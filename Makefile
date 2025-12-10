@@ -198,7 +198,7 @@ aks-ssh: get-cluster-credentials
 
 aks-web-ssh: get-cluster-credentials
 	$(if $(PR_NUMBER), $(eval export APP_ID=review-$(PR_NUMBER)) , $(eval export APP_ID=$(CONFIG_LONG)))
-	kubectl -n ${NAMESPACE} exec -ti --tty deployment/teacher-training-entitlement-${APP_ID}-web -- /bin/sh
+	kubectl -n ${NAMESPACE} exec -ti --tty deployment/teacher-training-entitlement-${APP_ID} -- /bin/sh
 
 action-group: set-azure-account # make production action-group ACTION_GROUP_EMAIL=notificationemail@domain.com . Must be run before setting enable_monitoring=true. Use any non-prod environment to create in the test subscription.
 	$(if $(ACTION_GROUP_EMAIL), , $(error Please specify a notification email for the action group))
@@ -207,8 +207,8 @@ action-group: set-azure-account # make production action-group ACTION_GROUP_EMAI
 
 # Removes explicit postgres database URLs from database.yml
 # konduit-cleanup:
-# 	sed $(SED_INPLACE) -e '/url\: "postgres/d' config/database.yml; \
-# 	exit 0
+#	sed $(SED_INPLACE) -e '/url\: "postgres/d' config/database.yml; \
+#	exit 0
 
 define KONDUIT_CONNECT
 	trap 'make konduit-cleanup' INT; \
