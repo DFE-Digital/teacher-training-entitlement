@@ -2,10 +2,11 @@ module "storage_account" {
   source = "./vendor/modules/aks//aks/storage_account"
 
   name                        = ""
-  environment                 = local.environment
+  environment                 = local.environmentsa
   azure_resource_prefix       = var.azure_resource_prefix
   service_short               = var.service_short
   config_short                = var.config_short
+  storage_account_name_override = local.uploads_storage_account_name
 
   public_network_access_enabled     = true
   container_delete_retention_days   = var.container_delete_retention_days
