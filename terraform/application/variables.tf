@@ -131,12 +131,13 @@ variable "worker_replicas" {
   default = 1
 }
 
+variable "command" {
+  type = list(string)
+  default = []
+}
+
 variable "enable_dfe_analytics_federated_auth" {
   description = "Create the resources in Google cloud for federated authentication and enable in application"
   type = bool
   default = false
-}
-variable "command" {
-  type = list(string)
-  default = []
 }
