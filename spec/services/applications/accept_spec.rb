@@ -17,7 +17,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     let(:trn) { rand(1_000_000..9_999_999).to_s }
     let(:user) { create(:user, :with_verified_trn) }
     let(:course_group) { create(:course_group, name: "leadership") }
-    let(:course) { create(:course, :senior_leadership, course_group:) }
+    let(:course) { create(:course, :tte_early_years, course_group:) }
     let(:lead_provider) { create(:lead_provider) }
     let(:cohort) { create(:cohort, :current, :without_funding_cap) }
     let(:cohort_next) { create(:cohort, :next, :without_funding_cap) }
@@ -75,10 +75,10 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
       end
     end
 
-    context "when user applies for EHCO but has accepted ASO" do
+    context "when user applies for EHCO but has accepted ASO", :npq do
       let(:other_course_group) { create(:course_group, name: "ehco") }
       let(:course) { create(:course, :additional_support_offer, course_group: other_course_group) }
-      let(:npq_ehco) { create(:course, :early_headship_coaching_offer, course_group: other_course_group) }
+      let(:npq_ehco) { create(:course, :tte_early_years, course_group: other_course_group) }
 
       let(:other_application) do
         create(
@@ -283,7 +283,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
       end
     end
 
-    context "when user has applied for different course" do
+    context "when user has applied for different course", :npq do
       let(:other_lead_provider) { create(:lead_provider) }
       let(:other_course) { create(:course, :early_years_leadership) }
 
@@ -443,7 +443,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     describe "changing schedule on accept" do
       let(:cohort) { create(:cohort, :current, :without_funding_cap) }
       let(:course_group) { create(:course_group, name: "leadership") }
-      let(:course) { create(:course, :senior_leadership, course_group:) }
+      let(:course) { create(:course, :tte_early_years, course_group:) }
 
       let(:application) do
         create(

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe CourseGroups::Support do
+RSpec.describe CourseGroups::Support, :npq do
   let(:cohort) { create(:cohort, :current) }
   let(:course_group) { CourseGroup.find_by(name: "support") || create(:course_group, name: "support") }
 

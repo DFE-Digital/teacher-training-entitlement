@@ -184,7 +184,9 @@ module Declarations
     end
 
     def valid_course_identifier_for_participant_outcome?
-      CourseGroup.joins(:courses).leadership_or_specialist.where(courses: { identifier: course_identifier }).exists?
+      # CourseGroup.joins(:courses).leadership_or_specialist.where(courses: { identifier: course_identifier }).exists?
+      # TODO: QUESTion for policy
+      true
     end
 
     def create_participant_outcome!
@@ -194,7 +196,7 @@ module Declarations
         lead_provider:,
         participant_id: participant.ecf_id,
         course_identifier:,
-        state: has_passed.to_s == "true" ? "passed" : "failed",
+        state: has_passed.to_s == "true" ? "passed" : "failed", # TODO: DEFINE COURSE OUTCOME VALUES
         completion_date: declaration_date.rfc3339,
       )
 

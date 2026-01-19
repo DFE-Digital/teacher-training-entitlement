@@ -9,15 +9,14 @@ RSpec.describe Statements::SummaryCalculator do
   let(:application) { create(:application, :accepted, :eligible_for_funding, course:, lead_provider:, cohort:) }
   let(:declaration_type) { "started" }
 
-  let!(:course) { create(:course, :leading_teaching) }
+  let!(:course) { create(:course, :tte_early_years) }
   let!(:contract) { create(:contract, course:, statement:) }
   let(:contract_template_monthly_service_fee) { nil }
 
   subject { described_class.new(statement:) }
 
   before do
-    create(:schedule, :npq_leadership_autumn, cohort:)
-    create(:schedule, :npq_specialist_autumn, cohort:)
+    create(:schedule, :tte_reception_autumn, cohort:)
   end
 
   describe "#total_payment" do
@@ -426,7 +425,7 @@ RSpec.describe Statements::SummaryCalculator do
     end
   end
 
-  describe "Contract with special_course" do
+  describe "Contract with special_course", :npq do
     let!(:maths_course) { create(:course, :leading_primary_mathematics) }
     let!(:leading_maths_contract) do
       create(

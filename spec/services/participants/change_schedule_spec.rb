@@ -14,15 +14,15 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
     }
   end
   let(:lead_provider) { create(:lead_provider) }
-  let(:course) { create(:course, :senior_leadership) }
+  let(:course) { create(:course, :tte_early_years) }
   let(:course_identifier) { course.identifier }
-  let(:schedule) { create(:schedule, :npq_leadership_spring, cohort:) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:application_trait) { :accepted }
   let!(:application) { create(:application, application_trait, cohort:, lead_provider:, course:, schedule:) }
   let(:participant) { application.user }
   let(:participant_id) { participant.ecf_id }
   let(:new_cohort) { create(:cohort, :next) }
-  let(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort: new_cohort) }
+  let(:new_schedule) { create(:schedule, :tte_reception_spring, cohort: new_cohort) }
   let(:new_schedule_identifier) { new_schedule.identifier }
   let(:statement) { create(:statement, cohort:, lead_provider:) }
   let!(:contract) { create(:contract, statement:, course:) }
@@ -60,7 +60,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
       end
 
       context "when the schedule identifier change of the same type again" do
-        let(:new_schedule) { create(:schedule, :npq_leadership_spring, cohort:) }
+        let(:new_schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
 
         it { is_expected.to have_error_count(1) }
         it { is_expected.to have_error(:schedule_identifier, :schedule_has_not_changed, "The participant already has the specified schedule") }
@@ -273,10 +273,10 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
       end
     end
 
-    context "when lead provider has no contract for the cohort and course" do
-      let(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort:) }
+    context "when lead provider has no contract for the cohort and course", :npq do
+      let(:new_schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
 
-      before { contract.update!(course: create(:course, :leading_literacy)) }
+      before { contract.update!(course: create(:course, :tte_early_years)) }
 
       it { is_expected.to have_error(:cohort, :missing_contract_for_cohort_and_course, "You cannot change a participant to this cohort as you do not have a contract for the cohort and course. Contact the DfE for assistance.") }
     end
@@ -284,7 +284,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
 
   describe "#change_schedule" do
     context "when changing the schedule only" do
-      let!(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort:) }
+      let!(:new_schedule) { create(:schedule, :tte_reception_spring, cohort:) }
 
       it "allows change of schedule" do
         expect(subject.change_schedule).to be_truthy
@@ -298,7 +298,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
 
         context "when application has schedule" do
           before do
-            create(:schedule, :npq_leadership_autumn, cohort: new_cohort)
+            create(:schedule, :tte_reception_spring, cohort: new_cohort)
             application.schedule.update!(cohort: new_cohort)
           end
 
@@ -311,7 +311,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
 
         context "when schedule is nil" do
           let(:new_cohort) { create(:cohort, :current) }
-          let(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort: new_cohort) }
+          let(:new_schedule) { create(:schedule, :tte_reception_autumn, cohort: new_cohort) }
 
           before do
             application.update!(schedule: nil)
@@ -357,7 +357,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
         # ensure we have an equivalent schedule which this one should shadow
         new_schedule
 
-        create :schedule, :npq_leadership_autumn, cohort: suffixed_cohort
+        create :schedule, :tte_reception_autumn, cohort: suffixed_cohort
       end
 
       let :declaration do
@@ -400,10 +400,10 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
           end
         end
 
-        context "with suffixed cohorts feature turned off" do
+        context "with suffixed cohorts feature turned off", :npq do
           before { allow(Feature).to receive(:suffixed_cohorts?).and_return(false) }
 
-          let(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort: cohort) }
+          let(:new_schedule) { create(:schedule, :tte_reception_autumn, cohort: cohort) }
 
           it "chooses schedule from cohort with suffix of a" do
             expect(subject.change_schedule).to be_truthy
@@ -453,9 +453,9 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
         context "with suffixed cohorts feature turned off" do
           before { allow(Feature).to receive(:suffixed_cohorts?).and_return(false) }
 
-          let(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort: cohort) }
+          let(:new_schedule) { create(:schedule, :tte_reception_autumn, cohort: cohort) }
 
-          it "chooses schedule from cohort with suffix of a" do
+          it "chooses schedule from cohort with suffix of a", :npq do
             expect(subject.change_schedule).to be_truthy
             application.reload
             expect(application.schedule).to eql(new_schedule)

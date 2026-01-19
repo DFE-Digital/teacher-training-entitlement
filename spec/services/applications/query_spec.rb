@@ -276,7 +276,7 @@ RSpec.describe Applications::Query do
     end
 
     describe "transient_previously_funded" do
-      let(:course) { create(:course, :senior_leadership) }
+      let(:course) { create(:course, :tte_early_years) }
       let!(:application) { create(:application, lead_provider:, course:) }
       let(:query_applications) { described_class.new(lead_provider:).applications }
       let(:returned_application) { query_applications.find(application.id) }
@@ -313,7 +313,7 @@ RSpec.describe Applications::Query do
         it { expect(returned_application).not_to be_transient_previously_funded }
       end
 
-      context "when there is a previous, accepted application that was eligible for funding in a different (not rebranded) course" do
+      context "when there is a previous, accepted application that was eligible for funding in a different (not rebranded) course", :npq do
         before do
           create(
             :application,
@@ -394,7 +394,7 @@ RSpec.describe Applications::Query do
         it { expect(returned_application).not_to be_transient_previously_funded }
       end
 
-      context "when there is a previous, accepted application that was eligible for funding on a rebranded course" do
+      context "when there is a previous, accepted application that was eligible for funding on a rebranded course", :npq do
         let(:course) { Course.find_by(identifier: Course::NPQ_ADDITIONAL_SUPPORT_OFFER) }
 
         before do

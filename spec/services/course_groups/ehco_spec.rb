@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe CourseGroups::Ehco do
+RSpec.describe CourseGroups::Ehco, :npq do
   let(:cohort) { create(:cohort, :current) }
   let(:schedule_date) { Date.current }
   let(:course_group) { CourseGroup.find_by(name: "ehco") || create(:course_group, name: "ehco") }

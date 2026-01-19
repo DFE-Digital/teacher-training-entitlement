@@ -5,7 +5,7 @@ RSpec.describe "NPQ Participant Outcomes endpoint", openapi_spec: "v3/swagger.ya
   include_context "with authorization for api doc request"
 
   let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
-  let(:course) { create(:course, :senior_leadership, course_group:) }
+  let(:course) { create(:course, :tte_early_years, course_group:) }
   let(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
   let(:application) do

@@ -41,7 +41,7 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v3/swagger.ya
       end
     end
 
-    describe "change delivery partner" do
+    describe "change delivery partner", :npq do
       it_behaves_like "an API update endpoint documentation",
                       "/api/v3/participant-declarations/{id}/change-delivery-partner",
                       "Participant declarations",
@@ -83,8 +83,8 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v3/swagger.ya
     let(:lead_provider) { create(:lead_provider) }
     let(:type) { "participant-declaration" }
     let(:cohort) { create(:cohort, :current) }
-    let(:course_group) { CourseGroup.find_by(name: "leadership") }
-    let(:course) { create(:course, :senior_leadership, course_group:) }
+    let(:course_group) { CourseGroup.find_by(name: "reception") }
+    let(:course) { create(:course, :tte_early_years, course_group:) }
     let!(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
     let(:application) { create(:application, :accepted, cohort:, course:, lead_provider:) }
     let(:declaration_date) { schedule.applies_from + 1.day }

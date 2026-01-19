@@ -5,7 +5,7 @@ RSpec.describe "NPQ Applications endpoint", :with_default_schedules, openapi_spe
   include_context "with authorization for api doc request"
 
   let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
-  let(:course) { create(:course, :senior_leadership, course_group:) }
+  let(:course) { create(:course, :tte_early_years, course_group:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
   let(:application) do
     create(

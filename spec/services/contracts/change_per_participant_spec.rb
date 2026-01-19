@@ -7,7 +7,7 @@ RSpec.describe Contracts::ChangePerParticipant, type: :model do
 
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { create(:statement, lead_provider:) }
-  let(:course) { create(:course, :senior_leadership) }
+  let(:course) { create(:course, :tte_early_years) }
   let(:last_months_statement) { create(:statement, lead_provider:, for_date: 1.month.ago) }
   let!(:last_months_contract) { create(:contract, statement: last_months_statement, course:) }
   let(:this_months_statement) { create(:statement, lead_provider:, for_date: Time.zone.today) }
@@ -16,7 +16,7 @@ RSpec.describe Contracts::ChangePerParticipant, type: :model do
   let!(:next_months_contract) { create(:contract, statement: next_months_statement, course:) }
   let(:future_statement) { create(:statement, lead_provider:, for_date: 2.months.from_now) }
   let!(:future_contract) { create(:contract, statement: future_statement, course:) }
-  let!(:contract_for_other_course) { create(:contract, statement: next_months_statement, course: create(:course, :early_headship_coaching_offer)) }
+  let!(:contract_for_other_course) { create(:contract, statement: next_months_statement, course: create(:course)) }
   let(:statement_in_other_cohort) { create(:statement, lead_provider:, cohort: create(:cohort, :next)) }
   let!(:contract_in_other_cohort) { create(:contract, statement: statement_in_other_cohort, course:) }
   let(:statement_for_other_provider) { create(:statement, lead_provider: create(:lead_provider), for_date: 1.month.from_now) }

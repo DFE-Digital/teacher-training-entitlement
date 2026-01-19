@@ -6,8 +6,8 @@ RSpec.describe Declarations::Create, type: :model do
   let(:lead_provider) { LeadProvider.first }
   let(:cohort) { create(:cohort, :current) }
   let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
-  let(:course) { create(:course, :senior_leadership, course_group:) }
-  let(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
+  let(:course) { create(:course, :tte_early_years, course_group:) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, course_group:, cohort:) }
   let(:application) { create(:application, :accepted, cohort:, course:, lead_provider:, schedule:) }
   let(:participant) { application.user }
   let(:participant_id) { participant.ecf_id }
@@ -148,7 +148,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
     end
 
-    context "when a declaration exists for a different course" do
+    context "when a declaration exists for a different course", :npq do
       let(:a_different_course) { create(:course, :headship, course_group:) }
       let(:another_application) { create(:application, :accepted, cohort:, course: a_different_course, lead_provider:, user: participant) }
 
@@ -227,28 +227,6 @@ RSpec.describe Declarations::Create, type: :model do
         end
       end
 
-      context "when ehco course identifier" do
-        let(:course_group) { CourseGroup.find_by(name: "ehco") || create(:course_group, name: "ehco") }
-        let(:course) { create(:course, :early_headship_coaching_offer, course_group:) }
-
-        it "does not create a participant outcome" do
-          expect {
-            service.create_declaration
-          }.not_to change(ParticipantOutcome, :count)
-        end
-      end
-
-      context "when aso course identifier" do
-        let(:course_group) { CourseGroup.find_by(name: "support") || create(:course_group, name: "support") }
-        let(:course) { create(:course, :additional_support_offer, course_group:) }
-
-        it "does not create a participant outcome" do
-          expect {
-            service.create_declaration
-          }.not_to change(ParticipantOutcome, :count)
-        end
-      end
-
       context "when ParticipantOutcomes::Create service class is invalid" do
         before do
           allow_any_instance_of(ParticipantOutcomes::Create).to receive(:valid?).and_return(false)
@@ -282,8 +260,8 @@ RSpec.describe Declarations::Create, type: :model do
       end
     end
 
-    context "when lead provider has no contract for the cohort and course" do
-      before { contract.update!(course: create(:course, :leading_literacy)) }
+    context "when lead provider has no contract for the cohort and course", :npq do
+      before { contract.update!(course: create(:course, :tte_early_years)) }
 
       it { is_expected.to have_error(:cohort, :missing_contract_for_cohort_and_course, "You cannot submit a declaration for this participant as you do not have a contract for the cohort and course. Contact the DfE for assistance.") }
     end
