@@ -9,8 +9,7 @@ module Helpers
       # examples use Course.first and Course.last
       before do
         Course.destroy_all
-        create(:course, :leading_literacy)
-        create(:course, :early_headship_coaching_offer)
+        create(:course, :tte_early_years)
       end
     end
   end

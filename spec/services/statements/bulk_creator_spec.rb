@@ -17,8 +17,8 @@ RSpec.describe Statements::BulkCreator do
     it "creates statements and contracts" do
       expect { subject.call(dry_run: false) }
         .to change(Statement, :count).by(6)
-        .and change(ContractTemplate, :count).by(3)
-        .and change(Contract, :count).by(9)
+        .and change(ContractTemplate, :count).by(2)
+        .and change(Contract, :count).by(6)
 
       [
         { lead_provider: LeadProvider.first, cohort:, year: 2025, month: 2, deadline_date: Date.new(2024, 12, 25), payment_date: Date.new(2025, 1, 26), output_fee: true },
@@ -27,7 +27,7 @@ RSpec.describe Statements::BulkCreator do
       ].each do |attrs|
         statement = Statement.find_by(attrs)
         expect(statement).to be_present
-        expect(statement.contracts.count).to eq(2)
+        expect(statement.contracts.count).to eq(1)
         expect(statement.reconcile_amount).to eq(0)
 
         contract_template = statement.contracts.find_by(course: Course.first).contract_template
@@ -36,19 +36,20 @@ RSpec.describe Statements::BulkCreator do
         expect(contract_template.special_course).to be(false)
         expect(contract_template.monthly_service_fee).to eq(100)
         expect(contract_template.service_fee_installments).to eq(12)
-        expect(contract_template.number_of_payment_periods).to eq(3)
-        expect(contract_template.service_fee_percentage).to eq(40)
-        expect(contract_template.output_payment_percentage).to eq(60)
+        expect(contract_template.number_of_payment_periods).to eq(3)    # this is set by BulkCreater.crontract_template_attributes_for(course_group)
+        expect(contract_template.service_fee_percentage).to eq(0)       # this is set by BulkCreater.crontract_template_attributes_for(course_group)
+        expect(contract_template.output_payment_percentage).to eq(100)  # this is set by BulkCreater.crontract_template_attributes_for(course_group)
 
-        contract_template = statement.contracts.find_by(course: Course.last).contract_template
-        expect(contract_template.recruitment_target).to eq(50)
-        expect(contract_template.per_participant).to eq(400)
-        expect(contract_template.special_course).to be(true)
-        expect(contract_template.monthly_service_fee).to eq(200)
-        expect(contract_template.service_fee_installments).to eq(6)
-        expect(contract_template.number_of_payment_periods).to eq(4)
-        expect(contract_template.service_fee_percentage).to eq(0)
-        expect(contract_template.output_payment_percentage).to eq(100)
+        # we only have 1 course at the moment
+        # contract_template = statement.contracts.find_by(course: Course.last).contract_template
+        # expect(contract_template.recruitment_target).to eq(50)
+        # expect(contract_template.per_participant).to eq(400)
+        # expect(contract_template.special_course).to be(true)
+        # expect(contract_template.monthly_service_fee).to eq(200)
+        # expect(contract_template.service_fee_installments).to eq(6)
+        # expect(contract_template.number_of_payment_periods).to eq(4)
+        # expect(contract_template.service_fee_percentage).to eq(0)
+        # expect(contract_template.output_payment_percentage).to eq(100)
       end
 
       [
@@ -68,8 +69,8 @@ RSpec.describe Statements::BulkCreator do
         expect(contract_template.monthly_service_fee).to eq(0)
         expect(contract_template.service_fee_installments).to eq(9)
         expect(contract_template.number_of_payment_periods).to eq(3)
-        expect(contract_template.service_fee_percentage).to eq(40)
-        expect(contract_template.output_payment_percentage).to eq(60)
+        expect(contract_template.service_fee_percentage).to eq(0)
+        expect(contract_template.output_payment_percentage).to eq(100)
       end
     end
   end

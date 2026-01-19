@@ -4,9 +4,9 @@ require "swagger_helper"
 RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:course) { create(:course, :early_headship_coaching_offer) }
+  let(:course) { create(:course, :tte_early_years) }
   let(:cohort) { create(:cohort, :current) }
-  let(:schedule) { create(:schedule, :npq_ehco_december, cohort:) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:user) { create(:user, :with_verified_trn) }
   let(:application) do
     create(:application,
@@ -118,7 +118,7 @@ RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", typ
                     "#/components/schemas/ParticipantChangeScheduleRequest" do
       let(:resource) { participant }
       let(:type) { "participant-change-schedule" }
-      let(:new_schedule) { create(:schedule, :npq_ehco_march, cohort:) }
+      let(:new_schedule) { create(:schedule, :tte_reception_spring, cohort:) }
       let(:attributes) { { schedule_identifier: new_schedule.identifier, course_identifier: course.identifier, cohort: application.cohort.start_year } }
       let(:invalid_attributes) { { schedule_identifier: "invalid", course_identifier: "invalid" } }
       let(:response_example) do

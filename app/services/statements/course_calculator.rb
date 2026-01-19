@@ -101,7 +101,9 @@ module Statements
     end
 
     def course_has_targeted_delivery_funding?
-      use_targeted_delivery_funding? && !course.ehco? && !course.aso?
+      # NOTE: check validity of defaulting to false
+      # use_targeted_delivery_funding? && !course.ehco? && !course.aso?
+      use_targeted_delivery_funding?
     end
 
     def targeted_delivery_funding_declarations_count

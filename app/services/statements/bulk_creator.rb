@@ -134,7 +134,14 @@ module Statements
     end
 
     def contract_template_attributes_for(course_group)
+      # TODO: TTE check with policy for accurate values
       case course_group.name
+      when "reception"
+        {
+          number_of_payment_periods: 3,
+          service_fee_percentage: 0,
+          output_payment_percentage: 100,
+        }
       when "leadership"
         {
           number_of_payment_periods: 4,

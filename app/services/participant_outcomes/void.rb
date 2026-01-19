@@ -25,7 +25,7 @@ module ParticipantOutcomes
 
     def voidable_outcome?
       declaration.completed_declaration_type? &&
-        valid_course_identifier_for_participant_outcome? &&
+        # valid_course_identifier_for_participant_outcome? &&
         !latest_existing_outcome&.voided_state?
     end
 

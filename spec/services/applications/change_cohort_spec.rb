@@ -28,9 +28,9 @@ RSpec.describe Applications::ChangeCohort, type: :model do
     end
 
     context "when the application has declarations" do
-      let(:application) { create(:application, :with_declaration, cohort: cohort_2021, schedule: create(:schedule, :npq_leadership_autumn, cohort: cohort_2021)) }
+      let(:application) { create(:application, :with_declaration, cohort: cohort_2021, schedule: create(:schedule, :tte_reception_autumn, cohort: cohort_2021)) }
 
-      before { create(:schedule, :npq_leadership_autumn, cohort: new_cohort) }
+      before { create(:schedule, :tte_reception_autumn, cohort: new_cohort) }
 
       it { is_expected.not_to be_valid }
       it { is_expected.to have_error(:cohort_id, :declarations_present, "Cannot change cohort for an application with declarations") }
@@ -43,10 +43,10 @@ RSpec.describe Applications::ChangeCohort, type: :model do
     end
 
     context "when the application has a schedule" do
-      let(:application) { create(:application, cohort: cohort_2021, schedule: create(:schedule, :npq_leadership_autumn, cohort: cohort_2021)) }
+      let(:application) { create(:application, cohort: cohort_2021, schedule: create(:schedule, :tte_reception_autumn, cohort: cohort_2021)) }
 
       context "when the new cohort has a schedule for the course group" do
-        before { create(:schedule, :npq_leadership_autumn, cohort: new_cohort) }
+        before { create(:schedule, :tte_reception_autumn, cohort: new_cohort) }
 
         it { is_expected.to be_valid }
       end
@@ -76,9 +76,9 @@ RSpec.describe Applications::ChangeCohort, type: :model do
     end
 
     context "when the application is in a schedule" do
-      let(:schedule) { create(:schedule, :npq_leadership_autumn, cohort: cohort_2021) }
+      let(:schedule) { create(:schedule, :tte_reception_autumn, cohort: cohort_2021) }
       let(:application) { create(:application, cohort: cohort_2021, schedule: schedule) }
-      let(:new_schedule) { create(:schedule, :npq_leadership_autumn, cohort: new_cohort) }
+      let(:new_schedule) { create(:schedule, :tte_reception_autumn, cohort: new_cohort) }
 
       context "when the new cohort has a schedule for the course group" do
         it "changes the schedule" do
@@ -92,17 +92,15 @@ RSpec.describe Applications::ChangeCohort, type: :model do
     let(:cohort_2022) { create(:cohort, start_year: 2022) }
     let(:cohort_2023) { create(:cohort, start_year: 2023) }
     let(:cohort_2024) { create(:cohort, start_year: 2024) }
-    let(:schedule_2021) { create(:schedule, :npq_leadership_autumn, cohort: cohort_2021) }
+    let(:schedule_2021) { create(:schedule, :tte_reception_autumn, cohort: cohort_2021) }
 
     before do
-      create(:schedule, :npq_leadership_autumn, cohort: new_cohort)
-      create(:schedule, :npq_leadership_autumn, cohort: cohort_2022)
-      create(:schedule, :npq_leadership_spring, cohort: cohort_2022)
+      create(:schedule, :tte_reception_autumn, cohort: new_cohort)
+      create(:schedule, :tte_reception_autumn, cohort: cohort_2022)
+      create(:schedule, :tte_reception_spring, cohort: cohort_2022)
       create(:schedule, :npq_specialist_autumn, cohort: cohort_2022)
-      create(:schedule, :npq_leadership_autumn, cohort: cohort_2023)
-      create(:schedule, :npq_leadership_spring, cohort: cohort_2023)
-      create(:schedule, :npq_specialist_autumn, cohort: cohort_2023)
-      create(:schedule, :npq_specialist_autumn, cohort: cohort_2024)
+      create(:schedule, :tte_reception_autumn, cohort: cohort_2023)
+      create(:schedule, :tte_reception_spring, cohort: cohort_2023)
     end
 
     context "when the application is in a schedule" do

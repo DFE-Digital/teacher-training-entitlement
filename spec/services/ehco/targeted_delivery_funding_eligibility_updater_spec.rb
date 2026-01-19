@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Ehco::TargetedDeliveryFundingEligibilityUpdater do
+RSpec.describe Ehco::TargetedDeliveryFundingEligibilityUpdater, :npq do
   subject { described_class.run(logger:) }
 
   let(:ehco_course) { Course.ehco }

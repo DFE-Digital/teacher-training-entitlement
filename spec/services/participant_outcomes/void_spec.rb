@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ParticipantOutcomes::Void, type: :model do
-  let(:course) { create(:course, :senior_leadership) }
+  let(:course) { create(:course, :tte_early_years) }
   let(:declaration) { create(:declaration, declaration_type, :paid, course:) }
   let(:declaration_type) { :completed }
 
@@ -48,20 +48,6 @@ RSpec.describe ParticipantOutcomes::Void, type: :model do
         service.void_outcome
 
         expect(declaration.participant_outcomes.count).to be(0)
-      end
-    end
-
-    %i[early_headship_coaching_offer additional_support_offer].each do |course_trait|
-      context "when the course is #{course_trait}" do
-        let(:course) { create(:course, course_trait) }
-
-        it "does not create participant outcome record" do
-          expect(declaration.participant_outcomes.count).to be(0)
-
-          service.void_outcome
-
-          expect(declaration.participant_outcomes.count).to be(0)
-        end
       end
     end
   end

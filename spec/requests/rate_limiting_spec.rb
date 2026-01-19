@@ -41,8 +41,6 @@ RSpec.describe "Rate limiting" do
   end
 
   [
-    Rails.application.routes.url_helpers.registration_wizard_show_path("qualified-teacher-check"),
-    Rails.application.routes.url_helpers.registration_wizard_show_change_path("qualified-teacher-check"),
     Rails.application.routes.url_helpers.session_wizard_show_path("sign-in"),
     Rails.application.routes.url_helpers.session_wizard_show_path("sign-in-code"),
   ].each do |protected_path|

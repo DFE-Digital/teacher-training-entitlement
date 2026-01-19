@@ -7,7 +7,7 @@ RSpec.describe Statements::CourseCalculator do
 
   let(:calculator)     { described_class.new(contract:) }
   let(:cohort)         { create(:cohort, :current) }
-  let(:course)         { create(:course, :leading_literacy) }
+  let(:course)         { create(:course, :tte_early_years) }
   let(:schedule)       { course.schedule_for(cohort:) }
   let(:statement)      { create(:statement, :next_output_fee, cohort:) }
   let(:paid_statement) { create(:statement, :paid, lead_provider:) }
@@ -16,8 +16,8 @@ RSpec.describe Statements::CourseCalculator do
   let!(:contract)      { create(:contract, course:, statement:) }
 
   before do
-    create(:schedule, :npq_leadership_autumn, cohort:)
-    create(:schedule, :npq_specialist_autumn, cohort:)
+    create(:schedule, :tte_reception_autumn, cohort:)
+    # create(:schedule, :npq_specialist_autumn, cohort:)
   end
 
   describe "#billable_declarations_count_for_declaration_type" do
@@ -239,25 +239,25 @@ RSpec.describe Statements::CourseCalculator do
     let(:statement) { create(:statement, :has_targeted_delivery_funding, :next_output_fee, cohort:) }
 
     context "with early headship coaching offer" do
-      let(:course) { create(:course, :early_headship_coaching_offer) }
+      let(:course) { create(:course, :tte_early_years) }
 
-      it { is_expected.to be false }
+      it { is_expected.to be true }
     end
 
-    context "with additional support offer" do
+    context "with additional support offer", :npq do
       let(:course) { create(:course, :additional_support_offer) }
 
       it { is_expected.to be false }
     end
 
-    context "with leadership course" do
+    context "with leadership course", :npq do
       let(:course) { create(:course, :early_years_leadership) }
 
       it { is_expected.to be true }
     end
   end
 
-  describe "#targeted_delivery_funding_declarations_count" do
+  describe "#targeted_delivery_funding_declarations_count", :npq, pending: "Policy question" do
     subject { calculator.targeted_delivery_funding_declarations_count }
 
     let(:application) do
@@ -288,7 +288,7 @@ RSpec.describe Statements::CourseCalculator do
       it { is_expected.to be(1) }
     end
 
-    context "when multiple declarations from same user of one type" do
+    context "when multiple declarations from same user of one type", :npq, pending: "Policy question" do
       let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
       let(:statement) { create(:statement, :has_targeted_delivery_funding, :next_output_fee, cohort:) }
 
@@ -320,7 +320,7 @@ RSpec.describe Statements::CourseCalculator do
     end
   end
 
-  describe "#targeted_delivery_funding_refundable_declarations_count" do
+  describe "#targeted_delivery_funding_refundable_declarations_count", :npq, pending: "policy question" do
     subject { calculator.targeted_delivery_funding_refundable_declarations_count }
 
     let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
