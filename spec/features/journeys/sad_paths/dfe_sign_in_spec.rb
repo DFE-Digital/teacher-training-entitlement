@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "DfE sign in", type: :feature do
+RSpec.feature "DfE sign in", :npq, type: :feature do
   include Helpers::JourneyAssertionHelper
 
   let(:user) { User.find_by(email: "user@example.com") }
