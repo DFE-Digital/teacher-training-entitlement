@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Sad journeys", :no_js, :with_default_schedules, type: :feature do
+RSpec.feature "Sad journeys", :no_js, :npq, :with_default_schedules, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
   include ApplicationHelper
@@ -16,22 +16,10 @@ RSpec.feature "Sad journeys", :no_js, :with_default_schedules, type: :feature do
   steps_that_require_course = %w[
     check-answers
     choose-your-provider
-    ehco-new-headteacher
-    ehco-possible-funding
-    funding-eligibility-maths
-    funding-eligibility-senco
-    funding-your-npq
-    get-an-identity-callback
-    ineligible-for-funding
-    maths-eligibility-teaching-for-mastery
-    maths-understanding-of-approach
     possible-funding
-    senco-in-role
-    senco-start-date
   ]
 
   RegistrationWizard::VALID_REGISTRATION_STEPS
-    .excluding(:choose_your_npq)
     .map { |step| step.to_s.dasherize }.each do |step|
     scenario "Navigating directly to the #{step} page does not raise an error" do
       visit "/registration/#{step}"
