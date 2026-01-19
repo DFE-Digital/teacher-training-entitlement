@@ -16,6 +16,8 @@ class CourseGroup < ApplicationRecord
       CourseGroups::Support.new(course_group: self, cohort:).schedule
     when "ehco"
       CourseGroups::Ehco.new(course_group: self, cohort:, schedule_date:).schedule
+    when "reception"
+      CourseGroups::Reception.new(course_group: self, cohort:).schedule
     else
       raise ArgumentError, "Invalid course group name"
     end

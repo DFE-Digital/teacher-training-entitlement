@@ -787,7 +787,7 @@ RSpec.describe Declaration, type: :model do
   describe "#duplicate_declarations" do
     let(:cohort) { create(:cohort, :current) }
     let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
-    let(:course) { create(:course, :senior_leadership, course_group:) }
+    let(:course) { create(:course, :tte_early_years, course_group:) }
     let(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
     let(:application) { create(:application, :accepted, cohort:, course:) }
     let(:participant) { application.user }
@@ -806,9 +806,9 @@ RSpec.describe Declaration, type: :model do
           end
         end
 
-        context "when declarations have been made for a different course" do
+        context "when declarations have been made for a different course", :npq do
           before do
-            course = create(:course, :early_headship_coaching_offer, course_group:)
+            course = create(:course, :tte_early_years, course_group:)
             other_application = create(:application, :accepted, course:, cohort:, user: other_user)
             create(:declaration, application: other_application)
           end
@@ -850,9 +850,9 @@ RSpec.describe Declaration, type: :model do
       end
     end
 
-    context "when declarations have been made for a different course" do
+    context "when declarations have been made for a different course", :npq do
       before do
-        course = create(:course, :early_headship_coaching_offer, course_group:)
+        course = create(:course, :tte_early_years, course_group:)
         other_application = create(:application, :accepted, course:, cohort:, user: participant)
         create(:declaration, application: other_application)
       end

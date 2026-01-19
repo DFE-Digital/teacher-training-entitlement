@@ -1,6 +1,9 @@
 class Schedule < ApplicationRecord
   DECLARATION_TYPES = %w[started retained-1 retained-2 completed].freeze
-  IDENTIFIERS = %w[npq-aso-march
+  # Adding identifier `tte-reception-spring` to help with transition to TTE context
+  IDENTIFIERS = %w[tte-reception-autumn
+                   tte-reception-spring
+                   npq-aso-march
                    npq-aso-june
                    npq-aso-november
                    npq-aso-december

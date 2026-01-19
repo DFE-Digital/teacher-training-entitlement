@@ -2,6 +2,7 @@ namespace :courses do
   desc "Update courses"
   task update: :environment do
     %w[
+      reception
       leadership
       specialist
       support

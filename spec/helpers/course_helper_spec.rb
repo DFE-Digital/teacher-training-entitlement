@@ -16,6 +16,7 @@ RSpec.describe CourseHelper, type: :helper do
         "npq-leading-literacy" => "Leading literacy",
         "npq-leading-primary-mathematics" => "Leading primary mathematics",
         "npq-senco" => "Special educational needs co-ordinator (SENCO)",
+        "tte-early-years" => "Early Years",
       }
     end
 
@@ -43,6 +44,7 @@ RSpec.describe CourseHelper, type: :helper do
         "npq-leading-literacy" => "the Leading literacy NPQ",
         "npq-leading-primary-mathematics" => "the Leading primary mathematics NPQ",
         "npq-senco" => "the Special educational needs co-ordinator (SENCO) NPQ",
+        "tte-early-years" => "the Early Years TTE",
       }
     end
 
@@ -70,6 +72,7 @@ RSpec.describe CourseHelper, type: :helper do
         "npq-early-years-leadership" => "NPQEYL",
         "npq-senco" => "NPQS",
         "npq-early-headship-coaching-offer" => "EHCO",
+        "tte-early-years" => "TTEEY",
       }
     end
 
@@ -85,18 +88,19 @@ RSpec.describe CourseHelper, type: :helper do
   describe ".title_embedded_course_name" do
     let(:expected_results) do
       {
-        "npq-additional-support-offer" => "Additional Support Offer NPQ",
-        "npq-leading-behaviour-culture" => "Leading behaviour and culture NPQ",
-        "npq-leading-literacy" => "Leading literacy NPQ",
-        "npq-leading-teaching" => "Leading teaching NPQ",
-        "npq-leading-teaching-development" => "Leading teacher development NPQ",
-        "npq-senior-leadership" => "Senior leadership NPQ",
-        "npq-leading-primary-mathematics" => "Leading primary mathematics NPQ",
-        "npq-headship" => "Headship NPQ",
-        "npq-executive-leadership" => "Executive leadership NPQ",
-        "npq-early-years-leadership" => "Early years leadership NPQ",
-        "npq-senco" => "Special educational needs co-ordinator (SENCO) NPQ",
+        "npq-additional-support-offer" => "Additional Support Offer TTE",
+        "npq-leading-behaviour-culture" => "Leading behaviour and culture TTE",
+        "npq-leading-literacy" => "Leading literacy TTE",
+        "npq-leading-teaching" => "Leading teaching TTE",
+        "npq-leading-teaching-development" => "Leading teacher development TTE",
+        "npq-senior-leadership" => "Senior leadership TTE",
+        "npq-leading-primary-mathematics" => "Leading primary mathematics TTE",
+        "npq-headship" => "Headship TTE",
+        "npq-executive-leadership" => "Executive leadership TTE",
+        "npq-early-years-leadership" => "Early years leadership TTE",
+        "npq-senco" => "Special educational needs co-ordinator (SENCO) TTE",
         "npq-early-headship-coaching-offer" => "Early headship coaching offer",
+        "tte-early-years" => "Early Years TTE",
       }
     end
 

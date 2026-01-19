@@ -54,5 +54,10 @@ FactoryBot.define do
       county { "county" }
       postcode { Faker::Address.postcode }
     end
+
+    trait :in_wales do
+      urn { "40000" }
+      establishment_type_code { "30" }
+    end
   end
 end
