@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "update_eyl_funding_eligible_schools_list:update" do
+RSpec.describe "update_eyl_funding_eligible_schools_list:update", :npq do
   let(:previous_file_path) { "lib/eyl_funding_eligible_schools/2022-11-30/eligible-schools.csv" }
   let(:previous_csv_content) do
     <<~CSV
