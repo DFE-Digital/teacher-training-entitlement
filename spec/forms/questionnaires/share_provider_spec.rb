@@ -16,6 +16,6 @@ RSpec.describe Questionnaires::ShareProvider, type: :model do
   describe "#previous_step" do
     subject(:previous_step) { model.previous_step }
 
-    it { is_expected.to be :choose_your_provider }
+    it { is_expected.to be :possible_funding }
   end
 end

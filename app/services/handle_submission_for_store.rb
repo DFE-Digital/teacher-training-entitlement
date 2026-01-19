@@ -136,29 +136,13 @@ private
     # to nil here to reduce confusion
     if eligible_for_funding?
       nil
-    elsif course.ehco?
-      store["ehco_funding_choice"]
     else
       store["funding"]
     end
   end
 
   def headteacher_status
-    if course.ehco?
-      case store["ehco_headteacher"]
-      when "yes"
-        case store["ehco_new_headteacher"]
-        when "yes"
-          "yes_in_first_five_years"
-        when "no"
-          "yes_over_five_years"
-        end
-      when "no"
-        "no"
-      end
-    else
-      store["headteacher_status"]
-    end
+    store["headteacher_status"]
   end
 
   def enqueue_send_application_submission_email_job(application)

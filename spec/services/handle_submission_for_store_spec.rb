@@ -8,7 +8,7 @@ RSpec.describe HandleSubmissionForStore do
   let(:school) { create(:school, :funding_eligible_establishment_type_code) }
   let(:private_childcare_provider) { create(:private_childcare_provider, :on_early_years_register) }
   let(:cohort) { create(:cohort, :current) }
-  let(:courses) { Course.where(identifier: "npq-leading-primary-mathematics") }
+  let(:courses) { Course.where(identifier: "tte-early-years") }
   let(:course) { courses.sample }
   let(:lead_provider) { LeadProvider.all.sample }
 
@@ -105,13 +105,13 @@ RSpec.describe HandleSubmissionForStore do
           "course_id" => course.id,
           "schedule_id" => nil,
           "ecf_id" => last_application.ecf_id,
-          "eligible_for_funding" => false,
+          "eligible_for_funding" => true,
           "employer_name" => nil,
           "employment_type" => nil,
           "employment_role" => nil,
           "funded_place" => nil,
           "funding_choice" => nil,
-          "funding_eligiblity_status_code" => "ineligible_establishment_not_a_pp50",
+          "funding_eligiblity_status_code" => "funded",
           "headteacher_status" => nil,
           "kind_of_nursery" => nil,
           "itt_provider_id" => nil,
@@ -154,7 +154,7 @@ RSpec.describe HandleSubmissionForStore do
       end
     end
 
-    context "when store includes information from the early years path" do
+    context "when store includes information from the early years path", :npq do
       let(:courses) { [Course.ehco] }
       let(:store) do
         {
@@ -265,7 +265,7 @@ RSpec.describe HandleSubmissionForStore do
           expect(user.applications.first.reload.funding_choice).to eq "school"
         end
 
-        context "when the course is EHCO" do
+        context "when the course is EHCO", :npq do
           before do
             allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_ESTABLISHMENT_TYPE)
           end
@@ -287,7 +287,7 @@ RSpec.describe HandleSubmissionForStore do
       end
     end
 
-    context "when applying for EHCO" do
+    context "when applying for EHCO", :npq do
       context "happy path" do
         let(:store) do
           {

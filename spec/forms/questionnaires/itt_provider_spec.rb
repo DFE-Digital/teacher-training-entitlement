@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Questionnaires::IttProvider, type: :model do
+RSpec.describe Questionnaires::IttProvider, :npq, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:itt_provider) }
   end

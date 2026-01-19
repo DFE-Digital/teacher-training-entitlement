@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Questionnaires::YourEmployment, type: :model do
+RSpec.describe Questionnaires::YourEmployment, :npq, type: :model do
   subject do
     described_class.new(employment_type:)
   end

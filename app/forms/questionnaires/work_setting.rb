@@ -66,15 +66,11 @@ module Questionnaires
     end
 
     def next_step
-      if wizard.query_store.inside_catchment?
-        return :choose_school if works_in_school?
-        return :kind_of_nursery if works_in_childcare?
-        return :referred_by_return_to_teaching_adviser if works_in_other?
+      return :ineligible_for_funding unless wizard.query_store.inside_catchment?
+      return :choose_school if works_in_school?
+      return :kind_of_nursery if works_in_childcare?
 
-        return :your_employment
-      end
-
-      :choose_your_npq
+      :ineligible_for_funding
     end
 
     def previous_step
@@ -98,9 +94,7 @@ module Questionnaires
       [
         build_option_struct(value: "early_years_or_childcare", link_errors: true),
         build_option_struct(value: "a_school"),
-        build_option_struct(value: "an_academy_trust"),
         build_option_struct(value: "a_16_to_19_educational_setting"),
-        build_option_struct(value: "another_setting"),
         build_option_struct(value: "other", divider: true),
       ]
     end

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "registration_wizard/dqt_mismatch.html.erb", type: :view do
+RSpec.describe "registration_wizard/dqt_mismatch.html.erb", :npq, type: :view do
   let(:request) { {} }
   let(:wizard) do
     RegistrationWizard.new(

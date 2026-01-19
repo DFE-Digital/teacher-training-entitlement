@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Questionnaires::ChoosePrivateChildcareProvider, type: :model do
+RSpec.describe Questionnaires::ChoosePrivateChildcareProvider, :npq, type: :model do
   let(:current_step) { :choose_private_childcare_provider }
   let(:store) { { "works_in_childcare" => "yes" } }
   let(:request) { nil }

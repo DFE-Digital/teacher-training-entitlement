@@ -5,19 +5,11 @@
 <h1 class="govuk-heading-xl">Funding</h1>
 
   <p class="govuk-body">
-    <% if !course.ehco? %>
       You’ve already been allocated scholarship funding for <%= localise_sentence_embedded_course_name(course) %> with <%= provider_name %>.
       <br>
       If you need to change something about your NPQ or provider, email <%= govuk_mail_to "continuing-professional-development@digital.education.gov.uk", "continuing-professional-development@digital.education.gov.uk" %>.
 
       <strong>If you’re taking the course again</strong>
-    <% else %>
-      You’ve already been allocated scholarship funding for Early headship coaching offer (EHCO) with <%= provider_name %>.
-      <br>
-      If you need to change something about your NPQ or provider, email <%= govuk_mail_to "continuing-professional-development@digital.education.gov.uk", "continuing-professional-development@digital.education.gov.uk" %>.
-
-      <strong>If you’re taking the EHCO again</strong>
-    <% end %>
 
     Continue to register.
 

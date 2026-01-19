@@ -31,13 +31,17 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       page.choose("Yes", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/provider-check", submit_form: true) do
-      expect(page).to have_text("Have you chosen an NPQ and provider?")
-      page.choose("Yes", visible: :all)
+    expect_page_to_have(path: "/registration/choose-your-course", submit_form: true) do
+      expect(page).to have_text("Choose a TTE course")
     end
 
-    # TODO: aria-expanded
-    expect_page_to_have(path: "/registration/teacher-catchment", axe_check: false, submit_form: true) do
+    expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
+      expect(page).to have_text("Select your provider")
+      page.choose("Ambition Institute", visible: :all)
+    end
+
+    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+      expect(page).to have_text("Do you work in England?")
       page.choose("Yes", visible: :all)
     end
 
@@ -47,31 +51,9 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     choose_a_school(js:, name: "open")
 
-    expect_page_to_have(path: "/registration/choose-your-npq", submit_form: true) do
-      expect(page).to have_text("Which NPQ do you want to do?")
-      page.choose("Headship", visible: :all)
-    end
-
-    expect_page_to_have(path: "/registration/ineligible-for-funding", submit_form: false) do
+    expect_page_to_have(path: "/registration/possible-funding", submit_form: true) do
       expect(page).to have_text("Funding")
-      expect(page).to have_text("such as state-funded schools")
-      expect(page).to have_text("This means that you would need to pay for the course another way")
-
-      page.click_link("Continue")
     end
-
-    expect_page_to_have(path: "/registration/funding-your-npq", submit_form: true) do
-      expect(page).to have_text("How are you funding your course?")
-      page.choose "My trust is paying", visible: :all
-    end
-
-    expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
-      expect(page).to have_text("Select your provider")
-      expect(page).to have_text("Before selecting your provider, you must check that they are currently open to accepting NPQ applications.")
-      page.choose("Teach First", visible: :all)
-    end
-
-    # check_back_journey_is_correct # FIXME: this currently fails # TODO: apply this check to all journeys
 
     expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
       expect(page).to have_text("Sharing your NPQ information")
@@ -82,10 +64,9 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       expect_check_answers_page_to_have_answers(
         {
           "Course start" => "In #{application_course_start_date}",
-          "Course" => "Headship",
-          "Provider" => "Teach First",
+          "Course" => "Early Years",
+          "Provider" => "Ambition Institute",
           "Workplace" => "open manchester school – street 1, manchester",
-          "Course funding" => "My trust is paying",
           "Work setting" => "A school",
           "Workplace in England" => "Yes",
         },
@@ -106,18 +87,17 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
       user.applications.first.tap do |application|
         expect(application.eligible_for_funding).to be_falsey
-        expect(application.funding_choice).to eql("trust")
       end
     end
     if User.last.applications.count == 1
       navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", axe_check: false, submit_form: false) do
-        expect(page).to have_text("Teach First")
-        expect(page).to have_text("Headship")
+        expect(page).to have_text("Ambition Institute")
+        expect(page).to have_text("Early Years")
       end
     else
       navigate_to_page(path: "/account", axe_check: false, submit_form: false) do
-        expect(page).to have_text("Teach First")
-        expect(page).to have_text("Headship")
+        expect(page).to have_text("Ambition Institute")
+        expect(page).to have_text("Early Years")
       end
     end
 
@@ -142,7 +122,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
     deep_compare_application_data(
       "accepted_at" => nil,
       "cohort_id" => Cohort.current.id,
-      "course_id" => Course.find_by(identifier: "npq-headship").id,
+      "course_id" => Course.find_by(identifier: "tte-early-years").id,
       "schedule_id" => nil,
       "ecf_id" => latest_application.ecf_id,
       "eligible_for_funding" => false,
@@ -150,7 +130,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "employment_type" => nil,
       "employment_role" => nil,
       "funded_place" => nil,
-      "funding_choice" => "trust",
+      "funding_choice" => nil,
       "funding_eligiblity_status_code" => "ineligible_establishment_type",
       "kind_of_nursery" => nil,
       "headteacher_status" => nil,
@@ -158,7 +138,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "lead_mentor" => false,
       "lead_provider_approval_status" => "pending",
       "participant_outcome_state" => nil,
-      "lead_provider_id" => LeadProvider.find_by(name: "Teach First").id,
+      "lead_provider_id" => LeadProvider.find_by(name: "Ambition Institute").id,
       "notes" => nil,
       "private_childcare_provider_id" => nil,
       "referred_by_return_to_teaching_adviser" => nil,
@@ -185,23 +165,23 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "review_status" => nil,
       "raw_application_data" => {
         "can_share_choices" => "1",
-        "chosen_provider" => "yes",
+        # "chosen_provider" => "yes",
         "course_start" => "In #{application_course_start_date}",
         "course_start_date" => "yes",
-        "course_identifier" => "npq-headship",
+        "course_identifier" => "tte-early-years",
         "email_template" => "not_eligible_scholarship_funding_not_tsf",
-        "funding" => "trust",
+        # "funding" => "trust",
         "funding_amount" => nil,
-        "funding_eligiblity_status_code" => "ineligible_establishment_type",
+        # "funding_eligiblity_status_code" => "ineligible_establishment_type",
         "institution_identifier" => "School-100000",
         "institution_name" => js ? "" : "open",
-        "lead_provider_id" => LeadProvider.find_by(name: "Teach First").id.to_s,
+        "lead_provider_id" => LeadProvider.find_by(name: "Ambition Institute").id.to_s,
         "submitted" => true,
-        "targeted_delivery_funding_eligibility" => false,
+        # "targeted_delivery_funding_eligibility" => false,
         "teacher_catchment" => "england",
         "teacher_catchment_country" => nil,
-        "tsf_primary_eligibility" => false,
-        "tsf_primary_plus_eligibility" => false,
+        # "tsf_primary_eligibility" => false,
+        # "tsf_primary_plus_eligibility" => false,
         "work_setting" => "a_school",
         "works_in_childcare" => "no",
         "works_in_school" => "yes",

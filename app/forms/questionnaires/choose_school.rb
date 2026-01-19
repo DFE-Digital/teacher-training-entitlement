@@ -20,9 +20,9 @@ module Questionnaires
       if institution_identifier == "other" || institution_identifier.blank?
         :choose_school
       elsif !institution(source: institution_identifier).in_england?
-        :school_not_in_england
+        :ineligible_for_funding
       else
-        :choose_your_npq
+        :possible_funding
       end
     end
 

@@ -6,7 +6,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
   let(:request) { nil }
 
   let(:wizard) do
-    RegistrationWizard.new(current_step:, store:, request:, current_user: create(:user))
+    RegistrationWizard.new(current_step:, store:, request:, current_user: build_stubbed(:user))
   end
 
   describe "validations" do
@@ -56,20 +56,42 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     it { is_expected.to validate_length_of(:institution_name).is_at_most(64) }
   end
 
-  describe "#next_step" do
-    subject { described_class.new(institution_identifier: "School-#{school.urn}", wizard:) }
+  describe "#previous_step" do
+    subject { described_class.new.previous_step }
 
-    let(:course) { create(:course) }
+    it { is_expected.to eq :work_setting }
+  end
+
+  describe "#next_step" do
+    subject { described_class.new(institution_identifier:, wizard:).next_step }
+
+    let(:course) { build_stubbed(:course, :tte_early_years) }
     let(:store) do
       {
         "course_identifier" => course.identifier.to_s,
         "works_in_school" => "yes",
+        "teacher_catchment" => "england",
       }
     end
-    let(:school) { create(:school) }
 
-    it "goes to choose_your_npq" do
-      expect(subject.next_step).to be(:choose_your_npq)
+    context "when possible_funding" do
+      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:school) { create(:school) }
+
+      it { is_expected.to eq :possible_funding }
+    end
+
+    context "when selecting other" do
+      let(:institution_identifier) { "other" }
+
+      it { is_expected.to eq :choose_school }
+    end
+
+    context "when school not in england" do
+      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:school) { create(:school, :in_wales) }
+
+      it { is_expected.to eq :ineligible_for_funding }
     end
   end
 end
