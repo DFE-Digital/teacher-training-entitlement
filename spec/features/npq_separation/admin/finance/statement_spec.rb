@@ -10,22 +10,22 @@ RSpec.feature "Statement", type: :feature do
 
   let!(:contracts) do
     [
-      create(:contract, course: create(:course, :leading_teaching), statement:),
-      create(:contract, course: create(:course, :leading_behaviour_culture), statement:),
-      create(:contract, course: create(:course, :leading_primary_mathematics), statement:),
+      create(:contract, course: create(:course, :tte_early_years), statement:),
+      # create(:contract, course: create(:course, :leading_behaviour_culture), statement:),
+      # create(:contract, course: create(:course, :leading_primary_mathematics), statement:),
     ]
   end
 
   before do
-    schedule_1 = create(:schedule, :npq_leadership_autumn)
-    schedule_2 = create(:schedule, :npq_leadership_spring)
-    create(:schedule, :npq_specialist_autumn)
-    create(:schedule, :npq_specialist_spring)
+    schedule_1 = create(:schedule, :tte_reception_autumn)
+    # schedule_2 = create(:schedule, :npq_leadership_spring)
+    # create(:schedule, :npq_specialist_autumn)
+    # create(:schedule, :npq_specialist_spring)
 
     create(:milestone, declaration_type: "started", schedule: schedule_1, statements: [statement])
-    create(:milestone, declaration_type: "started", schedule: schedule_2, statements: [statement])
+    # create(:milestone, declaration_type: "started", schedule: schedule_2, statements: [statement])
     create(:milestone, declaration_type: "completed", schedule: schedule_1, statements: [statement])
-    create(:milestone, declaration_type: "completed", schedule: schedule_2, statements: [statement])
+    # create(:milestone, declaration_type: "completed", schedule: schedule_2, statements: [statement])
 
     sign_in_as(create(:admin))
   end

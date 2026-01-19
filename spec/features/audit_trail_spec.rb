@@ -43,7 +43,7 @@ RSpec.feature "Recording audit trail via papertrail", :versioning, type: :reques
       travel_to Date.parse("2024-12-13") # ensure schedule identifier is predicable
 
       APIToken.create_with_known_token!(raw_token, lead_provider:)
-      create(:schedule, :npq_leadership_autumn,
+      create(:schedule, :tte_reception_autumn,
              course_group: application.course.course_group,
              cohort: application.cohort)
 
@@ -51,7 +51,7 @@ RSpec.feature "Recording audit trail via papertrail", :versioning, type: :reques
     end
 
     let(:raw_token) { "a-token" }
-    let(:course) { create :"npq-senior-leadership" }
+    let(:course) { create(:course, :tte_early_years) }
     let(:lead_provider) { create :lead_provider }
     let(:application) { create :application, lead_provider:, course:, cohort: }
 

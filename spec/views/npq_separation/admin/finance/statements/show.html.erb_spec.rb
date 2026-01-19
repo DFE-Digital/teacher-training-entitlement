@@ -4,7 +4,7 @@ RSpec.describe "npq_separation/admin/finance/statements/show", type: :view do
   subject { Capybara.string(render) }
 
   let(:contract) { create(:contract, course:, statement:) }
-  let(:course) { create(:course, :leading_teaching) }
+  let(:course) { create(:course, :tte_early_years) }
 
   before do
     assign(:statement, statement)

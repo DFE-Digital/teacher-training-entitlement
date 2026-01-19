@@ -12,13 +12,13 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
 
   let!(:schedules) do
     [
-      create(:schedule, :npq_ehco_december, cohort:),
-      create(:schedule, :npq_aso_december, cohort:, allowed_declaration_types: %w[started completed], policy_descriptor: 11),
+      create(:schedule, :tte_reception_autumn, cohort:),
+      create(:schedule, :tte_reception_spring, cohort:, allowed_declaration_types: %w[started completed], policy_descriptor: 11),
     ]
   end
 
   before do
-    create(:application, :accepted, schedule: schedules[1], cohort:, course: create(:course, :additional_support_offer))
+    create(:application, :accepted, schedule: schedules[1], cohort:, course: create(:course, :tte_early_years))
     sign_in_as admin
   end
 
@@ -52,7 +52,7 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
 
   context "when logged in as a super admin" do
     let(:schedule) { schedules.first }
-    let(:course_group) { CourseGroup.where.not(id: schedule.course_group_id).last }
+    let(:course_group) { create(:course_group, name: "reception") }
 
     before do
       admin.update! super_admin: true

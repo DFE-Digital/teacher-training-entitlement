@@ -4,8 +4,8 @@ RSpec.describe NpqSeparation::ApplicationTallyComponent, type: :component do
   subject { described_class.new(Application.where(cohort:), :course) }
 
   let(:cohort) { create :cohort, :current }
-  let(:course_1) { create :course, :early_headship_coaching_offer }
-  let(:course_2) { create :course, :additional_support_offer }
+  let(:course_1) { create :course, :tte_early_years }
+  let(:course_2) { create :course }
 
   before do
     create(:application, cohort:, course: course_1)

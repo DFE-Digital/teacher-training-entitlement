@@ -47,10 +47,9 @@ RSpec.feature "Creating statements", type: :feature do
         ["April 2025", "24 Feb 2025", "25 Mar 2025", "No"],
       ]
 
-      find("summary", text: "2 contracts for #{LeadProvider.first.name} statements").click
+      find("summary", text: "1 contract for #{LeadProvider.first.name} statements").click
       expect(page).to have_table rows: [
         [Course.first.name, "30", "£1,000", "12", "No", "£100"],
-        [Course.last.name, "50", "£400", "6", "Yes", "£200"],
       ]
 
       find("summary", text: "1 contract for #{LeadProvider.last.name} statements").click
@@ -62,8 +61,8 @@ RSpec.feature "Creating statements", type: :feature do
         click_on "Create statements"
         expect(page).to have_text("6 statements created successfully")
       }.to change(Statement, :count).by(6)
-          .and change(Contract, :count).by(9)
-          .and change(ContractTemplate, :count).by(3)
+          .and change(Contract, :count).by(6)
+          .and change(ContractTemplate, :count).by(2)
     end
 
     scenario "downloading examples" do

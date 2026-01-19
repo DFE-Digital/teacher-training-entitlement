@@ -12,7 +12,7 @@ RSpec.describe ValidTestDataGenerators::SandboxSharedData, :with_default_schedul
     allow(Rails).to receive(:env) { environment.inquiry }
     # Stub Faker and Courses here so we have all scenarios created regardless
     allow(Faker::Boolean).to receive(:boolean).and_return(false)
-    allow(Course).to receive(:all).and_return([Course.find_by(identifier: "npq-headship"), Course.find_by(identifier: "npq-leading-literacy")])
+    allow(Course).to receive(:all).and_return([Course.find_by(identifier: "tte-early-years")])
   end
 
   subject { described_class.new(lead_provider:, cohort:) }
@@ -85,7 +85,7 @@ RSpec.describe ValidTestDataGenerators::SandboxSharedData, :with_default_schedul
         }.to(change(ParticipantIdChange, :count))
       end
 
-      it "creates rejected applications" do
+      it "creates rejected applications", :npq do
         expect {
           subject.populate
         }.to(change { Application.where(lead_provider_approval_status: "rejected").count })

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe OneOff::MoveApplicationsToAutumn2025 do
+RSpec.describe OneOff::MoveApplicationsToAutumn2025, :npq do
   subject :perform do
     Tempfile.open do |changelog|
       described_class.new(lead_provider:, changelog:, limit:)

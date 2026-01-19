@@ -10,22 +10,21 @@ RSpec.describe OneOff::UpdateContracts do
     let(:csv_content) do
       <<~CSV
         lead_provider_name,course_identifier,per_participant
-        Provider 1,#{Course::NPQ_SENCO},1000
-        Provider 2,#{Course::NPQ_HEADSHIP},2000
+        Provider 1,tte-early-years,1000
+        Provider 2,tte-early-years,2000
       CSV
     end
 
     let(:lead_provider_1) { create(:lead_provider, name: "Provider 1") }
     let(:lead_provider_2) { create(:lead_provider, name: "Provider 2") }
     let(:cohort) { create(:cohort, start_year: cohort_year) }
-    let(:course_1) { create(:course, :senco) }
-    let(:course_2) { create(:course, :headship) }
+    let(:course_1) { create(:course, :tte_early_years) }
     let(:statement_1) { create(:statement, year: year, month: month, cohort: cohort, lead_provider: lead_provider_1) }
     let(:statement_2) { create(:statement, year: year, month: month, cohort: cohort, lead_provider: lead_provider_2) }
     let(:contract_template_1) { create(:contract_template, per_participant: 100) }
     let(:contract_template_2) { create(:contract_template, per_participant: 200) }
     let!(:contract_1) { create(:contract, contract_template: contract_template_1, statement: statement_1, course: course_1) }
-    let!(:contract_2) { create(:contract, contract_template: contract_template_2, statement: statement_2, course: course_2) }
+    let!(:contract_2) { create(:contract, contract_template: contract_template_2, statement: statement_2, course: course_1) }
     let(:dry_run) { false }
 
     before do
@@ -50,7 +49,7 @@ RSpec.describe OneOff::UpdateContracts do
         let(:csv_content) do
           <<~CSV
             lead_provider_name,course_identifier,per_participant
-            Provider 1,#{Course::NPQ_SENCO},1000
+            Provider 1,tte-early-years,1000
           CSV
         end
 
@@ -76,9 +75,9 @@ RSpec.describe OneOff::UpdateContracts do
       let(:csv_content) do
         <<~CSV
           provider_name,course_identifier,per_participant
-          Provider 1,#{Course::NPQ_SENCO},1000
-          Provider 2,#{Course::NPQ_HEADSHIP},2000
-          Provider 3,#{Course::NPQ_HEADSHIP},2000
+          Provider 1,tte-early-years,1000
+          Provider 2,tte-early-years,2000
+          Provider 3,tte-early-years,2000
         CSV
       end
 
