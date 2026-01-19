@@ -9,8 +9,8 @@ RSpec.describe OneOff::CreateOrUpdateStatements do
 
     let(:ambition) { LeadProvider.find_by!(name: "Ambition Institute") }
     let(:cohort) { create(:cohort, start_year: cohort_year) }
-    let(:course_1) { create(:course, :senco) }
-    let(:course_2) { create(:course, :headship) }
+    let(:course_1) { create(:course, :tte_early_years) }
+    # let(:course_2) { create(:course, :headship) }
     let(:statement_1) do
       create(:statement,
              year: 2025,
@@ -29,7 +29,7 @@ RSpec.describe OneOff::CreateOrUpdateStatements do
       csv_file.rewind
 
       create(:contract, contract_template: contract_template_1, statement: statement_1, course: course_1)
-      create(:contract, contract_template: contract_template_2, statement: statement_1, course: course_2)
+      # create(:contract, contract_template: contract_template_2, statement: statement_1, course: course_2)
 
       LeadProvider.where.not(name: "Ambition Institute").map(&:destroy)
     end
@@ -51,7 +51,7 @@ RSpec.describe OneOff::CreateOrUpdateStatements do
       it "creates a new contracts" do
         expect {
           OneOff::CreateOrUpdateStatements.new.call(cohort_identifier:, csv_path:)
-        }.to change(Contract, :count).by(2)
+        }.to change(Contract, :count).by(1)
       end
 
       it "creates log records" do

@@ -7,12 +7,12 @@ RSpec.describe NpqSeparation::Admin::CoursePaymentOverviewComponent, type: :comp
   let(:calculator) { ::Statements::CourseCalculator.new(contract:) }
   let(:statement) { create(:statement, :has_targeted_delivery_funding) }
   let(:paid_statement) { create(:statement, :paid) }
-  let(:course) { create(:course, :senior_leadership) }
+  let(:course) { create(:course, :tte_early_years) }
   let(:contract) { create(:contract, course:, statement:) }
 
   before do
-    create :schedule, :npq_leadership_autumn, cohort: statement.cohort
-    create :schedule, :npq_leadership_spring, cohort: statement.cohort
+    create :schedule, :tte_reception_autumn, cohort: statement.cohort
+    create :schedule, :tte_reception_spring, cohort: statement.cohort
 
     create_list(:declaration, 2, :eligible, declaration_type: "started", course:, statement:)
     create_list(:declaration, 3, :eligible, declaration_type: "retained-1", course:, statement:)

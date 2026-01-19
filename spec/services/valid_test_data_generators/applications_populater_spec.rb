@@ -7,6 +7,7 @@ RSpec.describe ValidTestDataGenerators::ApplicationsPopulater, :with_default_sch
   let(:cohort) { create(:cohort, :current) }
 
   before do
+    create(:course, :tte_early_years)
     allow(Rails).to receive(:env) { environment.inquiry }
   end
 
@@ -66,7 +67,7 @@ RSpec.describe ValidTestDataGenerators::ApplicationsPopulater, :with_default_sch
         }.to(change(ParticipantIdChange, :count))
       end
 
-      it "creates rejected applications" do
+      it "creates rejected applications", :npq do
         expect {
           subject.populate
         }.to(change { Application.rejected_lead_provider_approval_status.count })

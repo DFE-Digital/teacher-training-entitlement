@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Exporters::TadSencoDataRequest do
+RSpec.describe Exporters::TadSencoDataRequest, :npq do
   let(:file) { Tempfile.new }
   let(:course) { create(:course, :senco) }
   let(:cohort) { create(:cohort, start_year: 2024) }
@@ -24,7 +24,7 @@ RSpec.describe Exporters::TadSencoDataRequest do
       :accepted,
       :eligible_for_funding,
       user:,
-      course: create(:course, :senior_leadership),
+      course: create(:course, :tte_early_years),
       cohort:,
     )
   end

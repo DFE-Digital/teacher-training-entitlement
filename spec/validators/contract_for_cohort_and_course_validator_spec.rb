@@ -30,7 +30,7 @@ RSpec.describe ContractForCohortAndCourseValidator do
     let(:params) { { cohort:, lead_provider:, course_identifier: } }
 
     let(:lead_provider) { create(:lead_provider) }
-    let(:course) { create(:course, :senior_leadership) }
+    let(:course) { create(:course, :tte_early_years) }
     let(:cohort) { create(:cohort, :current) }
     let(:statement) { create(:statement, cohort:, lead_provider:) }
     let!(:contract) { create(:contract, statement:, course:) }
@@ -41,7 +41,7 @@ RSpec.describe ContractForCohortAndCourseValidator do
     end
 
     context "when lead provider has no contract for the cohort and course" do
-      before { contract.update!(course: create(:course, :leading_literacy)) }
+      before { contract.update!(course: create(:course)) }
 
       it { is_expected.to be_invalid }
       it { is_expected.to have_error(:cohort, :missing_contract_for_cohort_and_course, "You cannot submit a declaration for this participant as you do not have a contract for the cohort and course. Contact the DfE for assistance.") }
