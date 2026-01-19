@@ -103,7 +103,7 @@ class Application < ApplicationRecord
   }, suffix: true
 
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
-  validate :funded_place_nil_for_cohort_with_no_funding_cap
+  validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
   validate :validate_permitted_schedule_for_course
 
@@ -227,7 +227,7 @@ private
     accepted_lead_provider_approval_status? && errors.blank? && cohort&.funding_cap?
   end
 
-  def funded_place_nil_for_cohort_with_no_funding_cap
+  def funded_place_nil_for_cohort_with_ineligible_for_funding_cap
     if accepted_lead_provider_approval_status? && errors.blank? && !cohort&.funding_cap? && !funded_place.nil?
       errors.add(:funded_place, :should_not_be_set)
     end

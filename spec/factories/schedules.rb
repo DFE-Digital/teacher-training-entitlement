@@ -23,6 +23,20 @@ FactoryBot.define do
       Schedule.find_by(cohort:, identifier:) || new(**attributes)
     end
 
+    trait :tte_reception_autumn do
+      name { "TTE Reception autumn" }
+      identifier { "tte-reception-autumn" }
+
+      course_group { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
+    end
+
+    trait :tte_reception_spring do
+      name { "TTE Reception spring" }
+      identifier { "tte-reception-spring" }
+
+      course_group { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
+    end
+
     trait :npq_aso_december do
       name { "NPQ ASO December" }
       identifier { "npq-aso-december" }

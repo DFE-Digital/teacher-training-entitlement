@@ -369,13 +369,15 @@ RSpec.describe Application do
     subject { application }
 
     context "when application has been previously funded" do
-      let(:application) { create(:application, :previously_funded, user:, course: Course.ehco) }
+      let(:application) { create(:application, :previously_funded, user:, course:) }
+      let(:course) { create(:course) }
 
       it { is_expected.not_to be_eligible_for_dfe_funding }
     end
 
     context "when application has not been previously funded" do
-      let(:application) { create(:application, user:, course: Course.ehco) }
+      let(:application) { create(:application, user:, course:) }
+      let(:course) { create(:course) }
 
       it "is not eligible for DfE funding if not eligible for funding" do
         application.update!(eligible_for_funding: false)
@@ -393,7 +395,8 @@ RSpec.describe Application do
 
   describe "#previously_funded?" do
     let(:user) { create(:user) }
-    let(:application) { create(:application, :previously_funded, user:, course: Course.ehco, cohort: cohort_with_funding_cap) }
+    let(:course) { create(:course) }
+    let(:application) { create(:application, :previously_funded, user:, course:, cohort: cohort_with_funding_cap) }
     let(:cohort_with_funding_cap) { create(:cohort, :with_funding_cap) }
     let(:cohort_without_funding_cap) { create(:cohort, :without_funding_cap) }
     let(:previous_application) { user.applications.where.not(id: application.id).first! }
@@ -434,7 +437,7 @@ RSpec.describe Application do
       it { is_expected.not_to be_previously_funded }
     end
 
-    context "when the application has not been previously funded (previous application is not for a rebranded alternative course)" do
+    context "when the application has not been previously funded (previous application is not for a rebranded alternative course)", :npq do
       before do
         previous_application.schedule.course_group.courses << Course.npqeyl
         previous_application.update!(course: Course.npqeyl)
@@ -560,9 +563,10 @@ RSpec.describe Application do
     end
 
     context "when it was previously funded" do
-      let(:user) { create(:user) }
+      subject(:application) { create(:application, :eligible_for_funding, :previously_funded, user:, course:) }
 
-      subject(:application) { create(:application, :eligible_for_funding, :previously_funded, user:, course: Course.ehco) }
+      let(:user) { create(:user) }
+      let(:course) { create(:course) }
 
       it { is_expected.not_to be_fundable }
 

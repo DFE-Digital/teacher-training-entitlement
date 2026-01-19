@@ -45,7 +45,7 @@ namespace :one_off do
         statements = Statement.where(year: year, month: month, cohort: cohort, lead_provider: lead_provider)
         raise if statements.count != 1
 
-        course = Course.find_by(identifier: "npq-early-headship-coaching-offer")
+        course = Course.find_by(identifier: "tte-early-years")
         contract_template_attributes = {
           "number_of_payment_periods" => 4,
           "service_fee_percentage" => 0,

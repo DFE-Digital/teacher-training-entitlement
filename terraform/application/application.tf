@@ -23,6 +23,9 @@ module "application_configuration" {
     RAILS_ENV        = var.environment
     AZURE_STORAGE_ACCOUNT_NAME = module.storage_account.name
     AZURE_STORAGE_CONTAINER    = "uploads"
+    TRA_OIDC_DOMAIN            = "https://preprod.teaching-identity.education.gov.uk/",
+    TRA_OIDC_CLIENT_ID         = "cpd-tte",
+    TRA_OIDC_CLIENT_SECRET     = "secret",
   }
   secret_variables = {
     DATABASE_URL = module.postgres.url

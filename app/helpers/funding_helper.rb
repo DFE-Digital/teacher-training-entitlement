@@ -3,8 +3,6 @@ module FundingHelper
   def scholarship_funding_eligibility(application)
     funding_eligibility = funding_eligibility_calculator(application)
 
-    return I18n.t("funding_details.no_Ofsted") if application.raw_application_data["has_ofsted_urn"] == "no" && !application.course.ehco?
-
     funding_eligibility.get_description_for_funding_status
   end
 
@@ -13,7 +11,6 @@ module FundingHelper
     return false if !application.eligible_for_funding && application.funding_choice.present?
     return false if application.employment_type == "other"
     return false unless application.inside_catchment?
-    return true if application.course.ehco? && new_headteacher?(application)
     return true if application.referred_by_return_to_teaching_adviser == "yes"
 
     application.work_setting == "another_setting" && application.employment_type != "lead_mentor_for_accredited_itt_provider" && application.course.identifier != "npq-early-headship-coaching-offer"
