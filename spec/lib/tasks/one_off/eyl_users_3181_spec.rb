@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "one_off:eyl_users" do
+RSpec.describe "one_off:eyl_users", :npq do
   subject(:run_task) { Rake::Task["one_off:eyl_users"].invoke }
 
   before do
@@ -16,7 +16,7 @@ RSpec.describe "one_off:eyl_users" do
 
   let(:file) { Tempfile.new }
   let(:course) { create(:course, :early_years_leadership) }
-  let(:other_course) { create(:course, :senior_leadership) }
+  let(:other_course) { create(:course, :tte_early_years) }
   let(:user_with_eyl_course) { create(:user) }
   let(:user_2_with_eyl_course) { create(:user) }
   let(:application) { create(:application, :accepted, user: user_with_eyl_course, course:, employment_role: "something", employment_type: "hospital_school", work_setting: "a_school") }

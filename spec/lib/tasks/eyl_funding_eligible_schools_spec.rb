@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "eyl_fundng_eligible_schools:update" do
+RSpec.describe "eyl_fundng_eligible_schools:update", :npq do
   let(:csv_file) do
     tempfile <<~CSV
       gias_urn

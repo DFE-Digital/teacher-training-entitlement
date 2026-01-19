@@ -35,7 +35,7 @@ module ValidTestDataGenerators
       @number_of_participants = number_of_participants
       @logger = logger
       # Ignoring ASO course, is an old course which we shouldn't create data
-      @courses = Course.all.reject { |c| c.identifier == "npq-additional-support-offer" }
+      @courses = Course.all
     end
 
     def create_participants!
@@ -76,14 +76,15 @@ module ValidTestDataGenerators
           withdrawn_application(application)
         end
 
-        return if Faker::Boolean.boolean(true_ratio: 0.3)
+        # TTE only has one course at the momemnt
+        # return if Faker::Boolean.boolean(true_ratio: 0.3)
 
-        course = courses.reject { |c| c.identifier == course.identifier }.sample
-        application = create_application(user, school, course, schedule)
+        # course = courses.reject { |c| c.identifier == course.identifier }.sample
+        # application = create_application(user, school, course, schedule)
 
-        return if Faker::Boolean.boolean(true_ratio: 0.3)
+        # return if Faker::Boolean.boolean(true_ratio: 0.3)
 
-        reject_application(application)
+        # reject_application(application)
       end
     end
 
