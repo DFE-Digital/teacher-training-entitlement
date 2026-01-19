@@ -1,8 +1,8 @@
 require "rails_helper"
 
-RSpec.describe Questionnaires::ChooseYourNpq, type: :model do
+RSpec.describe Questionnaires::ChooseYourNpq, :npq, type: :model do
   describe "validations" do
-    let(:valid_course_identifier) { create(:course, :early_headship_coaching_offer).identifier }
+    let(:valid_course_identifier) { create(:course, :tte_early_years).identifier }
 
     it { is_expected.to validate_presence_of(:course_identifier) }
 
@@ -45,7 +45,7 @@ RSpec.describe Questionnaires::ChooseYourNpq, type: :model do
       end
 
       context "nothing was actually changed" do
-        let(:course) { create(:course, :early_headship_coaching_offer) }
+        let(:course) { create(:course, :tte_early_years) }
 
         it { is_expected.to be :check_answers }
       end
@@ -76,7 +76,7 @@ RSpec.describe Questionnaires::ChooseYourNpq, type: :model do
     end
 
     context "when the course is EHCO" do
-      let(:course) { create(:course, :early_headship_coaching_offer) }
+      let(:course) { create(:course, :tte_early_years) }
 
       it { is_expected.to be(:npqh_status) }
     end

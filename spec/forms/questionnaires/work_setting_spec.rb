@@ -6,6 +6,48 @@ RSpec.describe Questionnaires::WorkSetting, type: :model do
     it { is_expected.to validate_inclusion_of(:work_setting).in_array(described_class::ALL_SETTINGS) }
   end
 
+  describe "previous_step" do
+    subject { described_class.new.previous_step }
+
+    it { is_expected.to eq :teacher_catchment }
+  end
+
+  describe "next_step" do
+    subject { described_class.new(work_setting:, wizard:).next_step }
+
+    let(:wizard) { RegistrationWizard.new(current_step: :work_setting, store:, request: nil, current_user: build_stubbed(:user)) }
+    let(:store) do
+      { "teacher_catchment" => "england" }
+    end
+
+    context "with school" do
+      let(:work_setting) { "a_school" }
+
+      it { is_expected.to eq :choose_school }
+    end
+
+    context "with childcare" do
+      let(:work_setting) { "early_years_or_childcare" }
+
+      it { is_expected.to eq :kind_of_nursery }
+    end
+
+    context "with any other" do
+      let(:work_setting) { "other" }
+
+      it { is_expected.to eq :ineligible_for_funding }
+    end
+
+    context "when not in catchment" do
+      let(:store) do
+        { "teacher_catchment" => "another" }
+      end
+      let(:work_setting) { "a_school" }
+
+      it { is_expected.to eq :ineligible_for_funding }
+    end
+  end
+
   describe "#after_save" do
     subject { described_class.new(work_setting:, wizard:) }
 

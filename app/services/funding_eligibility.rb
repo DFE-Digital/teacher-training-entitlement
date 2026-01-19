@@ -1,4 +1,5 @@
 class FundingEligibility
+  # TODO: Review this class and adjust for TTE
   class MissingMandatoryInstitution < StandardError; end
 
   include CourseHelper
@@ -100,12 +101,6 @@ class FundingEligibility
       return NOT_IN_ENGLAND unless @inside_catchment
       return PREVIOUSLY_FUNDED if previously_funded?
 
-      if course.ehco?
-        return FUNDED_ELIGIBILITY_RESULT if new_headteacher?
-
-        return NOT_NEW_HEADTEACHER_REQUESTING_EHCO
-      end
-
       case work_setting
       when *Questionnaires::WorkSetting::CHILDCARE_SETTINGS then childcare_policy
       when *Questionnaires::WorkSetting::SCHOOL_SETTINGS then school_policy
@@ -124,7 +119,9 @@ class FundingEligibility
   end
 
   def possible_funding_for_non_pp50_and_fe?
-    course.only_pp50? && institution.is_a?(School)
+    # course.only_pp50? && institution.is_a?(School)
+    # there is no course pp50 on TTE
+    false
   end
 
 private
@@ -161,11 +158,11 @@ private
 
     return INELIGIBLE_ESTABLISHMENT_TYPE unless mandatory_institution.eligible_establishment?
 
-    if course.only_pp50?
-      return FUNDED_ELIGIBILITY_RESULT if mandatory_institution.pp50?(work_setting)
+    # if course.only_pp50?
+    #   return FUNDED_ELIGIBILITY_RESULT if mandatory_institution.pp50?(work_setting)
 
-      return INELIGIBLE_ESTABLISHMENT_NOT_A_PP50
-    end
+    #   return INELIGIBLE_ESTABLISHMENT_NOT_A_PP50
+    # end
 
     FUNDED_ELIGIBILITY_RESULT
   end
@@ -228,7 +225,6 @@ private
     @accepted_applications ||= begin
       application_ids = users.flat_map do |user|
         user.applications
-            .where(course: course.rebranded_alternative_courses)
             .accepted
             .eligible_for_funding
             .where(funded_place: [nil, true])

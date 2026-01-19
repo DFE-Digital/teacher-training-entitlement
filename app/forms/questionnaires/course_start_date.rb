@@ -49,7 +49,7 @@ module Questionnaires
       if course_start_date == "yes"
         wizard.store["course_start"] = "In #{application_course_start_date}"
         wizard.current_user.update!(notify_user_for_future_reg: false)
-        :provider_check
+        :choose_your_course
       else
         wizard.current_user.update!(notify_user_for_future_reg: true)
         :cannot_register_yet

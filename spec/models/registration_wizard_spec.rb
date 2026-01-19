@@ -9,7 +9,7 @@ RSpec.describe RegistrationWizard do
   let(:user) { create(:user) }
   let(:current_step) { "share_provider" }
 
-  before { create(:course, :additional_support_offer) }
+  before { create(:course, :tte_early_years) }
 
   describe "#current_step" do
     it "returns current step" do
@@ -45,10 +45,11 @@ RSpec.describe RegistrationWizard do
           "trn_auto_verified" => nil,
           "verified_trn" => nil,
           "works_in_childcare" => "yes",
+          "work_setting" => "early_years_or_childcare",
           "kind_of_nursery" => "local_authority_maintained_nursery",
           "institution_name" => "",
           "institution_identifier" => "School-#{school.urn}",
-          "course_identifier" => "npq-additional-support-offer",
+          "course_identifier" => "tte-early-years",
           "lead_provider_id" => LeadProvider.all.sample.id,
           "funding" => "self",
           "referred_by_return_to_teaching_adviser" => "no",
@@ -60,12 +61,12 @@ RSpec.describe RegistrationWizard do
       end
     end
 
-    context "when working in private nursery" do
+    context "when working in private nursery", :npq do
       let(:private_childcare_provider) { create(:private_childcare_provider) }
       let(:store) do
         {
           "chosen_provider" => "yes",
-          "course_identifier" => "npq-additional-support-offer",
+          "course_identifier" => "tte-early-years",
           "date_of_birth" => 30.years.ago,
           "full_name" => "Tatyana Christensen",
           "has_ofsted_urn" => has_ofsted_urn,

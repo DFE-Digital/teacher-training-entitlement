@@ -47,10 +47,10 @@ class RegistrationWizardController < PublicPagesController
   end
 
   def development_login
-    return unless Rails.env.development?
+    return unless Rails.env.development? || Rails.env.review?
 
-    user_email = ENV["DEV_USER_EMAIL_FOR_LOGIN"]
-    user = User.find_by!(email: user_email)
+    # user_email = ENV["DEV_USER_EMAIL_FOR_LOGIN"]
+    user = User.find_by!(email: params[:user_email])
     session["user_id"] = user.id
     sign_in user
     wizard = RegistrationWizard.new(
@@ -103,8 +103,8 @@ private
   end
 
   def check_course_defined
-    redirect_to_course_start_date if !@form.instance_of?(Questionnaires::ChooseYourNpq) && defined?(@form.course) && !@form.course
-    redirect_to_course_start_date if @form.instance_of?(Questionnaires::CheckAnswers) && !@wizard.course
+    # redirect_to_course_start_date if !@form.instance_of?(Questionnaires::ChooseYourCourse) && defined?(@form.course) && !@form.course
+    # redirect_to_course_start_date if @form.instance_of?(Questionnaires::CheckAnswers) && !@wizard.course
   end
 
   def registration_closed

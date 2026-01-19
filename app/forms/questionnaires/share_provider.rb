@@ -31,7 +31,7 @@ module Questionnaires
     end
 
     def previous_step
-      :choose_your_provider
+      :possible_funding
     end
   end
 end

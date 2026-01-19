@@ -16,16 +16,7 @@ class EmailTemplate
 private
 
   def email_key
-    return :itt_leader_wrong_course if not_lead_mentor_course?
     return :not_england_wrong_catchment if not_in_england?
-
-    # EHCO outcomes
-    if course&.ehco?
-      return :already_funded_not_elgible_ehco_funding if previously_funded?
-      return :ehco_scholarship_funding if eligible_for_funding?
-
-      return :not_eligible_ehco_funding
-    end
 
     if eligible_for_funding?
       return :eligible_scholarship_funding if targeted_delivery_funding_eligibility?
@@ -37,12 +28,6 @@ private
       return :not_eligible_scholarship_funding if targeted_delivery_funding_eligibility?
 
       return :already_funded_not_eligible_scholarship_funding_not_tsf
-    end
-
-    if ofsted_register? || course&.eyl?
-      # Early years leadership NPQ outcomes
-      return :not_npqeyl_on_ofsted_register if !course&.eyl? && ofsted_register?
-      return :not_on_ofsted_register if !ofsted_register? && course&.eyl?
     end
 
     return :not_eligible_scholarship_funding_not_tsf if !eligible_for_funding? && !targeted_delivery_funding_eligibility?

@@ -786,9 +786,9 @@ en:
 
   course:
     embedded_sentence:
-      default: "the %{course_name} NPQ"
+      default: "the %{course_name} TTE"
       ehco: "the %{course_name}"
-      title: "%{course_name} NPQ"
+      title: "%{course_name} TTE"
       title_ehco: "%{course_name}"
     short_code:
       "npq-leading-teaching": "NPQLT"
@@ -803,7 +803,9 @@ en:
       "npq-leading-literacy": "NPQLL"
       "npq-leading-primary-mathematics": "NPQLPM"
       "npq-senco": "NPQS"
+      "tte-early-years": "TTEEY"
     name:
+      "tte-early-years": "Early Years"
       "npq-leading-teaching": "Leading teaching"
       "npq-leading-behaviour-culture": "Leading behaviour and culture"
       "npq-leading-teaching-development": "Leading teacher development"
@@ -983,6 +985,7 @@ en:
         ehco_previously_funded: "DfE scholarship funding not available"
         ehco_unavailable: "You cannot register for the Early Headship Coaching Offer"
         choose_your_npq: "Choose an NPQ"
+        choose_your_course: "Choose a TTE course"
         before_you_can_register_for_this_NPQ: "Before you can register for this NPQ"
         maths_understanding_of_approach: "How can you show your understanding of mastery approaches to teaching maths?"
         course_start_date: "Course start"
@@ -1030,7 +1033,7 @@ en:
         teacher_catchment: "Do you work in England?"
         referred_by_return_to_teaching_adviser: "Did a Return To Teaching Adviser (RTTA) refer you to this registration service?"
         kind_of_nursery: "Which early years setting do you work in?"
-        course_identifier: "Which NPQ do you want to do?"
+        course_identifier: "You are registering for the early years development TTE course"
         maths_eligibility_teaching_for_mastery: "Have you taken at least one year of the primary maths Teaching for Mastery programme?"
         maths_understanding_of_approach: "How can you show your understanding of mastery approaches to teaching maths?"
         course_start_date: "Do you want to start a course before April 2024?"
@@ -1053,6 +1056,10 @@ en:
         reason: Required for deferred or withdrawn
 
       registration_wizard:
+        choose_your_course:
+          - This course is aimed at teachers who have completed their induction and are currently teaching reception age children, or plan to in the future.
+
+          - If you do not want to do this course, %{link} to find the right course for you.
         choose_your_npq_html: "To register for an NPQ and the <a href=\"https://professional-development-for-teachers-leaders.education.gov.uk/early-headship-coaching-offer\" class=\"govuk-link\">Early headship coaching offer</a>, submit 2 separate registrations."
         maths_eligibility_teaching_for_mastery_html_one: "You need to be able to demonstrate that you have an understanding of mastery approaches to teaching maths."
         maths_eligibility_teaching_for_mastery_two_html: "You can demonstrate this if you’ve taken at least one year of the <a href=\"https://www.gov.uk/guidance/join-the-maths-teaching-for-mastery-programme\" class=\"govuk-link\">primary maths Teaching for Mastery programme</a>."

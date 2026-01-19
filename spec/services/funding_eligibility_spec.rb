@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe FundingEligibility do
+RSpec.describe FundingEligibility, :npq do
   subject(:funding_eligibility) do
     described_class.new(institution:,
                         course:,
@@ -72,7 +72,7 @@ RSpec.describe FundingEligibility do
     end
 
     context "and the course is early headship coaching offer" do
-      let(:course) { build(:course, :early_headship_coaching_offer) }
+      let(:course) { build(:course, :tte_early_years) }
 
       include_examples "general rules"
       include_examples "funding eligibility", :not_new_headteacher_requesting_ehco
@@ -431,7 +431,7 @@ RSpec.describe FundingEligibility do
   describe "#get_description_for_funding_status" do
     subject { funding_eligibility.get_description_for_funding_status }
 
-    let(:course) { build(:course, :early_headship_coaching_offer) }
+    let(:course) { build(:course, :tte_early_years) }
 
     before do
       allow_any_instance_of(CourseHelper).to receive(:localise_sentence_embedded_course_name).with(course).and_return("Localised Course Name")

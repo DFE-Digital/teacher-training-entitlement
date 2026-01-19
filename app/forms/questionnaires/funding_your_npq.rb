@@ -13,11 +13,14 @@ module Questionnaires
     end
 
     def next_step
-      :choose_your_provider
+      :share_provider
     end
 
     def previous_step
-      :ineligible_for_funding
+      # This is a placeholder that will hold the fund evaluation outcome
+      # there are multiple possible origins `sad_paths`
+      # :not_in_england, :not_eligible_for_funding, :participant_previously_funded
+      wizard.query_store.funding_evaluation&.to_sym
     end
 
     def course

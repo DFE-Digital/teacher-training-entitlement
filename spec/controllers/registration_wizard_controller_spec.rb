@@ -82,7 +82,7 @@ RSpec.describe RegistrationWizardController do
       end
 
       it "redirects to course-start-date page" do
-        expect(response).to redirect_to registration_wizard_show_path("provider-check")
+        expect(response).to redirect_to registration_wizard_show_path("choose-your-course")
         expect(wizard).not_to have_received(:save!)
       end
     end

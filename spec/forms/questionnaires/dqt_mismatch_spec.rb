@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Questionnaires::DqtMismatch do
+RSpec.describe Questionnaires::DqtMismatch, :npq do
   subject(:step) { described_class.new.tap { |s| s.wizard = wizard } }
 
   let(:request) { nil }

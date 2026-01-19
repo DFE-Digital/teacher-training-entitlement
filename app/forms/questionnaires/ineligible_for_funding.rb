@@ -17,27 +17,12 @@ module Questionnaires
     attr_accessor :version
 
     def next_step
-      :funding_your_npq
+      :funding_your_course
     end
 
     def previous_step
-      if works_in_another_setting? && employment_type_other?
-        :choose_your_npq
-      elsif course.npqlpm?
-        if wizard.query_store.maths_understanding?
-          :maths_eligibility_teaching_for_mastery
-        else
-          :maths_understanding_of_approach
-        end
-      elsif course.npqs?
-        if wizard.query_store.senco_in_role_status?
-          :senco_start_date
-        else
-          :senco_in_role
-        end
-      else
-        :choose_your_npq
-      end
+      # TODO: match each previous step according to question TTE
+      :teacher_catchment
     end
 
     def ineligible_template
