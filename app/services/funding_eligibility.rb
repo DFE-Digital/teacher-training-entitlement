@@ -158,12 +158,6 @@ private
 
     return INELIGIBLE_ESTABLISHMENT_TYPE unless mandatory_institution.eligible_establishment?
 
-    # if course.only_pp50?
-    #   return FUNDED_ELIGIBILITY_RESULT if mandatory_institution.pp50?(work_setting)
-
-    #   return INELIGIBLE_ESTABLISHMENT_NOT_A_PP50
-    # end
-
     FUNDED_ELIGIBILITY_RESULT
   end
 
