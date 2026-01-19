@@ -6,34 +6,3 @@
 <p class="govuk-!-margin-top-2">
   Contact <%= application.lead_provider.name %> to check that they have a funded place to offer you.
 </p>
-
-<% if application.course.senco? %>
-  <h3>What if my chosen provider cannot offer me a place on their NPQ course</h3>
-  <p class="govuk-!-margin-bottom-2">If you’re a SENCO in a maintained school and need to complete the SENCO NPQ in October 2024 but have been told by your provider that you do not have one of the following:</p>
-
-  <ul class="govuk-list govuk-list--bullet">
-    <li>
-      a place on their course
-    </li>
-    <li>
-      a scholarship funded place on their course
-    </li>
-  </ul>
-  <p class="govuk-body">
-    Contact the
-    <a href="mailto:continuing-professional-development@digital.education.gov.uk" class="govuk-link">CPD helpdesk</a>
-    for support if you have never started or completed the national award for SENCO (NASENCO) qualification before.'
-  </p>
-<% else %>
-  <h3>If no funded place is available</h3>
-  <p class="govuk-!-margin-bottom-2">You can:</p>
-
-  <ul class="govuk-list govuk-list--bullet">
-    <li>
-      register with a different provider
-    </li>
-    <li>
-      consider other payment options, such as self-funding or asking if your workplace or trust can cover the cost
-    </li>
-  </ul>
-<% end %>
