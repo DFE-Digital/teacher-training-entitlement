@@ -46,7 +46,7 @@ services:
 
   web:
     <<: *app
-    command: bin/dev
+    command: sh -c "yarn install && bin/dev"
     ports:
       - 3000:3000
     shm_size: '512mb' # required for chromium / selenium
