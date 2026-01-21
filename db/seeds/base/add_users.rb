@@ -31,3 +31,10 @@ User.find_or_create_by!(email: "Gurmukh.BHURJEE@education.gov.uk") do |user|
     trn: "0000002",
   )
 end
+
+User.find_or_create_by!(email: "toby.privett@education.gov.uk") do |user|
+  user.assign_attributes(
+    full_name: "Toby Privett",
+    trn: "0000003",
+  )
+end
