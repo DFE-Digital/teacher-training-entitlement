@@ -7,7 +7,7 @@ x-app: &app
   depends_on:
     - db
   environment:
-    - DATABASE_URL=postgresql://postgres@db:5432/
+    - DATABASE_URL=postgresql://postgres:postgres@db:5432/
     - RAILS_ENV=development
     - RAILS_LOG_TO_STDOUT=true
     - RAILS_SERVE_STATIC_FILES=true
@@ -46,7 +46,7 @@ services:
 
   web:
     <<: *app
-    command: bin/dev
+    command: sh -c "yarn install && bin/dev"
     ports:
       - 3000:3000
     shm_size: '512mb' # required for chromium / selenium
