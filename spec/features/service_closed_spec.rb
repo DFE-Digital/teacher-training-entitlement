@@ -13,7 +13,9 @@ RSpec.feature "Service is closed", type: :feature do
     visit "/"
     expect(page).to have_content("Registration is temporarily closed")
     expect(page).to be_accessible
+  end
 
+  scenario "Service sign up for email", :npq do
     page.click_button("Sign up for email updates")
 
     expect(page).to have_current_path(new_email_update_path)
@@ -156,7 +158,7 @@ RSpec.feature "Service is closed", type: :feature do
     end
   end
 
-  context "when using email updates" do
+  context "when using email updates", :npq do
     before { close_registration! }
 
     scenario "Register to email and unsubscribe" do
