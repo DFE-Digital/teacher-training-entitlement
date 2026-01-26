@@ -487,6 +487,7 @@ en:
         questionnaires/choose_school:
           attributes:
             institution_identifier:
+              blank: Enter a workplace name
               invalid: No matching school found
             institution_name:
               no_results: No schools with the name %{name} were found, please try again

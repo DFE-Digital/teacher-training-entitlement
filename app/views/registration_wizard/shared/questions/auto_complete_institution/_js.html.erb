@@ -63,7 +63,7 @@
     <%=
       form.text_field(
         question.name,
-        data: question.data_attributes,
+        data: question.data_attributes.merge("default-value": question.default_value),
         id: question_id
       )
     %>

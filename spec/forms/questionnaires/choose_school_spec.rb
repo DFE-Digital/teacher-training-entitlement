@@ -15,10 +15,16 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     end
 
     describe "#institution_identifier" do
-      it "can have institution_identifier as empty string" do
+      it "requires institution_identifier to be present" do
+        subject.institution_identifier = nil
+        subject.valid?
+        expect(subject.errors[:institution_identifier]).to include("Enter a workplace name")
+      end
+
+      it "requires institution_identifier to be present when empty string" do
         subject.institution_identifier = ""
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_blank
+        expect(subject.errors[:institution_identifier]).to include("Enter a workplace name")
       end
 
       it "can have institution_identifier as 'other'" do
@@ -92,6 +98,27 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
       let(:school) { create(:school, :in_wales) }
 
       it { is_expected.to eq :ineligible_for_funding }
+    end
+  end
+
+  describe "#selected_institution_display_value" do
+    subject { described_class.new(institution_identifier:, wizard:).selected_institution_display_value }
+
+    let(:store) { { "works_in_school" => "yes" } }
+
+    context "when institution_identifier is blank" do
+      let(:institution_identifier) { nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when institution_identifier is set to a school" do
+      let(:school) { create(:school, :with_address) }
+      let(:institution_identifier) { "School-#{school.urn}" }
+
+      it "returns formatted school details" do
+        expect(subject).to eq("#{school.urn} - #{school.name} - #{school.address_string}")
+      end
     end
   end
 end

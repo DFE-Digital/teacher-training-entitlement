@@ -8,6 +8,7 @@ module Questionnaires
     validates :institution_name, length: { maximum: 64 }
 
     validate :validate_school_name_returns_results
+    validate :validate_institution_identifier_selected
 
     def self.permitted_params
       %i[
@@ -42,8 +43,18 @@ module Questionnaires
             name: :institution_name,
             locale_name: :choose_school_search,
           ),
+          default_value: selected_institution_display_value,
         ),
       ]
+    end
+
+    def selected_institution_display_value
+      return nil if institution_identifier.blank?
+
+      selected = institution(source: institution_identifier)
+      return nil unless selected
+
+      [selected.urn, selected.name, selected.address_string].compact.join(" - ")
     end
 
     def possible_institutions
@@ -73,6 +84,18 @@ module Questionnaires
     def validate_school_name_returns_results
       if search_term_entered_in_no_js_fallback_form? && possible_institutions.blank?
         errors.add(:institution_name, :no_results, name: institution_name)
+      end
+    end
+
+    def validate_institution_identifier_selected
+      # Allow initial no-JS search (institution_name not yet in wizard store)
+      return if institution_name.present? && !search_term_entered_in_no_js_fallback_form?
+
+      # Allow "other" selection for additional searches
+      return if institution_identifier == "other"
+
+      if institution_identifier.blank?
+        errors.add(:institution_identifier, :blank)
       end
     end
   end
