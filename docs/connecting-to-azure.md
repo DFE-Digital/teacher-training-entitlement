@@ -49,7 +49,7 @@ but you may need to re-authenticate every once in a while.
 To get shell access on a review app for a given PR_NUMBER, run the following:
 
 ```shell
-make review aks-ssh PULL_REQUEST_NUMBER=[PR_NUMBER]
+make review aks-ssh PR_NUMBER=[PR_NUMBER]
 ```
 
 From there, the rake task can be run
@@ -65,13 +65,13 @@ make ci production aks-ssh
 To get a rails console on a review app for a given PR_NUMBER, run the following:
 
 ```shell
-make review aks-console PULL_REQUEST_NUMBER=[PR_NUMBER]
+make review aks-console PR_NUMBER=[PR_NUMBER]
 ```
 
 By default a shell will safely run with `--sandbox` providing read only access. To run with read-write, run the following:
 
 ```shell
-make review aks-rw-console PULL_REQUEST_NUMBER=[PR_NUMBER]
+make review aks-rw-console PR_NUMBER=[PR_NUMBER]
 ```
 
 To get a read-only rails console on production, run the following:
@@ -90,7 +90,7 @@ make ci production aks-rw-console
 
 To copy a file from the `tmp` directory on a review app:
 ```shell
-make review aks-download-tmp-file PULL_REQUEST_NUMBER=[PR_NUMBER] FILENAME=somefile.csv
+make review aks-download-tmp-file PR_NUMBER=[PR_NUMBER] FILENAME=somefile.csv
 ```
 
 The file ends up locally in a subdirectory matching the pod name.
