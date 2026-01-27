@@ -19,23 +19,23 @@ window.onload = function init() {
   window.GOVUKFrontend.initAll();
 };
 
-if (document.querySelector('#school-picker')) {
+if (document.querySelector('[data-picker="school"]')) {
   institutionPicker.enhanceSelectElement({
-    selectElement: document.querySelector('#school-picker'),
+    selectElement: document.querySelector('[data-picker="school"]'),
     lookupPath: 'institutions',
   })
 }
 
-if (document.querySelector('#nursery-picker')) {
+if (document.querySelector('[data-picker="nursery"]')) {
   institutionPicker.enhanceSelectElement({
-    selectElement: document.querySelector('#nursery-picker'),
+    selectElement: document.querySelector('[data-picker="nursery"]'),
     lookupPath: 'institutions',
   })
 }
 
-if (document.querySelector('#private-childcare-provider-picker')) {
+if (document.querySelector('[data-picker="private-childcare-provider"]')) {
   institutionPicker.enhanceSelectElement({
-    selectElement: document.querySelector('#private-childcare-provider-picker'),
+    selectElement: document.querySelector('[data-picker="private-childcare-provider"]'),
     lookupPath: 'private_childcare_providers'
   })
 }
