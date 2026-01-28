@@ -94,9 +94,7 @@ module Questionnaires
       # Allow "other" selection for additional searches
       return if institution_identifier == "other"
 
-      if institution_identifier.blank?
-        errors.add(:institution_identifier, :blank)
-      end
+      errors.add(:institution_identifier, :blank) if institution_identifier.blank?
     end
   end
 end
