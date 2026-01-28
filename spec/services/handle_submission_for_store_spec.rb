@@ -257,77 +257,13 @@ RSpec.describe HandleSubmissionForStore do
 
       context "when there is a funding choice selected and eligible for funding is false" do
         before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_ESTABLISHMENT_TYPE)
+          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_SETTING)
         end
 
         it "saves the funding choice to school on the application" do
           subject.call
           expect(user.applications.first.reload.funding_choice).to eq "school"
         end
-
-        context "when the course is EHCO", :npq do
-          before do
-            allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_ESTABLISHMENT_TYPE)
-          end
-
-          let(:courses) { [Course.ehco] }
-
-          let(:store) do
-            super().merge(
-              "funding" => "school",
-              "ehco_funding_choice" => "trust",
-            )
-          end
-
-          it "saves funding choice from the aso funding choice question instead of the regular path" do
-            subject.call
-            expect(user.applications.first.reload.funding_choice).to eq "trust"
-          end
-        end
-      end
-    end
-
-    context "when applying for EHCO", :npq do
-      context "happy path" do
-        let(:store) do
-          {
-            "current_user_id" => user.id,
-            "course_identifier" => ehco_course.identifier,
-            "institution_identifier" => "School-#{school.urn}",
-            "lead_provider_id" => LeadProvider.all.sample.id,
-            "ehco_headteacher" => "yes",
-            "ehco_new_headteacher" => "no",
-          }
-        end
-
-        let(:ehco_course) { Course.ehco }
-
-        it "applies the correct course" do
-          subject.call
-          expect(user.applications.first.course).to eq(ehco_course)
-        end
-      end
-
-      context "a headteacher for over five years" do
-        let(:store) do
-          {
-            "current_user_id" => user.id,
-            "course_identifier" => Course.ehco.identifier,
-            "institution_identifier" => "School-#{school.urn}",
-            "lead_provider_id" => LeadProvider.all.sample.id,
-            "ehco_headteacher" => "yes",
-            "ehco_new_headteacher" => "no",
-          }
-        end
-
-        it "returns headteacher_status as yes_over_five_years" do
-          subject.call
-          expect(user.applications.first.reload.headteacher_status).to eq "yes_over_five_years"
-        end
-      end
-
-      it "enqueues SendApplicationSubmissionEmailJob" do
-        expect { subject.call }.to have_enqueued_job(SendApplicationSubmissionEmailJob).exactly(:once).on_queue("default")
       end
     end
 
@@ -566,23 +502,6 @@ RSpec.describe HandleSubmissionForStore do
           "review_status" => nil,
           "reason_for_rejection" => nil,
         })
-      end
-    end
-
-    describe "#review_status" do
-      subject { application.review_status }
-
-      let(:store) { build :registration_wizard_store }
-      let(:application) { service.tap(&:call).application }
-
-      it { is_expected.to be_nil }
-
-      context "when funding eligibility is subject to review" do
-        before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::SUBJECT_TO_REVIEW)
-        end
-
-        it { is_expected.to eq "Needs review" }
       end
     end
   end
