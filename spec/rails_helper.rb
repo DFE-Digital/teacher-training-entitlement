@@ -69,8 +69,7 @@ Capybara.save_path = Rails.root.join("tmp/capybara/downloads-#{Time.zone.now.to_
 begin
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
-  puts e.to_s.strip
-  exit 1
+  abort e.to_s.strip
 end
 
 RSpec.configure do |config|
