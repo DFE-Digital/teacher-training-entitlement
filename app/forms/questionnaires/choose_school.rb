@@ -54,7 +54,7 @@ module Questionnaires
       selected = institution(source: institution_identifier)
       return nil unless selected
 
-      [selected.urn, selected.name, selected.address_string].compact.join(" - ")
+      selected.name_with_address
     end
 
     def possible_institutions

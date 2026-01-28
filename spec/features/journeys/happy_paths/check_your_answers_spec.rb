@@ -1,0 +1,35 @@
+require "rails_helper"
+
+RSpec.feature "Check your answers", :with_default_schedules, type: :feature do
+  include Helpers::JourneyAssertionHelper
+  include Helpers::JourneyStepHelper
+
+  include_context "Stub Get An Identity Omniauth Responses"
+
+  let(:user) { create(:user) }
+  let(:school) { create(:school, :with_address) }
+
+  before do
+    page.set_rack_session(
+      "user_id" => user.id,
+      "registration_store" => {
+        "works_in_school" => "yes",
+        "institution_identifier" => "School-#{school.urn}",
+        "course_start_date" => "yes",
+        "teacher_catchment" => "england",
+        "work_setting" => "a_school",
+      },
+    )
+  end
+
+  describe "changing workplace" do
+    scenario "displays previously selected school when returning to choose-school page" do
+      visit "/registration/choose-school/change"
+
+      within(".npq-js-reveal") do
+        input = find("input[type='text']", visible: true)
+        expect(input.value).to eq(school.name_with_address)
+      end
+    end
+  end
+end

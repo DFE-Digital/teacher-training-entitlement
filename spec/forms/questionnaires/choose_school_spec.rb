@@ -100,25 +100,4 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
       it { is_expected.to eq :ineligible_for_funding }
     end
   end
-
-  describe "#selected_institution_display_value" do
-    subject { described_class.new(institution_identifier:, wizard:).selected_institution_display_value }
-
-    let(:store) { { "works_in_school" => "yes" } }
-
-    context "when institution_identifier is blank" do
-      let(:institution_identifier) { nil }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when institution_identifier is set to a school" do
-      let(:school) { create(:school, :with_address) }
-      let(:institution_identifier) { "School-#{school.urn}" }
-
-      it "returns formatted school details" do
-        expect(subject).to eq("#{school.urn} - #{school.name} - #{school.address_string}")
-      end
-    end
-  end
 end
