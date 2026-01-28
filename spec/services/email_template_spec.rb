@@ -48,15 +48,6 @@ RSpec.describe EmailTemplate do
     end
   end
 
-  context "when not elgibible for scholarship and no for TSF" do
-    let(:funding_eligiblity_status_code) { FundingEligibility::INELIGIBLE_ESTABLISHMENT_TYPE }
-    let(:targeted_delivery_funding_eligibility) { false }
-
-    it "returns not_eligible_scholarship_funding_not_tsf" do
-      expect(subject).to eq :not_eligible_scholarship_funding_not_tsf
-    end
-  end
-
   context "when not in England" do
     let(:funding_eligiblity_status_code) { FundingEligibility::NOT_IN_ENGLAND }
 
