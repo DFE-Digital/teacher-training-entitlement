@@ -33,39 +33,26 @@
   The below is the JS version of the form. It is hidden by default and
   revealed by the CSS only when .js-enabled is set on the body.
 
-  "#{question.picker}-picker" is in place so that the question can load in
-  the correct searchable select logic. This is detected and the picker set up in
-  app/javascript/application.js.
+  The data-picker attribute is used by app/javascript/application.js to
+  detect and set up the correct searchable select logic.
 
-  Available options:
-    - "nursery-picker"
-    - "school-picker"
-    - "private-childcare-provider-picker"
+  Available picker values:
+    - "nursery"
+    - "school"
+    - "private-childcare-provider"
 %>
 
-<% question_id = "#{question.picker}-picker" %>
-
 <div class="npq-js-reveal">
-  <div class="govuk-form-group">
-    <h1 class="govuk-label-wrapper">
-      <%=
-        form.label(
-          question.name,
-          question_text,
-          class: "govuk-label govuk-label--xl",
-          for: question_id
-        )
-      %>
-    </h1>
-
-    <div class="govuk-hint" id="nursery-picker-hint"><%= hint_text %></div>
-
-    <%=
-      form.text_field(
-        question.name,
-        data: question.data_attributes,
-        id: question_id
+  <%=
+    form.govuk_text_field(
+      question.name,
+      width: "full",
+      label: { text: question_text, size: "xl", tag: "h1" },
+      hint: { text: hint_text },
+      data: question.data_attributes.merge(
+        "default-value": question.default_value,
+        "picker": question.picker
       )
-    %>
-  </div>
+    )
+  %>
 </div>

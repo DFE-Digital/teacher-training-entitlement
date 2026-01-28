@@ -27,7 +27,7 @@ institutionPicker.enhanceSelectElement = (configurationOptions) => {
   }
 
   configurationOptions.minLength = 2
-  configurationOptions.defaultValue = ""
+  configurationOptions.defaultValue = configurationOptions.selectElement.dataset.defaultValue || ""
   configurationOptions.displayMenu = "overlay"
 
   configurationOptions.templates = {

@@ -15,10 +15,16 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     end
 
     describe "#institution_identifier" do
-      it "can have institution_identifier as empty string" do
+      it "requires institution_identifier to be present" do
+        subject.institution_identifier = nil
+        subject.valid?
+        expect(subject.errors[:institution_identifier]).to include("Enter a workplace name")
+      end
+
+      it "requires institution_identifier to be present when empty string" do
         subject.institution_identifier = ""
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_blank
+        expect(subject.errors[:institution_identifier]).to include("Enter a workplace name")
       end
 
       it "can have institution_identifier as 'other'" do

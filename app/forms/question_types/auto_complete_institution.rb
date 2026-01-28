@@ -33,7 +33,8 @@ module QuestionTypes
   class AutoCompleteInstitution < Base
     attr_reader :data_attributes,
                 :picker,
-                :search_question
+                :search_question,
+                :default_value
 
     def initialize(
       *args,
@@ -41,12 +42,14 @@ module QuestionTypes
       display_no_javascript_fallback_form:,
       search_question:,
       data_attributes: {},
+      default_value: nil,
       **opts
     )
       @data_attributes = data_attributes
       @picker = picker
       @display_no_javascript_fallback_form = display_no_javascript_fallback_form
       @search_question = search_question
+      @default_value = default_value
 
       super(*args, **opts)
     end

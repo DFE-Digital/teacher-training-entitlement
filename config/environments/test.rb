@@ -70,6 +70,9 @@ Rails.application.configure do
   config.dotenv.autorestore = false if config.respond_to?(:dotenv)
   config.active_job.queue_adapter = :test
 
+  # Enable rack_session_access for feature specs to set session data directly
+  config.middleware.use RackSessionAccess::Middleware
+
   config.after_initialize do
     Bullet.enable                       = true
     Bullet.bullet_logger                = true
