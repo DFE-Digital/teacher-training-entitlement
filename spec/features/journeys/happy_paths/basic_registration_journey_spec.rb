@@ -131,7 +131,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "employment_role" => nil,
       "funded_place" => nil,
       "funding_choice" => nil,
-      "funding_eligiblity_status_code" => "ineligible_establishment_type",
+      "funding_eligiblity_status_code" => "ineligible_setting",
       "kind_of_nursery" => nil,
       "headteacher_status" => nil,
       "itt_provider_id" => nil,
