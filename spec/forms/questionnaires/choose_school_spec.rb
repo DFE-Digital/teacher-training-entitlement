@@ -63,9 +63,19 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
   end
 
   describe "#previous_step" do
-    subject { described_class.new.previous_step }
+    subject { described_class.new(wizard:).previous_step }
 
-    it { is_expected.to eq :work_setting }
+    context "when user works in childcare (early years flow)" do
+      let(:store) { { "works_in_childcare" => "yes" } }
+
+      it { is_expected.to eq :kind_of_nursery }
+    end
+
+    context "when user works in school" do
+      let(:store) { { "works_in_school" => "yes" } }
+
+      it { is_expected.to eq :work_setting }
+    end
   end
 
   describe "#next_step" do
