@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Check your answers", :with_default_schedules, type: :feature do
+RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
 
@@ -22,14 +22,12 @@ RSpec.feature "Check your answers", :with_default_schedules, type: :feature do
     )
   end
 
-  describe "changing workplace" do
-    scenario "displays previously selected school when returning to choose-school page" do
-      visit "/registration/choose-school/change"
+  scenario "displays previously selected school when returning to choose-school page" do
+    visit "/registration/choose-school/change"
 
-      within(".npq-js-reveal") do
-        input = find("input[type='text']", visible: true)
-        expect(input.value).to eq(school.name_with_address)
-      end
+    within(".npq-js-reveal") do
+      input = find("input[type='text']", visible: true)
+      expect(input.value).to eq(school.name_with_address)
     end
   end
 end
