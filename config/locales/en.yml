@@ -528,7 +528,7 @@ en:
         questionnaires/kind_of_nursery:
           attributes:
             kind_of_nursery:
-              blank: Select your early years setting
+              blank: Select an option
         questionnaires/teacher_catchment:
           attributes:
             teacher_catchment:

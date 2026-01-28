@@ -23,7 +23,7 @@ module Questionnaires
     def next_step
       return :choose_school if public_nursery?
 
-      :ineligible_for_funding
+      :possible_funding
     end
 
     def previous_step
