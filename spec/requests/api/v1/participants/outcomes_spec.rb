@@ -4,7 +4,7 @@ RSpec.describe "Participants outcome endpoints", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:query) { ParticipantOutcomes::Query }
   let(:serializer) { API::ParticipantOutcomeSerializer }
-  let(:serializer_version) { :v3 }
+  let(:serializer_version) { :v1 }
   let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
   let(:user) { application.user }
 

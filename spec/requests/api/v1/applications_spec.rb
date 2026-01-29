@@ -4,7 +4,7 @@ RSpec.describe "Application endpoints", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:query) { Applications::Query }
   let(:serializer) { API::ApplicationSerializer }
-  let(:serializer_version) { :v3 }
+  let(:serializer_version) { :v1 }
 
   describe "GET /api/v3/applications/:id" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }

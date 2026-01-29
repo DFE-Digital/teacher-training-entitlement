@@ -1,7 +1,7 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
+RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
   let(:course) { create(:course, :tte_early_years) }
@@ -29,31 +29,31 @@ RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", typ
   end
 
   it_behaves_like "an API index endpoint documentation",
-                  "/api/v3/participants/npq",
-                  "NPQ Participants",
-                  "NPQ participants",
+                  "/api/v1/participants",
+                  "Participants",
+                  "participants",
                   "#/components/schemas/ListParticipantsFilter",
                   "#/components/schemas/ParticipantsResponse",
                   true
 
   it_behaves_like "an API show endpoint documentation",
-                  "/api/v3/participants/npq/{id}",
-                  "NPQ Participants",
-                  "NPQ participant",
+                  "/api/v1/participants/{id}",
+                  "Participants",
+                  "participant",
                   "#/components/schemas/ParticipantResponse" do
     let(:resource) { participant }
   end
 
   describe "update actions" do
     let(:base_response_example) do
-      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3)
+      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v1)
     end
 
     it_behaves_like "an API update endpoint documentation",
-                    "/api/v3/participants/npq/{id}/resume",
-                    "NPQ Participants",
-                    "Resume an NPQ participant",
-                    "The NPQ participant being resumed",
+                    "/api/v1/participants/{id}/resume",
+                    "Participants",
+                    "Resume an participant",
+                    "The participant being resumed",
                     "#/components/schemas/ParticipantResponse",
                     "#/components/schemas/ParticipantResumeRequest" do
       before { application.withdrawn_training_status! }
@@ -64,18 +64,18 @@ RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", typ
       let(:invalid_attributes) { { course_identifier: "invalid" } }
       let(:response_example) do
         base_response_example.tap do |example|
-          example[:data][:attributes][:npq_enrolments][0][:training_status] = "active"
-          example[:data][:attributes][:npq_enrolments][0][:deferral] = nil
-          example[:data][:attributes][:npq_enrolments][0][:withdrawal] = nil
+          example[:data][:attributes][:enrolments][0][:training_status] = "active"
+          example[:data][:attributes][:enrolments][0][:deferral] = nil
+          example[:data][:attributes][:enrolments][0][:withdrawal] = nil
         end
       end
     end
 
     it_behaves_like "an API update endpoint documentation",
-                    "/api/v3/participants/npq/{id}/defer",
-                    "NPQ Participants",
-                    "Defer an NPQ participant",
-                    "The NPQ participant being deferred",
+                    "/api/v1/participants/{id}/defer",
+                    "Participants",
+                    "Defer an participant",
+                    "The participant being deferred",
                     "#/components/schemas/ParticipantResponse",
                     "#/components/schemas/ParticipantDeferRequest" do
       let(:resource) { participant }
@@ -84,17 +84,17 @@ RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", typ
       let(:invalid_attributes) { { course_identifier: "invalid" } }
       let(:response_example) do
         base_response_example.tap do |example|
-          example[:data][:attributes][:npq_enrolments][0][:training_status] = "deferred"
-          example[:data][:attributes][:npq_enrolments][0][:withdrawal] = nil
+          example[:data][:attributes][:enrolments][0][:training_status] = "deferred"
+          example[:data][:attributes][:enrolments][0][:withdrawal] = nil
         end
       end
     end
 
     it_behaves_like "an API update endpoint documentation",
-                    "/api/v3/participants/npq/{id}/withdraw",
-                    "NPQ Participants",
-                    "Withdraw an NPQ participant",
-                    "The NPQ participant being withdrawn",
+                    "/api/v1/participants/{id}/withdraw",
+                    "Participants",
+                    "Withdraw an participant",
+                    "The participant being withdrawn",
                     "#/components/schemas/ParticipantResponse",
                     "#/components/schemas/ParticipantWithdrawRequest" do
       let(:resource) { participant }
@@ -103,17 +103,17 @@ RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", typ
       let(:invalid_attributes) { { course_identifier: "invalid" } }
       let(:response_example) do
         base_response_example.tap do |example|
-          example[:data][:attributes][:npq_enrolments][0][:training_status] = "withdrawn"
-          example[:data][:attributes][:npq_enrolments][0][:deferral] = nil
+          example[:data][:attributes][:enrolments][0][:training_status] = "withdrawn"
+          example[:data][:attributes][:enrolments][0][:deferral] = nil
         end
       end
     end
 
     it_behaves_like "an API update endpoint documentation",
-                    "/api/v3/participants/npq/{id}/change-schedule",
-                    "NPQ Participants",
-                    "Notify that an NPQ participant is changing training schedule",
-                    "The NPQ participant changing schedule",
+                    "/api/v1/participants/{id}/change-schedule",
+                    "Participants",
+                    "Notify that an participant is changing training schedule",
+                    "The participant changing schedule",
                     "#/components/schemas/ParticipantResponse",
                     "#/components/schemas/ParticipantChangeScheduleRequest" do
       let(:resource) { participant }
@@ -123,8 +123,8 @@ RSpec.describe "NPQ Participants endpoint", openapi_spec: "v3/swagger.yaml", typ
       let(:invalid_attributes) { { schedule_identifier: "invalid", course_identifier: "invalid" } }
       let(:response_example) do
         base_response_example.tap do |example|
-          example[:data][:attributes][:npq_enrolments][0][:schedule_identifier] = new_schedule.identifier
-          example[:data][:attributes][:npq_enrolments][0][:course_identifier] = course.identifier
+          example[:data][:attributes][:enrolments][0][:schedule_identifier] = new_schedule.identifier
+          example[:data][:attributes][:enrolments][0][:course_identifier] = course.identifier
         end
       end
     end

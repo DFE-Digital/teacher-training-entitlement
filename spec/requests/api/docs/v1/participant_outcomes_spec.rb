@@ -1,12 +1,12 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "NPQ Participant Outcomes endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
+RSpec.describe "Participant Outcomes endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
+  let(:course_group) { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
   let(:course) { create(:course, :tte_early_years, course_group:) }
-  let(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, course_group:, cohort:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
   let(:application) do
     create(
@@ -22,9 +22,9 @@ RSpec.describe "NPQ Participant Outcomes endpoint", openapi_spec: "v3/swagger.ya
   before { create(:participant_outcome, declaration:) }
 
   it_behaves_like "an API index endpoint documentation",
-                  "/api/v3/participants/npq/outcomes",
-                  "NPQ Participant Outcomes",
-                  "NPQ Outcomes for all participants",
+                  "/api/v1/participants/outcomes",
+                  "Participant Outcomes",
+                  "Outcomes for all participants",
                   "#/components/schemas/ListParticipantOutcomesFilter",
                   "#/components/schemas/ParticipantOutcomesResponse"
 end

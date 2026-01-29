@@ -4,7 +4,7 @@ RSpec.describe "Declaration endpoints", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:query) { Declarations::Query }
   let(:serializer) { API::DeclarationSerializer }
-  let(:serializer_version) { :v3 }
+  let(:serializer_version) { :v1 }
 
   def create_resource(**attrs)
     if attrs[:user]

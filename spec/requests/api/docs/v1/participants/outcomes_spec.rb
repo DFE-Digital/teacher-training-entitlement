@@ -1,12 +1,12 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "NPQ Participant Outcomes endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
+RSpec.describe "Participant Outcomes endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
+  let(:course_group) { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
   let(:course) { create(:course, :tte_early_years, course_group:) }
-  let(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, course_group:, cohort:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
   let(:application) do
     create(
@@ -24,23 +24,23 @@ RSpec.describe "NPQ Participant Outcomes endpoint", openapi_spec: "v3/swagger.ya
   before { create(:participant_outcome, declaration:) }
 
   it_behaves_like "an API index endpoint documentation",
-                  "/api/v3/participants/npq/{id}/outcomes",
-                  "NPQ Participant Outcomes",
-                  "NPQ Outcomes for a single participant",
+                  "/api/v1/participants/{id}/outcomes",
+                  "Participant Outcomes",
+                  "Outcomes for a single participant",
                   nil,
                   "#/components/schemas/ParticipantOutcomesResponse" do
     let(:resource) { participant }
   end
 
   it_behaves_like "an API create on resource endpoint documentation",
-                  "/api/v3/participants/npq/{id}/outcomes",
-                  "NPQ Participant Outcomes",
-                  "Submit a NPQ Outcome for a single participant",
-                  "The details of an NPQ Outcome",
+                  "/api/v1/participants/{id}/outcomes",
+                  "Participant Outcomes",
+                  "Submit a Outcome for a single participant",
+                  "The details of an Outcome",
                   "#/components/schemas/ParticipantOutcomeResponse",
                   "#/components/schemas/ParticipantOutcomeCreateRequest" do
     let(:resource) { participant }
-    let(:type) { "npq-outcome-confirmation" }
+    let(:type) { "outcome-confirmation" }
     let(:attributes) do
       {
         course_identifier: course.identifier,

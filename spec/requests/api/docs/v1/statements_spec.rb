@@ -1,12 +1,12 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "Statements endpoint", :exceptions_app, openapi_spec: "v3/swagger.yaml", type: :request do
+RSpec.describe "Statements endpoint", :exceptions_app, openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
   let(:statement) { create(:statement, lead_provider:) }
 
-  path "/api/v3/statements" do
+  path "/api/v1/statements" do
     get "Retrieve financial statements" do
       tags "Statements"
       produces "application/json"
@@ -43,7 +43,7 @@ RSpec.describe "Statements endpoint", :exceptions_app, openapi_spec: "v3/swagger
     end
   end
 
-  path "/api/v3/statements/{id}" do
+  path "/api/v1/statements/{id}" do
     get "Retrieve a specific financial statement" do
       tags "Statements"
       produces "application/json"
