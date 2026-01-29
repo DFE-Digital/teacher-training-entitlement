@@ -1,5 +1,5 @@
 module API
-  module V3
+  module V1
     module Participants
       class OutcomesController < BaseController
         include Pagination

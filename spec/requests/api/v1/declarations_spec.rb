@@ -36,7 +36,7 @@ RSpec.describe "Declaration endpoints", type: :request do
   end
 
   describe "GET /api/v3/participant-declarations" do
-    let(:path) { api_v3_declarations_path }
+    let(:path) { api_v1_declarations_path }
     let(:resource_id_key) { :ecf_id }
 
     it_behaves_like "an API index endpoint"
@@ -51,7 +51,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
 
     def path(id = nil)
-      api_v3_declaration_path(id)
+      api_v1_declaration_path(id)
     end
 
     it_behaves_like "an API show endpoint"
@@ -65,7 +65,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     let(:service_args) { { declaration: resource } }
 
     def path(id = nil)
-      void_api_v3_declaration_path(ecf_id: id)
+      void_api_v1_declaration_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"
@@ -97,7 +97,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     end
 
     def path(id = nil)
-      change_delivery_partner_api_v3_declaration_path(ecf_id: id)
+      change_delivery_partner_api_v1_declaration_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"
@@ -123,7 +123,7 @@ RSpec.describe "Declaration endpoints", type: :request do
   end
 
   describe "POST /api/v3/participant-declarations" do
-    let(:path) { api_v3_declarations_path }
+    let(:path) { api_v1_declarations_path }
 
     let(:service) { Declarations::Create }
     let(:action) { :create_declaration }

@@ -1,5 +1,5 @@
 module API
-  module V3
+  module V1
     class DeliveryPartnersController < BaseController
       include Pagination
 

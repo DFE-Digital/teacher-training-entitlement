@@ -1,5 +1,5 @@
 module API
-  module V3
+  module V1
     class DeclarationsController < BaseController
       include Pagination
       include FilterByDate

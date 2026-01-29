@@ -11,14 +11,14 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
 
     def path(id = nil)
-      api_v3_application_path(id)
+      api_v1_application_path(id)
     end
 
     it_behaves_like "an API show endpoint"
   end
 
   describe "GET /api/v3/npq-applications" do
-    let(:path) { api_v3_applications_path }
+    let(:path) { api_v1_applications_path }
     let(:resource_id_key) { :ecf_id }
 
     def create_resource(**attrs)
@@ -42,7 +42,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:service_args) { { application: resource }.merge!(attributes) }
 
     def path(id = nil)
-      accept_api_v3_application_path(ecf_id: id)
+      accept_api_v1_application_path(ecf_id: id)
     end
 
     it_behaves_like "an API create on resource endpoint"
@@ -56,7 +56,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:service_args) { { application: resource, reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider] } }
 
     def path(id = nil)
-      reject_api_v3_application_path(ecf_id: id)
+      reject_api_v1_application_path(ecf_id: id)
     end
 
     it_behaves_like "an API create on resource endpoint"
@@ -71,7 +71,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:service_args) { { application: resource }.merge!(attributes) }
 
     def path(id = nil)
-      change_funded_place_api_v3_application_path(ecf_id: id)
+      change_funded_place_api_v1_application_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"

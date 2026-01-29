@@ -1,5 +1,5 @@
 module API
-  module V3
+  module V1
     class ParticipantOutcomesController < BaseController
       include Pagination
       include FilterByDate

@@ -16,7 +16,7 @@ RSpec.describe "Participant outcome endpoints", type: :request do
   end
 
   describe "GET /api/v3/participants/npq/outcomes" do
-    let(:path) { api_v3_participant_outcomes_path }
+    let(:path) { api_v1_participant_outcomes_path }
     let(:resource_id_key) { :ecf_id }
 
     it_behaves_like "an API index endpoint"

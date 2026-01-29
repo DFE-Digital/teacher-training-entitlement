@@ -65,14 +65,8 @@ Rails.application.routes.draw do
     get "guidance/*page", to: "guidance#show", as: :guidance_page
     get "docs/:version", to: "documentation#index", as: :documentation
 
-    namespace :v1 do
-      namespace :get_an_identity do
-        resource :webhook_messages, only: %i[create]
-      end
-    end
-
-    namespace :v3, defaults: { format: :json } do
-      resources :applications, path: "npq-applications", only: %i[index show], param: :ecf_id do
+    namespace :v1, defaults: { format: :json } do
+      resources :applications, only: %i[index show], param: :ecf_id do
         member do
           post :reject, path: "reject"
           post :accept, path: "accept"
@@ -80,9 +74,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :participant_outcomes, only: %i[index], path: "participants/npq/outcomes", as: :participant_outcomes
+      resources :participant_outcomes, only: %i[index], path: "participants/outcomes", as: :participant_outcomes
 
-      resources :participants, only: %i[index show], path: "participants/npq", param: :ecf_id do
+      resources :participants, only: %i[index show], param: :ecf_id do
         member do
           put :change_schedule, path: "change-schedule"
           put :defer

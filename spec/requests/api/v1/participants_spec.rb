@@ -8,7 +8,7 @@ RSpec.describe "Participant endpoints", type: :request do
   let(:serializer_lead_provider) { current_lead_provider }
 
   describe "GET /api/v3/participants/npq" do
-    let(:path) { api_v3_participants_path }
+    let(:path) { api_v1_participants_path }
     let(:resource_id_key) { :ecf_id }
 
     def create_resource(**attrs)
@@ -28,12 +28,12 @@ RSpec.describe "Participant endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
 
     def path(id = nil)
-      api_v3_participant_path(id)
+      api_v1_participant_path(id)
     end
 
     it_behaves_like "an API show endpoint"
     it_behaves_like "an API endpoint that checks participant_id change" do
-      let(:path) { api_v3_participant_path(participant_id_change.from_participant_id) }
+      let(:path) { api_v1_participant_path(participant_id_change.from_participant_id) }
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe "Participant endpoints", type: :request do
     let(:service_methods) { { participant: resource } }
 
     def path(id = nil)
-      resume_api_v3_participant_path(ecf_id: id)
+      resume_api_v1_participant_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"
@@ -65,7 +65,7 @@ RSpec.describe "Participant endpoints", type: :request do
     let(:service_methods) { { participant: resource } }
 
     def path(id = nil)
-      defer_api_v3_participant_path(ecf_id: id)
+      defer_api_v1_participant_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"
@@ -82,7 +82,7 @@ RSpec.describe "Participant endpoints", type: :request do
     let(:service_methods) { { participant: resource } }
 
     def path(id = nil)
-      withdraw_api_v3_participant_path(ecf_id: id)
+      withdraw_api_v1_participant_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"
@@ -101,7 +101,7 @@ RSpec.describe "Participant endpoints", type: :request do
     let(:service_methods) { { participant: resource } }
 
     def path(id = nil)
-      change_schedule_api_v3_participant_path(id)
+      change_schedule_api_v1_participant_path(id)
     end
 
     it_behaves_like "an API update endpoint"

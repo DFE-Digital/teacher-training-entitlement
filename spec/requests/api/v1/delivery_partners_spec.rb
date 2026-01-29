@@ -12,14 +12,14 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
 
     def path(id = nil)
-      api_v3_delivery_partner_path(id)
+      api_v1_delivery_partner_path(id)
     end
 
     it_behaves_like "an API show endpoint"
   end
 
   describe "GET /api/v3/delivery_partners" do
-    let(:path) { api_v3_delivery_partners_path }
+    let(:path) { api_v1_delivery_partners_path }
     let(:resource_id_key) { :ecf_id }
 
     def create_resource(**attrs)
