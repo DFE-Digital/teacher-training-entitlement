@@ -11,7 +11,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
 
   let(:request_data) do
     {
-      "path" => "/api/v3/participants/npq",
+      "path" => "/api/v1/participants",
       "params" => {},
       "body" => { "foo" => "bar" }.to_json,
       "headers" => {
@@ -33,7 +33,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
       "body" => {
         "data" => [{
           "id" => "123456",
-          "type" => "npq-participant",
+          "type" => "participant",
           "attributes" => {
             "full_name": "Test Example",
             "teacher_reference_number": "123",
@@ -50,7 +50,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
 
     allow(DfE::Analytics::Event).to receive(:new) { analytics_event }
     allow(analytics_event).to receive(:with_type).with(:persist_api_request) { analytics_event }
-    allow(analytics_event).to receive(:with_namespace).with("npq") { analytics_event }
+    allow(analytics_event).to receive(:with_namespace).with("tte") { analytics_event }
     allow(analytics_event).to receive(:with_user).with(lead_provider) { analytics_event }
   end
 
@@ -139,7 +139,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
           "body" => {
             "errors" => [{
               "title" => "application",
-              "detail" => "This NPQ application has already been accepted",
+              "detail" => "This application has already been accepted",
             }],
           }.to_json,
         }
@@ -156,7 +156,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
             response_body: {
               "errors" => [{
                 "title" => "application",
-                "detail" => "This NPQ application has already been accepted",
+                "detail" => "This application has already been accepted",
               }],
             },
             response_headers: response_data["headers"],
@@ -172,7 +172,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
     context "when no `auth_token`` has been used in the request" do
       let(:request_data) do
         {
-          "path" => "/api/v3/participants/npq",
+          "path" => "/api/v1/participants",
           "params" => {},
           "body" => { "foo" => "bar" }.to_json,
           "headers" => {
@@ -210,7 +210,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
     context "when there is no `request_body`" do
       let(:request_data) do
         {
-          "path" => "/api/v3/participants/npq",
+          "path" => "/api/v1/participants",
           "params" => { "data" => { "attributes" => { "course_identifier" => "test-course" } } },
           "body" => nil,
           "headers" => {
@@ -248,7 +248,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
     context "when `request_body` is invalid" do
       let(:request_data) do
         {
-          "path" => "/api/v3/participants/npq",
+          "path" => "/api/v1/participants",
           "params" => {},
           "body" => "invalid-body",
           "headers" => {
