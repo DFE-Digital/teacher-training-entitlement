@@ -7,7 +7,7 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
   let(:serializer_version) { :v1 }
   let(:serializer_lead_provider) { current_lead_provider }
 
-  describe "GET /api/v3/delivery_partners/:id" do
+  describe "GET /api/v1/delivery_partners/:id" do
     let(:resource) { create(:delivery_partner, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
 
@@ -18,7 +18,7 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
     it_behaves_like "an API show endpoint"
   end
 
-  describe "GET /api/v3/delivery_partners" do
+  describe "GET /api/v1/delivery_partners" do
     let(:path) { api_v1_delivery_partners_path }
     let(:resource_id_key) { :ecf_id }
 

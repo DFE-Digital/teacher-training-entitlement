@@ -6,7 +6,7 @@ RSpec.describe "Application endpoints", type: :request do
   let(:serializer) { API::ApplicationSerializer }
   let(:serializer_version) { :v1 }
 
-  describe "GET /api/v3/applications/:id" do
+  describe "GET /api/v1/applications/:id" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
 
@@ -17,7 +17,7 @@ RSpec.describe "Application endpoints", type: :request do
     it_behaves_like "an API show endpoint"
   end
 
-  describe "GET /api/v3/npq-applications" do
+  describe "GET /api/v1/applications" do
     let(:path) { api_v1_applications_path }
     let(:resource_id_key) { :ecf_id }
 
@@ -33,7 +33,7 @@ RSpec.describe "Application endpoints", type: :request do
     it_behaves_like "an API index endpoint with sorting"
   end
 
-  describe "POST /api/v3/npq-applications/:ecf_id/accept" do
+  describe "POST /api/v1/applications/:ecf_id/accept" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Accept }
@@ -48,7 +48,7 @@ RSpec.describe "Application endpoints", type: :request do
     it_behaves_like "an API create on resource endpoint"
   end
 
-  describe "POST /api/v3/npq-applications/:ecf_id/reject" do
+  describe "POST /api/v1/applications/:ecf_id/reject" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Reject }
@@ -62,7 +62,7 @@ RSpec.describe "Application endpoints", type: :request do
     it_behaves_like "an API create on resource endpoint"
   end
 
-  describe "PUT /api/v3/npq-applications/:ecf_id/change-funded-place" do
+  describe "PUT /api/v1/applications/:ecf_id/change-funded-place" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::ChangeFundedPlace }

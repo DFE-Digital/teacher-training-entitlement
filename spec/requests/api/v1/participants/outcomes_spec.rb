@@ -25,7 +25,7 @@ RSpec.describe "Participants outcome endpoints", type: :request do
     end
   end
 
-  describe "GET /api/v3/participants/npq/:participant_id/outcomes" do
+  describe "GET /api/v1/participants/:participant_id/outcomes" do
     let(:path) { api_v1_participants_outcomes_path(user.ecf_id) }
     let(:resource_id_key) { :ecf_id }
 
@@ -37,7 +37,7 @@ RSpec.describe "Participants outcome endpoints", type: :request do
     end
   end
 
-  describe "POST /api/v3/participants/npq/:participant_id/outcomes" do
+  describe "POST /api/v1/participants/:participant_id/outcomes" do
     let(:path) { api_v1_participants_outcomes_path(user.ecf_id) }
     let(:attributes) do
       {

@@ -5,7 +5,7 @@ RSpec.describe "Statements endpoint", type: "request" do
   let(:query) { Statements::Query }
   let(:serializer) { API::StatementSerializer }
 
-  describe "GET /api/v3/statements" do
+  describe "GET /api/v1/statements" do
     let(:path) { api_v1_statements_path }
     let(:resource_id_key) { :ecf_id }
 

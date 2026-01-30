@@ -15,7 +15,7 @@ RSpec.describe "Participant outcome endpoints", type: :request do
     create(:participant_outcome, **attrs)
   end
 
-  describe "GET /api/v3/participants/npq/outcomes" do
+  describe "GET /api/v1/participants/outcomes" do
     let(:path) { api_v1_participant_outcomes_path }
     let(:resource_id_key) { :ecf_id }
 

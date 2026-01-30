@@ -7,7 +7,7 @@ RSpec.describe "Participant endpoints", type: :request do
   let(:serializer_version) { :v1 }
   let(:serializer_lead_provider) { current_lead_provider }
 
-  describe "GET /api/v3/participants/npq" do
+  describe "GET /api/v1/participants" do
     let(:path) { api_v1_participants_path }
     let(:resource_id_key) { :ecf_id }
 
@@ -23,7 +23,7 @@ RSpec.describe "Participant endpoints", type: :request do
     it_behaves_like "an API index endpoint with sorting"
   end
 
-  describe "GET /api/v3/participants/npq/:id" do
+  describe "GET /api/v1/participants/:id" do
     let(:resource) { create(:user, :with_application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
 
@@ -37,7 +37,7 @@ RSpec.describe "Participant endpoints", type: :request do
     end
   end
 
-  describe "PUT /api/v3/participants/:ecf_id/resume" do
+  describe "PUT /api/v1/participants/:ecf_id/resume" do
     let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
     let(:resource) { application.user }
     let(:resource_id) { resource.ecf_id }
@@ -54,7 +54,7 @@ RSpec.describe "Participant endpoints", type: :request do
     it_behaves_like "an API update endpoint"
   end
 
-  describe "PUT /api/v3/participants/:ecf_id/defer" do
+  describe "PUT /api/v1/participants/:ecf_id/defer" do
     let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
     let(:resource) { application.user }
     let(:resource_id) { resource.ecf_id }
@@ -71,7 +71,7 @@ RSpec.describe "Participant endpoints", type: :request do
     it_behaves_like "an API update endpoint"
   end
 
-  describe "PUT /api/v3/participants/:ecf_id/withdraw" do
+  describe "PUT /api/v1/participants/:ecf_id/withdraw" do
     let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
     let(:resource) { application.user }
     let(:resource_id) { resource.ecf_id }
@@ -88,7 +88,7 @@ RSpec.describe "Participant endpoints", type: :request do
     it_behaves_like "an API update endpoint"
   end
 
-  describe "PUT /api/v3/participants/:ecf_id/change-schedule" do
+  describe "PUT /api/v1/participants/:ecf_id/change-schedule" do
     let(:application) { create(:application, :with_declaration, lead_provider: current_lead_provider) }
     let(:schedule_identifier) { application.schedule.identifier }
     let(:course_identifier) { application.course.identifier }

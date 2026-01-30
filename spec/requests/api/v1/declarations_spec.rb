@@ -35,7 +35,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     end
   end
 
-  describe "GET /api/v3/participant-declarations" do
+  describe "GET /api/v1/participant-declarations" do
     let(:path) { api_v1_declarations_path }
     let(:resource_id_key) { :ecf_id }
 
@@ -46,7 +46,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     it_behaves_like "an API index endpoint with filter by cohort"
   end
 
-  describe "GET /api/v3/participant-declarations/:ecf_id" do
+  describe "GET /api/v1/participant-declarations/:ecf_id" do
     let(:resource) { create(:declaration, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
 
@@ -57,7 +57,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     it_behaves_like "an API show endpoint"
   end
 
-  describe "PUT /api/v3/participant-declarations/:ecf_id/void" do
+  describe "PUT /api/v1/participant-declarations/:ecf_id/void" do
     let(:resource) { create(:declaration, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Declarations::Void }
@@ -72,7 +72,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     it_behaves_like "changing a declaration by another lead provider"
   end
 
-  describe "PUT /api/v3/participant-declarations/:ecf_id/change-delivery-partner" do
+  describe "PUT /api/v1/participant-declarations/:ecf_id/change-delivery-partner" do
     let(:cohort) { create(:cohort, :current) }
 
     let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => current_ }) }
@@ -122,7 +122,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     end
   end
 
-  describe "POST /api/v3/participant-declarations" do
+  describe "POST /api/v1/participant-declarations" do
     let(:path) { api_v1_declarations_path }
 
     let(:service) { Declarations::Create }
