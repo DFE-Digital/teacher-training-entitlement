@@ -251,7 +251,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     let(:application) { build(:application, :accepted, cohort:, course:, private_childcare_provider:, itt_provider:, school:) }
 
     describe "nested attributes" do
-      subject(:attributes) { JSON.parse(described_class.render(application, view: :v3))["attributes"] }
+      subject(:attributes) { JSON.parse(described_class.render(application, view: :v1))["attributes"] }
 
       it "serializes the `schedule_identifier`" do
         expect(attributes["schedule_identifier"]).to eq(application.schedule.identifier)

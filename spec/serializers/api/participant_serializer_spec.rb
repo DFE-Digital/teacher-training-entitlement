@@ -196,7 +196,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
     end
 
     context "when serializing the `v3` view" do
-      subject(:attributes) { JSON.parse(described_class.render(participant, lead_provider:, view: :v3))["attributes"] }
+      subject(:attributes) { JSON.parse(described_class.render(participant, lead_provider:, view: :v1))["attributes"] }
 
       it "serializes the `full_name`" do
         expect(attributes["full_name"]).to eq(participant.full_name)

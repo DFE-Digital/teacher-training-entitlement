@@ -135,7 +135,7 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
     end
 
     context "when serializing the `v3` view" do
-      subject(:attributes) { JSON.parse(described_class.render(declaration, view: :v3))["attributes"] }
+      subject(:attributes) { JSON.parse(described_class.render(declaration, view: :v1))["attributes"] }
 
       it "serializes the `application_id`" do
         expect(attributes["application_id"]).to eq(application.ecf_id)

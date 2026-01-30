@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :declaration do
     transient do
       user { create(:user) }
-      course { create(:course) }
+      course { create(:course, :tte_early_years) }
       statement { nil }
       paid_statement { nil }
     end

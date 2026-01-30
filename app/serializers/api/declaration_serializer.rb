@@ -18,14 +18,6 @@ module API
       end
 
       view :v1 do
-        field(:voided_state?, name: :voided)
-        field(:eligible_for_payment?, name: :eligible_for_payment)
-      end
-
-      view :v2 do
-      end
-
-      view :v3 do
         field(:delivery_partner_id) { |declaration| declaration.delivery_partner&.ecf_id }
         field(:delivery_partner_name) { |declaration| declaration.delivery_partner&.name }
         field(:secondary_delivery_partner_id) { |declaration| declaration.secondary_delivery_partner&.ecf_id }
@@ -42,7 +34,7 @@ module API
       field(:updated_at)
     end
 
-    %i[v1 v2 v3].each do |version|
+    %i[v1].each do |version|
       view version do
         association :attributes, blueprint: AttributesSerializer, view: version do |declaration|
           declaration

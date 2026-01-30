@@ -47,7 +47,7 @@ RSpec.describe API::ParticipantOutcomeSerializer, type: :serializer do
     end
 
     context "when serializing the `v3` view" do
-      subject(:attributes) { JSON.parse(described_class.render(outcome, view: :v3))["attributes"] }
+      subject(:attributes) { JSON.parse(described_class.render(outcome, view: :v1))["attributes"] }
 
       it "serializes the `updated_at`" do
         expect(attributes["updated_at"]).to eq(outcome.updated_at.rfc3339)

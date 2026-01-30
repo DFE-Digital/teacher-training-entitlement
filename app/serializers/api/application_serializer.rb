@@ -1,7 +1,7 @@
 module API
   class ApplicationSerializer < Blueprinter::Base
     identifier :ecf_id, name: :id
-    field(:type) { "npq_application" }
+    field(:type) { "application" }
 
     class AttributesSerializer < Blueprinter::Base
       exclude :id
@@ -41,10 +41,8 @@ module API
         ].compact.max
       end
 
-      view :v3 do
+      view :v1 do
         field(:schedule_identifier) { |a| a.schedule&.identifier }
-        field(:senco_in_role, name: :works_as_senco)
-        field(:senco_start_date) { |application| application.senco_start_date&.as_json }
       end
     end
 
@@ -52,8 +50,8 @@ module API
       application
     end
 
-    view :v3 do
-      association :attributes, blueprint: AttributesSerializer, view: :v3 do |application|
+    view :v1 do
+      association :attributes, blueprint: AttributesSerializer, view: :v1 do |application|
         application
       end
     end
