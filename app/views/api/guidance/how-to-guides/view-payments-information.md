@@ -9,10 +9,10 @@ Providers can view up to date payment cut-off dates, upcoming payment dates, and
 ## Retrieve financial statements
 
 ```
-GET /api/v3/statements
+GET /api/v1/statements
 ```
 
-For more detailed information, see the ['Retrieve financial statements' endpoint documentation](/api/docs/v3#/Statements/get_api_v3_statements).
+For more detailed information, see the ['Retrieve financial statements' endpoint documentation](/api/docs/v1#/Statements/get_api_v1_statements).
 
 ### Example response body
 
@@ -40,12 +40,12 @@ For more detailed information, see the ['Retrieve financial statements' endpoint
 ## Retrieve a specific financial statement
 
 ```
-GET /api/v3/statements/{id}
+GET /api/v1/statements/{id}
 ```
 
 Providers can find statement IDs within previously submitted declaration response bodies.
 
-For more detailed information, see the ['Retrieve a specific financial statement' endpoint documentation](/api/docs/v3#/Statements/get_api_v3_statements__id_).
+For more detailed information, see the ['Retrieve a specific financial statement' endpoint documentation](/api/docs/v1#/Statements/get_api_v1_statements__id_).
 
 ### Example response body
 

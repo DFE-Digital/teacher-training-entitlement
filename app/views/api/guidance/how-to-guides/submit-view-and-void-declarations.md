@@ -1,6 +1,6 @@
 # Submit, view and void declarations
 
-Providers must submit declarations in line with NPQ contractual schedules and milestone dates.
+Providers must submit declarations in line with contractual schedules and milestone dates.
 
 These declarations will trigger payment from DfE to providers.
 
@@ -28,10 +28,10 @@ X-With-Server-Date: 2022-01-10T10:42:00Z
 ## Declare a participant has reached a milestone
 
 ```
-POST /api/v3/participant-declarations
+POST /api/v1/participant-declarations
 ```
 
-Notify DfE a participant has started an NPQ course by submitting a `started` declaration in line with milestone 1 dates.
+Notify DfE a participant has started a course by submitting a `started` declaration in line with milestone 1 dates.
 
 Request bodies must include the necessary data attributes, including the `declaration_type` attribute with a started value.
 
@@ -40,10 +40,10 @@ Successful requests will return a response body with declaration data.
 Any attempts to submit duplicate declarations will return an error message.
 
 <div class="govuk-inset-text">
-  Providers should store the returned NPQ participant declaration ID for management tasks.
+  Providers should store the returned participant declaration ID for management tasks.
 </div>
 
-For more detailed information, see the ['Declare a participant has reached a milestone' endpoint documentation](/api/docs/v3#/Participant%20declarations/post_api_v3_participant_declarations).
+For more detailed information, see the ['Declare a participant has reached a milestone' endpoint documentation](/api/docs/v1#/Participant%20declarations/post_api_v1_participant_declarations).
 
 ### Example request body
 
@@ -55,7 +55,7 @@ For more detailed information, see the ['Declare a participant has reached a mil
       "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "declaration_type": "started",
       "declaration_date": "2021-05-31T02:21:32.000Z",
-      "course_identifier": "npq-senior-leadership"
+      "course_identifier": "tte-early-years"
     }
   }
 }
@@ -71,7 +71,7 @@ For more detailed information, see the ['Declare a participant has reached a mil
     "attributes": {
       "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "declaration_type": "started",
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "tte-early-years",
       "declaration_date": "2022-04-30",
       "state": "submitted",
       "has_passed": null,
@@ -90,7 +90,7 @@ For more detailed information, see the ['Declare a participant has reached a mil
 ## Retrieve multiple participant declarations
 
 ```
-GET /api/v3/participant-declarations
+GET /api/v1/participant-declarations
 ```
 
 Use this endpooint to: 
@@ -100,9 +100,9 @@ Use this endpooint to:
 * identify if any are missing
 * void or clawback declarations which have been submitted in error
 
-Providers can also filter results by adding filters to the parameter. For example: `GET /api/v3/participant-declarations?filter[participant_id]=ab3a7848-1208-7679-942a-b4a70eed400a` or `GET /api/v3/participant-declarations?filter[cohort]=2022&filter[updated_since]=2020-11-13T11:21:55Z`
+Providers can also filter results by adding filters to the parameter. For example: `GET /api/v1/participant-declarations?filter[participant_id]=ab3a7848-1208-7679-942a-b4a70eed400a` or `GET /api/v1/participant-declarations?filter[cohort]=2022&filter[updated_since]=2020-11-13T11:21:55Z`
 
-For more detailed information, see the ['Retrieve multiple participant declarations' endpoint documentation](/api/docs/v3#/Participant%20declarations/get_api_v3_participant_declarations).
+For more detailed information, see the ['Retrieve multiple participant declarations' endpoint documentation](/api/docs/v1#/Participant%20declarations/get_api_v1_participant_declarations).
 
 ### Example response body
 
@@ -115,7 +115,7 @@ For more detailed information, see the ['Retrieve multiple participant declarati
       "attributes": {
         "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
         "declaration_type": "started",
-        "course_identifier": "npq-senior-leadership",
+        "course_identifier": "tte-early-years",
         "declaration_date": "2022-04-30",
         "state": "submitted",
         "has_passed": null,
@@ -135,12 +135,12 @@ For more detailed information, see the ['Retrieve multiple participant declarati
 ## Retrieve a single participant’s declarations
 
 ```
-GET /api/v3/participant-declarations/{id}
+GET /api/v1/participant-declarations/{id}
 ```
 
 View a specific declaration which has been previously submitted. Check declaration details and void or clawback those which have been submitted in error.
 
-For more detailed information, see the ['Retrieve a single participant’s declarations' endpoint documentation](/api/docs/v3#/Participant%20declarations/get_api_v3_participant_declarations__id_).
+For more detailed information, see the ['Retrieve a single participant’s declarations' endpoint documentation](/api/docs/v1#/Participant%20declarations/get_api_v1_participant_declarations__id_).
 
 ### Example response body
 
@@ -152,7 +152,7 @@ For more detailed information, see the ['Retrieve a single participant’s decla
     "attributes": {
       "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "declaration_type": "started",
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "tte-early-years",
       "declaration_date": "2022-04-30",
       "state": "submitted",
       "has_passed": null,
@@ -171,7 +171,7 @@ For more detailed information, see the ['Retrieve a single participant’s decla
 ## Void a declaration
 
 ```
-PUT /api/v3/participant-declarations/{id}/void
+PUT /api/v1/participant-declarations/{id}/void
 ```
 
 Void specific declarations which have been submitted in error.
@@ -183,7 +183,7 @@ Successful requests will return a response body including updates to the declara
 
 If a provider voids a `completed` declaration, the outcome (indicating whether they have passed or failed) will be retracted. The `has_passed` value will revert to `null`.
 
-For more detailed information, see the ['Void a declaration' endpoint documentation](/api/docs/v3#/Participant%20declarations/put_api_v3_participant_declarations__id__void).
+For more detailed information, see the ['Void a declaration' endpoint documentation](/api/docs/v1#/Participant%20declarations/put_api_v1_participant_declarations__id__void).
 
 ### Example response body
 
@@ -195,7 +195,7 @@ For more detailed information, see the ['Void a declaration' endpoint documentat
     "attributes": {
       "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "declaration_type": "started",
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "tte-early-years",
       "declaration_date": "2022-04-30",
       "state": "voided",
       "has_passed": null,

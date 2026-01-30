@@ -1,6 +1,6 @@
 # Roadmap
 
-This page explains what we’re working on to improve the digital services that facilitate the national professional qualification (NPQ) service.
+This page explains what we’re working on to improve the digital services that facilitate the teacher training entitlement (TTE) service.
 
 It sets out what we’re working on now, what will come next, and what we might pursue later.
 
@@ -10,32 +10,17 @@ By sharing this publicly, we hope to:
 - be transparent about what we’re working on and why
 - gather more feedback about the work we’re aiming to do
 
-Our objectives are centered around how we can make it easier for applicants to register for NPQs, and make it more efficient for lead providers to process NPQ applicants.
+Our objectives are centered around how we can make it easier for applicants to register and make it more efficient for lead providers to process applicants.
 
 <div class="govuk-grid-row">
 
   <div class="govuk-grid-column-one-third">
     <h2 id="now" class="govuk-heading-m">Now</h2>
     <p class="govuk-body-m">We are:</p>
-    <p class="govuk-body-m"><strong>Helping providers identify records more easily</strong></p>
+    <p class="govuk-body-m"><strong>Preparing the TTE API</strong></p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>Include the Application ID within the API response body for the Participant Declarations endpoint.</li>
-      <li>Show SENCO specific fields within the API response for Application endpoints.</li>
-      <li>Ability to see why an application was rejected, including if another provider has accepted or the DfE has rejected the application.</li>
-      <li>Ability to have visibility of declarations if an applicant was transferred.</li>
-    </ul>
-    <p class="govuk-body-m"><strong>Making other technical changes to optimise the service</strong></p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>Restrict access to the API based on the provider's IP range (to be commissioned).</li>
-      <li>Drop the maximum page size to 1000 for API requests.</li>
-    </ul>
-    <p class="govuk-body-m"><strong>Processing applications more efficiently</strong></p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>Ability to reject a previously accepted application with no declarations.</li>
-    </ul>
-        <p class="govuk-body-m"><strong>Managing technical debt</strong></p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>Deprecate the legacy versions of the API (v1 & v2), now that providers have migrated to v3 since separating from ECF.</li>
+      <li>API Guidance</li>
+      <li>API documentation</li>
     </ul>
   </div>
 
@@ -44,7 +29,7 @@ Our objectives are centered around how we can make it easier for applicants to r
     <p class="govuk-body-m">We will:</p>
             <p class="govuk-body-m"><strong>Improve the registration sign-in process</strong></p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>Introduce the GOV.UK One Login system to make signing into the NPQ registration service simpler and more secure.</li>
+      <li>Introduce the GOV.UK One Login system to make signing into the registration service simpler and more secure.</li>
 
 
   </div>
@@ -52,11 +37,7 @@ Our objectives are centered around how we can make it easier for applicants to r
   <div class="govuk-grid-column-one-third">
     <h2 id="later" class="govuk-heading-m">Later</h2>
     <p class="govuk-body-m">We plan to:</p>
-        <p class="govuk-body-m"><strong> Allow users to check their funding eligiblity without making a registration</strong></p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>Explore ways to clearly show a user whether they'll be eligible for scholarship funding without making a registration.</li>
-
-
+    
   </div>
 
 </div>

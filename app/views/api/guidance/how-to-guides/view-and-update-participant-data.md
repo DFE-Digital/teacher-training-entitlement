@@ -11,7 +11,7 @@ Once a provider has accepted an application, they can **view and update data** t
 ## Retrieve multiple participants
 
 ```
-GET /api/v3/participants/npq
+GET /api/v1/participants
 ```
 
 <div class="govuk-inset-text">
@@ -20,13 +20,13 @@ Providers can filter results by adding updated_since filters to the parameter. F
 
 ### Check for participant ID changes
 
-Providers can check if an NPQ participant’s ID has changed using the `participant_id_changes` nested structure in the `NPQEnrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value.
+Providers can check if an  participant’s ID has changed using the `participant_id_changes` nested structure in the `Enrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value.
 
 ### Duplicate IDs 
 
 We've [previously advised](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant IDs. Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID.
 
-For more detailed information, see the ['Retrieve multiple participants' endpoint documentation](/api/docs/v3#/NPQ%20Participants/get_api_v3_participants_npq).
+For more detailed information, see the ['Retrieve multiple participants' endpoint documentation](/api/docs/v1#%20Participants/get_api_v1_participants_).
 
 ### Example response body
 
@@ -35,18 +35,18 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
   "data": [
     {
       "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-      "type": "npq-participant",
+      "type": "participant",
       "attributes": {
         "full_name": "Isabelle MacDonald",
         "teacher_reference_number": "1234567",
         "updated_at": "2021-05-31T02:22:32.000Z",
-        "npq_enrolments": [
+        "enrolments": [
           {
             "email": "isabelle.macdonald2@some-school.example.com",
-            "course_identifier": "npq-senior-leadership",
-            "schedule_identifier": "npq-aso-march",
+            "course_identifier": "senior-leadership",
+            "schedule_identifier": "aso-march",
             "cohort": "2022",
-            "npq_application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
+            "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
             "eligible_for_funding": true,
             "training_status": "active",
             "school_urn": "106286",
@@ -73,12 +73,12 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
 ## Retrieve a single participant’s data
 
 ```
-GET /api/v3/participants/npq/{id}
+GET /api/v1/participants/{id}
 ```
 
 ### Check for participant ID changes
 
-Providers can check if an NPQ participant’s ID has changed using the `participant_id_changes` nested structure in the `NPQEnrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value.
+Providers can check if an  participant’s ID has changed using the `participant_id_changes` nested structure in the `Enrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value.
 
 ### Duplicate IDs 
 
@@ -88,7 +88,7 @@ Where we identify duplicates, we'll fix the error by ‘retiring’ one of the p
 
 To date, when this has occurred, we’ve informed providers of changes via CSVs
 
-For more detailed information, see the ['Retrieve a single participant' endpoint documentation](/api/docs/v3#/NPQ%20Participants/get_api_v3_participants_npq__id_).
+For more detailed information, see the ['Retrieve a single participant' endpoint documentation](/api/docs/v1#%20Participants/get_api_v1_participants__id_).
 
 ### Example response body
 
@@ -97,18 +97,18 @@ For more detailed information, see the ['Retrieve a single participant' endpoint
   "data": [
     {
       "id": "ac3d1243-7308-4879-942a-c4a70ced400a",
-      "type": "npq-participant",
+      "type": "participant",
       "attributes": {
         "full_name": "Isabelle MacDonald",
         "teacher_reference_number": "1234567",
         "updated_at": "2021-05-31T02:22:32.000Z",
-        "npq_enrolments": [
+        "enrolments": [
           {
             "email": "isabelle.macdonald2@some-school.example.com",
-            "course_identifier": "npq-senior-leadership",
-            "schedule_identifier": "npq-leadership-autumn",
+            "course_identifier": "senior-leadership",
+            "schedule_identifier": "leadership-autumn",
             "cohort": "2021",
-            "npq_application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
+            "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
             "eligible_for_funding": true,
             "funded_place": true,
             "training_status": "active",
@@ -135,14 +135,14 @@ For more detailed information, see the ['Retrieve a single participant' endpoint
 ## Defer a participant
 
 ```
-PUT /api/v3/participants/npq/{id}/defer
+PUT /api/v1/participants/{id}/defer
 ```
 
 A participant can choose to **defer** their course at any time if they plan to resume training at a later date. Providers must notify DfE of this via the API.
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information, see the ['Defer a participant' endpoint documentation](/api/docs/v3#/NPQ%20Participants/put_api_v3_participants_npq__id__defer).
+For more detailed information, see the ['Defer a participant' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__defer).
 
 ### Example request body
 
@@ -151,7 +151,7 @@ For more detailed information, see the ['Defer a participant' endpoint documenta
   "data": {
     "type": "participant-defer",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "reason": "bereavement"
     }
   }
@@ -161,14 +161,14 @@ For more detailed information, see the ['Defer a participant' endpoint documenta
 ## Resume a participant
 
 ```
-PUT /api/v3/participants/npq/{id}/resume
+PUT /api/v1/participants/{id}/resume
 ```
 
 A participant can **resume** their course at any time if they've previously deferred. Providers must notify DfE of this via the API.
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information, see the ['Resume a participant' endpoint documentation](/api/docs/v3#/NPQ%20Participants/put_api_v3_participants_npq__id__resume).
+For more detailed information, see the ['Resume a participant' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__resume).
 
 ###Example request body
 
@@ -177,7 +177,7 @@ For more detailed information, see the ['Resume a participant' endpoint document
   "data": {
     "type": "participant-resume",
     "attributes": {
-      "course_identifier": "npq-senior-leadership"
+      "course_identifier": "senior-leadership"
     }
   }
 }
@@ -186,7 +186,7 @@ For more detailed information, see the ['Resume a participant' endpoint document
 ## Withdraw a participant
 
 ```
-PUT /api/v3/participants/npq/{id}/withdraw
+PUT /api/v1/participants/{id}/withdraw
 ```
 
 A participant can choose to **withdraw** from their course at any time. Providers must notify DfE of this via the API.
@@ -200,7 +200,7 @@ Providers should note that:
 * if a participant is withdrawn later in their course, we'll pay providers for any declarations submitted where the `declaration_date` is before the withdrawal date
 * the amount we'll pay depends on which milestones have been reached with declarations submitted before withdrawal
 
-For more detailed information, see the ['Withdraw a participant' endpoint documentation](/api/docs/v3#/NPQ%20Participants/put_api_v3_participants_npq__id__withdraw).
+For more detailed information, see the ['Withdraw a participant' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__withdraw).
 
 ### Example request body
 
@@ -209,7 +209,7 @@ For more detailed information, see the ['Withdraw a participant' endpoint docume
   "data": {
     "type": "participant-withdraw",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "reason": "insufficient-capacity-to-undertake-programme"
     }
   }
@@ -219,7 +219,7 @@ For more detailed information, see the ['Withdraw a participant' endpoint docume
 ## Notify that a participant is changing training schedule
 
 ```
-PUT /api/v3/participants/npq/{id}/change-schedule
+PUT /api/v1/participants/{id}/change-schedule
 ```
 
 The API will automatically assign schedules to participants depending on when course applications are accepted by providers. Providers must notify DfE of any **schedule change**.
@@ -231,9 +231,9 @@ Successful requests will return a response body including updates to the `schedu
 
 The API will reject a schedule change if any submitted, eligible, payable or paid declarations have a `declaration_date` which does not align with the new schedule’s milestone dates.
 
-For example, a participant is in the 2023 cohort on an `npq-specialist-autumn` schedule. Their provider has submitted a started declaration dated 1 October 2023. The provider tries to change the schedule to `npq-specialist-spring`. The API will reject the change because a spring schedule does not start until January, which is after the declaration date. The API returns an error message with instructions to void existing declarations first.
+For example, a participant is in the 2023 cohort on an `specialist-autumn` schedule. Their provider has submitted a started declaration dated 1 October 2023. The provider tries to change the schedule to `specialist-spring`. The API will reject the change because a spring schedule does not start until January, which is after the declaration date. The API returns an error message with instructions to void existing declarations first.
 
-For more detailed information, see the ['Notify that a participant is changing training schedule' endpoint documentation](/api/docs/v3#/NPQ%20Participants/put_api_v3_participants_npq__id__change_schedule).
+For more detailed information, see the ['Notify that a participant is changing training schedule' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__change_schedule).
 
 ### Example request body
 
@@ -242,8 +242,8 @@ For more detailed information, see the ['Notify that a participant is changing t
   "data": {
     "type": "participant-change-schedule",
     "attributes": {
-      "schedule_identifier": "npq-ehco-march",
-      "course_identifier": "npq-early-headship-coaching-offer",
+      "schedule_identifier": "ehco-march",
+      "course_identifier": "early-headship-coaching-offer",
       "cohort": "2023"
     }
   }
@@ -254,7 +254,7 @@ For more detailed information, see the ['Notify that a participant is changing t
 ## Updating cohort on a funded place application
 
 ```
-PUT /api/v3/participants/npq/:id/change-schedule endpoint​
+PUT /api/v1/participants/:id/change-schedule endpoint​
 ```
 
 For an application that has been accepted, providers are able to change the cohort year via the API​.
@@ -276,20 +276,20 @@ cohort 2022 to cohort 2024 will work.​
 
 * Schedule identifier and/or cohort year can be changed. When just updating the cohort year, make sure the schedule identifier remains the correct one and unchanged​.
 
-* Course identifier for the specific npq course that the participant is on.​
+* Course identifier for the specific  course that the participant is on.​
   
 * Cohort – fill out the cohort year that the participant is changing to​.
 
 * 200 response means that the request was successful and the cohort year updated.
   
 
-## Retrieve multiple NPQ outcomes for all participants
+## Retrieve multiple  outcomes for all participants
 
 ```
-GET /api/v3/participants/npq/outcomes
+GET /api/v1/participants/outcomes
 ```
 
-Participants can either pass or fail assessment at the end of their NPQ course. These outcomes are submitted by providers within `completed` declaration submissions.
+Participants can either pass or fail assessment at the end of their  course. These outcomes are submitted by providers within `completed` declaration submissions.
 
 <div class="govuk-inset-text">
 Outcomes are sent to the Database of Qualified Teachers (DQT). They issue certificates to participants who've passed.
@@ -300,7 +300,7 @@ Successful requests will return a response body including an outcome `state` val
 * outcomes submitted (`passed` or `failed`)
 * if `completed` declarations have been voided and the outcome retracted (`voided`)
 
-For more detailed information, see the ['Retrieve multiple NPQ outcomes for all participants' endpoint documentation](/api/docs/v3#/NPQ%20Participant%20Outcomes/get_api_v3_participants_npq_outcomes).
+For more detailed information, see the ['Retrieve multiple  outcomes for all participants' endpoint documentation](/api/docs/v1#%20Participant%20Outcomes/get_api_v1_participants_outcomes).
 
 ### Example response body
 
@@ -313,7 +313,7 @@ For more detailed information, see the ['Retrieve multiple NPQ outcomes for all 
       "attributes": {
         "state": "passed",
         "completion_date": "2021-05-31T00:00:00+00:00",
-        "course_identifier": "npq-senior-leadership",
+        "course_identifier": "senior-leadership",
         "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z"
@@ -326,10 +326,10 @@ For more detailed information, see the ['Retrieve multiple NPQ outcomes for all 
 ## Retrieve multiple outcomes for a single participant
 
 ```
-GET /api/v3/participants/npq/{id}/outcomes
+GET /api/v1/participants/{id}/outcomes
 ```
 
-A participant can either pass or fail assessment at the end of their NPQ course. Their outcome will be submitted by providers within `completed` declaration submissions.
+A participant can either pass or fail assessment at the end of their  course. Their outcome will be submitted by providers within `completed` declaration submissions.
 
 <div class="govuk-inset-text">
 Outcomes are sent to the Database of Qualified Teachers (DQT). They issue certificates to participants who've passed.
@@ -340,7 +340,7 @@ Successful requests will return a response body including an outcome `state`valu
 * the outcome submitted (`passed` or `failed`)
 * if the `completed` declaration has been `voided` and the outcome retracted (`voided`)
 
-For more detailed information, see the ['Retrieve multiple NPQ outcomes for a single participant' endpoint documentation](/api/docs/v3#/NPQ%20Participant%20Outcomes/get_api_v3_participants_npq__id__outcomes).
+For more detailed information, see the ['Retrieve multiple  outcomes for a single participant' endpoint documentation](/api/docs/v1#%20Participant%20Outcomes/get_api_v1_participants__id__outcomes).
 
 ### Example response body
 
@@ -353,7 +353,7 @@ For more detailed information, see the ['Retrieve multiple NPQ outcomes for a si
       "attributes": {
         "state": "passed",
         "completion_date": "2021-05-31T00:00:00+00:00",
-        "course_identifier": "npq-senior-leadership",
+        "course_identifier": "senior-leadership",
         "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z"
@@ -363,32 +363,32 @@ For more detailed information, see the ['Retrieve multiple NPQ outcomes for a si
 }
 ```
 
-## Submit an NPQ outcome for single participant
+## Submit an  outcome for single participant
 
 ```
-POST /api/v3/participants/npq/{id}/outcomes
+POST /api/v1/participants/{id}/outcomes
 ```
 
 Outcomes may need to be updated if previously submitted data was inaccurate. For example, a provider should update a participant’s outcome if:
 
 * the reported outcome was incorrect
 * the reported date the participant received their outcome was incorrect
-* a participant has retaken their NPQ assessment and their outcome has changed
+* a participant has retaken their  assessment and their outcome has changed
 
 Request bodies must include a new value for the outcome `state` and `completion_date`.
 
 Successful requests will return a response body with updates included.
 
-For more detailed information, see the ['Submit an NPQ outcome for a single participant' endpoint documentation](/api/docs/v3#/NPQ%20Participant%20Outcomes/post_api_v3_participants_npq__id__outcomes).
+For more detailed information, see the ['Submit an outcome for a single participant' endpoint documentation](/api/docs/v1/Participant%20Outcomes/post_api_v1_participants__id__outcomes).
 
 ### Example request body
 
 ```json
 {
   "data": {
-    "type": "npq-outcome-confirmation",
+    "type": "outcome-confirmation",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "state": "passed",
       "completion_date": "2021-05-31T00:00:00+00:00"
     }
