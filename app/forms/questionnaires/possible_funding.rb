@@ -7,6 +7,8 @@ module Questionnaires
     end
 
     def previous_step
+      return :kind_of_nursery if kind_of_nursery_private?
+
       :choose_school
     end
 

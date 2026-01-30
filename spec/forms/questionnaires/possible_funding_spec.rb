@@ -19,9 +19,29 @@ RSpec.describe Questionnaires::PossibleFunding do
   end
 
   describe "#previous_step" do
-    subject { described_class.new.previous_step }
+    subject do
+      form = described_class.new
+      form.wizard = wizard
+      form.previous_step
+    end
 
-    it { is_expected.to eq :choose_school }
+    context "when user selected a private nursery" do
+      let(:store) { { "kind_of_nursery" => "private_nursery" } }
+
+      it { is_expected.to eq :kind_of_nursery }
+    end
+
+    context "when user selected a public nursery" do
+      let(:store) { { "kind_of_nursery" => "local_authority_maintained_nursery" } }
+
+      it { is_expected.to eq :choose_school }
+    end
+
+    context "when user did not come via nursery path" do
+      let(:store) { {} }
+
+      it { is_expected.to eq :choose_school }
+    end
   end
 
   describe "#course" do
