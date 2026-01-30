@@ -30,7 +30,7 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
   end
 
   describe "nested attributes" do
-    %i[v1 v2 v3].each do |view|
+    %i[v1].each do |view|
       context "when serializing the `#{view}` view" do
         subject(:attributes) { JSON.parse(described_class.render(declaration, view:))["attributes"] }
 
@@ -123,18 +123,6 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
     end
 
     context "when serializing the `v1` view" do
-      subject(:attributes) { JSON.parse(described_class.render(declaration, view: :v1))["attributes"] }
-
-      it "serializes `voided`" do
-        expect(attributes["voided"]).to eq(declaration.voided_state?)
-      end
-
-      it "serializes `eligible_for_payment`" do
-        expect(attributes["eligible_for_payment"]).to eq(declaration.eligible_for_payment?)
-      end
-    end
-
-    context "when serializing the `v3` view" do
       subject(:attributes) { JSON.parse(described_class.render(declaration, view: :v1))["attributes"] }
 
       it "serializes the `application_id`" do

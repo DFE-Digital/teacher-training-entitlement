@@ -18,7 +18,7 @@ RSpec.feature "Maintenance banner", :no_js do
   end
 
   scenario "viewing an API docs path" do
-    visit api_documentation_path(version: "v3")
+    visit api_documentation_path(version: "v1")
     expect(page).to have_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
   end
 
@@ -36,7 +36,7 @@ RSpec.feature "Maintenance banner", :no_js do
     end
 
     scenario "viewing the API docs" do
-      visit api_documentation_path(version: "v3")
+      visit api_documentation_path(version: "v1")
       expect(page).not_to have_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
     end
   end

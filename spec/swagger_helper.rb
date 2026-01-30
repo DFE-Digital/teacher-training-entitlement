@@ -19,7 +19,7 @@ RSpec.configure do |config|
   # By default, the operations defined in spec files are added to the first
   # document below. You can override this behavior by adding a openapi_spec tag to the
   # the root example_group in your specs, e.g. describe '...', openapi_spec: 'v2/swagger.json'
-  config.openapi_specs = API::Version.all.each_with_object({}) { |version, hash|
+  config.openapi_specs = API::Version.all.each_with_object({}) do |version, hash|
     hash["#{version}/swagger.yaml"] = {
       openapi: "3.0.1",
       info: {
@@ -97,7 +97,7 @@ RSpec.configure do |config|
         }.compact,
       },
     }
-  }
+  end
   # Specify the format of the output Swagger file when running 'rswag:specs:swaggerize'.
   # The openapi_specs configuration option has the filename including format in
   # the key, this may want to be changed to avoid putting yaml in json files.

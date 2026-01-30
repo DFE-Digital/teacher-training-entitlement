@@ -20,7 +20,7 @@ RSpec.describe API::ParticipantOutcomeSerializer, type: :serializer do
   end
 
   describe "nested attributes" do
-    %i[v1 v2 v3].each do |view|
+    %i[v1].each do |view|
       context "when serializing the `#{view}` view" do
         subject(:attributes) { JSON.parse(described_class.render(outcome, view:))["attributes"] }
 
@@ -43,14 +43,10 @@ RSpec.describe API::ParticipantOutcomeSerializer, type: :serializer do
         it "serializes the `created_at`" do
           expect(attributes["created_at"]).to eq(outcome.created_at.rfc3339)
         end
-      end
-    end
 
-    context "when serializing the `v3` view" do
-      subject(:attributes) { JSON.parse(described_class.render(outcome, view: :v1))["attributes"] }
-
-      it "serializes the `updated_at`" do
-        expect(attributes["updated_at"]).to eq(outcome.updated_at.rfc3339)
+        it "serializes the `updated_at`" do
+          expect(attributes["updated_at"]).to eq(outcome.updated_at.rfc3339)
+        end
       end
     end
   end
