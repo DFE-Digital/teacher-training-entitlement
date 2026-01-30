@@ -134,8 +134,6 @@ paths:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
-                        works_as_senco: true
-                        senco_start_date: '2021-09-01'
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -224,8 +222,6 @@ paths:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
-                        works_as_senco: true
-                        senco_start_date: '2021-09-01'
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -297,8 +293,6 @@ paths:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
-                        works_as_senco: true
-                        senco_start_date: '2021-09-01'
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -490,6 +484,56 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v1/participant-declarations/{id}/change-delivery-partner":
+    put:
+      summary: Change declaration delivery partner
+      tags:
+      - Participant declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The declaration delivery partner is going to be changed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ParticipantDeclarationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableEntityResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ParticipantDeclarationChangeDeliveryPartnerRequest"
+        required: true
   "/api/v1/delivery-partners":
     get:
       summary: Retrieve multiple Delivery Partners
@@ -1103,8 +1147,8 @@ paths:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
 servers:
-- url: /
-  description: API endpoints
+- url: "/"
+  description: API endpoint
 components:
   securitySchemes:
     api_key:
@@ -1143,8 +1187,8 @@ components:
           type: string
           example: '2021-05-13T11:21:55Z'
         participant_id:
-          description: Return only applications from the specified participant
-            or participants. This is comma delimited string of participant IDs.
+          description: Return only applications from the specified participant or
+            participants. This is comma delimited string of participant IDs.
           type: string
           example: 7e5bcdbf-c818-4961-8da5-439cab1984e0,c2a7ef98-bbfc-48c5-8f02-d484071d2165
     ListParticipantsFilter:
@@ -1342,8 +1386,8 @@ components:
               - another
               - employer
             headteacher_status:
-              description: Indicates whether this participant is or will be a
-                head teacher
+              description: Indicates whether this participant is or will be a head
+                teacher
               type: string
               example: 'no'
               enum:
@@ -1354,8 +1398,8 @@ components:
               - yes_in_first_five_years
               - yes_over_five_years
             ineligible_for_funding_reason:
-              description: Indicates why this participant is not eligible for
-                DfE funding
+              description: Indicates why this participant is not eligible for DfE
+                funding
               type: string
               nullable: true
               example: previously-funded
@@ -1425,8 +1469,8 @@ components:
               nullable: true
               example: '2022'
             eligible_for_funding:
-              description: Indicates whether this participant would be eligible
-                for funding from the DfE
+              description: Indicates whether this participant would be eligible for
+                funding from the DfE
               type: boolean
               example: true
             targeted_delivery_funding_eligibility:
@@ -1496,38 +1540,26 @@ components:
               enum:
               - tte-reception-autumn
               - tte-reception-spring
-              - aso-march
-              - aso-june
-              - aso-november
-              - aso-december
-              - ehco-march
-              - ehco-june
-              - ehco-november
-              - ehco-december
-              - leadership-autumn
-              - leadership-spring
-              - specialist-autumn
-              - specialist-spring
-            works_as_senco:
-              description: Indicates whether the participant works as a SENCO (Special
-                Educational Needs Coordinator)
-              type: boolean
-              nullable: true
-              example: true
-            senco_start_date:
-              description: The date when the participant started working as a SENCO
-              type: string
-              format: date
-              nullable: true
-              example: '2021-09-01'
+              - npq-aso-march
+              - npq-aso-june
+              - npq-aso-november
+              - npq-aso-december
+              - npq-ehco-march
+              - npq-ehco-june
+              - npq-ehco-november
+              - npq-ehco-december
+              - npq-leadership-autumn
+              - npq-leadership-spring
+              - npq-specialist-autumn
+              - npq-specialist-spring
     ApplicationAcceptRequest:
-      description: A application acceptance request
+      description: An application acceptance request
       type: object
       required:
       - data
       properties:
         data:
-          description: A application acceptance request data
+          description: An application acceptance request data
           type: object
           required:
           - type
@@ -1539,7 +1571,7 @@ components:
               required: true
               example: application-accept
             attributes:
-              description: A application acceptance request attributes
+              description: An application acceptance request attributes
               type: object
               required: false
               properties:
@@ -1556,26 +1588,26 @@ components:
                   enum:
                   - tte-reception-autumn
                   - tte-reception-spring
-                  - aso-march
-                  - aso-june
-                  - aso-november
-                  - aso-december
-                  - ehco-march
-                  - ehco-june
-                  - ehco-november
-                  - ehco-december
-                  - leadership-autumn
-                  - leadership-spring
-                  - specialist-autumn
-                  - specialist-spring
+                  - npq-aso-march
+                  - npq-aso-june
+                  - npq-aso-november
+                  - npq-aso-december
+                  - npq-ehco-march
+                  - npq-ehco-june
+                  - npq-ehco-november
+                  - npq-ehco-december
+                  - npq-leadership-autumn
+                  - npq-leadership-spring
+                  - npq-specialist-autumn
+                  - npq-specialist-spring
     ApplicationChangeFundedPlaceRequest:
-      description: A application change funded place request
+      description: An application change funded place request
       type: object
       required:
       - data
       properties:
         data:
-          description: A application change funded place request data
+          description: An application change funded place request data
           type: object
           required:
           - type
@@ -1587,7 +1619,7 @@ components:
               required: true
               example: application-change-funded-place
             attributes:
-              description: A application change funded place request attributes
+              description: An application change funded place request attributes
               type: object
               required:
               - funded_place
@@ -1680,18 +1712,18 @@ components:
                     enum:
                     - tte-reception-autumn
                     - tte-reception-spring
-                    - aso-march
-                    - aso-june
-                    - aso-november
-                    - aso-december
-                    - ehco-march
-                    - ehco-june
-                    - ehco-november
-                    - ehco-december
-                    - leadership-autumn
-                    - leadership-spring
-                    - specialist-autumn
-                    - specialist-spring
+                    - npq-aso-march
+                    - npq-aso-june
+                    - npq-aso-november
+                    - npq-aso-december
+                    - npq-ehco-march
+                    - npq-ehco-june
+                    - npq-ehco-november
+                    - npq-ehco-december
+                    - npq-leadership-autumn
+                    - npq-leadership-spring
+                    - npq-specialist-autumn
+                    - npq-specialist-spring
                   cohort:
                     description: Indicates which call-off contract would fund this
                       participant's training. 2021 indicates a participant that has
@@ -1703,8 +1735,8 @@ components:
                     nullable: true
                     example: '2022'
                   application_id:
-                    description: The ID of the application that was accepted to
-                      create this enrolment
+                    description: The ID of the application that was accepted to create
+                      this enrolment
                     type: string
                     format: uuid
                     nullable: false
@@ -2016,22 +2048,22 @@ components:
                   required: true
                   nullable: false
                   type: string
-                  example: ehco-march
+                  example: npq-ehco-march
                   enum:
                   - tte-reception-autumn
                   - tte-reception-spring
-                  - aso-march
-                  - aso-june
-                  - aso-november
-                  - aso-december
-                  - ehco-march
-                  - ehco-june
-                  - ehco-november
-                  - ehco-december
-                  - leadership-autumn
-                  - leadership-spring
-                  - specialist-autumn
-                  - specialist-spring
+                  - npq-aso-march
+                  - npq-aso-june
+                  - npq-aso-november
+                  - npq-aso-december
+                  - npq-ehco-march
+                  - npq-ehco-june
+                  - npq-ehco-november
+                  - npq-ehco-december
+                  - npq-leadership-autumn
+                  - npq-leadership-spring
+                  - npq-specialist-autumn
+                  - npq-specialist-spring
                 course_identifier:
                   description: The type of course the participant is enrolled in
                   required: true
@@ -2041,11 +2073,11 @@ components:
                   enum:
                   - tte-early-years
                 cohort:
-                  description: Providers may change an participant's cohort up
-                    until the point of submitting a started declaration. The value
-                    indicates which call-off contract funds this participant's training.
-                    2023 indicates a participant that has started, or will start,
-                    their training in the 2023/24 academic year.
+                  description: Providers may change a participant's cohort up until
+                    the point of submitting a started declaration. The value indicates
+                    which call-off contract funds this participant's training. 2023
+                    indicates a participant that has started, or will start, their
+                    training in the 2023/24 academic year.
                   required: false
                   nullable: true
                   type: string

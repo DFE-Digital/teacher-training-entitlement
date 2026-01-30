@@ -1,6 +1,6 @@
 PARTICIPANTS_RESPONSE = {
   v1: {
-    description: "A list of NPQ participants.",
+    description: "A list of participants.",
     type: :object,
     required: %i[data],
     properties: {

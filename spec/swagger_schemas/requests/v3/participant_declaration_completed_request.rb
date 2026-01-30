@@ -1,5 +1,5 @@
 V3_PARTICIPANT_DECLARATION_COMPLETED_REQUEST = {
-  description: "An NPQ completed participant declaration",
+  description: "An completed participant declaration",
   type: :object,
   required: %i[
     participant_id

@@ -1,6 +1,6 @@
 APPLICATION_RESPONSE = {
   v1: {
-    description: "A single NPQ application",
+    description: "A single application",
     type: :object,
     required: %i[data],
     properties: {

@@ -4,7 +4,7 @@ PARTICIPANT_CHANGE_SCHEDULE_REQUEST = {
   required: %i[data],
   properties: {
     data: {
-      description: "An NPQ participant change schedule request data",
+      description: "An participant change schedule request data",
       type: :object,
       required: %i[type attributes],
       properties: {
@@ -15,7 +15,7 @@ PARTICIPANT_CHANGE_SCHEDULE_REQUEST = {
           required: true,
         },
         attributes: {
-          description: "An NPQ participant change schedule request attributes",
+          description: "An participant change schedule request attributes",
           type: :object,
           required: %i[schedule_identifier course_identifier],
           properties: {
@@ -36,7 +36,7 @@ PARTICIPANT_CHANGE_SCHEDULE_REQUEST = {
               enum: Course::IDENTIFIERS,
             },
             cohort: {
-              description: "Providers may change an NPQ participant's cohort up until the point of submitting a started declaration. The value indicates which call-off contract funds this participant's training. 2023 indicates a participant that has started, or will start, their training in the 2023/24 academic year.",
+              description: "Providers may change a participant's cohort up until the point of submitting a started declaration. The value indicates which call-off contract funds this participant's training. 2023 indicates a participant that has started, or will start, their training in the 2023/24 academic year.",
               required: false,
               nullable: true,
               type: :string,

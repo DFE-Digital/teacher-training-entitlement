@@ -1,5 +1,5 @@
 DELIVERY_PARTNER = {
-  v3: {
+  v1: {
     description: "A single delivery partner",
     type: :object,
     required: %i[id type attributes],

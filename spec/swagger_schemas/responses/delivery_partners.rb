@@ -1,5 +1,5 @@
 DELIVERY_PARTNERS_RESPONSE = {
-  v3: {
+  v1: {
     description: "A list of delivery partners",
     type: :object,
     required: %i[data],

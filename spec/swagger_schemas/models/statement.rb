@@ -1,5 +1,5 @@
 STATEMENT = {
-  v3: {
+  v1: {
     description: "A financial statement.",
     type: :object,
     required: %i[id type attributes],

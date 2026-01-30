@@ -1,6 +1,6 @@
 PARTICIPANT_OUTCOME_RESPONSE = {
   v1: {
-    description: "The details of an NPQ Outcome",
+    description: "The details of an Outcome",
     type: :object,
     required: %i[data],
     properties: {

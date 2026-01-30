@@ -1,5 +1,5 @@
 PARTICIPANT_DECLARATION_RETAINED_REQUEST = {
-  description: "An NPQ participant retained declaration",
+  description: "An participant retained declaration",
   type: :object,
   additionalProperties: false,
   properties: {

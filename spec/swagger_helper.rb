@@ -23,7 +23,7 @@ RSpec.configure do |config|
     hash["#{version}/swagger.yaml"] = {
       openapi: "3.0.1",
       info: {
-        title: "NPQ Registration API",
+        title: "Teacher Training Entitlement (TTE) API",
         version:,
       },
       externalDocs: {
@@ -33,7 +33,8 @@ RSpec.configure do |config|
       paths: {},
       servers: [
         {
-          url: "http://0.0.0.0:3000", # Replaced in hosted environments by config/initializers/swagger_server_url.rb
+          url: "/",
+          description: "API endpoint",
         },
       ],
       components: {
@@ -48,7 +49,6 @@ RSpec.configure do |config|
         schemas: {
           PaginationFilter: PAGINATION_FILTER,
           ListApplicationsFilter: LIST_APPLICATIONS_FILTER[version],
-          ListEnrolmentsFilter: LIST_ENROLMENTS_FILTER[version],
           ListParticipantsFilter: LIST_PARTICIPANTS_FILTER[version],
           ListParticipantDeclarationsFilter: LIST_PARTICIPANT_DECLARATIONS_FILTER[version],
           ListParticipantOutcomesFilter: LIST_PARTICIPANT_OUTCOMES_FILTER,
@@ -64,12 +64,6 @@ RSpec.configure do |config|
           Application: APPLICATION[version],
           ApplicationAcceptRequest: APPLICATION_ACCEPT_REQUEST[version],
           ApplicationChangeFundedPlaceRequest: APPLICATION_CHANGE_FUNDED_PLACE_REQUEST,
-          EnrolmentsCsvResponse: ENROLMENTS_CSV_RESPONSE[version],
-          EnrolmentCsv: ENROLMENT_CSV[version],
-          DeclarationsCsvResponse: DECLARATIONS_CSV_RESPONSE[version],
-          DeclarationCsv: DECLARATION_CSV[version],
-          ApplicationsCsvResponse: APPLICATIONS_CSV_RESPONSE[version],
-          ApplicationCsv: APPLICATION_CSV[version],
           ParticipantResponse: PARTICIPANT_RESPONSE[version],
           ParticipantsResponse: PARTICIPANTS_RESPONSE[version],
           Participant: PARTICIPANT[version],
@@ -94,31 +88,16 @@ RSpec.configure do |config|
           DeliveryPartnerResponse: DELIVERY_PARTNER_RESPONSE[version],
           DeliveryPartnersResponse: DELIVERY_PARTNERS_RESPONSE[version],
           DeliveryPartnersSortingOptions: DELIVERY_PARTNERS_SORTING_OPTIONS[version],
+
+          ParticipantDeclarationRequest: V3_PARTICIPANT_DECLARATION_REQUEST,
+          ParticipantDeclarationStartedRequest: V3_PARTICIPANT_DECLARATION_STARTED_REQUEST,
+          ParticipantDeclarationRetainedRequest: V3_PARTICIPANT_DECLARATION_RETAINED_REQUEST,
+          ParticipantDeclarationCompletedRequest: V3_PARTICIPANT_DECLARATION_COMPLETED_REQUEST,
+          ParticipantDeclarationChangeDeliveryPartnerRequest: V3_PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST,
         }.compact,
       },
     }
-  }.tap do |hash|
-    v1_v2_participant_declaration_requests = {
-      ParticipantDeclarationRequest: PARTICIPANT_DECLARATION_REQUEST,
-      ParticipantDeclarationStartedRequest: PARTICIPANT_DECLARATION_STARTED_REQUEST,
-      ParticipantDeclarationRetainedRequest: PARTICIPANT_DECLARATION_RETAINED_REQUEST,
-      ParticipantDeclarationCompletedRequest: PARTICIPANT_DECLARATION_COMPLETED_REQUEST,
-    }
-
-    unless Rails.configuration.x.disable_legacy_api
-      hash["v1/swagger.yaml"][:components][:schemas].merge!(v1_v2_participant_declaration_requests)
-      hash["v2/swagger.yaml"][:components][:schemas].merge!(v1_v2_participant_declaration_requests)
-    end
-
-    hash["v3/swagger.yaml"][:components][:schemas].merge!(
-      ParticipantDeclarationRequest: V3_PARTICIPANT_DECLARATION_REQUEST,
-      ParticipantDeclarationStartedRequest: V3_PARTICIPANT_DECLARATION_STARTED_REQUEST,
-      ParticipantDeclarationRetainedRequest: V3_PARTICIPANT_DECLARATION_RETAINED_REQUEST,
-      ParticipantDeclarationCompletedRequest: V3_PARTICIPANT_DECLARATION_COMPLETED_REQUEST,
-      ParticipantDeclarationChangeDeliveryPartnerRequest: V3_PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST,
-    )
-  end
-
+  }
   # Specify the format of the output Swagger file when running 'rswag:specs:swaggerize'.
   # The openapi_specs configuration option has the filename including format in
   # the key, this may want to be changed to avoid putting yaml in json files.

@@ -1,6 +1,6 @@
 APPLICATIONS_RESPONSE = {
   v1: {
-    description: "A list of NPQ applications.",
+    description: "A list of applications.",
     type: :object,
     required: %i[data],
     properties: {

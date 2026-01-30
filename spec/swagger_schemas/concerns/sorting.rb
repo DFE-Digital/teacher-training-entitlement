@@ -1,5 +1,5 @@
 SORTING_OPTIONS = {
-  v3: {
+  v1: {
     description: "Sort records being returned.",
     enum: [
       "created_at",

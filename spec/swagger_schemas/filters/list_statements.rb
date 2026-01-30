@@ -1,5 +1,5 @@
 LIST_STATEMENTS_FILTER = {
-  v3: {
+  v1: {
     description: "Filter statements to return more specific results",
     type: "object",
     properties: {

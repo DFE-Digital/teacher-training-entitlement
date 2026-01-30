@@ -1,5 +1,5 @@
 V3_PARTICIPANT_DECLARATION_STARTED_REQUEST = {
-  description: "An NPQ started participant declaration",
+  description: "An started participant declaration",
   type: :object,
   additionalProperties: false,
   properties: {

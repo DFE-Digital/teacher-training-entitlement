@@ -19,7 +19,7 @@ V3_PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST = {
         attributes: {
           required: true,
           anyOf: [{
-            description: "An NPQ completed participant declaration",
+            description: "An completed participant declaration",
             type: :object,
             required: %i[delivery_partner_id],
             additionalProperties: false,
