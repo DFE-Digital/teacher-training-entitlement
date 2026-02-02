@@ -323,7 +323,7 @@ en:
               *ecf_id
   activemodel:
     attributes:
-      questionnaires/funding_your_npq:
+      questionnaires/funding_your_course:
         funding_options:
           school: My workplace is covering the cost
           trust: My trust is paying
@@ -499,10 +499,10 @@ en:
           attributes:
             institution_location:
               blank: Enter the location of your workplace
-        questionnaires/funding_your_npq:
+        questionnaires/funding_your_course:
           attributes:
             funding:
-              blank: Choose how your NPQ will be funded
+              blank: Choose how your course will be funded
               invalid: Choose a valid funding option
         questionnaires/npqh_status:
           attributes:

@@ -106,11 +106,9 @@ class RegistrationWizard
       array << Answer.new("Nursery", t("kind_of_nursery"), :kind_of_nursery)
     end
     array << Answer.new("Workplace", institution_from_store.try(:name_with_address), :choose_school)
-
-    # TODO: add missing step when self funding
-    # if funding_your_course?
-    #   array << Answer.new("Funding", store[], :)
-    # end
+    if store["funding"].present?
+      array << Answer.new("Course funding", I18n.t(store["funding"], scope: "helpers.label.registration_wizard.funding_options"), :funding_your_course)
+    end
 
     array
   end
