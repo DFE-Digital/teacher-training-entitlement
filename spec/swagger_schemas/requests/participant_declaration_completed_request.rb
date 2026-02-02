@@ -51,6 +51,22 @@ PARTICIPANT_DECLARATION_COMPLETED_REQUEST = {
       nullable: false,
       example: true,
     },
+    delivery_partner_id: {
+      description: "The delivery partner ID",
+      type: :string,
+      format: :uuid,
+      required: false,
+      nullable: false,
+      example: "524df095-f9bf-4f9d-ba4c-772545a99e60",
+    },
+    secondary_delivery_partner_id: {
+      description: "The secondary delivery partner ID",
+      type: :string,
+      format: :uuid,
+      required: false,
+      nullable: false,
+      example: "f0de7abf-399b-4e68-83de-2c33b503810c",
+    },
   },
   example: {
     participant_id: "db3a7848-7308-4879-942a-c4a70ced400a",

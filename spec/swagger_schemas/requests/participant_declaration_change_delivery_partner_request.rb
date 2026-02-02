@@ -1,4 +1,4 @@
-V3_PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST = {
+PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST = {
   description: "A participant declaration change delivery partner request",
   type: :object,
   required: %w[data],

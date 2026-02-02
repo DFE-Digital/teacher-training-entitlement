@@ -37,6 +37,22 @@ PARTICIPANT_DECLARATION_STARTED_REQUEST = {
       enum: Course::IDENTIFIERS,
       example: Course::IDENTIFIERS.first,
     },
+    delivery_partner_id: {
+      description: "The delivery partner ID",
+      type: :string,
+      format: :uuid,
+      required: false,
+      nullable: false,
+      example: "524df095-f9bf-4f9d-ba4c-772545a99e60",
+    },
+    secondary_delivery_partner_id: {
+      description: "The secondary delivery partner ID",
+      type: :string,
+      format: :uuid,
+      required: false,
+      nullable: false,
+      example: "f0de7abf-399b-4e68-83de-2c33b503810c",
+    },
   },
   required: %i[
     participant_id
@@ -49,5 +65,6 @@ PARTICIPANT_DECLARATION_STARTED_REQUEST = {
     declaration_type: "started",
     declaration_date: "2021-05-31T02:21:32Z",
     course_identifier: Course::IDENTIFIERS.first,
+    delivery_partner_id: "524df095-f9bf-4f9d-ba4c-772545a99e60",
   },
 }.freeze

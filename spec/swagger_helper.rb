@@ -89,11 +89,11 @@ RSpec.configure do |config|
           DeliveryPartnersResponse: DELIVERY_PARTNERS_RESPONSE[version],
           DeliveryPartnersSortingOptions: DELIVERY_PARTNERS_SORTING_OPTIONS[version],
 
-          ParticipantDeclarationRequest: V3_PARTICIPANT_DECLARATION_REQUEST,
-          ParticipantDeclarationStartedRequest: V3_PARTICIPANT_DECLARATION_STARTED_REQUEST,
-          ParticipantDeclarationRetainedRequest: V3_PARTICIPANT_DECLARATION_RETAINED_REQUEST,
-          ParticipantDeclarationCompletedRequest: V3_PARTICIPANT_DECLARATION_COMPLETED_REQUEST,
-          ParticipantDeclarationChangeDeliveryPartnerRequest: V3_PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST,
+          ParticipantDeclarationRequest: PARTICIPANT_DECLARATION_REQUEST,
+          ParticipantDeclarationStartedRequest: PARTICIPANT_DECLARATION_STARTED_REQUEST,
+          ParticipantDeclarationRetainedRequest: PARTICIPANT_DECLARATION_RETAINED_REQUEST,
+          ParticipantDeclarationCompletedRequest: PARTICIPANT_DECLARATION_COMPLETED_REQUEST,
+          ParticipantDeclarationChangeDeliveryPartnerRequest: PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST,
         }.compact,
       },
     }
