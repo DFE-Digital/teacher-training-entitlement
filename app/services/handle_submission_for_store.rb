@@ -43,7 +43,7 @@ class HandleSubmissionForStore
         teacher_catchment_iso_country_code:,
         cohort: Cohort.current,
         lead_provider_approval_status: Application.lead_provider_approval_statuses[:pending],
-        review_status: funding_eligibility_service.subject_to_review? ? "needs_review" : nil,
+        review_status: nil,
       )
       enqueue_send_application_submission_email_job(application)
     end
@@ -153,19 +153,11 @@ private
     @funding_eligibility_service ||= FundingEligibility.new(
       course:,
       institution: institution_from_store,
-      approved_itt_provider:,
-      lead_mentor: lead_mentor?,
       inside_catchment: inside_catchment?,
-      new_headteacher: new_headteacher?,
       trn: query_store.trn,
       get_an_identity_id: query_store.get_an_identity_id,
       query_store:,
     )
-  end
-
-  def approved_itt_provider
-    ::IttProvider.currently_approved
-      .find_by(legal_name: store["itt_provider"]).present?
   end
 
   def eligible_for_funding?
@@ -176,14 +168,8 @@ private
     EmailTemplateLookup.call(store["email_template"])
   end
 
-  delegate :ineligible_institution_type?,
-           :funding_eligiblity_status_code,
-           :previously_received_targeted_funding_support?,
+  delegate :funding_eligiblity_status_code,
            to: :funding_eligibility_service
-
-  def new_headteacher?
-    %w[yes_in_first_two_years yes_in_first_five_years yes_when_course_starts].include?(headteacher_status)
-  end
 
   def course
     @course ||= query_store.course

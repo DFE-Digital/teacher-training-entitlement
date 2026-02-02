@@ -97,28 +97,16 @@ class RegistrationWizard
   def answers
     array = []
 
-    if trn_set_via_fallback_verification_question?
-      # TODO: when the TRN is verified by TTE
-      # array << Answer.new("Full name", store["full_name"], :qualified_teacher_check)
-      # array << Answer.new("Teacher reference number (TRN)", trn, :qualified_teacher_check)
-      # array << Answer.new("Date of birth", formatted_date_of_birth, :qualified_teacher_check)
-
-      # if form_for_step(:qualified_teacher_check).national_insurance_number.present?
-      #   array << Answer.new("National Insurance number", store["national_insurance_number"], :qualified_teacher_check)
-      # end
-    end
-
     array << Answer.new("Course start", store["course_start"], :course_start_date)
     array << Answer.new("Course", I18n.t(course.identifier, scope: "course.name"), :choose_your_course)
     array << Answer.new("Provider", lead_provider&.name, :choose_your_provider)
     array << Answer.new("Workplace in England", teacher_catchment_humanized, :teacher_catchment)
     array << Answer.new("Work setting", t("work_setting"), :work_setting)
     if kind_of_nursery_public?
-      array << Answer.new("Nursery", store["kind_of_nursery"], :kind_of_nursery)
+      array << Answer.new("Nursery", t("kind_of_nursery"), :kind_of_nursery)
     end
-    if works_in_school?
-      array << Answer.new("Workplace", institution_from_store.try(:name_with_address), :choose_school)
-    end
+    array << Answer.new("Workplace", institution_from_store.try(:name_with_address), :choose_school)
+
     # TODO: add missing step when self funding
     # if funding_your_course?
     #   array << Answer.new("Funding", store[], :)
@@ -179,9 +167,7 @@ private
     FundingEligibility.new(
       course:,
       institution: institution_from_store,
-      approved_itt_provider: approved_itt_provider?,
       inside_catchment: inside_catchment?,
-      new_headteacher: new_headteacher?,
       trn:,
       get_an_identity_id:,
       query_store:,

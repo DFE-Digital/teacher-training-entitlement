@@ -52,10 +52,6 @@ private
     funding_eligiblity_status_code == FundingEligibility::FUNDED_ELIGIBILITY_RESULT
   end
 
-  def not_lead_mentor_course?
-    funding_eligiblity_status_code == FundingEligibility::NOT_LEAD_MENTOR_COURSE
-  end
-
   def course
     Course.find_by(identifier: data["course_identifier"])
   end
