@@ -1,8 +1,9 @@
-* @DFE-Digital/teacher-training-entitlement
+# Default owners for everything in the repo
+* @DFE-Digital/tte-dev-cpd
 
 # Don't automatically assign reviewers on PRs that only modify these files,
 # as they are dependabot pull requests.
-Gemfile
-Gemfile.lock
-package.json
-yarn.lock
+Gemfile @DFE-Digital/tte-dev-cpd
+Gemfile.lock @DFE-Digital/tte-dev-cpd
+package.json @DFE-Digital/tte-dev-cpd
+yarn.lock @DFE-Digital/tte-dev-cpd
