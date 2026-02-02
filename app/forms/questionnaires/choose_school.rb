@@ -22,6 +22,8 @@ module Questionnaires
         :choose_school
       elsif !institution(source: institution_identifier).in_england?
         :ineligible_for_funding
+      elsif funding_eligibility.previously_funded?
+        :ineligible_for_funding
       else
         :possible_funding
       end
@@ -75,6 +77,17 @@ module Questionnaires
     end
 
   private
+
+    def funding_eligibility
+      @funding_eligibility ||= FundingEligibility.new(
+        course: wizard.query_store.course,
+        institution: institution(source: institution_identifier),
+        inside_catchment: wizard.query_store.inside_catchment?,
+        trn: wizard.query_store.trn,
+        get_an_identity_id: wizard.query_store.get_an_identity_id,
+        query_store: wizard.query_store,
+      )
+    end
 
     def search_term_entered_in_no_js_fallback_form?
       # This combination of fields is only used in the no-js fallback form
