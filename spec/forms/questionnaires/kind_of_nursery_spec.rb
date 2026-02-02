@@ -22,7 +22,19 @@ RSpec.describe Questionnaires::KindOfNursery, type: :model do
     context "when private nursery option selected" do
       let(:kind_of_nursery) { "private_nursery" }
 
-      it { is_expected.to eq(:possible_funding) }
+      it { is_expected.to eq(:ineligible_for_funding) }
+    end
+
+    context "when childminder option selected" do
+      let(:kind_of_nursery) { "childminder" }
+
+      it { is_expected.to eq(:ineligible_for_funding) }
+    end
+
+    context "when another early years setting option selected" do
+      let(:kind_of_nursery) { "another_early_years_setting" }
+
+      it { is_expected.to eq(:ineligible_for_funding) }
     end
   end
 end

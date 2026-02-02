@@ -4,9 +4,9 @@ module Questionnaires
 
     include Helpers::Institution
 
-    NOT_ELIGIBLE_FOR_SCHOLARSHIP_FUNDING = "not_eligible_for_scholarship_funding".freeze
+    INELIGIBLE_SETTING = "ineligible_setting".freeze
     NOT_IN_ENGLAND = "not_in_england".freeze
-    ALREADY_FUNDED_NOT_ELIGIBLE_SCHOLARSHIP_FUNDING = "already_funded/not_eligible_scholarship_funding".freeze
+    PREVIOUSLY_FUNDED = "previously_funded".freeze
 
     attr_accessor :version
 
@@ -15,7 +15,11 @@ module Questionnaires
     end
 
     def previous_step
-      :teacher_catchment
+      return :choose_school if works_in_school?
+      return :kind_of_nursery if kind_of_nursery_private?
+      return :work_setting if works_in_other?
+
+      :teacher_catchment # :not_in_england
     end
 
     def ineligible_template
@@ -23,15 +27,17 @@ module Questionnaires
                                when FundingEligibility::NOT_IN_ENGLAND
                                  NOT_IN_ENGLAND
                                when FundingEligibility::PREVIOUSLY_FUNDED
-                                 ALREADY_FUNDED_NOT_ELIGIBLE_SCHOLARSHIP_FUNDING
+                                 PREVIOUSLY_FUNDED
                                when FundingEligibility::INELIGIBLE_SETTING
-                                 NOT_ELIGIBLE_FOR_SCHOLARSHIP_FUNDING
+                                 INELIGIBLE_SETTING
                                else
                                  raise UnexpectedEligibilityStatusCode, "Missing status code handling: #{funding_eligiblity_status_code}"
                                end
     end
 
     def funding_eligiblity_status_code
+      return :ineligible_setting if kind_of_nursery_private? || works_in_other?
+
       @funding_eligiblity_status_code ||= funding_eligibility.funding_eligiblity_status_code
     end
 
@@ -49,6 +55,9 @@ module Questionnaires
     delegate :course,
              :lead_provider,
              :inside_catchment?,
+             :works_in_other?,
+             :works_in_school?,
+             :kind_of_nursery_private?,
              to: :query_store
   end
 end
