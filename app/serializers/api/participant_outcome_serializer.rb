@@ -15,12 +15,6 @@ module API
 
       view :v1 do
       end
-
-      view :v2 do
-      end
-
-      view :v3 do
-      end
     end
 
     %i[v1].each do |version|
