@@ -1100,6 +1100,9 @@ en:
           "yes": "Yes"
           "no": "No"
 
+        lead_provider_id_options:
+          not_chosen: "I have not chosen a provider yet"
+
         ehco_headteacher_options:
           "yes": "Yes"
           "no": "No"

@@ -35,6 +35,12 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
       subject.valid?
       expect(subject.errors[:lead_provider_id]).to be_blank
     end
+
+    it "is valid when not chosen option is selected" do
+      subject.lead_provider_id = described_class::NOT_CHOSEN
+      subject.valid?
+      expect(subject.errors[:lead_provider_id]).to be_blank
+    end
   end
 
   describe "#previous_step" do
@@ -44,9 +50,17 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
   end
 
   describe "#next_step" do
-    subject { described_class.new.next_step }
+    context "when a provider is chosen" do
+      subject { described_class.new(lead_provider_id: LeadProvider.first.id).next_step }
 
-    it { is_expected.to eq :teacher_catchment }
+      it { is_expected.to eq :teacher_catchment }
+    end
+
+    context "when provider is not chosen" do
+      subject { described_class.new(lead_provider_id: described_class::NOT_CHOSEN).next_step }
+
+      it { is_expected.to eq :choose_a_tte_and_provider }
+    end
   end
 
   describe ".options" do
@@ -71,8 +85,30 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
       )
     end
 
-    it "returns all options" do
-      expect(subject.map(&:value).sort).to eq(expected_providers.pluck(:id).sort)
+    it "returns all provider options plus the not chosen option" do
+      provider_ids = expected_providers.pluck(:id)
+      expect(subject.map(&:value)).to eq(provider_ids + [described_class::NOT_CHOSEN])
+    end
+
+    it "includes a divider before the not chosen option" do
+      not_chosen_option = subject.find { |o| o.value == described_class::NOT_CHOSEN }
+      expect(not_chosen_option.divider).to be true
+    end
+  end
+
+  describe "#not_chosen_provider?" do
+    let(:form) { described_class.new }
+
+    context "when lead_provider_id is NOT_CHOSEN" do
+      before { form.lead_provider_id = described_class::NOT_CHOSEN }
+
+      it { expect(form.not_chosen_provider?).to be true }
+    end
+
+    context "when lead_provider_id is a real provider id" do
+      before { form.lead_provider_id = LeadProvider.first.id }
+
+      it { expect(form.not_chosen_provider?).to be false }
     end
   end
 end
