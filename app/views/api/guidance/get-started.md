@@ -41,9 +41,9 @@ The test environments feature all the NPQ API request endpoints and have been po
 
 The base URL for the API's test environments is:
 
-* [https://npq-registration-sandbox-web.teacherservices.cloud](https://npq-registration-sandbox-web.teacherservices.cloud)
+* [https://sandbox.teacher-training-entitlement.education.gov.uk](https://sandbox.teacher-training-entitlement.education.gov.uk)
 
-Providers can add the required API version and endpoint depending on what they want to test. For example, they’d add `/api/v3/npq-applications` to the test environment URL if they want to retrieve multiple applications.
+Providers can add the required API version and endpoint depending on what they want to test. For example, they’d add `/api/v1/applications` to the test environment URL if they want to retrieve multiple applications.
 
 Providers can also create ‘dummy’ applications in the sandbox environment. This enables them to:
 
@@ -56,7 +56,7 @@ Providers can also create ‘dummy’ applications in the sandbox environment. T
 
 Provider development teams can also access the OpenAPI spec in YAML format:
 
-* [view the OpenAPI version 3 spec](/api/docs/v3/swagger.yaml)
+* [view the OpenAPI version 3 spec](/api/docs/v1/swagger.yaml)
 
 Providers can use API testing tools such as Postman to make test API calls. Providers can import the API as a collection by using [Postman’s](https://www.postman.com/) import feature and copying in the YAML URL of the API spec.
 
@@ -100,8 +100,8 @@ The DfE can coordinate ‘windows’ (set time periods) for providers to do this
 
 Always poll 2 windows back from your last successful poll. This guarantees that all participant data is captured. For example: 
 
-* at 3:15pm enter the following request - <code>/api/v3/participants/ecf?filter[updated_since]=2025-01-28T13:15:00Z</code>
-* at 4:15pm enter the following request - <code>/api/v3/participants/ecf?filter[updated_since]=2025-01-28T14:15:00Z</code>
+* at 3:15pm enter the following request - <code>/api/v1/participants/ecf?filter[updated_since]=2025-01-28T13:15:00Z</code>
+* at 4:15pm enter the following request - <code>/api/v1/participants/ecf?filter[updated_since]=2025-01-28T14:15:00Z</code>
 
 Try polling randomly rather than on the hour to prevent system overload. 
 

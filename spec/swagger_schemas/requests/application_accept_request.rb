@@ -1,11 +1,11 @@
 APPLICATION_ACCEPT_REQUEST = {
-  v3: {
-    description: "A NPQ application acceptance request",
+  v1: {
+    description: "An application acceptance request",
     type: :object,
     required: %i[data],
     properties: {
       data: {
-        description: "A NPQ application acceptance request data",
+        description: "An application acceptance request data",
         type: :object,
         required: %i[type attributes],
         properties: {
@@ -13,10 +13,10 @@ APPLICATION_ACCEPT_REQUEST = {
             description: "The data typed",
             type: :string,
             required: true,
-            example: "npq-application-accept",
+            example: "application-accept",
           },
           attributes: {
-            description: "A NPQ application acceptance request attributes",
+            description: "An application acceptance request attributes",
             type: :object,
             required: false,
             properties: {
@@ -26,23 +26,17 @@ APPLICATION_ACCEPT_REQUEST = {
                 type: :boolean,
                 example: true,
               },
+              schedule_identifier: {
+                description: "The new schedule of the participant",
+                nullable: false,
+                type: :string,
+                example: Schedule::IDENTIFIERS.first,
+                enum: Schedule::IDENTIFIERS,
+              },
             },
           },
         },
       },
     },
   },
-}.tap { |h|
-  unless Rails.configuration.x.disable_legacy_api
-    h[:v1] = h[:v3].deep_dup
-    h[:v2] = h[:v3].deep_dup
-  end
-
-  h[:v3][:properties][:data][:properties][:attributes][:properties][:schedule_identifier] = {
-    description: "The new schedule of the participant",
-    nullable: false,
-    type: :string,
-    example: Schedule::IDENTIFIERS.first,
-    enum: Schedule::IDENTIFIERS,
-  }
 }.freeze

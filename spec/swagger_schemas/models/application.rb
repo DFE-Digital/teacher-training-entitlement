@@ -1,6 +1,6 @@
 APPLICATION = {
   v1: {
-    description: "A single NPQ application",
+    description: "A single application",
     type: :object,
     required: %i[id type attributes],
     properties: {
@@ -10,22 +10,22 @@ APPLICATION = {
       type: {
         description: "The data type",
         type: :string,
-        example: "npq_application",
+        example: "application",
         enum: %w[
-          npq_application
+          application
         ],
       },
       attributes: {
         properties: {
           course_identifier: {
-            description: "The NPQ course this NPQ application relates to",
+            description: "The course this application relates to",
             type: :string,
             nullable: false,
             example: Course::IDENTIFIERS.first,
             enum: Course::IDENTIFIERS,
           },
           email: {
-            description: "The email address registered for this NPQ participant",
+            description: "The email address registered for this participant",
             type: :string,
             nullable: false,
             example: "isabelle.macdonald2@some-school.example.com",
@@ -48,33 +48,33 @@ APPLICATION = {
             example: "Director",
           },
           full_name: {
-            description: "The full name of this NPQ participant",
+            description: "The full name of this participant",
             type: :string,
             nullable: false,
             example: "Isabelle MacDonald",
           },
           funding_choice: {
-            description: "Indicates how this NPQ participant has said they will funded their training",
+            description: "Indicates how this participant has said they will funded their training",
             type: :string,
             nullable: true,
             example: Application.funding_choices.keys.first,
             enum: Application.funding_choices.keys,
           },
           headteacher_status: {
-            description: "Indicates whether this NPQ participant is or will be a head teacher",
+            description: "Indicates whether this participant is or will be a head teacher",
             type: :string,
             example: Application.headteacher_statuses.keys.first,
             enum: Application.headteacher_statuses.keys,
           },
           ineligible_for_funding_reason: {
-            description: "Indicates why this NPQ participant is not eligible for DfE funding",
+            description: "Indicates why this participant is not eligible for DfE funding",
             type: :string,
             nullable: true,
             example: Application::INELIGIBLE_FOR_FUNDING_REASONS.first,
             enum: Application::INELIGIBLE_FOR_FUNDING_REASONS,
           },
           participant_id: {
-            description: "The unique identifier of this NPQ participant",
+            description: "The unique identifier of this participant",
             type: :string,
             example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
             format: "uuid",
@@ -86,7 +86,7 @@ APPLICATION = {
             nullable: true,
           },
           teacher_reference_number: {
-            description: "The Teacher Reference Number (TRN) for this NPQ participant",
+            description: "The Teacher Reference Number (TRN) for this participant",
             type: :string,
             example: "1234567",
             nullable: true,
@@ -98,18 +98,18 @@ APPLICATION = {
             example: true,
           },
           school_urn: {
-            description: "The Unique Reference Number (URN) of the school where this NPQ participant is employed",
+            description: "The Unique Reference Number (URN) of the school where this participant is employed",
             type: :string,
             example: "106286",
           },
           school_ukprn: {
-            description: "The UK Provider Reference Number (UK Provider Reference Number) of the school where this NPQ participant is employed",
+            description: "The UK Provider Reference Number (UK Provider Reference Number) of the school where this participant is employed",
             nullable: true,
             type: :string,
             example: "10079319",
           },
           status: {
-            description: "The current state of the NPQ application",
+            description: "The current state of the application",
             type: :string,
             nullable: true,
             example: Application.lead_provider_approval_statuses.keys.first,
@@ -133,7 +133,7 @@ APPLICATION = {
             example: "2022",
           },
           eligible_for_funding: {
-            description: "Indicates whether this NPQ participant would be eligible for funding from the DfE",
+            description: "Indicates whether this participant would be eligible for funding from the DfE",
             type: :boolean,
             example: true,
           },
@@ -150,7 +150,7 @@ APPLICATION = {
             example: true,
           },
           teacher_catchment_country: {
-            description: "This field shows the text entered by the participant during their NPQ online registration.",
+            description: "This field shows the text entered by the participant during their online registration.",
             nullable: true,
             type: :string,
             example: "United Kingdom of Great Britain and Northern Ireland",
@@ -193,6 +193,13 @@ APPLICATION = {
             format: :"date-time",
             example: "2021-05-31T02:22:32.000Z",
           },
+          schedule_identifier: {
+            description: "The new schedule of the participant",
+            nullable: true,
+            type: :string,
+            example: Schedule::IDENTIFIERS.first,
+            enum: Schedule::IDENTIFIERS,
+          },
         },
       },
     },
@@ -206,18 +213,5 @@ APPLICATION = {
     type: :string,
     example: Schedule::IDENTIFIERS.first,
     enum: Schedule::IDENTIFIERS,
-  }
-  h[:v3][:properties][:attributes][:properties][:works_as_senco] = {
-    description: "Indicates whether the participant works as a SENCO (Special Educational Needs Coordinator)",
-    type: :boolean,
-    nullable: true,
-    example: true,
-  }
-  h[:v3][:properties][:attributes][:properties][:senco_start_date] = {
-    description: "The date when the participant started working as a SENCO",
-    type: :string,
-    format: :date,
-    nullable: true,
-    example: "2021-09-01",
   }
 }.freeze

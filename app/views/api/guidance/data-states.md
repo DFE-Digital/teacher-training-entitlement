@@ -117,7 +117,7 @@ A participant’s `training_status` value will determine whether a provider can:
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>deferred</code></th>
       <td class="govuk-table__cell govuk-table__cell">Participants who've deferred training</td>
-      <td class="govuk-table__cell govuk-table__cell">Notify DfE when the participant <a href="/api/docs/v3#/NPQ%20Participants/put_api_v3_participants_npq__id__resume" class="govuk-link">resumes training</a></td>
+      <td class="govuk-table__cell govuk-table__cell">Notify DfE when the participant <a href="/api/docs/v1/Participants/put_api_v1_participants__id__resume" class="govuk-link">resumes training</a></td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>withdrawn</code></th>

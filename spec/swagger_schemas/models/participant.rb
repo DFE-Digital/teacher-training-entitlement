@@ -1,6 +1,6 @@
 PARTICIPANT = {
   v1: {
-    description: "The details of an NPQ Participant",
+    description: "The details of an Participant",
     type: :object,
     required: %i[id type attributes],
     properties: {
@@ -10,31 +10,31 @@ PARTICIPANT = {
       type: {
         description: "The data type",
         type: :string,
-        example: "npq-participant",
-        enum: %w[npq-participant],
+        example: "participant",
+        enum: %w[participant],
       },
       attributes: {
         properties: {
           participant_id: {
-            description: "The unique identifier of this NPQ participant",
+            description: "The unique identifier of this participant",
             type: :string,
             format: :uuid,
             nullable: false,
             example: "db3a7848-7308-4879-942a-c4a70ced400a",
           },
           full_name: {
-            description: "The full name of this NPQ participant",
+            description: "The full name of this participant",
             type: :string,
             nullable: false,
             example: "Isabelle MacDonald",
           },
           email: {
-            description: "The email address registered for this NPQ participant",
+            description: "The email address registered for this participant",
             type: :string,
             nullable: false,
             example: "isabelle.macdonald2@some-school.example.com",
           },
-          npq_courses: {
+          courses: {
             description: "The type of course(s) the participant is enrolled in",
             type: :array,
             items: {
@@ -49,9 +49,9 @@ PARTICIPANT = {
             type: :array,
             items: {
               type: :object,
-              required: %i[npq_course funded_place npq_application_id],
+              required: %i[course funded_place application_id],
               properties: {
-                npq_course: {
+                course: {
                   description: "The type of course the participant is enrolled in",
                   type: :string,
                   nullable: false,
@@ -64,8 +64,8 @@ PARTICIPANT = {
                   example: true,
                   nullable: true,
                 },
-                npq_application_id: {
-                  description: "The ID of the NPQ application that was accepted to create this enrolment",
+                application_id: {
+                  description: "The ID of the application that was accepted to create this enrolment",
                   type: :string,
                   format: :uuid,
                   nullable: false,
@@ -75,7 +75,7 @@ PARTICIPANT = {
             },
           },
           teacher_reference_number: {
-            description: "The Teacher Reference Number (TRN) for this NPQ participant",
+            description: "The Teacher Reference Number (TRN) for this participant",
             type: :string,
             example: "1234567",
             nullable: true,
@@ -93,17 +93,17 @@ PARTICIPANT = {
   },
 }.tap { |h|
   h[:v2] = h[:v1].deep_dup
-  h[:v2][:properties][:attributes][:properties].except!(:participant_id, :npq_courses, :funded_places)
-  h[:v2][:properties][:attributes][:properties][:npq_enrolments] = {
+  h[:v2][:properties][:attributes][:properties].except!(:participant_id, :courses, :funded_places)
+  h[:v2][:properties][:attributes][:properties][:enrolments] = {
     description: "Information about the course(s) the participant is enrolled in",
     type: :array,
     items: {
-      description: "The details of an NPQ Participant enrolment",
+      description: "The details of an Participant enrolment",
       type: :object,
-      required: %i[course_identifier npq_application_id eligible_for_funding training_status targeted_delivery_funding_eligibility],
+      required: %i[course_identifier application_id eligible_for_funding training_status targeted_delivery_funding_eligibility],
       properties: {
         course_identifier: {
-          description: "The NPQ course this NPQ application relates to",
+          description: "The course this application relates to",
           type: :string,
           nullable: false,
           example: Course::IDENTIFIERS.first,
@@ -122,27 +122,27 @@ PARTICIPANT = {
           nullable: true,
           example: "2022",
         },
-        npq_application_id: {
-          description: "The ID of the NPQ application that was accepted to create this enrolment",
+        application_id: {
+          description: "The ID of the application that was accepted to create this enrolment",
           type: :string,
           format: :uuid,
           nullable: false,
           example: "db3a7848-7308-4879-942a-c4a70ced400a",
         },
         eligible_for_funding: {
-          description: "Indicates whether this NPQ participant would be eligible for funding from the DfE",
+          description: "Indicates whether this participant would be eligible for funding from the DfE",
           type: :boolean,
           nullable: false,
           example: true,
         },
         training_status: {
-          description: "The training status of the NPQ participant",
+          description: "The training status of the participant",
           type: :string,
           enum: Application.training_statuses.keys,
           example: Application.training_statuses.keys.first,
         },
         school_urn: {
-          description: "The Unique Reference Number (URN) of the school where this NPQ participant is employed",
+          description: "The Unique Reference Number (URN) of the school where this participant is employed",
           type: :string,
           nullable: true,
           example: "106286",
@@ -163,18 +163,18 @@ PARTICIPANT = {
     },
   }
 
-  h[:v3] = h[:v2].deep_dup
-  h[:v3][:properties][:attributes][:properties].except!(:email)
-  h[:v3][:properties][:attributes][:properties][:npq_enrolments][:items][:required] << :email
-  h[:v3][:properties][:attributes][:properties][:npq_enrolments][:items][:properties].merge!({
+  h[:v1] = h[:v2].deep_dup
+  h[:v1][:properties][:attributes][:properties].except!(:email)
+  h[:v1][:properties][:attributes][:properties][:enrolments][:items][:required] << :email
+  h[:v1][:properties][:attributes][:properties][:enrolments][:items][:properties].merge!({
     email: {
-      description: "The email address registered for this NPQ participant",
+      description: "The email address registered for this participant",
       type: :string,
       nullable: false,
       example: "isabelle.macdonald2@some-school.example.com",
     },
     withdrawal: {
-      description: "The details of an NPQ Participant withdrawal",
+      description: "The details of an Participant withdrawal",
       type: :object,
       nullable: true,
       required: %i[reason date],
@@ -197,7 +197,7 @@ PARTICIPANT = {
       },
     },
     deferral: {
-      description: "The details of an NPQ Participant deferral",
+      description: "The details of an Participant deferral",
       type: :object,
       nullable: true,
       required: %i[reason date],
@@ -227,7 +227,7 @@ PARTICIPANT = {
       example: "2021-05-31T02:21:32.000Z",
     },
   })
-  h[:v3][:properties][:attributes][:properties][:participant_id_changes] = {
+  h[:v1][:properties][:attributes][:properties][:participant_id_changes] = {
     description: "Information about the Participant ID changes",
     type: :array,
     items: {

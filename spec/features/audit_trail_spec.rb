@@ -47,7 +47,7 @@ RSpec.feature "Recording audit trail via papertrail", :versioning, type: :reques
              course_group: application.course.course_group,
              cohort: application.cohort)
 
-      post accept_api_v3_application_path(application.ecf_id), headers:
+      post accept_api_v1_application_path(application.ecf_id), headers:
     end
 
     let(:raw_token) { "a-token" }

@@ -19,7 +19,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `type`" do
-      expect(response["type"]).to eq("npq_application")
+      expect(response["type"]).to eq("application")
     end
   end
 
@@ -247,38 +247,14 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
   end
 
-  context "when serializing the `v3` view" do
+  context "when serializing the `v1` view" do
     let(:application) { build(:application, :accepted, cohort:, course:, private_childcare_provider:, itt_provider:, school:) }
 
     describe "nested attributes" do
-      subject(:attributes) { JSON.parse(described_class.render(application, view: :v3))["attributes"] }
+      subject(:attributes) { JSON.parse(described_class.render(application, view: :v1))["attributes"] }
 
       it "serializes the `schedule_identifier`" do
         expect(attributes["schedule_identifier"]).to eq(application.schedule.identifier)
-      end
-
-      context "when application is senco application" do
-        let(:application) { build(:application, :senco, cohort:, course:, private_childcare_provider:, itt_provider:, school:) }
-
-        it "serializes the `works_as_senco`" do
-          expect(attributes["works_as_senco"]).to eq(application.senco_in_role)
-        end
-
-        it "serializes the `senco_start_date`" do
-          expect(attributes["senco_start_date"]).to eq(application.senco_start_date.as_json)
-        end
-      end
-
-      context "when application is non senco application" do
-        let(:application) { build(:application, cohort:, course:, private_childcare_provider:, itt_provider:, school:) }
-
-        it "serializes the `works_as_senco` as nil" do
-          expect(attributes["works_as_senco"]).to be_nil
-        end
-
-        it "serializes the `senco_start_date` as nil" do
-          expect(attributes["senco_start_date"]).to be_nil
-        end
       end
     end
   end

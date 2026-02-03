@@ -5,7 +5,7 @@ class API::Version
     end
 
     def all
-      %i[v3]
+      %i[v1]
     end
   end
 end

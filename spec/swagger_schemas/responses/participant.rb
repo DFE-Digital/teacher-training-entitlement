@@ -1,6 +1,6 @@
 PARTICIPANT_RESPONSE = {
   v1: {
-    description: "A single NPQ participant",
+    description: "A single participant",
     type: :object,
     required: %i[data],
     properties: {

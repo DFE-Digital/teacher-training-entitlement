@@ -1,5 +1,5 @@
 LIST_DELIVERY_PARTNERS_FILTER = {
-  v3: {
+  v1: {
     description: "Filter delivery partners to return more specific results",
     type: "object",
     properties: {

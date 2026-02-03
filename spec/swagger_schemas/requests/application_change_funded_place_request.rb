@@ -1,10 +1,10 @@
 APPLICATION_CHANGE_FUNDED_PLACE_REQUEST = {
-  description: "A NPQ application change funded place request",
+  description: "An application change funded place request",
   type: :object,
   required: %i[data],
   properties: {
     data: {
-      description: "A NPQ application change funded place request data",
+      description: "An application change funded place request data",
       type: :object,
       required: %i[type attributes],
       properties: {
@@ -12,10 +12,10 @@ APPLICATION_CHANGE_FUNDED_PLACE_REQUEST = {
           description: "The data typed",
           type: :string,
           required: true,
-          example: "npq-application-change-funded-place",
+          example: "application-change-funded-place",
         },
         attributes: {
-          description: "A NPQ application change funded place request attributes",
+          description: "An application change funded place request attributes",
           type: :object,
           required: %i[funded_place],
           properties: {

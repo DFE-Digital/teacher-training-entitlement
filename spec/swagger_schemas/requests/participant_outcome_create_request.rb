@@ -1,21 +1,21 @@
 PARTICIPANT_OUTCOME_CREATE_REQUEST = {
-  description: "The NPQ outcome submission request",
+  description: "The outcome submission request",
   type: :object,
   required: %i[data],
   properties: {
     data: {
-      description: "The NPQ outcome submission request attributes",
+      description: "The outcome submission request attributes",
       type: :object,
       required: %i[type attributes],
       properties: {
         type: {
           description: "The data typed",
           type: :string,
-          example: "npq-outcome-confirmation",
+          example: "outcome-confirmation",
           required: true,
         },
         attributes: {
-          description: "The NPQ outcome submission request attributes",
+          description: "The outcome submission request attributes",
           type: :object,
           required: %i[course_identifier state completion_date],
           properties: {

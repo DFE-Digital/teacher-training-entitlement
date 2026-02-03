@@ -1,5 +1,5 @@
 DELIVERY_PARTNERS_SORTING_OPTIONS = {
-  v3: {
+  v1: {
     description: "Sort records being returned.",
     enum: [
       "name",

@@ -1,40 +1,12 @@
 module API
   class ParticipantSerializer < Blueprinter::Base
     identifier :ecf_id, name: :id
-    field(:type) { "npq-participant" }
+    field(:type) { "participant" }
 
     class AttributesSerializer < Blueprinter::Base
       exclude :id
 
       view :v1 do
-        field(:ecf_id, name: :participant_id)
-        field(:full_name)
-        field(:email)
-
-        field(:npq_courses) do |object, options|
-          applications(object, options).map { |application| application.course.identifier }
-        end
-
-        field(:funded_places) do |object, options|
-          applications(object, options).map do |application|
-            {
-              npq_course: application.course.identifier,
-              funded_place: application.funded_place,
-              npq_application_id: application.ecf_id,
-            }
-          end
-        end
-
-        field(:teacher_reference_number) do |object, _options|
-          object.trn if object.trn_verified
-        end
-        field(:updated_at) do |object, _options|
-          updated_at(object)
-        end
-      end
-
-      view :v2 do
-        field(:email)
         field(:full_name)
         field(:teacher_reference_number) do |object, _options|
           object.trn if object.trn_verified
@@ -43,40 +15,14 @@ module API
           updated_at(object)
         end
 
-        field(:npq_enrolments) do |object, options|
-          applications(object, options).map do |application|
-            {
-              course_identifier: application.course.identifier,
-              schedule_identifier: application&.schedule&.identifier,
-              cohort: application.cohort&.start_year&.to_s,
-              npq_application_id: application.ecf_id,
-              eligible_for_funding: application.eligible_for_funding,
-              training_status: application.training_status,
-              school_urn: application.school&.urn,
-              targeted_delivery_funding_eligibility: application.targeted_delivery_funding_eligibility,
-              funded_place: application.funded_place,
-            }
-          end
-        end
-      end
-
-      view :v3 do
-        field(:full_name)
-        field(:teacher_reference_number) do |object, _options|
-          object.trn if object.trn_verified
-        end
-        field(:updated_at) do |object, _options|
-          updated_at(object)
-        end
-
-        field(:npq_enrolments) do |object, options|
+        field(:enrolments) do |object, options|
           applications(object, options).map do |application|
             {
               email: object.email,
               course_identifier: application.course.identifier,
               schedule_identifier: application&.schedule&.identifier,
               cohort: application.cohort&.start_year&.to_s,
-              npq_application_id: application.ecf_id,
+              application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
               training_status: application.training_status,
               school_urn: application.school&.urn,
@@ -151,7 +97,7 @@ module API
       participant
     end
 
-    %i[v1 v2 v3].each do |version|
+    %i[v1].each do |version|
       view version do
         association :attributes, blueprint: AttributesSerializer, view: version do |participant|
           participant

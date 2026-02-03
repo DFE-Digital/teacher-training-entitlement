@@ -1,5 +1,5 @@
 LIST_PARTICIPANT_OUTCOMES_FILTER = {
-  description: "Filter NPQ outcomes to return more specific results",
+  description: "Filter outcomes to return more specific results",
   type: "object",
   properties: {
     created_since: {

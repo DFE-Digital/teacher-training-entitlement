@@ -28,14 +28,14 @@ While participants can enter different email addresses when applying for trainin
 ## Retrieve multiple applications
 
 ```
-GET /api/v3/npq-applications
+GET /api/v1/applications
 ```
 
 Providers can filter results to see more specific or up to date data by adding `cohort`, `participant_id` and `updated_since` filters to the parameter. 
 
-For example: `GET /api/v3/npq-applications?filter[cohort]=2021&filter[participant_id]=7e5bcdbf-c818-4961-8da5-439cab1984e0&filter[updated_since]=2020-11-13T11:21:55Z`
+For example: `GET /api/v1/applications?filter[cohort]=2021&filter[participant_id]=7e5bcdbf-c818-4961-8da5-439cab1984e0&filter[updated_since]=2020-11-13T11:21:55Z`
 
-See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v3#/NPQ%20Applications/get_api_v3_npq_applications) for more information.
+See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/NPQ%20Applications/get_api_v1_applications) for more information.
 
 ### Example response body
 
@@ -44,9 +44,9 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v3#/
   "data": [
     {
       "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-      "type": "npq_application",
+      "type": "application",
       "attributes": {
-        "course_identifier": "npq-senior-leadership",
+        "course_identifier": "senior-leadership",
         "email": "isabelle.macdonald2@some-school.example.com",
         "email_validated": true,
         "employer_name": "Some Company Ltd",
@@ -74,7 +74,7 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v3#/
         "funded_place": null,
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z",
-        "schedule_identifier": "npq-aso-march"
+        "schedule_identifier": "aso-march"
       }
     }
   ]
@@ -84,10 +84,10 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v3#/
 ## Retrieve a single application
 
 ```
-GET /api/v3/npq-applications/{id}
+GET /api/v1/applications/{id}
 ```
 
-See the ['Retrieve a single application' endpoint documentation](/api/docs/v3#/NPQ%20Applications/get_api_v3_npq_applications__id_) for more information.
+See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/get_api_v1_applications__id_) for more information.
 
 ### Example response body
 
@@ -95,9 +95,9 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v3#/N
 {
   "data": {
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-    "type": "npq_application",
+    "type": "application",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "employer_name": "Some Company Ltd",
@@ -125,7 +125,7 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v3#/N
       "funded_place": null,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "npq-aso-march"
+      "schedule_identifier": "aso-march"
     }
   }
 }
@@ -134,7 +134,7 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v3#/N
 ## Accept an application
 
 ```
-POST /api/v3/npq-applications/{id}/accept
+POST /api/v1/applications/{id}/accept
 ```
 
 Providers should accept applications for those they want to enrol onto a course. Providers must inform applicants of the outcome of their successful NPQ application.
@@ -154,9 +154,9 @@ An optional request body allows lead providers to add a participant’s schedule
 ```json
 {
   "data": {
-    "type": "npq-application-accept",
+    "type": "application-accept",
     "attributes": {
-      "schedule_identifier": "npq-leadership-spring"
+      "schedule_identifier": "leadership-spring"
       "funded_place": true
     }
   }
@@ -168,7 +168,7 @@ Successful requests will return a response body including updates to the status 
 The API will prevent more than one provider accepting applications for the same course by automatically updating the application status or returning an error message.
 </div>
 
-See the ['Accept an application' endpoint documentation](/api/docs/v3#/NPQ%20Applications/post_api_v3_npq_applications__id__accept) for more information.
+See the ['Accept an application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/post_api_v1_applications__id__accept) for more information.
 
 ### Example response body
 
@@ -176,9 +176,9 @@ See the ['Accept an application' endpoint documentation](/api/docs/v3#/NPQ%20App
 {
   "data": {
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-    "type": "npq_application",
+    "type": "application",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "employer_name": "Some Company Ltd",
@@ -206,7 +206,7 @@ See the ['Accept an application' endpoint documentation](/api/docs/v3#/NPQ%20App
       "funded_place": true,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "npq-leadership-spring"
+      "schedule_identifier": "leadership-spring"
     }
   }
 }
@@ -215,7 +215,7 @@ See the ['Accept an application' endpoint documentation](/api/docs/v3#/NPQ%20App
 ## Reject an application
 
 ```
-POST /api/v3/npq-applications/{id}/reject
+POST /api/v1/applications/{id}/reject
 ```
 
 Providers should **reject applications** for those they do not want to enrol onto a course. 
@@ -234,7 +234,7 @@ The request parameter must include the `id` of the corresponding NPQ application
 
 Successful requests will return a response body including updates to the `status` attribute.
 
-See the ['Reject an application' endpoint documentation](/api/docs/v3#/NPQ%20Applications/post_api_v3_npq_applications__id__reject) for more information.
+See the ['Reject an application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/post_api_v1_applications__id__reject) for more information.
 
 ### Example request body
 
@@ -242,9 +242,9 @@ See the ['Reject an application' endpoint documentation](/api/docs/v3#/NPQ%20App
 {
   "data": {
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-    "type": "npq_application",
+    "type": "application",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "employer_name": "Some Company Ltd",
@@ -272,7 +272,7 @@ See the ['Reject an application' endpoint documentation](/api/docs/v3#/NPQ%20App
       "funded_place": null,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "npq-aso-march"
+      "schedule_identifier": "aso-march"
     }
   }
 }
@@ -281,21 +281,21 @@ See the ['Reject an application' endpoint documentation](/api/docs/v3#/NPQ%20App
 ## Change funded place value of an application
 
 ```
-PUT/api/v3/npq-applications/{id}/change-funded-place 
+PUT/api/v1/applications/{id}/change-funded-place 
 ```
 
 Providers can update a participant’s funding information after an application has been accepted.
 
 It’s not possible to change this information if the application has not been accepted.
 
-See the ['Change funded place value of an application' endpoint documentation](/api/docs/v3#/NPQ%20Applications/put_api_v3_npq_applications__id__change_funded_place) for more information.
+See the ['Change funded place value of an application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/put_api_v1_applications__id__change_funded_place) for more information.
 
 ### Example request body:
 
 ```json
 { 
   "data": { 
-    "type": "npq-application-change-funded-place", 
+    "type": "application-change-funded-place", 
     "attributes": { 
       "funded_place": true 
     } 
@@ -311,9 +311,9 @@ Successful requests will return a response body including updates to the ```fund
 {
   "data": {
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-    "type": "npq_application",
+    "type": "application",
     "attributes": {
-      "course_identifier": "npq-senior-leadership",
+      "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "employer_name": "Some Company Ltd",
@@ -341,7 +341,7 @@ Successful requests will return a response body including updates to the ```fund
       "funded_place": true,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "npq-aso-march"
+      "schedule_identifier": "aso-march"
     }
   }
 }

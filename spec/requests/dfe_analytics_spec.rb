@@ -4,6 +4,9 @@ require "rails_helper"
 
 RSpec.describe "DfE Analytics", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
+  let(:get_applications_request) do
+    api_get "/api/v1/applications"
+  end
 
   context "when DfE Analytics is enabled" do
     before { Flipper.enable(Feature::DFE_ANALYTICS_ENABLED) }
@@ -13,7 +16,7 @@ RSpec.describe "DfE Analytics", type: :request do
     end
 
     it "does send DfE Analytics API request events" do
-      expect { api_get "/api/v3/npq-applications" }.to have_sent_analytics_event_types(:web_request)
+      expect { get_applications_request }.to have_sent_analytics_event_types(:web_request)
     end
 
     it "sends a DfE Analytics custom event for API requests" do
@@ -22,7 +25,7 @@ RSpec.describe "DfE Analytics", type: :request do
       # to work
       expect(StreamAPIRequestsToBigQueryJob).to receive(:perform_later)
       perform_enqueued_jobs do
-        api_get "/api/v3/npq-applications"
+        get_applications_request
       end
       # expect { perform_enqueued_jobs { api_get("/api/v3/npq-applications") } }.to have_sent_analytics_event_types(:persist_api_request)
       # expect { api_get("/api/v3/npq-applications") }.to have_sent_analytics_event_types(:persist_api_request)
@@ -41,7 +44,7 @@ RSpec.describe "DfE Analytics", type: :request do
     end
 
     it "does not send DfE Analytics API request events" do
-      expect { api_get "/api/v3/npq-applications" }.not_to have_sent_analytics_event_types(:web_request)
+      expect { get_applications_request }.not_to have_sent_analytics_event_types(:web_request)
     end
 
     it "does not send DfE Analytics web request events for healthcheck" do

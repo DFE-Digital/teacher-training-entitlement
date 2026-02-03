@@ -66,7 +66,7 @@ private
     event = DfE::Analytics::Event.new
       .with_type(:persist_api_request)
       .with_user(lead_provider)
-      .with_namespace("npq")
+      .with_namespace("tte")
       .with_data(data:)
 
     DfE::Analytics::SendEvents.do(Array.wrap(event))

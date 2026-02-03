@@ -13,16 +13,11 @@ LIST_PARTICIPANT_DECLARATIONS_FILTER = {
         type: :string,
         example: "2021-05-13T11:21:55Z",
       },
+      cohort: {
+        description: "Return participant declarations associated to the specified cohort or cohorts. This is a comma delimited string of years.",
+        type: :string,
+        example: "2021,2022",
+      },
     },
   },
-}.tap { |h|
-  h[:v2] = h[:v1]
-  h[:v3] = h[:v1].deep_dup
-  h[:v3][:properties].merge!({
-    cohort: {
-      description: "Return participant declarations associated to the specified cohort or cohorts. This is a comma delimited string of years.",
-      type: :string,
-      example: "2021,2022",
-    },
-  })
 }.freeze

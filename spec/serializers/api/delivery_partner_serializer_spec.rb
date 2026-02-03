@@ -31,7 +31,7 @@ RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
 
   context "when serializing the v3 view" do
     describe "nested attributes" do
-      subject(:attributes) { JSON.parse(described_class.render(delivery_partner, view: :v3, lead_provider: current_lead_provider))["attributes"] }
+      subject(:attributes) { JSON.parse(described_class.render(delivery_partner, view: :v1, lead_provider: current_lead_provider))["attributes"] }
 
       it "serializes the `name`" do
         expect(attributes["name"]).to eq(delivery_partner.name)
