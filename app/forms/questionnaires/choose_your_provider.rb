@@ -54,7 +54,7 @@ module Questionnaires
     end
 
     def after_save
-      wizard.store["lead_provider_id"] = not_chosen_provider? ? nil : lead_provider_id
+      wizard.store["lead_provider_id"] = lead_provider_id
     end
 
     def not_chosen_provider?
