@@ -56,7 +56,7 @@ shared:
     - created_at
     - updated_at
     - scope
-  :admins:
+  :admin_users:
     - id
     - email
     - full_name

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin, type: :model do
+RSpec.describe AdminUser, type: :model do
   describe "validation" do
     describe "full_name" do
       it { is_expected.to validate_presence_of(:full_name).with_message("Enter a full name") }
@@ -15,7 +15,7 @@ RSpec.describe Admin, type: :model do
 
   describe "defaults" do
     specify "super_admin defaults to false" do
-      expect(Admin.new.super_admin?).to be false
+      expect(AdminUser.new.super_admin?).to be false
     end
   end
 
