@@ -11,7 +11,7 @@ RSpec.feature "Recording audit trail via papertrail", :versioning, type: :reques
     before do
       sign_in_as_admin
 
-      post npq_separation_admin_applications_change_training_status_path(application, params:)
+      post admin_applications_change_training_status_path(application, params:)
     end
 
     let :application do
@@ -32,7 +32,7 @@ RSpec.feature "Recording audit trail via papertrail", :versioning, type: :reques
     let(:version) { application.versions.last }
 
     it "records the admin details" do
-      expect(change_author).to eq "Admin #{Admin.maximum(:id)}"
+      expect(change_author).to eq "AdminUser #{AdminUser.maximum(:id)}"
     end
   end
 

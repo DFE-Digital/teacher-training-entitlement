@@ -17,7 +17,7 @@ RSpec.feature "Showing Application timestamps in UK local time", type: :feature 
   #   travel_to(winter_timestamp) do
   #     sign_in_as create(:admin)
 
-  #     visit(npq_separation_admin_applications_path)
+  #     visit(admin_applications_path)
 
   #     expect(page).to have_css("h1", text: "Applications")
 
@@ -30,7 +30,7 @@ RSpec.feature "Showing Application timestamps in UK local time", type: :feature 
     travel_to(summer_timestamp) do
       sign_in_as create(:admin)
 
-      visit(npq_separation_admin_applications_path)
+      visit(admin_applications_path)
 
       expect(page).to have_css("h1", text: "Applications")
 
