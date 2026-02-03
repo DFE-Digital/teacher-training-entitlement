@@ -179,43 +179,43 @@ jobs:
           SLACK_MESSAGE: Failure deploying to sandbox - Docker tag ${{ needs.build.outputs.docker-image }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-  # deploy-production:
-  #   name: Deploy production
-  #   concurrency: deploy_app_production
-  #   needs: [deploy-staging]
-  #   runs-on: ubuntu-24.04
-  #   if: github.ref == 'refs/heads/main'
-  #   environment:
-  #     name: production
-  #   steps:
-  #     - uses: actions/checkout@v6
+  deploy-production:
+    name: Deploy production
+    concurrency: deploy_app_production
+    needs: [deploy-sandbox]
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v6
 
-  #     - uses: ./.github/actions/deploy-environment-to-aks
-  #       id: deploy
-  #       with:
-  #         environment: production
-  #         docker-image: ${{ needs.deploy-staging.outputs.docker-image }}
-  #         azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #         deploy-commit-sha: ${{ github.sha }}
-  #         statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+      - uses: ./.github/actions/deploy-environment-to-aks
+        id: deploy
+        with:
+          environment: production
+          docker-image: ${{ needs.build.outputs.docker-image }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploy-commit-sha: ${{ github.sha }}
+          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
 
-  #     - name: Notify on failure
-  #       if: failure()
-  #       uses: rtCamp/action-slack-notify@master
-  #       env:
-  #         SLACK_COLOR: failure
-  #         SLACK_TITLE: Failure deploying to production
-  #         SLACK_MESSAGE: Failure deploying to production - Docker tag ${{ needs.deploy-staging.outputs.docker-image }}
-  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Notify on failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_COLOR: failure
+          SLACK_TITLE: Failure deploying to production
+          SLACK_MESSAGE: Failure deploying to production - Docker tag ${{ needs.build.outputs.docker-image }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
   deploy_domains_infra:
     name: Deploy Domains Infrastructure
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     concurrency: deploy_production
-    needs: [deploy-sandbox]
+    needs: [deploy-production]
     environment:
       name: production
     permissions:
@@ -240,7 +240,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        domain_environment: [staging, sandbox]
+        domain_environment: [staging, sandbox, production]
     environment:
       name: production
     permissions:
