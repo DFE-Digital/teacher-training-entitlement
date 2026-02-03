@@ -19,11 +19,11 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
     let(:otp_generator) { instance_double(OtpCodeGenerator, call: String) }
 
     it "generates an OTP code" do
-      expect { subject }.to change { Admin.find(admin.id).otp_hash }.from(nil).to(otp_generator.call)
+      expect { subject }.to change { AdminUser.find(admin.id).otp_hash }.from(nil).to(otp_generator.call)
     end
 
     it "sets the OTP expiration time" do
-      expect { subject }.to change { Admin.find(admin.id).otp_expires_at }.from(nil).to(10.minutes.from_now)
+      expect { subject }.to change { AdminUser.find(admin.id).otp_expires_at }.from(nil).to(10.minutes.from_now)
     end
 
     it "sends an email with the OTP code" do
