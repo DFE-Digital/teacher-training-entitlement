@@ -1,22 +1,72 @@
 version: 2
 updates:
-- package-ecosystem: bundler
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: docker
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: github-actions
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
+  # Ruby dependencies (Gemfile)
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "ruby"
+    assignees:
+      - "DFE-Digital/tte-dev-cpd"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # JavaScript dependencies (package.json)
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "04:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+    assignees:
+      - "DFE-Digital/tte-dev-cpd"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    versioning-strategy: increase
+
+  # Docker dependencies (Dockerfile)
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: "monday"
+      time: "04:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+    assignees:
+      - "DFE-Digital/tte-dev-cpd"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: "monday"
+      time: "04:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    assignees:
+      - "DFE-Digital/tte-dev-cpd"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
