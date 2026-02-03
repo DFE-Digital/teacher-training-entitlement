@@ -1,0 +1,39 @@
+<h1 class="govuk-heading-l">Users</h1>
+
+<div class="admin-search-box">
+  <%= form_with method: :get do |f| %>
+    <%= f.govuk_text_field(
+        :q,
+        value: params[:q],
+        label: { text: "Find a user", size: "s" },
+        hint: { text: 'Search by the user’s name, email address, teacher reference number (TRN) or application ID', size: "m"}
+      )
+    %>
+
+    <%= f.govuk_submit "Search" %>
+  <% end %>
+</div>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Name")
+        row.with_cell(text: "TRN")
+        row.with_cell(text: "Date added")
+      end
+    end
+
+    table.with_body do |body|
+      @users.each do |user|
+        body.with_row do |row|
+          row.with_cell(text: govuk_link_to(user.full_name, admin_user_path(user)))
+          row.with_cell(text: user.trn)
+          row.with_cell(text: user.created_at.to_date.to_formatted_s(:govuk))
+        end
+      end
+    end
+  end
+%>
+
+<%= govuk_pagination(pagy: @pagy) %>

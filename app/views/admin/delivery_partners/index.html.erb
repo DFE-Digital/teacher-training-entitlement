@@ -1,0 +1,46 @@
+<h1 class="govuk-heading-l">Delivery partners</h1>
+<p class="govuk-body">
+  Delivery partners work with providers to deliver NPQs.
+</p>
+
+<h2 class="govuk-heading-m">Add a delivery partner</h2>
+
+<p class="govuk-body">You can <a href="/admin/delivery-partners/new" class="govuk-link">add a delivery partner</a> and assign them to providers.</p>
+
+<div class="admin-search-box">
+  <%= form_with method: :get do |f| %>
+    <%= f.govuk_text_field(
+        :q,
+        value: params[:q],
+        label: { text: "Find a delivery partner", size: "m" },
+        hint: { text: "Enter part or all of the delivery partner’s name, or the entire ID with or without hyphens.", size: "s" },
+      )
+    %>
+    <%= f.govuk_submit "Search" %>
+  <% end %>
+</div>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Delivery partner")
+        row.with_cell(text: "Actions")
+      end
+    end
+
+    table.with_body do |body|
+      @delivery_partners.each do |delivery_partner|
+        body.with_row do |row|
+          row.with_cell(text: delivery_partner.name)
+          row.with_cell do
+              safe_join [tag.div { govuk_link_to("Change name", edit_admin_delivery_partner_path(delivery_partner), class: "govuk-!-margin-bottom-0") },
+                tag.div { govuk_link_to("Assign to provider", edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner), class: "govuk-!-margin-bottom-0") }]
+          end
+        end
+      end
+    end
+  end
+%>
+
+<%= govuk_pagination(pagy: @pagy) %>

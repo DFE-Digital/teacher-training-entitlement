@@ -49,8 +49,8 @@ private
       reset_session
       nil
     else
-      Admin.find_by(id: session[:admin_id]).tap do |admin_user|
-        PaperTrail.request.whodunnit = "Admin #{admin_user.id}" if admin_user
+      AdminUser.find_by(id: session[:admin_id]).tap do |admin_user|
+        PaperTrail.request.whodunnit = "AdminUser #{admin_user.id}" if admin_user
       end
     end
   end
