@@ -14,31 +14,31 @@ RSpec.describe Questionnaires::IneligibleForFunding, type: :model do
     end
 
     context "when user works in a school (previously funded)" do
-      let(:store) { { "works_in_school" => "yes" } }
+      let(:store) { { "teacher_catchment" => "england", "works_in_school" => "yes" } }
 
       it { is_expected.to eq(:choose_school) }
     end
 
     context "when user selected private nursery" do
-      let(:store) { { "kind_of_nursery" => "private_nursery" } }
+      let(:store) { { "teacher_catchment" => "england", "kind_of_nursery" => "private_nursery" } }
 
       it { is_expected.to eq(:kind_of_nursery) }
     end
 
     context "when user selected childminder" do
-      let(:store) { { "kind_of_nursery" => "childminder" } }
+      let(:store) { { "teacher_catchment" => "england", "kind_of_nursery" => "childminder" } }
 
       it { is_expected.to eq(:kind_of_nursery) }
     end
 
     context "when user selected another early years setting" do
-      let(:store) { { "kind_of_nursery" => "another_early_years_setting" } }
+      let(:store) { { "teacher_catchment" => "england", "kind_of_nursery" => "another_early_years_setting" } }
 
       it { is_expected.to eq(:kind_of_nursery) }
     end
 
     context "when user selected other work setting" do
-      let(:store) { { "work_setting" => "other" } }
+      let(:store) { { "teacher_catchment" => "england", "work_setting" => "other" } }
 
       it { is_expected.to eq(:work_setting) }
     end
@@ -46,7 +46,7 @@ RSpec.describe Questionnaires::IneligibleForFunding, type: :model do
     context "when user is not in England" do
       let(:store) { { "teacher_catchment" => "another" } }
 
-      it { is_expected.to eq(:teacher_catchment) }
+      it { is_expected.to eq(:work_setting) }
     end
   end
 end

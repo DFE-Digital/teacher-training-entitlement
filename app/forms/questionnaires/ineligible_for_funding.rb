@@ -15,11 +15,12 @@ module Questionnaires
     end
 
     def previous_step
+      # Check the catchment first as works_in_school? can also be true
+      return :work_setting unless inside_catchment?
       return :choose_school if works_in_school?
       return :kind_of_nursery if kind_of_nursery_private?
-      return :work_setting if works_in_other?
 
-      :teacher_catchment # :not_in_england
+      :work_setting # works_in_other
     end
 
     def ineligible_template
