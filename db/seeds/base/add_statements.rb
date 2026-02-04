@@ -1,3 +1,5 @@
+return if Statement.exists?
+
 LeadProvider.find_each do |lead_provider|
   Cohort.find_each do |cohort|
     date    = cohort.registration_start_date.to_date

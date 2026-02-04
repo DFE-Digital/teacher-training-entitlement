@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Skip if declarations already exist (makes seed idempotent)
+return if Declaration.exists?
+
 helpers            = Class.new { include ActiveSupport::Testing::TimeHelpers }.new
 lead_providers     = LeadProvider.alphabetical.limit(2) # it's very slow to do this for all lead providers
 application_count  = 1
