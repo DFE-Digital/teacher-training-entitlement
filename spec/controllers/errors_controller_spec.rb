@@ -17,7 +17,7 @@ RSpec.describe ErrorsController, type: :controller do
 
   describe "GET #unprocessable_content" do
     it "returns unprocessable_content" do
-      get :unprocessable_entity
+      get :unprocessable_content
       expect(response).to have_http_status(:unprocessable_content)
     end
   end

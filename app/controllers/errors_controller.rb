@@ -19,7 +19,7 @@ class ErrorsController < PublicPagesController
     end
   end
 
-  def unprocessable_entity
+  def unprocessable_content
     respond_to do |format|
       format.html { render status: :unprocessable_content }
       format.json { render json: { error: "Unprocessable entity" }, status: :unprocessable_content }
