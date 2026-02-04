@@ -1,6 +1,6 @@
 class BulkOperation < ApplicationRecord
-  belongs_to :admin
-  belongs_to :ran_by_admin, class_name: "Admin", optional: true
+  belongs_to :admin, class_name: "AdminUser"
+  belongs_to :ran_by_admin, class_name: "AdminUser", optional: true
   has_one_attached :file
 
   validate :file_valid

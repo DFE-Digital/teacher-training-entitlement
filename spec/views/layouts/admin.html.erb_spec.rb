@@ -5,7 +5,7 @@ RSpec.describe "layouts/admin.html.erb", type: :view do
 
   let(:admin) { build_stubbed(:admin) }
   let(:expected_items) do
-    structure = NpqSeparation::NavigationStructures::AdminNavigationStructure.new(admin)
+    structure = NavigationStructures::AdminNavigationStructure.new(admin)
     structure.primary_structure.map(&:name)
   end
 
@@ -14,7 +14,7 @@ RSpec.describe "layouts/admin.html.erb", type: :view do
   end
 
   describe "service navigation" do
-    it { is_expected.to have_css(".govuk-service-navigation__container", text: "Manage NPQs") }
+    it { is_expected.to have_css(".govuk-service-navigation__container", text: "TTE Admin console") }
 
     it "has links for the admin navigation primary structure" do
       expected_items.each do |item|

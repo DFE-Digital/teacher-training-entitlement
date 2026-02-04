@@ -16,7 +16,7 @@ module SessionWizardSteps
     end
 
     def admin
-      @admin ||= Admin.find_by(email: wizard.store["email"])
+      @admin ||= AdminUser.find_by(email: wizard.store["email"])
     end
     alias_method :user, :admin
 

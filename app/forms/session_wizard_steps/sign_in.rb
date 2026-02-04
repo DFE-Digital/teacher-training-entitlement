@@ -21,7 +21,7 @@ module SessionWizardSteps
     end
 
     def after_save
-      admin = Admin.find_by(email:)
+      admin = AdminUser.find_by(email:)
 
       if admin
         # TODO: extract out

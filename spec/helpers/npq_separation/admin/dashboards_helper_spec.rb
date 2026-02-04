@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe NpqSeparation::Admin::DashboardsHelper, type: :helper do
+RSpec.describe Admin::DashboardsHelper, type: :helper do
   describe "#render_dashboard_partial" do
     it "raises ActionController::RoutingError when given an invalid dashboard name" do
       expect {

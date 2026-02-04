@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_28_113435) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_01_140800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -73,7 +73,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_28_113435) do
     t.index ["statement_id"], name: "index_adjustments_on_statement_id"
   end
 
-  create_table "admins", force: :cascade do |t|
+  create_table "admin_users", force: :cascade do |t|
     t.string "email", limit: 64, null: false
     t.string "full_name", limit: 64, null: false
     t.boolean "super_admin", default: false, null: false

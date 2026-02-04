@@ -12,7 +12,7 @@ RSpec.describe BulkOperation, type: :model do
 
   describe "relationships" do
     it { is_expected.to belong_to(:admin) }
-    it { is_expected.to belong_to(:ran_by_admin).class_name("Admin").optional }
+    it { is_expected.to belong_to(:ran_by_admin).class_name("AdminUser").optional }
     it { is_expected.to have_one_attached(:file) }
   end
 

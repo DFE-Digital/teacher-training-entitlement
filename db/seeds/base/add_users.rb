@@ -1,7 +1,7 @@
 otp_testing_code = "00000"
 
 # Create admin user
-Admin.find_or_create_by!(
+AdminUser.find_or_create_by!(
   email: "admin@example.com",
   full_name: "example admin",
   otp_hash: otp_testing_code,
@@ -10,7 +10,7 @@ Admin.find_or_create_by!(
 )
 
 # Create admin user
-Admin.find_or_create_by!(
+AdminUser.find_or_create_by!(
   email: "superadmin@example.com",
   full_name: "example super admin",
   otp_hash: otp_testing_code,
