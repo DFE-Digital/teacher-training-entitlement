@@ -54,7 +54,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
     describe "#create with invalid params" do
       before { post admin_cohorts_path, params: invalid_params }
 
-      it { is_expected.to have_http_status :unprocessable_entity }
+      it { is_expected.to have_http_status :unprocessable_content }
     end
 
     describe "#edit" do
@@ -76,7 +76,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
     describe "#update with invalid params" do
       before { patch admin_cohort_path(cohort), params: invalid_params }
 
-      it { is_expected.to have_http_status :unprocessable_entity }
+      it { is_expected.to have_http_status :unprocessable_content }
     end
 
     describe "#destroy" do

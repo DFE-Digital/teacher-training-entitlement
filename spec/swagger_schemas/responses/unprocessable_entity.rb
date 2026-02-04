@@ -1,4 +1,4 @@
-UNPROCESSABLE_ENTITY_RESPONSE = {
+UNPROCESSABLE_CONTENT_RESPONSE = {
   description: "The payload was not valid. See the errors for more information.",
   type: :object,
   properties: {

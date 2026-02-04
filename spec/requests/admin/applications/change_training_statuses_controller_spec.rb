@@ -46,7 +46,7 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusesController, :ecf_api_d
       context "with invalid update" do
         let(:params) { { change_training_status: { training_status: "unexpected" } } }
 
-        it { is_expected.to have_http_status :unprocessable_entity }
+        it { is_expected.to have_http_status :unprocessable_content }
         it { is_expected.to have_attributes body: /Change.*training status/i }
       end
     end

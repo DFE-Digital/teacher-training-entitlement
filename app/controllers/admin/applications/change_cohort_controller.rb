@@ -11,7 +11,7 @@ module Admin
         if @change_cohort.change_cohort
           redirect_to admin_application_path(@application)
         else
-          render :show, status: :unprocessable_entity
+          render :show, status: :unprocessable_content
         end
       end
 

@@ -7,7 +7,6 @@ gem "activerecord-session_store"
 gem "azure-blob"
 gem "blueprinter"
 gem "bootsnap", ">= 1.1.0", require: false
-gem "canonical-rails"
 gem "countries"
 gem "cssbundling-rails", "~> 1.4"
 gem "daemons"
@@ -37,7 +36,7 @@ gem "pg", ">= 0.18", "< 2.0"
 gem "pg_search"
 gem "puma", "~> 7.1.0"
 gem "rack-attack"
-gem "rails", "~> 7.2.2"
+gem "rails", "~> 8.1.2"
 gem "rails_semantic_logger"
 gem "redis"
 gem "rouge"
@@ -82,6 +81,8 @@ group :development do
   gem "i18n-debug"
   gem "listen", ">= 3.0.5", "< 3.10"
   gem "rails-erd"
+  gem "rubocop", require: false
+  gem "ruby-lsp"
   gem "web-console", ">= 3.3.0"
 end
 
