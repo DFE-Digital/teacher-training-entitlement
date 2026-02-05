@@ -14,8 +14,27 @@ RSpec.describe Questionnaires::ShareProvider, type: :model do
   end
 
   describe "#previous_step" do
-    subject(:previous_step) { model.previous_step }
+    subject { described_class.new(wizard:).previous_step }
 
-    it { is_expected.to be :possible_funding }
+    let(:wizard) do
+      RegistrationWizard.new(
+        current_step: :share_provider,
+        store:,
+        request: nil,
+        current_user: build_stubbed(:user),
+      )
+    end
+
+    context "when user has selected a funding option (ineligible flow)" do
+      let(:store) { { "funding" => "self" } }
+
+      it { is_expected.to eq(:funding_your_course) }
+    end
+
+    context "when user has not selected a funding option (eligible flow)" do
+      let(:store) { {} }
+
+      it { is_expected.to eq(:possible_funding) }
+    end
   end
 end

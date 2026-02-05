@@ -56,7 +56,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
     end
 
     expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
-      expect(page).to have_text("Sharing your NPQ information")
+      expect(page).to have_text("Sharing your TTE information")
       page.check("Yes, I agree to share my information", visible: :all)
     end
 

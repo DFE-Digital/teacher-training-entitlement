@@ -29,6 +29,10 @@ class RegistrationQueryStore
     current_user.trn
   end
 
+  def funding
+    store["funding"]
+  end
+
   def funding_amount
     store["funding_amount"]
   end

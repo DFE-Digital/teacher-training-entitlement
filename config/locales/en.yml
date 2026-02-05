@@ -328,7 +328,7 @@ en:
           school: My workplace is covering the cost
           trust: My trust is paying
           self: I am paying
-          another: Another way
+          another: My TTE course is being paid for in another way
       questionnaires/teacher_catchment:
         teacher_catchment:
           one : nil # workaround
@@ -502,8 +502,8 @@ en:
         questionnaires/funding_your_course:
           attributes:
             funding:
-              blank: Choose how your course will be funded
-              invalid: Choose a valid funding option
+              blank: Select an option
+              invalid: Select an option
         questionnaires/npqh_status:
           attributes:
             npqh_status:
@@ -923,7 +923,7 @@ en:
       applications_change_cohort:
         cohort_id: Choose a cohort
       registration_wizard:
-        can_share_choices: "Sharing your NPQ information"
+        can_share_choices: "Sharing your TTE information"
         ehco_headteacher: "Are you a headteacher?"
         ehco_new_headteacher: "Are you in your first 5 years of a headship?"
         employment_type: "How are you employed?"
@@ -1079,7 +1079,7 @@ en:
           school: "My workplace is covering the cost"
           trust: "My trust is paying"
           self: "I am paying"
-          another: "Another way"
+          another: "My TTE course is being paid for in another way"
 
         teacher_catchment_options:
           england: "England"
