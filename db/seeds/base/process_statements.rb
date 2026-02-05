@@ -1,3 +1,5 @@
+return if Statement.where.not(state: "open").exists?
+
 helpers = Class.new { include ActiveSupport::Testing::TimeHelpers }.new
 
 Cohort.all.find_each do |cohort|

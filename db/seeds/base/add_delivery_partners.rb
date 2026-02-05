@@ -1,3 +1,5 @@
+return if DeliveryPartner.exists?
+
 # first lead provider will have 100 delivery partners - useful for showing what production volume will get up to
 100.times do
   FactoryBot.create(:delivery_partner, lead_providers: Cohort.all.index_with { LeadProvider.first })
