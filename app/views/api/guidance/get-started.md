@@ -32,7 +32,7 @@ Unauthenticated requests will receive an `UnauthorizedResponse` with a `401` err
 
 ## Test environments
 
-The test environments feature all the NPQ API request endpoints and have been populated with seed data which cover scenarios where users have:
+The test environments feature all the API request endpoints and have been populated with seed data which cover scenarios where users have:
 
 * one application
 * multiple applications
@@ -100,8 +100,8 @@ The DfE can coordinate ‘windows’ (set time periods) for providers to do this
 
 Always poll 2 windows back from your last successful poll. This guarantees that all participant data is captured. For example: 
 
-* at 3:15pm enter the following request - <code>/api/v1/participants/ecf?filter[updated_since]=2025-01-28T13:15:00Z</code>
-* at 4:15pm enter the following request - <code>/api/v1/participants/ecf?filter[updated_since]=2025-01-28T14:15:00Z</code>
+* at 3:15pm enter the following request - <code>/api/v1/participants?filter[updated_since]=2025-01-28T13:15:00Z</code>
+* at 4:15pm enter the following request - <code>/api/v1/participants?filter[updated_since]=2025-01-28T14:15:00Z</code>
 
 Try polling randomly rather than on the hour to prevent system overload. 
 

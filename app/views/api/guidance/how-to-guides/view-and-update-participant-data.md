@@ -15,18 +15,18 @@ GET /api/v1/participants
 ```
 
 <div class="govuk-inset-text">
-Providers can filter results by adding updated_since filters to the parameter. For example: <code>GET /api/v{n}/participants/ecf?filter[updated_since]=2020-11-13T11:21:55Z</code>
+Providers can filter results by adding updated_since filters to the parameter. For example: <code>GET /api/v{n}/participants?filter[updated_since]=2020-11-13T11:21:55Z</code>
 </div>
 
-### Check for participant ID changes
+<!-- ### Check for participant ID changes -->
 
-Providers can check if an  participant’s ID has changed using the `participant_id_changes` nested structure in the `Enrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value.
+<!-- Providers can check if an  participant’s ID has changed using the `participant_id_changes` nested structure in the `Enrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value. -->
 
-### Duplicate IDs 
+<!-- ### Duplicate IDs  -->
 
-We've [previously advised](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant IDs. Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID.
+<!-- We've [previously advised](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant IDs. Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID. -->
 
-For more detailed information, see the ['Retrieve multiple participants' endpoint documentation](/api/docs/v1#%20Participants/get_api_v1_participants_).
+For more detailed information, see the ['Retrieve multiple participants' endpoint documentation](/api/docs/v1#/Participants/get_api_v1_participants).
 
 ### Example response body
 
@@ -76,19 +76,19 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
 GET /api/v1/participants/{id}
 ```
 
-### Check for participant ID changes
+<!-- ### Check for participant ID changes -->
 
-Providers can check if an  participant’s ID has changed using the `participant_id_changes` nested structure in the `Enrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value.
+<!-- Providers can check if an  participant’s ID has changed using the `participant_id_changes` nested structure in the `Enrolment`, which contains a `from_participant_id` and a `to_participant_id` string fields, as well a `changed_at` date value. -->
 
-### Duplicate IDs 
+<!-- ### Duplicate IDs  -->
 
-We've [previously advised](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant IDs. Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID.
+<!-- We've [previously advised](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html#15-march-2023) of the possibility that participants may be registered as duplicates with multiple participant IDs. Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID. -->
 
-Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID. 
+<!-- Where we identify duplicates, we'll fix the error by ‘retiring’ one of the participant IDs, then associating all records and data under the remaining ID.  -->
 
-To date, when this has occurred, we’ve informed providers of changes via CSVs
+<!-- To date, when this has occurred, we’ve informed providers of changes via CSVs -->
 
-For more detailed information, see the ['Retrieve a single participant' endpoint documentation](/api/docs/v1#%20Participants/get_api_v1_participants__id_).
+For more detailed information, see the ['Retrieve a single participant' endpoint documentation](/api/docs/v1#/Participants/get_api_v1_participants__id_).
 
 ### Example response body
 
@@ -142,7 +142,7 @@ A participant can choose to **defer** their course at any time if they plan to r
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information, see the ['Defer a participant' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__defer).
+For more detailed information, see the ['Defer a participant' endpoint documentation](/api/docs/v1#/Participants/put_api_v1_participants__id__defer)
 
 ### Example request body
 
@@ -168,7 +168,7 @@ A participant can **resume** their course at any time if they've previously defe
 
 Successful requests will return a response body including updates to the `training_status` attribute.
 
-For more detailed information, see the ['Resume a participant' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__resume).
+For more detailed information, see the ['Resume a participant' endpoint documentation](/api/docs/v1#/Participants/put_api_v1_participants__id__resume)
 
 ###Example request body
 
@@ -200,7 +200,7 @@ Providers should note that:
 * if a participant is withdrawn later in their course, we'll pay providers for any declarations submitted where the `declaration_date` is before the withdrawal date
 * the amount we'll pay depends on which milestones have been reached with declarations submitted before withdrawal
 
-For more detailed information, see the ['Withdraw a participant' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__withdraw).
+For more detailed information, see the ['Withdraw a participant' endpoint documentation](/api/docs/v1#/Participants/put_api_v1_participants__id__withdraw)
 
 ### Example request body
 
@@ -233,7 +233,7 @@ The API will reject a schedule change if any submitted, eligible, payable or pai
 
 For example, a participant is in the 2023 cohort on an `specialist-autumn` schedule. Their provider has submitted a started declaration dated 1 October 2023. The provider tries to change the schedule to `specialist-spring`. The API will reject the change because a spring schedule does not start until January, which is after the declaration date. The API returns an error message with instructions to void existing declarations first.
 
-For more detailed information, see the ['Notify that a participant is changing training schedule' endpoint documentation](/api/docs/v1#%20Participants/put_api_v1_participants__id__change_schedule).
+For more detailed information, see the ['Notify that a participant is changing training schedule' endpoint documentation](/api/docs/v1#/Participants/put_api_v1_participants__id__change_schedule)
 
 ### Example request body
 
@@ -265,10 +265,6 @@ associated with the original cohort year. These will need to be voided first. Af
 
 ### Other scenarios:​
 
-From cohort 2024 onwards, there are funding caps, which were not present in cohorts 2021, 2022, and 2023.
-For this reason, if you try change from cohort 2024 back to cohort 2022 for example, it will error and give the
-message: "You cannot change the '#/cohort' field from one with a funding cap to one without a funding cap"​
-
 You CAN change the cohort from one without a funding cap to one with a funding cap, so changing from
 cohort 2022 to cohort 2024 will work.​
 
@@ -283,7 +279,7 @@ cohort 2022 to cohort 2024 will work.​
 * 200 response means that the request was successful and the cohort year updated.
   
 
-## Retrieve multiple  outcomes for all participants
+## Retrieve multiple course outcomes for all participants
 
 ```
 GET /api/v1/participants/outcomes
@@ -291,16 +287,16 @@ GET /api/v1/participants/outcomes
 
 Participants can either pass or fail assessment at the end of their  course. These outcomes are submitted by providers within `completed` declaration submissions.
 
-<div class="govuk-inset-text">
-Outcomes are sent to the Database of Qualified Teachers (DQT). They issue certificates to participants who've passed.
-</div>
+<!-- <div class="govuk-inset-text"> -->
+<!-- Outcomes are sent to the Database of Qualified Teachers (DQT). They issue certificates to participants who've passed. -->
+<!-- </div> -->
 
 Successful requests will return a response body including an outcome `state` value to signify:
 
-* outcomes submitted (`passed` or `failed`)
+* outcomes submitted (`completed` or ...)
 * if `completed` declarations have been voided and the outcome retracted (`voided`)
 
-For more detailed information, see the ['Retrieve multiple  outcomes for all participants' endpoint documentation](/api/docs/v1#%20Participant%20Outcomes/get_api_v1_participants_outcomes).
+For more detailed information, see the ['Retrieve multiple  outcomes for all participants' endpoint documentation](/api/docs/v1#/Participant%20Outcomes/get_api_v1_participants_outcomes)
 
 ### Example response body
 
@@ -331,16 +327,16 @@ GET /api/v1/participants/{id}/outcomes
 
 A participant can either pass or fail assessment at the end of their  course. Their outcome will be submitted by providers within `completed` declaration submissions.
 
-<div class="govuk-inset-text">
-Outcomes are sent to the Database of Qualified Teachers (DQT). They issue certificates to participants who've passed.
-</div>
+<!-- <div class="govuk-inset-text"> -->
+<!-- Outcomes are sent to the Database of Qualified Teachers (DQT). They issue certificates to participants who've passed. -->
+<!-- </div> -->
 
 Successful requests will return a response body including an outcome `state`value to signify:
 
-* the outcome submitted (`passed` or `failed`)
+* the outcome submitted (`completed` or ..)
 * if the `completed` declaration has been `voided` and the outcome retracted (`voided`)
 
-For more detailed information, see the ['Retrieve multiple  outcomes for a single participant' endpoint documentation](/api/docs/v1#%20Participant%20Outcomes/get_api_v1_participants__id__outcomes).
+For more detailed information, see the ['Retrieve multiple  outcomes for a single participant' endpoint documentation](/api/docs/v1#/Participant%20Outcomes/get_api_v1_participants__id__outcomes)
 
 ### Example response body
 
@@ -379,7 +375,7 @@ Request bodies must include a new value for the outcome `state` and `completion_
 
 Successful requests will return a response body with updates included.
 
-For more detailed information, see the ['Submit an outcome for a single participant' endpoint documentation](/api/docs/v1/Participant%20Outcomes/post_api_v1_participants__id__outcomes).
+For more detailed information, see the ['Submit an outcome for a single participant' endpoint documentation](/api/docs/v1#/Participant%20Outcomes/post_api_v1_participants__id__outcomes)
 
 ### Example request body
 
