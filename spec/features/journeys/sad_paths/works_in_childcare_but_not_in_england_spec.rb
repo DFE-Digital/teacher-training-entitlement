@@ -59,7 +59,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
       page.click_link("Continue")
     end
 
-    expect_page_to_have(path: "/registration/funding-your-npq", submit_form: true) do
+    expect_page_to_have(path: "/registration/funding-your-course", submit_form: true) do
       expect(page).to have_text("How are you funding your course?")
       page.choose "My workplace is covering the cost", visible: :all
     end

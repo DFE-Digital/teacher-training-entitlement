@@ -1,5 +1,5 @@
 module Questionnaires
-  class FundingYourNpq < Base
+  class FundingYourCourse < Base
     VALID_FUNDING_OPTIONS = %w[school trust self another employer].freeze
 
     attr_accessor :funding
@@ -17,10 +17,7 @@ module Questionnaires
     end
 
     def previous_step
-      # This is a placeholder that will hold the fund evaluation outcome
-      # there are multiple possible origins `sad_paths`
-      # :not_in_england, :not_eligible_for_funding, :participant_previously_funded
-      wizard.query_store.funding_evaluation&.to_sym
+      :ineligible_for_funding
     end
 
     def course

@@ -40,6 +40,10 @@ RSpec.feature "Sad journey", :with_default_schedules, type: :feature do
       page.choose("No", visible: :all)
     end
 
+    expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
+      page.choose("Other", visible: :all)
+    end
+
     expect_page_to_have(path: "/registration/ineligible-for-funding")
   end
 end

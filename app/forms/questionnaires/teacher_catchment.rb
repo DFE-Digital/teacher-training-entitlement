@@ -22,8 +22,6 @@ module Questionnaires
     end
 
     def next_step
-      return :ineligible_for_funding if teacher_catchment == "another"
-
       :work_setting
     end
 
