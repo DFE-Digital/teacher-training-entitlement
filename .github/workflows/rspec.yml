@@ -13,12 +13,12 @@ on:
         description: Ruby version
         type: string
         required: false
-        default: "3.4.7"
+        default: "3.4.8"
       node-version:
         description: Node version
         type: string
         required: false
-        default: "22.15.1"
+        default: "24.13.0"
 
 env:
   code-coverage-artifact-name: code_coverage_${{github.run_number}}
@@ -39,7 +39,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.7' }}
+          ruby-version: ${{ inputs.ruby-version || '3.4.8' }}
           bundler-cache: true
 
       - name: Lint Ruby
@@ -58,7 +58,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.7' }}
+          ruby-version: ${{ inputs.ruby-version || '3.4.8' }}
           bundler-cache: true
 
       - name: Lint SCSS
@@ -103,13 +103,13 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.7' }}
+          ruby-version: ${{ inputs.ruby-version || '3.4.8' }}
           bundler-cache: true
 
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ inputs.node-version || '22.15.1' }}
+          node-version: ${{ inputs.node-version || '24.13.0' }}
           cache: yarn
 
       - name: Create screenshots directory

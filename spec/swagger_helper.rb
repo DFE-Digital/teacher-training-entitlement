@@ -57,7 +57,7 @@ RSpec.configure do |config|
           UnauthorisedResponse: UNAUTHORISED_RESPONSE,
           NotFoundResponse: NOT_FOUND_RESPONSE,
           BadRequestResponse: BAD_REQUEST_RESPONSE,
-          UnprocessableEntityResponse: UNPROCESSABLE_ENTITY_RESPONSE,
+          UnprocessableEntityResponse: UNPROCESSABLE_CONTENT_RESPONSE,
           IDAttribute: ID_ATTRIBUTE,
           ApplicationResponse: APPLICATION_RESPONSE[version],
           ApplicationsResponse: APPLICATIONS_RESPONSE[version],

@@ -13,7 +13,7 @@ module Admin
         if @change_training_status.change_training_status
           redirect_to admin_application_path(@application)
         else
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 

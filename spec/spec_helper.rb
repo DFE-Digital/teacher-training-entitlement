@@ -9,6 +9,7 @@ require "webmock/rspec"
 require "support/helpers/journey_helper"
 require "support/helpers/journey_assertion_helper"
 require "support/helpers/journey_step_helper"
+require "rack_session_access/capybara"
 
 WebMock.disable_net_connect!(allow_localhost: true,
                              allow: [

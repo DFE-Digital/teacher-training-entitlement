@@ -10,7 +10,7 @@ module Admin
         if @revert_to_pending_form.revert
           redirect_to admin_application_path(@application)
         else
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 

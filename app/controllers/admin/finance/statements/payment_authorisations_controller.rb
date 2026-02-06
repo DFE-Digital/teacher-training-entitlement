@@ -13,7 +13,7 @@ module Admin
           if @payment_authorisation_form.save_form
             redirect_to admin_finance_statement_path(@statement)
           else
-            render :new, status: :unprocessable_entity
+            render :new, status: :unprocessable_content
           end
         end
 

@@ -35,7 +35,7 @@ RSpec.describe Admin::Finance::Contracts::ChangePerParticipantController, type: 
       context "when passing invalid value" do
         let(:params) { { contracts_change_per_participant: { per_participant: "" } } }
 
-        it { is_expected.to have_http_status :unprocessable_entity }
+        it { is_expected.to have_http_status :unprocessable_content }
       end
     end
   end

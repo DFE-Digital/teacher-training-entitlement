@@ -119,7 +119,7 @@ module OneOff
                                            cohort: [] })
                  .find(ids)
                  .each do |application|
-        move_application_to_autumn(application)
+                   move_application_to_autumn(application)
       end
     end
 
