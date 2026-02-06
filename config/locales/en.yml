@@ -908,6 +908,7 @@ en:
         national_insurance_number: "National Insurance number"
         national_insurance_number_optional: "National Insurance number (optional)"
         change_your_course_or_provider: "Change your course or provider"
+        choose_a_tte_and_provider: "Choose a TTE course and provider"
         senco_in_role: "Do you work as a special educational needs co-ordinator (SENCO)?"
         senco_start_date: "When did you become a SENCO?"
         funding_eligibility_senco: "Funding"
@@ -1099,6 +1100,9 @@ en:
         has_ofsted_urn_options:
           "yes": "Yes"
           "no": "No"
+
+        lead_provider_id_options:
+          not_chosen: "I have not chosen a provider yet"
 
         ehco_headteacher_options:
           "yes": "Yes"

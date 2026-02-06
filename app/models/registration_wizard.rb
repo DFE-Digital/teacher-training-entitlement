@@ -21,6 +21,7 @@ class RegistrationWizard
     cannot_register_yet
     choose_your_course
     choose_your_provider
+    choose_a_tte_and_provider
     teacher_catchment
     work_setting
     choose_school
