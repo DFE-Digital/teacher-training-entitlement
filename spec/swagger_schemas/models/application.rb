@@ -35,18 +35,6 @@ APPLICATION = {
             type: :boolean,
             example: true,
           },
-          employer_name: {
-            description: "The name of current employer of the participant if not currently employed by school",
-            type: :string,
-            nullable: true,
-            example: "Some Company Ltd",
-          },
-          employment_role: {
-            description: "Participant's current role in the company they are employed in if not currently employed by school",
-            type: :string,
-            nullable: true,
-            example: "Director",
-          },
           full_name: {
             description: "The full name of this participant",
             type: :string,
@@ -59,12 +47,6 @@ APPLICATION = {
             nullable: true,
             example: Application.funding_choices.keys.first,
             enum: Application.funding_choices.keys,
-          },
-          headteacher_status: {
-            description: "Indicates whether this participant is or will be a head teacher",
-            type: :string,
-            example: Application.headteacher_statuses.keys.first,
-            enum: Application.headteacher_statuses.keys,
           },
           ineligible_for_funding_reason: {
             description: "Indicates why this participant is not eligible for DfE funding",
@@ -90,12 +72,6 @@ APPLICATION = {
             type: :string,
             example: "1234567",
             nullable: true,
-          },
-          teacher_reference_number_validated: {
-            description: "Indicates whether the Teacher Reference Number (TRN) has been validated",
-            type: :boolean,
-            nullable: false,
-            example: true,
           },
           school_urn: {
             description: "The Unique Reference Number (URN) of the school where this participant is employed",
@@ -160,18 +136,6 @@ APPLICATION = {
             nullable: true,
             type: :string,
             example: "GBR",
-          },
-          itt_provider: {
-            description: "This field contains the legal name of the ITT accredited provider from the <a href=\"https://www.gov.uk/government/publications/accredited-initial-teacher-training-itt-providers/list-of-providers-accredited-to-deliver-itt-from-september-2024\" class=\"govuk-link\" rel=\"noreferrer noopener\" target=\"_blank\">list of providers</a>.",
-            nullable: true,
-            type: :string,
-            example: "University of Southampton",
-          },
-          lead_mentor: {
-            description: "This field indicates whether the applicant is an ITT lead mentor.",
-            nullable: true,
-            type: :boolean,
-            example: true,
           },
           funded_place: {
             description: "Indicates whether or not this participant’s training is being funded by DfE",
