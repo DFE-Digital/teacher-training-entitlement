@@ -9,16 +9,12 @@ module API
       field(:course_identifier) { |a| a.course.identifier }
       field(:email) { |a| a.user.email }
       field(:email_validated) { true }
-      field(:employer_name)
-      field(:employment_role)
       field(:full_name) { |a| a.user.full_name }
       field(:funding_choice)
-      field(:headteacher_status)
       field(:ineligible_for_funding_reason)
       field(:participant_id) { |a| a.user.ecf_id }
       field(:private_childcare_provider_urn) { |a| a.private_childcare_provider_including_disabled&.provider_urn }
       field(:teacher_reference_number) { |a| a.user.trn }
-      field(:teacher_reference_number_validated) { |a| a.user.trn_verified }
       field(:school_urn) { |a| a.school&.urn }
       field(:ukprn, name: :school_ukprn)
       field(:lead_provider_approval_status, name: :status)
@@ -30,8 +26,6 @@ module API
       field(:inside_uk_catchment?, name: :teacher_catchment)
       field(:teacher_catchment_country)
       field(:teacher_catchment_iso_country_code)
-      field(:itt_provider) { |a| a.itt_provider_including_disabled&.legal_name }
-      field(:lead_mentor)
       field(:funded_place)
       field(:created_at)
       field(:updated_at) do |a|
