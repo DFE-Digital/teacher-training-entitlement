@@ -334,7 +334,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     perform_enqueued_jobs { click_button "Continue" }
 
-    expect_mail_to_have_been_sent(to: application.user.email, template_id: ApplicationFundingEligibilityMailer::ELIGIBLE_FOR_FUNDING_TEMPLATE)
+    expect_mail_to_have_been_sent(to: application.user.email, template_id: GenericMailer::TEMPLATE_ID)
 
     expect(page).to have_css("h1", text: "Application details")
     expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")

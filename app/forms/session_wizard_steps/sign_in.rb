@@ -27,6 +27,7 @@ module SessionWizardSteps
         # TODO: extract out
         code = OtpCodeGenerator.new.call
         admin.update!(otp_hash: code, otp_expires_at: 10.minutes.from_now)
+
         ConfirmEmailMailer.confirmation_code_mail(to: email, code:).deliver_now
       end
     end

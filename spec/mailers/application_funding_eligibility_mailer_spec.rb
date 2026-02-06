@@ -8,22 +8,19 @@ RSpec.describe ApplicationFundingEligibilityMailer, type: :mailer do
     let(:course_name) { "Example Course" }
     let(:ecf_id) { "ABC123" }
 
+    let(:expected_body) do
+      <<~TEXT
+        Your application has been assessed as eligible for funding.
+        Full name: #{full_name}
+        Provider name: #{provider_name}
+        Course name: #{course_name}
+        ECF ID: #{ecf_id}
+      TEXT
+    end
+
     subject(:mail) do
       described_class.eligible_for_funding_mail(
-        to: to,
-        full_name: full_name,
-        provider_name: provider_name,
-        course_name: course_name,
-        ecf_id: ecf_id,
-      )
-    end
-
-    it "sends to the correct recipient" do
-      expect(mail.to).to eq([to])
-    end
-
-    it "sends the correct personalisation" do
-      expect(mail).to have_personalisation(
+        to:,
         full_name:,
         provider_name:,
         course_name:,
@@ -31,9 +28,13 @@ RSpec.describe ApplicationFundingEligibilityMailer, type: :mailer do
       )
     end
 
-    it "uses the correct template" do
-      expect(mail).to use_template \
-        ApplicationFundingEligibilityMailer::ELIGIBLE_FOR_FUNDING_TEMPLATE
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Eligible for funding")
+        expect(mail.personalisation[:body]).to eq(expected_body)
+      end
     end
 
     it_behaves_like "a mailer with redacted logs"

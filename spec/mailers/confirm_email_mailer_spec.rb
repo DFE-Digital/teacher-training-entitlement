@@ -4,6 +4,12 @@ RSpec.describe ConfirmEmailMailer, type: :mailer do
   describe "#confirmation_code_mail" do
     let(:to) { "recipient@example.com" }
     let(:code) { "ABC123" }
+    let(:expected_body) do
+      <<~TEXT
+        Your confirmation code is #{code}.
+        It will expire in 10 minutes.
+      TEXT
+    end
 
     subject(:mail) do
       described_class.confirmation_code_mail(
@@ -12,12 +18,14 @@ RSpec.describe ConfirmEmailMailer, type: :mailer do
       )
     end
 
-    it "sends to the correct recipient" do
-      expect(mail.to).to eq([to])
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Confirmation Code")
+        expect(mail.personalisation[:body]).to eq(expected_body)
+      end
     end
-
-    it { is_expected.to have_personalisation(code:) }
-    it { is_expected.to use_template(ConfirmEmailMailer::TEMPLATE_ID) }
 
     it_behaves_like "a mailer with redacted logs"
   end

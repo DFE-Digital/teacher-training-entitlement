@@ -3,9 +3,8 @@ class SendApplicationSubmissionEmailJob < ApplicationJob
 
   queue_as :default
 
-  def perform(application:, email_template:)
+  def perform(application:)
     ApplicationSubmissionMailer.application_submitted_mail(
-      email_template,
       to: application.user.email,
       full_name: application.user.full_name,
       provider_name: application.lead_provider.name,

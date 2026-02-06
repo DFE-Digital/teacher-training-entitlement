@@ -8,10 +8,19 @@ RSpec.describe ApplicationSubmissionMailer, type: :mailer do
     let(:course_name) { "Example Course" }
     let(:amount) { "Example Amount" }
     let(:ecf_id) { "ABC123" }
+    let(:expected_body) do
+      <<~TEXT
+        Your application has been submitted.
+        Full name: #{full_name}
+        Provider name: #{provider_name}
+        Course name: #{course_name}
+        Amount: #{amount}
+        ECF ID: #{ecf_id}
+      TEXT
+    end
 
     subject(:mail) do
       described_class.application_submitted_mail(
-        nil,
         to:,
         full_name:,
         provider_name:,
@@ -21,21 +30,14 @@ RSpec.describe ApplicationSubmissionMailer, type: :mailer do
       )
     end
 
-    it "sends to the correct recipient" do
-      expect(mail.to).to eq([to])
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Application submitted")
+        expect(mail.personalisation[:body]).to eq(expected_body)
+      end
     end
-
-    it "sends the correct personalisation" do
-      expect(mail).to have_personalisation(
-        full_name:,
-        provider_name:,
-        course_name:,
-        amount:,
-        ecf_id:,
-      )
-    end
-
-    it { is_expected.to use_template(ApplicationSubmissionMailer::TEMPLATE_ID) }
 
     it_behaves_like "a mailer with redacted logs"
   end

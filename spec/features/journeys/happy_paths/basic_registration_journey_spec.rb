@@ -169,7 +169,6 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
         "course_start" => "In #{application_course_start_date}",
         "course_start_date" => "yes",
         "course_identifier" => "tte-early-years",
-        "email_template" => "not_eligible_scholarship_funding_not_tsf",
         # "funding" => "trust",
         "funding_amount" => nil,
         # "funding_eligiblity_status_code" => "ineligible_establishment_type",
