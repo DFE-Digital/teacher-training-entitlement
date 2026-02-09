@@ -82,7 +82,9 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
           provider_name: application.lead_provider.name,
           course_name: application.course.name,
           ecf_id: application.ecf_id,
-        ).and_return(double(eligible_for_funding: double(deliver_later: true)))
+        )
+
+        allow(GenericMailer).to receive(:with).and_call_original
         make_change
       end
     end
