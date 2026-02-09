@@ -27,7 +27,7 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
     end
 
     it "sends an email with the OTP code" do
-      expect(ConfirmEmailMailer).to receive(:confirmation_code_mail).with(to: email, code: otp_generator.call).and_call_original
+      expect(GenericMailer).to receive(:with).with(to: email, code: otp_generator.call).and_call_original
       subject
     end
   end

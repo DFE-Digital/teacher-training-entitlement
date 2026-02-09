@@ -7,7 +7,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
 
   let(:application) { create(:application, :accepted) }
 
-  before { allow(ApplicationFundingEligibilityMailer).to receive(:eligible_for_funding_mail).and_call_original }
+  before { allow(GenericMailer).to receive(:eligible_for_funding).and_call_original }
 
   describe "validations" do
     it { is_expected.to validate_presence_of :application }
@@ -76,13 +76,15 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       end
 
       it "sends an email" do
-        expect(ApplicationFundingEligibilityMailer).to receive(:eligible_for_funding_mail).with(
+        expect(GenericMailer).to receive(:with).with(
           to: application.user.email,
           full_name: application.user.full_name,
           provider_name: application.lead_provider.name,
           course_name: application.course.name,
           ecf_id: application.ecf_id,
         )
+
+        allow(GenericMailer).to receive(:with).and_call_original
         make_change
       end
     end
@@ -109,7 +111,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       end
 
       it "does not send an email" do
-        expect(ApplicationFundingEligibilityMailer).not_to receive(:eligible_for_funding_mail)
+        expect(GenericMailer).not_to receive(:eligible_for_funding)
         make_change
       end
     end
@@ -122,7 +124,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       it { is_expected.to be true }
 
       it "does not send an email" do
-        expect(ApplicationFundingEligibilityMailer).not_to receive(:eligible_for_funding_mail)
+        expect(GenericMailer).not_to receive(:eligible_for_funding)
         make_change
       end
     end

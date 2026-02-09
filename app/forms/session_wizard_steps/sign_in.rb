@@ -22,13 +22,13 @@ module SessionWizardSteps
 
     def after_save
       admin = AdminUser.find_by(email:)
+      return unless admin
 
-      if admin
-        # TODO: extract out
-        code = OtpCodeGenerator.new.call
-        admin.update!(otp_hash: code, otp_expires_at: 10.minutes.from_now)
-        ConfirmEmailMailer.confirmation_code_mail(to: email, code:).deliver_now
-      end
+      # TODO: extract out
+      code = OtpCodeGenerator.new.call
+      admin.update!(otp_hash: code, otp_expires_at: 10.minutes.from_now)
+
+      GenericMailer.with(to: email, code:).confirmation_code.deliver_now
     end
   end
 end

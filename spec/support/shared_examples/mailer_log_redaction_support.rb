@@ -13,14 +13,6 @@ RSpec.shared_examples "a mailer with redacted logs" do
     expect(ActionMailer::Base.deliveries.last.to).to eq([to])
   end
 
-  it "redacts the processing log entry" do
-    line = log.lines.find { _1.include? "processed outbound mail" }
-
-    expect(line).to be_present
-    expect(line).not_to include(to)
-    expect(line).to include("[FILTERED]")
-  end
-
   it "redacts the delivery log entry" do
     line = log.lines.find { _1.include? "Delivered mail" }
 

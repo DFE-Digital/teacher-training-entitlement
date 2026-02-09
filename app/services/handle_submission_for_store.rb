@@ -146,7 +146,7 @@ private
   end
 
   def enqueue_send_application_submission_email_job(application)
-    SendApplicationSubmissionEmailJob.perform_later(application:, email_template:)
+    SendApplicationSubmissionEmailJob.perform_later(application:)
   end
 
   def funding_eligibility_service
@@ -162,10 +162,6 @@ private
 
   def eligible_for_funding?
     funding_eligibility_service.funded?
-  end
-
-  def email_template
-    EmailTemplateLookup.call(store["email_template"])
   end
 
   delegate :funding_eligiblity_status_code,
