@@ -1,11 +1,11 @@
 GIT
   remote: https://github.com/DFE-Digital/dfe-analytics.git
-  revision: 31c25462e5fa824c1e75a1099c06e0676724731c
-  tag: v1.15.14
+  revision: 14be35cf91c1ca86a18bd87243444cb3e2d9fae2
+  tag: v1.15.6
   specs:
-    dfe-analytics (1.15.14)
+    dfe-analytics (1.15.6)
       google-cloud-bigquery (~> 1.38)
-      httparty (~> 0.24)
+      httparty (~> 0.21)
       multi_xml (~> 0.6.0)
       request_store_rails (~> 2)
 
@@ -181,10 +181,10 @@ GEM
       delayed_job (>= 3.0, < 5)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
-    devise (4.9.4)
+    devise (5.0.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
-      railties (>= 4.1.0)
+      railties (>= 7.0)
       responders
       warden (~> 1.2.3)
     diff-lcs (1.6.2)
@@ -759,7 +759,7 @@ DEPENDENCIES
   delayed_cron_job
   delayed_job
   delayed_job_active_record
-  devise (~> 4.9)
+  devise (~> 5.0)
   dfe-analytics!
   dotenv-rails
   email_validator
