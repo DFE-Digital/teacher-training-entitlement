@@ -50,6 +50,19 @@ RSpec.describe RegistrationWizardController do
 
     it { is_expected.to have_http_status :success }
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
+
+    context "when form requirements are not met" do
+      before do
+        allow_any_instance_of(Questionnaires::CourseStartDate)
+          .to receive(:requirements_met?).and_return(false)
+
+        make_request
+      end
+
+      it "redirects to course start date page" do
+        expect(response).to redirect_to registration_wizard_show_path("course-start-date")
+      end
+    end
   end
 
   describe "#update" do
@@ -95,8 +108,8 @@ RSpec.describe RegistrationWizardController do
         make_request
       end
 
-      it "redirects to home page" do
-        expect(response).to redirect_to root_path
+      it "redirects to course start date page" do
+        expect(response).to redirect_to registration_wizard_show_path("course-start-date")
       end
     end
   end

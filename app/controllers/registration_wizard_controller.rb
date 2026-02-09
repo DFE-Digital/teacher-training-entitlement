@@ -14,7 +14,7 @@ class RegistrationWizardController < PublicPagesController
     @wizard.before_render
 
     return redirect_to registration_wizard_show_path(@wizard.next_step_path) if @wizard.skip_step?
-    return redirect_to root_path unless @form.requirements_met?
+    return redirect_to_requirements_not_met unless @form.requirements_met?
 
     render @wizard.current_step
 
@@ -31,7 +31,7 @@ class RegistrationWizardController < PublicPagesController
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
 
     return redirect_to registration_wizard_show_path(@wizard.next_step_path) if @wizard.skip_step?
-    return redirect_to root_path unless @form.requirements_met?
+    return redirect_to_requirements_not_met unless @form.requirements_met?
 
     if @form.valid?
       if @form.redirect_to_change_path?
@@ -68,6 +68,14 @@ private
 
   def redirect_to_course_start_date
     redirect_to registration_wizard_show_path("course-start-date")
+  end
+
+  def redirect_to_requirements_not_met
+    if current_user
+      redirect_to registration_wizard_show_path("course-start-date")
+    else
+      redirect_to root_path
+    end
   end
 
   def redirect_to_institution_picker

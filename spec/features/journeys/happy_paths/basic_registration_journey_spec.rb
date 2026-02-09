@@ -103,8 +103,8 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     visit "/registration/share-provider"
 
-    expect_page_to_have(path: "/", axe_check: false, submit_form: false) do
-      expect(page).to have_content("Before you start")
+    expect_page_to_have(path: "/registration/course-start-date", axe_check: false, submit_form: false) do
+      expect(page).to have_text(I18n.t("helpers.hint.registration_wizard.course_start_date_one"))
     end
 
     expect(retrieve_latest_application_user_data).to match(user_attributes_from_stubbed_callback_response.merge(
