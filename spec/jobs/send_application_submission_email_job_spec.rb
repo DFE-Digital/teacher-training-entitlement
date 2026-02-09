@@ -8,11 +8,11 @@ RSpec.describe SendApplicationSubmissionEmailJob, type: :job do
 
   describe "#perform" do
     before do
-      allow(ApplicationSubmissionMailer).to receive(:application_submitted_mail).and_call_original
+      allow(GenericMailer).to receive(:with).and_call_original
     end
 
     it "calls `ApplicationSubmissionMailer`" do
-      expect(ApplicationSubmissionMailer).to receive(:application_submitted_mail).with(
+      expect(GenericMailer).to receive(:with).with(
         amount: "123",
         to: application.user.email,
         full_name: application.user.full_name,

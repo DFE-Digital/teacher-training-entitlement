@@ -4,13 +4,13 @@ class SendApplicationSubmissionEmailJob < ApplicationJob
   queue_as :default
 
   def perform(application:)
-    ApplicationSubmissionMailer.application_submitted_mail(
+    GenericMailer.with(
       to: application.user.email,
       full_name: application.user.full_name,
       provider_name: application.lead_provider.name,
       course_name: localise_sentence_embedded_course_name(application.course),
       amount: application.raw_application_data["funding_amount"],
       ecf_id: application.ecf_id,
-    ).deliver_now
+    ).application_submitted.deliver_now
   end
 end
