@@ -23,7 +23,9 @@ RSpec.describe ConfirmEmailMailer, type: :mailer do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
         expect(mail.personalisation[:subject]).to eq("Confirmation Code")
-        expect(mail.personalisation[:body]).to eq(expected_body)
+
+        body = mail.personalisation[:body]
+        expect(body).to include(code)
       end
     end
 

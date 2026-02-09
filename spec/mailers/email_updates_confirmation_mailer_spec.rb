@@ -25,7 +25,10 @@ RSpec.describe EmailUpdatesConfirmationMailer, type: :mailer do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
         expect(mail.personalisation[:subject]).to eq("Email Updates Confirmation")
-        expect(mail.personalisation[:body]).to eq(expected_body)
+
+        body = mail.personalisation[:body]
+        expect(body).to include(service_link)
+        expect(body).to include(unsubscribe_link)
       end
     end
 

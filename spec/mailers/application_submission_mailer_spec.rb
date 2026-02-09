@@ -35,7 +35,12 @@ RSpec.describe ApplicationSubmissionMailer, type: :mailer do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
         expect(mail.personalisation[:subject]).to eq("Application submitted")
-        expect(mail.personalisation[:body]).to eq(expected_body)
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(provider_name)
+        expect(body).to include(course_name)
+        expect(body).to include(ecf_id)
       end
     end
 

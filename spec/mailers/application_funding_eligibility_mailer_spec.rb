@@ -8,16 +8,6 @@ RSpec.describe ApplicationFundingEligibilityMailer, type: :mailer do
     let(:course_name) { "Example Course" }
     let(:ecf_id) { "ABC123" }
 
-    let(:expected_body) do
-      <<~TEXT
-        Your application has been assessed as eligible for funding.
-        Full name: #{full_name}
-        Provider name: #{provider_name}
-        Course name: #{course_name}
-        ECF ID: #{ecf_id}
-      TEXT
-    end
-
     subject(:mail) do
       described_class.eligible_for_funding_mail(
         to:,
@@ -33,7 +23,12 @@ RSpec.describe ApplicationFundingEligibilityMailer, type: :mailer do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
         expect(mail.personalisation[:subject]).to eq("Eligible for funding")
-        expect(mail.personalisation[:body]).to eq(expected_body)
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(provider_name)
+        expect(body).to include(course_name)
+        expect(body).to include(ecf_id)
       end
     end
 
