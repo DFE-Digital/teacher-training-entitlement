@@ -141,3 +141,15 @@ variable "enable_dfe_analytics_federated_auth" {
   type = bool
   default = false
 }
+
+variable "postgres_flexible_server_sku" {
+  default = "B_Standard_B1ms"
+}
+
+variable "azure_maintenance_window" {
+  default = null
+}
+
+variable "postgres_enable_high_availability" {
+  default = false
+}
