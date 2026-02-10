@@ -37,6 +37,10 @@ class LocalAuthority < ApplicationRecord
     true
   end
 
+  def eligible_establishment?
+    true
+  end
+
   def la_name
     name
   end

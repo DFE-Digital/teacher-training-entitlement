@@ -86,7 +86,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       expect(user.applications.count).to be(1)
 
       user.applications.first.tap do |application|
-        expect(application.eligible_for_funding).to be_falsey
+        expect(application.eligible_for_funding).to be_truthy
       end
     end
     if User.last.applications.count == 1
@@ -125,13 +125,13 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "course_id" => Course.find_by(identifier: "tte-early-years").id,
       "schedule_id" => nil,
       "ecf_id" => latest_application.ecf_id,
-      "eligible_for_funding" => false,
+      "eligible_for_funding" => true,
       "employer_name" => nil,
       "employment_type" => nil,
       "employment_role" => nil,
       "funded_place" => nil,
       "funding_choice" => nil,
-      "funding_eligiblity_status_code" => "ineligible_setting",
+      "funding_eligiblity_status_code" => "funded",
       "kind_of_nursery" => nil,
       "headteacher_status" => nil,
       "itt_provider_id" => nil,

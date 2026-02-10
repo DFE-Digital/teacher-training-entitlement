@@ -9,6 +9,7 @@ RSpec.shared_context "with default school", shared_context: :metadata do
         address_1: "street 1",
         town: "manchester",
         establishment_status_code: "1",
+        establishment_type_code: "1",
       )
     end
   end

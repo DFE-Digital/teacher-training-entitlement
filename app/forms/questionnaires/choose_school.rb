@@ -22,10 +22,14 @@ module Questionnaires
         :choose_school
       elsif !institution(source: institution_identifier).in_england?
         :ineligible_for_funding
+      elsif !institution(source: institution_identifier).eligible_establishment?
+        :ineligible_for_funding
       elsif funding_eligibility.previously_funded?
         :ineligible_for_funding
-      else
+      elsif funding_eligibility.funded?
         :possible_funding
+      else
+        :ineligible_for_funding
       end
     end
 
