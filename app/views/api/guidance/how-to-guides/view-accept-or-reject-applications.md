@@ -4,16 +4,16 @@
   Providers must accept or reject applications before participants start a course and inform applicants of the outcome regardless of whether the application has been accepted or rejected.
 </div>
 
-Providers can **view application data** to find out if NPQ applicants:
+Providers can **view application data** to find out if applicants:
 
 * have a valid email address
 * have a valid teacher reference number (TRN)
 * are eligible for funding
 * have a funded place
 
-Providers can then accept or reject NPQ course applications.
+Providers can then accept or reject course applications.
 
-While people can make multiple applications for the same course, with one or multiple providers, only one provider can accept an application from a participant for an NPQ course.
+While people can make multiple applications for the same course, with one or multiple providers, only one provider can accept an application from a participant for a course.
 
 To prevent a participant being enrolled onto the same course with more than one provider the API will:
 
@@ -35,7 +35,7 @@ Providers can filter results to see more specific or up to date data by adding `
 
 For example: `GET /api/v1/applications?filter[cohort]=2021&filter[participant_id]=7e5bcdbf-c818-4961-8da5-439cab1984e0&filter[updated_since]=2020-11-13T11:21:55Z`
 
-See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/NPQ%20Applications/get_api_v1_applications) for more information.
+See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/Applications/get_api_v1_applications) for more information.
 
 ### Example response body
 
@@ -49,16 +49,12 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
         "course_identifier": "senior-leadership",
         "email": "isabelle.macdonald2@some-school.example.com",
         "email_validated": true,
-        "employer_name": "Some Company Ltd",
-        "employment_role": "Director",
         "full_name": "Isabelle MacDonald",
         "funding_choice": "school",
-        "headteacher_status": "no",
         "ineligible_for_funding_reason": "previously-funded",
         "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         "private_childcare_provider_urn": "EY944860",
         "teacher_reference_number": "1234567",
-        "teacher_reference_number_validated": true,
         "school_urn": "106286",
         "school_ukprn": "10079319",
         "status": "pending",
@@ -69,8 +65,6 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
         "teacher_catchment": true,
         "teacher_catchment_country": "United Kingdom of Great Britain and Northern Ireland",
         "teacher_catchment_iso_country_code": "GBR",
-        "itt_provider": "University of Southampton",
-        "lead_mentor": true,
         "funded_place": null,
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z",
@@ -87,7 +81,7 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
 GET /api/v1/applications/{id}
 ```
 
-See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/get_api_v1_applications__id_) for more information.
+See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/Applications/get_api_v1_applications__id_) for more information.
 
 ### Example response body
 
@@ -100,11 +94,8 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/N
       "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
-      "employer_name": "Some Company Ltd",
-      "employment_role": "Director",
       "full_name": "Isabelle MacDonald",
       "funding_choice": "school",
-      "headteacher_status": "no",
       "ineligible_for_funding_reason": "previously-funded",
       "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
       "private_childcare_provider_urn": "EY944860",
@@ -120,8 +111,6 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/N
       "teacher_catchment": true,
       "teacher_catchment_country": "United Kingdom of Great Britain and Northern Ireland",
       "teacher_catchment_iso_country_code": "GBR",
-      "itt_provider": "University of Southampton",
-      "lead_mentor": true,
       "funded_place": null,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
@@ -137,17 +126,17 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/N
 POST /api/v1/applications/{id}/accept
 ```
 
-Providers should accept applications for those they want to enrol onto a course. Providers must inform applicants of the outcome of their successful NPQ application.
+Providers should accept applications for those they want to enrol onto a course. Providers must inform applicants of the outcome of their successful application.
 
 Reasons to accept applications include (but are not limited to) the participant:
 
 * having funding confirmed
-* being suitable for their chosen NPQ course
+* being suitable for their chosen course
 * having relevant support from their school
 
-The request parameter must include the `id` of the corresponding NPQ application.
+The request parameter must include the `id` of the corresponding application.
 
-An optional request body allows lead providers to add a participant’s schedule when accepting NPQ applications.
+An optional request body allows lead providers to add a participant’s schedule when accepting applications.
 
 ### Example request body
 
@@ -168,7 +157,7 @@ Successful requests will return a response body including updates to the status 
 The API will prevent more than one provider accepting applications for the same course by automatically updating the application status or returning an error message.
 </div>
 
-See the ['Accept an application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/post_api_v1_applications__id__accept) for more information.
+See the ['Accept an application' endpoint documentation](/api/docs/v1#/Applications/post_api_v1_applications__id__accept) for more information.
 
 ### Example response body
 
@@ -181,11 +170,8 @@ See the ['Accept an application' endpoint documentation](/api/docs/v1#/NPQ%20App
       "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
-      "employer_name": "Some Company Ltd",
-      "employment_role": "Director",
       "full_name": "Isabelle MacDonald",
       "funding_choice": "school",
-      "headteacher_status": "no",
       "ineligible_for_funding_reason": "previously-funded",
       "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
       "private_childcare_provider_urn": "EY944860",
@@ -201,8 +187,6 @@ See the ['Accept an application' endpoint documentation](/api/docs/v1#/NPQ%20App
       "teacher_catchment": true,
       "teacher_catchment_country": "United Kingdom of Great Britain and Northern Ireland",
       "teacher_catchment_iso_country_code": "GBR",
-      "itt_provider": "University of Southampton",
-      "lead_mentor": true,
       "funded_place": true,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
@@ -220,7 +204,7 @@ POST /api/v1/applications/{id}/reject
 
 Providers should **reject applications** for those they do not want to enrol onto a course. 
 
-Providers **must inform applicants** of the outcome of their unsuccessful NPQ application.
+Providers **must inform applicants** of the outcome of their unsuccessful application.
 
 Reasons to reject applications include (but are not limited to) the participant:
 
@@ -230,11 +214,11 @@ Reasons to reject applications include (but are not limited to) the participant:
 * wanting to take on another course
 * no longer wanting to take the course
 
-The request parameter must include the `id` of the corresponding NPQ application.
+The request parameter must include the `id` of the corresponding application.
 
 Successful requests will return a response body including updates to the `status` attribute.
 
-See the ['Reject an application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/post_api_v1_applications__id__reject) for more information.
+See the ['Reject an application' endpoint documentation](/api/docs/v1#/Applications/post_api_v1_applications__id__reject) for more information.
 
 ### Example request body
 
@@ -247,16 +231,12 @@ See the ['Reject an application' endpoint documentation](/api/docs/v1#/NPQ%20App
       "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
-      "employer_name": "Some Company Ltd",
-      "employment_role": "Director",
       "full_name": "Isabelle MacDonald",
       "funding_choice": "school",
-      "headteacher_status": "no",
       "ineligible_for_funding_reason": "previously-funded",
       "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
       "private_childcare_provider_urn": "EY944860",
       "teacher_reference_number": "1234567",
-      "teacher_reference_number_validated": true,
       "school_urn": "106286",
       "school_ukprn": "10079319",
       "status": "rejected",
@@ -267,8 +247,6 @@ See the ['Reject an application' endpoint documentation](/api/docs/v1#/NPQ%20App
       "teacher_catchment": true,
       "teacher_catchment_country": "United Kingdom of Great Britain and Northern Ireland",
       "teacher_catchment_iso_country_code": "GBR",
-      "itt_provider": "University of Southampton",
-      "lead_mentor": true,
       "funded_place": null,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
@@ -288,7 +266,7 @@ Providers can update a participant’s funding information after an application 
 
 It’s not possible to change this information if the application has not been accepted.
 
-See the ['Change funded place value of an application' endpoint documentation](/api/docs/v1#/NPQ%20Applications/put_api_v1_applications__id__change_funded_place) for more information.
+See the ['Change funded place value of an application' endpoint documentation](/api/docs/v1#/Applications/put_api_v1_applications__id__change_funded_place) for more information.
 
 ### Example request body:
 
@@ -316,16 +294,12 @@ Successful requests will return a response body including updates to the ```fund
       "course_identifier": "senior-leadership",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
-      "employer_name": "Some Company Ltd",
-      "employment_role": "Director",
       "full_name": "Isabelle MacDonald",
       "funding_choice": "school",
-      "headteacher_status": "no",
       "ineligible_for_funding_reason": "previously-funded",
       "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
       "private_childcare_provider_urn": "EY944860",
       "teacher_reference_number": "1234567",
-      "teacher_reference_number_validated": true,
       "school_urn": "106286",
       "school_ukprn": "10079319",
       "status": "accepted",
@@ -336,8 +310,6 @@ Successful requests will return a response body including updates to the ```fund
       "teacher_catchment": true,
       "teacher_catchment_country": "United Kingdom of Great Britain and Northern Ireland",
       "teacher_catchment_iso_country_code": "GBR",
-      "itt_provider": "University of Southampton",
-      "lead_mentor": true,
       "funded_place": true,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
@@ -349,20 +321,20 @@ Successful requests will return a response body including updates to the ```fund
 
 ## Update an application due to a change in circumstance
 
-There are several reasons why there might be a change in circumstance for an NPQ application, including where a participant:
+There are several reasons why there might be a change in circumstance for an application, including where a participant:
 
 * made a mistake during their application
 * selected the wrong course during their application
 * wants to take another course instead
-* wants to fund their NPQ differently
+* wants to fund their course differently
 
 Where there has been a change in circumstance, providers should:
 
 * reject the application if the application `status` is `pending`
 * contact DfE if the application `status` is `accepted` 
 
-For example, if a participant registers for an NPQ course but then decides to change to another course, the provider should:
+For example, if a participant registers for a course but then decides to change to another course, the provider should:
 
 1. Reject that participant’s application.
-2. Ask the participant to re-register on the NPQ registration service, entering the correct course details.
+2. Ask the participant to re-register on the registration service, entering the correct course details.
 3. Accept the new application once it is available via the API.

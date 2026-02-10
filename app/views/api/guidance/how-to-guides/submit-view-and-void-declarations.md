@@ -93,7 +93,7 @@ For more detailed information, see the ['Declare a participant has reached a mil
 GET /api/v1/participant-declarations
 ```
 
-Use this endpooint to: 
+Use this endpoint to: 
 
 * view all declarations which have been submitted to date
 * check declaration submissions

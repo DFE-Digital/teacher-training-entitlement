@@ -30,24 +30,9 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes).not_to have_key("schedule_identifier")
     end
 
-    it "serializes the `employer_name`" do
-      application.employer_name = "employer"
-      expect(attributes["employer_name"]).to eq(application.employer_name)
-    end
-
-    it "serializes the `employment_role`" do
-      application.employment_role = "role"
-      expect(attributes["employment_role"]).to eq(application.employment_role)
-    end
-
     it "serializes the `funding_choice`" do
       application.funding_choice = "school"
       expect(attributes["funding_choice"]).to eq(application.funding_choice)
-    end
-
-    it "serializes the `headteacher_status`" do
-      application.headteacher_status = "no"
-      expect(attributes["headteacher_status"]).to eq(application.headteacher_status)
     end
 
     it "serializes the `works_in_school`" do
@@ -91,11 +76,6 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes["teacher_catchment_iso_country_code"]).to eq(application.teacher_catchment_iso_country_code)
     end
 
-    it "serializes the `lead_mentor`" do
-      application.lead_mentor = true
-      expect(attributes["lead_mentor"]).to eq(application.lead_mentor)
-    end
-
     describe "cohort serialization" do
       it "serializes the `cohort`" do
         cohort.start_year = 2025
@@ -106,36 +86,6 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
         let(:cohort) { nil }
 
         it { expect(attributes["cohort"]).to be_nil }
-      end
-    end
-
-    describe "itt_provider serialization" do
-      # We need to persist and then reload the application
-      # to ensure the default scope is applied/accounted for.
-      before { application.save! }
-
-      subject(:attributes) { JSON.parse(described_class.render(application.reload))["attributes"] }
-
-      context "when the `itt_provider` is set" do
-        let(:itt_provider) { create(:itt_provider) }
-
-        it "serializes the `itt_provider`" do
-          expect(attributes["itt_provider"]).to eq(itt_provider.legal_name)
-        end
-      end
-
-      context "when `itt_provider` is `nil`" do
-        let(:itt_provider) { nil }
-
-        it { expect(attributes["itt_provider"]).to be_nil }
-      end
-
-      context "when the `itt_provider` is disabled" do
-        let(:itt_provider) { create(:itt_provider, :disabled, legal_name: "disabled provider") }
-
-        it "serializes the `itt_provider`" do
-          expect(attributes["itt_provider"]).to eq(itt_provider.legal_name)
-        end
       end
     end
 
@@ -214,11 +164,6 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       it "serializes the `teacher_reference_number`" do
         user.trn = "1234567"
         expect(attributes["teacher_reference_number"]).to eq(user.trn)
-      end
-
-      it "serializes the `teacher_reference_number_validated`" do
-        user.trn_verified = true
-        expect(attributes["teacher_reference_number_validated"]).to eq(user.trn_verified)
       end
     end
 

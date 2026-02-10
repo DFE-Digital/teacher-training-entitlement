@@ -12,23 +12,23 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>application</code></th>
-      <td class="govuk-table__cell">The application a person makes to be trained on an NPQ course. Applications include funding details</td>
+      <td class="govuk-table__cell">The application a person makes to be trained on an course. Applications include funding details</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>participant</code></th>
-      <td class="govuk-table__cell">A person registered for an NPQ course</td>
+      <td class="govuk-table__cell">A person registered for an course</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>schedule</code></th>
-      <td class="govuk-table__cell">The expected timeframe in which a participant will complete their NPQ course. Schedules include defined <a href="/api/guidance/schedules-and-milestone-dates" class="govuk-link">milestone dates</a> against which DfE validates the declarations submitted by providers</td>
+      <td class="govuk-table__cell">The expected timeframe in which a participant will complete their course. Schedules include defined <a href="/api/guidance/schedules-and-milestone-dates" class="govuk-link">milestone dates</a> against which DfE validates the declarations submitted by providers</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>course_identifier</code></th>
-      <td class="govuk-table__cell">The NPQ course a participant applies for and is registered for</td>
+      <td class="govuk-table__cell">The course a participant applies for and is registered for</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>outcome</code></th>
-      <td class="govuk-table__cell">The assessment result a participant achieves at the end of an NPQ course</td>
+      <td class="govuk-table__cell">The assessment result a participant achieves at the end of an course</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>declaration</code></th>
@@ -44,14 +44,14 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>funding cap</code></th>
-      <td class="govuk-table__cell">The maximum number of places each provider can offer per NPQ that DfE will pay for from the 2024/25 academic year onwards</td>
+      <td class="govuk-table__cell">The maximum number of places each provider can offer per that DfE will pay for an academic year</td>
     </tr>
   </tbody>
 </table>
 
 ## Application data states
 
-This API uses a `state` model to reflect the NPQ participant journey, meet contractual requirements for how providers should report participants’ training and how DfE will pay for this training.
+This API uses a `state` model to reflect the participant journey, meet contractual requirements for how providers should report participants’ training and how DfE will pay for this training.
 
 Application states are defined by the `status` attribute.
 
@@ -73,7 +73,7 @@ An application’s status value will determine whether a provider can:
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>pending</code></th>
-      <td class="govuk-table__cell govuk-table__cell">Applications which have been made for an NPQ course</td>
+      <td class="govuk-table__cell govuk-table__cell">Applications which have been made for an course</td>
       <td class="govuk-table__cell govuk-table__cell">Accept or reject applications</td>
     </tr>
     <tr class="govuk-table__row">
@@ -117,7 +117,7 @@ A participant’s `training_status` value will determine whether a provider can:
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>deferred</code></th>
       <td class="govuk-table__cell govuk-table__cell">Participants who've deferred training</td>
-      <td class="govuk-table__cell govuk-table__cell">Notify DfE when the participant <a href="/api/docs/v1/Participants/put_api_v1_participants__id__resume" class="govuk-link">resumes training</a></td>
+      <td class="govuk-table__cell govuk-table__cell">Notify DfE when the participant <a href="/api/docs/v1#/Participants/put_api_v1_participants__id__resume" class="govuk-link">resumes training</a></td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>withdrawn</code></th>

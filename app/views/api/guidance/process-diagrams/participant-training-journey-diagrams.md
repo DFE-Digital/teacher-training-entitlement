@@ -1,8 +1,8 @@
-# Participant NPQ journey
+# Participant journey
 
-These diagrams provide an overview of the key processes that take place during each phase of an NPQ participant’s journey.
+These diagrams provide an overview of the key processes that take place during each phase of an participant’s journey.
 
-## Registering and applying for an NPQ
+## Registering and applying for a course
 
 <div class="card">
   <img src="/images/participant.png" alt="Participant Icon" class="participant">
@@ -14,21 +14,13 @@ These diagrams provide an overview of the key processes that take place during e
     </p>
 
     <ul class="govuk-list govuk-list--bullet">
-      <li>which NPQ courses are available</li>
+      <li>which courses are available</li>
       <li>which providers offer them</li>
       <li>who is eligible for scholarship funding</li>
     </ul>
 
     <p class="govuk-body">
-      2. Creates a DfE Identity account.
-    </p>
-
-    <p class="govuk-body">
-      3. Requests a teacher reference number (TRN) if they do not have it or have never had one.
-    </p>
-
-    <p class="govuk-body">
-      4. Registers for an NPQ by providing their information including:
+      2. Registers for a course by providing their information including:
     </p>
     <ul class="govuk-list govuk-list--bullet">
       <li>workplace details</li>
@@ -42,9 +34,9 @@ These diagrams provide an overview of the key processes that take place during e
   <div class="card-text">
     <h2 class="govuk-heading-m">DfE</h2>
     <p class="govuk-body">
-      5. Reviews the information supplied by the participant and tells them whether they qualify for scholarship funding.
+      3. Reviews the information supplied by the participant and tells them whether they are eligibile for funding.
       <br><br>
-      6. Informs the chosen provider that the participant has registered for an NPQ.
+      4. Informs the chosen provider that the participant has submitted an application.
     </p>
   </div>
 </div>
@@ -53,7 +45,7 @@ These diagrams provide an overview of the key processes that take place during e
   <img src="/images/provider.png" alt="Provider Icon" class="provider">
   <div class="card-text">
     <h2 class="govuk-heading-m">Provider</h2>
-    <p class="govuk-body">7. Receives notification of registration and requests that the participant completes an application for their course.</p>
+    <p class="govuk-body">5. Receives notification of registration and requests that the participant completes an application for their course.</p>
   </div>
 </div>
 
@@ -61,7 +53,7 @@ These diagrams provide an overview of the key processes that take place during e
   <img src="/images/participant.png" alt="Participant Icon" class="participant">
   <div class="card-text">
     <h2 class="govuk-heading-m">Participant</h2>
-    <p class="govuk-body">8. Completes and submits the application to their course provider.<br><br> 9. If they are suitable for the course, they’ll be accepted by the provider.</p>
+    <p class="govuk-body">6. Completes and submits the application to their course provider.<br><br> 7. If they are suitable for the course, they’ll be accepted by the provider.</p>
   </div>
 </div>
 
@@ -81,7 +73,7 @@ These diagrams provide an overview of the key processes that take place during e
   <img src="/images/provider.png" alt="Provider Icon" class="provider">
   <div class="card-text">
     <h2 class="govuk-heading-m">Provider</h2>
-    <p class="govuk-body">2. Sends course logistics, including start date, in-person session timings, and other key details. <br><br>3. Sends login details for the training platform.</p>
+    <p class="govuk-body">2. Sends course logistics, including start date, session timings, and other key details. <br><br>3. Sends login details for the training platform.</p>
   </div>
 </div>
 
@@ -203,7 +195,7 @@ This flow outlines how payments are managed between the provider and the Departm
   <img src="/images/provider.png" alt="Provider Icon" class="provider">
   <div class="card-text">
     <h2 class="govuk-heading-m">Provider </h2>
-    <p class="govuk-body">1. Sends invoices to DfE for participant-related and service-related payments.</p>
+    <p class="govuk-body">1. Sends invoices to DfE for participant-related payments.</p>
   </div>
 </div>
 
@@ -223,18 +215,18 @@ This flow outlines how payments are managed between the provider and the Departm
   </div>
 </div>
 
-<div class="card">
-  <img src="/images/dfe.png" alt="DfE Icon" class="dfe">
-  <div class="card-text">
-    <h2 class="govuk-heading-m">DfE </h2>
-    <p class="govuk-body">5. Sends a monthly service fee based on the target number of participants.</p>
-  </div>
-</div>
+<!-- <div class="card"> -->
+<!--   <img src="/images/dfe.png" alt="DfE Icon" class="dfe"> -->
+<!--   <div class="card-text"> -->
+<!--     <h2 class="govuk-heading-m">DfE </h2> -->
+<!--     <p class="govuk-body">5. Sends a monthly service fee based on the target number of participants.</p> -->
+<!--   </div> -->
+<!-- </div> -->
 
-<div class="card">
-  <img src="/images/provider.png" alt="Provider Icon" class="provider">
-  <div class="card-text">
-    <h2 class="govuk-heading-m">Provider </h2>
-    <p class="govuk-body">6. Receives service fees.</p>
-  </div>
-</div>
+<!-- <div class="card"> -->
+<!--   <img src="/images/provider.png" alt="Provider Icon" class="provider"> -->
+<!--   <div class="card-text"> -->
+<!--     <h2 class="govuk-heading-m">Provider </h2> -->
+<!--     <p class="govuk-body">6. Receives service fees.</p> -->
+<!--   </div> -->
+<!-- </div> -->
