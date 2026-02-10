@@ -42,6 +42,7 @@ module "web_application" {
   namespace    = var.namespace
   environment  = local.environment
   service_name = var.service_name
+  replicas     = var.app_replicas
 
 
   cluster_configuration_map  = module.cluster_data.configuration_map
