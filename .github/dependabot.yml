@@ -11,8 +11,6 @@ updates:
     labels:
       - "dependencies"
       - "ruby"
-    assignees:
-      - "DFE-Digital/tte-dev-cpd"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -28,8 +26,6 @@ updates:
     labels:
       - "dependencies"
       - "javascript"
-    assignees:
-      - "DFE-Digital/tte-dev-cpd"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -47,8 +43,6 @@ updates:
     labels:
       - "dependencies"
       - "docker"
-    assignees:
-      - "DFE-Digital/tte-dev-cpd"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -65,8 +59,6 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
-    assignees:
-      - "DFE-Digital/tte-dev-cpd"
     commit-message:
       prefix: "chore"
       include: "scope"
