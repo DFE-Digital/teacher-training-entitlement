@@ -89,6 +89,11 @@ RSpec.describe FundingEligibility do
 
     context "when work setting is early years or childcare" do
       let(:work_setting) { "early_years_or_childcare" }
+      let(:institution) { build(:school) }
+
+      before do
+        allow(institution).to receive(:eligible_establishment?).and_return(true)
+      end
 
       context "when kind of nursery is local_authority_maintained_nursery" do
         let(:kind_of_nursery) { "local_authority_maintained_nursery" }
@@ -116,6 +121,16 @@ RSpec.describe FundingEligibility do
 
       context "when kind of nursery is another_early_years_setting" do
         let(:kind_of_nursery) { "another_early_years_setting" }
+
+        it { is_expected.to eq :ineligible_setting }
+      end
+
+      context "when institution has ineligible establishment type" do
+        let(:kind_of_nursery) { "preschool_class_as_part_of_school" }
+
+        before do
+          allow(institution).to receive(:eligible_establishment?).and_return(false)
+        end
 
         it { is_expected.to eq :ineligible_setting }
       end

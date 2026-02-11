@@ -78,6 +78,7 @@ private
   def childcare_policy
     kind_of_nursery = query_store.store["kind_of_nursery"]
 
+    return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?
     return FUNDED_ELIGIBILITY_RESULT if kind_of_nursery.in?(ELIGIBLE_NURSERY_TYPES)
 
     INELIGIBLE_SETTING
