@@ -3,6 +3,36 @@ require "rails_helper"
 RSpec.describe User do
   subject { create(:user) }
 
+  describe "#active_applications_for(course:)" do
+    let!(:cohort) { create(:cohort, :current) }
+    let(:course) { create(:course) }
+    let(:user) { create(:user) }
+    let!(:application) { create(:application, :active, course:, user:, cohort:) }
+
+    context "when there are active applications for the current cohort and course" do
+      it do
+        expect(user.active_applications_for(course:)).to eq([application])
+      end
+    end
+
+    context "when there are active applications for a different cohort but same course" do
+      let(:previous_cohort) { create(:cohort, :previous) }
+      let!(:application) { create(:application, :active, course:, user:, cohort: previous_cohort) }
+
+      it do
+        expect(user.active_applications_for(course:)).to be_blank
+      end
+    end
+
+    context "when there are active applications for the current cohort and but not the specified course" do
+      let(:another_course) { create(:course) }
+
+      it do
+        expect(user.active_applications_for(course: another_course)).to be_blank
+      end
+    end
+  end
+
   describe "relationships" do
     it { is_expected.to have_many(:applications).dependent(:destroy) }
     it { is_expected.to have_many(:participant_id_changes).order("created_at desc") }

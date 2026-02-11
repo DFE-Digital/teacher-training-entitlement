@@ -3,6 +3,7 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_wizard
   before_action :set_form
   before_action :check_end_of_journey, only: %i[update]
+  before_action :check_duplicate_applications, only: %i[update]
   before_action :check_course_defined, only: %i[show]
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
@@ -95,11 +96,29 @@ private
     @form = @wizard.form
   end
 
+  def check_duplicate_applications
+    return unless @wizard.current_step.to_s == "choose_your_course" && @form.course_identifier.present?
+
+    active_applications = current_user.active_applications_for(course: @form.course)
+    return if active_applications.empty?
+
+    flash[:alert] = {
+      title: "Application already registered",
+      message: "You have already made an application for #{@form.course.name}",
+    }
+
+    redirect_to accounts_user_registration_path(active_applications.last)
+  end
+
   def check_end_of_journey
-    if @form.valid? && @form.last_step?
-      @wizard.save!
-      redirect_to accounts_user_registration_path(current_user.applications.last, success: true)
-    end
+    return unless @form.valid? && @form.last_step?
+
+    @wizard.save!
+    flash[:notice] = {
+      title: "Registration successfully submitted",
+      message: "Check the details of your registration and find out more about applying with your provider",
+    }
+    redirect_to accounts_user_registration_path(current_user.applications.last)
   end
 
   def check_course_defined

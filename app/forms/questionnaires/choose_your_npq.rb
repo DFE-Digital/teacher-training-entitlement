@@ -139,7 +139,7 @@ module Questionnaires
     end
 
     def courses
-      Course.where(display: true).order(:position)
+      @courses ||= Course.displayable
     end
 
     def previous_course

@@ -50,6 +50,34 @@ RSpec.describe RegistrationWizardController do
 
     it { is_expected.to have_http_status :success }
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
+
+    context "when application already submitted for course" do
+      let(:course) { create(:course) }
+      let!(:application) { create(:application, :accepted, course:, user: current_user) }
+      let(:step) { nil }
+
+      before do
+        session["registration_store"] = { "course_identifier" => course.identifier }
+        patch(:update, params: { step: })
+      end
+
+      context "when step is chose your course" do
+        let(:step) { "choose-your-course" }
+
+        it "redirects to account/registration page with alert" do
+          expect(response).to redirect_to accounts_user_registration_path(application)
+          expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
+        end
+      end
+
+      context "when step is chose your provider" do
+        let(:step) { "choose-your-provider" }
+
+        it "does not redirect, just renders the step" do
+          expect(response).to be_successful
+        end
+      end
+    end
   end
 
   describe "#update" do

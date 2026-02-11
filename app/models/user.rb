@@ -123,6 +123,13 @@ class User < ApplicationRecord
     trn_lookup_status == "Found"
   end
 
+  def active_applications_for(course:)
+    applications
+      .active_applications
+      .where(course_id: course.id)
+      .where(cohort_id: Cohort.current.id)
+  end
+
 private
 
   def touch_significantly_updated_at
