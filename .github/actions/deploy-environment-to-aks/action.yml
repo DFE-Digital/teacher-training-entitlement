@@ -69,7 +69,7 @@ runs:
       shell: bash
       run: |
         make ci review get-cluster-credentials
-        kubectl exec -n cpd-development deployment/teacher-training-entitlement-review-${{ inputs.pull-request-number }}-web -- sh -c "cd /app && RAILS_ENV=${{ inputs.environment }} /usr/local/bin/bundle exec rails db:seed:replant"
+        kubectl exec -n cpd-development deployment/teacher-training-entitlement-review-${{ inputs.pull-request-number }} -- sh -c "cd /app && RAILS_ENV=${{ inputs.environment }} /usr/local/bin/bundle exec rails db:seed:replant"
       env:
         PULL_REQUEST_NUMBER: ${{ inputs.pull-request-number }}
 
