@@ -109,7 +109,9 @@ RSpec.describe "Delivery Partners rake tasks" do
     context "with data row" do
       subject { csv_data[1] }
 
-      it { is_expected.to eq [partners[0].ecf_id, partners[0].name] }
+      let(:partner) { partners.min_by(&:id) }
+
+      it { is_expected.to eq [partner.ecf_id, partner.name] }
     end
 
     context "without specifying export file" do
@@ -248,7 +250,7 @@ RSpec.describe "Delivery Partners rake tasks" do
     context "with data row" do
       subject { csv_data[0].to_h }
 
-      let(:partnership) { partnerships[0] }
+      let(:partnership) { partnerships.min_by(&:id) }
 
       it { is_expected.to have_attributes length: 3 }
       it { is_expected.to include "Lead Provider ECF Id" => partnership.lead_provider.ecf_id }
