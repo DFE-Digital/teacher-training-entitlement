@@ -58,7 +58,7 @@ RSpec.describe Questionnaires::KindOfNursery, type: :model do
       let(:kind_of_nursery) { "local_authority_maintained_nursery" }
 
       it "preserves institution_identifier" do
-        expect { subject.after_save }.not_to change { wizard.store["institution_identifier"] }
+        expect { subject.after_save }.not_to(change { wizard.store["institution_identifier"] })
       end
     end
   end
