@@ -23,6 +23,9 @@
     "webpack-cli": "^6.0.1"
   },
   "devDependencies": {},
+  "resolutions": {
+    "lodash-es": "^4.17.23"
+  },
   "license": "MIT",
   "scripts": {
     "build": "webpack --config webpack.config.js",
