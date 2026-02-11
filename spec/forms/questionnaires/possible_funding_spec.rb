@@ -57,4 +57,18 @@ RSpec.describe Questionnaires::PossibleFunding do
       expect(subject.course).to eql(course)
     end
   end
+
+  describe "#after_save" do
+    subject do
+      form = described_class.new
+      form.wizard = wizard
+      form
+    end
+
+    let(:store) { { "funding" => "scholarship" } }
+
+    it "clears the funding value" do
+      expect { subject.after_save }.to change { wizard.store["funding"] }.from("scholarship").to(nil)
+    end
+  end
 end

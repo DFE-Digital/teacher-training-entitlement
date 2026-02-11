@@ -56,5 +56,9 @@ module Questionnaires
     def public_nursery?
       KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(kind_of_nursery)
     end
+
+    def after_save
+      wizard.store.delete("institution_identifier") unless public_nursery?
+    end
   end
 end

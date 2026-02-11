@@ -41,15 +41,17 @@ module Questionnaires
         wizard.store["works_in_school"] = "yes"
         wizard.store["works_in_childcare"] = "no"
 
-        %w[kind_of_nursery has_ofsted_urn].map { |field| wizard.store.delete(field) }
+        %w[kind_of_nursery has_ofsted_urn institution_identifier].each { |field| wizard.store.delete(field) }
       when *CHILDCARE_SETTINGS
         wizard.store["works_in_childcare"] = "yes"
         wizard.store["works_in_school"] = "no"
+
+        wizard.store.delete("institution_identifier")
       when *OTHER_SETTINGS, *ANOTHER_SETTING_SETTINGS
         wizard.store["works_in_school"] = "no"
         wizard.store["works_in_childcare"] = "no"
 
-        %w[funding kind_of_nursery has_ofsted_urn].map do |field|
+        %w[funding kind_of_nursery has_ofsted_urn institution_identifier].each do |field|
           wizard.store.delete(field)
         end
       else
