@@ -18,19 +18,10 @@ module Questionnaires
     end
 
     def next_step
-      if institution_identifier == "other" || institution_identifier.blank?
-        :choose_school
-      elsif !institution(source: institution_identifier).in_england?
-        :ineligible_for_funding
-      elsif !institution(source: institution_identifier).eligible_establishment?
-        :ineligible_for_funding
-      elsif funding_eligibility.previously_funded?
-        :ineligible_for_funding
-      elsif funding_eligibility.funded?
-        :possible_funding
-      else
-        :ineligible_for_funding
-      end
+      return :choose_school if no_institution_selected?
+      return :ineligible_for_funding unless eligible_for_funding?
+
+      :possible_funding
     end
 
     def previous_step
@@ -82,10 +73,25 @@ module Questionnaires
 
   private
 
+    def no_institution_selected?
+      institution_identifier == "other" || institution_identifier.blank?
+    end
+
+    def eligible_for_funding?
+      selected_institution.in_england? &&
+        selected_institution.eligible_establishment? &&
+        !funding_eligibility.previously_funded? &&
+        funding_eligibility.funded?
+    end
+
+    def selected_institution
+      @selected_institution ||= institution(source: institution_identifier)
+    end
+
     def funding_eligibility
       @funding_eligibility ||= FundingEligibility.new(
         course: wizard.query_store.course,
-        institution: institution(source: institution_identifier),
+        institution: selected_institution,
         inside_catchment: wizard.query_store.inside_catchment?,
         trn: wizard.query_store.trn,
         get_an_identity_id: wizard.query_store.get_an_identity_id,
