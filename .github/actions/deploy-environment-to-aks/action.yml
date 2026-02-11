@@ -62,6 +62,7 @@ runs:
       env:
         TF_VAR_statuscake_api_token: ${{ inputs.statuscake-api-token }}
         DOCKER_IMAGE: ${{ inputs.docker-image }}
+        DOCKER_IMAGE_TAG: ${{ inputs.deploy-commit-sha }}
         PULL_REQUEST_NUMBER: ${{ inputs.pull-request-number }}
 
     - name: Seed database

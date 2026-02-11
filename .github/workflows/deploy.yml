@@ -134,7 +134,7 @@ jobs:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploy-commit-sha: ${{ github.sha }}
+          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
 
       - name: Notify on failure
@@ -149,7 +149,7 @@ jobs:
   deploy-sandbox:
     name: Deploy sandbox
     concurrency: deploy_app_sandbox
-    needs: [deploy-staging]
+    needs: [build, deploy-staging]
     runs-on: ubuntu-24.04
     if: github.ref == 'refs/heads/main'
     environment:
@@ -167,7 +167,7 @@ jobs:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploy-commit-sha: ${{ github.sha }}
+          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
 
       - name: Notify on failure
@@ -182,7 +182,7 @@ jobs:
   deploy-production:
     name: Deploy production
     concurrency: deploy_app_production
-    needs: [deploy-sandbox]
+    needs: [build, deploy-sandbox]
     runs-on: ubuntu-24.04
     if: github.ref == 'refs/heads/main'
     environment:
@@ -198,7 +198,7 @@ jobs:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploy-commit-sha: ${{ github.sha }}
+          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
 
       - name: Notify on failure
