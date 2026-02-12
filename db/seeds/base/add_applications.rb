@@ -20,7 +20,6 @@ LeadProvider.find_each do |lead_provider|
       cohort: all_cohorts.sample,
     )
 
-    # users with 3 applications each
     user = FactoryBot.create(:user, :with_random_name)
 
     FactoryBot.create(
@@ -36,7 +35,7 @@ LeadProvider.find_each do |lead_provider|
 
     FactoryBot.create_list(
       :application,
-      2,
+      1,
       :rejected,
       :with_random_participant_outcome_state,
       :with_random_work_setting,
@@ -46,10 +45,9 @@ LeadProvider.find_each do |lead_provider|
       cohort: all_cohorts.sample,
     )
 
-    # users with one accepted application each
-    FactoryBot.create_list(
+    # # users with one accepted application each
+    FactoryBot.create(
       :application,
-      2,
       :accepted,
       :with_random_user,
       :with_random_work_setting,
@@ -73,9 +71,8 @@ LeadProvider.find_each do |lead_provider|
     )
 
     # users with one deferred application each
-    FactoryBot.create_list(
+    FactoryBot.create(
       :application,
-      2,
       :deferred,
       %i[accepted rejected].sample,
       :with_random_user,
@@ -101,9 +98,8 @@ LeadProvider.find_each do |lead_provider|
     )
 
     # users with one eligible for funded place application each (cohort funding_cap true)
-    FactoryBot.create_list(
+    FactoryBot.create(
       :application,
-      2,
       :accepted,
       :eligible_for_funding,
       :with_random_user,
@@ -116,9 +112,8 @@ LeadProvider.find_each do |lead_provider|
     )
 
     # users with one not eligible for funded place application each (cohort funding_cap true)
-    FactoryBot.create_list(
+    FactoryBot.create(
       :application,
-      2,
       :accepted,
       :with_random_user,
       :with_random_work_setting,
@@ -130,9 +125,8 @@ LeadProvider.find_each do |lead_provider|
     )
 
     # users with one funded place nil application each (cohort funding_cap false)
-    FactoryBot.create_list(
+    FactoryBot.create(
       :application,
-      2,
       :accepted,
       :with_random_user,
       :with_random_work_setting,
