@@ -11,6 +11,6 @@ spec:
       - pathType: ImplementationSpecific
         backend:
           service:
-            name: teacher-training-entitlement-development
+            name: teacher-training-entitlement-staging
             port:
               number: 80
