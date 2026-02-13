@@ -2,27 +2,35 @@ module Questionnaires
   class ChooseYourCourse < Base
     include Helpers::Institution
 
+    def initialize(*args)
+      # Remove this once we have more than one course, but for now we want to default to the TTE Early Years course as it's the only one available
+      self.course_identifier = "tte-early-years"
+      super
+    end
+
     QUESTION_NAME = :course_identifier
 
     attr_accessor QUESTION_NAME
 
-    # Disabled these validations as we only have one course which is
-    # automatically assigned
-    # validates QUESTION_NAME, presence: true
-    # validate :validate_course_exists
+    validates QUESTION_NAME, presence: true
+    validate :validate_course_exists
 
     def self.permitted_params
       [QUESTION_NAME]
     end
 
     def questions
+      # When we have more than one course, this should be changed to a RadioButtonGroup
       [
-        QuestionTypes::RadioButtonGroup.new(
-          name: :course_identifier,
-          options:,
-          style_options: { legend: { size: "m", tag: "h2" } },
-        ),
+        QuestionTypes::HiddenField.new(name: :course_identifier),
       ]
+      # [
+      #   QuestionTypes::RadioButtonGroup.new(
+      #     name: :course_identifier,
+      #     options:,
+      #     style_options: { legend: { size: "m", tag: "h2" } },
+      #   ),
+      # ]
     end
 
     def options
@@ -39,7 +47,7 @@ module Questionnaires
     end
 
     def after_save
-      wizard.store["course_identifier"] = "tte-early-years"
+      wizard.store["course_identifier"] = course_identifier
     end
 
     def next_step
@@ -51,17 +59,13 @@ module Questionnaires
     end
 
     def course
-      # Early years auto-selected because we only have 1 course at this point
-      course_identifier = "tte-early-years"
-      Course.find_by(identifier: course_identifier)
+      @course ||= Course.find_by(identifier: course_identifier)
     end
 
   private
 
     def courses
-      # Course.where(display: true).order(:position)
-      # Early years auto-selected because we only have 1 course at this point
-      Course.none
+      @courses ||= Course.displayable
     end
 
     def validate_course_exists

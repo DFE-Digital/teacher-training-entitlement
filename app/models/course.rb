@@ -5,6 +5,8 @@ class Course < ApplicationRecord
   validates :identifier, presence: true, uniqueness: true
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
+  scope :displayable, -> { where(display: true).order(:position) }
+
   IDENTIFIERS = %w[tte-early-years].freeze
 
   def schedule_for(cohort: Cohort.current, schedule_date: Date.current)
