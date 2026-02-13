@@ -277,6 +277,7 @@ RSpec.describe Applications::Query do
 
     describe "transient_previously_funded" do
       let(:course) { create(:course, :tte_early_years) }
+      let(:previous_cohort) { create(:cohort, :unique, :with_funding_cap) }
       let!(:application) { create(:application, lead_provider:, course:) }
       let(:query_applications) { described_class.new(lead_provider:).applications }
       let(:returned_application) { query_applications.find(application.id) }
@@ -304,8 +305,10 @@ RSpec.describe Applications::Query do
             :application,
             :accepted,
             lead_provider:,
+            cohort: previous_cohort,
             user_id: application.user_id,
             eligible_for_funding: false,
+            funded_place: false,
             course: application.course,
           )
         end
@@ -334,6 +337,7 @@ RSpec.describe Applications::Query do
             :application,
             :accepted,
             lead_provider:,
+            cohort: previous_cohort,
             user_id: application.user_id,
             eligible_for_funding: true,
             course: application.course,
@@ -368,6 +372,7 @@ RSpec.describe Applications::Query do
             :application,
             :accepted,
             lead_provider:,
+            cohort: previous_cohort,
             user_id: application.user_id,
             eligible_for_funding: true,
             funded_place: true,
@@ -384,6 +389,7 @@ RSpec.describe Applications::Query do
             :application,
             :accepted,
             lead_provider:,
+            cohort: previous_cohort,
             user_id: application.user_id,
             eligible_for_funding: true,
             funded_place: false,

@@ -38,9 +38,14 @@ RSpec.describe Statements::CourseCalculator do
     end
 
     context "when there are multiple declarations from same user and same type" do
+      let(:shared_application) { create(:application, :accepted, :eligible_for_funding, course:, lead_provider:, cohort:) }
+
       before do
-        user = create(:user)
-        Declaration.find_each { _1.application.update!(user:) }
+        StatementItem.destroy_all
+        Declaration.destroy_all
+        %w[started retained-1 retained-2 completed].each do |declaration_type|
+          create_list(:declaration, 2, state: :eligible, declaration_type:, application: shared_application, course:, lead_provider:, cohort:, statement:)
+        end
       end
 
       it "they are counted once per user", :aggregate_failures do
@@ -67,12 +72,9 @@ RSpec.describe Statements::CourseCalculator do
     end
 
     context "when multiple declarations from same user and same type" do
-      let(:declaration) { create(:declaration, :eligible, application:, course:, lead_provider:, cohort:, statement:) }
-
       before do
-        create(:declaration, :eligible, course:, lead_provider:, cohort:, application:, statement:).tap do |d|
-          d.application.update!(user: declaration.application.user)
-        end
+        create(:declaration, :eligible, application:, course:, lead_provider:, cohort:, statement:)
+        create(:declaration, :eligible, application:, course:, lead_provider:, cohort:, statement:)
       end
 
       it "has two declarations" do
@@ -97,13 +99,8 @@ RSpec.describe Statements::CourseCalculator do
       end
 
       before do
-        create(:declaration, :eligible, course:, lead_provider:, cohort:, statement:).tap do |d|
-          d.application.update!(user: started_declaration.application.user)
-        end
-
-        create(:declaration, :eligible, course:, lead_provider:, cohort:, statement:).tap do |d|
-          d.application.update!(user: retained_1_declaration.application.user)
-        end
+        create(:declaration, :eligible, application: started_declaration.application, course:, lead_provider:, cohort:, statement:)
+        create(:declaration, :eligible, application: retained_1_declaration.application, course:, lead_provider:, cohort:, statement:)
       end
 
       it { is_expected.to be(2) }
@@ -177,9 +174,7 @@ RSpec.describe Statements::CourseCalculator do
       let(:declaration) { create(:declaration, :eligible, course:, lead_provider:, statement:) }
 
       before do
-        create(:declaration, :eligible, course:, lead_provider:, cohort:, statement:).tap do |d|
-          d.application.update!(user: declaration.application.user)
-        end
+        create(:declaration, :eligible, application: declaration.application, course:, lead_provider:, cohort:, statement:)
       end
 
       it { is_expected.to be(1) }

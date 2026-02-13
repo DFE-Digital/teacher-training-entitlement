@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :cohort do
     sequence(:start_year, 0) { |n| 2021 + n % 9 }
+    suffix { "a" }
     registration_start_date { Date.new(start_year, 4, 3) }
     funding_cap { true }
-    suffix { "a" }
 
     description do
       suffix_label = suffix == "a" ? nil : ": suffix #{suffix}"
@@ -24,6 +24,10 @@ FactoryBot.define do
 
     trait :previous do
       start_year { Date.current.month < 9 ? Date.current.year : (Date.current.year - 1) }
+    end
+
+    trait :unique do
+      sequence(:suffix) { |n| ("b".."z").to_a[n % 25] }
     end
 
     trait :with_funding_cap do

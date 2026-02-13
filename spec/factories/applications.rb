@@ -10,7 +10,13 @@ FactoryBot.define do
     headteacher_status { "no" }
     lead_provider_approval_status { :pending }
     ecf_id { SecureRandom.uuid }
-    cohort { create(:cohort, :current) }
+    cohort do
+      if user.persisted? && user.applications.not_rejected.exists?(course:)
+        create(:cohort, :unique)
+      else
+        create(:cohort, :current)
+      end
+    end
     teacher_catchment { cohort && cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
@@ -96,8 +102,9 @@ FactoryBot.define do
     trait :previously_funded do
       after(:create) do |application|
         course = application.course.rebranded_alternative_courses.first
+        previous_cohort = create(:cohort, :unique, :with_funding_cap)
 
-        create(:application, :accepted, :eligible_for_funding, user: application.user, course:, cohort: application.cohort)
+        create(:application, :accepted, :eligible_for_funding, user: application.user, course:, cohort: previous_cohort)
       end
     end
 
@@ -111,6 +118,14 @@ FactoryBot.define do
 
     trait :with_random_user do
       user { build(:user, :with_random_name) }
+    end
+
+    trait :with_get_an_identity_user do
+      user { create(:user, :with_get_an_identity_id) }
+    end
+
+    trait :without_get_an_identity_user do
+      user { create(:user, provider: nil) }
     end
 
     trait :with_participant_id_change do

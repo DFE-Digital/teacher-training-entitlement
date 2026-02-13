@@ -29,29 +29,29 @@ RSpec.describe AdminService::DashboardStats do
     create_list(
       :application,
       get_an_identity_applications_created_before_start_time,
+      :with_get_an_identity_user,
       created_at: start_time - 1.day,
-      user: create(:user, :with_get_an_identity_id),
     )
 
     create_list(
       :application,
       non_get_an_identity_applications_created_before_start_time,
+      :without_get_an_identity_user,
       created_at: start_time - 1.day,
-      user: create(:user, provider: nil),
     )
 
     create_list(
       :application,
       get_an_identity_applications_created_since_start_time,
+      :with_get_an_identity_user,
       created_at: start_time + 1.day,
-      user: create(:user, :with_get_an_identity_id),
     )
 
     create_list(
       :application,
       non_get_an_identity_applications_created_since_start_time,
+      :without_get_an_identity_user,
       created_at: start_time + 1.day,
-      user: create(:user, provider: nil),
     )
   end
 
