@@ -2,6 +2,8 @@
 
 # Register for Teacher Training Entitlement (TTE)
 
+
+
 1. [What is TTE and how does it work](docs/how_does_tte_work.md)
 1. [Setting up the app for development](docs/setup.md)
 1. [Connecting to Azure](docs/connecting-to-azure.md)
