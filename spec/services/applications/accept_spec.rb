@@ -121,7 +121,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
       end
     end
 
-    context "when user has applied for the same course with another provider" do
+    context "when user has applied for the same course with another provider in a different cohort" do
       let(:other_lead_provider) { create(:lead_provider) }
 
       let(:other_application) do
@@ -129,7 +129,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
                user:,
                course:,
                lead_provider: other_lead_provider,
-               cohort:)
+               cohort: cohort_next)
       end
 
       before do
@@ -137,28 +137,27 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         other_application.save!
       end
 
-      it "rejects other_application" do
+      it "does not reject other_application in different cohort" do
         service.accept
         expect(application.reload.lead_provider_approval_status).to eql("accepted")
         expect(application.reload.accepted_at).to be_within(1.minute).of(Time.zone.now)
         expect(service.application).to be_active_training_status
 
         other_application.reload
-        expect(other_application.lead_provider_approval_status).to eql("rejected")
-        expect(other_application.reason_for_rejection).to eql(Application.reason_for_rejections[:other_application_in_this_cohort_accepted])
+        expect(other_application.lead_provider_approval_status).to eql("pending")
       end
     end
 
     context "when accepting an application for a course that has already been accepted by another provider" do
       let(:other_lead_provider) { create(:lead_provider) }
 
-      context "when the other npq applicaton belongs to the same participant" do
+      context "when the other npq applicaton belongs to the same participant in a different cohort" do
         let(:other_application) do
           create(:application,
                  user:,
                  course:,
                  lead_provider: other_lead_provider,
-                 cohort:)
+                 cohort: cohort_next)
         end
 
         let(:params) do
@@ -171,31 +170,8 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
           application.update!(lead_provider_approval_status: "accepted")
         end
 
-        context "when both applications are in the same cohort" do
-          it "does not allow 2 applications with same course and cohort to be accepted" do
-            expect {
-              service.accept
-            }.not_to(change { other_application.reload.lead_provider_approval_status })
-          end
-
-          it "attaches errors to the object" do
-            service.accept
-            expect(service).to have_error(:application, :has_another_accepted_application, "The participant has already had an application accepted for this course.")
-          end
-        end
-
-        context "when the applications are in different cohorts" do
-          let(:other_application) do
-            create(:application,
-                   user:,
-                   course:,
-                   lead_provider: other_lead_provider,
-                   cohort: cohort_next)
-          end
-
-          it "allows both applications to be accepted" do
-            expect { service.accept }.to change { other_application.reload.lead_provider_approval_status }.to("accepted")
-          end
+        it "allows both applications to be accepted when in different cohorts" do
+          expect { service.accept }.to change { other_application.reload.lead_provider_approval_status }.to("accepted")
         end
 
         context "when one of the applications is withdrawn" do

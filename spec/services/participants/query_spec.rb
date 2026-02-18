@@ -42,8 +42,8 @@ RSpec.describe Participants::Query do
       before do
         create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id)
         create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id)
-        create(:application, :accepted, user: participant1, lead_provider:, cohort: application1.cohort)
-        create(:application, :accepted, user: participant1, lead_provider:, cohort: application1.cohort)
+        create(:application, :accepted, user: participant1, lead_provider:)
+        create(:application, :accepted, user: participant1, lead_provider:)
       end
 
       it "does not return duplicate participants" do

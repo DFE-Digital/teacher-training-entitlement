@@ -14,6 +14,7 @@ class Application < ApplicationRecord
   has_paper_trail meta: { note: :version_note }
 
   belongs_to :user
+  belongs_to :cohort, optional: true
   belongs_to :course
   belongs_to :lead_provider
   belongs_to :school, optional: true
@@ -21,7 +22,6 @@ class Application < ApplicationRecord
   belongs_to :private_childcare_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "PrivateChildcareProvider", foreign_key: :private_childcare_provider_id
   belongs_to :itt_provider, optional: true
   belongs_to :itt_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "IttProvider", foreign_key: :itt_provider_id
-  belongs_to :cohort, optional: true
   belongs_to :schedule, optional: true
 
   has_many :participant_id_changes, through: :user
@@ -35,11 +35,17 @@ class Application < ApplicationRecord
   scope :with_targeted_delivery_funding_eligibility, -> { where(targeted_delivery_funding_eligibility: true) }
   scope :for_manual_review, -> { where.not(review_status: nil) }
   scope :not_withdrawn, -> { where.not(training_status: "withdrawn").or(where(training_status: nil)) }
+  scope :not_rejected, -> { where.not(lead_provider_approval_status: "rejected") }
 
   attr_accessor :version_note, :skip_touch_user_if_changed
 
   validate :schedule_cohort_matches
   validates :ecf_id, uniqueness: { case_sensitive: false }
+  validates :user_id,
+            uniqueness: {
+              scope: %i[cohort_id course_id],
+              conditions: -> { where.not(lead_provider_approval_status: "rejected") },
+            }, unless: :provider_rejected?
 
   after_commit :touch_user_if_changed
 
@@ -132,6 +138,10 @@ class Application < ApplicationRecord
       .eligible_for_funding
       .where(funded_place: [nil, true])
       .exists?
+  end
+
+  def provider_rejected?
+    lead_provider_approval_status.to_s == "rejected"
   end
 
   def ineligible_for_funding_reason

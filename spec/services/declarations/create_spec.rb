@@ -393,43 +393,5 @@ RSpec.describe Declarations::Create, type: :model do
         expect(declaration.superseded_by).to eq(original_declaration)
       end
     end
-
-    context "when there is more than one matching application" do
-      let(:newer_application) { create(:application, :accepted, cohort:, course:, lead_provider:, user: application.user) }
-
-      before do
-        travel_to(1.day.ago) do
-          application
-        end
-        newer_application
-      end
-
-      it "creates a declaration for the latest application" do
-        expect { subject }.to change(Declaration, :count).by(1)
-
-        expect(declaration.application).to eq(newer_application)
-      end
-    end
-
-    context "when there is already an older application with declarations" do
-      let(:newer_application) { create(:application, :accepted, cohort:, course:, lead_provider:, user: application.user) }
-
-      before do
-        travel_to(1.month.ago) do
-          application
-          create(:declaration, application:, declaration_type: "started")
-          create(:declaration, application:, declaration_type: "retained-1")
-          create(:declaration, application:, declaration_type: "retained-2")
-          create(:declaration, application:, declaration_type: "completed")
-        end
-        newer_application
-      end
-
-      it "creates a declaration for the latest application" do
-        expect { subject }.to change(Declaration, :count).by(1)
-
-        expect(declaration.application).to eq(newer_application)
-      end
-    end
   end
 end
