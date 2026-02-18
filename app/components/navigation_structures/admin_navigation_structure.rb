@@ -18,7 +18,7 @@ module NavigationStructures
     def super_admin_nodes
       return {} unless @current_admin.super_admin?
 
-      {
+      nodes = {
         Node.new(
           name: "Feature flags",
           href: admin_features_path,
@@ -31,6 +31,17 @@ module NavigationStructures
           prefix: "/admin/admins",
         ) => [],
       }
+
+      # Only show API Test Scenarios in development, review, and sandbox environments
+      if Rails.env.in?(%w[development review sandbox])
+        nodes[Node.new(
+          name: "API Test Scenarios",
+          href: admin_api_test_scenarios_path,
+          prefix: "/admin/api-test-scenarios",
+        )] = []
+      end
+
+      nodes
     end
 
     def admin_nodes

@@ -1,0 +1,83 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">API Test Scenarios</h1>
+
+    <p class="govuk-body">
+      Seed test data for Lead Provider API Test Scenarios. This will create 12 test applications with specific characteristics for testing the API integration.
+    </p>
+
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        Running this will delete any existing test data for the selected provider and cohort year, then create fresh test data.
+      </strong>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Provider</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+          <th scope="col" class="govuk-table__header">Test Applications</th>
+          <th scope="col" class="govuk-table__header">Action</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <% @lead_providers.each do |provider_data| %>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              <%= link_to provider_data[:provider].name,
+                          admin_lead_provider_path(provider_data[:provider]),
+                          class: "govuk-link" %>
+            </td>
+            <td class="govuk-table__cell">
+              <% if provider_data[:seeded] %>
+                <strong class="govuk-tag govuk-tag--green">Seeded</strong>
+              <% else %>
+                <strong class="govuk-tag govuk-tag--grey">Not seeded</strong>
+              <% end %>
+            </td>
+            <td class="govuk-table__cell">
+              <%= provider_data[:applications_count] %>
+            </td>
+            <td class="govuk-table__cell">
+              <%= button_to(
+                    provider_data[:seeded] ? "Re-seed data" : "Seed data",
+                    admin_api_test_scenarios_path,
+                    method: :post,
+                    params: { lead_provider_id: provider_data[:provider].id },
+                    class: "govuk-button govuk-button--secondary",
+                    data: { confirm: "Are you sure? This will #{provider_data[:seeded] ? 'delete existing and create new' : 'create'} test data for #{provider_data[:provider].name}" }
+                  ) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          What test data will be created?
+        </span>
+      </summary>
+      <div class="govuk-details__text">
+        <p class="govuk-body">The following 12 test applications will be created:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <% @application_data.each do |app| %>
+            <li>
+              <strong><%= app[:email] %></strong> - <%= app[:purpose] %>
+            </li>
+          <% end %>
+        </ul>
+        <p class="govuk-body">All applications will be in <strong>pending</strong> status, ready for the provider to accept or reject via the API.</p>
+        <p class="govuk-body">Two statements will also be created: one in <strong>paid</strong> status and one in <strong>payable</strong> status.</p>
+      </div>
+    </details>
+  </div>
+</div>
