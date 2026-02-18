@@ -29,6 +29,8 @@ module SessionWizardSteps
       admin.update!(otp_hash: code, otp_expires_at: 10.minutes.from_now)
 
       GenericMailer.with(to: email, code:).confirmation_code.deliver_now
+    rescue Notifications::Client::BadRequestError => e
+      Rails.logger.error("Failed to send OTP email: #{e.message}")
     end
   end
 end

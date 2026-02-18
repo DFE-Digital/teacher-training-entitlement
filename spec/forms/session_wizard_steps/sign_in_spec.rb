@@ -30,5 +30,14 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
       expect(GenericMailer).to receive(:with).with(to: email, code: otp_generator.call).and_call_original
       subject
     end
+
+    it "catches Notify errors" do
+      message = instance_double(ActionMailer::MessageDelivery)
+      allow(GenericMailer).to receive(:with).and_return(instance_double(GenericMailer, confirmation_code: message))
+      allow(message).to receive(:deliver_now)
+        .and_raise(Notifications::Client::BadRequestError.new(instance_double(Net::HTTPResponse, code: 400, body: "error")))
+
+      expect { subject }.not_to raise_error
+    end
   end
 end
