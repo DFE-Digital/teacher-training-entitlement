@@ -6,7 +6,7 @@ RSpec.describe "admin/applications/declarations/index.html.erb", :versioning, ty
   let(:application) { build_stubbed(:application) }
 
   before do
-    stub_template "_declaration.html.erb" => "declaration partial\n"
+    stub_template "admin/applications/declarations/_declaration.html.erb" => "declaration partial\n"
     assign(:application, application)
     assign(:declarations, [])
   end
