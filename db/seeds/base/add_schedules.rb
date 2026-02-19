@@ -1,9 +1,8 @@
+schedules = %i[tte_reception_autumn tte_send_spring]
 # cohorts up to 2025 reflect production
 {
-  2021 => %i[npq_leadership_spring npq_leadership_autumn npq_specialist_spring npq_specialist_autumn npq_aso_december npq_aso_june npq_aso_march npq_aso_november npq_ehco_june],
-  2022 => %i[npq_leadership_spring npq_leadership_autumn npq_specialist_spring npq_specialist_autumn npq_ehco_june npq_ehco_march npq_ehco_november npq_ehco_december],
-  2023 => %i[npq_leadership_spring npq_leadership_autumn npq_specialist_spring npq_specialist_autumn npq_ehco_june npq_ehco_march npq_ehco_november npq_ehco_december],
-  2024 => %i[npq_leadership_autumn npq_specialist_autumn npq_ehco_june npq_ehco_november npq_ehco_december],
+  2023 => schedules,
+  2024 => schedules,
 }.each do |start_year, schedules|
   cohort = Cohort.find_by(start_year:, suffix: "a")
   schedules.each do |schedule_identifier|
@@ -13,14 +12,8 @@ end
 
 Cohort.where(start_year: 2025..).find_each do |cohort|
   {
-    npq_ehco_december: 9,
-    npq_ehco_june: 8,
-    npq_ehco_march: 8,
-    npq_ehco_november: 9,
-    npq_leadership_autumn: 9,
-    npq_leadership_spring: 8,
-    npq_specialist_autumn: 9,
-    npq_specialist_spring: 8,
+    tte_reception_autumn: 9,
+    tte_reception_spring: 8,
   }.each do |schedule_identifier, policy_descriptor|
     FactoryBot.create(
       :schedule,

@@ -178,15 +178,7 @@ module Declarations
     end
 
     def validate_has_passed?
-      return false unless valid_course_identifier_for_participant_outcome?
-
       declaration_type == "completed"
-    end
-
-    def valid_course_identifier_for_participant_outcome?
-      # CourseGroup.joins(:courses).leadership_or_specialist.where(courses: { identifier: course_identifier }).exists?
-      # TODO: QUESTion for policy
-      true
     end
 
     def create_participant_outcome!

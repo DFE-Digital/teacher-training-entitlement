@@ -33,7 +33,7 @@ RSpec.feature "Sad journey", :with_default_schedules, type: :feature do
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
-      page.choose("Ambition Institute", visible: :all)
+      page.choose(LeadProvider.first.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/teacher-catchment", axe_check: false, submit_form: true) do

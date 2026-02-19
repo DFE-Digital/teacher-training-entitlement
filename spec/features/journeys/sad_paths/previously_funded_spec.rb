@@ -6,8 +6,8 @@ RSpec.feature "Previously funded participant", :with_default_schedules, type: :f
 
   let(:user) { create(:user, :with_get_an_identity_id) }
   let(:school) { create(:school, :with_address) }
-  let(:lead_provider) { LeadProvider.find_by(name: "Ambition Institute") }
-  let(:course) { Course.find_by(identifier: "tte-early-years") }
+  let(:lead_provider) { create(:lead_provider, :with_courses) }
+  let(:course) { lead_provider.courses.last }
 
   before do
     create(:application,

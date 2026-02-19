@@ -43,7 +43,7 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
       expect(sl).to have_summary_item("Name", schedule.name)
       expect(sl).to have_summary_item("Identifier", schedule.identifier)
       expect(sl).to have_summary_item("Policy descriptor", 11)
-      expect(sl).to have_summary_item("Course group", schedule.course_group.name)
+      expect(sl).to have_summary_item("Course group", schedule.course_group)
       expect(sl).to have_summary_item("Applies from", long_date(schedule.applies_from))
       expect(sl).to have_summary_item("Applies to", long_date(schedule.applies_to))
       expect(sl).to have_summary_item("Declaration types", "started, completed")
@@ -52,7 +52,7 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
 
   context "when logged in as a super admin" do
     let(:schedule) { schedules.first }
-    let(:course_group) { create(:course_group, name: "reception") }
+    let(:course_group) { "reception" }
 
     before do
       admin.update! super_admin: true
@@ -132,7 +132,7 @@ private
     fill_in "Name", with: "name"
     fill_in "Identifier", with: "identifier"
     fill_in "Policy descriptor", with: "42"
-    select course_group.name, from: "Course group"
+    select course_group, from: "Course group"
 
     fieldsets = all("fieldset")
 

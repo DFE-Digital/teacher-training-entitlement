@@ -9,6 +9,8 @@ RSpec.describe Statements::BulkCreator do
   let(:statements_csv_id) { ActiveStorage::Blob.create_and_upload!(io: statements_csv, filename: "statements.csv").signed_id }
   let(:contracts_csv_id)  { ActiveStorage::Blob.create_and_upload!(io: contracts_csv, filename: "contracts.csv").signed_id }
 
+  before { create(:lead_provider, :with_courses) }
+
   subject { described_class.new(cohort:, statements_csv_id:, contracts_csv_id:) }
 
   it { is_expected.to be_valid }

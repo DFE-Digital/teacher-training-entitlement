@@ -12,7 +12,7 @@ RSpec.feature "Account", type: :feature do
   end
 
   describe "accounts user registration page" do
-    let!(:application) { FactoryBot.create(:application) }
+    let!(:application) { create(:application) }
 
     scenario "when not logged in, it redirects to sign in" do
       visit(accounts_user_registration_path(application.id))

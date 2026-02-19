@@ -7,9 +7,8 @@ RSpec.describe Admin::SchedulesController, :ecf_api_disabled, type: :request do
 
   let(:schedule)       { create(:schedule) }
   let(:cohort)         { schedule.cohort }
-  let(:valid_params)   { { schedule: attributes_for(:schedule).merge(course_group_id: course_group.id) } }
+  let(:valid_params)   { { schedule: attributes_for(:schedule).merge(course_group: "send") } }
   let(:invalid_params) { { schedule: { name: "" } } }
-  let(:course_group)   { create(:course_group) }
 
   context "when logged in as super admin" do
     before { sign_in_as_admin(super_admin: true) }

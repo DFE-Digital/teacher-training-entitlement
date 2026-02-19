@@ -1,16 +1,24 @@
 class Course < ApplicationRecord
-  belongs_to :course_group, optional: true
+  include CourseGroupable
+  self.ignored_columns = %w[course_group_id]
 
   validates :name, presence: true
   validates :identifier, presence: true, uniqueness: true
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
+  has_many :course_cohorts, dependent: :destroy
+  has_many :course_cohort_providers, through: :course_cohorts
+  has_many :lead_providers, through: :course_cohort_providers
 
   scope :displayable, -> { where(display: true).order(:position) }
 
   IDENTIFIERS = %w[tte-early-years].freeze
 
-  def schedule_for(cohort: Cohort.current, schedule_date: Date.current)
-    course_group.schedule_for(cohort:, schedule_date:)
+  def schedule_for(cohort: Cohort.current)
+    schedules.find_by(cohort:, identifier: "tte-reception-autumn")
+  end
+
+  def schedules
+    @schedules ||= Schedule.where(course_group:)
   end
 
   def short_code

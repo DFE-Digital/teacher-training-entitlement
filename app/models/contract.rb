@@ -15,7 +15,7 @@ class Contract < ApplicationRecord
            :targeted_delivery_funding_per_participant,
            to: :contract_template
 
-  validates :course_id, uniqueness: { scope: :statement_id }
+  validates :course_id, uniqueness: { scope: :statement_id, message: "Contract for this statement and course already exists" }
   validate :changing_contract_template_when_payable
   validate :changing_contract_template_when_paid
 

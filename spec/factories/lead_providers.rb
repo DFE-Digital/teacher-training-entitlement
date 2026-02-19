@@ -5,7 +5,7 @@ FactoryBot.define do
       delivery_partners { Array.wrap(delivery_partner) }
     end
 
-    name { Faker::Company.unique.name }
+    name { Faker::Company.unique.name.gsub(",", "") }
     ecf_id { SecureRandom.uuid }
     hint { Faker::Lorem.sentence }
 
@@ -22,6 +22,12 @@ FactoryBot.define do
         Array.wrap(delivery_partners).each do |delivery_partner|
           lead_provider.delivery_partnerships.create! delivery_partner:, cohort:
         end
+      end
+    end
+
+    trait :with_courses do
+      after :create do |lead_provider|
+        create(:course, lead_provider:)
       end
     end
   end

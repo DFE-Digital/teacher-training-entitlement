@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe DeliveryPartners::Query do
-  let(:lead_provider_1) { LeadProvider.first }
-  let(:lead_provider_2) { LeadProvider.last }
+  let(:lead_provider_1) { create(:lead_provider) }
+  let(:lead_provider_2) { create(:lead_provider) }
   let(:cohort_21) { create :cohort, start_year: 2021 }
   let(:cohort_22) { create :cohort, start_year: 2022 }
   let(:cohort_23) { create :cohort, start_year: 2023 }

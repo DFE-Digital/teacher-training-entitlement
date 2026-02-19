@@ -632,7 +632,7 @@ RSpec.describe Declaration, type: :model do
         create(:declaration, :payable, lead_provider:, course:, declaration_type: "retained-1")
 
         # Declaration on another provider.
-        create(:declaration, :completed, :payable, lead_provider: LeadProvider.where.not(id: lead_provider.id).first, course:)
+        create(:declaration, :completed, :payable, lead_provider: create(:lead_provider), course:)
 
         # Declaration with different course.
         create(:declaration, :completed, :payable, lead_provider:, course:, application: create(:application, course: create(:course, identifier: "other-course")))
@@ -708,7 +708,7 @@ RSpec.describe Declaration, type: :model do
       let(:lead_provider) { declaration.lead_provider }
       let(:declaration) { create(:declaration) }
 
-      before { create(:declaration, lead_provider: LeadProvider.where.not(id: lead_provider.id).first) }
+      before { create(:declaration, lead_provider: create(:lead_provider)) }
 
       it { expect(described_class.with_lead_provider(lead_provider)).to contain_exactly(declaration) }
     end
@@ -786,9 +786,8 @@ RSpec.describe Declaration, type: :model do
 
   describe "#duplicate_declarations" do
     let(:cohort) { create(:cohort, :current) }
-    let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
-    let(:course) { create(:course, :tte_early_years, course_group:) }
-    let(:schedule) { create(:schedule, :npq_leadership_autumn, course_group:, cohort:) }
+    let(:course) { create(:course, :tte_early_years) }
+    let(:schedule) { create(:schedule, :npq_leadership_autumn, cohort:) }
     let(:application) { create(:application, :accepted, cohort:, course:) }
     let(:participant) { application.user }
     let!(:declaration) { create(:declaration, application:) }
@@ -808,7 +807,7 @@ RSpec.describe Declaration, type: :model do
 
         context "when declarations have been made for a different course", :npq do
           before do
-            course = create(:course, :tte_early_years, course_group:)
+            course = create(:course, :tte_early_years)
             other_application = create(:application, :accepted, course:, cohort:, user: other_user)
             create(:declaration, application: other_application)
           end
@@ -852,7 +851,7 @@ RSpec.describe Declaration, type: :model do
 
     context "when declarations have been made for a different course", :npq do
       before do
-        course = create(:course, :tte_early_years, course_group:)
+        course = create(:course, :tte_early_years)
         other_application = create(:application, :accepted, course:, cohort:, user: participant)
         create(:declaration, application: other_application)
       end

@@ -37,7 +37,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
       expect(page).to have_text("Select your provider")
-      page.choose("Ambition Institute", visible: :all)
+      page.choose(LeadProvider.first.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
@@ -65,7 +65,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
         {
           "Course start" => "In #{application_course_start_date}",
           "Course" => "Early Years",
-          "Provider" => "Ambition Institute",
+          "Provider" => LeadProvider.first.name,
           "Workplace" => "open manchester school – street 1, manchester",
           "Work setting" => "A school",
           "Workplace in England" => "Yes",
@@ -91,12 +91,12 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
     end
     if User.last.applications.count == 1
       navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", axe_check: false, submit_form: false) do
-        expect(page).to have_text("Ambition Institute")
+        expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
     else
       navigate_to_page(path: "/account", axe_check: false, submit_form: false) do
-        expect(page).to have_text("Ambition Institute")
+        expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
     end
@@ -138,7 +138,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "lead_mentor" => false,
       "lead_provider_approval_status" => "pending",
       "participant_outcome_state" => nil,
-      "lead_provider_id" => LeadProvider.find_by(name: "Ambition Institute").id,
+      "lead_provider_id" => LeadProvider.find_by(name: LeadProvider.first.name).id,
       "notes" => nil,
       "private_childcare_provider_id" => nil,
       "referred_by_return_to_teaching_adviser" => nil,
@@ -174,7 +174,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
         # "funding_eligiblity_status_code" => "ineligible_establishment_type",
         "institution_identifier" => "School-100000",
         "institution_name" => js ? "" : "open",
-        "lead_provider_id" => LeadProvider.find_by(name: "Ambition Institute").id.to_s,
+        "lead_provider_id" => LeadProvider.first.id.to_s,
         "submitted" => true,
         # "targeted_delivery_funding_eligibility" => false,
         "teacher_catchment" => "england",

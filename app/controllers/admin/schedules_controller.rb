@@ -49,7 +49,7 @@ private
 
   def schedule_params
     params.require(:schedule).permit(
-      :course_group_id,
+      :course_group,
       :name,
       :identifier,
       :policy_descriptor,
