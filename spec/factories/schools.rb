@@ -7,6 +7,7 @@ FactoryBot.define do
     urn { generate(:urn) }
     ukprn { generate(:ukprn) }
     establishment_status_code { "1" }
+    establishment_type_code { "1" } # Community school (eligible)
     last_changed_date { Date.new(2010, 1, 1) }
 
     trait :non_pp50 do
@@ -58,6 +59,10 @@ FactoryBot.define do
     trait :in_wales do
       urn { "40000" }
       establishment_type_code { "30" }
+    end
+
+    trait :ineligible_establishment_type do
+      establishment_type_code { "11" } # Other independent school
     end
   end
 end

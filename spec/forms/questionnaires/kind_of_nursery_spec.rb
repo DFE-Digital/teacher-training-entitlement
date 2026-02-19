@@ -37,4 +37,29 @@ RSpec.describe Questionnaires::KindOfNursery, type: :model do
       it { is_expected.to eq(:ineligible_for_funding) }
     end
   end
+
+  describe "#after_save" do
+    subject { described_class.new(kind_of_nursery:, wizard:) }
+
+    let(:store) { { "institution_identifier" => "School-123456" } }
+    let(:wizard) do
+      RegistrationWizard.new(current_step: :kind_of_nursery, store:, request: nil, current_user: build_stubbed(:user))
+    end
+
+    context "when private nursery selected" do
+      let(:kind_of_nursery) { "private_nursery" }
+
+      it "clears institution_identifier" do
+        expect { subject.after_save }.to change { wizard.store["institution_identifier"] }.to(nil)
+      end
+    end
+
+    context "when public nursery selected" do
+      let(:kind_of_nursery) { "local_authority_maintained_nursery" }
+
+      it "preserves institution_identifier" do
+        expect { subject.after_save }.not_to(change { wizard.store["institution_identifier"] })
+      end
+    end
+  end
 end

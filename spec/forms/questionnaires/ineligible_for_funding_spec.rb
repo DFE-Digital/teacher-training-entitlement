@@ -19,6 +19,18 @@ RSpec.describe Questionnaires::IneligibleForFunding, type: :model do
       it { is_expected.to eq(:choose_school) }
     end
 
+    context "when user selected public nursery (preschool class as part of school)" do
+      let(:store) { { "teacher_catchment" => "england", "kind_of_nursery" => "preschool_class_as_part_of_school" } }
+
+      it { is_expected.to eq(:choose_school) }
+    end
+
+    context "when user selected public nursery (local authority maintained)" do
+      let(:store) { { "teacher_catchment" => "england", "kind_of_nursery" => "local_authority_maintained_nursery" } }
+
+      it { is_expected.to eq(:choose_school) }
+    end
+
     context "when user selected private nursery" do
       let(:store) { { "teacher_catchment" => "england", "kind_of_nursery" => "private_nursery" } }
 

@@ -31,6 +31,8 @@ module Questionnaires
     end
 
     def previous_step
+      return :funding_your_course if query_store.funding.present?
+
       :possible_funding
     end
   end

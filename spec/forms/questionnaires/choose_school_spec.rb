@@ -89,6 +89,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
       {
         "course_identifier" => course.identifier.to_s,
         "works_in_school" => "yes",
+        "work_setting" => "a_school",
         "teacher_catchment" => "england",
       }
     end
@@ -109,6 +110,29 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     context "when school not in england" do
       let(:institution_identifier) { "School-#{school.urn}" }
       let(:school) { create(:school, :in_wales) }
+
+      it { is_expected.to eq :ineligible_for_funding }
+    end
+
+    context "when school has ineligible establishment type" do
+      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:school) { create(:school, :ineligible_establishment_type) }
+
+      it { is_expected.to eq :ineligible_for_funding }
+    end
+
+    context "when early years route with ineligible establishment type" do
+      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:school) { create(:school, :ineligible_establishment_type) }
+      let(:store) do
+        {
+          "course_identifier" => course.identifier.to_s,
+          "works_in_childcare" => "yes",
+          "work_setting" => "early_years_or_childcare",
+          "kind_of_nursery" => "local_authority_maintained_nursery",
+          "teacher_catchment" => "england",
+        }
+      end
 
       it { is_expected.to eq :ineligible_for_funding }
     end

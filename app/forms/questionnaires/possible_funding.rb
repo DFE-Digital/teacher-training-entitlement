@@ -18,6 +18,7 @@ module Questionnaires
 
     def after_save
       wizard.store["funding_amount"] = funding_amount
+      wizard.store.delete("funding")
     end
 
     def message_template
