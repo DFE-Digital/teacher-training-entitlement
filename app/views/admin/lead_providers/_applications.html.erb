@@ -1,0 +1,55 @@
+<% if applications.any? %>
+  <%= govuk_table do |table|
+        table.with_head do |head|
+          head.with_row do |row|
+            row.with_cell(text: "Participant")
+            row.with_cell(text: "Email")
+            row.with_cell(text: "Course")
+            row.with_cell(text: "Status")
+            row.with_cell(text: "Funding")
+            row.with_cell(text: "Created")
+          end
+        end
+        table.with_body do |body|
+          applications.each do |application|
+            body.with_row do |row|
+              row.with_cell do
+                link_to application.user.full_name, admin_application_path(application), class: "govuk-link"
+              end
+              row.with_cell(text: application.user.email)
+              row.with_cell(text: application.course.name)
+              row.with_cell do
+                case application.lead_provider_approval_status
+                when "accepted"
+                  tag.strong("Accepted", class: "govuk-tag govuk-tag--green")
+                when "rejected"
+                  tag.strong("Rejected", class: "govuk-tag govuk-tag--red")
+                when "pending"
+                  tag.strong("Pending", class: "govuk-tag govuk-tag--yellow")
+                else
+                  application.lead_provider_approval_status.titleize
+                end
+              end
+              row.with_cell do
+                if application.cohort.funding_cap?
+                  if application.funded_place
+                    tag.strong("Funded", class: "govuk-tag govuk-tag--blue")
+                  elsif application.funded_place == false
+                    tag.strong("Not funded", class: "govuk-tag govuk-tag--grey")
+                  else
+                    "—"
+                  end
+                else
+                  "N/A"
+                end
+              end
+              row.with_cell(text: application.created_at.to_date.to_fs(:govuk))
+            end
+          end
+        end
+      end
+  %>
+  <%= govuk_pagination(pagy:) %>
+<% else %>
+  <p class="govuk-body">No applications found for this cohort.</p>
+<% end %>

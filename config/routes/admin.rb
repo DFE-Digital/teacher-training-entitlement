@@ -129,7 +129,9 @@ namespace :admin do
   end
 
   resources :lead_providers, only: %i[index show], path: "providers" do
-    resources :cohort, controller: "lead_provider_cohort", only: %i[show]
+    member do
+      get "cohorts/:cohort_id", to: "lead_providers#show", as: :cohort
+    end
   end
   resources :admins, only: %i[index]
 

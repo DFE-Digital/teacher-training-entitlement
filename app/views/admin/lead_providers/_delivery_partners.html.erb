@@ -1,0 +1,20 @@
+<% if delivery_partners.any? %>
+    <%= govuk_table do |table|
+        table.with_head do |head|
+            head.with_row do |row|
+                row.with_cell(text: "Delivery partner")
+            end
+        end
+        table.with_body do |body|
+            delivery_partners.each do |delivery_partner|
+                body.with_row do |row|
+                    row.with_cell(text: delivery_partner.name)
+                end
+            end
+        end
+    end
+    %>
+    <%= govuk_pagination(pagy:) %>
+<% else %>
+    <p class="govuk-body">No delivery partners found for this cohort.</p>
+<% end %>
