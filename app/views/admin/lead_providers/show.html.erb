@@ -20,10 +20,15 @@
 
 <%= govuk_tabs do |tabs| %>
     <%= tabs.with_tab(label: "Applications") do %>
-        <%= render partial: "applications",  locals: { current_cohort: @current_cohort, applications: @applications, pagy: @pagy_applications } %>
+        <%= render partial: "applications",  locals: { applications: @applications, pagy: @pagy_applications } %>
     <% end %>
 
     <%= tabs.with_tab(label: "Delivery Partners") do %>
-        <%= render partial: "delivery_partners",  locals: { current_cohort: @current_cohort, delivery_partners: @delivery_partners, pagy: @pagy_delivery_partners } %>
+        <%= render partial: "delivery_partners",  locals: { delivery_partners: @delivery_partners, pagy: @pagy_delivery_partners } %>
     <% end %>
+
+    <%= tabs.with_tab(label: "Statements") do %>
+        <%= render partial: "statements",  locals: { statements: @statements, pagy: @pagy_statements } %>
+    <% end %>
+
 <% end %>

@@ -1,0 +1,24 @@
+<% if statements.any? %>
+    <%= govuk_table do |table|
+        table.with_head do |head|
+            head.with_row do |row|
+                row.with_cell(text: "Statement date")
+                row.with_cell(text: "Status")
+                row.with_cell(text: "Payment run")
+            end
+        end
+        table.with_body do |body|
+            statements.each do |statement|
+                body.with_row do |row|
+                    row.with_cell(text: govuk_link_to(statement_name(statement), admin_finance_statement_path(statement)))
+                    row.with_cell(text: statement.state)
+                    row.with_cell(text: boolean_red_green_tag(statement.output_fee))
+                end
+            end
+        end
+    end
+    %>
+    <%= govuk_pagination(pagy:) %>
+<% else %>
+    <p class="govuk-body">No statements found for this cohort.</p>
+<% end %>
