@@ -2,7 +2,7 @@
 
 module ValidTestDataGenerators
   # Service to seed test data for Lead Provider API Test Scenarios
-  # Based on: documentation/lead_provider_api_test_scenarios.md
+  # Based on: @tte-board/documentation/lead_provider_api_test_scenarios.md
   #
   class APITestScenariosSeeder
     attr_reader :lead_provider, :cohort_year, :logger
