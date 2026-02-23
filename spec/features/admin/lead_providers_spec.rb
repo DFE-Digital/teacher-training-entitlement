@@ -33,12 +33,15 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     expect(page).to have_css(".govuk-caption-l", text: lead_provider.name)
     expect(page).to have_css("h1", text: "Cohort 2025 to 2026")
 
+    find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: ["Delivery partner" => delivery_partner_25.name])
 
-    click_link("Cohort 2024 to 2025")
+    click_link("2024 to 2025")
+    find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: ["Delivery partner" => delivery_partner_24.name])
 
-    click_link("Cohort 2023 to 2024")
+    click_link("2023 to 2024")
+    find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: ["Delivery partner" => delivery_partner_23.name])
   end
 end
