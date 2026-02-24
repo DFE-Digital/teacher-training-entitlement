@@ -84,8 +84,8 @@ class Application < ApplicationRecord
   }, suffix: true
 
   enum :lead_provider_approval_status, {
-    pending: "pending",
     accepted: "accepted",
+    pending: "pending",
     rejected: "rejected",
   }, suffix: true
 
