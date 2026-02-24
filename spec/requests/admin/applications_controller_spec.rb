@@ -6,6 +6,8 @@ RSpec.describe Admin::ApplicationsController, type: :request do
   before { sign_in_as_admin }
 
   describe "/admin/applications" do
+    before { create(:cohort, :current) }
+
     subject do
       get admin_applications_path
       response

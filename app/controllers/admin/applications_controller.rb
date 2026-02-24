@@ -1,5 +1,7 @@
 class Admin::ApplicationsController < AdminController
   def index
+    params[:cohort_id] ||= Cohort.current.id
+
     applications = Application.includes(:private_childcare_provider, :school, :user)
                               .merge(filter_scope)
                               .merge(search_scope)
