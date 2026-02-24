@@ -5,7 +5,7 @@ RSpec.feature "Service is closed", type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
 
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   scenario "Service close date has passed" do
     close_registration!
@@ -41,7 +41,7 @@ RSpec.feature "Service is closed", type: :feature do
   end
 
   context "when using late registration" do
-    include_context "Stub Get An Identity Omniauth Responses"
+    include_context "Stub Teacher Auth Responses"
 
     let(:super_admin) { create(:super_admin) }
     let(:email) { "example@example.com" }

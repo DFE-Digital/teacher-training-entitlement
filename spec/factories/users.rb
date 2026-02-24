@@ -17,7 +17,7 @@ FactoryBot.define do
       end
 
       uid { get_an_identity_id }
-      provider { "tra_openid_connect" }
+      provider { Omniauth::Strategies::TeacherAuth::NAME.to_s }
     end
 
     trait :with_random_name do

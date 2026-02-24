@@ -16,7 +16,7 @@ RSpec.describe Users::FindOrCreateFromProviderData do
 
   let(:provider_data) do
     OpenStruct.new({
-      provider: "tra_openid_connect",
+      provider: "teacher_auth",
       uid: provider_data_uid,
       info: OpenStruct.new({
         date_of_birth: provider_data_date_of_birth_parsed,
@@ -261,7 +261,7 @@ RSpec.describe Users::FindOrCreateFromProviderData do
 
       it "creates a new user with the UID and email" do
         expect(subject.uid).to eq provider_data_uid
-        expect(subject.provider).to eq "tra_openid_connect"
+        expect(subject.provider).to eq "teacher_auth"
         expect(subject.email).to eq provider_data_email
       end
 
@@ -276,7 +276,7 @@ RSpec.describe Users::FindOrCreateFromProviderData do
 
       it "assigns the UID" do
         expect(subject.uid).to eq provider_data_uid
-        expect(subject.provider).to eq "tra_openid_connect"
+        expect(subject.provider).to eq "teacher_auth"
       end
 
       it_behaves_like "a saved valid user with provider data assigned"
@@ -290,7 +290,7 @@ RSpec.describe Users::FindOrCreateFromProviderData do
 
         it "assigns the UID" do
           expect(subject.uid).to eq provider_data_uid
-          expect(subject.provider).to eq "tra_openid_connect"
+          expect(subject.provider).to eq "teacher_auth"
         end
 
         it_behaves_like "a saved valid user with provider data assigned"
@@ -300,7 +300,7 @@ RSpec.describe Users::FindOrCreateFromProviderData do
     context "when user with email does not exist" do
       it "creates a new user with the UID and email" do
         expect(subject.uid).to eq provider_data_uid
-        expect(subject.provider).to eq "tra_openid_connect"
+        expect(subject.provider).to eq "teacher_auth"
         expect(subject.email).to eq provider_data_email
       end
 
@@ -319,7 +319,7 @@ RSpec.describe Users::FindOrCreateFromProviderData do
 
         it "assigns the UID to the existing user" do
           expect(subject.uid).to eq provider_data_uid
-          expect(subject.provider).to eq "tra_openid_connect"
+          expect(subject.provider).to eq "teacher_auth"
         end
 
         it_behaves_like "a saved valid user with provider data assigned"

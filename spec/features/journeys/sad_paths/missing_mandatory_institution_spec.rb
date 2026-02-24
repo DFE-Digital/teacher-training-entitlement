@@ -4,7 +4,7 @@ RSpec.feature "Sad journeys", :npq, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
 
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   # N.B. from this perspective there is no difference between manually
   # navigating and having two browser windows open

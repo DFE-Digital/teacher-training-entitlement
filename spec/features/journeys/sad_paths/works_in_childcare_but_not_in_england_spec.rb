@@ -6,7 +6,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   include ApplicationHelper
 
   include_context "retrieve latest application data"
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   context "when JavaScript is enabled", :js do
     scenario("works in childcare but not in england (with JS)") { run_scenario }
