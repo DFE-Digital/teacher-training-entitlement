@@ -742,7 +742,7 @@ en:
               blank: Statement not found
 
   omniauth_providers:
-    tra_openid_connect: "Get an Identity"
+    teacher_auth: "Teacher Auth"
 
   shared:
     cancel: Cancel
