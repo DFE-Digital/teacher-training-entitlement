@@ -206,7 +206,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
@@ -439,9 +439,9 @@ paths:
                         course_identifier: tte-early-years
                         declaration_date: '2021-05-31T02:22:32Z'
                         state: voided
-                        has_passed: 
+                        has_passed:
                         statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
-                        clawback_statement_id: 
+                        clawback_statement_id:
                         uplift_paid: true
                         lead_provider_name: Example Institute
                         ineligible_for_funding_reason: duplicate_declaration
@@ -782,8 +782,8 @@ paths:
                           targeted_delivery_funding_eligibility: true
                           funded_place: true
                           email: isabelle.macdonald2@some-school.example.com
-                          withdrawal: 
-                          deferral: 
+                          withdrawal:
+                          deferral:
                           created_at: '2021-05-31T02:21:32.000Z'
                         participant_id_changes:
                         - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
@@ -860,7 +860,7 @@ paths:
                           targeted_delivery_funding_eligibility: true
                           funded_place: true
                           email: isabelle.macdonald2@some-school.example.com
-                          withdrawal: 
+                          withdrawal:
                           deferral:
                             reason: bereavement
                             date: '2021-05-31T02:22:32.000Z'
@@ -943,7 +943,7 @@ paths:
                           withdrawal:
                             reason: insufficient-capacity-to-undertake-programme
                             date: '2021-05-31T02:22:32.000Z'
-                          deferral: 
+                          deferral:
                           created_at: '2021-05-31T02:21:32.000Z'
                         participant_id_changes:
                         - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
@@ -1395,10 +1395,10 @@ components:
               description: The current state of the application
               type: string
               nullable: true
-              example: pending
+              example: accepted
               enum:
-              - pending
               - accepted
+              - pending
               - rejected
             reason_for_rejection:
               description: The reason why the application was rejected by the lead
@@ -1457,7 +1457,7 @@ components:
                 being funded by DfE
               nullable: true
               type: boolean
-              example: 
+              example:
             created_at:
               description: The date the application was created
               type: string
@@ -1723,7 +1723,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was withdrawn
@@ -1765,7 +1765,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was deferred
@@ -2007,7 +2007,7 @@ components:
                   required: true
                   nullable: false
                   type: string
-                  example: 
+                  example:
                   enum:
                   - tte-early-years
                 cohort:
@@ -2303,7 +2303,7 @@ components:
             has_passed:
               description: Whether the participant has failed or passed
               type: string
-              example: 
+              example:
               nullable: true
             statement_id:
               description: Unique ID of the statement the declaration will be paid

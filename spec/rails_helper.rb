@@ -6,6 +6,7 @@ require File.expand_path("../config/environment", __dir__)
 raise "The Rails environment is running in production mode!" if Rails.env.production?
 
 require "rspec/rails"
+require "rspec/default_http_header"
 # Add additional requires below this line. Rails is not loaded until this point!
 
 require "site_prism"
@@ -169,6 +170,8 @@ RSpec.configure do |config|
     Time.use_zone("London") { example.run }
   end
 end
+
+require "shoulda/matchers"
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
