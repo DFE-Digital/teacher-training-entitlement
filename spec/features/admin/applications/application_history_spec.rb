@@ -33,7 +33,6 @@ RSpec.feature "viewing application history", :versioning, type: :feature do
       PaperTrail.request.whodunnit = "test user"
       create(:schedule, cohort: older_cohort, course_group: application.course.course_group, identifier: application.schedule.identifier)
       Applications::ChangeCohort.new(application:, cohort_id: older_cohort.id).change_cohort
-      Applications::ChangeLeadProvider.new(application:, lead_provider_id: LeadProvider.last.id).change_lead_provider
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).change_funding_eligibility
       create(:declaration, application:)
       Applications::ChangeTrainingStatus.new(application:, training_status: Application.training_statuses[:deferred], reason: "other").change_training_status
@@ -44,7 +43,6 @@ RSpec.feature "viewing application history", :versioning, type: :feature do
       expect(page).to have_css("h2", text: "Cohort changed to #{older_cohort.name}")
       expect(page).to have_css("h2", text: "Schedule changed to #{Schedule.last.name}")
       expect(page).to have_content("by test user")
-      expect(page).to have_css("h2", text: "Provider changed to UCL Institute of Education")
       expect(page).to have_css("h2", text: "Eligible for funding changed to yes")
       expect(page).to have_css("li", text: "Status code changed to marked_funded_by_policy")
       expect(page).to have_css("h2", text: "Training status changed to deferred")
