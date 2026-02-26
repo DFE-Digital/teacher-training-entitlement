@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module Participants
-  class Defer < Action
+  class Defer
+    include ActiveModel::Validations
+
     DEFERRAL_REASONS = %w[
       bereavement
       long-term-sickness
@@ -10,38 +12,42 @@ module Participants
       other
     ].freeze
 
-    attribute :reason
+    def initialize(application:, reason:)
+      @application = application
+      @reason = reason
+    end
 
-    validates :reason, inclusion: { in: DEFERRAL_REASONS }, allow_blank: false
+    attr_reader :reason
+
+    validates :reason, inclusion: { in: DEFERRAL_REASONS, message: :missing_reason }, allow_blank: false
     validate :not_already_deferred
     validate :not_withdrawn
     validate :has_declarations
 
-    def defer
-      return false if invalid?
+    def call
+      return if invalid?
 
-      ActiveRecord::Base.transaction do
-        create_application_state!(state: :deferred, reason:)
-        application.deferred_training_status!
-        participant.reload
-      end
-
-      true
+      @application.application_states.create!(state: :deferred, reason:)
+      @application.deferred_training_status!
     end
-    alias_method :call, :defer
 
   private
 
     def not_withdrawn
-      errors.add(:participant_id, :already_withdrawn) if application&.withdrawn_training_status?
+      add_error(:base, :already_withdrawn) if @application&.withdrawn_training_status?
     end
 
     def not_already_deferred
-      errors.add(:participant_id, :already_deferred) if application&.deferred_training_status?
+      add_error(:base, :already_deferred) if @application&.deferred_training_status?
     end
 
     def has_declarations
-      errors.add(:participant_id, :no_declarations) if application&.declarations&.none?
+      add_error(:base, :no_declarations) if @application&.declarations&.none?
+    end
+
+    def add_error(group, key)
+      message = I18n.t("activemodel.errors.models.participants/defer.attributes.#{group}.#{key}")
+      errors.add(group, message)
     end
   end
 end

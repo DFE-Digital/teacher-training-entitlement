@@ -66,8 +66,8 @@ en:
     already_active: The participant is already active
     already_deferred: The participant is already deferred
     already_withdrawn: The participant is already withdrawn
-    no_declarations: You cannot defer an NPQ participant that has no declarations
-    no_started_declarations: An NPQ participant who has not got a started declaration cannot be withdrawn. Please contact support for assistance
+    no_declarations: You cannot defer a participant that has no declarations
+    no_started_declarations: A participant who has not got a started declaration cannot be withdrawn. Please contact support for assistance
     declaration_must_be_before_withdrawal_date: "This participant withdrew from this course on %{withdrawal_date}. Enter a '#/declaration_date' that's on or before the withdrawal date."
     invalid_participant: "Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again."
     changed: "The participant_id '%{from_participant_id}' has been replaced with '%{to_participant_id}'."
@@ -139,6 +139,7 @@ en:
         restrict_dependent_destroy:
           has_many: "Cannot delete because associated %{record} exist"
       models:
+      
         adjustment:
           attributes:
             description:
@@ -150,6 +151,12 @@ en:
               format: You can only enter numeric values in the adjustment amount field
         application:
           attributes:
+            training_status:
+              inclusion: Choose a valid training status
+              invalid_deferral_no_declarations: You cannot defer a participant that has no declarations
+              pending_lead_provider_approval_status: You cannot change the training status of an application which is in a pending state
+            reason:
+              inclusion: Choose a valid reason for the training status change
             schedule:
               <<: *schedule
             funded_place:
@@ -336,6 +343,27 @@ en:
         checks_done: Yes, I'm ready to authorise this for payment
     errors:
       models:
+        participants/defer:
+          attributes:
+            reason:
+              missing_reason: A valid reason for deferral must be provided
+            base:
+              already_deferred: The participant is already deferred              
+              no_declarations: You cannot defer a participant that has no declarations
+              already_withdrawn: The participant is already withdrawn
+        participants/withdraw:
+          attributes:
+            reason:
+              missing_reason: A valid reason for withdrawal must be provided
+            base:
+              already_withdrawn: The participant is already withdrawn
+              no_started_declarations: A participant who has not got a started declaration cannot be withdrawn. Please contact support for assistance
+              no_declarations: You cannot withdraw a participant that has no declarations
+        participants/resume:
+          attributes:
+            base:
+              already_active: The participant is already active              
+
         admin/adjustments/create_adjustment_form: &create_adjustment_form
           attributes:
             statement:
@@ -352,14 +380,6 @@ en:
           attributes:
             continue:
               inclusion: Select ‘Yes’ or ‘No’ to continue
-        applications/change_training_status:
-          attributes:
-            training_status:
-              inclusion: Choose a valid training status
-              invalid_deferral_no_declarations: You cannot defer an NPQ participant that has no declarations
-              pending_lead_provider_approval_status: You cannot change the training status of an application which is in a pending state
-            reason:
-              inclusion: Choose a valid reason for the training status change
         applications/change_funding_eligibility:
           attributes:
             base:
@@ -571,34 +591,6 @@ en:
             code:
               blank: Code can’t be blank
               incorrect: Code is not correct. Please try again
-        participants/resume:
-          attributes:
-            course_identifier:
-              <<: *participant_course_identifier
-            participant_id:
-              <<: *participant_id
-            lead_provider:
-              <<: *lead_provider
-        participants/defer:
-          attributes:
-            course_identifier:
-              <<: *participant_course_identifier
-            participant_id:
-              <<: *participant_id
-            lead_provider:
-              <<: *lead_provider
-            reason:
-              <<: *participant_reason
-        participants/withdraw:
-          attributes:
-            course_identifier:
-              <<: *participant_course_identifier
-            participant_id:
-              <<: *participant_id
-            lead_provider:
-              <<: *lead_provider
-            reason:
-              <<: *participant_reason
         participants/change_schedule:
           attributes:
             course_identifier:

@@ -128,11 +128,10 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   end
 
   context "when there is a change to the training_status field with a reason" do
-    let(:application) { create(:application, :accepted) }
+    let(:application) { create(:application, :with_declaration, :accepted) }
 
     before do
-      create(:declaration, application:)
-      Applications::ChangeTrainingStatus.new(application:, training_status: Application.training_statuses[:deferred], reason: "other").change_training_status
+      Participants::Defer.new(application:, reason: "other").call
     end
 
     it "renders the reason with an inset component" do

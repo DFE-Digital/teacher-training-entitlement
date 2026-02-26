@@ -16,7 +16,8 @@ AdminUser.find_or_create_by!(email: "superadmin@example.com") do |admin|
     full_name: "example super admin",
     otp_hash: otp_testing_code,
     otp_expires_at: "3000-01-01 00:00:00.000000000 +0000",
-    super_admin: true,
+    super_admin:
+    true,
   )
 end
 

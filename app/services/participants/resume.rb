@@ -1,26 +1,31 @@
 # frozen_string_literal: true
 
 module Participants
-  class Resume < Action
+  class Resume
+    include ActiveModel::Validations
+
     validate :not_already_active
 
-    def resume
-      return false if invalid?
-
-      ActiveRecord::Base.transaction do
-        create_application_state!
-        application.active_training_status!
-        participant.reload
-      end
-
-      true
+    def initialize(application:)
+      @application = application
     end
-    alias_method :call, :resume
+
+    def call
+      return if invalid?
+
+      @application.application_states.create!
+      @application.active_training_status!
+    end
 
   private
 
     def not_already_active
-      errors.add(:participant_id, :already_active) if application&.active_training_status?
+      add_error(:base, :already_active) if @application&.active_training_status?
+    end
+
+    def add_error(group, key)
+      message = I18n.t("activemodel.errors.models.participants/resume.attributes.#{group}.#{key}")
+      errors.add(group, message)
     end
   end
 end

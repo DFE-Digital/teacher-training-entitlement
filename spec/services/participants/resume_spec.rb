@@ -1,22 +1,31 @@
-# frozen_string_literal: true
-
 require "rails_helper"
 
 RSpec.describe Participants::Resume, type: :model do
-  it_behaves_like "a participant action" do
-    let(:instance) { described_class.new(lead_provider:, participant_id:, course_identifier:) }
-    let(:application) { create(:application, :accepted, :with_declaration, training_status: %w[withdrawn deferred].sample) }
+  subject(:service) { described_class.new(application:) }
+
+  let(:application) { create(:application, :accepted, :with_declaration) }
+  let(:reason) { nil }
+  let(:error_message_path) { "activemodel.errors.models.participants/resume.attributes" }
+
+  before { service.call }
+
+  context "when resuming an active application" do
+    let(:application) { create(:application, :active, :with_declaration) }
+
+    it do
+      expect(service.errors).not_to be_blank
+      expect(service.errors[:base])
+        .to include(I18n.t("#{error_message_path}.base.already_active"))
+    end
   end
 
-  it_behaves_like "a participant state transition", :resume, %w[withdrawn deferred], "active" do
-    let(:instance) { described_class.new(lead_provider:, participant_id:, course_identifier:) }
+  context "when successfully resuming" do
+    let(:reason) { "other" }
+    let(:application) { create(:application, :deferred, :with_declaration) }
 
-    describe "validations" do
-      context "when the application is already active" do
-        let(:application) { create(:application, :accepted) }
-
-        it { expect(instance).to have_error(:participant_id, :already_active, "The participant is already active") }
-      end
+    it do
+      expect(service.errors).to be_blank
+      expect(application.reload.training_status).to eq(Participants::Strategy::ACTIVE)
     end
   end
 end

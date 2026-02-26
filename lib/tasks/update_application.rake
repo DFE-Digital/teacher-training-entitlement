@@ -45,12 +45,9 @@ class UpdateApplicationRakeTask
 
         reason = args.reason
 
-        service = Participants::Withdraw.new(lead_provider: application.lead_provider,
-                                             participant_id: application.user.ecf_id,
-                                             course_identifier: application.course.identifier,
-                                             reason:)
-        result = service.withdraw
-        log_result("Participant #{application.user.ecf_id} withdrawn from application #{args.application_ecf_id}", result, service.errors)
+        service = Participants::Withdraw.new(application:, reason:)
+        service.call
+        log_result("Participant #{application.user.ecf_id} withdrawn from application #{args.application_ecf_id}", service.errors.blank?, service.errors)
       end
 
       desc "Change cohort on an application"

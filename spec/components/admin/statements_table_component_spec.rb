@@ -21,8 +21,6 @@ RSpec.describe Admin::StatementsTableComponent, type: :component do
     end
   end
 
-  it "renders a link to each cohort page"
-
   it "renders a link to each course provider page" do
     statements.each do |statement|
       expect(page).to have_link(statement.lead_provider.name, href: "/admin/providers/#{statement.lead_provider.id}")

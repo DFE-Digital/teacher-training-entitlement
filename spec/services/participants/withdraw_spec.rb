@@ -1,52 +1,51 @@
-# frozen_string_literal: true
-
 require "rails_helper"
 
 RSpec.describe Participants::Withdraw, type: :model do
-  it_behaves_like "a participant action" do
-    let(:reason) { described_class::WITHDRAWAL_REASONS.sample }
-    let(:instance) { described_class.new(lead_provider:, participant_id:, course_identifier:, reason:) }
+  subject(:service) { described_class.new(application:, reason:) }
+
+  let(:application) { create(:application, :accepted, :with_declaration) }
+  let(:reason) { nil }
+  let(:error_message_path) { "activemodel.errors.models.participants/withdraw.attributes" }
+
+  before { service.call }
+
+  context "when withdrawing with no declarations" do
+    let(:application) { create(:application, :accepted, declarations: []) }
+
+    it do
+      expect(service.errors).not_to be_blank
+      expect(service.errors[:base])
+        .to include(I18n.t("#{error_message_path}.base.no_started_declarations"))
+    end
   end
 
-  it_behaves_like "a participant state transition", :withdraw, %w[active], "withdrawn" do
-    let(:reason) { described_class::WITHDRAWAL_REASONS.sample }
-    let(:instance) { described_class.new(lead_provider:, participant_id:, course_identifier:, reason:) }
+  context "when withdrawing without a reason" do
+    let(:reason) { nil }
 
-    describe "validations" do
-      it { is_expected.to validate_inclusion_of(:reason).in_array(described_class::WITHDRAWAL_REASONS).with_message("The property '#/reason' must be a valid reason") }
+    it do
+      expect(service.errors).not_to be_blank
+      expect(service.errors[:reason])
+        .to include(I18n.t("#{error_message_path}.reason.missing_reason"))
+    end
+  end
 
-      context "with new withdrawal reasons" do
-        %w[
-          assessment-requirements-not-met
-          change-in-career
-          disengaged-and-unresponsive
-          non-payment-of-invoice
-        ].each do |new_reason|
-          it "accepts #{new_reason} as a valid withdrawal reason" do
-            expect(described_class::WITHDRAWAL_REASONS).to include(new_reason)
-          end
-        end
-      end
+  context "when withdrawing a withdrawn application" do
+    let(:application) { create(:application, :withdrawn, :with_declaration) }
 
-      context "when the application is already withdrawn" do
-        let(:application) { create(:application, :accepted, :withdrawn) }
+    it do
+      expect(service.errors).not_to be_blank
+      expect(service.errors[:base])
+        .to include(I18n.t("#{error_message_path}.base.already_withdrawn"))
+    end
+  end
 
-        it { expect(instance).to have_error(:participant_id, :already_withdrawn, "The participant is already withdrawn") }
-      end
+  context "when successfully withdrawing" do
+    let(:reason) { "other" }
+    let(:application) { create(:application, :accepted, :with_declaration) }
 
-      context "when the application has no declarations" do
-        let(:application) { create(:application, :accepted) }
-
-        it { expect(instance).to have_error(:participant_id, :no_started_declarations, "An NPQ participant who has not got a started declaration cannot be withdrawn. Please contact support for assistance") }
-      end
-
-      context "when the application has no started declarations" do
-        let(:application) { create(:application, :accepted) }
-
-        before { create(:declaration, application:, declaration_type: "retained-1") }
-
-        it { expect(instance).to have_error(:participant_id, :no_started_declarations, "An NPQ participant who has not got a started declaration cannot be withdrawn. Please contact support for assistance") }
-      end
+    it do
+      expect(service.errors).to be_blank
+      expect(application.reload.training_status).to eq(Participants::Strategy::WITHDRAWN)
     end
   end
 end

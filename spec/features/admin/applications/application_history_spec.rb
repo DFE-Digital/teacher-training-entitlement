@@ -36,7 +36,7 @@ RSpec.feature "viewing application history", :versioning, type: :feature do
       Applications::ChangeLeadProvider.new(application:, lead_provider_id: LeadProvider.last.id).change_lead_provider
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).change_funding_eligibility
       create(:declaration, application:)
-      Applications::ChangeTrainingStatus.new(application:, training_status: Application.training_statuses[:deferred], reason: "other").change_training_status
+      Participants::Defer.new(application: application, reason: "other").call
     end
 
     scenario "viewing application history" do

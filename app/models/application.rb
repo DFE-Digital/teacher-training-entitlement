@@ -46,6 +46,7 @@ class Application < ApplicationRecord
               scope: %i[cohort_id course_id],
               conditions: -> { where.not(lead_provider_approval_status: "rejected") },
             }, unless: :provider_rejected?
+  validate :ensure_change_training_status, if: -> { will_save_change_to_training_status? && persisted? }
 
   after_commit :touch_user_if_changed
 
@@ -222,6 +223,20 @@ class Application < ApplicationRecord
   end
 
 private
+
+  def ensure_change_training_status
+    if training_status.blank?
+      errors.add(:training_status, :inclusion)
+    end
+
+    if accepted_lead_provider_approval_status? && declarations.blank? && deferred_training_status?
+      errors.add(:training_status, :invalid_deferral_no_declarations)
+    end
+
+    if pending_lead_provider_approval_status?
+      errors.add(:training_status, :pending_lead_provider_approval_status)
+    end
+  end
 
   def funding_eligibility(with_funded_place:)
     return eligible_for_funding unless with_funded_place
