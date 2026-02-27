@@ -197,6 +197,14 @@ module ValidTestDataGenerators
       logger.info "✓ Course and schedules setup"
     end
 
+    def setup_delivery_partners
+      # 1. add a delivery partner to lead-provider so that LP can make a declaration
+      # 2. declaration date has to be after schedule.applies_from
+      # 3. needs a contract for cohort/course ie create Contract
+      # - create contract template
+      # - create contract with statement, course
+    end
+
     def create_applications!
       @applications = {}
 
