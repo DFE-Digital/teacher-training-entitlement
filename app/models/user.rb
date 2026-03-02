@@ -56,10 +56,6 @@ class User < ApplicationRecord
     with_get_an_identity_id.find_by(uid: get_an_identity_id)
   end
 
-  def self.find_or_create_from_provider_data(provider_data, feature_flag_id:)
-    Users::FindOrCreateFromProviderData.new(provider_data: provider_data, feature_flag_id: feature_flag_id).call
-  end
-
   def get_an_identity_provider?
     provider == Omniauth::Strategies::TeacherAuth::NAME.to_s
   end
