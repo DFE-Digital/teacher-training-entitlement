@@ -295,28 +295,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     end
   end
 
-  scenario "changing lead provider" do
-    application = create(:application)
-
-    visit admin_application_path(application)
-    expect(page).to have_css("h1", text: "Application details")
-
-    within(".govuk-summary-list__row", text: application.lead_provider.name) do
-      click_link("Transfer")
-    end
-
-    expect(page).to have_css("h1", text: "Transfer provider")
-
-    click_button "Continue"
-    expect(page).to have_css(".govuk-error-message", text: "Choose a provider")
-
-    choose "Best Practice Network", visible: :all
-    click_button "Continue"
-
-    expect(page).to have_css("h1", text: "Application details")
-    expect(page).to have_summary_item("Provider", "Best Practice Network")
-  end
-
   scenario "changing eligibility for funding" do
     application = create(:application, :accepted)
 

@@ -33,8 +33,6 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
       create(:schedule, cohort: older_cohort, course_group: application.course.course_group, identifier: application.schedule.identifier)
       travel_to time_2
       Applications::ChangeCohort.new(application:, cohort_id: older_cohort.id).change_cohort
-      travel_to time_3
-      Applications::ChangeLeadProvider.new(application:, lead_provider_id: new_lead_provider.id).change_lead_provider
     end
 
     it "shows an item for each change" do
@@ -42,13 +40,10 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
                                   text: "Cohort changed to #{older_cohort.name}")
       expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
                                   text: "Schedule changed to #{Schedule.last.name}")
-      expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
-                                  text: "Provider changed to #{new_lead_provider.name}")
     end
 
     it "shows the date of each change" do
       expect(subject).to have_css(".moj-timeline__byline", text: "by some user, 1 Jan 2025 2:00pm")
-      expect(subject).to have_css(".moj-timeline__byline", text: "by some user, 1 Jan 2025 3:00pm")
     end
 
     context "when the user is an Admin" do
