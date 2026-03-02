@@ -7,7 +7,7 @@ module Admin
 
       def create
         if @form.invalid?
-          render :new, status: :unprocessable_entity and return
+          render :new, status: :unprocessable_content and return
         end
 
         service = Participants::Strategy.for(
@@ -20,7 +20,7 @@ module Admin
 
         if service.errors.any?
           @form.errors.copy!(service.errors)
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         else
           redirect_to admin_application_path(@form.application)
         end
