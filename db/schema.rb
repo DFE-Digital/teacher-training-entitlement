@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "api_token_scopes", ["lead_provider", "teacher_record_service"]
   create_enum "application_statuses", ["active", "deferred", "withdrawn"]
+  create_enum "course_group", ["reception", "send"]
   create_enum "declaration_state_reasons", ["duplicate"]
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
@@ -258,7 +259,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
   end
 
   create_table "courses", force: :cascade do |t|
-    t.string "course_group"
+    t.enum "course_group", enum_type: "course_group"
     t.datetime "created_at", null: false
     t.text "description"
     t.boolean "display", default: true
@@ -533,7 +534,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.date "applies_from", null: false
     t.date "applies_to", null: false
     t.bigint "cohort_id", null: false
-    t.string "course_group"
+    t.enum "course_group", enum_type: "course_group"
     t.datetime "created_at", null: false
     t.uuid "ecf_id"
     t.string "identifier", null: false
