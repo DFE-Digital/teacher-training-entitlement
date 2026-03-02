@@ -3,7 +3,8 @@ module Admin
     class ChangeCohortForm
       include ActiveModel::Model
       include ActiveModel::Attributes
-      attribute :id, :integer
+
+      attribute :application
       attribute :cohort_id, :integer
       attribute :override_declarations_check, :boolean, default: false
 
@@ -23,10 +24,6 @@ module Admin
 
       def cohort
         @cohort ||= Cohort.find(cohort_id)
-      end
-
-      def application
-        @application ||= Application.find(id)
       end
     end
   end

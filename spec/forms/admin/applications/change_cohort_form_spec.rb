@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Admin::Applications::ChangeCohortForm, type: :model do
-  subject(:service) { described_class.new(id: application.id, cohort_id:) }
+  subject(:service) { described_class.new(application:, cohort_id:) }
 
   let(:application) { create(:application, cohort: cohort_2021) }
   let(:cohort_2021) { create(:cohort, start_year: 2021) }

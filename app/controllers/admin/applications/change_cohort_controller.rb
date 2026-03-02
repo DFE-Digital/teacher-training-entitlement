@@ -2,9 +2,8 @@
 
 module Admin
   module Applications
-    class ChangeCohortController < AdminController
+    class ChangeCohortController < ApplicationsController
       before_action :set_form
-      delegate :application, :cohort, to: :@form
 
       def create
         if @form.invalid?
@@ -12,7 +11,7 @@ module Admin
         end
 
         service = ::Applications::ChangeCohort.new(
-          application: @form.application,
+          application:,
           new_cohort: @form.cohort,
           override_declarations_check: @form.override_declarations_check,
         )
@@ -23,7 +22,7 @@ module Admin
           @form.errors.copy!(service.errors)
           render :show, status: :unprocessable_entity
         else
-          redirect_to admin_application_path(@form.application)
+          redirect_to admin_application_path(application)
         end
       end
 
@@ -31,15 +30,15 @@ module Admin
 
       def set_form
         @form = Admin::Applications::ChangeCohortForm.new(
-          cohort_params,
+          form_params,
         )
       end
 
-      def cohort_params
+      def form_params
         params
           .fetch(:form, {})
           .permit(:cohort_id)
-          .merge(id: params[:id])
+          .merge(application:)
       end
     end
   end
