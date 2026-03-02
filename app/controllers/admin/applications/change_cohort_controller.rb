@@ -3,31 +3,43 @@
 module Admin
   module Applications
     class ChangeCohortController < AdminController
-      before_action :set_application, :set_change_cohort
+      before_action :set_form
+      delegate :application, :cohort, to: :@form
 
       def create
-        @change_cohort.assign_attributes(cohort_params)
+        if @form.invalid?
+          render :show, status: :unprocessable_entity and return
+        end
 
-        if @change_cohort.change_cohort
-          redirect_to admin_application_path(@application)
+        service = Applications::ChangeCohort.new(
+          application: @form.application,
+          new_cohort: @form.cohort,
+          override_declarations_check: @form.override_declarations_check,
+        )
+
+        service.call
+
+        if service.errors.any?
+          @form.errors.copy!(service.errors)
+          render :show, status: :unprocessable_entity
         else
-          render :show, status: :unprocessable_content
+          redirect_to admin_application_path(@form.application)
         end
       end
 
     private
 
-      def set_application
-        @application = Application.find(params[:id])
-      end
-
-      def set_change_cohort
-        @change_cohort =
-          ::Applications::ChangeCohort.new(application: @application)
+      def set_form
+        @form = Admin::Applications::ChangeCohortForm.new(
+          cohort_params,
+        )
       end
 
       def cohort_params
-        params.fetch(:applications_change_cohort, {}).permit(:cohort_id)
+        params
+          .fetch(:form, {})
+          .permit(:cohort_id)
+          .merge(id: params[:id])
       end
     end
   end
