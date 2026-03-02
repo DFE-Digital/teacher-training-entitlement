@@ -24,7 +24,8 @@
   },
   "devDependencies": {},
   "resolutions": {
-    "lodash-es": "^4.17.23"
+    "lodash-es": "^4.17.23",
+    "serialize-javascript": "^7.0.3"
   },
   "license": "MIT",
   "scripts": {
