@@ -18,9 +18,6 @@
                  as: :form, 
                  url: admin_applications_change_cohort_path(@form.application) do |f| %>
       <%= f.govuk_error_summary %>
-      <h2 class="BK">cohort_id: <%= @form.cohort_id %></h2>
-      <h2 class="BK">id: <%= @form.id %></h2>
-      <h2 class="BK">id: <%= @form.cohort_options.map(&:id).join(', ') %></h2>
       <%= f.govuk_collection_radio_buttons :cohort_id,
                                            @form.cohort_options,
                                            :id,
