@@ -916,6 +916,8 @@ en:
         lead_provider_id: Choose a different provider
       applications_change_cohort:
         cohort_id: Choose a cohort
+      form:
+        cohort_id: Choose a cohort
       registration_wizard:
         can_share_choices: "Sharing your TTE information"
         ehco_headteacher: "Are you a headteacher?"

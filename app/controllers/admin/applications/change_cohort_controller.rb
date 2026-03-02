@@ -11,7 +11,7 @@ module Admin
           render :show, status: :unprocessable_entity and return
         end
 
-        service = Applications::ChangeCohort.new(
+        service = ::Applications::ChangeCohort.new(
           application: @form.application,
           new_cohort: @form.cohort,
           override_declarations_check: @form.override_declarations_check,
