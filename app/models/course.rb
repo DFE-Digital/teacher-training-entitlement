@@ -1,6 +1,5 @@
 class Course < ApplicationRecord
   include CourseGroupable
-  self.ignored_columns = %w[course_group_id]
 
   validates :name, presence: true
   validates :identifier, presence: true, uniqueness: true

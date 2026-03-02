@@ -134,16 +134,8 @@ module Statements
     end
 
     def contract_template_attributes_for(course_group)
-      # TODO: TTE check with policy for accurate values
-      # TODO BK - Is this correct ?
       case course_group
       when "reception"
-        {
-          number_of_payment_periods: 3,
-          service_fee_percentage: 0,
-          output_payment_percentage: 100,
-        }
-      when "send"
         {
           number_of_payment_periods: 3,
           service_fee_percentage: 0,

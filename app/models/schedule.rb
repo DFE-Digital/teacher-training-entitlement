@@ -1,6 +1,5 @@
 class Schedule < ApplicationRecord
   include CourseGroupable
-  self.ignored_columns = %w[course_group_id]
 
   DECLARATION_TYPES = %w[started retained-1 retained-2 completed].freeze
   # # TODO BK: Can we remove this ?
