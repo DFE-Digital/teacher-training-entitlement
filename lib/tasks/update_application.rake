@@ -45,7 +45,7 @@ class UpdateApplicationRakeTask
 
         reason = args.reason
 
-        service = Participants::Withdraw.new(application:, reason:)
+        service = ::Applications::Withdraw.new(application:, reason:)
         service.call
         log_result("Participant #{application.user.ecf_id} withdrawn from application #{args.application_ecf_id}", service.errors.blank?, service.errors)
       end

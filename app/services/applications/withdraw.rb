@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Participants
+module Applications
   class Withdraw
     include ActiveModel::Validations
 
@@ -62,7 +62,7 @@ module Participants
     end
 
     def add_error(group, key)
-      message = I18n.t("activemodel.errors.models.participants/withdraw.attributes.#{group}.#{key}")
+      message = I18n.t("activemodel.errors.models.applications/withdraw.attributes.#{group}.#{key}")
       errors.add(group, message)
     end
   end

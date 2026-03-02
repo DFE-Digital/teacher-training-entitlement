@@ -139,13 +139,13 @@ module ValidTestDataGenerators
     end
 
     def defer_application(application)
-      Participants::Defer.new(application:,
-                              reason: Participants::Defer::DEFERRAL_REASONS.sample).call
+      Applications::Defer.new(application:,
+                              reason: ::Applications::Defer::DEFERRAL_REASONS.sample).call
     end
 
     def withdrawn_application(application)
-      Participants::Withdraw.new(application:,
-                                 reason: Participants::Withdraw::WITHDRAWAL_REASONS.sample).call
+      Applications::Withdraw.new(application:,
+                                 reason: ::Applications::Withdraw::WITHDRAWAL_REASONS.sample).call
     end
 
     def create_declarations(application)

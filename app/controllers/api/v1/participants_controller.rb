@@ -18,18 +18,18 @@ module API
       end
 
       def resume
-        service = ::Participants::Resume.new(application:)
+        service = ::Applications::Resume.new(application:)
         call_and_render(service:)
       end
 
       def defer
-        service = ::Participants::Defer.new(application:, reason:)
+        service = ::Applications::Defer.new(application:, reason:)
 
         call_and_render(service:)
       end
 
       def withdraw
-        service = ::Participants::Withdraw.new(application:, reason:)
+        service = ::Applications::Withdraw.new(application:, reason:)
         call_and_render(service:)
       end
 

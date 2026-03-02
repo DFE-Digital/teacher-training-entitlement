@@ -38,7 +38,7 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusForm, type: :model do
 
         it do
           expect(subject).to validate_inclusion_of(:reason)
-                          .in_array(Participants::Defer::DEFERRAL_REASONS)
+                          .in_array(::Applications::Defer::DEFERRAL_REASONS)
                           .with_message("Choose a valid reason for the training status change")
         end
       end
@@ -48,7 +48,7 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusForm, type: :model do
 
         it do
           expect(subject).to validate_inclusion_of(:reason)
-                          .in_array(Participants::Withdraw::WITHDRAWAL_REASONS)
+                          .in_array(::Applications::Withdraw::WITHDRAWAL_REASONS)
                           .with_message("Choose a valid reason for the training status change")
         end
       end
@@ -112,12 +112,12 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusForm, type: :model do
 
     it "has reasons for deferral" do
       expect(form.reason_options["deferred"])
-        .to match_array(Participants::Defer::DEFERRAL_REASONS)
+        .to match_array(::Applications::Defer::DEFERRAL_REASONS)
     end
 
     it "has reasons for withdrawn" do
       expect(form.reason_options["withdrawn"])
-        .to match_array(Participants::Withdraw::WITHDRAWAL_REASONS)
+        .to match_array(::Applications::Withdraw::WITHDRAWAL_REASONS)
     end
   end
 end

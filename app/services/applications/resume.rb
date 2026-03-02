@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Participants
+module Applications
   class Resume
     include ActiveModel::Validations
 
@@ -24,7 +24,7 @@ module Participants
     end
 
     def add_error(group, key)
-      message = I18n.t("activemodel.errors.models.participants/resume.attributes.#{group}.#{key}")
+      message = I18n.t("activemodel.errors.models.applications/resume.attributes.#{group}.#{key}")
       errors.add(group, message)
     end
   end

@@ -343,7 +343,7 @@ en:
         checks_done: Yes, I'm ready to authorise this for payment
     errors:
       models:
-        participants/defer:
+        applications/defer:
           attributes:
             reason:
               missing_reason: A valid reason for deferral must be provided
@@ -351,7 +351,7 @@ en:
               already_deferred: The participant is already deferred              
               no_declarations: You cannot defer a participant that has no declarations
               already_withdrawn: The participant is already withdrawn
-        participants/withdraw:
+        applications/withdraw:
           attributes:
             reason:
               missing_reason: A valid reason for withdrawal must be provided
@@ -359,7 +359,7 @@ en:
               already_withdrawn: The participant is already withdrawn
               no_started_declarations: A participant who has not got a started declaration cannot be withdrawn. Please contact support for assistance
               no_declarations: You cannot withdraw a participant that has no declarations
-        participants/resume:
+        applications/resume:
           attributes:
             base:
               already_active: The participant is already active              

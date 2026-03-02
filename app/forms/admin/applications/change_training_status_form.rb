@@ -9,11 +9,11 @@ module Admin
       attribute :reason, :string
 
       REASON_OPTIONS = {
-        Participants::Strategy::DEFERRED => Participants::Defer::DEFERRAL_REASONS,
-        Participants::Strategy::WITHDRAWN => Participants::Withdraw::WITHDRAWAL_REASONS,
+        ::Applications::Strategy::DEFERRED => ::Applications::Defer::DEFERRAL_REASONS,
+        ::Applications::Strategy::WITHDRAWN => ::Applications::Withdraw::WITHDRAWAL_REASONS,
       }.freeze
 
-      validates :training_status, inclusion: Application.training_statuses.values
+      validates :training_status, inclusion: { in: Application.training_statuses.values, message: "Choose a valid training status" }
       validates :reason, inclusion: { in: :valid_reasons, message: "Choose a valid reason for the training status change" }, if: :reason_required?
       validate :ensure_training_status_is_changing
 
@@ -36,7 +36,7 @@ module Admin
       end
 
       def reason_required?
-        training_status.present? && training_status != Participants::Strategy::ACTIVE
+        training_status.present? && training_status != ::Applications::Strategy::ACTIVE
       end
 
       def application

@@ -1,11 +1,11 @@
 require "rails_helper"
 
-RSpec.describe Participants::Resume, type: :model do
+RSpec.describe Applications::Resume, type: :model do
   subject(:service) { described_class.new(application:) }
 
   let(:application) { create(:application, :accepted, :with_declaration) }
   let(:reason) { nil }
-  let(:error_message_path) { "activemodel.errors.models.participants/resume.attributes" }
+  let(:error_message_path) { "activemodel.errors.models.applications/resume.attributes" }
 
   before { service.call }
 
@@ -25,7 +25,7 @@ RSpec.describe Participants::Resume, type: :model do
 
     it do
       expect(service.errors).to be_blank
-      expect(application.reload.training_status).to eq(Participants::Strategy::ACTIVE)
+      expect(application.reload.training_status).to eq(Applications::Strategy::ACTIVE)
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Participants
+module Applications
   class Defer
     include ActiveModel::Validations
 
@@ -46,7 +46,7 @@ module Participants
     end
 
     def add_error(group, key)
-      message = I18n.t("activemodel.errors.models.participants/defer.attributes.#{group}.#{key}")
+      message = I18n.t("activemodel.errors.models.applications/defer.attributes.#{group}.#{key}")
       errors.add(group, message)
     end
   end

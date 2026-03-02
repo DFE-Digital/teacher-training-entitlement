@@ -1,4 +1,4 @@
-module Participants
+module Applications
   class Strategy
     WITHDRAWN = "withdrawn".freeze
     DEFERRED = "deferred".freeze

@@ -10,7 +10,7 @@ module Admin
           render :new, status: :unprocessable_content and return
         end
 
-        service = Participants::Strategy.for(
+        service = ::Applications::Strategy.for(
           application: @form.application,
           training_status: @form.training_status,
           reason: @form.reason,

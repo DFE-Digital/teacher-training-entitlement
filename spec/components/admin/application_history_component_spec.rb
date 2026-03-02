@@ -131,7 +131,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     let(:application) { create(:application, :with_declaration, :accepted) }
 
     before do
-      Participants::Defer.new(application:, reason: "other").call
+      ::Applications::Defer.new(application:, reason: "other").call
     end
 
     it "renders the reason with an inset component" do
