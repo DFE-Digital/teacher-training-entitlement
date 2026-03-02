@@ -4,6 +4,7 @@ class Cohort < ApplicationRecord
   has_many :statements, dependent: :restrict_with_exception
   has_many :delivery_partnerships, dependent: :destroy
   has_many :delivery_partners, through: :delivery_partnerships
+  has_many :course_cohorts, dependent: :destroy
 
   validates :start_year,
             presence: true,
