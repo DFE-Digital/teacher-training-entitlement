@@ -345,7 +345,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       click_link("Change")
     end
 
-#    binding.pry
     expect(page).to have_css("h1", text: "Choose a cohort")
 
     click_button "Continue"
