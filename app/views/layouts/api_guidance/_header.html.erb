@@ -1,10 +1,8 @@
-<%= govuk_header(
-      service_name: "Teacher training entitlement",
-      service_url: '/api/guidance'
-    )
-%>
-<%= govuk_service_navigation(
+<%= govuk_header do |header|
+  header.with_service_navigation(
+    service_name: "Teacher training entitlement",
+    service_url: "/api/guidance",
     current_path: request.path,
-    navigation_items: guidance_navigation_structure.service_navigation_items,
+    navigation_items: guidance_navigation_structure.service_navigation_items
   )
-%>
+end %>

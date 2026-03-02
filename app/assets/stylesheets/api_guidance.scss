@@ -1,5 +1,16 @@
 @import "./api_guidance/_masthead";
 
+// Fix service navigation layout - prevent nav wrapper from wrapping to new line
+.govuk-service-navigation__container {
+  @include govuk-media-query($from: tablet) {
+    flex-wrap: nowrap;
+  }
+}
+
+.govuk-service-navigation__service-name {
+  white-space: nowrap;
+}
+
 .api-guidance {
   $orange: darken(#f47738, 20%);
   $blue: #1d70b8;
