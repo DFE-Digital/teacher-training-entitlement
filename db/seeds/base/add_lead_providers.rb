@@ -11,7 +11,7 @@ Course.find_each do |course|
         course:,
         cohort:,
       )
-      CourseCohortProvider.create!(
+      CourseCohortProvider.find_or_create_by!(
         lead_provider:,
         course_cohort:,
       )
