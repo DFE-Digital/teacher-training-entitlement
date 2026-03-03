@@ -53,7 +53,7 @@ ApplicationRecord.descendants.each(&:reset_column_information)
   "process_statements.rb",
   "add_delivery_partners.rb",
 ].each do |seed_file|
-  Rails.logger.info("seeding #{seed_file}")
+  puts("seeding #{seed_file}")
   ApplicationRecord.transaction do
     load_base_file(seed_file)
   end

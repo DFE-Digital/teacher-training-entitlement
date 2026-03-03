@@ -151,9 +151,9 @@ FactoryBot.define do
 
     trait :deferred do
       accepted
-      with_declaration
 
       after(:create) do |application|
+        application.declarations << create(:declaration, application:) if application.declarations.blank?
         application.update!(training_status: ApplicationState.states[:deferred])
 
         create(:application_state,
