@@ -9,17 +9,12 @@ RSpec.describe Course do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
   end
 
-  describe "associations" do
-    it { is_expected.to belong_to(:course_group).optional }
-  end
-
   describe "#schedule_for" do
-    let(:cohort) { build(:cohort, :current) }
-    let(:schedule_date) { Date.current }
+    let!(:cohort) { build(:cohort, :current) }
+    let!(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
 
     it "calls course_group.schedule_for method" do
-      expect(subject.course_group).to receive(:schedule_for).with(cohort:, schedule_date:)
-      subject.schedule_for(cohort:, schedule_date:)
+      expect(schedule).to eq(subject.schedule_for(cohort:))
     end
   end
 

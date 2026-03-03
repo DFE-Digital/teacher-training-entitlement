@@ -22,9 +22,9 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   end
 
   context "when there are changes to the record" do
-    let(:original_lead_provider) { LeadProvider.first }
+    let(:original_lead_provider) { create(:lead_provider) }
     let(:original_itt_provider) { create(:itt_provider) }
-    let(:new_lead_provider) { LeadProvider.last }
+    let(:new_lead_provider) { create(:lead_provider) }
     let(:original_ecf_id) { SecureRandom.uuid }
     let(:application) { create(:application, :accepted, cohort:, lead_provider: original_lead_provider, itt_provider: original_itt_provider, ecf_id: original_ecf_id) }
     let(:whodunnit) { "some user" }

@@ -106,10 +106,9 @@ module Participants
     end
 
     def validate_permitted_schedule_for_course
-      return if errors.any?
-      return unless new_schedule
+      return if errors.any? || new_schedule.nil?
 
-      unless new_schedule.course_group.courses.exists?(identifier: course_identifier)
+      if new_schedule.course_group != application.course.course_group
         errors.add(:schedule_identifier, :invalid_for_course)
       end
     end

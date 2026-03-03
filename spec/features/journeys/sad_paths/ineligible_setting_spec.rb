@@ -4,7 +4,7 @@ RSpec.feature "Ineligible setting", :with_default_schedules, type: :feature do
   include ApplicationHelper
 
   let(:user) { create(:user, :with_get_an_identity_id) }
-  let(:lead_provider) { LeadProvider.find_by(name: "Ambition Institute") }
+  let(:lead_provider) { LeadProvider.first }
   let(:course) { Course.find_by(identifier: "tte-early-years") }
 
   context "when work setting is 'other'" do

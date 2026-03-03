@@ -5,9 +5,10 @@ RSpec.feature "Creating statements", type: :feature do
   include Helpers::FileHelper
   include Helpers::StatementsHelper
 
-  let(:cohort) { create(:cohort) }
+  let(:cohort) { Cohort.last }
 
   before do
+    create(:lead_provider, :with_courses)
     sign_in_as admin
     visit admin_cohort_path(cohort)
   end

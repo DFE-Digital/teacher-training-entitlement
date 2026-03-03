@@ -168,7 +168,7 @@ module ValidTestDataGenerators
     def create_outcomes(application)
       completed_declaration = application.declarations.eligible_for_outcomes(lead_provider, application.course.identifier).first
       return unless completed_declaration
-      return unless CourseGroup.joins(:courses).leadership_or_specialist.where(courses: { identifier: application.course.identifier }).exists?
+      return unless application.course.course_group.in?(%w[leadership specialist])
 
       ParticipantOutcomes::Create::STATES.reverse.each do |state_trait|
         FactoryBot.create(

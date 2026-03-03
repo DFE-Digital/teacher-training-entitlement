@@ -17,7 +17,6 @@ RSpec.describe Statements::CourseCalculator do
 
   before do
     create(:schedule, :tte_reception_autumn, cohort:)
-    # create(:schedule, :npq_specialist_autumn, cohort:)
   end
 
   describe "#billable_declarations_count_for_declaration_type" do
@@ -340,7 +339,7 @@ RSpec.describe Statements::CourseCalculator do
     let(:course_group) { course.course_group }
 
     before do
-      course_group.schedules.destroy_all
+      Schedule.where(course_group:).destroy_all # TODO: BK - fix this properly
       create(:schedule, course_group:, cohort:, allowed_declaration_types: %w[started retained-1])
       create(:schedule, course_group:, cohort:, allowed_declaration_types: %w[retained-1 completed])
     end

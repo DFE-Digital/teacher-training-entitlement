@@ -4,9 +4,8 @@ require "swagger_helper"
 RSpec.describe "Participant Outcomes endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:course_group) { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
-  let(:course) { create(:course, :tte_early_years, course_group:) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn, course_group:, cohort:) }
+  let(:course) { create(:course, :tte_early_years) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
   let(:application) do
     create(

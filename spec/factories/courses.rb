@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:name) { |n| "TTE Course #{n}" }
     sequence(:identifier) { |n| "identifier-#{n}" }
     ecf_id { SecureRandom.uuid }
-    course_group
+    course_group { "reception" }
 
     initialize_with do
       Course.find_by(identifier:) || new(**attributes)
@@ -12,10 +12,26 @@ FactoryBot.define do
     trait :tte_early_years do
       sequence(:name) { |n| "TTE Early Years Course #{n}" }
       identifier { "tte-early-years" }
-      course_group { create(:course_group, name: "reception") }
+      course_group { "reception" }
       short_code { "TTEEY" }
     end
 
     factory :"tte-early-years", traits: [:tte_early_years]
+
+    transient do
+      lead_provider { nil }
+    end
+
+    after(:create) do |course, evaluator|
+      if course.course_cohorts.empty?
+        cohort = nil
+        begin
+          cohort = Cohort.current
+        rescue StandardError
+          cohort = create(:cohort, :current)
+        end
+        course.course_cohorts << create(:course_cohort, course:, cohort:, lead_provider: evaluator.lead_provider)
+      end
+    end
   end
 end

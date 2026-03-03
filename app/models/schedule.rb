@@ -1,24 +1,12 @@
 class Schedule < ApplicationRecord
-  DECLARATION_TYPES = %w[started retained-1 retained-2 completed].freeze
-  # Adding identifier `tte-reception-spring` to help with transition to TTE context
-  IDENTIFIERS = %w[tte-reception-autumn
-                   tte-reception-spring
-                   npq-aso-march
-                   npq-aso-june
-                   npq-aso-november
-                   npq-aso-december
-                   npq-ehco-march
-                   npq-ehco-june
-                   npq-ehco-november
-                   npq-ehco-december
-                   npq-leadership-autumn
-                   npq-leadership-spring
-                   npq-specialist-autumn
-                   npq-specialist-spring].freeze
+  include CourseGroupable
 
-  belongs_to :course_group
+  DECLARATION_TYPES = %w[started retained-1 retained-2 completed].freeze
+  # # TODO BK: Can we remove this ?
+  IDENTIFIERS = %w[tte-reception-autumn
+                   tte-reception-spring].freeze
+
   belongs_to :cohort
-  has_many :courses, through: :course_group
   has_many :applications, dependent: :restrict_with_error
   has_many :milestones
   has_many :statements, through: :milestones
@@ -33,6 +21,10 @@ class Schedule < ApplicationRecord
   validates :acceptance_window_start, presence: true, if: -> { new_record? || acceptance_window_start_was }
   validates :acceptance_window_end, presence: true, if: -> { new_record? || acceptance_window_end_was }
   validates :policy_descriptor, presence: true, numericality: { only_integer: true, greater_than: 0 }, if: -> { new_record? || policy_descriptor_was }
+
+  def courses
+    @courses ||= Course.where(course_group:)
+  end
 
   def self.allowed_declaration_types
     Declaration.declaration_types.keys

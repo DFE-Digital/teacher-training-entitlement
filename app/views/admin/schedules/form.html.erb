@@ -16,10 +16,8 @@
   <%= f.govuk_text_field :policy_descriptor, class: "govuk-input--width-2", label: { text: "Policy descriptor" } %>
 
   <%=
-    f.govuk_collection_select :course_group_id,
-                              CourseGroup.all.order(:name),
-                              :id,
-                              :name,
+    f.govuk_select :course_group,
+                              options_for_select(Schedule.course_groups.keys.sort, @schedule.course_group),
                               options: { include_blank: true },
                               label: { text: "Course group" }
   %>

@@ -5,10 +5,11 @@ require "rails_helper"
 RSpec.describe Declarations::Create, type: :model do
   let(:lead_provider) { LeadProvider.first }
   let(:cohort) { create(:cohort, :current) }
-  let(:course_group) { CourseGroup.find_by(name: "leadership") || create(:course_group, name: "leadership") }
-  let(:course) { create(:course, :tte_early_years, course_group:) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn, course_group:, cohort:) }
-  let(:application) { create(:application, :accepted, cohort:, course:, lead_provider:, schedule:) }
+  let(:course) { create(:course, :tte_early_years) }
+  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
+  let(:application) do
+    create(:application, :accepted, cohort:, course:, lead_provider:, schedule:)
+  end
   let(:participant) { application.user }
   let(:participant_id) { participant.ecf_id }
   let(:declaration_type) { "started" }
@@ -149,7 +150,7 @@ RSpec.describe Declarations::Create, type: :model do
     end
 
     context "when a declaration exists for a different course", :npq do
-      let(:a_different_course) { create(:course, :headship, course_group:) }
+      let(:a_different_course) { create(:course, :headship) }
       let(:another_application) { create(:application, :accepted, cohort:, course: a_different_course, lead_provider:, user: participant) }
 
       before { create(:declaration, application: another_application, declaration_type:, declaration_date:) }
@@ -274,7 +275,7 @@ RSpec.describe Declarations::Create, type: :model do
     end
 
     context "when the declaration type does not exist for the schedule" do
-      let(:schedule) { create(:schedule, :npq_specialist_autumn, course_group:, cohort:) }
+      let(:schedule) { create(:schedule, :tte_reception_spring, cohort:, allowed_declaration_types: %w[started retained-1 completed]) }
       let(:declaration_type) { "retained-2" }
 
       it { is_expected.to have_error(:declaration_type, :mismatch_declaration_type_for_schedule, "The property '#/declaration_type' does not exist for this schedule.") }

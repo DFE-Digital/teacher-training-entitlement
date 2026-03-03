@@ -28,6 +28,7 @@ RSpec.feature "viewing application history", :versioning, type: :feature do
     let(:application) { create(:application, :accepted, cohort:, lead_provider: LeadProvider.first) }
     let(:cohort) { create(:cohort, start_year: 2024) }
     let(:older_cohort) { create(:cohort, start_year: 2023) }
+    let(:new_lead_provider) { create(:lead_provider, :with_courses) }
 
     before do
       PaperTrail.request.whodunnit = "test user"

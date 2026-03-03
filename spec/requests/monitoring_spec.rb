@@ -43,7 +43,10 @@ RSpec.describe "Monitoring" do
     end
 
     context "when the database is not populated" do
-      before { Course.destroy_all }
+      before do
+        Contract.destroy_all
+        Course.destroy_all
+      end
 
       it { is_expected.to have_http_status :service_unavailable }
       it { expect(response_body[:database]).to include({ connected: true, populated: false }) }

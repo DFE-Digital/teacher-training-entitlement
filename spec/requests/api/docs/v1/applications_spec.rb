@@ -4,8 +4,7 @@ require "swagger_helper"
 RSpec.describe "Applications endpoint", :with_default_schedules, openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:course_group) { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
-  let(:course) { create(:course, :tte_early_years, course_group:) }
+  let(:course) { create(:course, :tte_early_years) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
   let(:application) do
     create(
@@ -46,7 +45,7 @@ RSpec.describe "Applications endpoint", :with_default_schedules, openapi_spec: "
                     "#/components/schemas/ApplicationAcceptRequest" do
       let(:resource) { application }
       let(:type) { "application-accept" }
-      let(:new_schedule) { create(:schedule, :tte_reception_spring, course_group:, cohort:) }
+      let(:new_schedule) { create(:schedule, :tte_reception_spring, cohort:) }
       let(:attributes) { { funded_place: false, schedule_identifier: new_schedule.identifier } }
       let(:invalid_attributes) { { funded_place: nil } }
       let(:response_example) do

@@ -6,7 +6,7 @@ FactoryBot.define do
 
     user
     course { create(Course::IDENTIFIERS.first.to_sym) }
-    lead_provider { LeadProvider.first }
+    lead_provider { LeadProvider.first || create(:lead_provider) }
     headteacher_status { "no" }
     lead_provider_approval_status { :pending }
     ecf_id { SecureRandom.uuid }
@@ -153,6 +153,7 @@ FactoryBot.define do
       accepted
 
       after(:create) do |application|
+        application.declarations << create(:declaration, application:) if application.declarations.blank?
         application.update!(training_status: ApplicationState.states[:deferred])
 
         create(:application_state,

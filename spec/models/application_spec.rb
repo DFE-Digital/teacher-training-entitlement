@@ -87,7 +87,7 @@ RSpec.describe Application do
       end
 
       context "when changing to wrong schedule" do
-        let(:new_schedule) { create(:schedule, cohort:) }
+        let(:new_schedule) { create(:schedule, cohort:, course_group: "send") }
 
         subject { create(:application, :accepted, cohort:) }
 
