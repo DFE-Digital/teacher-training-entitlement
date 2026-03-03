@@ -3,34 +3,41 @@
 module Admin
   module Applications
     class ChangeTrainingStatusesController < AdminController
-      before_action :set_application, :set_training_status
-
-      def new; end
+      before_action :set_form
 
       def create
-        @change_training_status.assign_attributes(training_status_params)
+        if @form.invalid?
+          render :new, status: :unprocessable_content and return
+        end
 
-        if @change_training_status.change_training_status
-          redirect_to admin_application_path(@application)
-        else
+        service = ::Applications::Strategy.for(
+          application: @form.application,
+          training_status: @form.training_status,
+          reason: @form.reason,
+        )
+
+        service.call
+
+        if service.errors.any?
+          @form.errors.copy!(service.errors)
           render :new, status: :unprocessable_content
+        else
+          redirect_to admin_application_path(@form.application)
         end
       end
 
     private
 
-      def set_application
-        @application = Application.find(params[:id])
-      end
-
-      def set_training_status
-        @change_training_status =
-          ::Applications::ChangeTrainingStatus.new(application: @application)
+      def set_form
+        @form = Admin::Applications::ChangeTrainingStatusForm.new(
+          training_status_params,
+        )
       end
 
       def training_status_params
-        params.fetch(:applications_change_training_status, {})
+        params.fetch(:form, {})
           .permit(:training_status, :reason)
+          .merge(id: params[:id])
       end
     end
   end

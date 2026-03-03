@@ -132,7 +132,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
       end
 
       context "when application has been deferred" do
-        let(:application) { create(:application, :deferred, :eligible_for_funded_place, lead_provider:) }
+        let(:application) { create(:application, :with_declaration, :deferred, :eligible_for_funded_place, lead_provider:) }
 
         it "serializes the `enrolments`" do
           expect(attributes["enrolments"]).to eq([

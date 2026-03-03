@@ -55,7 +55,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "filtering applications by application status" do
     application = applications_in_order.last
-    application.update! training_status: :deferred
+    application.update_column(:training_status, :deferred)
 
     visit(admin_applications_path)
     select "Deferred", from: "Application status"
@@ -276,7 +276,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     click_button "Continue"
 
     expect(page).to have_css(".govuk-error-message", text: "Choose a valid reason for the training status change")
-    select Applications::ChangeTrainingStatus::REASON_OPTIONS["deferred"].first
+    select Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["deferred"].first
     click_button "Continue"
 
     expect(page).to have_css("h1", text: "Application details")

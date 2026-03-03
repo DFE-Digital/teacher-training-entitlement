@@ -59,7 +59,7 @@ FactoryBot.define do
       accepted
 
       after(:create) do |application|
-        create(:declaration, application:)
+        application.declarations << create(:declaration, application:)
       end
     end
 
@@ -153,6 +153,7 @@ FactoryBot.define do
       accepted
 
       after(:create) do |application|
+        application.declarations << create(:declaration, application:) if application.declarations.blank?
         application.update!(training_status: ApplicationState.states[:deferred])
 
         create(:application_state,

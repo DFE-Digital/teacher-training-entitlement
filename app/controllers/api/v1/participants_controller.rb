@@ -18,33 +18,19 @@ module API
       end
 
       def resume
-        service = ::Participants::Resume.new_filtering_attributes(participant_action_params)
-
-        if service.resume
-          render json: to_json(service.participant)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        service = ::Applications::Resume.new(application:)
+        call_and_render(service:)
       end
 
       def defer
-        service = ::Participants::Defer.new_filtering_attributes(participant_action_params)
+        service = ::Applications::Defer.new(application:, reason:)
 
-        if service.defer
-          render json: to_json(service.participant)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        call_and_render(service:)
       end
 
       def withdraw
-        service = ::Participants::Withdraw.new_filtering_attributes(participant_action_params)
-
-        if service.withdraw
-          render json: to_json(service.participant)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        service = ::Applications::Withdraw.new(application:, reason:)
+        call_and_render(service:)
       end
 
       def change_schedule
@@ -58,6 +44,28 @@ module API
       end
 
     private
+
+      def call_and_render(service:)
+        if application.nil?
+          service.errors.add(:base, :application_not_found)
+        else
+          service.call
+        end
+
+        if service.errors.blank?
+          render json: to_json(participant)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def course_identifier
+        participant_action_params[:course_identifier]
+      end
+
+      def reason
+        participant_action_params[:reason]
+      end
 
       def training_status
         participant_params.dig(:filter, :training_status)
@@ -81,7 +89,7 @@ module API
       end
 
       def participant_action_params
-        params
+        @participant_action_params ||= params
           .require(:data)
           .require(:attributes)
           .permit(:course_identifier, :reason, :schedule_identifier, :cohort)
@@ -99,6 +107,14 @@ module API
 
       def participant
         participants_query.participant(ecf_id: participant_params[:ecf_id])
+      end
+
+      def application
+        @application ||= participant
+          &.applications
+          &.accepted
+          &.includes(:course)
+          &.find_by(lead_provider: current_lead_provider, course: { identifier: course_identifier })
       end
     end
   end

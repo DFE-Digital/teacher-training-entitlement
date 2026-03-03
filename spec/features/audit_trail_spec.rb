@@ -22,9 +22,9 @@ RSpec.feature "Recording audit trail via papertrail", :versioning, type: :reques
 
     let :params do
       {
-        applications_change_training_status: {
+        form: {
           training_status: :withdrawn,
-          reason: Applications::ChangeTrainingStatus::REASON_OPTIONS["withdrawn"].first,
+          reason: Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["withdrawn"].first,
         },
       }
     end

@@ -7,11 +7,11 @@ RSpec.describe "admin/applications/change_training_statuses/new", type: :view do
 
   before do
     assign(:application, application)
-    assign(:change_training_status, change_training_status)
+    assign(:form, form)
   end
 
-  let(:application) { build_stubbed(:application, :accepted) }
-  let(:change_training_status) { Applications::ChangeTrainingStatus.new(application:) }
+  let(:application) { create(:application, :accepted) }
+  let(:form) { Admin::Applications::ChangeTrainingStatusForm.new(id: application.id) }
   let(:form_path) { admin_applications_change_training_status_path(application) }
 
   it { is_expected.to have_css("h1", text: "Change training status") }
@@ -25,7 +25,7 @@ RSpec.describe "admin/applications/change_training_statuses/new", type: :view do
   it { is_expected.to have_css("optgroup option") }
 
   context "when there are form errors" do
-    before { change_training_status.valid? }
+    before { form.valid? }
 
     it { is_expected.to have_css(".govuk-error-summary") }
     it { is_expected.to have_css(".govuk-error-message") }

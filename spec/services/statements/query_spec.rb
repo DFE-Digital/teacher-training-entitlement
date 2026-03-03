@@ -182,10 +182,6 @@ RSpec.describe Statements::Query do
           expect(described_class.new(state: %w[open paid]).statements).to contain_exactly(open_statement, paid_statement)
         end
 
-        it "raises when invalid states queried", pending: "needs implementation" do
-          expect { described_class.new(state: "error").statements }.to raise_error(ArgumentError)
-        end
-
         context "when state param omitted" do
           it "returns all statements" do
             expect(described_class.new.statements).to contain_exactly(open_statement, payable_statement, paid_statement)

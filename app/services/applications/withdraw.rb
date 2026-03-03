@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-module Participants
-  class Withdraw < Action
+module Applications
+  class Withdraw
+    include ActiveModel::Validations
+
     WITHDRAWAL_REASONS = %w[
       insufficient-capacity-to-undertake-programme
       personal-reason-health-or-pregnancy-related
@@ -26,35 +28,42 @@ module Participants
       other
     ].freeze
 
-    attribute :reason
+    attr_reader :reason
 
-    validates :reason, inclusion: { in: WITHDRAWAL_REASONS }, allow_blank: false
+    validates :reason, inclusion: { in: WITHDRAWAL_REASONS, message: :missing_reason }, allow_blank: false
     validate :not_withdrawn
     validate :has_started_declarations
+    validate :has_declarations
 
-    def withdraw
-      return false if invalid?
-
-      ActiveRecord::Base.transaction do
-        create_application_state!(state: :withdrawn, reason:)
-        application.withdrawn_training_status!
-        participant.reload
-      end
-
-      true
+    def initialize(application:, reason:)
+      @application = application
+      @reason = reason
     end
-    alias_method :call, :withdraw
+
+    def call
+      return if invalid?
+
+      @application.application_states.create!(state: :withdrawn, reason:)
+      @application.withdrawn_training_status!
+    end
 
   private
 
     def not_withdrawn
-      errors.add(:participant_id, :already_withdrawn) if application&.withdrawn_training_status?
+      add_error(:base, :already_withdrawn) if @application&.withdrawn_training_status?
     end
 
     def has_started_declarations
-      return if errors.any?
+      add_error(:base, :no_started_declarations) unless @application&.declarations&.any?(&:started_declaration_type?)
+    end
 
-      errors.add(:participant_id, :no_started_declarations) unless application&.declarations&.any?(&:started_declaration_type?)
+    def has_declarations
+      add_error(:base, :no_declarations) if @application&.declarations&.none?
+    end
+
+    def add_error(group, key)
+      message = I18n.t("activemodel.errors.models.applications/withdraw.attributes.#{group}.#{key}")
+      errors.add(group, message)
     end
   end
 end

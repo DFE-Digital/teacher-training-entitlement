@@ -80,7 +80,7 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
                     "#/components/schemas/ParticipantDeferRequest" do
       let(:resource) { participant }
       let(:type) { "participant-defer" }
-      let(:attributes) { { course_identifier: course.identifier, reason: Participants::Defer::DEFERRAL_REASONS.sample } }
+      let(:attributes) { { course_identifier: course.identifier, reason: ::Applications::Defer::DEFERRAL_REASONS.sample } }
       let(:invalid_attributes) { { course_identifier: "invalid" } }
       let(:response_example) do
         base_response_example.tap do |example|
@@ -99,7 +99,7 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
                     "#/components/schemas/ParticipantWithdrawRequest" do
       let(:resource) { participant }
       let(:type) { "participant-withdraw" }
-      let(:attributes) { { course_identifier: course.identifier, reason: Participants::Withdraw::WITHDRAWAL_REASONS.sample } }
+      let(:attributes) { { course_identifier: course.identifier, reason: ::Applications::Withdraw::WITHDRAWAL_REASONS.sample } }
       let(:invalid_attributes) { { course_identifier: "invalid" } }
       let(:response_example) do
         base_response_example.tap do |example|

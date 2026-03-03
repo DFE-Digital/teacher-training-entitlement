@@ -33,9 +33,9 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusesController, :ecf_api_d
       context "with valid update" do
         let :params do
           {
-            applications_change_training_status: {
+            form: {
               training_status: :withdrawn,
-              reason: Applications::ChangeTrainingStatus::REASON_OPTIONS["withdrawn"].first,
+              reason: Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["withdrawn"].first,
             },
           }
         end

@@ -18,19 +18,6 @@ RSpec.feature "admin management", type: :feature do
     then_the_latest_admin_has_the_correct_details(full_name: "Joey Joe", email: "joey-joe@shabadoo.org")
   end
 
-  # this doesn't exist currently, no ability to change admins
-  scenario "editing an admin", skip: "this doesn't exist currently, no ability to change admins" do
-    given_the_following_admin_exists(full_name: "Joey Joe", email: "joey-joe@shabadoo.org")
-    visit(admin_admins_path)
-    and_i_select_them_from_the_list_of_admins(email: "joey-joe@shabadoo.org")
-
-    when_i_change_their_full_name_to("Joey Joseph")
-    and_i_change_their_email_to("joey-joseph@shabadoo.org")
-    click_button("Update admin")
-
-    then_the_admin_record_should_have_the_correct_details(full_name: "Joey Joseph", email: "joey-joseph@shabadoo.org")
-  end
-
   scenario "deleting an admin" do
     given_the_following_admin_exists(full_name: "Person who shall be deleted")
     and_i_am_on_the_admin_index

@@ -184,8 +184,8 @@ PARTICIPANT = {
           description: "The reason a participant was withdrawn",
           type: :string,
           nullable: false,
-          example: Participants::Withdraw::WITHDRAWAL_REASONS.first,
-          enum: Participants::Withdraw::WITHDRAWAL_REASONS,
+          example: ::Applications::Withdraw::WITHDRAWAL_REASONS.first,
+          enum: ::Applications::Withdraw::WITHDRAWAL_REASONS,
         },
         date: {
           description: "The date and time the participant was withdrawn",
@@ -207,8 +207,8 @@ PARTICIPANT = {
           description: "The reason a participant was deferred",
           type: :string,
           nullable: false,
-          example: Participants::Defer::DEFERRAL_REASONS.first,
-          enum: Participants::Defer::DEFERRAL_REASONS,
+          example: ::Applications::Defer::DEFERRAL_REASONS.first,
+          enum: ::Applications::Defer::DEFERRAL_REASONS,
         },
         date: {
           description: "The date and time the participant was deferred",

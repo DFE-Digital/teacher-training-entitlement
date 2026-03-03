@@ -35,7 +35,7 @@ RSpec.feature "viewing application history", :versioning, type: :feature do
       Applications::ChangeCohort.new(application:, cohort_id: older_cohort.id).change_cohort
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).change_funding_eligibility
       create(:declaration, application:)
-      Applications::ChangeTrainingStatus.new(application:, training_status: Application.training_statuses[:deferred], reason: "other").change_training_status
+      ::Applications::Defer.new(application: application, reason: "other").call
     end
 
     scenario "viewing application history" do

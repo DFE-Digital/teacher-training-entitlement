@@ -38,54 +38,81 @@ RSpec.describe "Participant endpoints", type: :request do
   end
 
   describe "PUT /api/v1/participants/:ecf_id/resume" do
-    let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
-    let(:resource) { application.user }
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Participants::Resume }
-    let(:action) { :resume }
-    let(:attributes) { { course_identifier: "course", lead_provider: current_lead_provider } }
-    let(:service_args) { { participant_id: resource_id }.merge!(attributes) }
-    let(:service_methods) { { participant: resource } }
+    let(:training_status) { "deferred" }
+    let(:application) { create(:application, :accepted, training_status:, lead_provider: current_lead_provider) }
+    let(:resource_id) { application.user.ecf_id }
+    let(:params) { { data: { attributes: { course_identifier: application.course.identifier, lead_provider: current_lead_provider } } } }
 
-    def path(id = nil)
-      resume_api_v1_participant_path(ecf_id: id)
+    before do
+      api_put(resume_api_v1_participant_path(ecf_id: application.user.ecf_id), params:)
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when the participant can be resumed" do
+      it_behaves_like "a successful api call"
+    end
+
+    context "when the participant cannot be resumed" do
+      let(:training_status) { "active" }
+      let(:expected_response) do
+        {
+          "errors" => [{ "title" => "base", "detail" => "The participant is already active" }],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
   end
 
   describe "PUT /api/v1/participants/:ecf_id/defer" do
-    let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
-    let(:resource) { application.user }
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Participants::Defer }
-    let(:action) { :defer }
-    let(:attributes) { { course_identifier: "course", reason: "reason", lead_provider: current_lead_provider } }
-    let(:service_args) { { participant_id: resource_id }.merge!(attributes) }
-    let(:service_methods) { { participant: resource } }
+    let(:training_status) { "active" }
+    let(:application) { create(:application, :accepted, :with_declaration, training_status:, lead_provider: current_lead_provider) }
+    let(:resource_id) { application.user.ecf_id }
+    let(:params) { { data: { attributes: { reason: "career-break", course_identifier: application.course.identifier, lead_provider: current_lead_provider } } } }
 
-    def path(id = nil)
-      defer_api_v1_participant_path(ecf_id: id)
+    before do
+      api_put(defer_api_v1_participant_path(ecf_id: application.user.ecf_id), params:)
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when the participant can be deferred" do
+      it_behaves_like "a successful api call"
+    end
+
+    context "when the participant cannot be deferred" do
+      let(:training_status) { "deferred" }
+      let(:expected_response) do
+        {
+          "errors" => [{ "title" => "base", "detail" => "The participant is already deferred" }],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
   end
 
   describe "PUT /api/v1/participants/:ecf_id/withdraw" do
-    let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
-    let(:resource) { application.user }
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Participants::Withdraw }
-    let(:action) { :withdraw }
-    let(:attributes) { { course_identifier: "course", reason: "reason", lead_provider: current_lead_provider } }
-    let(:service_args) { { participant_id: resource_id }.merge!(attributes) }
-    let(:service_methods) { { participant: resource } }
+    let(:training_status) { "active" }
+    let(:application) { create(:application, :accepted, :with_declaration, training_status:, lead_provider: current_lead_provider) }
+    let(:resource_id) { application.user.ecf_id }
+    let(:params) { { data: { attributes: { reason: "insufficient-capacity", course_identifier: application.course.identifier, lead_provider: current_lead_provider } } } }
 
-    def path(id = nil)
-      withdraw_api_v1_participant_path(ecf_id: id)
+    before do
+      api_put(withdraw_api_v1_participant_path(ecf_id: application.user.ecf_id), params:)
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when the participant can be withdrawn" do
+      it_behaves_like "a successful api call"
+    end
+
+    context "when the participant cannot be withdrawn" do
+      let(:training_status) { "withdrawn" }
+      let(:expected_response) do
+        {
+          "errors" => [{ "title" => "base", "detail" => "The participant is already withdrawn" }],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
   end
 
   describe "PUT /api/v1/participants/:ecf_id/change-schedule" do
