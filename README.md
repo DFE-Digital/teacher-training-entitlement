@@ -5,6 +5,7 @@
 1. [What is TTE and how does it work](docs/how_does_tte_work.md)
 1. [Setting up the app for development](docs/setup.md)
 1. [Connecting to Azure](docs/connecting-to-azure.md)
+1. [Azure KeyVault - Managing Environment Variables](docs/azure-keyvault.md)
 1. [Environments](docs/environments.md)
 1. [Monitoring, logging, and alerting](docs/logging.md)
 1. [Feature Flags](docs/feature_flags.md)
