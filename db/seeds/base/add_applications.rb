@@ -128,6 +128,8 @@ LeadProvider.find_each do |lead_provider|
     course = all_courses.sample
     cohort = all_cohorts.sample
     delivery_partner = lead_provider.delivery_partners.last
+    next if delivery_partner.nil?
+
     delivery_partnership = DeliveryPartnership.find_by(delivery_partner:, lead_provider:, cohort:) || FactoryBot.create(:delivery_partnership, delivery_partner:, lead_provider:, cohort:)
     unless cohort.delivery_partnerships.include?(delivery_partnership)
       cohort.delivery_partnerships << delivery_partnership
