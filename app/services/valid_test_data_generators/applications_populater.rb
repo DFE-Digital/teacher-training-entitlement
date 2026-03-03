@@ -154,7 +154,7 @@ module ValidTestDataGenerators
 
         FactoryBot.create(
           :declaration,
-          state: Declaration.states.keys.sample,
+          :billable_or_voidable,
           application:,
           declaration_type:,
         )

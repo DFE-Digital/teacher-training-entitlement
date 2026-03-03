@@ -70,6 +70,10 @@ FactoryBot.define do
       state { :voided }
     end
 
+    trait :billable_or_voidable do
+      state { (Declaration::BILLABLE_STATES + Declaration::VOIDABLE_STATES).uniq.sample }
+    end
+
     trait :with_delivery_partner do
       delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     end
