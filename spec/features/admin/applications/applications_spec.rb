@@ -17,6 +17,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   before do
     create_list(:application, applications_per_page + 1)
+    create(:lead_provider, :with_courses)
     sign_in_as(create(:admin))
   end
 
@@ -334,8 +335,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   scenario "changing schedule cohort" do
     future_cohort = create(:cohort, start_year: 3.years.from_now.year)
     application = create(:application, cohort: Cohort.first)
-    create(:schedule, :npq_leadership_autumn, cohort: application.cohort)
-    create(:schedule, :npq_leadership_spring, cohort: future_cohort)
+    create(:schedule, :tte_reception_autumn, cohort: application.cohort)
+    create(:schedule, :tte_reception_spring, cohort: future_cohort)
 
     visit admin_application_path(application)
 

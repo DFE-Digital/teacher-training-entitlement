@@ -126,32 +126,26 @@ module Applications
       Schedule.where(identifier: schedule_identifier, cohort:).first
     end
 
-    def fallback_schedule
-      course.schedule_for(cohort:)
-    end
-
     def schedule
-      @schedule ||= schedule_identifier.present? ? new_schedule : fallback_schedule
+      @schedule ||= schedule_identifier.present? ? new_schedule : course.schedule_for(cohort:)
     end
 
     def validate_schedule_exists
       return unless application
+      return if schedule
 
-      unless schedule
-        if schedule_identifier.present?
-          errors.add(:schedule_identifier, :not_found)
-        else
-          errors.add(:schedule, :blank)
-          Sentry.capture_message("Schedule could not be determined for application #{application.ecf_id}")
-        end
+      if schedule_identifier.present?
+        errors.add(:schedule_identifier, :not_found)
+      else
+        errors.add(:schedule, :blank)
+        Sentry.capture_message("Schedule could not be determined for application #{application.ecf_id}")
       end
     end
 
     def validate_permitted_schedule_for_course
-      return if errors.any?
-      return if schedule_identifier.blank?
+      return if errors.any? || schedule_identifier.blank?
 
-      unless schedule && schedule.course_group.courses.include?(course)
+      unless schedule && schedule.course_group == course.course_group
         errors.add(:schedule_identifier, :invalid_for_course)
       end
     end

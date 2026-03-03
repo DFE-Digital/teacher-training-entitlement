@@ -1,15 +1,9 @@
 class Admin::CoursesController < AdminController
   def index
-    @pagy, @courses = pagy(courses_query.courses)
+    @pagy, @courses = pagy(Course.order(name: :asc))
   end
 
   def show
-    @course = courses_query.course(id: params[:id])
-  end
-
-private
-
-  def courses_query
-    @courses_query ||= Courses::Query.new
+    @course = Course.find(params[:id])
   end
 end

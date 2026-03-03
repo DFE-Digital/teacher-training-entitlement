@@ -1,10 +1,12 @@
 require "rails_helper"
 
 RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
+  let!(:lead_provider) { create(:lead_provider, :with_courses) }
+  let(:course) { lead_provider.course_cohorts.last.course }
+
   describe "validations" do
     let(:current_step) { "choose_your_provider" }
     let(:request) { nil }
-    let(:course) { build_stubbed(:course, :tte_early_years) }
     let(:school) { bulid_stubbed(:school) }
     let(:store) do
       {
@@ -30,8 +32,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
       subject.lead_provider_id = 0
       subject.valid?
       expect(subject.errors[:lead_provider_id]).to be_present
-
-      subject.lead_provider_id = LeadProvider.first.id
+      subject.lead_provider_id = lead_provider.id
       subject.valid?
       expect(subject.errors[:lead_provider_id]).to be_blank
     end
@@ -51,7 +52,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
 
   describe "#next_step" do
     context "when a provider is chosen" do
-      subject { described_class.new(lead_provider_id: LeadProvider.first.id).next_step }
+      subject { described_class.new(lead_provider_id: lead_provider.id).next_step }
 
       it { is_expected.to eq :teacher_catchment }
     end
@@ -67,14 +68,13 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
-    let(:course) { build_stubbed(:course, :tte_early_years) }
     let(:store) do
       {
         "course_identifier" => course_identifier,
       }
     end
     let(:course_identifier) { course.identifier }
-    let(:expected_providers) { LeadProvider.all }
+    let(:expected_providers) { course.lead_providers.alphabetical }
 
     before do
       form.wizard = RegistrationWizard.new(

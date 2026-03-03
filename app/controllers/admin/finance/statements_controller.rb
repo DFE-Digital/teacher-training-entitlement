@@ -33,9 +33,9 @@ class Admin::Finance::StatementsController < AdminController
 private
 
   def set_statements_and_contracts
-    scope = Statement.includes(contracts: [
-      :contract_template,
-      { course: :course_group },
+    scope = Statement.includes(contracts: %i[
+      contract_template
+      course
     ])
 
     @statement = scope.find(params[:id])

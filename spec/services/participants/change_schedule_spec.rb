@@ -260,7 +260,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
       end
 
       context "when new_schedule is not permitted for course" do
-        let(:not_permitted_course_group) { create(:course_group) }
+        let(:not_permitted_course_group) { "send" }
 
         before do
           new_schedule.update!(course_group: not_permitted_course_group)

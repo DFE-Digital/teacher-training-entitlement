@@ -271,7 +271,7 @@ private
     return if errors.any?
     return unless accepted_lead_provider_approval_status? && schedule && course
 
-    unless schedule.course_group.courses.include?(course)
+    unless schedule.course_group == course.course_group
       errors.add(:schedule, :invalid_for_course)
     end
   end

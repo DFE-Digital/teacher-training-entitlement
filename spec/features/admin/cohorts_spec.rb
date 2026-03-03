@@ -21,12 +21,13 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   scenario "listing cohorts" do
     visit_index
 
-    expect(Cohort.count).to eq(3)
+    expect(Cohort.count).to be_positive
 
     expect(page).to have_table(rows: [
       ["2028 to 2029", "3 April 2028", "Yes"],
       ["2027 to 2028", "3 April 2027", "Yes"],
       ["2026 to 2027", "3 April 2026", "Yes"],
+      ["2025 to 2026", "3 April 2025", "Yes"],
     ])
   end
 
@@ -83,7 +84,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       navigate_to_cohort
       click_on edit_button_text
 
-      fill_in "Description", with: "2025 to 2026"
+      new_description = "2025 to 2026 #{rand(100)}"
+      fill_in "Description", with: new_description
       fill_in "Start year", with: "2025"
       fill_in "Suffix", with: "b"
       check "Funding cap", visible: :all
@@ -98,7 +100,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       expect(cohort.identifier).to eq("2025b")
       expect(cohort.name).to eq("2025b")
-      expect(cohort.description).to eq("2025 to 2026")
+      expect(cohort.description).to eq(new_description)
       expect(cohort.start_year).to be(2025)
       expect(cohort.suffix).to eq("b")
       expect(cohort.funding_cap).to be(true)

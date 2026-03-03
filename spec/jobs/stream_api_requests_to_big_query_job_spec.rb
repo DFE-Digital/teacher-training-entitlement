@@ -7,7 +7,7 @@ RSpec.describe StreamAPIRequestsToBigQueryJob, type: :job do
 
   let(:status_code) { 200 }
   let(:created_at) { Time.zone.now.to_s }
-  let(:lead_provider) { LeadProvider.find_by(name: "Ambition Institute") }
+  let(:lead_provider) { create(:lead_provider) }
 
   let(:request_data) do
     {

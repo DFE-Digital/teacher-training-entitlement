@@ -83,9 +83,8 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.ya
     let(:lead_provider) { create(:lead_provider) }
     let(:type) { "participant-declaration" }
     let(:cohort) { create(:cohort, :current) }
-    let(:course_group) { CourseGroup.find_by(name: "reception") }
-    let(:course) { create(:course, :tte_early_years, course_group:) }
-    let!(:schedule) { create(:schedule, :tte_reception_autumn, course_group:, cohort:) }
+    let(:course) { create(:course, :tte_early_years) }
+    let!(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
     let(:application) { create(:application, :accepted, cohort:, course:, lead_provider:) }
     let(:declaration_date) { schedule.applies_from + 1.day }
     let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }

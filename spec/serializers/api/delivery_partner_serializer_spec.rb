@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
-  let(:current_lead_provider) { LeadProvider.first }
-  let(:other_lead_provider) { LeadProvider.last }
+  let(:current_lead_provider) { create(:lead_provider) }
+  let(:other_lead_provider) { create(:lead_provider) }
   let(:delivery_partner) do
     create(:delivery_partner,
            lead_providers: {

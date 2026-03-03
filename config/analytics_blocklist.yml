@@ -1,184 +1,187 @@
 ---
-shared:
+:shared:
   :versions:
-    - id
-    - item_type
-    - item_id
-    - event
-    - whodunnit
-    - object
-    - object_changes
-    - note
-    - created_at
+  - id
+  - created_at
+  - event
+  - item_id
+  - item_type
+  - note
+  - object
+  - object_changes
+  - whodunnit
   :delayed_jobs:
-    - id
-    - priority
-    - attempts
-    - handler
-    - last_error
-    - run_at
-    - locked_at
-    - failed_at
-    - locked_by
-    - queue
-    - created_at
-    - updated_at
-    - cron
+  - id
+  - attempts
+  - created_at
+  - cron
+  - failed_at
+  - handler
+  - last_error
+  - locked_at
+  - locked_by
+  - priority
+  - queue
+  - run_at
+  - updated_at
   :sessions:
-    - id
-    - session_id
-    - data
-    - created_at
-    - updated_at
-  :get_an_identity_webhook_messages:
-    - id
-    - raw
-    - message
-    - message_id
-    - message_type
-    - status
-    - status_comment
-    - sent_at
-    - processed_at
-    - created_at
-    - updated_at
-  :reports:
-    - id
-    - identifier
-    - data
-    - created_at
-    - updated_at
-  :api_tokens:
-    - id
-    - lead_provider_id
-    - hashed_token
-    - last_used_at
-    - created_at
-    - updated_at
-    - scope
-  :admin_users:
-    - id
-    - email
-    - full_name
-    - super_admin
-    - otp_hash
-    - otp_expires_at
-    - created_at
-    - updated_at
-  :flipper_gates:
-    - id
-    - feature_key
-    - key
-    - value
-    - created_at
-    - updated_at
-  :flipper_features:
-    - id
-    - key
-    - created_at
-    - updated_at
-  :closed_registration_users:
-    - id
-    - email
-    - created_at
-    - updated_at
-  :users:
-    - date_of_birth
-    - national_insurance_number
-    - archived_email
-    - raw_tra_provider_data
-  :applications:
-    - raw_application_data
-    - DEPRECATED_school_urn
-    - DEPRECATED_private_childcare_provider_urn
-    - DEPRECATED_itt_provider
-  :contract_templates:
-    - id
-    - recruitment_target
-    - service_fee_installments
-    - service_fee_percentage
-    - per_participant
-    - number_of_payment_periods
-    - output_payment_percentage
-    - monthly_service_fee
-    - targeted_delivery_funding_per_participant
-    - special_course
-    - ecf_id
-    - created_at
-    - updated_at
-  :contracts:
-    - id
-    - statement_id
-    - course_id
-    - contract_template_id
-    - created_at
-    - updated_at
-  :statements:
-    - reconcile_amount
-  :courses:
-    - position
-  :schools:
-    - la_code
-    - la_name
-    - establishment_status_code
-    - establishment_status_name
-    - establishment_type_code
-    - establishment_type_name
-    - number_of_pupils
-    - phase_type
-    - phase_name
-  :financial_change_logs:
-    - id
-    - operation_description
-    - data_changes
-    - created_at
-    - updated_at
+  - id
+  - created_at
+  - data
+  - session_id
+  - updated_at
   :active_storage_variant_records:
-    - id
-    - blob_id
-    - variation_digest
+  - id
+  - blob_id
+  - variation_digest
   :active_storage_blobs:
-    - id
-    - key
-    - filename
-    - content_type
-    - metadata
-    - service_name
-    - byte_size
-    - checksum
-    - created_at
+  - id
+  - byte_size
+  - checksum
+  - content_type
+  - created_at
+  - filename
+  - key
+  - metadata
+  - service_name
   :active_storage_attachments:
-    - id
-    - name
-    - record_type
-    - record_id
-    - blob_id
-    - created_at
-  :bulk_operations:
-    - id
-    - type
-    - admin_id
-    - row_count
-    - result
-    - created_at
-    - updated_at
-    - started_at
-    - finished_at
-    - ran_by_admin_id
+  - id
+  - blob_id
+  - created_at
+  - name
+  - record_id
+  - record_type
+  :get_an_identity_webhook_messages:
+  - id
+  - created_at
+  - message
+  - message_id
+  - message_type
+  - processed_at
+  - raw
+  - sent_at
+  - status
+  - status_comment
+  - updated_at
+  :statements:
+  - reconcile_amount
+  :schools:
+  - establishment_status_code
+  - establishment_status_name
+  - establishment_type_code
+  - establishment_type_name
+  - la_code
+  - la_name
+  - number_of_pupils
+  - phase_name
+  - phase_type
   :legacy_passed_participant_outcomes:
-    - id
-    - trn
-    - course_short_code
-    - completion_date
-    - created_at
-    - updated_at
+  - id
+  - completion_date
+  - course_short_code
+  - created_at
+  - trn
+  - updated_at
+  :financial_change_logs:
+  - id
+  - created_at
+  - data_changes
+  - operation_description
+  - updated_at
+  :course_cohort_providers:
+  - id
+  - course_cohort_id
+  - created_at
+  - lead_provider_id
+  - updated_at
+  :course_cohorts:
+  - id
+  - cohort_id
+  - course_id
+  - created_at
+  - updated_at
+  :courses:
+  - position
+  :contract_templates:
+  - id
+  - created_at
+  - ecf_id
+  - monthly_service_fee
+  - number_of_payment_periods
+  - output_payment_percentage
+  - per_participant
+  - recruitment_target
+  - service_fee_installments
+  - service_fee_percentage
+  - special_course
+  - targeted_delivery_funding_per_participant
+  - updated_at
+  :contracts:
+  - id
+  - contract_template_id
+  - course_id
+  - created_at
+  - statement_id
+  - updated_at
+  :closed_registration_users:
+  - id
+  - created_at
+  - email
+  - updated_at
+  :api_tokens:
+  - id
+  - created_at
+  - hashed_token
+  - last_used_at
+  - lead_provider_id
+  - scope
+  - updated_at
+  :admin_users:
+  - id
+  - created_at
+  - email
+  - full_name
+  - otp_expires_at
+  - otp_hash
+  - super_admin
+  - updated_at
   :adjustments:
-    - id
-    - statement_id
-    - description
-    - amount
-    - created_at
-    - updated_at
-  :participant_outcomes:
-    - qualified_teachers_api_request_successful
-    - sent_to_qualified_teachers_api_at
+  - id
+  - amount
+  - created_at
+  - description
+  - statement_id
+  - updated_at
+  :applications:
+  - DEPRECATED_itt_provider
+  - DEPRECATED_private_childcare_provider_urn
+  - DEPRECATED_school_urn
+  - raw_application_data
+  :users:
+  - archived_email
+  - date_of_birth
+  - national_insurance_number
+  - raw_tra_provider_data
+  :bulk_operations:
+  - id
+  - admin_id
+  - created_at
+  - finished_at
+  - ran_by_admin_id
+  - result
+  - row_count
+  - started_at
+  - type
+  - updated_at
+  :flipper_gates:
+  - id
+  - created_at
+  - feature_key
+  - key
+  - updated_at
+  - value
+  :flipper_features:
+  - id
+  - created_at
+  - key
+  - updated_at

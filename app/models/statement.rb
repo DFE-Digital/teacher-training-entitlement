@@ -14,7 +14,7 @@ class Statement < ApplicationRecord
   validates :output_fee, inclusion: { in: [true, false] }
   validates :month, numericality: { in: 1..12, only_integer: true }
   validates :year, numericality: { in: 2020..2050, only_integer: true }
-  validates :lead_provider_id, uniqueness: { scope: %i[cohort_id year month] }
+  validates :lead_provider_id, uniqueness: { scope: %i[cohort_id year month], message: "Statement for this lead provider, cohort, year and month already exists" }
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validate :payment_date_on_or_after_deadline_date

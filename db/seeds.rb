@@ -35,7 +35,6 @@ ApplicationRecord.descendants.each(&:reset_column_information)
 # review apps doesn't cause the container to go into an
 # unhealthy state for too long (as courses are loaded in healthcheck).
 [
-  "add_course_groups.rb",
   "add_courses.rb",
   "add_feature_flags.rb",
   "add_cohorts.rb",
