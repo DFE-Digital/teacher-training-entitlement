@@ -7,8 +7,8 @@ RSpec.feature "Administering API Test Scenarios", type: :feature do
 
   let(:admin) { create(:admin) }
   let(:super_admin) { create(:super_admin) }
-  let(:lead_provider) { LeadProvider.first }
-  let(:other_lead_provider) { LeadProvider.last }
+  let!(:lead_provider) { create(:lead_provider) }
+  let!(:other_lead_provider) { create(:lead_provider) }
 
   before do
     create(:school)
