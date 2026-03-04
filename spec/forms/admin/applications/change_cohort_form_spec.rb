@@ -24,7 +24,7 @@ RSpec.describe Admin::Applications::ChangeCohortForm, type: :model do
       create(:schedule, :tte_reception_autumn, cohort: new_cohort)
       create(:schedule, :tte_reception_autumn, cohort: cohort_2022)
       create(:schedule, :tte_reception_spring, cohort: cohort_2022)
-      create(:schedule, :npq_specialist_autumn, cohort: cohort_2022)
+      create(:schedule, :tte_reception_autumn, cohort: cohort_2022)
       create(:schedule, :tte_reception_autumn, cohort: cohort_2023)
       create(:schedule, :tte_reception_spring, cohort: cohort_2023)
     end
