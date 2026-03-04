@@ -1,0 +1,88 @@
+# API Test Scenarios Data
+# This file defines the test applications to be created for Lead Provider API testing
+# Based on: documentation/lead_provider_api_test_scenarios.md
+
+applications:
+  - label: APP-001
+    email: test-accept-01@example.com
+    full_name: Test Accept One
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: Accept with funded place. Declaration lifecycle, defer/resume
+
+  - label: APP-002
+    email: test-accept-02@example.com
+    full_name: Test Accept Two
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: Accept with funded place. Void and error scenarios
+
+  - label: APP-003
+    email: test-reject-01@example.com
+    full_name: Test Reject One
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: Reject scenario
+
+  - label: APP-004
+    email: test-accept-03@example.com
+    full_name: Test Accept Three
+    cohort_offset: 0
+    funding_eligible: false
+    purpose: Accept without funded place. Funding eligibility error cases
+
+  - label: APP-005
+    email: test-withdraw-01@example.com
+    full_name: Test Withdraw One
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: Accept with funded place. Withdrawal scenario
+
+  - label: APP-006
+    email: test-edge-01@example.com
+    full_name: Test Edge One
+    cohort_offset: 1
+    funding_eligible: true
+    purpose: Different cohort. Listing/filter edge case
+
+  - label: APP-007
+    email: test-nodecl-01@example.com
+    full_name: Test No Declaration One
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: Accept with funded place. No declarations submitted
+
+  - label: APP-008
+    email: test-adm-started@example.com
+    full_name: Test Admin Started
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: "Admin verification: started declaration"
+
+  - label: APP-009
+    email: test-adm-completed@example.com
+    full_name: Test Admin Completed
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: "Admin verification: completed declaration, outcome passed"
+
+  - label: APP-010
+    email: test-adm-failed@example.com
+    full_name: Test Admin Failed
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: "Admin verification: completed declaration, outcome failed"
+
+  - label: APP-011
+    email: test-adm-voided@example.com
+    full_name: Test Admin Voided
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: "Admin verification: voided declaration"
+
+  - label: APP-012
+    email: test-adm-deferred@example.com
+    full_name: Test Admin Deferred
+    cohort_offset: 0
+    funding_eligible: true
+    purpose: "Admin verification: deferred participant"

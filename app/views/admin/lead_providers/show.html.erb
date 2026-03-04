@@ -1,0 +1,34 @@
+<% content_for :side_navigation do %>
+    <h2 class="govuk-heading-m">Cohorts</h2>
+    <%=
+    render SubNavigationComponent.new(
+        request.path,
+        structure:
+        @cohorts.map do |cohort|
+        NavigationStructure::Node.new(
+            name: cohort.description,
+            href: cohort_admin_lead_provider_path(@lead_provider, cohort),
+            prefix: cohort_admin_lead_provider_path(@lead_provider, cohort),
+        )
+        end
+    )
+    %>
+<% end %>
+
+<span class="govuk-caption-l"><%= @lead_provider.name %></span>
+<%= tag.h1("Cohort #{@current_cohort.description}", class: "govuk-heading-l") %>
+
+<%= govuk_tabs do |tabs| %>
+    <%= tabs.with_tab(label: "Applications") do %>
+        <%= render partial: "applications",  locals: { applications: @applications, pagy: @pagy_applications } %>
+    <% end %>
+
+    <%= tabs.with_tab(label: "Delivery Partners") do %>
+        <%= render partial: "delivery_partners",  locals: { delivery_partners: @delivery_partners, pagy: @pagy_delivery_partners } %>
+    <% end %>
+
+    <%= tabs.with_tab(label: "Statements") do %>
+        <%= render partial: "statements",  locals: { statements: @statements, pagy: @pagy_statements } %>
+    <% end %>
+
+<% end %>

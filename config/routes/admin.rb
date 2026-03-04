@@ -11,6 +11,7 @@ namespace :admin do
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
   resources :glossary, only: %i[index]
+  resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios"
 
   namespace :registration_closed, path: "registration-closed" do
     resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
@@ -128,7 +129,9 @@ namespace :admin do
   end
 
   resources :lead_providers, only: %i[index show], path: "providers" do
-    resources :cohort, controller: "lead_provider_cohort", only: %i[show]
+    member do
+      get "cohorts/:cohort_id", to: "lead_providers#show", as: :cohort
+    end
   end
   resources :admins, only: %i[index]
 
