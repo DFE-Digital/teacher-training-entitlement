@@ -14,3 +14,7 @@ There are three permanent environments for TTE (Teacher Training Entitlement), p
 Security in the `production` Azure space is configured for sensitive data. You need to log in with real admin credentials in these environments, and you'll need an Azure PIM to run `make` commands against them.
 
 The `test` space should contain only seed/test data. Use dummy admin logins in these environments, and you won't need a PIM for `make`.
+
+## HTTP Basic Auth
+
+Staging is protected by HTTP basic auth. Credentials are stored in the `HTTP-BASIC-AUTH-USER-PASS` secret in Key Vault (format: `username:password`).

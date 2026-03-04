@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   default_form_builder GOVUKDesignSystemFormBuilder::FormBuilder
 
+  before_action :http_basic_authenticate
+
   around_action :set_time_zone
   before_action :clear_null_user_sessions
   before_action :set_cache_headers
@@ -11,6 +13,17 @@ class ApplicationController < ActionController::Base
   include DfE::Analytics::Requests
 
 private
+
+  def http_basic_authenticate
+    credentials = ENV.fetch("HTTP_BASIC_AUTH_USER_PASS", nil)
+    return if credentials.blank?
+
+    authenticate_or_request_with_http_basic do |username, password|
+      expected_username, expected_password = credentials.split(":", 2)
+      ActiveSupport::SecurityUtils.secure_compare(username, expected_username) &
+        ActiveSupport::SecurityUtils.secure_compare(password, expected_password)
+    end
+  end
 
   def authenticate_user!
     raise "ApplicationController should not be used directly. Use a subclass instead."
