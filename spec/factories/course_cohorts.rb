@@ -3,6 +3,10 @@ FactoryBot.define do
     course
     cohort
 
+    initialize_with do
+      CourseCohort.find_or_initialize_by(course:, cohort:)
+    end
+
     transient do
       lead_provider { nil }
     end
