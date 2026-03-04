@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Users::FindOrCreateFromTeacherAuth do
-  subject { described_class.new(provider_data:, feature_flag_id:).call }
+  subject(:make_request) { described_class.new(provider_data:, feature_flag_id:).call }
 
   let(:uid) { "urn:fdc:gov.uk:2022:#{SecureRandom.alphanumeric(43)}" }
   let(:feature_flag_id) { SecureRandom.uuid }
@@ -35,17 +35,17 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     before { user }
 
     it "sets the uid and provider on the user" do
-      subject
+      make_request
       expect(user.reload).to have_attributes(uid:, provider: "teacher_auth")
     end
 
     it "returns the user" do
-      expect(subject).to eq(user)
+      expect(make_request).to eq(user)
     end
 
     context "when user's details have updated" do
       it "updates the user" do
-        subject
+        make_request
         expect(user.reload).to have_attributes(email:, full_name: verified_name.join(" "))
       end
     end
@@ -62,22 +62,22 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     end
 
     it "sets the uid and provider on the most recently updated user" do
-      subject
+      make_request
       expect(most_recently_updated_user.reload).to have_attributes(uid:, provider: "teacher_auth")
     end
 
     it "moves applications to the most recently updated user" do
-      subject
+      make_request
       expect(application.reload.user).to eq(most_recently_updated_user)
     end
 
     it "archives the other users" do
-      subject
+      make_request
       expect(older_user.reload).to be_archived
     end
 
     it "creates participant ID records" do
-      subject
+      make_request
       expect(
         most_recently_updated_user.participant_id_changes.find_by(
           from_participant_id: older_user.ecf_id,
@@ -87,12 +87,12 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     end
 
     it "returns the most recently updated user" do
-      expect(subject).to eq(most_recently_updated_user)
+      expect(make_request).to eq(most_recently_updated_user)
     end
 
     context "when user's details have updated" do
       it "updates the user" do
-        subject
+        make_request
         expect(most_recently_updated_user.reload).to have_attributes(
           email:,
           full_name: verified_name.join(" "),
@@ -109,7 +109,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
 
       context "when users details have updated" do
         it "updates the user" do
-          subject
+          make_request
           expect(existing_user.reload).to have_attributes(
             email:,
             full_name: verified_name.join(" "),
@@ -121,7 +121,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
         let(:existing_user) { create(:user, :with_get_an_identity_id, email:, uid:, trn: "2345678") }
 
         it "updates the verified TRN on the user" do
-          subject
+          make_request
           expect(existing_user.reload).to have_attributes(
             trn:,
             trn_verified: true,
@@ -133,7 +133,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
 
     context "when no user exists with the same provider and UID" do
       it "creates a new user" do
-        subject
+        make_request
         expect(User.find_by(provider: "teacher_auth", uid:)).to have_attributes(
           email:,
           trn:,
