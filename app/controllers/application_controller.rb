@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   default_form_builder GOVUKDesignSystemFormBuilder::FormBuilder
 
-  before_action :http_basic_authenticate
+  before_action :http_basic_authenticate, if: -> { Rails.env.staging? }
 
   around_action :set_time_zone
   before_action :clear_null_user_sessions
