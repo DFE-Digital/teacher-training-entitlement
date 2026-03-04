@@ -135,24 +135,25 @@ LeadProvider.find_each do |lead_provider|
       cohort.delivery_partnerships << delivery_partnership
     end
 
-    declaration =
-      FactoryBot.build(:declaration,
-                       delivery_partner:,
-                       lead_provider:,
-                       cohort:,
-                       course:)
-
-    FactoryBot.create(
+    application = FactoryBot.create(
       :application,
-      :deferred,
+      :accepted,
       :with_random_user,
       :with_random_work_setting,
       :with_random_participant_outcome_state,
       lead_provider:,
       course:,
       cohort:,
-      declarations: [declaration],
     )
+
+    application.declarations << FactoryBot.create(:declaration,
+                                                  application:,
+                                                  delivery_partner:,
+                                                  lead_provider:,
+                                                  cohort:,
+                                                  course:)
+
+    application.deferred_training_status!
   end
 end
 
