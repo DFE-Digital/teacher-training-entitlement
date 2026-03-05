@@ -15,7 +15,7 @@ class SessionsController < PublicPagesController
 private
 
   def build_sign_out_uri(id_token)
-    teacher_auth_domain_uri = URI.parse(ENV["TEACHER_AUTH_DOMAIN"])
+    teacher_auth_domain_uri = URI.parse(ENV.fetch("TEACHER_AUTH_DOMAIN"))
 
     URI::Generic.build({
       scheme: teacher_auth_domain_uri.scheme,
