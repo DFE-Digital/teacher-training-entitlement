@@ -15,7 +15,7 @@ RSpec.describe SessionsController do
       session[:id_token] = id_token
 
       post_logout_uri = "http://test.host/sign-out"
-      expected_redirect_url = "https://teacher-auth-domain.com:443/oauth2/logout?id_token_hint=#{id_token}&post_logout_redirect_uri=#{CGI.escape(post_logout_uri)}"
+      expected_redirect_url = "https://teacher-auth.example.com:443/oauth2/logout?id_token_hint=#{id_token}&post_logout_redirect_uri=#{CGI.escape(post_logout_uri)}"
 
       get :destroy
 
