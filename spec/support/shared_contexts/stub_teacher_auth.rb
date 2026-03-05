@@ -1,4 +1,4 @@
-RSpec.shared_context("Stub Get An Identity Omniauth Responses") do
+RSpec.shared_context("Stub Teacher Auth Responses") do
   let(:user_first_name) { "John" }
   let(:user_last_name) { "Doe" }
   let(:user_preferred_name) { "#{user_first_name} #{user_last_name}" }
@@ -9,12 +9,13 @@ RSpec.shared_context("Stub Get An Identity Omniauth Responses") do
   let(:user_date_of_birth_parsed) { Date.new(1980, 12, 13) }
   let(:user_trn) { "1234567" }
   let(:user_trn_lookup_status) { "Found" }
+  let(:user_verified_name) { [user_first_name, user_last_name] }
 
-  let(:provider) { "tra_openid_connect" }
+  let(:provider) { "teacher_auth" }
 
   let(:stubbed_callback_response) do
     {
-      "provider" => "tra_openid_connect",
+      "provider" => "teacher_auth",
       "uid" => user_uid,
       "info" => {
         "date_of_birth" => user_date_of_birth_parsed,
@@ -38,6 +39,8 @@ RSpec.shared_context("Stub Get An Identity Omniauth Responses") do
           "name" => user_full_name,
           "preferred_name" => user_preferred_name,
           "birthdate" => user_date_of_birth,
+          "verified_name" => user_verified_name,
+          "verified_date_of_birth" => user_date_of_birth,
           "trn" => user_trn,
           "given_name" => user_first_name,
           "family_name" => user_last_name,
@@ -57,7 +60,7 @@ RSpec.shared_context("Stub Get An Identity Omniauth Responses") do
       "email" => user_email,
       "full_name" => user_full_name,
       "preferred_name" => user_preferred_name,
-      "provider" => "tra_openid_connect",
+      "provider" => "teacher_auth",
       "raw_tra_provider_data" => stubbed_callback_response_as_json,
       "trn" => user_trn,
       "trn_lookup_status" => user_trn_lookup_status,
@@ -67,6 +70,6 @@ RSpec.shared_context("Stub Get An Identity Omniauth Responses") do
 
   before do
     OmniAuth.config.test_mode = true
-    OmniAuth.config.add_mock(:tra_openid_connect, stubbed_callback_response)
+    OmniAuth.config.add_mock(:teacher_auth, stubbed_callback_response)
   end
 end

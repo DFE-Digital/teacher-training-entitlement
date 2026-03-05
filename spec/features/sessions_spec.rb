@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.feature "Sessions", type: :feature do
   let(:otp_code) { "123456" }
 
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   scenario "signing in when user does not exist" do
     visit "/sign-in"

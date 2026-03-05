@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "Account", type: :feature do
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   describe "accounts page" do
     scenario "when not logged in, it redirects to sign in" do

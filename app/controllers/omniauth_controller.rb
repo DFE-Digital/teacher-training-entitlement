@@ -1,17 +1,14 @@
 class OmniauthController < Devise::OmniauthCallbacksController
-  skip_before_action :verify_authenticity_token, only: %i[tra_openid_connect]
+  skip_before_action :verify_authenticity_token, only: %i[teacher_auth]
   skip_before_action :authenticate_user!
 
-  def tra_openid_connect
-    # Let user continue using current TRA login
-    session.delete("clear_tra_login")
-
+  def teacher_auth
     provider_data = request.env["omniauth.auth"]
 
-    @user = User.find_or_create_from_provider_data(
-      provider_data,
+    @user = Users::FindOrCreateFromTeacherAuth.new(
+      provider_data:,
       feature_flag_id: session["feature_flag_id"],
-    )
+    ).call
 
     # @user.persisted? checks that it exists and has been persisted to the database
     # @user.save checks that any changes made to an existing record have been persisted to that persisted record
@@ -47,7 +44,7 @@ class OmniauthController < Devise::OmniauthCallbacksController
     end
   rescue StandardError => e
     id = @user.try(:id)
-    Rails.logger.info("[GAI] #{e} raised, user_id=#{id} uid=#{try_to_extract_user_uid}")
+    Rails.logger.info("[TeacherAuth] #{e} raised, user_id=#{id} uid=#{try_to_extract_user_uid}")
 
     raise e
   end
@@ -55,7 +52,7 @@ class OmniauthController < Devise::OmniauthCallbacksController
   def failure
     redirect_to after_sign_in_path_for(current_user) and return if logged_in_user.present?
 
-    Rails.logger.info("[GAI][omniauth_failure] uid=#{try_to_extract_user_uid} error=#{try_to_extract_error_type}")
+    Rails.logger.info("[TeacherAuth][omniauth_failure] uid=#{try_to_extract_user_uid} error=#{try_to_extract_error_type}")
     send_error_to_sentry(
       "Omniauth login failure",
       contexts: {

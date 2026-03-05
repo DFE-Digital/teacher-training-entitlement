@@ -10,7 +10,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
     let!(:application_for_user_with_dfe_id) { create(:application, :accepted, user: existing_user_with_dfe_id, course: create(:course, :leading_teaching)) }
 
     context "and the email in DfE Identity has changed" do
-      include_context "Stub Get An Identity Omniauth Responses" do
+      include_context "Stub Teacher Auth Responses" do
         let(:user_email) { "user@example.com" }
         let(:user_uid) { existing_user_with_dfe_id.uid }
       end
@@ -26,7 +26,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
     end
 
     context "and the email in DfE Identity has not changed" do
-      include_context "Stub Get An Identity Omniauth Responses" do
+      include_context "Stub Teacher Auth Responses" do
         let(:user_email) { "old@example.com" }
         let(:user_uid) { existing_user_with_dfe_id.uid }
       end
@@ -42,7 +42,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
     end
 
     context "and there is another account that matches the DfE Identity email but it doesn't have a DfE Identity UID" do
-      include_context "Stub Get An Identity Omniauth Responses" do
+      include_context "Stub Teacher Auth Responses" do
         let(:user_email) { "user@example.com" }
         let(:user_uid) { existing_user_with_dfe_id.uid }
       end
@@ -71,7 +71,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
     end
 
     context "and there is another account that matches the DfE Identity email that has a different DfE Identity UID" do
-      include_context "Stub Get An Identity Omniauth Responses" do
+      include_context "Stub Teacher Auth Responses" do
         let(:user_email) { "user@example.com" }
         let(:user_uid) { existing_user_with_dfe_id.uid }
       end
@@ -80,7 +80,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
         create(:user, :with_get_an_identity_id, email: "user@example.com", full_name: "old name")
       end
       let!(:application_for_user_with_same_email_different_dfe_uid) { create(:application, :accepted, user: user_with_same_email_different_dfe_uid, course: create(:course, :leading_teaching)) }
-      let!(:existing_user_with_dfe_id) { create(:user, :with_get_an_identity_id, full_name: "old name", email: "old@example.com", provider: "tra_openid_connect") }
+      let!(:existing_user_with_dfe_id) { create(:user, :with_get_an_identity_id, full_name: "old name", email: "old@example.com", provider: "teacher_auth") }
 
       scenario "the clashing user account should be archived" do
         navigate_to_page(path: "/", submit_form: false, axe_check: false) do
@@ -106,7 +106,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       let!(:application_for_user) { create(:application, :accepted, user: user, course: create(:course, :leading_teaching)) }
       let(:user) { create(:user, email: "user@example.com") }
 
-      include_context "Stub Get An Identity Omniauth Responses" do
+      include_context "Stub Teacher Auth Responses" do
         let(:user_email) { "user@example.com" }
         let(:user_uid) { existing_user_with_dfe_id.uid }
       end
@@ -129,7 +129,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
         let!(:application_for_existing_user) { create(:application, :accepted, user: existing_user, course: create(:course, :leading_teaching)) }
         let(:uid) { SecureRandom.uuid }
 
-        include_context "Stub Get An Identity Omniauth Responses" do
+        include_context "Stub Teacher Auth Responses" do
           let(:user_email) { "user@example.com" }
           let(:user_uid) { uid }
         end
@@ -141,7 +141,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
 
           expect(page).to have_current_path("/accounts/user_registrations/#{application_for_existing_user.id}")
           expect(existing_user.reload.uid).to eq uid
-          expect(existing_user.provider).to eq "tra_openid_connect"
+          expect(existing_user.provider).to eq "teacher_auth"
           expect(existing_user.full_name).to eq "John Doe"
           expect(existing_user.applications.first).to eq application_for_existing_user
         end
@@ -152,7 +152,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
         let!(:application_for_clashing_user) { create(:application, :accepted, user: clashing_user, course: create(:course, :leading_teaching)) }
         let(:uid) { SecureRandom.uuid }
 
-        include_context "Stub Get An Identity Omniauth Responses" do
+        include_context "Stub Teacher Auth Responses" do
           let(:user_email) { "user@example.com" }
           let(:user_uid) { uid }
         end
@@ -166,7 +166,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
 
           expect(clashing_user.reload.email).to eq "user@example.com"
           expect(clashing_user.uid).to eq uid
-          expect(clashing_user.provider).to eq "tra_openid_connect"
+          expect(clashing_user.provider).to eq "teacher_auth"
           expect(clashing_user.archived?).to be false
           expect(clashing_user.applications.first).to eq application_for_clashing_user
         end
@@ -177,7 +177,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       let(:uid) { SecureRandom.uuid }
       let(:new_user_created_with_uid) { User.find_by(uid: uid) }
 
-      include_context "Stub Get An Identity Omniauth Responses" do
+      include_context "Stub Teacher Auth Responses" do
         let(:user_email) { "user@example.com" }
         let(:user_uid) { uid }
       end
@@ -189,7 +189,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
 
         expect(page).to have_current_path("/registration/course-start-date")
         expect(new_user_created_with_uid.email).to eq "user@example.com"
-        expect(new_user_created_with_uid.provider).to eq "tra_openid_connect"
+        expect(new_user_created_with_uid.provider).to eq "teacher_auth"
         expect(new_user_created_with_uid.full_name).to eq "John Doe"
       end
     end

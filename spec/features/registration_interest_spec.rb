@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "Register interest", type: :feature do
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   scenario "Sign up to notification with direct link" do
     visit "/registration-interest/sign-up"

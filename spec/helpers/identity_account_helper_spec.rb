@@ -8,12 +8,12 @@ RSpec.describe IdentityAccountHelper, type: :helper do
 
     let(:redirect_uri) { "https://redirect.uri?param=value" }
 
-    it "is built with the TRA domain" do
-      expect(link).to match("https://tra-domain.com/")
+    it "is built with the TeacherAuth domain" do
+      expect(link).to match("https://teacher-auth-domain.com/")
     end
 
     it "includes the client_id query parameter" do
-      expect(link).to match("client_id=npq")
+      expect(link).to match("client_id=teacher-training-entitlement")
     end
 
     it "includes the URL encoded redirect_id query parameter" do

@@ -5,7 +5,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   include Helpers::JourneyStepHelper
   include ApplicationHelper
 
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   let(:user_trn) { "" }
   let(:manually_entered_trn) { "3651763" }

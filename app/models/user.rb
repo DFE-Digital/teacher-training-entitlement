@@ -10,7 +10,7 @@ class User < ApplicationRecord
     email_updates_unsubscribe_key
   ].freeze
 
-  devise :omniauthable, omniauth_providers: [:tra_openid_connect]
+  devise :omniauthable, omniauth_providers: [Omniauth::Strategies::TeacherAuth::NAME]
 
   has_paper_trail meta: { note: :version_note }, ignore: %i[raw_tra_provider_data updated_at feature_flag_id]
 
@@ -35,7 +35,7 @@ class User < ApplicationRecord
 
   scope :with_get_an_identity_id, lambda {
     where.not(uid: nil)
-         .where(provider: "tra_openid_connect")
+         .where(provider: Omniauth::Strategies::TeacherAuth::NAME.to_s)
   }
 
   EMAIL_UPDATES_STATES = %i[senco other_npq].freeze
@@ -56,12 +56,8 @@ class User < ApplicationRecord
     with_get_an_identity_id.find_by(uid: get_an_identity_id)
   end
 
-  def self.find_or_create_from_provider_data(provider_data, feature_flag_id:)
-    Users::FindOrCreateFromProviderData.new(provider_data: provider_data, feature_flag_id: feature_flag_id).call
-  end
-
   def get_an_identity_provider?
-    provider == "tra_openid_connect"
+    provider == Omniauth::Strategies::TeacherAuth::NAME.to_s
   end
 
   def get_an_identity_id

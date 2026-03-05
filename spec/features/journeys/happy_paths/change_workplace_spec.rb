@@ -4,7 +4,7 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
 
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   let(:user) { create(:user) }
   let(:school) { create(:school, :with_address) }

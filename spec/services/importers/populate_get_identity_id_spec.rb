@@ -9,7 +9,7 @@ RSpec.describe Importers::PopulateGetIdentityId do
     described_class.new.import([{ id: "ba752426-6029-429a-9b0b-40bcf51b8e8a", user_id: "get-an-id-" }])
 
     expect(user.reload.uid).to eq("get-an-id-")
-    expect(user.reload.provider).to eq("tra_openid_connect")
+    expect(user.reload.provider).to eq("teacher_auth")
   end
 
   it "Updates multiple users" do

@@ -22,7 +22,7 @@ RSpec/ContextWording:
     - 'spec/services/report_service_spec.rb'
     - 'spec/models/school_spec.rb'
     - 'spec/support/shared_contexts/retrieve_latest_application_data.rb'
-    - 'spec/support/shared_contexts/stub_gai_oauth.rb'
+    - 'spec/support/shared_contexts/stub_teacher_auth.rb'
 
 # Offense count: 2
 RSpec/ExpectInHook:

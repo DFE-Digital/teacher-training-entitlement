@@ -14,15 +14,15 @@ class SessionsController < PublicPagesController
 private
 
   def build_sign_out_uri
-    tra_domain_uri = URI.parse(ENV["TRA_OIDC_DOMAIN"])
+    teacher_auth_domain_uri = URI.parse(ENV["TEACHER_AUTH_DOMAIN"])
 
     URI::Generic.build({
-      scheme: tra_domain_uri.scheme,
-      host: tra_domain_uri.host,
-      port: tra_domain_uri.port,
+      scheme: teacher_auth_domain_uri.scheme,
+      host: teacher_auth_domain_uri.host,
+      port: teacher_auth_domain_uri.port,
       path: "/connect/signout",
       query: URI.encode_www_form({
-        "client_id" => "register-for-npq",
+        "client_id" => ENV.fetch("TEACHER_AUTH_CLIENT_ID"),
         "post_logout_redirect_uri" => root_uri.to_s,
       }),
     }).to_s

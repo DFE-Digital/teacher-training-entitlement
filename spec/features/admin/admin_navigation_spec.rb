@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.feature "admin", :rack_test_driver, type: :feature do
   include Helpers::AdminLogin
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   let(:admin) { create(:admin) }
   let(:super_admin) { create(:super_admin) }

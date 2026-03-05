@@ -26,11 +26,11 @@ module IdentityAccountHelper
   private
 
     def tra_oidc_domain
-      ENV.fetch("TRA_OIDC_DOMAIN")
+      ENV.fetch("TEACHER_AUTH_DOMAIN")
     end
 
     def tra_oidc_client_id
-      ENV.fetch("TRA_OIDC_CLIENT_ID")
+      ENV.fetch("TEACHER_AUTH_CLIENT_ID")
     end
 
     def sign_out_uri

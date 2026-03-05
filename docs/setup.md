@@ -17,7 +17,7 @@
 1. Run `bundle install` to install the gem dependencies
 1. Run `yarn` to install node dependencies
 1. Run `bin/rails db:setup` to set up the database development and test schemas, and seed with test data
-1. Copy `.env.example` to `.env` and fill in the values (ask a team member for `TRA_OIDC_*` values)
+1. Copy `.env.example` to `.env` and fill in the values (ask a team member for `TEACHER_AUTH_*` values)
 1. Run `./bin/dev` to launch the app on http://localhost:3000 and auto-compile assets
 
 ## Codespaces

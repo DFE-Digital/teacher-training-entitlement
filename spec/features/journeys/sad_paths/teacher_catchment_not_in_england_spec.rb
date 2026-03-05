@@ -7,7 +7,7 @@ RSpec.feature "Sad journey", :with_default_schedules, type: :feature do
   include Helpers::JourneyAssertionHelper
   include ApplicationHelper
 
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   context "when JavaScript is enabled", :js do
     scenario("teacher catchment not in England (with JS)") { run_scenario }

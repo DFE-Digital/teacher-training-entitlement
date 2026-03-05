@@ -5,7 +5,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   include Helpers::JourneyStepHelper
 
   include_context "retrieve latest application data"
-  include_context "Stub Get An Identity Omniauth Responses"
+  include_context "Stub Teacher Auth Responses"
 
   context "when JavaScript is enabled", :js do
     scenario("Not chosen DQT or provider (with JS)") { run_scenario(js: true) }
