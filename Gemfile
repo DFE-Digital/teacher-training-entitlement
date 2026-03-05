@@ -98,7 +98,7 @@ group :test do
   gem "webmock"
 end
 
-group :development, :test, :review, :sandbox, :staging do
+group :development, :test, :review, :sandbox do
   gem "factory_bot_rails"
   gem "faker"
 end
