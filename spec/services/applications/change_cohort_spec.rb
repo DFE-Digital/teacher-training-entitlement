@@ -6,12 +6,11 @@ RSpec.describe Applications::ChangeCohort, type: :service do
   subject(:service) { described_class.new(application:, new_cohort:) }
 
   let(:cohort_2021) { create(:cohort, start_year: 2021) }
+  let(:error_message_path) { "activemodel.errors.models.applications/change_cohort.attributes.base" }
   let(:new_cohort) { create(:cohort, start_year: 2025) }
   let(:application) { create(:application, cohort: cohort_2021) }
 
   before { subject.call }
-
-  let(:error_message_path) { "activemodel.errors.models.applications/change_cohort.attributes.base" }
 
   describe "validation" do
     context "when the new cohort start_year is different to the current cohort start year" do
