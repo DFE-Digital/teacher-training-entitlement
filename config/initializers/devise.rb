@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "omniauth/strategies/teacher_auth"
+require "url_builder"
 
 Devise.setup do |config|
   require "devise/orm/active_record"
@@ -18,12 +19,12 @@ Devise.setup do |config|
                       host: oidc_domain ? URI(oidc_domain).host : nil,
                       identifier: ENV.fetch("TEACHER_AUTH_CLIENT_ID", nil),
                       redirect_uri:
-                        "#{ENV.fetch("HOSTING_DOMAIN", nil)}/users/auth/teacher_auth/callback",
+                        UrlBuilder.build_url("/users/auth/teacher_auth/callback"),
                       secret: ENV.fetch("TEACHER_AUTH_CLIENT_SECRET", nil),
                     },
                     issuer: oidc_domain,
                     post_logout_redirect_uri:
-                      "#{ENV.fetch("HOSTING_DOMAIN", nil)}/sign-out",
+                      UrlBuilder.build_url("/sign-out"),
                     strategy_class: Omniauth::Strategies::TeacherAuth
   end
 end
