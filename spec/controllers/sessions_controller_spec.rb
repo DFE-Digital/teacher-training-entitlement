@@ -23,6 +23,20 @@ RSpec.describe SessionsController do
     end
   end
 
+  context "when an admin is signed in" do
+    before do
+      allow(controller).to receive(:current_admin).and_return(create(:admin))
+    end
+
+    it "redirects to admin path" do
+      expect(controller).to receive(:sign_out_all_scopes)
+
+      get :destroy
+
+      expect(response).to redirect_to("/admin")
+    end
+  end
+
   context "when no user is signed in (callback from provider)" do
     it "redirects to root" do
       expect(controller).to receive(:sign_out_all_scopes)
