@@ -1,8 +1,5 @@
 <%= govuk_header do |header|
-  header.with_service_navigation(
-    service_name: "Teacher training entitlement",
-    service_url: "/api/guidance",
-    current_path: request.path,
-    navigation_items: guidance_navigation_structure.service_navigation_items
-  )
+  header.with_product_name do
+    govuk_link_to("Teacher training entitlement", "/api/guidance", class: "govuk-header__link")
+  end
 end %>

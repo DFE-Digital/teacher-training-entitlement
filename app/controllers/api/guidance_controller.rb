@@ -4,7 +4,6 @@ module API
 
     def index
       @page = Guidance::IndexPage.new
-      @latest_release_note = ReleaseNotes.new.latest
     end
 
     def show

@@ -16,60 +16,33 @@
 
   <%= render partial: "layouts/api_guidance/header" %>
 
-  <% if !@page.index_page? %>
-    <div class="govuk-width-container">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
-          <div role="region" aria-label="Backwards navigation", class="govuk-!-margin-bottom-6">
-            <%= govuk_back_link(href: url_for(:back)) %>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
-
   <%= render partial: "layouts/shared/maintenance_banner" %>
 
   <main id="main-content" class="api-guidance">
     <%= render partial: "layouts/shared/messages" %>
 
     <% if @page.index_page? %>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <%= yield %>
-        </div>
-      </div>
+      <%= yield %>
     <% else %>
-      <div class="govuk-width-container">
+      <div class="govuk-width-container govuk-!-padding-top-6">
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter">
-            <nav class="x-govuk-sub-navigation" aria-labelledby="sub-navigation-heading">
-              <h2 class="govuk-visually-hidden" id="sub-navigation-heading">Navigation</h2>
-              <ul class="x-govuk-sub-navigation__section">
-                <% @page.sections.each do |href, text| %>
-                  <li class="x-govuk-sub-navigation__section-item">
-                    <a class="x-govuk-sub-navigation__link" href="<%= href %>">
-                      <%= text %>
-                    </a>
-                  </li>
-                <% end %>
-              </ul>
-            </nav>
+          <div class="govuk-grid-column-one-third" id="side-navigation">
+            <%=
+              render SubNavigationComponent.new(
+                request.path,
+                structure: guidance_navigation_structure.sidebar_structure,
+              )
+            %>
           </div>
-          <div class="govuk-grid-column-three-quarters">
+
+          <div class="govuk-grid-column-two-thirds">
             <%= yield %>
           </div>
         </div>
-        <% if @page.sections.any? %>
-          <div class="govuk-grid-row govuk-!-padding-bottom-5">
-            <div class="govuk-grid-column-one-quarter">
-              <%= govuk_link_to("↑ Back to top", "#top") %>
-            </div>
-          </div>
-        <% end %>
       </div>
     <% end %>
   </main>
 </body>
+
 <%= render partial: "layouts/shared/footer" %>
 </html>
