@@ -12,6 +12,7 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'db/schema.rb'
+    - 'db/migrate_archive/**/*'
     - 'node_modules/**/*'
     - 'config/application.rb'
     - 'config/puma.rb'

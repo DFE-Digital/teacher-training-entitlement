@@ -57,7 +57,7 @@ jobs:
           cache: yarn
 
       - name: Precompile assets
-        run: RAILS_ENV=production SECRET_KEY_BASE=required-to-run-but-not-used bundle exec rails assets:precompile
+        run: RAILS_ENV=production SECRET_KEY_BASE=required-to-run-but-not-used bundle exec rails db:schema:load assets:precompile
 
       - name: Set up test database
         run: bin/rails db:setup
