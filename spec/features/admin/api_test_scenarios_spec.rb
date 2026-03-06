@@ -47,8 +47,10 @@ RSpec.feature "Administering API Test Scenarios", type: :feature do
     sign_in_as_super_admin
     visit admin_api_test_scenarios_path
 
-    within("tr", text: lead_provider.name) do
-      click_button "Seed data"
+    accept_confirm do
+      within("tr", text: lead_provider.name) do
+        click_button "Seed data"
+      end
     end
 
     expect(page).to have_current_path(admin_api_test_scenarios_path)
@@ -61,8 +63,10 @@ RSpec.feature "Administering API Test Scenarios", type: :feature do
     sign_in_as_super_admin
     visit admin_api_test_scenarios_path
 
-    within("tr", text: lead_provider.name) do
-      click_button "Seed data"
+    accept_confirm do
+      within("tr", text: lead_provider.name) do
+        click_button "Seed data"
+      end
     end
 
     expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
@@ -80,8 +84,10 @@ RSpec.feature "Administering API Test Scenarios", type: :feature do
     expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
     expect(page).to have_content("12")
 
-    within("tr", text: lead_provider.name) do
-      click_button "Re-seed data"
+    accept_confirm do
+      within("tr", text: lead_provider.name) do
+        click_button "Re-seed data"
+      end
     end
 
     expect(page).to have_content("Success")
@@ -179,8 +185,10 @@ RSpec.feature "Administering API Test Scenarios", type: :feature do
     sign_in_as_super_admin
     visit admin_api_test_scenarios_path
 
-    within("tr", text: lead_provider.name) do
-      click_button "Seed data"
+    accept_confirm do
+      within("tr", text: lead_provider.name) do
+        click_button "Seed data"
+      end
     end
 
     expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
