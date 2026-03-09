@@ -18,6 +18,9 @@ RSpec.describe "Omniauth callbacks", type: :request do
           "info" => {
             "email" => "user@example.com",
           },
+          "credentials" => {
+            "id_token" => "test-id-token",
+          },
           "extra" => {
             "raw_info" => {
               "trn" => "1234567",

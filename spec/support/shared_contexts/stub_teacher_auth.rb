@@ -28,6 +28,7 @@ RSpec.shared_context("Stub Teacher Auth Responses") do
       },
       "credentials" => {
         "token" => SecureRandom.uuid,
+        "id_token" => SecureRandom.uuid,
         "expires_at" => 24.days.from_now.to_i,
         "expires" => true,
       },

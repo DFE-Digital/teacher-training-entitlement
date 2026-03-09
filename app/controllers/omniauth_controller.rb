@@ -4,6 +4,8 @@ class OmniauthController < Devise::OmniauthCallbacksController
 
   def teacher_auth
     provider_data = request.env["omniauth.auth"]
+    # Store id_token for OIDC logout (required as id_token_hint parameter)
+    session[:id_token] = provider_data.credentials.id_token
 
     @user = Users::FindOrCreateFromTeacherAuth.new(
       provider_data:,
