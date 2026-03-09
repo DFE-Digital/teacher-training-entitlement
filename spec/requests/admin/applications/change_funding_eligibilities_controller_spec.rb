@@ -26,7 +26,7 @@ RSpec.describe Admin::Applications::ChangeFundingEligibilitiesController, :ecf_a
         post admin_applications_change_funding_eligibility_path(application, params:)
       end
 
-      let(:params) { { applications_change_funding_eligibility: { eligible_for_funding: "1" } } }
+      let(:params) { { form: { eligible_for_funding: "1" } } }
 
       it { is_expected.to redirect_to admin_application_path(application) }
     end
@@ -41,7 +41,7 @@ RSpec.describe Admin::Applications::ChangeFundingEligibilitiesController, :ecf_a
 
     describe "#create" do
       before do
-        post admin_applications_change_funding_eligibility_path(application, params: {})
+        post admin_applications_change_funding_eligibility_path(application, params: { form: { eligible_for_funding: "1" } })
       end
 
       it { is_expected.to redirect_to sign_in_path }

@@ -2,12 +2,13 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <%= form_for @funding_eligibility,
+    <%= form_for @form,
+                as: :form,
                  url: admin_applications_change_funding_eligibility_path(@application) do |f| %>
       <%= f.govuk_error_summary %>
 
       <%= f.govuk_collection_radio_buttons :eligible_for_funding,
-                                           f.object.eligible_for_funding_options,
+                                           @form.eligible_for_funding_options,
                                            :first,
                                            :last,
                                            legend: { tag: "h1", size: "m", text: "Is #{@application.user.full_name} eligible for funding?" } %>
