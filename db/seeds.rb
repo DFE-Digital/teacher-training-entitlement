@@ -1,7 +1,7 @@
 require "faker"
 require "csv"
 
-return unless Rails.env.in?(%w[development review sandbox staging])
+return unless Rails.env.in?(%w[development review sandbox])
 
 PaperTrail.enabled = false
 
