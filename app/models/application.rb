@@ -17,6 +17,7 @@ class Application < ApplicationRecord
   belongs_to :cohort, optional: true
   belongs_to :course
   belongs_to :lead_provider
+  belongs_to :institution, optional: true
   belongs_to :school, optional: true
   belongs_to :private_childcare_provider, optional: true
   belongs_to :private_childcare_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "PrivateChildcareProvider", foreign_key: :private_childcare_provider_id
