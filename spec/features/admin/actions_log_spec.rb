@@ -17,17 +17,17 @@ RSpec.feature "actions log", :no_js, :versioning, type: :feature do
     Applications::ChangeFundingEligibility.new(
       application: application_1,
       eligible_for_funding: true,
-    ).change_funding_eligibility
+    ).call
 
     Applications::ChangeFundingEligibility.new(
       application: application_2,
       eligible_for_funding: true,
-    ).change_funding_eligibility
+    ).call
 
     Applications::ChangeFundingEligibility.new(
       application: application_1,
       eligible_for_funding: false,
-    ).change_funding_eligibility
+    ).call
 
     sign_in_as(create(:admin))
   end

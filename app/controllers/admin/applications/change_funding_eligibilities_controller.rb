@@ -2,38 +2,45 @@
 
 module Admin
   module Applications
-    class ChangeFundingEligibilitiesController < AdminController
-      before_action :set_application
-
-      def new
-        @funding_eligibility =
-          ::Applications::ChangeFundingEligibility.new(application: @application,
-                                                       eligible_for_funding: @application.eligible_for_funding)
-      end
+    class ChangeFundingEligibilitiesController < ApplicationsController
+      before_action :set_form
 
       def create
-        @funding_eligibility = ::Applications::ChangeFundingEligibility.new(application: @application)
-        @funding_eligibility.assign_attributes(funding_eligibility_params)
+        if @form.invalid?
+          render :new, status: :unprocessable_entity and return
+        end
 
-        if @funding_eligibility.change_funding_eligibility
-          if @application.previous_changes["eligible_for_funding"]
-            flash[:success] =
-              "Funding eligibility has been changed to ‘#{@application.eligible_for_funding ? 'Yes' : 'No'}’"
-          end
-          redirect_to admin_application_path(@application)
+        service = ::Applications::ChangeFundingEligibility.new(
+          application:,
+          eligible_for_funding: @form.eligible_for_funding,
+        )
+
+        service.call
+
+        if service.errors.any?
+          @form.errors.copy!(service.errors)
+          render :new, status: :unprocessable_entity
         else
-          render :new, status: :unprocessable_content
+          flash[:success] =
+            "Funding eligibility has been changed to ‘#{application.eligible_for_funding ? 'Yes' : 'No'}’"
+
+          redirect_to admin_application_path(application)
         end
       end
 
     private
 
-      def set_application
-        @application = Application.find(params[:id])
+      def set_form
+        @form = Admin::Applications::ChangeFundingEligibilityForm.new(
+          form_params,
+        )
       end
 
-      def funding_eligibility_params
-        params.fetch(:applications_change_funding_eligibility, {}).permit(:eligible_for_funding)
+      def form_params
+        params
+          .fetch(:form, { eligible_for_funding: application.eligible_for_funding })
+          .permit(:eligible_for_funding)
+          .merge(application:)
       end
     end
   end

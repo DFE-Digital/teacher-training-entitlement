@@ -160,7 +160,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
 
   context "when there is a change to funding eligibility" do
     before do
-      Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).change_funding_eligibility
+      Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).call
     end
 
     it "shows the eligibility funding change" do

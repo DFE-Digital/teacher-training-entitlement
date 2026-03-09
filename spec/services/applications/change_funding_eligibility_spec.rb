@@ -3,14 +3,17 @@
 require "rails_helper"
 
 RSpec.describe Applications::ChangeFundingEligibility, type: :model do
-  subject(:service) { described_class.new(application:) }
-
+  let(:eligible_for_funding) { false }
   let(:application) { create(:application, :accepted) }
 
-  before { allow(GenericMailer).to receive(:eligible_for_funding).and_call_original }
+  subject(:service) { described_class.new(application:, eligible_for_funding:) }
+
+  before do
+    allow(GenericMailer).to receive(:eligible_for_funding).and_call_original
+  end
 
   describe "validations" do
-    it { is_expected.to validate_presence_of :application }
+    before { service.call }
 
     context "with application with billable declarations" do
       subject { service.tap(&:valid?).errors.full_messages }
@@ -53,93 +56,61 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
     end
   end
 
-  describe "#change_funding_eligibility" do
-    subject(:make_change) { service.change_funding_eligibility }
-
-    before { service.eligible_for_funding = true }
-
+  describe "#call" do
     context "with valid update from false to true" do
-      it { is_expected.to be true }
+      let(:eligible_for_funding) { true }
 
-      it "changes eligibility_for_funding" do
-        expect { make_change }
-          .to change { application.reload.eligible_for_funding }
-                .from(false)
-                .to(true)
-      end
+      it do
+        aggregate_failures do
+          expect(GenericMailer).to receive(:with).with(
+            to: application.user.email,
+            full_name: application.user.full_name,
+            provider_name: application.lead_provider.name,
+            course_name: application.course.name,
+            ecf_id: application.ecf_id,
+          ).and_call_original
 
-      it "sets funding_eligibility_status_code" do
-        expect { make_change }
-          .to change { application.reload.funding_eligiblity_status_code }
-                .from(nil)
-                .to("marked_funded_by_policy")
-      end
+          service.call
 
-      it "sends an email" do
-        expect(GenericMailer).to receive(:with).with(
-          to: application.user.email,
-          full_name: application.user.full_name,
-          provider_name: application.lead_provider.name,
-          course_name: application.course.name,
-          ecf_id: application.ecf_id,
-        )
-
-        allow(GenericMailer).to receive(:with).and_call_original
-        make_change
+          expect(subject.errors).to be_blank
+          expect(application.reload.eligible_for_funding).to be_truthy
+          expect(application.funding_eligiblity_status_code).to eq("marked_funded_by_policy")
+        end
       end
     end
 
     context "with valid update from true to false" do
+      let(:eligible_for_funding) { false }
       let(:application) { create(:application, :pending, :eligible_for_funding, funded_place: false) }
 
-      before { service.eligible_for_funding = false }
+      it do
+        aggregate_failures do
+          expect(GenericMailer).not_to receive(:eligible_for_funding)
 
-      it { is_expected.to be true }
+          service.call
 
-      it "changes eligibility_for_funding" do
-        expect { make_change }
-          .to change { application.reload.eligible_for_funding }
-                .from(true)
-                .to(false)
-      end
-
-      it "sets funding_eligibility_status_code" do
-        expect { make_change }
-          .to change { application.reload.funding_eligiblity_status_code }
-                .from(nil)
-                .to("marked_ineligible_by_policy")
-      end
-
-      it "does not send an email" do
-        expect(GenericMailer).not_to receive(:eligible_for_funding)
-        make_change
+          expect(subject.errors).to be_blank
+          expect(application.reload.eligible_for_funding).to be_falsey
+          expect(application.funding_eligiblity_status_code).to eq("marked_ineligible_by_policy")
+        end
       end
     end
 
     context "with a valid update from true to true" do
       let(:application) { create(:application, :pending, :eligible_for_funding) }
 
-      before { service.eligible_for_funding = true }
+      let(:eligible_for_funding) { true }
 
-      it { is_expected.to be true }
+      it do
+        aggregate_failures do
+          expect(GenericMailer).not_to receive(:eligible_for_funding)
 
-      it "does not send an email" do
-        expect(GenericMailer).not_to receive(:eligible_for_funding)
-        make_change
-      end
-    end
+          service.call
 
-    context "with invalid update" do
-      let(:application) { nil }
-
-      it "returns false" do
-        expect(service.change_funding_eligibility).to be false
-      end
-
-      it "sets errors" do
-        service.change_funding_eligibility
-
-        expect(service.errors.messages[:application]).to include(/blank/)
+          expect(subject.errors).to be_blank
+          expect(application.reload.eligible_for_funding).to be_truthy
+          expect(application.funding_eligiblity_status_code).to eq("marked_funded_by_policy")
+        end
       end
     end
   end
