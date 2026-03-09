@@ -60,8 +60,9 @@ class UpdateApplicationRakeTask
         cohort_before_update = application.cohort.identifier
 
         override_declarations_check = args.override_declarations_check == "true"
-        service = Applications::ChangeCohort.new(application:, cohort_id: new_cohort.id, override_declarations_check:)
-        result = service.change_cohort
+        service = Applications::ChangeCohort.new(application:, new_cohort:, override_declarations_check:)
+        service.call
+        result = service.errors.blank?
         raise service.errors.messages.values.flatten.to_sentence unless result
 
         logger.info("Application #{application.ecf_id} cohort changed from #{cohort_before_update} to #{application.cohort.identifier}")

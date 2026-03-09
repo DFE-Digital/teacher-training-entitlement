@@ -33,7 +33,7 @@ RSpec.feature "viewing application history", :versioning, type: :feature do
     before do
       PaperTrail.request.whodunnit = "test user"
       create(:schedule, cohort: older_cohort, course_group: application.course.course_group, identifier: application.schedule.identifier)
-      Applications::ChangeCohort.new(application:, cohort_id: older_cohort.id).change_cohort
+      Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).change_funding_eligibility
       create(:declaration, application:)
       ::Applications::Defer.new(application: application, reason: "other").call

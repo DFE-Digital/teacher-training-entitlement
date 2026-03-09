@@ -32,7 +32,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     before do
       create(:schedule, cohort: older_cohort, course_group: application.course.course_group, identifier: application.schedule.identifier)
       travel_to time_2
-      Applications::ChangeCohort.new(application:, cohort_id: older_cohort.id).change_cohort
+      Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
     end
 
     it "shows an item for each change" do
@@ -182,7 +182,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   # not sure how this happens, but there are plenty of versions like this in production
   context "when there is a version with no object_changes" do
     before do
-      Applications::ChangeCohort.new(application:, cohort_id: older_cohort.id).change_cohort
+      Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
       application.versions.last.update!(object_changes: nil)
     end
 

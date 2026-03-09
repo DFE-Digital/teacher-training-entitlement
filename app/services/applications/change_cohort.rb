@@ -2,64 +2,57 @@
 
 module Applications
   class ChangeCohort
-    include ActiveModel::Model
-    include ActiveModel::Attributes
-    include ActiveModel::Validations::Callbacks
+    include ActiveModel::Validations
 
-    attribute :application
-    attribute :cohort_id, :integer
-    attribute :override_declarations_check, :boolean, default: false
+    validate :declarations_present
+    validate :different_cohort
+    validate :schedule_exists_in_new_cohort
 
-    validates :application, presence: true
-    validates :cohort_id, presence: true
-    validate :different_cohort, if: :application
-    validate :declarations_present, if: :application, unless: :override_declarations_check
-    validate :schedule_exists_in_new_cohort, if: :application
-
-    def change_cohort
-      return false if invalid?
-
-      if application.schedule
-        application.update!(cohort: cohort, schedule: new_schedule)
-      else
-        application.update!(cohort: cohort)
-      end
+    def initialize(application:, new_cohort:, override_declarations_check: false)
+      @application = application
+      @new_cohort = new_cohort
+      @override_declarations_check = override_declarations_check
     end
 
-    def cohort_options
-      if application.schedule
-        Cohort.joins(:schedules)
-          .where(schedules: { course_group: application.course.course_group })
-          .where.not(id: application.cohort.id)
-          .distinct
-          .order_by_oldest
+    def call
+      return if invalid?
+
+      if @application.schedule.present?
+        @application.update!(cohort: @new_cohort, schedule: new_schedule)
       else
-        Cohort.where.not(id: application.cohort.id).order_by_oldest
+        @application.update!(cohort: @new_cohort)
       end
     end
 
   private
 
-    def cohort
-      @cohort ||= Cohort.find(cohort_id)
-    end
-
     def different_cohort
-      errors.add(:cohort_id, :must_be_different) if cohort_id == application.cohort.id
-    end
-
-    def declarations_present
-      errors.add(:cohort_id, :declarations_present) if application.declarations.any?
-    end
-
-    def new_schedule
-      Schedule.find_by(course_group: application.course.course_group, cohort_id:, identifier: application.schedule.identifier)
+      add_error(:base, :must_be_different) if @new_cohort.id == @application.cohort.id
     end
 
     def schedule_exists_in_new_cohort
-      return unless application.schedule
+      return unless @application.schedule
 
-      errors.add(:cohort_id, :schedule_not_found) unless new_schedule
+      add_error(:base, :schedule_not_found) unless @new_cohort.schedules.exists?(course_group: @application.course.course_group, identifier: @application.schedule.identifier)
+    end
+
+    def declarations_present
+      return if @override_declarations_check
+
+      add_error(:base, :declarations_present) if @application.declarations.any?
+    end
+
+    def new_schedule
+      Schedule.find_by(
+        course_group: @application.course.course_group,
+        cohort_id: @new_cohort.id,
+        identifier: @application.schedule.identifier,
+      )
+    end
+
+    def add_error(group, key)
+      message = I18n.t("activemodel.errors.models.applications/change_cohort.attributes.#{group}.#{key}")
+      errors.add(group, message)
     end
   end
 end

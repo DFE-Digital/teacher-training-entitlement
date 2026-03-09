@@ -363,7 +363,10 @@ en:
           attributes:
             base:
               already_active: The participant is already active              
-
+        admin/applications/change_cohort_form:
+          attributes:
+            cohort_id:
+              blank: "Choose a cohort"
         admin/adjustments/create_adjustment_form: &create_adjustment_form
           attributes:
             statement:
@@ -397,8 +400,7 @@ en:
               pending_unremoveable_declarations: There are already declarations for this participant on this course, please ask the provider to void any declarations they have made before attempting to revert the application.
         applications/change_cohort:
           attributes:
-            cohort_id:
-              blank: "Choose a cohort"
+            base:
               must_be_different: must be different
               schedule_not_found: There is no schedule for the current course in the specified cohort
               declarations_present: Cannot change cohort for an application with declarations
@@ -913,6 +915,8 @@ en:
       applications_change_lead_provider:
         lead_provider_id: Choose a different provider
       applications_change_cohort:
+        cohort_id: Choose a cohort
+      form:
         cohort_id: Choose a cohort
       registration_wizard:
         can_share_choices: "Sharing your TTE information"

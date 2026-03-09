@@ -1,4 +1,4 @@
-<%= govuk_back_link href: admin_application_path(@application) %>
+<%= govuk_back_link href: admin_application_path(@form.application) %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -10,22 +10,22 @@
       <p class="govuk-body">
         <strong>Schedule Cohort</strong>
         <br/>
-        <%= @application.cohort.name %>
+        <%= @form.application.cohort.name %>
       </p>
     </div>
 
-    <%= form_for @change_cohort,
-                 url: admin_applications_change_cohort_path(@application) do |f| %>
+    <%= form_for @form,
+                 as: :form, 
+                 url: admin_applications_change_cohort_path(@form.application) do |f| %>
       <%= f.govuk_error_summary %>
-
       <%= f.govuk_collection_radio_buttons :cohort_id,
-                                           f.object.cohort_options,
+                                           @form.cohort_options,
                                            :id,
                                            :name,
                                            legend: { tag: 'h1', size: 'm' } %>
       <div class="govuk-button-group">
         <%= f.govuk_submit t("shared.continue") %>
-        <%= govuk_link_to t("shared.cancel"), admin_application_path(@application) %>
+        <%= govuk_link_to t("shared.cancel"), admin_application_path(@form.application) %>
       </div>
     <% end %>
   </div>

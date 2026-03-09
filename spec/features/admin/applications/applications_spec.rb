@@ -334,6 +334,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "changing schedule cohort" do
     future_cohort = create(:cohort, start_year: 3.years.from_now.year)
+    create(:cohort, start_year: 2.years.from_now.year)
     application = create(:application, cohort: Cohort.first)
     create(:schedule, :tte_reception_autumn, cohort: application.cohort)
     create(:schedule, :tte_reception_spring, cohort: future_cohort)
