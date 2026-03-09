@@ -20,9 +20,9 @@ RSpec.describe "layouts/api_guidance.html.erb", type: :view do
       expect(subject).to have_link("Get started")
       expect(subject).to have_link("How the API works")
       expect(subject).to have_link("Test environments")
-      expect(subject).to have_link("What's new")
       expect(subject).to have_link("How-to guides")
       expect(subject).to have_link("Process diagrams")
+      expect(subject).to have_link("Release notes")
       expect(subject).to have_link("Roadmap")
     end
   end

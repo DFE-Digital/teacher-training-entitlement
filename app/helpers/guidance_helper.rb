@@ -17,11 +17,6 @@ module GuidanceHelper
         prefix: "/api/guidance/test-environments",
       ),
       NavigationStructure::Node.new(
-        name: "What's new",
-        href: api_guidance_page_path(page: "release-notes"),
-        prefix: "/api/guidance/release-notes",
-      ),
-      NavigationStructure::Node.new(
         name: "How-to guides",
         href: api_guidance_page_path(page: "how-to-guides/how-courses-work"),
         prefix: "/api/guidance/how-to-guides",
@@ -57,6 +52,11 @@ module GuidanceHelper
         name: "Process diagrams",
         href: api_guidance_page_path(page: "process-diagrams/participant-training-journey-diagrams"),
         prefix: "/api/guidance/process-diagrams",
+      ),
+      NavigationStructure::Node.new(
+        name: "Release notes",
+        href: api_guidance_page_path(page: "release-notes"),
+        prefix: "/api/guidance/release-notes",
       ),
       NavigationStructure::Node.new(
         name: "Roadmap",

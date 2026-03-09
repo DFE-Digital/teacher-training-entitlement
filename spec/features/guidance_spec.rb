@@ -9,13 +9,13 @@ RSpec.feature "Guidance", type: :feature do
         expect(page).to have_link("Get started")
         expect(page).to have_link("How the API works")
         expect(page).to have_link("Test environments")
-        expect(page).to have_link("What's new")
         expect(page).to have_link("How-to guides")
         expect(page).to have_link("Process diagrams")
+        expect(page).to have_link("Release notes")
         expect(page).to have_link("Roadmap")
       end
 
-      within("#side-navigation") { click_on "What's new" }
+      within("#side-navigation") { click_on "Release notes" }
 
       expect(page).to have_current_path("/api/guidance/release-notes", ignore_query: true)
     end
@@ -58,8 +58,8 @@ RSpec.feature "Guidance", type: :feature do
     it "renders the .html page" do
       visit "/api/guidance/release-notes"
 
-      expect(page).not_to have_content("#What's new'")
-      expect(page).to have_content("What's new")
+      expect(page).not_to have_content("#Release notes")
+      expect(page).to have_content("Release notes")
     end
   end
 
