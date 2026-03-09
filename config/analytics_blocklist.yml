@@ -82,6 +82,19 @@
   - created_at
   - trn
   - updated_at
+  :institutions:
+  - id
+  - institutionable_type
+  - institutionable_id
+  - name
+  - address_1
+  - town
+  - county
+  - postcode
+  - postcode_without_spaces
+  - region
+  - created_at
+  - updated_at
   :financial_change_logs:
   - id
   - created_at
@@ -157,6 +170,7 @@
   - DEPRECATED_private_childcare_provider_urn
   - DEPRECATED_school_urn
   - raw_application_data
+  - institution_id
   :users:
   - archived_email
   - date_of_birth
