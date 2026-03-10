@@ -11,7 +11,7 @@ RSpec.describe Questionnaires::CheckAnswers do
   let(:store) do
     {
       lead_provider_id: load_provider.id,
-      institution_identifier: "School-#{school.urn}",
+      institution_id: school.institution.id,
       course_identifier: course.identifier,
       trn_verified: true,
       trn: store_trn,
