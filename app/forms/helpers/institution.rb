@@ -2,38 +2,33 @@ module Helpers
   module Institution
   private
 
+    # TODO: Consider adding `delegate :name, :address, :in_england?, to: :institution, prefix: :employer`
+    # to Application model to simplify employer-related method access.
+
     def institution(source: wizard.store["institution_identifier"], application: nil)
       return @institution if @institution
       return nil if source.nil?
 
-      klass, identifier = source.split("-")
       application = application.nil? ? query_store : application
-      @institution ||= case klass
-                       when "PrivateChildcareProvider"
-                         load_private_childcare_provider_institution(identifier, application)
-                       when "School"
-                         load_school_institution(identifier, application)
-                       when "LocalAuthority"
-                         load_local_authority_institution(identifier, application)
-                       end
+      institutionable = ::Institution.find_institutionable_by_identifier(source)
+
+      return nil unless institutionable
+      return nil unless valid_for_application?(institutionable, application)
+
+      @institution = institutionable
     end
 
-    def load_private_childcare_provider_institution(identifier, application)
-      return unless application.works_in_childcare?
+  private
 
-      PrivateChildcareProvider.find_by(provider_urn: identifier)
-    end
-
-    def load_school_institution(identifier, application)
-      return unless application.works_in_childcare? || application.works_in_school?
-
-      School.find_by(urn: identifier)
-    end
-
-    def load_local_authority_institution(identifier, application)
-      return unless application.works_in_childcare? || application.works_in_school?
-
-      LocalAuthority.find_by(id: identifier)
+    def valid_for_application?(institutionable, application)
+      case institutionable
+      when PrivateChildcareProvider
+        application.works_in_childcare?
+      when School, LocalAuthority
+        application.works_in_childcare? || application.works_in_school?
+      else
+        false
+      end
     end
   end
 end
