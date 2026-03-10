@@ -1,6 +1,5 @@
 class InstitutionSerializer < Blueprinter::Base
-  exclude(:id)
-  field(:identifier)
+  field(:id) { |i, _| i.institution.id }
   field(:name)
   field(:address) { |i, _| i.address_string }
 end

@@ -1,19 +1,17 @@
 module Questionnaires
   class ChooseSchool < Base
-    include Helpers::Institution
+    attr_accessor :institution_name, :institution_id
 
-    attr_accessor :institution_name, :institution_identifier
-
-    validates :institution_identifier, format: { with: /\ASchool-\d{6,7}\z|\ALocalAuthority-\d+\z/, unless: -> { institution_identifier.blank? || institution_identifier == "other" } }
+    validates :institution_id, numericality: { only_integer: true }, unless: -> { institution_id.blank? || institution_id == "other" }
     validates :institution_name, length: { maximum: 64 }
 
     validate :validate_school_name_returns_results
-    validate :validate_institution_identifier_selected
+    validate :validate_institution_id_selected
 
     def self.permitted_params
       %i[
         institution_name
-        institution_identifier
+        institution_id
       ]
     end
 
@@ -33,7 +31,7 @@ module Questionnaires
     def questions
       [
         QuestionTypes::AutoCompleteInstitution.new(
-          name: :institution_identifier,
+          name: :institution_id,
           locale_name: :choose_school,
           picker: :school,
           options: possible_institutions,
@@ -48,12 +46,9 @@ module Questionnaires
     end
 
     def selected_institution_display_value
-      return nil if institution_identifier.blank?
+      return nil if institution_id.blank?
 
-      selected = institution(source: institution_identifier)
-      return nil unless selected
-
-      selected.name_with_address
+      selected_institution&.name_with_address
     end
 
     def possible_institutions
@@ -74,7 +69,7 @@ module Questionnaires
   private
 
     def no_institution_selected?
-      institution_identifier == "other" || institution_identifier.blank?
+      institution_id == "other" || institution_id.blank?
     end
 
     def eligible_for_funding?
@@ -85,7 +80,9 @@ module Questionnaires
     end
 
     def selected_institution
-      @selected_institution ||= institution(source: institution_identifier)
+      return nil if institution_id.blank? || institution_id == "other"
+
+      @selected_institution ||= Institution.find(institution_id)&.institutionable
     end
 
     def funding_eligibility
@@ -112,14 +109,14 @@ module Questionnaires
       end
     end
 
-    def validate_institution_identifier_selected
+    def validate_institution_id_selected
       # Allow initial no-JS search (institution_name not yet in wizard store)
       return if institution_name.present? && !search_term_entered_in_no_js_fallback_form?
 
       # Allow "other" selection for additional searches
-      return if institution_identifier == "other"
+      return if institution_id == "other"
 
-      errors.add(:institution_identifier, :blank) if institution_identifier.blank?
+      errors.add(:institution_id, :blank) if institution_id.blank?
     end
   end
 end

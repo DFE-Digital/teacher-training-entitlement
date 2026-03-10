@@ -1,7 +1,5 @@
 module Questionnaires
   class SencoInRole < Base
-    include Helpers::Institution
-
     QUESTION_NAME = :senco_in_role
 
     attr_accessor QUESTION_NAME

@@ -1,6 +1,4 @@
 class HandleSubmissionForStore
-  include Helpers::Institution
-
   attr_reader :store, :application
 
   def initialize(store:)
@@ -100,7 +98,9 @@ private
   end
 
   def institution_from_store
-    @institution_from_store ||= institution(source: store["institution_identifier"])
+    return nil if store["institution_id"].blank?
+
+    @institution_from_store ||= Institution.find(store["institution_id"])&.institutionable
   end
 
   def institution_record

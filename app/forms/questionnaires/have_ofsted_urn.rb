@@ -18,7 +18,7 @@ module Questionnaires
     def after_save
       return if wizard.query_store.has_ofsted_urn?
 
-      wizard.store["institution_identifier"] = nil
+      wizard.store["institution_id"] = nil
       wizard.store["institution_name"] = nil
     end
 

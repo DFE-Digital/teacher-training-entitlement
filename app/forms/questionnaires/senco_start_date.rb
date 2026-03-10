@@ -2,7 +2,6 @@ module Questionnaires
   class SencoStartDate < Base
     include ActiveModel::Attributes
     include ActiveRecord::AttributeAssignment
-    include Helpers::Institution
 
     QUESTION_NAME = :senco_start_date
     EARLIEST_SENCO_START_DATE = Date.new(1960, 1, 1)

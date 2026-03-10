@@ -2,8 +2,6 @@ module Questionnaires
   class IneligibleForFunding < Base
     class UnexpectedEligibilityStatusCode < StandardError; end
 
-    include Helpers::Institution
-
     INELIGIBLE_SETTING = "ineligible_setting".freeze
     NOT_IN_ENGLAND = "not_in_england".freeze
     PREVIOUSLY_FUNDED = "previously_funded".freeze

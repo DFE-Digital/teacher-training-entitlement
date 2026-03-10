@@ -17,8 +17,7 @@ class AdminService::UsersSearch
       chain = chain.or(default_scope.where(ecf_id: q))
       chain = chain.or(default_scope.where(applications: { ecf_id: q }))
       chain = chain.or(default_scope.where(users[:trn].matches("%#{q}%")))
-      chain = chain.or(default_scope.where(applications: { school_id: find_schools.pluck(:id) }))
-      chain = chain.or(default_scope.where(applications: { private_childcare_provider_id: find_private_childcare_providers.pluck(:id) }))
+      chain = chain.or(default_scope.where(applications: { institution_id: find_institutions_by_urn.pluck(:id) }))
     end
 
     chain.distinct
@@ -26,15 +25,13 @@ class AdminService::UsersSearch
 
 private
 
-  def find_schools
-    School.where("urn ILIKE ?", "%#{q}%")
+  def find_institutions_by_urn
+    school_ids = School.where("urn ILIKE ?", "%#{q}%").joins(:institution).select("institutions.id")
+    pcp_ids = PrivateChildcareProvider.where("provider_urn ILIKE ?", "%#{q}%").joins(:institution).select("institutions.id")
+    Institution.where(id: school_ids).or(Institution.where(id: pcp_ids))
   end
 
   def default_scope
     User.left_joins(:applications).order(email: :asc)
-  end
-
-  def find_private_childcare_providers
-    PrivateChildcareProvider.where("provider_urn ILIKE ?", "%#{q}%")
   end
 end

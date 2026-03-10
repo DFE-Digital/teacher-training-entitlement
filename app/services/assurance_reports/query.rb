@@ -28,7 +28,7 @@ module AssuranceReports
           lp.name                                 AS npq_lead_provider_name,
           lp.ecf_id                               AS npq_lead_provider_id,
           sc.urn                                  AS school_urn,
-          sc.name                                 AS school_name,
+          i.name                                  AS school_name,
           a.training_status                       AS training_status,
           st.reason                               AS training_status_reason,
           d.ecf_id                                AS declaration_id,
@@ -48,7 +48,8 @@ module AssuranceReports
         JOIN courses c                      ON c.id = a.course_id
         JOIN users u                        ON u.id = a.user_id
         JOIN schedules sch                  ON sch.id = a.schedule_id
-        LEFT OUTER JOIN schools sc          ON sc.id = a.school_id
+        LEFT OUTER JOIN institutions i      ON i.id = a.institution_id
+        LEFT OUTER JOIN schools sc          ON sc.id = i.institutionable_id AND i.institutionable_type = 'School'
         LEFT OUTER JOIN (
              SELECT DISTINCT ON (lead_provider_id, application_id) lead_provider_id, application_id, state, reason
              FROM application_states

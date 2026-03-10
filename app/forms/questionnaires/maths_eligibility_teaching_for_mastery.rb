@@ -1,7 +1,5 @@
 module Questionnaires
   class MathsEligibilityTeachingForMastery < Base
-    include Helpers::Institution
-
     QUESTION_NAME = :maths_eligibility_teaching_for_mastery
 
     attr_accessor QUESTION_NAME
