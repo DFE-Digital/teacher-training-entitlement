@@ -66,29 +66,16 @@ module Importers
       end
 
       private_childcare_provider.assign_attributes(
-        address_1: wrapped_csv_row.column(:address_1),
-        address_2: wrapped_csv_row.column(:address_2),
-        address_3: wrapped_csv_row.column(:address_3),
-        provider_status: wrapped_csv_row.column(:provider_status),
         early_years_individual_registers: wrapped_csv_row.early_years_individual_registers,
         local_authority: wrapped_csv_row.column(:local_authority),
-        ofsted_region: wrapped_csv_row.column(:ofsted_region),
-        places: wrapped_csv_row.column(:places),
-        postcode: strip_whitespace(wrapped_csv_row.column(:postcode)),
-        postcode_without_spaces: strip_whitespace(wrapped_csv_row.postcode_without_spaces),
         provider_compulsory_childcare_register_flag: wrapped_csv_row.provider_compulsory_childcare_register_flag,
         provider_early_years_register_flag: wrapped_csv_row.provider_early_years_register_flag,
-        provider_name: translate_unicode_characters(wrapped_csv_row.column(:provider_name)),
-        region: wrapped_csv_row.column(:region),
-        registered_person_name: wrapped_csv_row.column(:registered_person_name),
-        registered_person_urn: wrapped_csv_row.column(:registered_person_urn),
-        registration_date: wrapped_csv_row.column(:registration_date),
-        town: wrapped_csv_row.column(:town),
       )
 
       updated_record = private_childcare_provider.changed? unless new_record
 
       private_childcare_provider.save!
+      update_institution!(private_childcare_provider, wrapped_csv_row)
 
       @imported_records += 1 if new_record
       @updated_records += 1 if updated_record
@@ -101,12 +88,31 @@ module Importers
       @import_errors[row_number_for_errors] << e.message
     end
 
+    def update_institution!(provider, wrapped_csv_row)
+      institution_attrs = {
+        name: translate_unicode_characters(wrapped_csv_row.column(:provider_name)),
+        address_1: wrapped_csv_row.column(:address_1),
+        address_2: wrapped_csv_row.column(:address_2),
+        address_3: wrapped_csv_row.column(:address_3),
+        town: wrapped_csv_row.column(:town),
+        postcode: strip_whitespace(wrapped_csv_row.column(:postcode)),
+        postcode_without_spaces: strip_whitespace(wrapped_csv_row.postcode_without_spaces),
+        region: wrapped_csv_row.column(:region),
+      }
+
+      if provider.institution
+        provider.institution.update!(institution_attrs)
+      else
+        provider.create_institution!(institution_attrs)
+      end
+    end
+
     def translate_unicode_characters(string)
-      string.tr("\u0096", "\u2013")
+      string&.tr("\u0096", "\u2013")
     end
 
     def strip_whitespace(string)
-      string.gsub(/\A\p{Space}+|\p{Space}+\z/, "")
+      string&.gsub(/\A\p{Space}+|\p{Space}+\z/, "")
     end
 
     class ChildcareProviderWrappedCSVRow
