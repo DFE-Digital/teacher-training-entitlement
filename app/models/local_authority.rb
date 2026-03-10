@@ -1,6 +1,8 @@
 class LocalAuthority < ApplicationRecord
   include PgSearch::Model
 
+  has_one :institution, as: :institutionable, touch: true
+
   pg_search_scope :search_by_name,
                   against: %i[name address_1 address_2 address_3 town county postcode postcode_without_spaces],
                   using: {

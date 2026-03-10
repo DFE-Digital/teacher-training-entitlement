@@ -1,5 +1,8 @@
 class School < ApplicationRecord
   include PgSearch::Model
+
+  has_one :institution, as: :institutionable, touch: true
+
   PRIMARY_PHASE = "Primary".freeze
   MIDDLE_DEEMED_PRIMARY_PHASE = "Middle deemed primary".freeze
 
