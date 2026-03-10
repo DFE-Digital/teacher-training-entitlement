@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_09_150501) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -112,8 +112,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_150501) do
   create_table "applications", force: :cascade do |t|
     t.integer "DEPRECATED_cohort"
     t.string "DEPRECATED_itt_provider"
-    t.text "DEPRECATED_private_childcare_provider_urn"
-    t.text "DEPRECATED_school_urn"
     t.datetime "accepted_at"
     t.bigint "cohort_id"
     t.bigint "course_id", null: false
@@ -138,13 +136,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_150501) do
     t.string "on_submission_trn"
     t.text "participant_outcome_state"
     t.boolean "primary_establishment", default: false
-    t.bigint "private_childcare_provider_id"
     t.jsonb "raw_application_data", default: {}
     t.enum "reason_for_rejection", enum_type: "reasons_for_rejection"
     t.string "referred_by_return_to_teaching_adviser"
     t.enum "review_status", enum_type: "review_statuses"
     t.bigint "schedule_id"
-    t.bigint "school_id"
     t.string "senco_in_role"
     t.date "senco_start_date"
     t.boolean "targeted_delivery_funding_eligibility", default: false
@@ -170,9 +166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_150501) do
     t.index ["itt_provider_id"], name: "index_applications_on_itt_provider_id"
     t.index ["lead_provider_approval_status", "lead_provider_id"], name: "idx_on_lead_provider_approval_status_lead_provider__299e5bac06"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
-    t.index ["private_childcare_provider_id"], name: "index_applications_on_private_childcare_provider_id"
     t.index ["schedule_id"], name: "index_applications_on_schedule_id"
-    t.index ["school_id"], name: "index_applications_on_school_id"
     t.index ["user_id", "cohort_id", "course_id"], name: "index_applications_on_user_id_and_cohort_id_and_course_id", unique: true, where: "(lead_provider_approval_status <> 'rejected'::lead_provider_approval_statuses)"
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
@@ -664,9 +658,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_09_150501) do
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "itt_providers"
   add_foreign_key "applications", "lead_providers"
-  add_foreign_key "applications", "private_childcare_providers"
   add_foreign_key "applications", "schedules"
-  add_foreign_key "applications", "schools"
   add_foreign_key "applications", "users"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"
