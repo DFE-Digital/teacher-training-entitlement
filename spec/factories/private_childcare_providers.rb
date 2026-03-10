@@ -1,9 +1,37 @@
 FactoryBot.define do
   factory :private_childcare_provider do
-    sequence(:provider_name) { |n| "private childcare provider #{n}" }
+    transient do
+      name { "private childcare provider" }
+      address_1 { "5 Charlotte Road" }
+      address_2 { nil }
+      address_3 { nil }
+      town { nil }
+      county { nil }
+      postcode { nil }
+      postcode_without_spaces { nil }
+      region { nil }
+    end
+
     sequence(:provider_urn) { |n| (100_000 + n).to_s }
-    provider_status { "Active" }
-    address_1 { "5 Charlotte Road" }
+
+    after(:build) do |provider, evaluator|
+      provider.institution ||= build(:institution, :for_private_childcare_provider,
+        institutionable: provider,
+        name: evaluator.name,
+        address_1: evaluator.address_1,
+        address_2: evaluator.address_2,
+        address_3: evaluator.address_3,
+        town: evaluator.town,
+        county: evaluator.county,
+        postcode: evaluator.postcode,
+        postcode_without_spaces: evaluator.postcode_without_spaces,
+        region: evaluator.region,
+      )
+    end
+
+    after(:create) do |provider, _evaluator|
+      provider.institution.save! if provider.institution&.new_record?
+    end
 
     trait :disabled do
       disabled_at { 1.day.ago }
@@ -18,7 +46,7 @@ FactoryBot.define do
     end
 
     trait :redacted do
-      provider_name { "REDACTED" }
+      name { "REDACTED" }
       address_1 { "REDACTED" }
       address_2 { "REDACTED" }
       address_3 { "REDACTED" }
@@ -26,7 +54,6 @@ FactoryBot.define do
       postcode { "REDACTED" }
       postcode_without_spaces { "REDACTED" }
       region { "London" }
-      ofsted_region { "London" }
     end
   end
 end

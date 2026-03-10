@@ -1,11 +1,8 @@
 class PrivateChildcareProvider < ApplicationRecord
   include Disableable
+  include PgSearch::Model
 
   has_one :institution, as: :institutionable, touch: true
-
-  REDACTED_DATA_STRING = "REDACTED".freeze
-
-  include PgSearch::Model
 
   pg_search_scope :search_by_urn,
                   against: [:provider_urn],
@@ -15,6 +12,25 @@ class PrivateChildcareProvider < ApplicationRecord
                       threshold: 0.2,
                     },
                   }
+
+  delegate :name, :county, :region, to: :institution
+
+  def name_with_address
+    [name, address_string].join(" – ")
+  end
+
+  def address
+    [institution.address_1, institution.address_2, institution.address_3, institution.town, institution.region, institution.postcode]
+      .reject(&:blank?) - [Institution::REDACTED_DATA_STRING]
+  end
+
+  def address_string
+    address.join(", ")
+  end
+
+  def display_name
+    [urn, name_with_address].compact.join(" - ")
+  end
 
   validates :provider_urn, presence: true
 
@@ -26,35 +42,6 @@ class PrivateChildcareProvider < ApplicationRecord
     nil
   end
 
-  def provider_name
-    raw_name = self[:provider_name]
-    raw_name unless raw_name == REDACTED_DATA_STRING
-  end
-
-  def name
-    provider_name
-  end
-
-  def display_name
-    [urn, name_with_address].compact.join(" - ")
-  end
-
-  def address
-    [address_1, address_2, address_3, town, region, postcode].reject(&:blank?) - [REDACTED_DATA_STRING]
-  end
-
-  def long_name
-    [name, address].join(" - ")
-  end
-
-  def address_string
-    address.join(", ")
-  end
-
-  def name_with_address
-    [name, address_string].join(" – ")
-  end
-
   def in_england?
     true # Needs filling in
   end
@@ -63,12 +50,12 @@ class PrivateChildcareProvider < ApplicationRecord
     local_authority
   end
 
-  def county
-    ofsted_region
-  end
-
   def identifier
     "PrivateChildcareProvider-#{urn}"
+  end
+
+  def long_name
+    [name, address].join(" - ")
   end
 
   def on_early_years_register?

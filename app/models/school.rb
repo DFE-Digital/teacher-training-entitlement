@@ -3,6 +3,17 @@ class School < ApplicationRecord
 
   has_one :institution, as: :institutionable, touch: true
 
+  delegate :name, :address, :address_string, :display_name, :name_with_address, to: :institution
+
+  pg_search_scope :search_school_fields,
+                  against: %i[la_name urn],
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      dictionary: "english",
+                    },
+                  }
+
   PRIMARY_PHASE = "Primary".freeze
   MIDDLE_DEEMED_PRIMARY_PHASE = "Middle deemed primary".freeze
 
@@ -46,17 +57,6 @@ class School < ApplicationRecord
 
   NAME_SEARCH_LIMIT = 100
 
-  pg_search_scope :search_by_fields,
-                  against: %i[
-                    name la_name address_1 address_2 address_3 town county postcode postcode_without_spaces region urn
-                  ],
-                  using: {
-                    tsearch: {
-                      prefix: true,
-                      dictionary: "english",
-                    },
-                  }
-
   # 1 => establishment_status_name: "Open"
   # 2 => establishment_status_name: "Closed"
   # 3 => establishment_status_name: "Open, but proposed to close"
@@ -64,45 +64,31 @@ class School < ApplicationRecord
 
   scope :open, -> { where(establishment_status_code: %w[1 3 4]) }
 
+  def self.search_by_name(search_term)
+    scope = search_all_fields(search_term).limit(NAME_SEARCH_LIMIT)
+    NAME_SYNONYMS.find do |key, value|
+      if search_term&.downcase&.match?(%r{\b#{key}\b}i)
+        synonym_name = search_term.downcase.gsub(key, value)
+        return scope + search_all_fields(synonym_name).limit(NAME_SEARCH_LIMIT)
+      end
+    end
+    scope
+  end
+
+  def self.search_all_fields(search_term)
+    institution_results = joins(:institution).merge(Institution.search_by_name(search_term))
+    school_field_results = search_school_fields(search_term)
+    where(id: institution_results.select(:id)).or(where(id: school_field_results.select(:id)))
+  end
+
   ELIGIBLE_ESTABLISHMENT_TYPE_CODES.each do |code, name|
     define_method("#{name.parameterize.underscore}?") do
       establishment_type_code == code
     end
   end
 
-  def self.search_by_name(name)
-    scope = search_by_fields(name).limit(NAME_SEARCH_LIMIT)
-    NAME_SYNONYMS.find do |key, value|
-      if name&.downcase&.match?(%r{\b#{key}\b}i)
-        synonym_name = name.downcase.gsub(key, value)
-        return scope + search_by_fields(synonym_name).limit(NAME_SEARCH_LIMIT)
-      end
-    end
-    scope
-  end
-
-  def display_name
-    name
-  end
-
-  def long_name
-    [display_name, address_string].join(" - ")
-  end
-
   def primary_education_phase?
     [MIDDLE_DEEMED_PRIMARY_PHASE, PRIMARY_PHASE].include?(phase_name)
-  end
-
-  def address
-    [address_1, address_2, address_3, town, county, postcode].reject(&:blank?)
-  end
-
-  def address_string
-    address.join(", ")
-  end
-
-  def name_with_address
-    [display_name, address_string].join(" – ")
   end
 
   def in_england?
@@ -118,6 +104,10 @@ class School < ApplicationRecord
 
   def identifier
     "School-#{urn}"
+  end
+
+  def long_name
+    [display_name, address_string].join(" - ")
   end
 
   def eligible_establishment?
