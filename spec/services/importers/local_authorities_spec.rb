@@ -8,17 +8,19 @@ RSpec.describe Importers::LocalAuthorities do
       expect { subject.call }.to change(LocalAuthority, :count).by(5)
 
       record = LocalAuthority.first
+      institution = record.institution
 
       expect(record.ukprn).to eql("10005549")
-      expect(record.name).to eql("Royal Borough of Kingston upon Thames")
-      expect(record.address_1).to eql("Guildhall")
-      expect(record.address_2).to eql("2 High Street")
-      expect(record.address_3).to be_nil
-      expect(record.town).to eql("Kingston Upon Thames")
-      expect(record.county).to eql("Surrey")
-      expect(record.postcode).to eql("KT1 1EU")
-      expect(record.postcode_without_spaces).to eql("KT11EU")
       expect(record.high_pupil_premium).to be_falsey
+
+      expect(institution.name).to eql("Royal Borough of Kingston upon Thames")
+      expect(institution.address_1).to eql("Guildhall")
+      expect(institution.address_2).to eql("2 High Street")
+      expect(institution.address_3).to be_nil
+      expect(institution.town).to eql("Kingston Upon Thames")
+      expect(institution.county).to eql("Surrey")
+      expect(institution.postcode).to eql("KT1 1EU")
+      expect(institution.postcode_without_spaces).to eql("KT11EU")
     end
 
     it "does not create dupes called multiple times" do
@@ -26,6 +28,7 @@ RSpec.describe Importers::LocalAuthorities do
         subject.call
         subject.call
       }.to change(LocalAuthority, :count).by(5)
+        .and change(Institution, :count).by(5)
     end
 
     context "when incorrect headers" do

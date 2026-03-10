@@ -67,7 +67,8 @@ RSpec.describe AdminService::UsersSearch do
     end
 
     context "when application#private_childcare_provider_urn match" do
-      let(:q) { application.DEPRECATED_private_childcare_provider_urn }
+      let!(:application) { create(:application, :with_private_childcare_provider, user:) }
+      let(:q) { application.private_childcare_provider.provider_urn }
 
       it "returns the hit" do
         expect(subject.call).to include(user)
