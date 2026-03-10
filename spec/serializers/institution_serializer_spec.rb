@@ -1,15 +1,15 @@
 require "rails_helper"
 
 RSpec.describe InstitutionSerializer, type: :serializer do
-  context "when passed a institution" do
+  context "when passed a school" do
     let(:school) { build(:school, :with_address) }
     let(:hash) { InstitutionSerializer.render_as_hash(school) }
 
-    it "only includes urn, identifier, name and address" do
-      expect(hash.keys).to eq(%i[identifier name address])
+    it "only includes id, name and address" do
+      expect(hash.keys).to eq(%i[id name address])
     end
 
-    it("serializes identifier") { expect(hash[:identifier]).to eql(school.identifier) }
+    it("serializes id") { expect(hash[:id]).to eql(school.institution.id) }
     it("serializes name") { expect(hash[:name]).to eql(school.name) }
     it("serializes the address") { expect(hash[:address]).to eql(school.address_string) }
   end
@@ -18,11 +18,11 @@ RSpec.describe InstitutionSerializer, type: :serializer do
     let(:local_authority) { build(:local_authority) }
     let(:hash) { InstitutionSerializer.render_as_hash(local_authority) }
 
-    it "only includes urn, identifier, name and address" do
-      expect(hash.keys).to eq(%i[identifier name address])
+    it "only includes id, name and address" do
+      expect(hash.keys).to eq(%i[id name address])
     end
 
-    it("serializes identifier") { expect(hash[:identifier]).to eql(local_authority.identifier) }
+    it("serializes id") { expect(hash[:id]).to eql(local_authority.institution.id) }
     it("serializes name") { expect(hash[:name]).to eql(local_authority.name) }
     it("serializes the address") { expect(hash[:address]).to eql(local_authority.address_string) }
   end
