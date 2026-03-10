@@ -11,7 +11,7 @@ class Exporters::TadSencoDataRequest
   def applications
     course_id = Course.where(identifier: "npq-senco").pluck(:id)
 
-    Application.where(course_id:, cohort: @cohort).includes(:user, :lead_provider, :school, :private_childcare_provider, :cohort, :declarations)
+    Application.where(course_id:, cohort: @cohort).includes(:user, :lead_provider, :institution, :cohort, :declarations)
   end
 
 private

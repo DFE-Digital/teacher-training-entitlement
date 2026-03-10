@@ -6,7 +6,7 @@ module Admin
       helper_method :employment_types
 
       def index
-        applications = Application.includes(:private_childcare_provider, :school, :user)
+        applications = Application.includes(:institution, :user)
                          .merge(review_scope)
                          .merge(filter_scope)
                          .merge(search_scope)
