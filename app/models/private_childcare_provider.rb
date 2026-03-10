@@ -13,7 +13,7 @@ class PrivateChildcareProvider < ApplicationRecord
                     },
                   }
 
-  delegate :name, :county, :region, to: :institution
+  delegate :name, :county, :region, :town, :postcode, to: :institution
 
   def name_with_address
     [name, address_string].join(" – ")
