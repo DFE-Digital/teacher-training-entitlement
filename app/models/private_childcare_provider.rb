@@ -1,6 +1,8 @@
 class PrivateChildcareProvider < ApplicationRecord
   include Disableable
 
+  has_one :institution, as: :institutionable, touch: true
+
   REDACTED_DATA_STRING = "REDACTED".freeze
 
   include PgSearch::Model
