@@ -3,7 +3,8 @@ class School < ApplicationRecord
 
   has_one :institution, as: :institutionable, touch: true
 
-  delegate :name, :address, :address_string, :display_name, :name_with_address, to: :institution
+  delegate :name, :address, :address_string, :display_name, :name_with_address,
+           :town, :county, :postcode, to: :institution
 
   pg_search_scope :search_school_fields,
                   against: %i[la_name urn],

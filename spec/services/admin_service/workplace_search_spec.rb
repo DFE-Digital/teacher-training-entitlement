@@ -31,14 +31,14 @@ RSpec.describe AdminService::WorkplaceSearch do
       let!(:workplace) { create(:private_childcare_provider) }
 
       context "when partial name match" do
-        let(:q) { workplace.provider_name.split(" ").first }
+        let(:q) { workplace.name.split(" ").first }
 
         it "returns the hit" do
           expect(subject.each.to_a).to eq([workplace])
         end
       end
 
-      context "when school#urn match" do
+      context "when provider_urn match" do
         let(:q) { workplace.provider_urn }
 
         it "returns the hit" do
@@ -62,14 +62,15 @@ RSpec.describe AdminService::WorkplaceSearch do
 
   describe "pagination" do
     let(:q) { nil }
-    let!(:school1) { create(:school, name: "School 1") }
-    let!(:school2) { create(:school, name: "School 2") }
-    let!(:pcp1) { create(:private_childcare_provider, provider_name: "PCP 1") }
-    let!(:pcp2) { create(:private_childcare_provider, provider_name: "PCP 2") }
-    let!(:la1) { create(:local_authority, name: "Barnet") }
-    let!(:la2) { create(:local_authority, name: "Ealing") }
+    let!(:school1) { create(:school, name: "ASchool 1") }
+    let!(:school2) { create(:school, name: "BSchool 2") }
+    let!(:pcp1) { create(:private_childcare_provider, name: "CPCP 1") }
+    let!(:pcp2) { create(:private_childcare_provider, name: "DPCP 2") }
+    let!(:la1) { create(:local_authority, name: "EBarnet") }
+    let!(:la2) { create(:local_authority, name: "FEaling") }
 
     context "when limit is higher than all records counts" do
+      # Results are sorted by name alphabetically across all institution types
       let(:result) { [school1, school2, pcp1, pcp2, la1, la2] }
 
       it "displays all records" do
