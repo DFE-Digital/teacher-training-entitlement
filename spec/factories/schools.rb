@@ -23,17 +23,16 @@ FactoryBot.define do
 
     after(:build) do |school, evaluator|
       school.institution ||= build(:institution, :for_school,
-        institutionable: school,
-        name: evaluator.name,
-        address_1: evaluator.address_1,
-        address_2: evaluator.address_2,
-        address_3: evaluator.address_3,
-        town: evaluator.town,
-        county: evaluator.county,
-        postcode: evaluator.postcode,
-        postcode_without_spaces: evaluator.postcode_without_spaces,
-        region: evaluator.region,
-      )
+                                   institutionable: school,
+                                   name: evaluator.name,
+                                   address_1: evaluator.address_1,
+                                   address_2: evaluator.address_2,
+                                   address_3: evaluator.address_3,
+                                   town: evaluator.town,
+                                   county: evaluator.county,
+                                   postcode: evaluator.postcode,
+                                   postcode_without_spaces: evaluator.postcode_without_spaces,
+                                   region: evaluator.region)
     end
 
     after(:create) do |school, _evaluator|

@@ -16,17 +16,16 @@ FactoryBot.define do
 
     after(:build) do |provider, evaluator|
       provider.institution ||= build(:institution, :for_private_childcare_provider,
-        institutionable: provider,
-        name: evaluator.name,
-        address_1: evaluator.address_1,
-        address_2: evaluator.address_2,
-        address_3: evaluator.address_3,
-        town: evaluator.town,
-        county: evaluator.county,
-        postcode: evaluator.postcode,
-        postcode_without_spaces: evaluator.postcode_without_spaces,
-        region: evaluator.region,
-      )
+                                     institutionable: provider,
+                                     name: evaluator.name,
+                                     address_1: evaluator.address_1,
+                                     address_2: evaluator.address_2,
+                                     address_3: evaluator.address_3,
+                                     town: evaluator.town,
+                                     county: evaluator.county,
+                                     postcode: evaluator.postcode,
+                                     postcode_without_spaces: evaluator.postcode_without_spaces,
+                                     region: evaluator.region)
     end
 
     after(:create) do |provider, _evaluator|

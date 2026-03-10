@@ -15,16 +15,15 @@ FactoryBot.define do
 
     after(:build) do |la, evaluator|
       la.institution ||= build(:institution, :for_local_authority,
-        institutionable: la,
-        name: evaluator.name,
-        address_1: evaluator.address_1,
-        address_2: evaluator.address_2,
-        address_3: evaluator.address_3,
-        town: evaluator.town,
-        county: evaluator.county,
-        postcode: evaluator.postcode,
-        postcode_without_spaces: evaluator.postcode_without_spaces,
-      )
+                               institutionable: la,
+                               name: evaluator.name,
+                               address_1: evaluator.address_1,
+                               address_2: evaluator.address_2,
+                               address_3: evaluator.address_3,
+                               town: evaluator.town,
+                               county: evaluator.county,
+                               postcode: evaluator.postcode,
+                               postcode_without_spaces: evaluator.postcode_without_spaces)
     end
 
     after(:create) do |la, _evaluator|
