@@ -12,8 +12,7 @@ class HandleSubmissionForStore
       @application = user.applications.create!(
         course_id: course.id,
         lead_provider_id: store["lead_provider_id"],
-        private_childcare_provider: private_childcare_provider_urn.present? && PrivateChildcareProvider.find_by(provider_urn: private_childcare_provider_urn),
-        school: school_urn.present? && School.find_by(urn: school_urn),
+        institution: institution_record,
         ukprn:,
         headteacher_status:,
         eligible_for_funding: eligible_for_funding?,
@@ -104,20 +103,10 @@ private
     @institution_from_store ||= institution(source: store["institution_identifier"])
   end
 
-  def store_private_childcare_provider_urn?
-    inside_catchment? && institution_from_store.is_a?(PrivateChildcareProvider)
-  end
+  def institution_record
+    return nil unless inside_catchment? && institution_from_store.present?
 
-  def private_childcare_provider_urn
-    institution_from_store.provider_urn if store_private_childcare_provider_urn?
-  end
-
-  def store_school_urn?
-    inside_catchment? && institution_from_store.is_a?(School)
-  end
-
-  def school_urn
-    institution_from_store.urn if store_school_urn?
+    institution_from_store.institution
   end
 
   def store_ukprn?
@@ -169,10 +158,6 @@ private
 
   def course
     @course ||= query_store.course
-  end
-
-  def school
-    @school ||= School.find_by(urn: store["school_urn"])
   end
 
   def user
