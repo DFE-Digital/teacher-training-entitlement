@@ -25,26 +25,22 @@ shared:
   :schools:
     - id
     - urn
-    - establishment_number
-    - name
     - close_date
     - ukprn
     - last_changed_date
-    - address_1
-    - address_2
-    - address_3
-    - town
-    - county
-    - postcode
-    - easting
-    - northing
-    - region
-    - country
     - created_at
     - updated_at
     - high_pupil_premium
-    - postcode_without_spaces
     - eyl_funding_eligible
+    - la_code
+    - la_name
+    - establishment_status_code
+    - establishment_status_name
+    - establishment_type_code
+    - establishment_type_name
+    - phase_type
+    - phase_name
+    - number_of_pupils
   :schedules:
     - id
     - cohort_id
@@ -69,24 +65,10 @@ shared:
   :private_childcare_providers:
     - id
     - provider_urn
-    - provider_name
-    - registered_person_urn
-    - registered_person_name
-    - registration_date
-    - provider_status
-    - address_1
-    - address_2
-    - address_3
-    - town
-    - postcode
-    - postcode_without_spaces
-    - region
     - local_authority
-    - ofsted_region
     - early_years_individual_registers
     - provider_early_years_register_flag
     - provider_compulsory_childcare_register_flag
-    - places
     - created_at
     - updated_at
     - disabled_at
@@ -109,6 +91,13 @@ shared:
   :local_authorities:
     - id
     - ukprn
+    - high_pupil_premium
+    - created_at
+    - updated_at
+  :institutions:
+    - id
+    - institutionable_type
+    - institutionable_id
     - name
     - address_1
     - address_2
@@ -117,7 +106,7 @@ shared:
     - county
     - postcode
     - postcode_without_spaces
-    - high_pupil_premium
+    - region
     - created_at
     - updated_at
   :lead_providers:
@@ -227,9 +216,8 @@ shared:
     - tsf_primary_plus_eligibility
     - lead_provider_approval_status
     - participant_outcome_state
-    - private_childcare_provider_id
     - itt_provider_id
-    - school_id
+    - institution_id
     - teacher_catchment_iso_country_code
     - targeted_support_funding_eligibility
     - notes

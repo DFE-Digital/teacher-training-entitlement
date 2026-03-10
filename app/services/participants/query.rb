@@ -71,7 +71,7 @@ module Participants
           :participant_id_changes,
           applications: %i[
             course
-            school
+            institution
             cohort
             lead_provider
             application_states

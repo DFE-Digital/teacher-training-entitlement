@@ -18,12 +18,22 @@ class Application < ApplicationRecord
   belongs_to :course
   belongs_to :lead_provider
   belongs_to :institution, optional: true
-  belongs_to :school, optional: true
-  belongs_to :private_childcare_provider, optional: true
-  belongs_to :private_childcare_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "PrivateChildcareProvider", foreign_key: :private_childcare_provider_id
   belongs_to :itt_provider, optional: true
   belongs_to :itt_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "IttProvider", foreign_key: :itt_provider_id
   belongs_to :schedule, optional: true
+
+  # Convenience methods to access the institutionable through institution
+  def school
+    institution&.institutionable if institution&.institutionable_type == "School"
+  end
+
+  def private_childcare_provider
+    institution&.institutionable if institution&.institutionable_type == "PrivateChildcareProvider"
+  end
+
+  def local_authority
+    institution&.institutionable if institution&.institutionable_type == "LocalAuthority"
+  end
 
   has_many :participant_id_changes, through: :user
   has_many :application_states
@@ -169,7 +179,7 @@ class Application < ApplicationRecord
   end
 
   def employer_name_to_display
-    employer_name || private_childcare_provider&.provider_name || school&.name || ""
+    employer_name || private_childcare_provider&.name || school&.name || ""
   end
 
   def long_employer_name_to_display

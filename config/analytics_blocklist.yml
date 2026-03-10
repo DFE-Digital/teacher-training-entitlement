@@ -65,35 +65,12 @@
   - updated_at
   :statements:
   - reconcile_amount
-  :schools:
-  - establishment_status_code
-  - establishment_status_name
-  - establishment_type_code
-  - establishment_type_name
-  - la_code
-  - la_name
-  - number_of_pupils
-  - phase_name
-  - phase_type
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
   - course_short_code
   - created_at
   - trn
-  - updated_at
-  :institutions:
-  - id
-  - institutionable_type
-  - institutionable_id
-  - name
-  - address_1
-  - town
-  - county
-  - postcode
-  - postcode_without_spaces
-  - region
-  - created_at
   - updated_at
   :financial_change_logs:
   - id
@@ -167,10 +144,7 @@
   - updated_at
   :applications:
   - DEPRECATED_itt_provider
-  - DEPRECATED_private_childcare_provider_urn
-  - DEPRECATED_school_urn
   - raw_application_data
-  - institution_id
   :users:
   - archived_email
   - date_of_birth
