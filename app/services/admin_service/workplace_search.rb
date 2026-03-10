@@ -36,7 +36,7 @@ private
         name_matches = Institution.search_by_name(q)
         urn_matches = Institution.joins(
           "LEFT JOIN schools ON institutions.institutionable_type = 'School' AND institutions.institutionable_id = schools.id " \
-          "LEFT JOIN private_childcare_providers ON institutions.institutionable_type = 'PrivateChildcareProvider' AND institutions.institutionable_id = private_childcare_providers.id"
+          "LEFT JOIN private_childcare_providers ON institutions.institutionable_type = 'PrivateChildcareProvider' AND institutions.institutionable_id = private_childcare_providers.id",
         ).where("schools.urn = :q OR private_childcare_providers.provider_urn = :q", q:)
 
         base.where(id: name_matches.select(:id)).or(base.where(id: urn_matches.select(:id)))
