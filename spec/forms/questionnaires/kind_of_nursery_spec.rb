@@ -41,7 +41,7 @@ RSpec.describe Questionnaires::KindOfNursery, type: :model do
   describe "#after_save" do
     subject { described_class.new(kind_of_nursery:, wizard:) }
 
-    let(:store) { { "institution_identifier" => "School-123456" } }
+    let(:store) { { "institution_id" => "123456" } }
     let(:wizard) do
       RegistrationWizard.new(current_step: :kind_of_nursery, store:, request: nil, current_user: build_stubbed(:user))
     end
@@ -49,16 +49,16 @@ RSpec.describe Questionnaires::KindOfNursery, type: :model do
     context "when private nursery selected" do
       let(:kind_of_nursery) { "private_nursery" }
 
-      it "clears institution_identifier" do
-        expect { subject.after_save }.to change { wizard.store["institution_identifier"] }.to(nil)
+      it "clears institution_id" do
+        expect { subject.after_save }.to change { wizard.store["institution_id"] }.to(nil)
       end
     end
 
     context "when public nursery selected" do
       let(:kind_of_nursery) { "local_authority_maintained_nursery" }
 
-      it "preserves institution_identifier" do
-        expect { subject.after_save }.not_to(change { wizard.store["institution_identifier"] })
+      it "preserves institution_id" do
+        expect { subject.after_save }.not_to(change { wizard.store["institution_id"] })
       end
     end
   end

@@ -14,48 +14,35 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
       described_class.new(wizard:)
     end
 
-    describe "#institution_identifier" do
-      it "requires institution_identifier to be present" do
-        subject.institution_identifier = nil
+    describe "#institution_id" do
+      it "requires institution_id to be present" do
+        subject.institution_id = nil
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to include("Enter a workplace name")
+        expect(subject.errors[:institution_id]).to include("Enter a workplace name")
       end
 
-      it "requires institution_identifier to be present when empty string" do
-        subject.institution_identifier = ""
+      it "requires institution_id to be present when empty string" do
+        subject.institution_id = ""
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to include("Enter a workplace name")
+        expect(subject.errors[:institution_id]).to include("Enter a workplace name")
       end
 
-      it "can have institution_identifier as 'other'" do
-        subject.institution_identifier = "other"
+      it "can have institution_id as 'other'" do
+        subject.institution_id = "other"
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_blank
+        expect(subject.errors[:institution_id]).to be_blank
       end
 
-      it "can have institution_identifier as 'School-123456'" do
-        subject.institution_identifier = "School-123456"
+      it "can have institution_id as a numeric string" do
+        subject.institution_id = "123456"
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_blank
+        expect(subject.errors[:institution_id]).to be_blank
       end
 
-      # this is used for the sandbox environment
-      it "can have institution_identifier as 'School-1234567'" do
-        subject.institution_identifier = "School-1234567"
+      it "cannot have institution_id as a non-numeric string" do
+        subject.institution_id = "School-123456"
         subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_blank
-      end
-
-      it "can have institution_identifier as 'LocalAuthority-1'" do
-        subject.institution_identifier = "LocalAuthority-1"
-        subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_blank
-      end
-
-      it "cannot have institution_identifier as '1234567'" do
-        subject.institution_identifier = "1234567"
-        subject.valid?
-        expect(subject.errors[:institution_identifier]).to be_present
+        expect(subject.errors[:institution_id]).to be_present
       end
     end
 
@@ -79,7 +66,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
   end
 
   describe "#next_step" do
-    subject { described_class.new(institution_identifier:, wizard:).next_step }
+    subject { described_class.new(institution_id:, wizard:).next_step }
 
     let(:wizard) do
       RegistrationWizard.new(current_step:, store:, request:, current_user: create(:user))
@@ -95,34 +82,34 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     end
 
     context "when possible_funding" do
-      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school) }
 
       it { is_expected.to eq :possible_funding }
     end
 
     context "when selecting other" do
-      let(:institution_identifier) { "other" }
+      let(:institution_id) { "other" }
 
       it { is_expected.to eq :choose_school }
     end
 
     context "when school not in england" do
-      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school, :in_wales) }
 
       it { is_expected.to eq :ineligible_for_funding }
     end
 
     context "when school has ineligible establishment type" do
-      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school, :ineligible_establishment_type) }
 
       it { is_expected.to eq :ineligible_for_funding }
     end
 
     context "when early years route with ineligible establishment type" do
-      let(:institution_identifier) { "School-#{school.urn}" }
+      let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school, :ineligible_establishment_type) }
       let(:store) do
         {
