@@ -28,7 +28,8 @@ FactoryBot.define do
 
     trait :with_school do
       transient do
-        school_record { create(:school) }
+        school { nil }
+        school_record { school || create(:school) }
       end
 
       institution { school_record.institution }

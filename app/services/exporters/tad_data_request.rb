@@ -18,7 +18,7 @@ class Exporters::TadDataRequest
     schedule_id = @schedules.pluck(:id)
 
     accepted_applications_ids = Declaration.billable.where(declaration_type: "started").where(cohort: @cohort).pluck(:application_id)
-    Application.where(id: accepted_applications_ids, schedule_id:, course_id:).includes(:user, :school, declarations: :participant_outcomes)
+    Application.where(id: accepted_applications_ids, schedule_id:, course_id:).includes(:user, :institution, declarations: :participant_outcomes)
   end
 
 private

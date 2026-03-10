@@ -43,7 +43,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         let(:file_name) { "spec/fixtures/files/private_childcare_providers_sample.csv" }
 
         it "imports rows as PrivateChildcareProvider records" do
-          expect { run_import }.to change(PrivateChildcareProvider, :count).from(0).to(7)
+          expect { run_import }.to change(PrivateChildcareProvider, :count).by(7)
 
           expect(find_provider_with_institution("520917")).to eq({
             "disabled_at" => nil,
@@ -69,18 +69,12 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR],
             "local_authority" => "Leeds",
-            "ofsted_region" => "North East, Yorkshire and the Humber",
             "name" => "Daisy Chain Childcare",
-            "provider_status" => "Active",
-            "places" => 50,
             "postcode" => "LS26 0NL",
             "postcode_without_spaces" => "LS260NL",
             "provider_compulsory_childcare_register_flag" => true,
             "provider_early_years_register_flag" => true,
             "region" => "Yorkshire and The Humber",
-            "registered_person_name" => "Daisy Chain Childcare Limited",
-            "registered_person_urn" => "RP910702",
-            "registration_date" => "23/03/1996",
             "town" => "Leeds",
             "provider_urn" => "EY790942",
           })
@@ -92,18 +86,12 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR],
             "local_authority" => "Nottinghamshire",
-            "ofsted_region" => "East Midlands",
             "name" => "Sparkle Daycare",
-            "provider_status" => "Active",
-            "places" => 18,
             "postcode" => "NG9 8DJ",
             "postcode_without_spaces" => "NG98DJ",
             "provider_compulsory_childcare_register_flag" => true,
             "provider_early_years_register_flag" => true,
             "region" => "East Midlands",
-            "registered_person_name" => "Walker, Emma",
-            "registered_person_urn" => "RP514806",
-            "registration_date" => "20/05/2008",
             "town" => "NOTTINGHAM",
             "provider_urn" => "EY565343",
           })
@@ -115,18 +103,12 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[EYR],
             "local_authority" => "Wiltshire",
-            "ofsted_region" => "South West",
             "name" => "Cricklade Preschool Playgroup",
-            "provider_status" => "Active",
-            "places" => 28,
             "postcode" => "SN6 6AT",
             "postcode_without_spaces" => "SN66AT",
             "provider_compulsory_childcare_register_flag" => false,
             "provider_early_years_register_flag" => true,
             "region" => "South West",
-            "registered_person_name" => "Cricklade Preschool Playgroup",
-            "registered_person_urn" => "RP901939",
-            "registration_date" => "12/04/2011",
             "town" => "Cricklade",
             "provider_urn" => "EY426355",
           })
@@ -138,18 +120,12 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR EYR],
             "local_authority" => "Wiltshire",
-            "ofsted_region" => "South West",
             "name" => "Cricklade Preschool Playgroup",
-            "provider_status" => "Active",
-            "places" => 28,
             "postcode" => "SN6 6AT",
             "postcode_without_spaces" => "SN66AT",
             "provider_compulsory_childcare_register_flag" => false,
             "provider_early_years_register_flag" => true,
             "region" => "South West",
-            "registered_person_name" => "Cricklade Preschool Playgroup",
-            "registered_person_urn" => "RP901939",
-            "registration_date" => "12/04/2011",
             "town" => "Cricklade",
             "provider_urn" => "EY426356",
           })
@@ -161,18 +137,12 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[VCR EYR],
             "local_authority" => "Wiltshire",
-            "ofsted_region" => "South West",
             "name" => "Cricklade Preschool Playgroup",
-            "provider_status" => "Active",
-            "places" => 28,
             "postcode" => "SN6 6AT",
             "postcode_without_spaces" => "SN66AT",
             "provider_compulsory_childcare_register_flag" => false,
             "provider_early_years_register_flag" => false,
             "region" => "South West",
-            "registered_person_name" => "Cricklade Preschool Playgroup",
-            "registered_person_urn" => "RP901939",
-            "registration_date" => "12/04/2011",
             "town" => "Cricklade",
             "provider_urn" => "EY426357",
           })
@@ -184,18 +154,12 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[VCR],
             "local_authority" => "Wiltshire",
-            "ofsted_region" => "South West",
             "name" => "Cricklade Preschool Playgroup",
-            "provider_status" => "Active",
-            "places" => 28,
             "postcode" => "SN6 6AT",
             "postcode_without_spaces" => "SN66AT",
             "provider_compulsory_childcare_register_flag" => true,
             "provider_early_years_register_flag" => false,
             "region" => "South West",
-            "registered_person_name" => "Cricklade Preschool Playgroup",
-            "registered_person_urn" => "RP901939",
-            "registration_date" => "12/04/2011",
             "town" => "Cricklade",
             "provider_urn" => "EY426358",
           })
@@ -244,7 +208,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         end
 
         it "imports valid rows" do
-          expect { run_import }.to change(PrivateChildcareProvider, :count).from(0).to(1)
+          expect { run_import }.to change(PrivateChildcareProvider, :count).by(1)
 
           expect(find_provider_with_institution("520917")).to eq({
             "address_1" => "21 Roseville Road",
@@ -253,19 +217,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Leeds",
-            "ofsted_region" => "North East, Yorkshire and the Humber",
-            "places" => 60,
             "postcode" => "LS8 5DT",
             "postcode_without_spaces" => "LS85DT",
             "provider_compulsory_childcare_register_flag" => true,
             "provider_early_years_register_flag" => true,
             "name" => "Rosewood Nursery",
-            "provider_status" => "Active",
             "provider_urn" => "520917",
             "region" => "Yorkshire and The Humber",
-            "registered_person_name" => "The Leeds Teaching Hospitals NHS Trust",
-            "registered_person_urn" => "RP901956",
-            "registration_date" => "24/10/1983",
             "town" => "Leeds",
           })
         end
@@ -311,17 +269,11 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Leeds",
-            "ofsted_region" => "North East, Yorkshire and the Humber",
-            "places" => 60,
             "postcode" => "LS8 5DT",
             "postcode_without_spaces" => "LS85DT",
             "name" => "Rosewood Nursery",
-            "provider_status" => "Active",
             "provider_urn" => "520917",
             "region" => "Yorkshire and The Humber",
-            "registered_person_name" => "The Leeds Teaching Hospitals NHS Trust",
-            "registered_person_urn" => "RP901956",
-            "registration_date" => "24/10/1983",
             "town" => "Leeds",
           })
 
@@ -334,16 +286,10 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR],
             "local_authority" => "Leeds",
-            "ofsted_region" => "North East, Yorkshire and the Humber",
             "name" => "Daisy Chain Childcare",
-            "provider_status" => "Active",
-            "places" => 50,
             "postcode" => "LS26 0NL",
             "postcode_without_spaces" => "LS260NL",
             "region" => "Yorkshire and The Humber",
-            "registered_person_name" => "Daisy Chain Childcare Limited",
-            "registered_person_urn" => "RP910702",
-            "registration_date" => "23/03/1996",
             "town" => "Leeds",
             "provider_urn" => "EY790942",
           })
@@ -359,17 +305,11 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Leeds",
-            "ofsted_region" => "North East, Yorkshire and the Humber",
-            "places" => 60,
             "postcode" => "LS8 5DT",
             "postcode_without_spaces" => "LS85DT",
             "name" => "Rosewood Nursery",
-            "provider_status" => "Active",
             "provider_urn" => "520917",
             "region" => "Yorkshire and The Humber",
-            "registered_person_name" => "The Leeds Teaching Hospitals NHS Trust",
-            "registered_person_urn" => "RP901956",
-            "registration_date" => "24/10/1983",
             "town" => "Leeds",
           })
 
@@ -382,16 +322,10 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR],
             "local_authority" => "Leeds",
-            "ofsted_region" => "North East, Yorkshire and the Humber",
             "name" => "Daisy Chain Childcare",
-            "provider_status" => "Active",
-            "places" => 50,
             "postcode" => "LS26 0NL",
             "postcode_without_spaces" => "LS260NL",
             "region" => "Yorkshire and The Humber",
-            "registered_person_name" => "Daisy Chain Childcare Limited",
-            "registered_person_urn" => "RP910702",
-            "registration_date" => "23/03/1996",
             "town" => "Leeds",
             "provider_urn" => "EY790942",
           })
@@ -412,7 +346,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         end
 
         it "imports rows as PrivateChildcareProvider records" do
-          expect { run_import }.to change(PrivateChildcareProvider, :count).from(0).to(10)
+          expect { run_import }.to change(PrivateChildcareProvider, :count).by(10)
 
           expect(find_provider_with_institution("CA000006")).to eq({
             "address_1" => "108 Regent Studios",
@@ -421,19 +355,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Islington",
-            "ofsted_region" => nil,
-            "places" => nil,
             "postcode" => "N7 7PH",
             "postcode_without_spaces" => "N77PH",
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_status" => "Active",
             "provider_urn" => "CA000006",
             "region" => nil,
-            "registered_person_name" => nil,
-            "registered_person_urn" => nil,
-            "registration_date" => nil,
             "town" => nil,
           })
           expect(find_provider_with_institution("CA000012")).to eq({
@@ -443,19 +371,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Redbridge",
-            "ofsted_region" => nil,
-            "places" => nil,
             "postcode" => "IG8 7DG",
             "postcode_without_spaces" => "IG87DG",
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "City Childcare Childminding Agency",
-            "provider_status" => "Active",
             "provider_urn" => "CA000012",
             "region" => nil,
-            "registered_person_name" => nil,
-            "registered_person_urn" => nil,
-            "registration_date" => nil,
             "town" => nil,
           })
         end
@@ -496,7 +418,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         end
 
         it "imports valid rows" do
-          expect { run_import }.to change(PrivateChildcareProvider, :count).from(0).to(1)
+          expect { run_import }.to change(PrivateChildcareProvider, :count).by(1)
 
           expect(find_provider_with_institution("CA000006")).to eq({
             "address_1" => "108 Regent Studios",
@@ -505,19 +427,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Islington",
-            "ofsted_region" => nil,
-            "places" => nil,
             "postcode" => "N7 7PH",
             "postcode_without_spaces" => "N77PH",
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_status" => "Active",
             "provider_urn" => "CA000006",
             "region" => nil,
-            "registered_person_name" => nil,
-            "registered_person_urn" => nil,
-            "registration_date" => nil,
             "town" => nil,
           })
         end
@@ -544,9 +460,15 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         before { run_import }
 
         it "makes the correct number of updates" do
-          run_update
+          # Address changes are on Institution now, so PrivateChildcareProvider
+          # model itself isn't updated - only institution is updated
+          expect {
+            run_update
+          }.to change {
+            PrivateChildcareProvider.find_by(provider_urn: "CA000006").institution.address_1
+          }.from("108 Regent Studios").to("109 Regent Studios")
 
-          expect(updates.updated_records).to be(1)
+          expect(updates.updated_records).to be(0)
         end
 
         it "doesn't reinsert existing records" do
@@ -563,19 +485,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Islington",
-            "ofsted_region" => nil,
-            "places" => nil,
             "postcode" => "N7 7PH",
             "postcode_without_spaces" => "N77PH",
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_status" => "Active",
             "provider_urn" => "CA000006",
             "region" => nil,
-            "registered_person_name" => nil,
-            "registered_person_urn" => nil,
-            "registration_date" => nil,
             "town" => nil,
           })
 
@@ -588,19 +504,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "disabled_at" => nil,
             "early_years_individual_registers" => %w[CCR VCR EYR],
             "local_authority" => "Islington",
-            "ofsted_region" => nil,
-            "places" => nil,
             "postcode" => "N7 7PH",
             "postcode_without_spaces" => "N77PH",
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_status" => "Active",
             "provider_urn" => "CA000006",
             "region" => nil,
-            "registered_person_name" => nil,
-            "registered_person_urn" => nil,
-            "registration_date" => nil,
             "town" => nil,
           })
         end
