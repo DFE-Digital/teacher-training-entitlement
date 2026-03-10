@@ -28,7 +28,7 @@ RSpec.feature "Previously funded participant", :with_default_schedules, type: :f
         "teacher_catchment" => "england",
         "work_setting" => "a_school",
         "works_in_school" => "yes",
-        "institution_identifier" => "School-#{school.urn}",
+        "institution_id" => school.institution.id.to_s,
       },
     )
   end

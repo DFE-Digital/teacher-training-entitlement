@@ -18,7 +18,7 @@ RSpec.feature "Listing and viewing schools", type: :feature do
     scenario "viewing the list of schools" do
       expect(page).to have_css("h1", text: "Workplaces")
 
-      School.order(name: :asc).limit(schools_per_page).each do |school|
+      School.joins(:institution).order("institutions.name ASC").limit(schools_per_page).each do |school|
         expect(page).to have_text(school.name)
       end
 
@@ -33,7 +33,7 @@ RSpec.feature "Listing and viewing schools", type: :feature do
     end
 
     scenario "viewing school details" do
-      school = School.order(name: :asc).first
+      school = School.joins(:institution).order("institutions.name ASC").first
 
       within first("tbody tr.govuk-table__row") do |_row|
         expect(find("td:nth-child(1)").text).to eq(school.name)
