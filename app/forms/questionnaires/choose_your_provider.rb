@@ -1,7 +1,5 @@
 module Questionnaires
   class ChooseYourProvider < Base
-    include Helpers::Institution
-
     NOT_CHOSEN = "not_chosen".freeze
 
     attr_accessor :lead_provider_id

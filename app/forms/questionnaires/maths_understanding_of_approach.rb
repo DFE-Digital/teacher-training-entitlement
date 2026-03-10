@@ -1,7 +1,5 @@
 module Questionnaires
   class MathsUnderstandingOfApproach < Base
-    include Helpers::Institution
-
     QUESTION_NAME = :maths_understanding_of_approach
 
     attr_accessor QUESTION_NAME

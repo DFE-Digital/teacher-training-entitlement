@@ -1,7 +1,5 @@
 module Questionnaires
   class ChooseYourCourse < Base
-    include Helpers::Institution
-
     def initialize(*args)
       # Remove this once we have more than one course, but for now we want to default to the TTE Early Years course as it's the only one available
       self.course_identifier = "tte-early-years"

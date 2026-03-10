@@ -1,7 +1,5 @@
 module Questionnaires
   class PossibleFunding < Base
-    include Helpers::Institution
-
     def next_step
       :share_provider
     end

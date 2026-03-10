@@ -31,6 +31,12 @@ class Application < ApplicationRecord
     institution&.institutionable if institution&.institutionable_type == "PrivateChildcareProvider"
   end
 
+  def private_childcare_provider_including_disabled
+    return nil unless institution&.institutionable_type == "PrivateChildcareProvider"
+
+    PrivateChildcareProvider.including_disabled.find_by(id: institution.institutionable_id)
+  end
+
   def local_authority
     institution&.institutionable if institution&.institutionable_type == "LocalAuthority"
   end
