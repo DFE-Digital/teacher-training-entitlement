@@ -1,7 +1,7 @@
 module AdminHelper
   def format_address(school)
     keys = %i[address_1 address_2 address_3 town county postcode]
-    parts = keys.map { |k| school[k] }.compact_blank
+    parts = keys.map { |k| school.public_send(k) }.compact_blank
 
     return if parts.blank?
 
