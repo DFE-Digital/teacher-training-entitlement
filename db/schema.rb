@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_153821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -555,7 +555,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.text "urn", null: false
-    t.index ["urn"], name: "index_schools_on_urn"
+    t.index ["urn"], name: "index_schools_on_urn", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
