@@ -2,16 +2,19 @@ FactoryBot.define do
   factory :institution do
     sequence(:name) { |n| "Institution #{n}" }
 
+    # Default to creating a school as the institutionable
+    for_school
+
     trait :for_school do
-      institutionable_type { "School" }
+      institutionable { association :school, institution: instance }
     end
 
     trait :for_private_childcare_provider do
-      institutionable_type { "PrivateChildcareProvider" }
+      institutionable { association :private_childcare_provider, institution: instance }
     end
 
     trait :for_local_authority do
-      institutionable_type { "LocalAuthority" }
+      institutionable { association :local_authority, institution: instance }
     end
 
     trait :with_address do
