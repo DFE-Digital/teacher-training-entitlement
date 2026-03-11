@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_141223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -155,6 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.enum "training_status", enum_type: "application_statuses"
     t.boolean "tsf_primary_eligibility", default: false
     t.boolean "tsf_primary_plus_eligibility", default: false
+    t.string "type"
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false

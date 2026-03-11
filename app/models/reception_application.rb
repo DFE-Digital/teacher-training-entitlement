@@ -1,0 +1,2 @@
+class ReceptionApplication < Application
+end
