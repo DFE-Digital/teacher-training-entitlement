@@ -23,22 +23,13 @@ class Application < ApplicationRecord
   belongs_to :schedule, optional: true
 
   # Convenience methods to access the institutionable through institution
-  def school
-    institution&.institutionable if institution&.institutionable_type == "School"
-  end
-
-  def private_childcare_provider
-    institution&.institutionable if institution&.institutionable_type == "PrivateChildcareProvider"
-  end
+  # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
+  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
 
   def private_childcare_provider_including_disabled
-    return nil unless institution&.institutionable_type == "PrivateChildcareProvider"
+    return nil unless institution&.private_childcare_provider?
 
     PrivateChildcareProvider.including_disabled.find_by(id: institution.institutionable_id)
-  end
-
-  def local_authority
-    institution&.institutionable if institution&.institutionable_type == "LocalAuthority"
   end
 
   has_many :participant_id_changes, through: :user
@@ -185,18 +176,15 @@ class Application < ApplicationRecord
   end
 
   def employer_name_to_display
-    employer_name || private_childcare_provider&.name || school&.name || ""
+    employer_name || institution&.name || ""
   end
 
   def long_employer_name_to_display
-    employer_name ||
-      private_childcare_provider&.long_name ||
-      school&.long_name ||
-      ""
+    employer_name || institution&.name_with_address || ""
   end
 
   def employer_urn
-    private_childcare_provider&.urn || school_urn || ""
+    institution&.urn || ""
   end
 
   def school_urn

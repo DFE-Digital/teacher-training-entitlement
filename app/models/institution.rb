@@ -16,24 +16,6 @@ class Institution < ApplicationRecord
 
   delegate :in_england?, :urn, :ukprn, :la_name, :identifier, :eligible_establishment?, to: :institutionable
 
-  # Finds an institutionable (School, PrivateChildcareProvider, LocalAuthority) by its
-  # string identifier format, e.g., "School-123456", "PrivateChildcareProvider-100001"
-  def self.find_institutionable_by_identifier(identifier)
-    return nil if identifier.blank?
-
-    klass_name, value = identifier.split("-", 2)
-    return nil if value.blank?
-
-    case klass_name
-    when "School"
-      School.find_by(urn: value)
-    when "PrivateChildcareProvider"
-      PrivateChildcareProvider.find_by(provider_urn: value)
-    when "LocalAuthority"
-      LocalAuthority.find_by(id: value)
-    end
-  end
-
   def name
     raw_name = self[:name]
     raw_name unless raw_name == REDACTED_DATA_STRING
