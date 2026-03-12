@@ -19,7 +19,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
   def run_scenario(js:)
     stub_participant_validation_request
 
-    navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+    navigate_to_page(path: "/", submit_form: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")
     end
@@ -90,12 +90,12 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       end
     end
     if User.last.applications.count == 1
-      navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", axe_check: false, submit_form: false) do
+      navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
     else
-      navigate_to_page(path: "/account", axe_check: false, submit_form: false) do
+      navigate_to_page(path: "/account", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
@@ -103,7 +103,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     visit "/registration/share-provider"
 
-    expect_page_to_have(path: "/", axe_check: false, submit_form: false) do
+    expect_page_to_have(path: "/", submit_form: false) do
       expect(page).to have_content("Before you start")
     end
 
