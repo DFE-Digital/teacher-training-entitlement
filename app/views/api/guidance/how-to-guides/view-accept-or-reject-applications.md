@@ -46,7 +46,7 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
       "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
       "type": "application",
       "attributes": {
-        "course_identifier": "senior-leadership",
+        "course_identifier": "tte-early-years",
         "email": "isabelle.macdonald2@some-school.example.com",
         "email_validated": true,
         "full_name": "Isabelle MacDonald",
@@ -68,7 +68,7 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
         "funded_place": null,
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z",
-        "schedule_identifier": "aso-march"
+        "schedule_identifier": "tte-reception-autumn"
       }
     }
   ]
@@ -91,7 +91,7 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/A
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "application",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "full_name": "Isabelle MacDonald",
@@ -114,7 +114,7 @@ See the ['Retrieve a single application' endpoint documentation](/api/docs/v1#/A
       "funded_place": null,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "aso-march"
+      "schedule_identifier": "tte-reception-autumn"
     }
   }
 }
@@ -145,7 +145,7 @@ An optional request body allows lead providers to add a participant’s schedule
   "data": {
     "type": "application-accept",
     "attributes": {
-      "schedule_identifier": "leadership-spring"
+      "schedule_identifier": "tte-reception-autumn"
       "funded_place": true
     }
   }
@@ -167,7 +167,7 @@ See the ['Accept an application' endpoint documentation](/api/docs/v1#/Applicati
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "application",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "full_name": "Isabelle MacDonald",
@@ -190,7 +190,7 @@ See the ['Accept an application' endpoint documentation](/api/docs/v1#/Applicati
       "funded_place": true,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "leadership-spring"
+      "schedule_identifier": "tte-reception-autumn"
     }
   }
 }
@@ -228,7 +228,7 @@ See the ['Reject an application' endpoint documentation](/api/docs/v1#/Applicati
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "application",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "full_name": "Isabelle MacDonald",
@@ -250,7 +250,7 @@ See the ['Reject an application' endpoint documentation](/api/docs/v1#/Applicati
       "funded_place": null,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "aso-march"
+      "schedule_identifier": "tte-reception-autumn"
     }
   }
 }
@@ -291,7 +291,7 @@ Successful requests will return a response body including updates to the ```fund
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "application",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "email": "isabelle.macdonald2@some-school.example.com",
       "email_validated": true,
       "full_name": "Isabelle MacDonald",
@@ -313,7 +313,7 @@ Successful requests will return a response body including updates to the ```fund
       "funded_place": true,
       "created_at": "2021-05-31T02:21:32.000Z",
       "updated_at": "2021-05-31T02:22:32.000Z",
-      "schedule_identifier": "aso-march"
+      "schedule_identifier": "tte-reception-autumn"
     }
   }
 }
