@@ -42,7 +42,6 @@ ApplicationRecord.descendants.each(&:reset_column_information)
   "add_schools.rb",
   "add_schedules.rb",
   "add_lead_providers.rb",
-  "add_itt_providers.rb",
   "add_users.rb",
   "add_applications.rb",
   "add_statements.rb",

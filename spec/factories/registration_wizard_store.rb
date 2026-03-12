@@ -16,8 +16,6 @@ FactoryBot.define do
     teacher_catchment { "england" }
     work_setting { "a_school" }
     referred_by_return_to_teaching_adviser { "no" }
-    senco_in_role { "yes" }
-    senco_start_date { "2024-12-12" }
     trn { current_user.trn }
   end
 end

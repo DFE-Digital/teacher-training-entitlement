@@ -157,6 +157,8 @@
   - DEPRECATED_private_childcare_provider_urn
   - DEPRECATED_school_urn
   - raw_application_data
+  - type
+  - targeted_delivery_funding_eligibility
   :users:
   - archived_email
   - date_of_birth

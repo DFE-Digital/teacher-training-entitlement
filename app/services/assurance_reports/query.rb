@@ -39,7 +39,6 @@ module AssuranceReports
           s.ecf_id                                AS statement_id,
           s.month                                 AS statement_month,
           s.year                                  AS statement_year,
-          a.targeted_delivery_funding_eligibility AS targeted_delivery_funding
         FROM declarations d
         JOIN statement_items si             ON si.declaration_id = d.id
         JOIN statements s                   ON s.id = si.statement_id

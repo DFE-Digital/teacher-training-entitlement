@@ -22,25 +22,7 @@
   </div>
   <div class="govuk-summary-card__content">
     <dl class="govuk-summary-list">
-
-      <% if application.targeted_delivery_funding_eligibility %>
-
-        <% scholarship_funding_row(application) %>
-
-        <% if application.created_at < APRIL_2024_CUTOFF_DATE %>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              Targeted support funding
-            </dt>
-            <dd class="govuk-summary-list__value">
-              <%= govuk_tag(text: "Eligible", colour: "green") %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= targeted_support_funding %></p>
-            </dd>
-          </div>
-        <% end %>
-      <% else %>
-        <% scholarship_funding_row(application) %>
-      <% end %>
+      <% scholarship_funding_row(application) %>
 
       <% unless application.eligible_for_funding? %>
         <% if application.raw_application_data["ehco_funding_choice"].present? %>

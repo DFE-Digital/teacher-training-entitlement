@@ -7,7 +7,6 @@ FactoryBot.define do
     user
     course { create(Course::IDENTIFIERS.first.to_sym) }
     lead_provider { LeadProvider.first || create(:lead_provider) }
-    headteacher_status { "no" }
     lead_provider_approval_status { :pending }
     ecf_id { SecureRandom.uuid }
     cohort do
@@ -20,9 +19,7 @@ FactoryBot.define do
     teacher_catchment { cohort && cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
-    itt_provider
     funding_choice { Application.funding_choices.keys.first }
-    lead_mentor { false }
     ukprn { rand(10_000_000..99_999_999).to_s }
     funded_place { cohort&.funding_cap ? !!eligible_for_funding : nil }
 
@@ -30,7 +27,6 @@ FactoryBot.define do
       school
       ukprn { school.ukprn }
       private_childcare_provider_id { nil }
-      DEPRECATED_private_childcare_provider_urn { nil }
 
       works_in_school { true }
       works_in_childcare { false }
@@ -48,7 +44,6 @@ FactoryBot.define do
     trait :with_public_childcare_provider do
       school
       private_childcare_provider_id { nil }
-      DEPRECATED_private_childcare_provider_urn { nil }
 
       works_in_school { false }
       works_in_childcare { true }
@@ -163,17 +158,8 @@ FactoryBot.define do
       end
     end
 
-    trait :lead_mentor do
-      lead_mentor { true }
-    end
-
     trait :manual_review do
       review_status { "Needs review" }
-    end
-
-    trait :senco do
-      senco_in_role { "yes" }
-      senco_start_date { Time.zone.today }
     end
   end
 end

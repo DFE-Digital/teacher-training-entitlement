@@ -6,8 +6,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:cohort) { build(:cohort) }
   let(:private_childcare_provider) { build(:private_childcare_provider) }
   let(:school) { build(:school) }
-  let(:itt_provider) { build(:itt_provider) }
-  let(:application) { build(:application, cohort:, course:, private_childcare_provider:, itt_provider:, school:) }
+  let(:application) { build(:application, cohort:, course:, private_childcare_provider:, school:) }
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(application)) }
@@ -47,11 +46,6 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     it "serializes the `status`" do
       application.lead_provider_approval_status = "pending"
       expect(attributes["status"]).to eq(application.lead_provider_approval_status)
-    end
-
-    it "serializes the `targeted_delivery_funding_eligibility`" do
-      application.targeted_delivery_funding_eligibility = "eligible"
-      expect(attributes["targeted_delivery_funding_eligibility"]).to eq(application.targeted_delivery_funding_eligibility)
     end
 
     it "serializes the `eligible_for_funding` (previously funded)" do
@@ -193,7 +187,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   end
 
   context "when serializing the `v1` view" do
-    let(:application) { build(:application, :accepted, cohort:, course:, private_childcare_provider:, itt_provider:, school:) }
+    let(:application) { build(:application, :accepted, cohort:, course:, private_childcare_provider:, school:) }
 
     describe "nested attributes" do
       subject(:attributes) { JSON.parse(described_class.render(application, view: :v1))["attributes"] }

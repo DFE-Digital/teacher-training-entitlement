@@ -115,9 +115,7 @@ module ValidTestDataGenerators
                         cohort:,
                         course:,
                         schedule:,
-                        headteacher_status: Application.headteacher_statuses.keys.sample,
-                        eligible_for_funding: Faker::Boolean.boolean,
-                        itt_provider: IttProvider.currently_approved.order("RANDOM()").first)
+                        eligible_for_funding: Faker::Boolean.boolean)
     end
 
     def accept_application(application)

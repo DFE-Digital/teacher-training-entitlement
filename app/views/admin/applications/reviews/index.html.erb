@@ -10,7 +10,7 @@
       <%= f.govuk_text_field(
           :q,
           value: params[:q],
-          label: { text: "Enter the User ID, name, email address, employer name, or application ID", size: "s" },
+          label: { text: "Enter the User ID, name, email address, school name, or application ID", size: "s" },
           form_group: { class: "govuk-grid-column-full" },
         )
       %>
@@ -30,14 +30,6 @@
         )
       %>
 
-      <%=
-        f.govuk_select(
-          :employment_type,
-          options_for_select(employment_types.map { [_1.humanize, _1] }.prepend(nil), params[:employment_type]),
-          label: { text: "Employment type", size: "s" },
-          form_group: { class: "govuk-grid-column-one-half" },
-        )
-      %>
     </div>
 
     <div class="govuk-grid-row">
@@ -138,8 +130,6 @@
           row.with_cell(text: application.created_at.to_formatted_s(:govuk_short))
           row.with_cell do
             concat tag.p(class: "govuk-body") { tag.strong(application.user.full_name) }
-            concat tag.p(application.employment_type.try(:humanize), class: 'govuk-body-s govuk-!-margin-top-1 govuk-!-margin-bottom-1')
-            concat tag.p(application.employer_name_to_display, class: 'govuk-body-s govuk-!-margin-top-1 govuk-!-margin-bottom-1')
           end
           row.with_cell { review_status_tag(application.review_status) }
           row.with_cell(text: boolean_red_green_tag(application.eligible_for_funding))

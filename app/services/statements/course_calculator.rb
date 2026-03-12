@@ -7,12 +7,9 @@ module Statements
     delegate :course,
              :recruitment_target,
              :statement,
-             :targeted_delivery_funding_per_participant,
              to: :contract
 
-    delegate :cohort,
-             :use_targeted_delivery_funding?,
-             to: :statement
+    delegate :cohort, to: :statement
 
     def initialize(contract:)
       @contract = contract
@@ -97,47 +94,7 @@ module Statements
     end
 
     def course_total
-      monthly_service_fees + output_payment_subtotal - clawback_payment + targeted_delivery_funding_subtotal - targeted_delivery_funding_refundable_subtotal
-    end
-
-    def course_has_targeted_delivery_funding?
-      # NOTE: check validity of defaulting to false
-      # use_targeted_delivery_funding? && !course.ehco? && !course.aso?
-      use_targeted_delivery_funding?
-    end
-
-    def targeted_delivery_funding_declarations_count
-      return 0 unless course_has_targeted_delivery_funding?
-
-      @targeted_delivery_funding_declarations_count ||=
-        statement_items
-            .billable
-            .where(
-              declaration: { declaration_type: "started" },
-              application: { course_id: course.id, targeted_delivery_funding_eligibility: true, eligible_for_funding: true },
-            )
-            .count
-    end
-
-    def targeted_delivery_funding_subtotal
-      targeted_delivery_funding_per_participant * targeted_delivery_funding_declarations_count
-    end
-
-    def targeted_delivery_funding_refundable_declarations_count
-      return 0 unless course_has_targeted_delivery_funding?
-
-      @targeted_delivery_funding_refundable_declarations_count ||=
-        statement_items
-            .refundable
-            .where(
-              declaration: { declaration_type: "started" },
-              application: { course_id: course.id, targeted_delivery_funding_eligibility: true, eligible_for_funding: true },
-            )
-            .count
-    end
-
-    def targeted_delivery_funding_refundable_subtotal
-      targeted_delivery_funding_per_participant * targeted_delivery_funding_refundable_declarations_count
+      monthly_service_fees + output_payment_subtotal - clawback_payment
     end
 
   private

@@ -10,7 +10,6 @@ APPLICATION_CSV = {
       email_validated
       teacher_reference_number_validated
       school_urn
-      headteacher_status
       eligible_for_funding
       funding_choice
       course_identifier
@@ -69,12 +68,6 @@ APPLICATION_CSV = {
         type: :string,
         example: "EY944860",
         nullable: true,
-      },
-      headteacher_status: {
-        description: "Indicates whether this NPQ participant is or will be a head teacher",
-        type: :string,
-        example: Application.headteacher_statuses.keys.first,
-        enum: Application.headteacher_statuses.keys,
       },
       eligible_for_funding: {
         description: "Indicates whether this NPQ participant would be eligible for funding from the DfE",

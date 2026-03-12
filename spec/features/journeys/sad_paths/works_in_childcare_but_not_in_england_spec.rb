@@ -130,7 +130,6 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
       "teacher_catchment" => "another",
       "teacher_catchment_country" => nil,
       "teacher_catchment_iso_country_code" => nil,
-      "teacher_catchment_synced_to_ecf" => false,
       "training_status" => nil,
       "ukprn" => nil,
       "primary_establishment" => false,
@@ -141,8 +140,6 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
       "works_in_childcare" => true,
       "works_in_school" => false,
       "work_setting" => "early_years_or_childcare",
-      "senco_in_role" => nil,
-      "senco_start_date" => nil,
       "on_submission_trn" => nil,
       "review_status" => nil,
       "raw_application_data" => {
