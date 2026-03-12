@@ -88,13 +88,13 @@ To make sure no declarations, participants, transfers or unfunded mentors are mi
 * use the default pagination of 100 records per page 
 * keep polling and incrementing the page number until you receive an empty response
 
-Contact the DfE using our Slack channel if you need further details. 
+Contact the DfE using our Teams channel if you need further details.
 
 ### Performing a full sync  
 
 We recommend you do a full sync of all records in the API once a week without using the <code>updated_since</code> filters.  
 
-The DfE can coordinate ‘windows’ (set time periods) for providers to do this at times when there is a low background load on the service. Contact the DfE using our Slack channel for more details. 
+The DfE can coordinate ‘windows’ (set time periods) for providers to do this at times when there is a low background load on the service. Contact the DfE using our Teams channel for more details. 
 
 ### Polling windows 
 
