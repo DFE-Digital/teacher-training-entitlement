@@ -57,7 +57,6 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           "Declaration Created At",
           "Statement Name",
           "Statement ID",
-          "Targeted Delivery Funding",
         ]
       end
 
@@ -91,7 +90,6 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           declaration.created_at.iso8601,
           Date.new(statement.year, statement.month).strftime("%B %Y"),
           statement.ecf_id,
-          declaration.application.targeted_delivery_funding_eligibility.to_s,
         ]
       end
 

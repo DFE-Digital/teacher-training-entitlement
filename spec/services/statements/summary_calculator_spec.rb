@@ -22,7 +22,6 @@ RSpec.describe Statements::SummaryCalculator do
   describe "#total_payment" do
     let(:default_total) { BigDecimal("0.1212631578947368421052631578947368421064e4") }
     let(:expected_total_output_payment) { 160 }
-    let(:expected_total_targeted_delivery_funding) { 100 }
 
     before { contract.contract_template.update! monthly_service_fee: contract_template_monthly_service_fee }
 
@@ -58,7 +57,6 @@ RSpec.describe Statements::SummaryCalculator do
           :eligible_for_funding,
           course:,
           lead_provider:,
-          targeted_delivery_funding_eligibility: true,
         )
       end
 
@@ -69,7 +67,7 @@ RSpec.describe Statements::SummaryCalculator do
       end
 
       it "adds the targeted delivery funding to the total" do
-        expect(subject.total_payment).to match_bigdecimal(default_total + expected_total_output_payment + expected_total_targeted_delivery_funding)
+        expect(subject.total_payment).to match_bigdecimal(default_total + expected_total_output_payment)
       end
     end
 
@@ -97,18 +95,12 @@ RSpec.describe Statements::SummaryCalculator do
           :eligible_for_funding,
           course:,
           lead_provider:,
-          targeted_delivery_funding_eligibility: true,
         )
       end
 
-      let(:expected_total_clawbacks) { 260 }
-
       it "deducts the clawbacks from the total" do
         expect(subject.total_payment)
-          .to match_bigdecimal(default_total +
-                               expected_total_output_payment +
-                               expected_total_targeted_delivery_funding -
-                               expected_total_clawbacks)
+          .to match_bigdecimal(default_total)
       end
     end
 
@@ -305,80 +297,6 @@ RSpec.describe Statements::SummaryCalculator do
     end
   end
 
-  describe "#total_targeted_delivery_funding" do
-    context "with no declarations" do
-      it do
-        expect(subject.total_targeted_delivery_funding).to be_zero
-      end
-    end
-
-    context "with declaration" do
-      let(:declaration_type) { "started" }
-
-      let(:application) do
-        create(
-          :application,
-          :accepted,
-          :eligible_for_funding,
-          course:,
-          lead_provider:,
-          targeted_delivery_funding_eligibility: true,
-        )
-      end
-
-      before do
-        travel_to statement.deadline_date do
-          create(:declaration, :eligible, declaration_type:, application:, lead_provider:, statement:)
-        end
-      end
-
-      it "returns total targeted delivery funding" do
-        expect(subject.total_targeted_delivery_funding.to_f).to eq(100.0)
-      end
-    end
-  end
-
-  describe "#total_targeted_delivery_funding_refundable" do
-    context "with no declarations" do
-      it do
-        expect(subject.total_targeted_delivery_funding_refundable).to be_zero
-      end
-    end
-
-    context "with declaration" do
-      before do
-        application.schedule.update! applies_from: statement.deadline_date - 1.month
-        earlier_statement = create(:statement, :next_output_fee, deadline_date: statement.deadline_date - 1.month, lead_provider:)
-
-        awaiting_clawback = travel_to(earlier_statement.deadline_date) do
-          create(:declaration, :paid, declaration_type:, application:, lead_provider:, statement: earlier_statement)
-        end
-
-        travel_to statement.deadline_date do
-          Declarations::Void.new(declaration: awaiting_clawback).void || raise("Could not void")
-        end
-      end
-
-      let(:declaration_type) { "started" }
-
-      let(:application) do
-        create(
-          :application,
-          :accepted,
-          :eligible_for_funding,
-          course:,
-          lead_provider:,
-          targeted_delivery_funding_eligibility: true,
-          cohort:,
-        )
-      end
-
-      it "returns total targeted delivery funding refundable" do
-        expect(subject.total_targeted_delivery_funding_refundable.to_f).to eq(100.0)
-      end
-    end
-  end
-
   describe "#total_clawbacks" do
     let(:application) do
       create(
@@ -388,7 +306,6 @@ RSpec.describe Statements::SummaryCalculator do
         course:,
         lead_provider:,
         eligible_for_funding: true,
-        targeted_delivery_funding_eligibility: true,
         cohort:,
       )
     end
@@ -408,8 +325,7 @@ RSpec.describe Statements::SummaryCalculator do
 
     it "returns total clawbacks" do
       expect(subject.clawback_payments.to_f).to eq(160.0)
-      expect(subject.total_targeted_delivery_funding_refundable.to_f).to eq(100.0)
-      expect(subject.total_clawbacks.to_f).to eq(160.0 + 100.0)
+      expect(subject.total_clawbacks.to_f).to eq(160.0)
     end
   end
 

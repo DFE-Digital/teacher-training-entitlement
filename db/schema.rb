@@ -108,10 +108,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_144310) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.integer "DEPRECATED_cohort"
-    t.string "DEPRECATED_itt_provider"
-    t.text "DEPRECATED_private_childcare_provider_urn"
-    t.text "DEPRECATED_school_urn"
     t.datetime "accepted_at"
     t.bigint "cohort_id"
     t.bigint "course_id", null: false

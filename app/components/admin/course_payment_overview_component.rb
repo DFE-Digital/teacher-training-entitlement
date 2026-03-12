@@ -29,8 +29,6 @@ module Admin
       [
         output_payment_row,
         *refundable_declaration_rows,
-        targeted_delivery_funding_billable_row,
-        targeted_delivery_funding_refundable_row,
         monthly_service_fees_row,
       ].compact
     end
@@ -57,28 +55,6 @@ module Admin
           -(count * output_payment_per_participant),
         ]
       end
-    end
-
-    def targeted_delivery_funding_billable_row
-      return unless course_has_targeted_delivery_funding?
-
-      [
-        t(".targeted_delivery_funding"),
-        targeted_delivery_funding_declarations_count,
-        targeted_delivery_funding_per_participant,
-        targeted_delivery_funding_subtotal,
-      ]
-    end
-
-    def targeted_delivery_funding_refundable_row
-      return unless course_has_targeted_delivery_funding? && targeted_delivery_funding_refundable_declarations_count.positive?
-
-      [
-        "Clawbacks",
-        targeted_delivery_funding_refundable_declarations_count,
-        -targeted_delivery_funding_per_participant,
-        -targeted_delivery_funding_refundable_subtotal,
-      ]
     end
 
     def monthly_service_fees_row

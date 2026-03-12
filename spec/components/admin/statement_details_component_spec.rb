@@ -11,8 +11,6 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
 
   let(:calculator) do
     OpenStruct.new(
-      use_targeted_delivery_funding?: false,
-      total_targeted_delivery_funding: 99,
       total_service_fees: 0,
       total_output_payment: 100.12,
       total_clawbacks: 50.34,
@@ -43,18 +41,6 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
     subject(:rendered) { render_inline described_class.new(statement:, link_to_voids: false) }
 
     it { is_expected.not_to have_link t(".view", href: admin_finance_voided_index_path(statement)) }
-  end
-
-  context "without targeted delivery funding" do
-    it { is_expected.not_to have_text t(".targeted_delivery_funding") }
-  end
-
-  context "with targeted delivery funding" do
-    before do
-      allow(calculator).to receive(:use_targeted_delivery_funding?).and_return(true)
-    end
-
-    it { is_expected.to have_text(/#{t('.targeted_delivery_funding')}\s+£#{calculator.total_targeted_delivery_funding}/) }
   end
 
   context "without total service fees" do

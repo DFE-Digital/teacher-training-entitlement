@@ -14,10 +14,6 @@ module Statements
       course_calulators.sum(&:output_payment_subtotal)
     end
 
-    def total_targeted_delivery_funding
-      course_calulators.sum(&:targeted_delivery_funding_subtotal)
-    end
-
     def total_service_fees
       course_calulators.sum(&:monthly_service_fees)
     end
@@ -26,12 +22,8 @@ module Statements
       course_calulators.sum(&:clawback_payment)
     end
 
-    def total_targeted_delivery_funding_refundable
-      course_calulators.sum(&:targeted_delivery_funding_refundable_subtotal)
-    end
-
     def total_clawbacks
-      clawback_payments + total_targeted_delivery_funding_refundable
+      clawback_payments
     end
 
     def total_adjustments
@@ -39,7 +31,7 @@ module Statements
     end
 
     def total_payment
-      total_service_fees + total_output_payment - total_clawbacks + total_adjustments + statement.reconcile_amount.to_f + total_targeted_delivery_funding
+      total_service_fees + total_output_payment - total_clawbacks + total_adjustments + statement.reconcile_amount.to_f
     end
 
     def total_starts

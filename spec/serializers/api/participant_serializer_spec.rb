@@ -95,7 +95,6 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             eligible_for_funding: application.eligible_for_funding,
             training_status: application.training_status,
             school_urn: application.school.urn,
-            targeted_delivery_funding_eligibility: application.targeted_delivery_funding_eligibility,
             withdrawal: nil,
             deferral: nil,
             created_at: application.accepted_at.rfc3339,
@@ -118,7 +117,6 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               eligible_for_funding: application.eligible_for_funding,
               training_status: application.training_status,
               school_urn: application.school.urn,
-              targeted_delivery_funding_eligibility: application.targeted_delivery_funding_eligibility,
               withdrawal: {
                 reason: application.application_states.last.reason,
                 date: application.application_states.last.created_at.rfc3339,
@@ -145,7 +143,6 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               eligible_for_funding: application.eligible_for_funding,
               training_status: application.training_status,
               school_urn: application.school.urn,
-              targeted_delivery_funding_eligibility: application.targeted_delivery_funding_eligibility,
               withdrawal: nil,
               deferral: {
                 reason: application.application_states.last.reason,

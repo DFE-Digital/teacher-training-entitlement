@@ -1,6 +1,6 @@
 module Helpers
   module JourneyHelper
-    APPLICATION_COMPARISON_IGNORED_ATTRIBUTES = %i[id created_at updated_at significantly_updated_at user_id DEPRECATED_school_urn DEPRECATED_private_childcare_provider_urn DEPRECATED_itt_provider].freeze
+    APPLICATION_COMPARISON_IGNORED_ATTRIBUTES = %i[id created_at updated_at significantly_updated_at user_id type].freeze
 
     def latest_application
       Application.order(created_at: :asc, id: :asc).last

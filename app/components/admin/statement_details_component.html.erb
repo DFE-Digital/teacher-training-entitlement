@@ -8,13 +8,6 @@
         <span class="float-right"><%= number_to_currency(@calculator.total_output_payment) %></span>
       </p>
 
-      <% if @calculator.use_targeted_delivery_funding? %>
-        <p class="govuk-body-s govuk-!-margin-bottom-2">
-          <%= t(".targeted_delivery_funding") %>
-          <span class="float-right"><%= number_to_currency(@calculator.total_targeted_delivery_funding) %></span>
-        </p>
-      <% end %>
-
       <p class="govuk-body-s govuk-!-margin-bottom-2">
         <%= t(".clawbacks") %>
         <span class="float-right"><%= number_to_currency(-@calculator.total_clawbacks) %></span>

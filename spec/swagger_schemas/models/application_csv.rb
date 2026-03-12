@@ -105,18 +105,6 @@ APPLICATION_CSV = {
         type: :boolean,
         example: true,
       },
-      employer_name: {
-        description: "The name of current employer of the participant if not currently employed by school",
-        type: :string,
-        nullable: true,
-        example: "Some Company Ltd",
-      },
-      employment_role: {
-        description: "Participant's current role in the company they are employed in if not currently employed by school",
-        type: :string,
-        nullable: true,
-        example: "Director",
-      },
       created_at: {
         description: "The date the application was created",
         type: :string,
@@ -165,18 +153,6 @@ APPLICATION_CSV = {
         nullable: true,
         type: :string,
         example: "FRA",
-      },
-      itt_provider: {
-        description: "This field contains the legal name of the ITT accredited provider from the <a href=\"https://www.gov.uk/government/publications/accredited-initial-teacher-training-itt-providers/list-of-providers-accredited-to-deliver-itt-from-september-2024\" class=\"govuk-link\" rel=\"noreferrer noopener\" target=\"_blank\">list of providers</a>.",
-        nullable: true,
-        type: :string,
-        example: "University of Southampton",
-      },
-      lead_mentor: {
-        description: "This field indicates whether the applicant is an ITT lead mentor.",
-        nullable: true,
-        type: :boolean,
-        example: true,
       },
     },
   },

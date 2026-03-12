@@ -226,115 +226,6 @@ RSpec.describe Statements::CourseCalculator do
     end
   end
 
-  describe "#course_has_targeted_delivery_funding?" do
-    subject { calculator.course_has_targeted_delivery_funding? }
-
-    let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
-    let(:statement) { create(:statement, :has_targeted_delivery_funding, :next_output_fee, cohort:) }
-
-    context "with early headship coaching offer" do
-      let(:course) { create(:course, :tte_early_years) }
-
-      it { is_expected.to be true }
-    end
-
-    context "with additional support offer", :npq do
-      let(:course) { create(:course, :additional_support_offer) }
-
-      it { is_expected.to be false }
-    end
-
-    context "with leadership course", :npq do
-      let(:course) { create(:course, :early_years_leadership) }
-
-      it { is_expected.to be true }
-    end
-  end
-
-  describe "#targeted_delivery_funding_declarations_count", :npq, pending: "Policy question" do
-    subject { calculator.targeted_delivery_funding_declarations_count }
-
-    let(:application) do
-      create(
-        :application,
-        :accepted,
-        :eligible_for_funding,
-        course:,
-        lead_provider:,
-        cohort:,
-        eligible_for_funding: true,
-        targeted_delivery_funding_eligibility: true,
-      )
-    end
-
-    context "when there are zero declarations" do
-      it { is_expected.to be_zero }
-    end
-
-    context "when there are targeted delivery funding declarations" do
-      let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
-      let(:statement) { create(:statement, :has_targeted_delivery_funding, :next_output_fee, cohort:) }
-
-      before do
-        create(:declaration, :eligible, course:, lead_provider:, application:, cohort:, statement:)
-      end
-
-      it { is_expected.to be(1) }
-    end
-
-    context "when multiple declarations from same user of one type", :npq, pending: "Policy question" do
-      let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
-      let(:statement) { create(:statement, :has_targeted_delivery_funding, :next_output_fee, cohort:) }
-
-      let(:application) do
-        create(
-          :application,
-          :accepted,
-          :eligible_for_funding,
-          :with_declaration,
-          course:,
-          lead_provider:,
-          eligible_for_funding: true,
-          targeted_delivery_funding_eligibility: true,
-          cohort:,
-        )
-      end
-
-      before do
-        create(:statement_item, declaration: application.declarations.first, statement:)
-        create(:declaration, :payable, course:, lead_provider:, declaration_type: "retained-1", cohort:, statement:, application: create(:application, user: application.user))
-      end
-
-      it "has two declarations" do
-        expect(Declaration.count).to be(2)
-        expect(calculator.statement.statement_items.count).to be(2)
-      end
-
-      it { is_expected.to be(1) }
-    end
-  end
-
-  describe "#targeted_delivery_funding_refundable_declarations_count", :npq, pending: "policy question" do
-    subject { calculator.targeted_delivery_funding_refundable_declarations_count }
-
-    let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
-    let(:statement) { create(:statement, :has_targeted_delivery_funding, :next_output_fee, cohort:) }
-
-    before { application.update! targeted_delivery_funding_eligibility: true }
-
-    context "when there are zero declarations" do
-      it { is_expected.to be_zero }
-    end
-
-    context "when there are targeted delivery funding refundable declarations" do
-      before do
-        create :declaration, :awaiting_clawback, course:, lead_provider:, application:, cohort:, statement:, paid_statement:
-      end
-
-      it { is_expected.to be(1) }
-    end
-  end
-
   describe "#allowed_declaration_types" do
     let(:course_group) { course.course_group }
 
@@ -371,8 +262,6 @@ RSpec.describe Statements::CourseCalculator do
     {
       output_payment_subtotal: 10,
       clawback_payment: -10,
-      targeted_delivery_funding_subtotal: 10,
-      targeted_delivery_funding_refundable_subtotal: -10,
     }.each do |method, stubbed_value|
       it "includes #{method}" do
         expect {

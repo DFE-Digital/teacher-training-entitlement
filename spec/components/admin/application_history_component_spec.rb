@@ -23,10 +23,9 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
 
   context "when there are changes to the record" do
     let(:original_lead_provider) { create(:lead_provider) }
-    let(:original_itt_provider) { create(:itt_provider) }
     let(:new_lead_provider) { create(:lead_provider) }
     let(:original_ecf_id) { SecureRandom.uuid }
-    let(:application) { create(:application, :accepted, cohort:, lead_provider: original_lead_provider, itt_provider: original_itt_provider, ecf_id: original_ecf_id) }
+    let(:application) { create(:application, :accepted, cohort:, lead_provider: original_lead_provider, ecf_id: original_ecf_id) }
     let(:whodunnit) { "some user" }
 
     before do
@@ -98,15 +97,6 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
       it "shows the user who made the changes as 'unknown'" do
         expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header p.moj-timeline__byline",
                                     text: "by unknown")
-      end
-    end
-
-    context "when the change is on an association with no name attribute" do
-      before { application.update!(itt_provider: create(:itt_provider)) }
-
-      it "shows the change using an ID" do
-        expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
-                                    text: "Itt provider changed to ID: #{application.itt_provider.id}")
       end
     end
 
