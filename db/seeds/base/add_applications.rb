@@ -11,6 +11,7 @@ LeadProvider.find_each do |lead_provider|
     FactoryBot.create_list(
       :application,
       5,
+      :reception_type,
       :with_random_user,
       :with_random_work_setting,
       :with_participant_id_change,
@@ -25,6 +26,7 @@ LeadProvider.find_each do |lead_provider|
     FactoryBot.create(
       :application,
       :accepted,
+      :reception_type,
       :with_random_participant_outcome_state,
       :with_random_work_setting,
       user:,
@@ -37,6 +39,7 @@ LeadProvider.find_each do |lead_provider|
       :application,
       1,
       :rejected,
+      :reception_type,
       :with_random_participant_outcome_state,
       :with_random_work_setting,
       user:,
@@ -49,6 +52,7 @@ LeadProvider.find_each do |lead_provider|
     FactoryBot.create(
       :application,
       :accepted,
+      :reception_type,
       :with_random_user,
       :with_random_work_setting,
       lead_provider:,
@@ -62,6 +66,7 @@ LeadProvider.find_each do |lead_provider|
       :application,
       2,
       :rejected,
+      :reception_type,
       :with_random_user,
       :with_random_work_setting,
       lead_provider:,
@@ -75,6 +80,7 @@ LeadProvider.find_each do |lead_provider|
       :application,
       2,
       :withdrawn,
+      :reception_type,
       %i[accepted rejected].sample,
       :with_random_user,
       :with_random_work_setting,
@@ -88,6 +94,7 @@ LeadProvider.find_each do |lead_provider|
     FactoryBot.create(
       :application,
       :accepted,
+      :reception_type,
       :eligible_for_funding,
       :with_random_user,
       :with_random_work_setting,
@@ -102,6 +109,7 @@ LeadProvider.find_each do |lead_provider|
     FactoryBot.create(
       :application,
       :accepted,
+      :reception_type,
       :with_random_user,
       :with_random_work_setting,
       :with_participant_id_change,
@@ -115,6 +123,7 @@ LeadProvider.find_each do |lead_provider|
     FactoryBot.create(
       :application,
       :accepted,
+      :reception_type,
       :with_random_user,
       :with_random_work_setting,
       :with_participant_id_change,
@@ -138,6 +147,7 @@ LeadProvider.find_each do |lead_provider|
     application = FactoryBot.create(
       :application,
       :accepted,
+      :reception_type,
       :with_random_user,
       :with_random_work_setting,
       :with_random_participant_outcome_state,
@@ -161,17 +171,7 @@ end
 course = Course.find_by!(identifier: Course::IDENTIFIERS.first.to_sym)
 
 # Make sure some applications will appear in the In Review list
-[
-  { employment_type: :hospital_school },
-  { employment_type: :lead_mentor_for_accredited_itt_provider },
-  { employment_type: :local_authority_supply_teacher },
-  { employment_type: :local_authority_virtual_school },
-  { employment_type: :young_offender_institution },
-  { employment_type: :other },
-  { referred_by_return_to_teaching_adviser: "yes" },
-].each do |application_attrs|
-  FactoryBot.create(:application, :manual_review, **application_attrs.merge(course:))
-end
+FactoryBot.create_list(:application, 3, :manual_review, course:)
 
 Application.order(id: :desc).each.with_index do |a, i|
   a.update!(created_at: i.days.ago)

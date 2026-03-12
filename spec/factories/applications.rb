@@ -161,5 +161,9 @@ FactoryBot.define do
     trait :manual_review do
       review_status { "Needs review" }
     end
+
+    trait :reception_type do
+      type { "ReceptionApplication" }
+    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_144310) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -153,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_144310) do
     t.index ["private_childcare_provider_id"], name: "index_applications_on_private_childcare_provider_id"
     t.index ["schedule_id"], name: "index_applications_on_schedule_id"
     t.index ["school_id"], name: "index_applications_on_school_id"
+    t.index ["type"], name: "index_applications_on_type"
     t.index ["user_id", "cohort_id", "course_id"], name: "index_applications_on_user_id_and_cohort_id_and_course_id", unique: true, where: "(lead_provider_approval_status <> 'rejected'::lead_provider_approval_statuses)"
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
