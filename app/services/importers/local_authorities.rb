@@ -11,7 +11,8 @@ class Importers::LocalAuthorities
     check_headers
 
     rows.each do |row|
-      la = LocalAuthority.find_or_initialize_by(ukprn: row["ukprn"])
+      institution = Institution.find_by(institution_reference_number: row["ukprn"])
+      la = institution&.institutionable || LocalAuthority.new
 
       la.update!(
         high_pupil_premium: ActiveModel::Type::Boolean.new.cast(row["high_pupil_premium"]),
@@ -33,6 +34,7 @@ private
       county: row["county"],
       postcode: row["postcode"],
       postcode_without_spaces: row["postcode"]&.gsub(" ", ""),
+      institution_reference_number: row["ukprn"],
     }
 
     if la.institution

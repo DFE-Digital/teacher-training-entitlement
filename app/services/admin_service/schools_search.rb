@@ -9,7 +9,7 @@ class AdminService::SchoolsSearch
     chain = default_scope
 
     if q.present?
-      chain = chain.where(urn: q)
+      chain = chain.where("institutions.institution_reference_number = ?", q)
       chain = chain.or(default_scope.where("institutions.name ILIKE ?", "%#{q}%"))
     end
 

@@ -61,7 +61,11 @@ module Importers
       new_record = false
       updated_record = false
 
-      private_childcare_provider = PrivateChildcareProvider.find_or_initialize_by(provider_urn: wrapped_csv_row.column(:provider_urn)) do
+      institution = Institution.find_by(institution_reference_number: wrapped_csv_row.column(:provider_urn))
+      private_childcare_provider = institution&.institutionable
+
+      if private_childcare_provider.nil?
+        private_childcare_provider = PrivateChildcareProvider.new
         new_record = true
       end
 
@@ -74,8 +78,10 @@ module Importers
 
       updated_record = private_childcare_provider.changed? unless new_record
 
-      private_childcare_provider.save!
-      update_institution!(private_childcare_provider, wrapped_csv_row)
+      ActiveRecord::Base.transaction do
+        private_childcare_provider.save!
+        update_institution!(private_childcare_provider, wrapped_csv_row)
+      end
 
       @imported_records += 1 if new_record
       @updated_records += 1 if updated_record
@@ -98,6 +104,7 @@ module Importers
         postcode: strip_whitespace(wrapped_csv_row.column(:postcode)),
         postcode_without_spaces: strip_whitespace(wrapped_csv_row.postcode_without_spaces),
         region: wrapped_csv_row.column(:region),
+        institution_reference_number: wrapped_csv_row.column(:provider_urn),
       }
 
       if provider.institution

@@ -27,7 +27,7 @@ module AssuranceReports
           a.funded_place                          AS funded_place,
           lp.name                                 AS npq_lead_provider_name,
           lp.ecf_id                               AS npq_lead_provider_id,
-          sc.urn                                  AS school_urn,
+          i.institution_reference_number          AS school_urn,
           i.name                                  AS school_name,
           a.training_status                       AS training_status,
           st.reason                               AS training_status_reason,

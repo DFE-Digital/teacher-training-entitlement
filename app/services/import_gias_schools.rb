@@ -10,13 +10,13 @@ class ImportGiasSchools
   def call
     CSV.foreach(csv_file, headers: true, converters: [gias_converter]) do |row|
       new_record = false
-      school = School.find_or_create_by!(urn: row["URN"]) do |s|
-        s.assign_attributes(school_attributes_from_row(row))
-        new_record = true
-      end
+      institution = Institution.find_by(institution_reference_number: row["URN"])
+      school = institution&.institutionable
 
-      if new_record
+      if school.nil?
+        school = School.create!(school_attributes_from_row(row))
         update_institution!(school, row)
+        new_record = true
       elsif refresh_all? || school.last_changed_date.nil?
         school.update!(school_attributes_from_row(row))
         update_institution!(school, row)
@@ -86,6 +86,7 @@ private
       postcode: row["Postcode"],
       postcode_without_spaces: row["Postcode"]&.gsub(" ", ""),
       region: row["RSCRegion (name)"],
+      institution_reference_number: row["URN"],
     }
   end
 

@@ -26,9 +26,7 @@ class AdminService::UsersSearch
 private
 
   def find_institutions_by_urn
-    school_ids = School.where("urn ILIKE ?", "%#{q}%").joins(:institution).select("institutions.id")
-    pcp_ids = PrivateChildcareProvider.where("provider_urn ILIKE ?", "%#{q}%").joins(:institution).select("institutions.id")
-    Institution.where(id: school_ids).or(Institution.where(id: pcp_ids))
+    Institution.where("institution_reference_number ILIKE ?", "%#{q}%")
   end
 
   def default_scope
