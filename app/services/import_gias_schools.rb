@@ -9,14 +9,13 @@ class ImportGiasSchools
 
   def call
     CSV.foreach(csv_file, headers: true, converters: [gias_converter]) do |row|
-      new_record = false
       institution = Institution.find_by(institution_reference_number: row["URN"])
       school = institution&.institutionable
 
       if school.nil?
         school = School.create!(school_attributes_from_row(row))
         update_institution!(school, row)
-        new_record = true
+        true
       elsif refresh_all? || school.last_changed_date.nil?
         school.update!(school_attributes_from_row(row))
         update_institution!(school, row)
