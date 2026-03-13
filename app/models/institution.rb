@@ -32,7 +32,7 @@ class Institution < ApplicationRecord
   end
 
   def address
-    [address_1, address_2, address_3, town, county, postcode].reject(&:blank?) - [REDACTED_DATA_STRING]
+    [address_1, address_2, address_3, town, county, region, postcode].reject(&:blank?) - [REDACTED_DATA_STRING]
   end
 
   def address_string

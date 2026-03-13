@@ -4,23 +4,11 @@ class PrivateChildcareProvider < ApplicationRecord
 
   has_one :institution, as: :institutionable, touch: true
 
-  delegate :name, :county, :region, :town, :postcode, :urn, to: :institution
+  delegate :name, :county, :region, :town, :postcode, :urn, :address, :address_string,
+           :name_with_address, to: :institution
 
   def self.search_by_urn(query)
     joins(:institution).where("institutions.institution_reference_number ILIKE ?", "%#{query}%")
-  end
-
-  def name_with_address
-    [name, address_string].join(" – ")
-  end
-
-  def address
-    [institution.address_1, institution.address_2, institution.address_3, institution.town, institution.region, institution.postcode]
-      .reject(&:blank?) - [Institution::REDACTED_DATA_STRING]
-  end
-
-  def address_string
-    address.join(", ")
   end
 
   def display_name
