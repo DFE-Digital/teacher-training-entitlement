@@ -90,8 +90,8 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
 
     describe "school serialization" do
       it "serializes the `school_urn`" do
-        school.urn = "1234567"
-        expect(attributes["school_urn"]).to eq(school.urn)
+        school.institution.institution_reference_number = "1234567"
+        expect(attributes["school_urn"]).to eq("1234567")
       end
 
       it "serializes the `school_ukprn`" do
@@ -126,7 +126,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
         let(:application) { build(:application, cohort:, course:, itt_provider:, institution: provider.institution) }
 
         it "serializes the `private_childcare_provider_urn`" do
-          expect(attributes["private_childcare_provider_urn"]).to eq(provider.provider_urn)
+          expect(attributes["private_childcare_provider_urn"]).to eq(provider.urn)
         end
       end
 
@@ -135,11 +135,11 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       end
 
       context "when the `private_childcare_provider` is disabled" do
-        let(:provider) { create(:private_childcare_provider, :disabled, provider_urn: "disabled urn") }
+        let(:provider) { create(:private_childcare_provider, :disabled, provider_urn: "disabled_urn") }
         let(:application) { build(:application, cohort:, course:, itt_provider:, institution: provider.institution) }
 
         it "serializes the `private_childcare_provider`" do
-          expect(attributes["private_childcare_provider_urn"]).to eq(provider.provider_urn)
+          expect(attributes["private_childcare_provider_urn"]).to eq(provider.urn)
         end
       end
     end

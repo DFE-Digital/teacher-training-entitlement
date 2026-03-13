@@ -39,7 +39,7 @@ RSpec.describe AdminService::WorkplaceSearch do
       end
 
       context "when provider_urn match" do
-        let(:q) { workplace.provider_urn }
+        let(:q) { workplace.urn }
 
         it "returns the hit" do
           expect(subject.each.to_a).to eq([workplace])

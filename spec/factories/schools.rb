@@ -5,6 +5,8 @@ FactoryBot.define do
   factory :school do
     transient do
       name { Faker::Educator.primary_school }
+      urn { generate(:urn) }
+      institution { nil }
       address_1 { nil }
       address_2 { nil }
       address_3 { nil }
@@ -15,24 +17,24 @@ FactoryBot.define do
       region { nil }
     end
 
-    urn { generate(:urn) }
     ukprn { generate(:ukprn) }
     establishment_status_code { "1" }
     establishment_type_code { "1" } # Community school (eligible)
     last_changed_date { Date.new(2010, 1, 1) }
 
     after(:build) do |school, evaluator|
-      school.institution ||= build(:institution, :for_school,
-                                   institutionable: school,
-                                   name: evaluator.name,
-                                   address_1: evaluator.address_1,
-                                   address_2: evaluator.address_2,
-                                   address_3: evaluator.address_3,
-                                   town: evaluator.town,
-                                   county: evaluator.county,
-                                   postcode: evaluator.postcode,
-                                   postcode_without_spaces: evaluator.postcode_without_spaces,
-                                   region: evaluator.region)
+      school.institution = evaluator.institution || build(:institution,
+                                                          institutionable: school,
+                                                          name: evaluator.name,
+                                                          address_1: evaluator.address_1,
+                                                          address_2: evaluator.address_2,
+                                                          address_3: evaluator.address_3,
+                                                          town: evaluator.town,
+                                                          county: evaluator.county,
+                                                          postcode: evaluator.postcode,
+                                                          postcode_without_spaces: evaluator.postcode_without_spaces,
+                                                          region: evaluator.region,
+                                                          institution_reference_number: evaluator.urn)
     end
 
     after(:create) do |school, _evaluator|

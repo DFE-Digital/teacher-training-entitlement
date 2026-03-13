@@ -2,9 +2,9 @@
 
 RSpec.shared_context "with default school", shared_context: :metadata do
   before do
-    unless School.where(urn: 100_000).exists?
+    unless Institution.exists?(institution_reference_number: "100000", institutionable_type: "School")
       create(:school,
-             urn: 100_000,
+             urn: "100000",
              name: "open manchester school",
              address_1: "street 1",
              town: "manchester",

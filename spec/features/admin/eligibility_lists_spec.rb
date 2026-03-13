@@ -31,7 +31,7 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
 
   scenario "Updating PP50 Schools eligibility list" do
     expect(PP50_SCHOOLS_URN_HASH[urn]).to be_nil
-    expect(School.find_by(urn:).pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be false
     expect(already_eligible_school_pp50.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be true
 
     within "div#pp50-schools" do
@@ -40,7 +40,7 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(School.find_by(urn:).pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be false
     expect(already_eligible_school_pp50.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be true
   end
 
@@ -62,7 +62,7 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
 
   scenario "Updating Childminders eligibility list" do
     expect(CHILDMINDERS_OFSTED_URN_HASH[urn]).to be_nil
-    expect(PrivateChildcareProvider.find_by(provider_urn: urn).on_childminders_list?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "PrivateChildcareProvider").institutionable.on_childminders_list?).to be false
     expect(already_eligible_childminder.on_childminders_list?).to be true
 
     click_link "Childminders"
@@ -72,14 +72,14 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(PrivateChildcareProvider.find_by(provider_urn: urn).on_childminders_list?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "PrivateChildcareProvider").institutionable.on_childminders_list?).to be false
     expect(already_eligible_childminder.on_childminders_list?).to be true
   end
 
   scenario "Updating Disadvantaged Early Years Schools eligibility list" do
     expect(EY_OFSTED_URN_HASH[urn]).to be_nil
-    expect(PrivateChildcareProvider.find_by(provider_urn: urn).eyl_disadvantaged?).to be false
-    expect(School.find_by(urn:).eyl_disadvantaged?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "PrivateChildcareProvider").institutionable.eyl_disadvantaged?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.eyl_disadvantaged?).to be false
     expect(already_eligible_ey_childcare_provider.eyl_disadvantaged?).to be true
     expect(already_eligible_ey_school.eyl_disadvantaged?).to be true
 
@@ -90,15 +90,15 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(PrivateChildcareProvider.find_by(provider_urn: urn).eyl_disadvantaged?).to be false
-    expect(School.find_by(urn:).eyl_disadvantaged?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "PrivateChildcareProvider").institutionable.eyl_disadvantaged?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.eyl_disadvantaged?).to be false
     expect(already_eligible_ey_childcare_provider.eyl_disadvantaged?).to be true
     expect(already_eligible_ey_school.eyl_disadvantaged?).to be true
   end
 
   scenario "Updating Local Authority Disadvantaged Nurseries eligibility list" do
     expect(LA_DISADVANTAGED_NURSERIES[ukprn]).to be_nil
-    expect(School.find_by(urn:).la_disadvantaged_nursery?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.la_disadvantaged_nursery?).to be false
     expect(already_eligible_la_nursery.la_disadvantaged_nursery?).to be true
 
     click_link "LA Nurseries"
@@ -108,12 +108,12 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(School.find_by(urn:).la_disadvantaged_nursery?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.la_disadvantaged_nursery?).to be false
     expect(already_eligible_la_nursery.la_disadvantaged_nursery?).to be true
   end
 
   scenario "Updating RISE eligibility list" do
-    expect(School.find_by(urn:).rise?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.rise?).to be false
     expect(already_eligible_rise_school.rise?).to be true
 
     click_link "RISE"
@@ -123,7 +123,7 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(School.find_by(urn:).rise?).to be false
+    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.rise?).to be false
     expect(already_eligible_rise_school.rise?).to be true
   end
 

@@ -35,12 +35,12 @@ RSpec.describe ImportGiasSchools do
 
       rows = CSV.parse(File.open(file_fixture("gias_sample.csv"), "r:iso-8859-1:UTF-8").read, headers: true)
 
-      school = School.find_by(urn: rows[0]["URN"])
+      school = Institution.find_by(institution_reference_number: rows[0]["URN"])&.institutionable
 
       expect(school.establishment_type_code).to eql("2")
 
       rows.each do |row|
-        school = School.find_by(urn: row["URN"])
+        school = Institution.find_by(institution_reference_number: row["URN"])&.institutionable
 
         # School attributes
         expect(school.la_code).to eql(row["LA (code)"])

@@ -12,17 +12,17 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
 
   describe "#call" do
     def find_provider_with_institution(urn)
-      provider = PrivateChildcareProvider.find_by(provider_urn: urn)
-      institution = provider.institution
+      institution = Institution.find_by(institution_reference_number: urn)
+      provider = institution&.institutionable
 
       {
         # Provider attributes
-        "disabled_at" => provider.disabled_at,
-        "early_years_individual_registers" => provider.early_years_individual_registers,
-        "local_authority" => provider.local_authority,
-        "provider_compulsory_childcare_register_flag" => provider.provider_compulsory_childcare_register_flag,
-        "provider_early_years_register_flag" => provider.provider_early_years_register_flag,
-        "provider_urn" => provider.provider_urn,
+        "disabled_at" => provider&.disabled_at,
+        "early_years_individual_registers" => provider&.early_years_individual_registers,
+        "local_authority" => provider&.local_authority,
+        "provider_compulsory_childcare_register_flag" => provider&.provider_compulsory_childcare_register_flag,
+        "provider_early_years_register_flag" => provider&.provider_early_years_register_flag,
+        "urn" => provider&.urn,
         # Institution attributes
         "name" => institution&.name,
         "address_1" => institution&.address_1,
@@ -51,7 +51,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "local_authority" => "Leeds",
             "provider_compulsory_childcare_register_flag" => true,
             "provider_early_years_register_flag" => true,
-            "provider_urn" => "520917",
+            "urn" => "520917",
             "name" => "Rosewood Nursery",
             "address_1" => "21 Roseville Road",
             "address_2" => "Harehills",
@@ -76,7 +76,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_early_years_register_flag" => true,
             "region" => "Yorkshire and The Humber",
             "town" => "Leeds",
-            "provider_urn" => "EY790942",
+            "urn" => "EY790942",
           })
 
           expect(find_provider_with_institution("EY565343")).to eq({
@@ -93,7 +93,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_early_years_register_flag" => true,
             "region" => "East Midlands",
             "town" => "NOTTINGHAM",
-            "provider_urn" => "EY565343",
+            "urn" => "EY565343",
           })
 
           expect(find_provider_with_institution("EY426355")).to eq({
@@ -110,7 +110,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_early_years_register_flag" => true,
             "region" => "South West",
             "town" => "Cricklade",
-            "provider_urn" => "EY426355",
+            "urn" => "EY426355",
           })
 
           expect(find_provider_with_institution("EY426356")).to eq({
@@ -127,7 +127,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_early_years_register_flag" => true,
             "region" => "South West",
             "town" => "Cricklade",
-            "provider_urn" => "EY426356",
+            "urn" => "EY426356",
           })
 
           expect(find_provider_with_institution("EY426357")).to eq({
@@ -144,7 +144,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_early_years_register_flag" => false,
             "region" => "South West",
             "town" => "Cricklade",
-            "provider_urn" => "EY426357",
+            "urn" => "EY426357",
           })
 
           expect(find_provider_with_institution("EY426358")).to eq({
@@ -161,7 +161,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_early_years_register_flag" => false,
             "region" => "South West",
             "town" => "Cricklade",
-            "provider_urn" => "EY426358",
+            "urn" => "EY426358",
           })
         end
 
@@ -202,7 +202,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         it "returns errors for invalid rows" do
           run_import
           expect(subject.import_errors).to eq({
-            3 => ["Validation failed: Provider urn can't be blank"],
+            3 => ["Validation failed: Institution reference number can't be blank"],
             4 => ["Unknown Individual Register combinations value: ABC only"],
           })
         end
@@ -222,7 +222,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_compulsory_childcare_register_flag" => true,
             "provider_early_years_register_flag" => true,
             "name" => "Rosewood Nursery",
-            "provider_urn" => "520917",
+            "urn" => "520917",
             "region" => "Yorkshire and The Humber",
             "town" => "Leeds",
           })
@@ -272,7 +272,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "postcode" => "LS8 5DT",
             "postcode_without_spaces" => "LS85DT",
             "name" => "Rosewood Nursery",
-            "provider_urn" => "520917",
+            "urn" => "520917",
             "region" => "Yorkshire and The Humber",
             "town" => "Leeds",
           })
@@ -291,7 +291,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "postcode_without_spaces" => "LS260NL",
             "region" => "Yorkshire and The Humber",
             "town" => "Leeds",
-            "provider_urn" => "EY790942",
+            "urn" => "EY790942",
           })
 
           run_update
@@ -308,7 +308,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "postcode" => "LS8 5DT",
             "postcode_without_spaces" => "LS85DT",
             "name" => "Rosewood Nursery",
-            "provider_urn" => "520917",
+            "urn" => "520917",
             "region" => "Yorkshire and The Humber",
             "town" => "Leeds",
           })
@@ -327,7 +327,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "postcode_without_spaces" => "LS260NL",
             "region" => "Yorkshire and The Humber",
             "town" => "Leeds",
-            "provider_urn" => "EY790942",
+            "urn" => "EY790942",
           })
         end
       end
@@ -360,7 +360,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_urn" => "CA000006",
+            "urn" => "CA000006",
             "region" => nil,
             "town" => nil,
           })
@@ -376,7 +376,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "City Childcare Childminding Agency",
-            "provider_urn" => "CA000012",
+            "urn" => "CA000012",
             "region" => nil,
             "town" => nil,
           })
@@ -412,7 +412,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
         it "returns errors for invalid rows" do
           run_import
           expect(subject.import_errors).to eq({
-            3 => ["Validation failed: Provider urn can't be blank"],
+            3 => ["Validation failed: Institution reference number can't be blank"],
             4 => ["Unknown Individual Register combinations value: EYR"],
           })
         end
@@ -432,7 +432,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_urn" => "CA000006",
+            "urn" => "CA000006",
             "region" => nil,
             "town" => nil,
           })
@@ -465,7 +465,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
           expect {
             run_update
           }.to change {
-            PrivateChildcareProvider.find_by(provider_urn: "CA000006").institution.address_1
+            Institution.find_by(institution_reference_number: "CA000006").institutionable.institution.address_1
           }.from("108 Regent Studios").to("109 Regent Studios")
 
           expect(updates.updated_records).to be(0)
@@ -490,7 +490,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_urn" => "CA000006",
+            "urn" => "CA000006",
             "region" => nil,
             "town" => nil,
           })
@@ -509,7 +509,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "provider_compulsory_childcare_register_flag" => nil,
             "provider_early_years_register_flag" => nil,
             "name" => "Daryel Care",
-            "provider_urn" => "CA000006",
+            "urn" => "CA000006",
             "region" => nil,
             "town" => nil,
           })

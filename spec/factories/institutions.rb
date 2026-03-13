@@ -1,20 +1,28 @@
 FactoryBot.define do
   factory :institution do
     sequence(:name) { |n| "Institution #{n}" }
+    sequence(:institution_reference_number) { |n| sprintf("IRN%08d", n) }
 
-    # Default to creating a school as the institutionable
-    for_school
+    after(:build) do |institution|
+      institution.institutionable ||= build(:school, institution: institution)
+    end
 
     trait :for_school do
-      institutionable { association :school, institution: instance }
+      after(:build) do |institution|
+        institution.institutionable ||= build(:school, institution: institution)
+      end
     end
 
     trait :for_private_childcare_provider do
-      institutionable { association :private_childcare_provider, institution: instance }
+      after(:build) do |institution|
+        institution.institutionable ||= build(:private_childcare_provider, institution: institution)
+      end
     end
 
     trait :for_local_authority do
-      institutionable { association :local_authority, institution: instance }
+      after(:build) do |institution|
+        institution.institutionable ||= build(:local_authority, institution: institution)
+      end
     end
 
     trait :with_address do
