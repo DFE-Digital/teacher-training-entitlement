@@ -3,22 +3,27 @@ require "rails_helper"
 RSpec.describe "layouts/api_guidance.html.erb", type: :view do
   subject { Capybara.string(render) }
 
-  let(:expected_items) do
-    structure = NavigationStructures::GuidanceNavigationStructure.new
-    structure.primary_structure.map(&:name)
+  describe "header" do
+    before do
+      view.instance_variable_set(:@page, instance_double(Guidance::GuidancePage, index_page?: true))
+    end
+
+    it { is_expected.to have_link("Teacher training entitlement", href: "/api/guidance") }
   end
 
-  before do
-    view.instance_variable_set(:@page, instance_double(Guidance::GuidancePage, index_page?: true))
-  end
-
-  describe "service navigation" do
-    it { is_expected.to have_css(".govuk-service-navigation__service-name", text: "Teacher training entitlement") }
+  describe "sidebar navigation" do
+    before do
+      view.instance_variable_set(:@page, instance_double(Guidance::GuidancePage, index_page?: false, sections: []))
+    end
 
     it "has links for the guidance navigation structure" do
-      expected_items.each do |item|
-        expect(subject).to have_link(item)
-      end
+      expect(subject).to have_link("Get started")
+      expect(subject).to have_link("How the API works")
+      expect(subject).to have_link("Test environments")
+      expect(subject).to have_link("How-to guides")
+      expect(subject).to have_link("Process diagrams")
+      expect(subject).to have_link("Release notes")
+      expect(subject).to have_link("Roadmap")
     end
   end
 end

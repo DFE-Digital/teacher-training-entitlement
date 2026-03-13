@@ -1,27 +1,32 @@
 require "rails_helper"
 
 RSpec.feature "Guidance", type: :feature do
-  describe "Back link navigation" do
-    it "renders a working back link on non-index guidance pages" do
-      visit "/api/guidance"
+  describe "Sidebar navigation" do
+    it "renders sidebar navigation on guidance subpages" do
+      visit "/api/guidance/get-started"
 
-      expect(page).not_to have_link("Back")
+      within("#side-navigation") do
+        expect(page).to have_link("Get started")
+        expect(page).to have_link("How the API works")
+        expect(page).to have_link("Test environments")
+        expect(page).to have_link("How-to guides")
+        expect(page).to have_link("Process diagrams")
+        expect(page).to have_link("Release notes")
+        expect(page).to have_link("Roadmap")
+      end
 
-      within("nav") { click_on "Get started" }
+      within("#side-navigation") { click_on "Release notes" }
 
-      expect(page).to have_link("Back", href: %r{/api/guidance})
-
-      click_on "Back"
-
-      expect(page).to have_current_path("/api/guidance", ignore_query: true)
+      expect(page).to have_current_path("/api/guidance/release-notes", ignore_query: true)
     end
   end
 
   describe "GET /api/guidance" do
-    it "renders the index page" do
+    it "renders the index page with masthead" do
       visit "/api/guidance"
 
-      expect(page).to have_content("Guidance")
+      expect(page).to have_content("Use this API to view, submit, and update TTE training data")
+      expect(page).not_to have_css("#side-navigation")
     end
 
     it "renders the call to action button" do
@@ -53,8 +58,8 @@ RSpec.feature "Guidance", type: :feature do
     it "renders the .html page" do
       visit "/api/guidance/release-notes"
 
-      expect(page).not_to have_content("#What's new'")
-      expect(page).to have_content("What's new")
+      expect(page).not_to have_content("#Release notes")
+      expect(page).to have_content("Release notes")
     end
   end
 

@@ -43,8 +43,8 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
         "enrolments": [
           {
             "email": "isabelle.macdonald2@some-school.example.com",
-            "course_identifier": "senior-leadership",
-            "schedule_identifier": "aso-march",
+            "course_identifier": "tte-early-years",
+            "schedule_identifier": "tte-reception-autumn",
             "cohort": "2022",
             "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
             "eligible_for_funding": true,
@@ -105,8 +105,8 @@ For more detailed information, see the ['Retrieve a single participant' endpoint
         "enrolments": [
           {
             "email": "isabelle.macdonald2@some-school.example.com",
-            "course_identifier": "senior-leadership",
-            "schedule_identifier": "leadership-autumn",
+            "course_identifier": "tte-early-years",
+            "schedule_identifier": "tte-reception-autumn",
             "cohort": "2021",
             "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
             "eligible_for_funding": true,
@@ -151,7 +151,7 @@ For more detailed information, see the ['Defer a participant' endpoint documenta
   "data": {
     "type": "participant-defer",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "reason": "bereavement"
     }
   }
@@ -177,7 +177,7 @@ For more detailed information, see the ['Resume a participant' endpoint document
   "data": {
     "type": "participant-resume",
     "attributes": {
-      "course_identifier": "senior-leadership"
+      "course_identifier": "tte-early-years"
     }
   }
 }
@@ -209,7 +209,7 @@ For more detailed information, see the ['Withdraw a participant' endpoint docume
   "data": {
     "type": "participant-withdraw",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "reason": "insufficient-capacity-to-undertake-programme"
     }
   }
@@ -242,8 +242,8 @@ For more detailed information, see the ['Notify that a participant is changing t
   "data": {
     "type": "participant-change-schedule",
     "attributes": {
-      "schedule_identifier": "ehco-march",
-      "course_identifier": "early-headship-coaching-offer",
+      "schedule_identifier": "tte-reception-autumn",
+      "course_identifier": "tte-early-years",
       "cohort": "2023"
     }
   }
@@ -309,7 +309,7 @@ For more detailed information, see the ['Retrieve multiple  outcomes for all par
       "attributes": {
         "state": "passed",
         "completion_date": "2021-05-31T00:00:00+00:00",
-        "course_identifier": "senior-leadership",
+        "course_identifier": "tte-early-years",
         "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z"
@@ -349,7 +349,7 @@ For more detailed information, see the ['Retrieve multiple  outcomes for a singl
       "attributes": {
         "state": "passed",
         "completion_date": "2021-05-31T00:00:00+00:00",
-        "course_identifier": "senior-leadership",
+        "course_identifier": "tte-early-years",
         "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         "created_at": "2021-05-31T02:21:32.000Z",
         "updated_at": "2021-05-31T02:22:32.000Z"
@@ -384,7 +384,7 @@ For more detailed information, see the ['Submit an outcome for a single particip
   "data": {
     "type": "outcome-confirmation",
     "attributes": {
-      "course_identifier": "senior-leadership",
+      "course_identifier": "tte-early-years",
       "state": "passed",
       "completion_date": "2021-05-31T00:00:00+00:00"
     }
