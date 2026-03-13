@@ -1,2 +1,0 @@
-class ReceptionApplication < Application
-end

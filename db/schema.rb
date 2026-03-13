@@ -137,7 +137,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.text "teacher_catchment_country"
     t.string "teacher_catchment_iso_country_code", limit: 3
     t.enum "training_status", enum_type: "application_statuses"
-    t.string "type"
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -153,7 +152,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.index ["private_childcare_provider_id"], name: "index_applications_on_private_childcare_provider_id"
     t.index ["schedule_id"], name: "index_applications_on_schedule_id"
     t.index ["school_id"], name: "index_applications_on_school_id"
-    t.index ["type"], name: "index_applications_on_type"
     t.index ["user_id", "cohort_id", "course_id"], name: "index_applications_on_user_id_and_cohort_id_and_course_id", unique: true, where: "(lead_provider_approval_status <> 'rejected'::lead_provider_approval_statuses)"
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
