@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -382,6 +382,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
     t.string "address_3"
     t.string "county"
     t.datetime "created_at", null: false
+    t.string "institution_reference_number"
     t.bigint "institutionable_id", null: false
     t.string "institutionable_type", null: false
     t.string "name"
@@ -390,6 +391,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
     t.string "region"
     t.string "town"
     t.datetime "updated_at", null: false
+    t.index ["institution_reference_number"], name: "index_institutions_on_institution_reference_number"
     t.index ["institutionable_type", "institutionable_id"], name: "idx_on_institutionable_type_institutionable_id_e617e86838", unique: true
   end
 
@@ -425,9 +427,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
   create_table "local_authorities", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "high_pupil_premium", default: false, null: false
-    t.text "ukprn"
     t.datetime "updated_at", null: false
-    t.index ["ukprn"], name: "index_local_authorities_on_ukprn"
   end
 
   create_table "milestone_statements", force: :cascade do |t|
@@ -498,9 +498,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
     t.text "local_authority"
     t.boolean "provider_compulsory_childcare_register_flag"
     t.boolean "provider_early_years_register_flag"
-    t.text "provider_urn", null: false
     t.datetime "updated_at", null: false
-    t.index ["provider_urn"], name: "index_private_childcare_providers_on_provider_urn"
   end
 
   create_table "registration_interests", force: :cascade do |t|
@@ -554,8 +552,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_130300) do
     t.integer "phase_type", default: 0
     t.text "ukprn"
     t.datetime "updated_at", null: false
-    t.text "urn", null: false
-    t.index ["urn"], name: "index_schools_on_urn"
   end
 
   create_table "sessions", force: :cascade do |t|

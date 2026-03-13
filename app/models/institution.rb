@@ -5,6 +5,8 @@ class Institution < ApplicationRecord
 
   delegated_type :institutionable, types: %w[School PrivateChildcareProvider LocalAuthority], dependent: :destroy
 
+  validates :institution_reference_number, presence: true
+
   pg_search_scope :search_by_name,
                   against: %i[name address_1 address_2 address_3 town county postcode postcode_without_spaces region],
                   using: {
@@ -14,7 +16,15 @@ class Institution < ApplicationRecord
                     },
                   }
 
-  delegate :in_england?, :urn, :ukprn, :identifier, :eligible_establishment?, to: :institutionable
+  delegate :in_england?, :identifier, :eligible_establishment?, to: :institutionable
+
+  def urn
+    institution_reference_number
+  end
+
+  def ukprn
+    institution_reference_number if institutionable_type == "LocalAuthority"
+  end
 
   def name
     raw_name = self[:name]

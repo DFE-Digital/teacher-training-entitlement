@@ -24,7 +24,6 @@ shared:
     - ecf_id
   :schools:
     - id
-    - urn
     - close_date
     - ukprn
     - last_changed_date
@@ -64,7 +63,6 @@ shared:
     - updated_at
   :private_childcare_providers:
     - id
-    - provider_urn
     - local_authority
     - early_years_individual_registers
     - provider_early_years_register_flag
@@ -90,7 +88,6 @@ shared:
     - to_participant_id
   :local_authorities:
     - id
-    - ukprn
     - high_pupil_premium
     - created_at
     - updated_at
@@ -107,6 +104,7 @@ shared:
     - postcode
     - postcode_without_spaces
     - region
+    - institution_reference_number
     - created_at
     - updated_at
   :lead_providers:

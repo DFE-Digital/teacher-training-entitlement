@@ -4,10 +4,11 @@ class School < ApplicationRecord
   has_one :institution, as: :institutionable, touch: true
 
   delegate :name, :address, :address_string, :display_name, :name_with_address,
-           :address_1, :address_2, :address_3, :town, :county, :postcode, to: :institution
+           :address_1, :address_2, :address_3, :town, :county, :postcode,
+           :urn, to: :institution
 
   pg_search_scope :search_school_fields,
-                  against: %i[la_name urn],
+                  against: %i[la_name],
                   using: {
                     tsearch: {
                       prefix: true,
@@ -79,7 +80,10 @@ class School < ApplicationRecord
   def self.search_all_fields(search_term)
     institution_results = joins(:institution).merge(Institution.search_by_name(search_term))
     school_field_results = search_school_fields(search_term)
-    where(id: institution_results.select(:id)).or(where(id: school_field_results.select(:id)))
+    urn_results = joins(:institution).where("institutions.institution_reference_number ILIKE ?", "%#{search_term}%")
+    where(id: institution_results.select(:id))
+      .or(where(id: school_field_results.select(:id)))
+      .or(where(id: urn_results.select(:id)))
   end
 
   ELIGIBLE_ESTABLISHMENT_TYPE_CODES.each do |code, name|

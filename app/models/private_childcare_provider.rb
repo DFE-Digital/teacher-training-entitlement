@@ -4,16 +4,11 @@ class PrivateChildcareProvider < ApplicationRecord
 
   has_one :institution, as: :institutionable, touch: true
 
-  pg_search_scope :search_by_urn,
-                  against: [:provider_urn],
-                  using: {
-                    trigram: {
-                      word_similarity: true,
-                      threshold: 0.2,
-                    },
-                  }
+  delegate :name, :county, :region, :town, :postcode, :urn, to: :institution
 
-  delegate :name, :county, :region, :town, :postcode, to: :institution
+  def self.search_by_urn(query)
+    joins(:institution).where("institutions.institution_reference_number ILIKE ?", "%#{query}%")
+  end
 
   def name_with_address
     [name, address_string].join(" – ")
@@ -30,12 +25,6 @@ class PrivateChildcareProvider < ApplicationRecord
 
   def display_name
     [urn, name_with_address].compact.join(" - ")
-  end
-
-  validates :provider_urn, presence: true
-
-  def urn
-    provider_urn
   end
 
   def ukprn
@@ -59,11 +48,11 @@ class PrivateChildcareProvider < ApplicationRecord
   end
 
   def eyl_disadvantaged?
-    !!EY_OFSTED_URN_HASH[provider_urn.to_s]
+    !!EY_OFSTED_URN_HASH[urn.to_s]
   end
 
   def on_childminders_list?
-    !!CHILDMINDERS_OFSTED_URN_HASH[provider_urn.to_s]
+    !!CHILDMINDERS_OFSTED_URN_HASH[urn.to_s]
   end
 
   def registration_details
