@@ -24,7 +24,4 @@ class LocalAuthority < ApplicationRecord
     true
   end
 
-  def la_name
-    institution.name
-  end
 end

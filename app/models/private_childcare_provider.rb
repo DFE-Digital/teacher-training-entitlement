@@ -46,10 +46,6 @@ class PrivateChildcareProvider < ApplicationRecord
     true # Needs filling in
   end
 
-  def la_name
-    local_authority
-  end
-
   def identifier
     "PrivateChildcareProvider-#{urn}"
   end

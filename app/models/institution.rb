@@ -14,7 +14,7 @@ class Institution < ApplicationRecord
                     },
                   }
 
-  delegate :in_england?, :urn, :ukprn, :la_name, :identifier, :eligible_establishment?, to: :institutionable
+  delegate :in_england?, :urn, :ukprn, :identifier, :eligible_establishment?, to: :institutionable
 
   def name
     raw_name = self[:name]
