@@ -59,9 +59,12 @@ module Questionnaires
         .open
         .limit(10)
 
-      local_authorities = LocalAuthority
+      local_authorities = Institution
         .search_by_name(institution_name)
+        .where(institutionable_type: "LocalAuthority")
+        .includes(:institutionable)
         .limit(10)
+        .map(&:institutionable)
 
       @possible_institutions = schools + local_authorities
     end

@@ -4,10 +4,6 @@ class LocalAuthority < ApplicationRecord
   delegate :name, :address, :address_string, :display_name, :name_with_address,
            :town, :county, :postcode, :ukprn, to: :institution
 
-  def self.search_by_name(name)
-    joins(:institution).merge(Institution.search_by_name(name))
-  end
-
   def urn
     nil
   end
@@ -23,5 +19,4 @@ class LocalAuthority < ApplicationRecord
   def eligible_establishment?
     true
   end
-
 end
