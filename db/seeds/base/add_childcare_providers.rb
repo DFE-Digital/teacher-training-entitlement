@@ -16,6 +16,7 @@ CSV.foreach(Rails.root.join("db/seeds/data/private_childcare_providers.csv"), he
       postcode: row["postcode"],
       postcode_without_spaces: row["postcode_without_spaces"],
       region: row["region"],
+      institution_reference_number: row["provider_urn"],
       created_at: Time.current,
       updated_at: Time.current,
     }
