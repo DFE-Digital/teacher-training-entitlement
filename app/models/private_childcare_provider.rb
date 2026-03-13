@@ -28,7 +28,7 @@ class PrivateChildcareProvider < ApplicationRecord
   end
 
   def long_name
-    [name, address].join(" - ")
+    [name, address_string].join(" - ")
   end
 
   def on_early_years_register?
