@@ -10,7 +10,6 @@ APPLICATION_CSV = {
       email_validated
       teacher_reference_number_validated
       school_urn
-      headteacher_status
       eligible_for_funding
       funding_choice
       course_identifier
@@ -70,12 +69,6 @@ APPLICATION_CSV = {
         example: "EY944860",
         nullable: true,
       },
-      headteacher_status: {
-        description: "Indicates whether this NPQ participant is or will be a head teacher",
-        type: :string,
-        example: Application.headteacher_statuses.keys.first,
-        enum: Application.headteacher_statuses.keys,
-      },
       eligible_for_funding: {
         description: "Indicates whether this NPQ participant would be eligible for funding from the DfE",
         type: :boolean,
@@ -111,18 +104,6 @@ APPLICATION_CSV = {
         description: "Indicates whether the participant is currently employed by school",
         type: :boolean,
         example: true,
-      },
-      employer_name: {
-        description: "The name of current employer of the participant if not currently employed by school",
-        type: :string,
-        nullable: true,
-        example: "Some Company Ltd",
-      },
-      employment_role: {
-        description: "Participant's current role in the company they are employed in if not currently employed by school",
-        type: :string,
-        nullable: true,
-        example: "Director",
       },
       created_at: {
         description: "The date the application was created",
@@ -172,18 +153,6 @@ APPLICATION_CSV = {
         nullable: true,
         type: :string,
         example: "FRA",
-      },
-      itt_provider: {
-        description: "This field contains the legal name of the ITT accredited provider from the <a href=\"https://www.gov.uk/government/publications/accredited-initial-teacher-training-itt-providers/list-of-providers-accredited-to-deliver-itt-from-september-2024\" class=\"govuk-link\" rel=\"noreferrer noopener\" target=\"_blank\">list of providers</a>.",
-        nullable: true,
-        type: :string,
-        example: "University of Southampton",
-      },
-      lead_mentor: {
-        description: "This field indicates whether the applicant is an ITT lead mentor.",
-        nullable: true,
-        type: :boolean,
-        example: true,
       },
     },
   },

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -26,9 +26,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
   create_enum "declaration_state_reasons", ["duplicate"]
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
-  create_enum "employment_types", ["hospital_school", "lead_mentor_for_accredited_itt_provider", "local_authority_supply_teacher", "local_authority_virtual_school", "young_offender_institution", "other"]
   create_enum "funding_choices", ["school", "trust", "self", "another", "employer"]
-  create_enum "headteacher_statuses", ["no", "yes_when_course_starts", "yes_in_first_two_years", "yes_over_two_years", "yes_in_first_five_years", "yes_over_five_years"]
   create_enum "kind_of_nurseries", ["local_authority_maintained_nursery", "preschool_class_as_part_of_school", "private_nursery", "another_early_years_setting", "childminder"]
   create_enum "lead_provider_approval_statuses", ["pending", "accepted", "rejected"]
   create_enum "outcome_states", ["passed", "failed", "voided"]
@@ -110,26 +108,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.integer "DEPRECATED_cohort"
-    t.string "DEPRECATED_itt_provider"
-    t.text "DEPRECATED_private_childcare_provider_urn"
-    t.text "DEPRECATED_school_urn"
     t.datetime "accepted_at"
     t.bigint "cohort_id"
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "eligible_for_funding", default: false, null: false
-    t.string "employer_name"
-    t.string "employment_role"
-    t.enum "employment_type", enum_type: "employment_types"
     t.boolean "funded_place"
     t.enum "funding_choice", enum_type: "funding_choices"
     t.string "funding_eligiblity_status_code"
-    t.enum "headteacher_status", enum_type: "headteacher_statuses"
-    t.bigint "itt_provider_id"
     t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
-    t.boolean "lead_mentor", default: false
     t.enum "lead_provider_approval_status", enum_type: "lead_provider_approval_statuses"
     t.bigint "lead_provider_id", null: false
     t.string "notes"
@@ -144,17 +132,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.enum "review_status", enum_type: "review_statuses"
     t.bigint "schedule_id"
     t.bigint "school_id"
-    t.string "senco_in_role"
-    t.date "senco_start_date"
-    t.boolean "targeted_delivery_funding_eligibility", default: false
     t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
     t.string "teacher_catchment_iso_country_code", limit: 3
-    t.boolean "teacher_catchment_synced_to_ecf", default: false
     t.enum "training_status", enum_type: "application_statuses"
-    t.boolean "tsf_primary_eligibility", default: false
-    t.boolean "tsf_primary_plus_eligibility", default: false
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -165,7 +147,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.index ["cohort_id"], name: "index_applications_on_cohort_id"
     t.index ["course_id"], name: "index_applications_on_course_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
-    t.index ["itt_provider_id"], name: "index_applications_on_itt_provider_id"
     t.index ["lead_provider_approval_status", "lead_provider_id"], name: "idx_on_lead_provider_approval_status_lead_provider__299e5bac06"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
     t.index ["private_childcare_provider_id"], name: "index_applications_on_private_childcare_provider_id"
@@ -378,17 +359,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.string "status", default: "pending"
     t.string "status_comment"
     t.datetime "updated_at", null: false
-  end
-
-  create_table "itt_providers", force: :cascade do |t|
-    t.boolean "approved"
-    t.datetime "created_at", null: false
-    t.datetime "disabled_at"
-    t.text "legal_name"
-    t.text "operating_name"
-    t.datetime "removed_at", precision: nil
-    t.datetime "updated_at", null: false
-    t.index ["legal_name"], name: "index_itt_providers_on_legal_name", unique: true
   end
 
   create_table "lead_providers", force: :cascade do |t|
@@ -678,7 +648,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
   add_foreign_key "application_states", "lead_providers"
   add_foreign_key "applications", "cohorts"
   add_foreign_key "applications", "courses"
-  add_foreign_key "applications", "itt_providers"
   add_foreign_key "applications", "lead_providers"
   add_foreign_key "applications", "private_childcare_providers"
   add_foreign_key "applications", "schedules"

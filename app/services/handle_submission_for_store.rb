@@ -15,29 +15,18 @@ class HandleSubmissionForStore
         private_childcare_provider: private_childcare_provider_urn.present? && PrivateChildcareProvider.find_by(provider_urn: private_childcare_provider_urn),
         school: school_urn.present? && School.find_by(urn: school_urn),
         ukprn:,
-        headteacher_status:,
         eligible_for_funding: eligible_for_funding?,
-        funding_eligiblity_status_code:,
+        funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
         funding_choice:,
         teacher_catchment:,
         works_in_school: store["works_in_school"] == "yes",
-        employer_name:,
-        employment_role:,
-        employment_type:,
-        targeted_delivery_funding_eligibility: false,
         primary_establishment:,
         number_of_pupils:,
-        tsf_primary_eligibility: false,
-        tsf_primary_plus_eligibility: false,
         works_in_childcare: store["works_in_childcare"] == "yes",
         kind_of_nursery: store["kind_of_nursery"],
         work_setting: store["work_setting"],
-        lead_mentor: lead_mentor?,
-        itt_provider: itt_provider.present? && IttProvider.find_by(legal_name: itt_provider),
         referred_by_return_to_teaching_adviser: store["referred_by_return_to_teaching_adviser"],
         raw_application_data: raw_application_data.except("current_user", "current_user_id"),
-        senco_in_role: store["senco_in_role"],
-        senco_start_date: store["senco_start_date"],
         on_submission_trn: store["trn"],
         teacher_catchment_country:,
         teacher_catchment_iso_country_code:,
@@ -62,23 +51,8 @@ private
     @query_store ||= RegistrationQueryStore.new(store:)
   end
 
-  delegate :employment_type_matters?,
-           :employment_role_matters?,
-           :employer_name_matters?,
-           :inside_catchment?,
+  delegate :inside_catchment?,
            to: :query_store
-
-  def referred_by_return_to_teaching_adviser?
-    store["referred_by_return_to_teaching_adviser"] == "yes"
-  end
-
-  def lead_mentor?
-    store["employment_type"] == "lead_mentor_for_accredited_itt_provider"
-  end
-
-  def itt_provider
-    store["itt_provider"]
-  end
 
   def primary_establishment
     institution_from_store.is_a?(School) && institution_from_store.primary_education_phase?
@@ -86,18 +60,6 @@ private
 
   def number_of_pupils
     institution_from_store.is_a?(School) && institution_from_store.number_of_pupils
-  end
-
-  def employer_name
-    store["employer_name"].presence if employer_name_matters?
-  end
-
-  def employment_role
-    store["employment_role"].presence if employment_role_matters?
-  end
-
-  def employment_type
-    store["employment_type"].presence if employment_type_matters?
   end
 
   def institution_from_store
@@ -141,10 +103,6 @@ private
     end
   end
 
-  def headteacher_status
-    store["headteacher_status"]
-  end
-
   def enqueue_send_application_submission_email_job(application)
     SendApplicationSubmissionEmailJob.perform_later(application:)
   end
@@ -163,9 +121,6 @@ private
   def eligible_for_funding?
     funding_eligibility_service.funded?
   end
-
-  delegate :funding_eligiblity_status_code,
-           to: :funding_eligibility_service
 
   def course
     @course ||= query_store.course

@@ -100,7 +100,7 @@ PARTICIPANT = {
     items: {
       description: "The details of an Participant enrolment",
       type: :object,
-      required: %i[course_identifier application_id eligible_for_funding training_status targeted_delivery_funding_eligibility],
+      required: %i[course_identifier application_id eligible_for_funding training_status],
       properties: {
         course_identifier: {
           description: "The course this application relates to",
@@ -146,12 +146,6 @@ PARTICIPANT = {
           type: :string,
           nullable: true,
           example: "106286",
-        },
-        targeted_delivery_funding_eligibility: {
-          description: "Whether or not this application is eligible for Targeted Delivery Funding uplift",
-          nullable: false,
-          type: :boolean,
-          example: true,
         },
         funded_place: {
           description: "Indicates whether or not this participant’s training is being funded by DfE",

@@ -157,9 +157,7 @@ class Declaration < ApplicationRecord
 
   def uplift_paid?
     applicable_course = !application.course.identifier.in?(COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT)
-    applicable_state = state.in?(UPLIFT_PAID_STATES)
-
-    applicable_course && applicable_state && started_declaration_type? && application.targeted_delivery_funding_eligibility?
+    applicable_course && state.in?(UPLIFT_PAID_STATES) && started_declaration_type?
   end
 
   def eligible_for_payment?

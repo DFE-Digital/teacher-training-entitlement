@@ -20,8 +20,6 @@ class Application < ApplicationRecord
   belongs_to :school, optional: true
   belongs_to :private_childcare_provider, optional: true
   belongs_to :private_childcare_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "PrivateChildcareProvider", foreign_key: :private_childcare_provider_id
-  belongs_to :itt_provider, optional: true
-  belongs_to :itt_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "IttProvider", foreign_key: :itt_provider_id
   belongs_to :schedule, optional: true
 
   has_many :participant_id_changes, through: :user
@@ -32,7 +30,6 @@ class Application < ApplicationRecord
   scope :active_applications, -> { where.not(id: expired_applications) }
   scope :accepted, -> { where(lead_provider_approval_status: "accepted") }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
-  scope :with_targeted_delivery_funding_eligibility, -> { where(targeted_delivery_funding_eligibility: true) }
   scope :for_manual_review, -> { where.not(review_status: nil) }
   scope :not_withdrawn, -> { where.not(training_status: "withdrawn").or(where(training_status: nil)) }
   scope :not_rejected, -> { where.not(lead_provider_approval_status: "rejected") }
@@ -56,24 +53,6 @@ class Application < ApplicationRecord
     private_nursery: "private_nursery",
     another_early_years_setting: "another_early_years_setting",
     childminder: "childminder",
-  }, suffix: true
-
-  enum :employment_type, {
-    hospital_school: "hospital_school",
-    lead_mentor_for_accredited_itt_provider: "lead_mentor_for_accredited_itt_provider",
-    local_authority_supply_teacher: "local_authority_supply_teacher",
-    local_authority_virtual_school: "local_authority_virtual_school",
-    young_offender_institution: "young_offender_institution",
-    other: "other",
-  }, suffix: true
-
-  enum :headteacher_status, {
-    no: "no",
-    yes_when_course_starts: "yes_when_course_starts",
-    yes_in_first_two_years: "yes_in_first_two_years",
-    yes_over_two_years: "yes_over_two_years",
-    yes_in_first_five_years: "yes_in_first_five_years",
-    yes_over_five_years: "yes_over_five_years",
   }, suffix: true
 
   enum :funding_choice, {
@@ -168,14 +147,12 @@ class Application < ApplicationRecord
   end
 
   def employer_name_to_display
-    employer_name || private_childcare_provider&.provider_name || school&.name || ""
+    private_childcare_provider&.provider_name || school&.name.to_s
   end
 
   def long_employer_name_to_display
-    employer_name ||
-      private_childcare_provider&.long_name ||
-      school&.long_name ||
-      ""
+    private_childcare_provider&.long_name ||
+      school&.long_name.to_s
   end
 
   def employer_urn

@@ -10,8 +10,6 @@ RSpec.describe Application do
     it { is_expected.to belong_to(:school).optional }
     it { is_expected.to belong_to(:private_childcare_provider).optional }
     it { is_expected.to belong_to(:private_childcare_provider_including_disabled).optional.class_name("PrivateChildcareProvider").with_foreign_key(:private_childcare_provider_id) }
-    it { is_expected.to belong_to(:itt_provider).optional }
-    it { is_expected.to belong_to(:itt_provider_including_disabled).optional.class_name("IttProvider").with_foreign_key(:itt_provider_id) }
     it { is_expected.to belong_to(:cohort).optional }
     it { is_expected.to belong_to(:schedule).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
@@ -20,13 +18,10 @@ RSpec.describe Application do
 
     context "when the providers are disabled" do
       let(:private_childcare_provider) { create(:private_childcare_provider, :disabled) }
-      let(:itt_provider) { create(:itt_provider, :disabled) }
-      let(:application) { create(:application, private_childcare_provider:, itt_provider:).reload }
+      let(:application) { create(:application, private_childcare_provider:).reload }
 
-      it { expect(application.itt_provider).to be_nil }
       it { expect(application.private_childcare_provider).to be_nil }
 
-      it { expect(application.itt_provider_including_disabled).to eq(itt_provider) }
       it { expect(application.private_childcare_provider_including_disabled).to eq(private_childcare_provider) }
     end
   end
@@ -124,17 +119,6 @@ RSpec.describe Application do
     }
 
     it {
-      expect(subject).to define_enum_for(:headteacher_status).with_values(
-        no: "no",
-        yes_when_course_starts: "yes_when_course_starts",
-        yes_in_first_two_years: "yes_in_first_two_years",
-        yes_over_two_years: "yes_over_two_years",
-        yes_in_first_five_years: "yes_in_first_five_years",
-        yes_over_five_years: "yes_over_five_years",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-
-    it {
       expect(subject).to define_enum_for(:funding_choice).with_values(
         school: "school",
         trust: "trust",
@@ -186,15 +170,6 @@ RSpec.describe Application do
         create(:application, eligible_for_funding: false)
 
         expect(described_class.eligible_for_funding).to contain_exactly(application_eligible_for_funding)
-      end
-    end
-
-    describe ".with_targeted_delivery_funding_eligibility" do
-      it "returns applications with targeted delivery funding eligibility" do
-        application_with_targeted_delivery_funding_eligibility = create(:application, targeted_delivery_funding_eligibility: true)
-        create(:application, targeted_delivery_funding_eligibility: false)
-
-        expect(described_class.with_targeted_delivery_funding_eligibility).to contain_exactly(application_with_targeted_delivery_funding_eligibility)
       end
     end
 
@@ -323,13 +298,6 @@ RSpec.describe Application do
       let(:private_childcare_provider) { create(:private_childcare_provider) }
       let(:name) { private_childcare_provider.provider_name }
       let(:application) { build(:application, private_childcare_provider:) }
-
-      include_examples "employer_name"
-    end
-
-    context "when application has employer_name" do
-      let(:name) { "Employer Foo Bar" }
-      let(:application) { build(:application, school: nil, school_id: nil, employer_name: name) }
 
       include_examples "employer_name"
     end
@@ -626,20 +594,6 @@ RSpec.describe Application do
               expect(application.updated_at).to eq(Time.zone.now)
               expect(user.updated_at).to be_within(1.second).of(old_datetime)
             end
-          end
-        end
-      end
-
-      context "when lead_provider_approval_status is not changed" do
-        it "does not update user.updated_at" do
-          freeze_time do
-            expect(user.updated_at).to be_within(1.second).of(old_datetime)
-            expect(application.updated_at).to be_within(1.second).of(old_datetime)
-
-            application.update!(employer_name: "Test name")
-
-            expect(application.updated_at).to eq(Time.zone.now)
-            expect(user.updated_at).to be_within(1.second).of(old_datetime)
           end
         end
       end

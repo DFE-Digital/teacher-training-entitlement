@@ -26,7 +26,6 @@ module API
               eligible_for_funding: application.eligible_for_funding,
               training_status: application.training_status,
               school_urn: application.school&.urn,
-              targeted_delivery_funding_eligibility: application.targeted_delivery_funding_eligibility,
               withdrawal: withdrawal(application:, lead_provider: options[:lead_provider]),
               deferral: deferral(application:, lead_provider: options[:lead_provider]),
               created_at: application.accepted_at.rfc3339,
