@@ -124,7 +124,6 @@ RSpec.feature "Applications in review", type: :feature do
     click_on "Search"
 
     expect(page).to have_text application_with_funding_decision.user.full_name
-    # BK expect(page).not_to have_text application_with_funding_decision_2.user.full_name
   end
 
   scenario "combining search and filters" do
