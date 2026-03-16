@@ -7,6 +7,7 @@ RSpec.feature "Applications in review", type: :feature do
   let!(:application_for_rtta_yes)                   { create(:application, :with_random_user, :manual_review, created_at: 4.days.ago, referred_by_return_to_teaching_adviser: "yes", school: nil, works_in_school: false) }
   let!(:application_for_rtta_no)                    { create(:application, :with_random_user, created_at: 3.days.ago, referred_by_return_to_teaching_adviser: "no") }
   let!(:application_eligible_for_funding)           { create(:application, :with_random_user, :manual_review, :eligible_for_funding, created_at: 11.days.ago) }
+  let!(:application_eligible_for_funding_2)         { create(:application, :with_random_user, :manual_review, :eligible_for_funding, created_at: 11.days.ago) }
   let!(:application_with_funding_decision)          { create(:application, :with_random_user, :accepted, :without_funded_place, created_at: 12.days.ago, review_status: "decision_made") }
 
   let(:serialized_application) { { application: 1 } }
@@ -23,6 +24,7 @@ RSpec.feature "Applications in review", type: :feature do
     rows = [
       application_with_funding_decision,
       application_eligible_for_funding,
+      application_eligible_for_funding_2,
       application_for_rtta_yes,
     ].map do |application|
       [
@@ -63,33 +65,36 @@ RSpec.feature "Applications in review", type: :feature do
     fill_in("Enter the User ID", with: application_eligible_for_funding.user.full_name)
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).to have_text(application_eligible_for_funding.user.full_name)
+    expect(page).not_to have_text(application_eligible_for_funding_2.user.full_name)
   end
 
   scenario "searching with user email" do
     fill_in("Enter the User ID", with: application_eligible_for_funding.user.email)
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).to have_text(application_eligible_for_funding.user.full_name)
+    expect(page).not_to have_text(application_eligible_for_funding_2.user.full_name)
   end
 
   scenario "searching with application ID" do
-    fill_in("Enter the User ID", with: normal_application.ecf_id)
+    fill_in("Enter the User ID", with: application_eligible_for_funding.ecf_id)
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).to have_text(application_eligible_for_funding.user.full_name)
+    expect(page).not_to have_text(application_eligible_for_funding_2.user.full_name)
   end
 
   scenario "filtering by eligible for funding" do
     select "No", from: "Eligible for funding"
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).to have_text(application_with_funding_decision.user.full_name)
+    expect(page).not_to have_text(application_eligible_for_funding.user.full_name)
 
     select "Yes", from: "Eligible for funding"
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
     expect(page).to have_text(application_eligible_for_funding.user.full_name)
   end
 
@@ -102,31 +107,33 @@ RSpec.feature "Applications in review", type: :feature do
   end
 
   scenario "filtering by cohort" do
-    select "2021 to 2022", from: "Year of registration"
+    select Cohort.first.description, from: "Year of registration"
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).not_to have_text(normal_application.user.full_name)
+    expect(page).to have_text(application_with_funding_decision.user.full_name)
   end
 
   scenario "filtering by review status" do
     select "Needs review", from: "Review status"
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
     expect(page).not_to have_text application_with_funding_decision.user.full_name
 
     select "Decision made", from: "Review status"
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).to have_text application_with_funding_decision.user.full_name
+    # BK expect(page).not_to have_text application_with_funding_decision_2.user.full_name
   end
 
   scenario "combining search and filters" do
-    fill_in("Enter the User ID", with: normal_application.user.full_name)
+    fill_in("Enter the User ID", with: application_eligible_for_funding.user.full_name)
     select "2021 to 2022", from: "Year of registration"
     click_on "Search"
 
-    expect(page).to have_http_status(:ok)
+    expect(page).not_to have_text(application_eligible_for_funding.user.full_name)
+    expect(page).not_to have_text(application_eligible_for_funding_2.user.full_name)
   end
 
   scenario "viewing an application" do
