@@ -244,6 +244,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose "Yes", visible: :all
     click_button "Change status to Pending"
 
+    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Provider approval status") do |summary_list_row|
       expect(summary_list_row).to have_text "Pending"
@@ -272,6 +273,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     select Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["deferred"].first
     click_button "Continue"
 
+    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Training status") do |summary_list|
       expect(summary_list).to have_text "Deferred"
@@ -282,6 +284,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose "Active", visible: :all
     click_button "Continue"
 
+    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Training status") do |summary_list|
       expect(summary_list).to have_text "Active"
@@ -303,12 +306,14 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page.find_field("No", visible: :all)).to be_checked
     choose "Yes", visible: :all
 
-    perform_enqueued_jobs { click_button "Continue" }
+    perform_enqueued_jobs do
+      click_button "Continue"
+      expect(page).to have_current_path(admin_application_path(application))
+      expect(page).to have_css("h1", text: "Application details")
+      expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")
+    end
 
     expect_mail_to_have_been_sent(to: application.user.email, template_id: GenericMailer::TEMPLATE_ID)
-
-    expect(page).to have_css("h1", text: "Application details")
-    expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")
     within(".govuk-summary-list__row", text: "Eligible for funding") do |summary_list_row|
       expect(summary_list_row).to have_text "Yes"
       click_link("Change")
@@ -318,6 +323,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose "No", visible: :all
     click_button "Continue"
 
+    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Eligible for funding") do |summary_list_row|
       expect(summary_list_row).to have_text "No"
@@ -345,6 +351,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose future_cohort.start_year.to_s, visible: :all
     click_button "Continue"
 
+    expect(page).to have_current_path(admin_application_path(application))
     within(".govuk-summary-list__row", text: "Schedule cohort") do |row|
       expect(row).to have_text(future_cohort.start_year.to_s)
     end

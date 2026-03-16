@@ -75,22 +75,21 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     expect_applicant_reached_end_of_journey
 
-    User.last.tap do |user|
-      expect(user.email).to eql("user@example.com")
-      expect(user.full_name).to eql("John Doe")
-      expect(user.trn).to eql("1234567")
-      expect(user.trn_verified).to be_truthy
-      expect(user.trn_auto_verified).to be_truthy
-      expect(user.date_of_birth).to eql(Date.new(1980, 12, 13))
-      expect(user.national_insurance_number).to be_nil
-      expect(user.applications.count).to be(1)
+    user = User.find_by!(email: "user@example.com")
+    expect(user.full_name).to eql("John Doe")
+    expect(user.trn).to eql("1234567")
+    expect(user.trn_verified).to be_truthy
+    expect(user.trn_auto_verified).to be_truthy
+    expect(user.date_of_birth).to eql(Date.new(1980, 12, 13))
+    expect(user.national_insurance_number).to be_nil
+    expect(user.applications.count).to be(1)
 
-      user.applications.first.tap do |application|
-        expect(application.eligible_for_funding).to be_truthy
-      end
+    user.applications.first.tap do |application|
+      expect(application.eligible_for_funding).to be_truthy
     end
-    if User.last.applications.count == 1
-      navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", submit_form: false) do
+
+    if user.applications.count == 1
+      navigate_to_page(path: "/accounts/user_registrations/#{user.applications.last.id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
