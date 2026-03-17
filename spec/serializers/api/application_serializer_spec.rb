@@ -48,11 +48,6 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes["status"]).to eq(application.lead_provider_approval_status)
     end
 
-    it "serializes the `targeted_delivery_funding_eligibility`" do
-      application.targeted_delivery_funding_eligibility = "eligible"
-      expect(attributes["targeted_delivery_funding_eligibility"]).to eq(application.targeted_delivery_funding_eligibility)
-    end
-
     it "serializes the `eligible_for_funding` (previously funded)" do
       application.eligible_for_funding = true
       allow(application).to receive(:previously_funded?).and_return(true)

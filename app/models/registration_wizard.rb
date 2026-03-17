@@ -119,21 +119,15 @@ class RegistrationWizard
 
 private
 
-  delegate :approved_itt_provider?,
-           :course,
-           :employment_type_matters?,
-           :employment_role_matters?,
-           :employer_name_matters?,
+  delegate :course,
            :employment_type_hospital_school?,
            :employment_type_other?,
            :formatted_date_of_birth,
            :get_an_identity_id,
            :has_ofsted_urn?,
            :inside_catchment?,
-           :itt_provider,
            :kind_of_nursery_private?,
            :kind_of_nursery_public?,
-           :lead_mentor_for_accredited_itt_provider?,
            :lead_provider,
            :new_headteacher?,
            :teacher_catchment_humanized,

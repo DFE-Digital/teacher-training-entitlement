@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe AdminService::ApplicationsSearch do
   let(:service) { described_class.new(q:) }
   let(:user) { build(:user, preferred_name: "Jonny D") }
-  let!(:application) { create(:application, employer_name: Faker::Company.name, user:) }
+  let!(:application) { create(:application, user:) }
 
   describe "#call" do
     subject { service.call }
@@ -28,12 +28,6 @@ RSpec.describe AdminService::ApplicationsSearch do
 
     context "when preferred_name partially matches" do
       let(:q) { user.preferred_name.split(" ").first.upcase }
-
-      it { is_expected.to include(application) }
-    end
-
-    context "when employer_name matches" do
-      let(:q) { application.employer_name.split(" ").first }
 
       it { is_expected.to include(application) }
     end

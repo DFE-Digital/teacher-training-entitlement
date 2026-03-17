@@ -60,18 +60,6 @@
       row.with_key(text: "Work setting")
       row.with_value(text: @application.work_setting.try(:humanize))
     end
-    sl.with_row do |row|
-      row.with_key(text: "Employment type")
-      row.with_value(text: @application.employment_type.try(:humanize))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Employer name")
-      row.with_value(text: @application.employer_name_to_display)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Role")
-      row.with_value(text: @application.employment_role)
-    end
   end
 %>
 

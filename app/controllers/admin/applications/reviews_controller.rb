@@ -3,8 +3,6 @@
 module Admin
   module Applications
     class ReviewsController < AdminController
-      helper_method :employment_types
-
       def index
         applications = Application.includes(:institution, :user)
                          .merge(review_scope)
@@ -21,10 +19,6 @@ module Admin
       end
 
     private
-
-      def employment_types
-        Application.employment_types.keys
-      end
 
       def filter_params
         params.permit %i[

@@ -118,22 +118,6 @@
       row.with_value(text: @application.employer_urn)
     end
     sl.with_row do |row|
-      row.with_key(text: "Headteacher status")
-      row.with_value(text: @application.headteacher_status.try(:humanize))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Employment type")
-      row.with_value(text: @application.employment_type.try(:humanize).presence || "-")
-    end
-    sl.with_row do |row|
-      row.with_key(text: "ITT Lead mentor")
-      row.with_value(text: @application.lead_mentor ? "Yes" : "No")
-    end
-    sl.with_row do |row|
-      row.with_key(text: "ITT provider")
-      row.with_value(text: @application.itt_provider.try(:operating_name).presence || "N/A")
-    end
-    sl.with_row do |row|
       row.with_key(text: "Country")
       row.with_value(text: @application.teacher_catchment_country.presence || "-")
     end

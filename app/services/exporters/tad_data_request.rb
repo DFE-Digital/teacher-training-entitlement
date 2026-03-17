@@ -50,7 +50,6 @@ private
         application.eligible_for_funding,
         application.training_status,
         application.targeted_support_funding_eligibility,
-        application.targeted_delivery_funding_eligibility,
       ] + outcomes
     end
   end
@@ -73,7 +72,6 @@ private
       "Eligible for Funding",
       "Participant Status",
       "Targeted Support Funding Eligibility",
-      "Targeted Delivery Funding Eligibility",
       "Outcome 1",
       "Outcome 1 Date",
       "Outcome 2",

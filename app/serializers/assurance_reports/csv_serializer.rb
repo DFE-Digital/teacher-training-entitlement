@@ -45,7 +45,6 @@ class AssuranceReports::CsvSerializer
       "Declaration Created At",
       "Statement Name",
       "Statement ID",
-      "Targeted Delivery Funding",
     ].compact
   end
 
@@ -76,7 +75,6 @@ private
       record.declaration_created_at.iso8601,
       statement_name(statement),
       record.statement_id,
-      record.targeted_delivery_funding,
     ]
   end
 end

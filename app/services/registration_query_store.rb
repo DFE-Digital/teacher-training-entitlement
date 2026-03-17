@@ -9,14 +9,6 @@ class RegistrationQueryStore
     store["current_user"] || User.find_by(id: store["current_user_id"])
   end
 
-  def itt_provider
-    store["itt_provider"]
-  end
-
-  def approved_itt_provider?
-    ::IttProvider.currently_approved.find_by(legal_name: itt_provider).present?
-  end
-
   def get_an_identity_id
     current_user.get_an_identity_id
   end
@@ -41,20 +33,8 @@ class RegistrationQueryStore
     store["teacher_catchment"] == "england"
   end
 
-  def tsf_primary_eligibility?
-    store["tsf_primary_eligibility"]
-  end
-
-  def tsf_primary_plus_eligibility?
-    store["tsf_primary_plus_eligibility"]
-  end
-
   def funding_eligiblity_status_code
     store["funding_eligiblity_status_code"]
-  end
-
-  def targeted_delivery_funding_eligibility?
-    store["targeted_delivery_funding_eligibility"]
   end
 
   def teacher_catchment_humanized
@@ -64,34 +44,6 @@ class RegistrationQueryStore
     when "england"
       "Yes"
     end
-  end
-
-  def employment_type
-    store["employment_type"]
-  end
-
-  def lead_mentor_for_accredited_itt_provider?
-    employment_type == Application.employment_types[:lead_mentor_for_accredited_itt_provider]
-  end
-
-  def employment_type_other?
-    employment_type == Application.employment_types[:other]
-  end
-
-  def employment_type_local_authority_virtual_school?
-    employment_type == Application.employment_types[:local_authority_virtual_school]
-  end
-
-  def local_authority_supply_teacher?
-    employment_type == Application.employment_types[:local_authority_supply_teacher]
-  end
-
-  def employment_type_hospital_school?
-    employment_type == Application.employment_types[:hospital_school]
-  end
-
-  def young_offender_institution?
-    employment_type == Application.employment_types[:young_offender_institution]
   end
 
   def teacher_catchment_england?
@@ -142,10 +94,6 @@ class RegistrationQueryStore
     @lead_provider ||= LeadProvider.find_by(id: store["lead_provider_id"])
   end
 
-  def new_headteacher?
-    store["ehco_headteacher"] == "yes" && store["ehco_new_headteacher"] == "yes"
-  end
-
   def date_of_birth
     store["date_of_birth"]
   end
@@ -158,40 +106,11 @@ class RegistrationQueryStore
     store["maths_understanding"]
   end
 
-  def senco_in_role
-    store["senco_in_role"]
-  end
-
-  def senco_in_role_status?
-    store["senco_in_role_status"]
-  end
-
-  def senco_start_date
-    store["senco_start_date"]
-  end
-
   def childminder?
     store["kind_of_nursery"] == "childminder"
   end
 
   def work_setting
     store["work_setting"]
-  end
-
-  def employment_type_matters?
-    (works_in_another_setting? && inside_catchment?) || lead_mentor_for_accredited_itt_provider?
-  end
-
-  def employment_role_matters?
-    return false unless employment_type_matters?
-
-    !(lead_mentor_for_accredited_itt_provider? || employment_type_hospital_school? || young_offender_institution? || employment_type_other?)
-  end
-
-  def employer_name_matters?
-    return true if referred_by_return_to_teaching_adviser?
-    return false unless employment_type_matters?
-
-    !(lead_mentor_for_accredited_itt_provider? || employment_type_other?)
   end
 end

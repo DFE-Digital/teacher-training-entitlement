@@ -472,22 +472,15 @@ RSpec.describe Declaration, type: :model do
 
   describe "#uplift_paid?" do
     let(:declaration_type) { :started }
-    let(:targeted_delivery_funding_eligibility) { true }
     let(:course_identifier) { Course::IDENTIFIERS.excluding(described_class::COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT).sample }
     let(:state) { described_class::UPLIFT_PAID_STATES.sample }
 
     subject(:declaration) do
-      application = build(:application, course: create(:course, identifier: course_identifier), targeted_delivery_funding_eligibility:)
+      application = build(:application, course: create(:course, identifier: course_identifier))
       build(:declaration, application:, declaration_type:, state:)
     end
 
     it { is_expected.to be_uplift_paid }
-
-    context "when targeted_delivery_funding_eligibility is false" do
-      let(:targeted_delivery_funding_eligibility) { false }
-
-      it { is_expected.not_to be_uplift_paid }
-    end
 
     described_class.declaration_types.keys.excluding("started").each do |ineligible_declaration_type|
       context "when declaration_type is #{ineligible_declaration_type}" do

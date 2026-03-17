@@ -50,7 +50,6 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
             "eligible_for_funding": true,
             "training_status": "active",
             "school_urn": "106286",
-            "targeted_delivery_funding_eligibility": true,
             "withdrawal": null,
             "deferral": null,
             "created_at": "2021-05-31T02:21:32.000Z",
@@ -113,7 +112,6 @@ For more detailed information, see the ['Retrieve a single participant' endpoint
             "funded_place": true,
             "training_status": "active",
             "school_urn": "123456",
-            "targeted_delivery_funding_eligibility": true,
             "withdrawal": null
             "deferral": null
             "created_at": "2021-05-31T02:22:32.000Z"

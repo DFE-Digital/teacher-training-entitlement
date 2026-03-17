@@ -215,7 +215,6 @@ module ValidTestDataGenerators
           itt_provider: nil,
           lead_provider_approval_status: :pending,
           ecf_id: SecureRandom.uuid,
-          headteacher_status: :no,
           eligible_for_funding: app_data[:funding_eligible],
           funded_place: nil,
           teacher_catchment: "england",

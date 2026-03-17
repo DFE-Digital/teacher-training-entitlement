@@ -143,9 +143,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       funded_place: true,
       lead_provider_approval_status: :accepted,
       funding_eligiblity_status_code: 123,
-      employment_type: :hospital_school,
-      employer_name: "Employer name",
-      employment_role: :headteacher,
     )
 
     within("tr", text: application.user.full_name) do
@@ -188,13 +185,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_css("h2", text: "Workplace")
 
     within(summary_lists[2]) do |summary_list|
-      expect(summary_list).to have_summary_item("Name", application.employer_name)
       expect(summary_list).to have_summary_item("UK Provider Reference Number (UKPRN)", application.ukprn)
       expect(summary_list).to have_summary_item("Unique reference number (URN)", application.school_urn)
-      expect(summary_list).to have_summary_item("Headteacher status", application.headteacher_status.humanize)
-      expect(summary_list).to have_summary_item("Employment type", application.employment_type.humanize)
-      expect(summary_list).to have_summary_item("ITT Lead mentor", application.lead_mentor? ? "Yes" : "No")
-      expect(summary_list).to have_summary_item("ITT provider", application.itt_provider.operating_name)
       expect(summary_list).to have_summary_item("Country", application.teacher_catchment_country)
     end
   end

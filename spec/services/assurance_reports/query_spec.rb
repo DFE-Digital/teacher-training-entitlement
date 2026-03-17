@@ -84,7 +84,6 @@ RSpec.describe AssuranceReports::Query do
       it { is_expected.to have_attributes statement_id: statement.ecf_id }
       it { is_expected.to have_attributes statement_month: statement.month }
       it { is_expected.to have_attributes statement_year: statement.year }
-      it { is_expected.to have_attributes targeted_delivery_funding: declaration.application.targeted_delivery_funding_eligibility }
 
       context "when last status update was 'withdrawn'" do
         let(:training_status) { :withdrawn }

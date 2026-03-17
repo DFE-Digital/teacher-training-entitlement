@@ -119,7 +119,6 @@ paths:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
-                        targeted_delivery_funding_eligibility: true
                         teacher_catchment: true
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
@@ -201,7 +200,6 @@ paths:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
-                        targeted_delivery_funding_eligibility: true
                         teacher_catchment: true
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
@@ -266,7 +264,6 @@ paths:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
-                        targeted_delivery_funding_eligibility: true
                         teacher_catchment: true
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
@@ -779,7 +776,6 @@ paths:
                           eligible_for_funding: true
                           training_status: active
                           school_urn: '106286'
-                          targeted_delivery_funding_eligibility: true
                           funded_place: true
                           email: isabelle.macdonald2@some-school.example.com
                           withdrawal:
@@ -857,7 +853,6 @@ paths:
                           eligible_for_funding: true
                           training_status: deferred
                           school_urn: '106286'
-                          targeted_delivery_funding_eligibility: true
                           funded_place: true
                           email: isabelle.macdonald2@some-school.example.com
                           withdrawal:
@@ -937,7 +932,6 @@ paths:
                           eligible_for_funding: true
                           training_status: withdrawn
                           school_urn: '106286'
-                          targeted_delivery_funding_eligibility: true
                           funded_place: true
                           email: isabelle.macdonald2@some-school.example.com
                           withdrawal:
@@ -1017,7 +1011,6 @@ paths:
                           eligible_for_funding: true
                           training_status: active
                           school_urn: '106286'
-                          targeted_delivery_funding_eligibility: true
                           funded_place: true
                           email: isabelle.macdonald2@some-school.example.com
                           withdrawal:
@@ -1425,12 +1418,6 @@ components:
                 funding from the DfE
               type: boolean
               example: true
-            targeted_delivery_funding_eligibility:
-              description: Whether or not this application is eligible for Targeted
-                Delivery Funding uplift
-              nullable: false
-              type: boolean
-              example: true
             teacher_catchment:
               description: This field will indicate whether or not the participant
                 is UK-based. <ul><li>If <code>true</code> then the registration relates
@@ -1608,7 +1595,6 @@ components:
                 - application_id
                 - eligible_for_funding
                 - training_status
-                - targeted_delivery_funding_eligibility
                 - email
                 properties:
                   course_identifier:
@@ -1663,12 +1649,6 @@ components:
                     type: string
                     nullable: true
                     example: '106286'
-                  targeted_delivery_funding_eligibility:
-                    description: Whether or not this application is eligible for Targeted
-                      Delivery Funding uplift
-                    nullable: false
-                    type: boolean
-                    example: true
                   funded_place:
                     description: Indicates whether or not this participant’s training
                       is being funded by DfE

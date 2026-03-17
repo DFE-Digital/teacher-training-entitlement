@@ -5,7 +5,7 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
 
   let(:component) { described_class.new(contract:) }
   let(:calculator) { ::Statements::CourseCalculator.new(contract:) }
-  let(:statement) { create(:statement, :has_targeted_delivery_funding) }
+  let(:statement) { create(:statement) }
   let(:paid_statement) { create(:statement, :paid) }
   let(:course) { create(:course, :tte_early_years) }
   let(:contract) { create(:contract, course:, statement:) }
@@ -64,44 +64,6 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
       it { is_expected.to have_css "tr:nth-child(2) td:nth-child(4)", text: "-£320" }
     end
 
-    context "when course does not have targeted delivery funding" do
-      before do
-        allow_any_instance_of(::Statements::CourseCalculator).to receive(:course_has_targeted_delivery_funding?).and_return(false)
-      end
-
-      it { is_expected.not_to have_text t(".targeted_delivery_funding") }
-    end
-
-    context "when course has targeted delivery funding" do
-      let(:refund_selector) { "tr:nth-child(4) td" }
-      let(:refund_text) { "Clawbacks" }
-
-      before do
-        allow_any_instance_of(::Statements::CourseCalculator).to receive(:course_has_targeted_delivery_funding?).and_return(true)
-      end
-
-      it { is_expected.to have_css("tr:nth-child(2) td:nth-child(1)", text: t(".targeted_delivery_funding")) }
-      it { is_expected.to have_css("tr:nth-child(2) td:nth-child(2)", text: calculator.targeted_delivery_funding_declarations_count) }
-      it { is_expected.to have_css("tr:nth-child(2) td:nth-child(3)", text: "£#{calculator.targeted_delivery_funding_per_participant}") }
-      it { is_expected.to have_css("tr:nth-child(2) td:nth-child(4)", text: "£#{calculator.targeted_delivery_funding_subtotal}") }
-
-      context "and no refundable declarations" do
-        it { is_expected.not_to have_css(refund_selector, text: refund_text) }
-      end
-
-      context "and refundable declarations" do
-        before do
-          application = create(:application, :eligible_for_funding, targeted_delivery_funding_eligibility: true, course:)
-          create(:declaration, :awaiting_clawback, application:, statement:, paid_statement:)
-        end
-
-        it { is_expected.to have_css(refund_selector, text: refund_text) }
-        it { is_expected.to have_css("tr:nth-child(4) td:nth-child(2)", text: calculator.targeted_delivery_funding_refundable_declarations_count) }
-        it { is_expected.to have_css("tr:nth-child(4) td:nth-child(3)", text: "-£#{calculator.targeted_delivery_funding_per_participant}") }
-        it { is_expected.to have_css("tr:nth-child(4) td:nth-child(4)", text: "-£#{calculator.targeted_delivery_funding_refundable_subtotal}") }
-      end
-    end
-
     context "when monthly service fees are zero" do
       before { contract.contract_template.update! monthly_service_fee: 0 }
 
@@ -111,8 +73,9 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
     context "when monthly service fees are not zero" do
       before { contract.contract_template.update! monthly_service_fee: 10 }
 
-      it { is_expected.to have_css "tr:nth-child(3) td", text: t(".service_fee") }
-      it { is_expected.to have_css "tr:nth-child(3) td", text: "£#{calculator.monthly_service_fees}" }
+      it { expect(subject).to have_css "tr:nth-child(2) td", text: t(".service_fee") }
+
+      it { is_expected.to have_css "tr:nth-child(2) td", text: "£#{calculator.monthly_service_fees}" }
     end
   end
 end
