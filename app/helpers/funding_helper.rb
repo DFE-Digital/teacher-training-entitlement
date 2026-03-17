@@ -23,7 +23,7 @@ private
   def funding_eligibility_calculator(application)
     FundingEligibility.new(
       course: application.course,
-      institution: application.institution&.institutionable,
+      institution: application.institution,
       inside_catchment: application.teacher_catchment == "england",
       trn: application.user.trn,
       get_an_identity_id: application.user.get_an_identity_id,

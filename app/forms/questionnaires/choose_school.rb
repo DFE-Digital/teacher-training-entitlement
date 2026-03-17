@@ -85,7 +85,7 @@ module Questionnaires
     def selected_institution
       return nil if institution_id.blank? || institution_id == "other"
 
-      @selected_institution ||= Institution.find(institution_id)&.institutionable
+      @selected_institution ||= Institution.find(institution_id)
     end
 
     def funding_eligibility

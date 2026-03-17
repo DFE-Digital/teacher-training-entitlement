@@ -116,7 +116,7 @@ module Questionnaires
     def institution
       return nil if wizard.store["institution_id"].blank?
 
-      @institution ||= ::Institution.find(wizard.store["institution_id"])&.institutionable
+      @institution ||= ::Institution.find(wizard.store["institution_id"])
     end
 
     def build_option_struct(value:, label: nil, hint: nil, link_errors: false, divider: false, revealed_question: nil)

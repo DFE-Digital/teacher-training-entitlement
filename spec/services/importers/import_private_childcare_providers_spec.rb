@@ -465,7 +465,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
           expect {
             run_update
           }.to change {
-            Institution.find_by(institution_reference_number: "CA000006").institutionable.institution.address_1
+            Institution.find_by(institution_reference_number: "CA000006").address_1
           }.from("108 Regent Studios").to("109 Regent Studios")
 
           expect(updates.updated_records).to be(0)

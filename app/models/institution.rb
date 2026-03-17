@@ -23,7 +23,9 @@ class Institution < ApplicationRecord
   end
 
   def ukprn
-    institution_reference_number if institutionable_type == "LocalAuthority"
+    return institution_reference_number if local_authority?
+
+    school&.ukprn
   end
 
   def name

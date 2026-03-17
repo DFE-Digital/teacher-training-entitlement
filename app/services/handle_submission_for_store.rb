@@ -10,7 +10,7 @@ class HandleSubmissionForStore
       @application = user.applications.create!(
         course_id: course.id,
         lead_provider_id: store["lead_provider_id"],
-        institution: institution_record,
+        institution: (institution_from_store if inside_catchment?),
         ukprn:,
         eligible_for_funding: eligible_for_funding?,
         funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
@@ -52,29 +52,23 @@ private
            to: :query_store
 
   def primary_establishment
-    institution_from_store.is_a?(School) && institution_from_store.primary_education_phase?
+    institution_from_store&.school? && institution_from_store.school.primary_education_phase?
   end
 
   def number_of_pupils
-    institution_from_store.is_a?(School) && institution_from_store.number_of_pupils
+    institution_from_store&.school? && institution_from_store.school.number_of_pupils
   end
 
   def institution_from_store
     return nil if store["institution_id"].blank?
 
-    @institution_from_store ||= Institution.find(store["institution_id"])&.institutionable
-  end
-
-  def institution_record
-    return nil unless inside_catchment? && institution_from_store.present?
-
-    institution_from_store.institution
+    @institution_from_store ||= Institution.find(store["institution_id"])
   end
 
   def store_ukprn?
     return false unless inside_catchment?
 
-    institution_from_store.is_a?(LocalAuthority) || institution_from_store.is_a?(School)
+    institution_from_store&.local_authority? || institution_from_store&.school?
   end
 
   def ukprn

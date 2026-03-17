@@ -151,7 +151,7 @@ private
   def institution_from_store
     return nil if store["institution_id"].blank?
 
-    @institution_from_store ||= Institution.find(store["institution_id"])&.institutionable
+    @institution_from_store ||= Institution.find(store["institution_id"])
   end
 
   def funding_eligibility_calculator
