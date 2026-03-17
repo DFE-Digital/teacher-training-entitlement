@@ -10,8 +10,10 @@ RSpec.feature "Listing and viewing schools", type: :feature do
   end
 
   context "when viewing all schools" do
+    let!(:first_school) { create(:school, :with_address, name: "AAAA First School", la_name: "Barnet") }
+
     before do
-      create_list(:school, schools_per_page + 1, :with_address, la_name: "Barnet")
+      create_list(:school, schools_per_page, :with_address, la_name: "Barnet")
       visit(admin_schools_path)
     end
 
@@ -33,15 +35,13 @@ RSpec.feature "Listing and viewing schools", type: :feature do
     end
 
     scenario "viewing school details" do
-      school = School.joins(:institution).order("institutions.name ASC").first
-
       within first("tbody tr.govuk-table__row") do |_row|
-        expect(find("td:nth-child(1)").text).to eq(school.name)
-        expect(find("td:nth-child(2)").text).to eq(school.id.to_s)
-        expect(find("td:nth-child(3)").text).to eq(school.urn)
-        expect(find("td:nth-child(4)").text).to eq(school.ukprn)
-        expect(find("td:nth-child(5)").text).to eq(school.la_name)
-        expect(find("td:nth-child(6)").text).to match(school.postcode)
+        expect(find("td:nth-child(1)").text).to eq(first_school.name)
+        expect(find("td:nth-child(2)").text).to eq(first_school.id.to_s)
+        expect(find("td:nth-child(3)").text).to eq(first_school.urn)
+        expect(find("td:nth-child(4)").text).to eq(first_school.ukprn)
+        expect(find("td:nth-child(5)").text).to eq(first_school.la_name)
+        expect(find("td:nth-child(6)").text).to match(first_school.postcode)
       end
     end
   end
