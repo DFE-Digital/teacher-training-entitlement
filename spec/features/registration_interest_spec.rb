@@ -7,8 +7,8 @@ RSpec.feature "Register interest", type: :feature do
     visit "/registration-interest/sign-up"
 
     expect(page).to be_accessible
-    expect(page).to have_text("What's your email address")
-    page.fill_in "What's your email address", with: "user@example.com"
+    expect(page).to have_text("What’s your email address")
+    page.fill_in "What’s your email address", with: "user@example.com"
     page.click_button("Confirm")
 
     expect(page).to be_accessible
