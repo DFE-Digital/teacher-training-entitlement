@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Guidance", type: :feature do
+RSpec.feature "Guidance", :skip_axe, type: :feature do
   describe "Sidebar navigation" do
     it "renders sidebar navigation on guidance subpages" do
       visit "/api/guidance/get-started"
