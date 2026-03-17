@@ -82,7 +82,7 @@ This limit on requests for each authentication key is calculated on a rolling ba
 
 ### Polling the API regularly 
 
-To make sure no declarations, participants, transfers or unfunded mentors are missed:
+To make sure no applications, declarations or participants are missed:
 
 * poll the relevant `GET endpoints` multiple times a day, ensuring you include an `updated_since` filter
 * use the default pagination of 100 records per page 
@@ -100,8 +100,8 @@ The DfE can coordinate ‘windows’ (set time periods) for providers to do this
 
 Always poll 2 windows back from your last successful poll. This guarantees that all participant data is captured. For example: 
 
-* at 3:15pm enter the following request - <code>/api/v1/participants?filter[updated_since]=2025-01-28T13:15:00Z</code>
-* at 4:15pm enter the following request - <code>/api/v1/participants?filter[updated_since]=2025-01-28T14:15:00Z</code>
+* at 3:15pm enter the following request - <code>/api/v1/applications?filter[updated_since]=2025-01-28T13:15:00Z</code>
+* at 4:15pm enter the following request - <code>/api/v1/applications?filter[updated_since]=2025-01-28T14:15:00Z</code>
 
 Try polling randomly rather than on the hour to prevent system overload. 
 
