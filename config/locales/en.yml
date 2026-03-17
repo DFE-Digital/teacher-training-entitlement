@@ -444,18 +444,6 @@ en:
           attributes:
             can_share_choices:
               accepted: You must agree to share data with providers to continue
-        questionnaires/your_employment:
-          attributes:
-            employment_type:
-              blank: Select an employment type
-        questionnaires/your_role:
-          attributes:
-            employment_role:
-              blank: Enter your employment role
-        questionnaires/your_employer:
-          attributes:
-            employer_name:
-              blank: Enter the name of your employer
         questionnaires/referred_by_return_to_teaching_adviser:
           attributes:
             referred_by_return_to_teaching_adviser:
