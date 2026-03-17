@@ -11,7 +11,7 @@ module FundingHelper
     return false unless application.inside_catchment?
     return true if application.referred_by_return_to_teaching_adviser == "yes"
 
-    application.work_setting == "another_setting" && application.course.identifier != "npq-early-headship-coaching-offer"
+    application.work_setting == "another_setting"
   end
 
   def targeted_support_funding
