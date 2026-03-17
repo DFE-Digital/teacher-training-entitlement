@@ -139,7 +139,6 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       "notes" => nil,
       "referred_by_return_to_teaching_adviser" => nil,
       "institution_id" => Institution.find_by(institution_reference_number: "100000").institutionable.institution.id,
-      "targeted_delivery_funding_eligibility" => false,
       "targeted_support_funding_eligibility" => false,
       "teacher_catchment" => "england",
       "teacher_catchment_country" => "United Kingdom of Great Britain and Northern Ireland",

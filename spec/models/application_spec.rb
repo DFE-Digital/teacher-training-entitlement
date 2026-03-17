@@ -8,21 +8,11 @@ RSpec.describe Application do
     it { is_expected.to belong_to(:course) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:institution).optional }
-    it { is_expected.to belong_to(:itt_provider).optional }
-    it { is_expected.to belong_to(:itt_provider_including_disabled).optional.class_name("IttProvider").with_foreign_key(:itt_provider_id) }
     it { is_expected.to belong_to(:cohort).optional }
     it { is_expected.to belong_to(:schedule).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
     it { is_expected.to have_many(:application_states) }
     it { is_expected.to have_many(:declarations) }
-
-    context "when the itt_provider is disabled" do
-      let(:itt_provider) { create(:itt_provider, :disabled) }
-      let(:application) { create(:application, itt_provider:).reload }
-
-      it { expect(application.itt_provider).to be_nil }
-      it { expect(application.itt_provider_including_disabled).to eq(itt_provider) }
-    end
   end
 
   describe "paper_trail" do
@@ -309,16 +299,9 @@ RSpec.describe Application do
       include_examples "employer_name"
     end
 
-    context "when application has employer_name" do
-      let(:name) { "Employer Foo Bar" }
-      let(:application) { build(:application, institution: nil, employer_name: name, works_in_school: false) }
-
-      include_examples "employer_name"
-    end
-
-    context "when no information about employer_name is available" do
+    context "when no institution is available" do
       let(:name) { "" }
-      let(:application) { build(:application, institution: nil, employer_name: nil, works_in_school: false) }
+      let(:application) { build(:application, institution: nil, works_in_school: false) }
 
       include_examples "employer_name"
     end

@@ -130,12 +130,6 @@ APPLICATION_CSV = {
         example: Application::INELIGIBLE_FOR_FUNDING_REASONS.first,
         enum: Application::INELIGIBLE_FOR_FUNDING_REASONS,
       },
-      targeted_delivery_funding_eligibility: {
-        description: "Whether or not this application is eligible for Targeted Delivery Funding uplift",
-        nullable: false,
-        type: :boolean,
-        example: true,
-      },
       teacher_catchment: {
         description: "This field will indicate whether or not the participant is UK-based. <ul><li>If <code>true</code> then the registration relates to a participant who is UK-based.</li><li>If <code>false</code> then the registration relates to a participant who is not UK-based.</li></ul>",
         nullable: true,

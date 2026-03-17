@@ -120,8 +120,6 @@ class RegistrationWizard
 private
 
   delegate :course,
-           :employment_type_hospital_school?,
-           :employment_type_other?,
            :formatted_date_of_birth,
            :get_an_identity_id,
            :has_ofsted_urn?,
@@ -129,7 +127,6 @@ private
            :kind_of_nursery_private?,
            :kind_of_nursery_public?,
            :lead_provider,
-           :new_headteacher?,
            :teacher_catchment_humanized,
            :trn,
            :trn_set_via_fallback_verification_question?,

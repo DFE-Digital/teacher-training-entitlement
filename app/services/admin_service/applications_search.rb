@@ -12,7 +12,7 @@ class AdminService::ApplicationsSearch
       chain = chain.where("users.email ilike ?", "%#{q}%")
       chain = chain.or(default_scope.where("users.full_name ilike ?", "%#{q}%"))
       chain = chain.or(default_scope.where("users.preferred_name ilike ?", "%#{q}%"))
-      chain = chain.or(default_scope.where("applications.employer_name ilike ? OR institutions.name ilike ?", "%#{q}%", "%#{q}%"))
+      chain = chain.or(default_scope.where("institutions.name ilike ?", "%#{q}%"))
       chain = chain.or(default_scope.where(ecf_id: q))
       chain = chain.or(default_scope.where(users: { ecf_id: q }))
     end

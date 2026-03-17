@@ -98,7 +98,6 @@ module Applications
           :user,
           :institution,
           :cohort,
-          :itt_provider_including_disabled,
           :schedule,
         )
     end

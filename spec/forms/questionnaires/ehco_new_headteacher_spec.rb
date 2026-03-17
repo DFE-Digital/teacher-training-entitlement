@@ -15,7 +15,7 @@ RSpec.describe Questionnaires::EhcoNewHeadteacher, :npq, type: :model do
 
   before do
     instance.wizard = RegistrationWizard.new(
-      current_step: :senco_in_role,
+      current_step: :ehco_new_headteacher,
       store:,
       request: nil,
       current_user: nil,

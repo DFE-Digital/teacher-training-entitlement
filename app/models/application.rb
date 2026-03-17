@@ -18,8 +18,6 @@ class Application < ApplicationRecord
   belongs_to :course
   belongs_to :lead_provider
   belongs_to :institution, optional: true
-  belongs_to :itt_provider, optional: true
-  belongs_to :itt_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "IttProvider", foreign_key: :itt_provider_id
   belongs_to :schedule, optional: true
 
   # Convenience methods to access the institutionable through institution
@@ -157,11 +155,11 @@ class Application < ApplicationRecord
   end
 
   def employer_name_to_display
-    employer_name || institution&.name || ""
+    institution&.name || ""
   end
 
   def long_employer_name_to_display
-    employer_name || institution&.name_with_address || ""
+    institution&.name_with_address || ""
   end
 
   def employer_urn

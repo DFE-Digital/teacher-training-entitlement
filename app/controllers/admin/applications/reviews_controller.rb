@@ -22,7 +22,6 @@ module Admin
 
       def filter_params
         params.permit %i[
-          employment_type
           eligible_for_funding
           referred_by_return_to_teaching_adviser
           cohort_id

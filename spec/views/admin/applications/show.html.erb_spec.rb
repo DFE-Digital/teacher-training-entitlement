@@ -41,18 +41,9 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     end
   end
 
-  describe "a row for an employer with no URN" do
-    let :application do
-      build_stubbed :application, institution: nil, employer_name: "No URN"
-    end
-
-    it { is_expected.to have_text(application.employer_name_to_display) }
-    it { is_expected.not_to have_link(application.employer_name_to_display) }
-  end
-
   describe "a summary card for a minimal application" do
     let :application do
-      build_stubbed :application, cohort: nil, itt_provider: nil, institution: nil
+      build_stubbed :application, cohort: nil, institution: nil
     end
 
     it { is_expected.to have_css "h1", text: "Application details" }

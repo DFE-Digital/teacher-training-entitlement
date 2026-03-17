@@ -196,7 +196,6 @@ shared:
     - number_of_pupils
     - lead_provider_approval_status
     - participant_outcome_state
-    - itt_provider_id
     - institution_id
     - teacher_catchment_iso_country_code
     - targeted_support_funding_eligibility

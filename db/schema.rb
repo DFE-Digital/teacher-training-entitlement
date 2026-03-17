@@ -108,8 +108,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.integer "DEPRECATED_cohort"
-    t.string "DEPRECATED_itt_provider"
     t.datetime "accepted_at"
     t.bigint "cohort_id"
     t.bigint "course_id", null: false
@@ -119,9 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.boolean "funded_place"
     t.enum "funding_choice", enum_type: "funding_choices"
     t.string "funding_eligiblity_status_code"
-    t.enum "headteacher_status", enum_type: "headteacher_statuses"
     t.bigint "institution_id"
-    t.bigint "itt_provider_id"
     t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
     t.enum "lead_provider_approval_status", enum_type: "lead_provider_approval_statuses"
     t.bigint "lead_provider_id", null: false
@@ -135,9 +131,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.string "referred_by_return_to_teaching_adviser"
     t.enum "review_status", enum_type: "review_statuses"
     t.bigint "schedule_id"
-    t.string "senco_in_role"
-    t.date "senco_start_date"
-    t.boolean "targeted_delivery_funding_eligibility", default: false
     t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
@@ -154,7 +147,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.index ["course_id"], name: "index_applications_on_course_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
-    t.index ["itt_provider_id"], name: "index_applications_on_itt_provider_id"
     t.index ["lead_provider_approval_status", "lead_provider_id"], name: "idx_on_lead_provider_approval_status_lead_provider__299e5bac06"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
     t.index ["schedule_id"], name: "index_applications_on_schedule_id"
@@ -384,17 +376,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.datetime "updated_at", null: false
     t.index ["institution_reference_number"], name: "index_institutions_on_institution_reference_number"
     t.index ["institutionable_type", "institutionable_id"], name: "idx_on_institutionable_type_institutionable_id_e617e86838", unique: true
-  end
-
-  create_table "itt_providers", force: :cascade do |t|
-    t.boolean "approved"
-    t.datetime "created_at", null: false
-    t.datetime "disabled_at"
-    t.text "legal_name"
-    t.text "operating_name"
-    t.datetime "removed_at", precision: nil
-    t.datetime "updated_at", null: false
-    t.index ["legal_name"], name: "index_itt_providers_on_legal_name", unique: true
   end
 
   create_table "lead_providers", force: :cascade do |t|
@@ -643,7 +624,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
   add_foreign_key "applications", "cohorts"
   add_foreign_key "applications", "courses"
   add_foreign_key "applications", "institutions"
-  add_foreign_key "applications", "itt_providers"
   add_foreign_key "applications", "lead_providers"
   add_foreign_key "applications", "schedules"
   add_foreign_key "applications", "users"
