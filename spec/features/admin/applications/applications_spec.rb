@@ -218,7 +218,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     expect(page).to have_current_path(admin_application_path(application))
 
-    within(first(".govuk-summary-list__row", text: "Name")) do
+    within(".govuk-summary-list__row", text: "Name", match: :first) do
       expect(page).to have_text(application.user.full_name)
     end
   end
