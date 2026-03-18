@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Institution do
   describe ".search_by_name" do
-    context "searching by name" do
+    context "when searching by name" do
       before { create(:school, name: "a school") }
 
       it "returns institutions matching the name" do
@@ -10,7 +10,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by la_name" do
+    context "when searching by la_name" do
       before { create(:school, la_name: "Swindon") }
 
       it "returns institutions matching the la_name" do
@@ -18,7 +18,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by address_1" do
+    context "when searching by address_1" do
       before { create(:school, address_1: "someplace") }
 
       it "returns institutions matching the address_1" do
@@ -26,7 +26,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by address_2" do
+    context "when searching by address_2" do
       before { create(:school, address_2: "someplace") }
 
       it "returns institutions matching the address_2" do
@@ -34,7 +34,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by address_3" do
+    context "when searching by address_3" do
       before { create(:school, address_3: "someplace") }
 
       it "returns institutions matching the address_3" do
@@ -42,7 +42,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by town" do
+    context "when searching by town" do
       before { create(:school, town: "someplace") }
 
       it "returns institutions matching the town" do
@@ -50,7 +50,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by county" do
+    context "when searching by county" do
       before { create(:school, county: "someplace") }
 
       it "returns institutions matching the county" do
@@ -58,7 +58,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by postcode" do
+    context "when searching by postcode" do
       before { create(:school, postcode: "AB12 3CD") }
 
       it "returns institutions matching the postcode" do
@@ -66,7 +66,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by postcode without spaces" do
+    context "when searching by postcode without spaces" do
       before { create(:school, postcode_without_spaces: "AB123CD") }
 
       it "returns institutions matching the postcode without spaces" do
@@ -74,7 +74,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by region" do
+    context "when searching by region" do
       before { create(:school, region: "someplace") }
 
       it "returns institutions matching the region" do
@@ -82,7 +82,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "searching by URN" do
+    context "when searching by URN" do
       before { create(:school, urn: "123456") }
 
       it "returns institutions matching the URN" do
@@ -90,7 +90,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "regarding apostrophes" do
+    context "when regarding apostrophes" do
       before { create(:school, name: "andrew's", postcode: "NW5") }
 
       it "can find with apostrophe" do
@@ -110,7 +110,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "regarding hyphen" do
+    context "when regarding hyphen" do
       before { create(:school, name: "mary-anne") }
 
       it "can find with hyphen" do
@@ -126,7 +126,7 @@ RSpec.describe Institution do
       end
     end
 
-    context "synonym searching: st and saint" do
+    context "when synonym searching: st and saint" do
       let(:st_school) { create(:school, name: "St Mary's Catholic Primary School") }
       let(:saint_school) { create(:school, name: "Saint Mary's College") }
       let(:school_containing_st) { create(:school, name: "Some Firsaint School") }
