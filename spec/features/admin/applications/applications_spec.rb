@@ -6,9 +6,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   RSpec::Matchers.define :have_application do |expected|
     match do |_actual|
-      within("td:nth-child(1)") do
-        expect(page).to have_text(expected.user.full_name)
-      end
+      expect(page).to have_css("table.govuk-table tbody tr", text: expected.user.full_name)
     end
   end
 
@@ -50,8 +48,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     fill_in "Find an application", with: applications_in_order[0].ecf_id
     click_on "Search"
 
-    expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(applications_in_order[0])
+    expect(page).to have_css("table.govuk-table tbody tr", count: 1)
   end
 
   scenario "filtering applications by application status" do
