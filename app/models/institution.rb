@@ -5,9 +5,12 @@ class Institution < ApplicationRecord
 
   delegated_type :institutionable, types: %w[School PrivateChildcareProvider LocalAuthority], dependent: :destroy
 
+  NAME_SYNONYMS = { "saint" => "st", "st" => "saint" }.freeze
+  SEARCH_LIMIT = 100
+
   validates :institution_reference_number, presence: true
 
-  pg_search_scope :search_by_name,
+  pg_search_scope :base_search_by_name,
                   against: %i[name address_1 address_2 address_3 town county postcode postcode_without_spaces region],
                   using: {
                     tsearch: {
@@ -17,6 +20,29 @@ class Institution < ApplicationRecord
                   }
 
   delegate :in_england?, :identifier, :eligible_establishment?, to: :institutionable
+
+  def self.search_all_fields(search_term)
+    name_address_matches = base_search_by_name(search_term)
+    la_name_matches = joins(
+      "LEFT JOIN schools ON institutions.institutionable_type = 'School' AND institutions.institutionable_id = schools.id",
+    ).where("schools.la_name ILIKE ?", "%#{search_term}%")
+    urn_matches = where("institution_reference_number ILIKE ?", "%#{search_term}%")
+
+    where(id: name_address_matches.select(:id))
+      .or(where(id: la_name_matches.select(:id)))
+      .or(where(id: urn_matches.select(:id)))
+  end
+
+  def self.search_by_name(search_term)
+    scope = search_all_fields(search_term).limit(SEARCH_LIMIT)
+    NAME_SYNONYMS.each do |key, value|
+      if search_term&.downcase&.match?(/\b#{key}\b/i)
+        synonym_term = search_term.downcase.gsub(key, value)
+        return (scope.to_a + search_all_fields(synonym_term).limit(SEARCH_LIMIT).to_a).uniq
+      end
+    end
+    scope
+  end
 
   def urn
     institution_reference_number
