@@ -105,10 +105,11 @@ RSpec.feature "User administration", type: :feature do
 
     scenario "changing a user's TRN" do
       visit admin_user_path(user)
+      expect(page).to have_css("h1", text: user.full_name)
       click_link "Change"
 
       expect(page).to have_css("h1", text: "Change TRN")
-      within(first(".govuk-summary-list")) do |summary_list|
+      within(".govuk-summary-list", match: :first) do |summary_list|
         expect(summary_list).to have_summary_item("Participant ID", user.ecf_id)
         expect(summary_list).to have_summary_item("TRN", user.trn)
       end

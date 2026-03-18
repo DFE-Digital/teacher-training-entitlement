@@ -19,7 +19,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
   def run_scenario(js:)
     stub_participant_validation_request
 
-    navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+    navigate_to_page(path: "/", submit_form: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")
     end
@@ -75,27 +75,26 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     expect_applicant_reached_end_of_journey
 
-    User.last.tap do |user|
-      expect(user.email).to eql("user@example.com")
-      expect(user.full_name).to eql("John Doe")
-      expect(user.trn).to eql("1234567")
-      expect(user.trn_verified).to be_truthy
-      expect(user.trn_auto_verified).to be_truthy
-      expect(user.date_of_birth).to eql(Date.new(1980, 12, 13))
-      expect(user.national_insurance_number).to be_nil
-      expect(user.applications.count).to be(1)
+    user = User.find_by!(email: "user@example.com")
+    expect(user.full_name).to eql("John Doe")
+    expect(user.trn).to eql("1234567")
+    expect(user.trn_verified).to be_truthy
+    expect(user.trn_auto_verified).to be_truthy
+    expect(user.date_of_birth).to eql(Date.new(1980, 12, 13))
+    expect(user.national_insurance_number).to be_nil
+    expect(user.applications.count).to be(1)
 
-      user.applications.first.tap do |application|
-        expect(application.eligible_for_funding).to be_truthy
-      end
+    user.applications.first.tap do |application|
+      expect(application.eligible_for_funding).to be_truthy
     end
-    if User.last.applications.count == 1
-      navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", axe_check: false, submit_form: false) do
+
+    if user.applications.count == 1
+      navigate_to_page(path: "/accounts/user_registrations/#{user.applications.last.id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
     else
-      navigate_to_page(path: "/account", axe_check: false, submit_form: false) do
+      navigate_to_page(path: "/account", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
@@ -103,7 +102,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     visit "/registration/share-provider"
 
-    expect_page_to_have(path: "/", axe_check: false, submit_form: false) do
+    expect_page_to_have(path: "/", submit_form: false) do
       expect(page).to have_content("Before you start")
     end
 
