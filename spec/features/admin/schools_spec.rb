@@ -20,8 +20,8 @@ RSpec.feature "Listing and viewing schools", type: :feature do
     scenario "viewing the list of schools" do
       expect(page).to have_css("h1", text: "Workplaces")
 
-      School.joins(:institution).order("institutions.name ASC").limit(schools_per_page).each do |school|
-        expect(page).to have_text(school.name)
+      Institution.order(:name).limit(schools_per_page).each do |institution|
+        expect(page).to have_text(institution.name)
       end
 
       expect(page).to have_css(".govuk-pagination__item--current", text: 1)
@@ -36,11 +36,11 @@ RSpec.feature "Listing and viewing schools", type: :feature do
 
     scenario "viewing school details" do
       within first("tbody tr.govuk-table__row") do |_row|
-        expect(find("td:nth-child(1)").text).to eq(first_school.name)
-        expect(find("td:nth-child(2)").text).to eq(first_school.id.to_s)
-        expect(find("td:nth-child(3)").text).to eq(first_school.urn)
-        expect(find("td:nth-child(4)").text).to eq(first_school.ukprn)
-        expect(find("td:nth-child(5)").text).to eq(first_school.la_name)
+        expect(find("td:nth-child(1)")).to have_text(first_school.name)
+        expect(find("td:nth-child(2)")).to have_text(first_school.institution.id)
+        expect(find("td:nth-child(3)")).to have_text(first_school.urn)
+        expect(find("td:nth-child(4)")).to have_text(first_school.ukprn)
+        expect(find("td:nth-child(5)")).to have_text(first_school.la_name)
         expect(find("td:nth-child(6)").text).to match(first_school.postcode)
       end
     end
@@ -64,7 +64,7 @@ RSpec.feature "Listing and viewing schools", type: :feature do
       expect(page).to have_css("tbody tr.govuk-table__row", count: 1)
 
       within first("tbody tr.govuk-table__row") do |_row|
-        expect(find("td:nth-child(1)").text).to eq(school.name)
+        expect(find("td:nth-child(1)")).to have_text(school.name)
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.feature "Listing and viewing schools", type: :feature do
       expect(page).to have_css("tbody tr.govuk-table__row", count: 1)
 
       within first("tbody tr.govuk-table__row") do |_row|
-        expect(find("td:nth-child(1)").text).to eq(school.name)
+        expect(find("td:nth-child(1)")).to have_text(school.name)
       end
     end
   end
