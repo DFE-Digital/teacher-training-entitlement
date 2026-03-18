@@ -54,21 +54,11 @@ module Questionnaires
     end
 
     def possible_institutions
-      return @possible_institutions if @possible_institutions
-
-      schools = School
-                  .search_by_name(institution_name)
-                  .open
-                  .limit(10)
-
-      local_authorities = Institution
-                            .search_by_name(institution_name)
-                            .where(institutionable_type: "LocalAuthority")
-                            .includes(:institutionable)
-                            .limit(10)
-                            .map(&:institutionable)
-
-      @possible_institutions = schools + local_authorities
+      @possible_institutions ||= Institution
+        .where(institutionable_type: %w[School LocalAuthority])
+        .open_school_or_non_school
+        .search_by_name(institution_name)
+        .limit(10)
     end
 
   private
