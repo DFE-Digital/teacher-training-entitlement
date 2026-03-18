@@ -8,11 +8,11 @@ If you have any questions or comments about these notes, please contact DfE via 
 
 <!-- The API V1 is made live for providers. -->
 
-## 17 March 2026
+## 31 March 2026
 
-### API Beta Changes <strong class="govuk-tag govuk-tag--yellow">SANDBOX</strong>
+### Final API specification <strong class="govuk-tag govuk-tag--yellow">SANDBOX</strong>
 
-The API has been updated based on the beta specification. Key changes:
+The API has been updated based on the final specification. Key changes:
 
 **Applications are now the central resource.** All lifecycle actions have moved to applications:
 
@@ -50,7 +50,7 @@ The API has been updated based on the beta specification. Key changes:
 
 ## 1 March 2026
 
-### API Launch <strong class="govuk-tag govuk-tag--yellow">SANDBOX</strong>
+### Draft API Launch <strong class="govuk-tag govuk-tag--yellow">SANDBOX</strong>
 
 The API V1 is made available for providers for their integration work.
 

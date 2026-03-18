@@ -67,7 +67,6 @@ Any attempts to submit duplicate declarations will return an error message.
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "declaration",
     "attributes": {
-      "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "application_id": "ab3a7848-1208-7679-942a-b4a70eed400a",
       "declaration_type": "started",
       "course_identifier": "tte-early-years",
@@ -76,7 +75,6 @@ Any attempts to submit duplicate declarations will return an error message.
       "has_passed": null,
       "statement_id": null,
       "clawback_statement_id": null,
-      "uplift_paid": true,
       "lead_provider_name": "Example Institute",
       "ineligible_for_funding_reason": null,
       "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60",
@@ -125,11 +123,11 @@ Use this endpoint to:
 * view all declarations which have been submitted to date
 * check declaration submissions
 * identify if any are missing
-* void or clawback declarations which have been submitted in error
+* void declarations which have been submitted in error
 
-Providers can filter results by adding filters to the parameter. For example: `GET /api/v1/declarations?filter[participant_id]=ab3a7848-1208-7679-942a-b4a70eed400a` or `GET /api/v1/declarations?filter[cohort]=2025&filter[updated_since]=2025-11-13T11:21:55Z`
+Providers can filter results by adding filters to the parameter. For example: `GET /api/v1/declarations?filter[application_id]=ab3a7848-1208-7679-942a-b4a70eed400a` or `GET /api/v1/declarations?filter[cohort]=2025&filter[updated_since]=2025-11-13T11:21:55Z`
 
-Providers can also filter by `application_id` and `declaration_type`. For example: `GET /api/v1/declarations?filter[application_id]=db3a7848-7308-4879-942a-c4a70ced400a&filter[declaration_type]=started`
+Providers can also filter by `declaration_type`. For example: `GET /api/v1/declarations?filter[application_id]=db3a7848-7308-4879-942a-c4a70ced400a&filter[declaration_type]=started`
 
 ### Example response body
 
@@ -140,7 +138,6 @@ Providers can also filter by `application_id` and `declaration_type`. For exampl
       "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
       "type": "declaration",
       "attributes": {
-        "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
         "application_id": "ab3a7848-1208-7679-942a-b4a70eed400a",
         "declaration_type": "started",
         "course_identifier": "tte-early-years",
@@ -149,7 +146,6 @@ Providers can also filter by `application_id` and `declaration_type`. For exampl
         "has_passed": null,
         "statement_id": null,
         "clawback_statement_id": null,
-        "uplift_paid": true,
         "lead_provider_name": "Example Institute",
         "ineligible_for_funding_reason": null,
         "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60",
@@ -168,7 +164,7 @@ Providers can also filter by `application_id` and `declaration_type`. For exampl
 GET /api/v1/declarations/{id}
 ```
 
-View a specific declaration which has been previously submitted. Check declaration details and void or clawback those which have been submitted in error.
+View a specific declaration which has been previously submitted. Check declaration details and void those which have been submitted in error.
 
 ### Example response body
 
@@ -178,7 +174,6 @@ View a specific declaration which has been previously submitted. Check declarati
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "declaration",
     "attributes": {
-      "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "application_id": "ab3a7848-1208-7679-942a-b4a70eed400a",
       "declaration_type": "started",
       "course_identifier": "tte-early-years",
@@ -187,7 +182,6 @@ View a specific declaration which has been previously submitted. Check declarati
       "has_passed": null,
       "statement_id": null,
       "clawback_statement_id": null,
-      "uplift_paid": true,
       "lead_provider_name": "Example Institute",
       "ineligible_for_funding_reason": null,
       "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60",
@@ -212,7 +206,7 @@ Successful requests will return a response body including updates to the declara
 * `voided` if it had been `submitted`, `ineligible`, `eligible`, or `payable`
 * `awaiting_clawback` if it had been paid
 
-If a provider voids a `completed` declaration, the outcome (indicating whether they have passed or failed) will be retracted. The `has_passed` value will revert to `null`.
+If a provider voids a `completed` declaration, the outcome will be retracted.
 
 ### Example request body
 
@@ -235,7 +229,6 @@ If a provider voids a `completed` declaration, the outcome (indicating whether t
     "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
     "type": "declaration",
     "attributes": {
-      "participant_id": "db3a7848-7308-4879-942a-c4a70ced400a",
       "application_id": "ab3a7848-1208-7679-942a-b4a70eed400a",
       "declaration_type": "started",
       "course_identifier": "tte-early-years",
@@ -244,7 +237,6 @@ If a provider voids a `completed` declaration, the outcome (indicating whether t
       "has_passed": null,
       "statement_id": "cd3a1234-7308-4879-942a-c4a70ced400a",
       "clawback_statement_id": null,
-      "uplift_paid": true,
       "lead_provider_name": "Example Institute",
       "ineligible_for_funding_reason": null,
       "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60",

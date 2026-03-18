@@ -67,7 +67,7 @@ For more detailed information, see the ['Retrieve a single participant' endpoint
 GET /api/v1/outcomes
 ```
 
-Participants can either pass or fail assessment at the end of their course. These outcomes are created automatically when providers submit `completed` declarations with the `has_passed` attribute.
+Outcomes are created automatically when providers submit `completed` declarations with the `has_passed` attribute.
 
 Providers can filter results by `application_id`. For example: `GET /api/v1/outcomes?filter[application_id]=db3a7848-7308-4879-942a-c4a70ced400a`
 
@@ -78,12 +78,11 @@ Providers can filter results by `application_id`. For example: `GET /api/v1/outc
   "data": [
     {
       "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-      "type": "participant-outcome",
+      "type": "outcome",
       "attributes": {
-        "state": "passed",
+        "state": "completed",
         "completion_date": "2026-06-30T00:00:00+00:00",
-        "course_identifier": "tte-early-years",
-        "participant_id": "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
+        "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
         "created_at": "2026-06-30T10:00:00.000Z",
         "updated_at": "2026-06-30T10:00:00.000Z"
       }

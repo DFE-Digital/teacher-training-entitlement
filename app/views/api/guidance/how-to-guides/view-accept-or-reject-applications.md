@@ -17,23 +17,19 @@ Providers can **view application data** to find out if applicants:
 * are eligible for funding
 * have a funded place
 
-While people can make multiple applications for the same course, with one or multiple providers, only one provider can accept an application from a participant for a course.
+Participants are not able to make multiple applications for the same course. They have however, the ability to change their selected course provider before the application is accepted.
 
-To prevent a participant being enrolled onto the same course with more than one provider the API will:
-
-* **automatically update the** `status` to `rejected` **for all other applications**. If someone has made multiple applications with different providers (within a given cohort) and a provider accepts one, the API will update the `status` of all other applications with other providers to `rejected`
-* **return an error message for new applications**. If a participant has had an application accepted by a provider, but then makes a new application for the same course with a new provider, the API will return an error message if the new provider tries to accept the new application
 
 <div class="govuk-inset-text">
 While participants can enter different email addresses when applying for training courses, providers will only see the email address associated with a given course application or registration. DfE will share the relevant email address with the relevant course provider.
 </div>
 
-## Provider reassignment (unassigned_at)
+## Change of course provider
 
 When a participant changes their Lead Provider from Provider A to Provider B:
 
-* **Provider A** will see the `unassigned_at` field set to the date the change occurred. The application becomes read-only — no actions can be performed on it.
-* **Provider B** will see `unassigned_at` as `null`. The application is fully actionable.
+* **Provider A** will still be able to view the application, it will however be in read-only mode and no operations will be allowed on it. The application field `unassigned_at` will be set to the date the change occurred.
+* **Provider B** will the now view the application, the field `unassigned_at` is set to `null`. The application is fully actionable.
 
 Providers can filter applications by status `unassigned` to find applications that have been reassigned away from them.
 
@@ -111,8 +107,6 @@ Reasons to accept applications include (but are not limited to) the participant:
 
 The request parameter must include the `id` of the corresponding application.
 
-An optional request body allows lead providers to add a participant's schedule when accepting applications.
-
 ### Example request body
 
 ```json
@@ -127,9 +121,6 @@ An optional request body allows lead providers to add a participant's schedule w
 ```
 
 Successful requests will return a response body including updates to the status attribute.
-<div class="govuk-inset-text">
-The API will prevent more than one provider accepting applications for the same course by automatically updating the application status or returning an error message.
-</div>
 
 See the ['Accept an application' endpoint documentation](/api/docs/v1#/Applications/put_api_v1_applications__id__accept) for more information.
 
