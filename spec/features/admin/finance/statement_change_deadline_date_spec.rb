@@ -12,15 +12,18 @@ RSpec.feature "Statement - change deadline date", type: :feature do
 
   scenario "updating deadline date" do
     visit(admin_finance_statement_path(statement))
+    expect(page).to have_css(".govuk-summary-card", text: "Statement summary")
     within(".govuk-summary-card", text: "Statement summary") do
       click_link "Change"
     end
 
     # check cancel
+    expect(page).to have_link("Cancel")
     click_link "Cancel"
     expect(page).to have_current_path(admin_finance_statement_path(statement))
 
     # check blank date validation
+    expect(page).to have_css(".govuk-summary-card", text: "Statement summary")
     within(".govuk-summary-card", text: "Statement summary") do
       click_link "Change"
     end
@@ -54,7 +57,7 @@ RSpec.feature "Statement - change deadline date", type: :feature do
 
     click_button "Change date"
 
-    expect(page).to have_content("Output payment deadline changed")
     expect(page).to have_current_path(admin_finance_statement_path(statement))
+    expect(page).to have_content("Output payment deadline changed")
   end
 end

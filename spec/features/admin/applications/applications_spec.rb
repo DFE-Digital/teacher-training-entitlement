@@ -114,20 +114,24 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     approval_status_without_results = "Accepted"
 
     visit(admin_applications_path)
+    expect(page).to have_css("h1", text: "Applications")
 
     fill_in "Find an application", with: search_with_results
     select approval_status_without_results, from: "Provider approval status"
     click_on "Search"
+    expect(page).to have_field("Find an application", with: search_with_results)
     expect(page).to have_text("No applications match the search and filters")
 
     fill_in "Find an application", with: search_without_results
     select approval_status_with_results, from: "Provider approval status"
     click_on "Search"
+    expect(page).to have_field("Find an application", with: search_without_results)
     expect(page).to have_text("No applications match the search and filters")
 
     fill_in "Find an application", with: search_with_results
     select approval_status_with_results, from: "Provider approval status"
     click_on "Search"
+    expect(page).to have_field("Find an application", with: search_with_results)
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(application)
   end

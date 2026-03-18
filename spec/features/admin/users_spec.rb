@@ -105,6 +105,7 @@ RSpec.feature "User administration", type: :feature do
 
     scenario "changing a user's TRN" do
       visit admin_user_path(user)
+      expect(page).to have_css("h1", text: user.full_name)
       click_link "Change"
 
       expect(page).to have_css("h1", text: "Change TRN")
