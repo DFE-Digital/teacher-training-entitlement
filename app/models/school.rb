@@ -1,20 +1,9 @@
 class School < ApplicationRecord
-  include PgSearch::Model
-
   has_one :institution, as: :institutionable, touch: true
 
   delegate :name, :address, :address_string, :display_name, :name_with_address,
            :address_1, :address_2, :address_3, :town, :county, :postcode,
            :urn, to: :institution
-
-  pg_search_scope :search_school_fields,
-                  against: %i[la_name],
-                  using: {
-                    tsearch: {
-                      prefix: true,
-                      dictionary: "english",
-                    },
-                  }
 
   PRIMARY_PHASE = "Primary".freeze
   MIDDLE_DEEMED_PRIMARY_PHASE = "Middle deemed primary".freeze
@@ -52,39 +41,12 @@ class School < ApplicationRecord
     "46" => "Academy 16 to 19 sponsor led",
   }.freeze
 
-  NAME_SYNONYMS = {
-    "saint" => "st",
-    "st" => "saint",
-  }.freeze
-
-  NAME_SEARCH_LIMIT = 100
-
   # 1 => establishment_status_name: "Open"
   # 2 => establishment_status_name: "Closed"
   # 3 => establishment_status_name: "Open, but proposed to close"
   # 4 => establishment_status_name: "Proposed to open"
 
   scope :open, -> { where(establishment_status_code: %w[1 3 4]) }
-
-  def self.search_by_name(search_term)
-    scope = search_all_fields(search_term).limit(NAME_SEARCH_LIMIT)
-    NAME_SYNONYMS.find do |key, value|
-      if search_term&.downcase&.match?(%r{\b#{key}\b}i)
-        synonym_name = search_term.downcase.gsub(key, value)
-        return scope + search_all_fields(synonym_name).limit(NAME_SEARCH_LIMIT)
-      end
-    end
-    scope
-  end
-
-  def self.search_all_fields(search_term)
-    institution_results = joins(:institution).merge(Institution.search_by_name(search_term))
-    school_field_results = search_school_fields(search_term)
-    urn_results = joins(:institution).where("institutions.institution_reference_number ILIKE ?", "%#{search_term}%")
-    where(id: institution_results.select(:id))
-      .or(where(id: school_field_results.select(:id)))
-      .or(where(id: urn_results.select(:id)))
-  end
 
   ELIGIBLE_ESTABLISHMENT_TYPE_CODES.each do |code, name|
     define_method("#{name.parameterize.underscore}?") do

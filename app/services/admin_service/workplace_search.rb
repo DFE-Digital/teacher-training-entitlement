@@ -43,6 +43,6 @@ private
   end
 
   def results
-    scope.offset(@offset).limit(@limit).map(&:institutionable)
+    scope.offset(@offset).limit(@limit)
   end
 end
