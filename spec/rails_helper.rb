@@ -158,7 +158,7 @@ RSpec.configure do |config|
   # Run accessibility check after all feature specs (skip with `skip_axe`)
   config.after(:each, type: :feature) do |example|
     if Capybara.current_driver != :rack_test && !example.metadata[:skip_axe]
-      expect(page).to be_axe_clean.according_to(:wcag2a, :wcag2aa, :wcag21a, :wcag21aa, :wcag22aa)
+      expect(page).to be_accessible
     end
   end
 
