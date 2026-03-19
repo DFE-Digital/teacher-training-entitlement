@@ -148,13 +148,13 @@ module ValidTestDataGenerators
     def setup_cohorts!
       @cohort_primary = Cohort.find_or_create_by!(start_year: cohort_year, suffix: "a") do |cohort|
         cohort.description = "#{cohort_year} to #{cohort_year + 1}"
-        cohort.registration_start_date = Date.new(cohort_year, 4, 3)
+        cohort.registration_starts_at = Date.new(cohort_year, 4, 3)
         cohort.funding_cap = true
       end
 
       @cohort_secondary = Cohort.find_or_create_by!(start_year: cohort_year + 1, suffix: "a") do |cohort|
         cohort.description = "#{cohort_year + 1} to #{cohort_year + 2}"
-        cohort.registration_start_date = Date.new(cohort_year + 1, 4, 3)
+        cohort.registration_starts_at = Date.new(cohort_year + 1, 4, 3)
         cohort.funding_cap = true
       end
 

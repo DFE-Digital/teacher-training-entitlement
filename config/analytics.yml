@@ -156,7 +156,8 @@ shared:
   :cohorts:
     - id
     - start_year
-    - registration_start_date
+    - registration_starts_at
+    - registration_ends_at
     - created_at
     - updated_at
     - funding_cap

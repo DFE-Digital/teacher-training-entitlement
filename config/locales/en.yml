@@ -200,7 +200,7 @@ en:
               inclusion: Choose true or false for funding cap
             ecf_id:
               *ecf_id
-            registration_start_date:
+            registration_starts_at:
               blank: Enter the start date for the cohorts registration period
         contract_template:
           attributes:

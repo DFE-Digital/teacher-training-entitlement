@@ -24,8 +24,8 @@ class Cohort < ApplicationRecord
             uniqueness: { case_sensitive: false },
             length: { within: 5..50 }
 
-  validates :registration_start_date, presence: true
-  validate :registration_start_date_matches_start_year
+  validates :registration_starts_at, presence: true
+  validate :registration_starts_at_matches_start_year
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
   validate :changing_funding_cap_with_dependent_applications
@@ -39,7 +39,7 @@ class Cohort < ApplicationRecord
   }
 
   def self.current(timestamp = Time.zone.today)
-    scope = order_by_latest.where(registration_start_date: ..timestamp)
+    scope = order_by_latest.where(registration_starts_at: ..timestamp)
 
     unless Feature.suffixed_cohorts?
       scope = scope.where(suffix: "a")
@@ -54,10 +54,10 @@ class Cohort < ApplicationRecord
 
 private
 
-  def registration_start_date_matches_start_year
-    return if registration_start_date.blank?
+  def registration_starts_at_matches_start_year
+    return if registration_starts_at.blank?
 
-    errors.add(:registration_start_date, "year must match the start year") if registration_start_date.year != start_year
+    errors.add(:registration_starts_at, "year must match the start year") if registration_starts_at.year != start_year
   end
 
   def changing_funding_cap_with_dependent_applications
