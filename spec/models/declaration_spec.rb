@@ -247,10 +247,10 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when declaration_date is before the schedule start" do
-      let(:declaration_date) { application.schedule.applies_from.prev_week }
+      let(:declaration_date) { application.schedule.training_starts_at.prev_week }
 
       context "when declaration is being created" do
-        before { subject.declaration_date = subject.application.schedule.applies_from.prev_week }
+        before { subject.declaration_date = subject.application.schedule.training_starts_at.prev_week }
 
         it "has a meaningful error" do
           expect(subject).to be_invalid
@@ -271,8 +271,8 @@ RSpec.describe Declaration, type: :model do
         end
 
         context "when declaration_date is going to be changed" do
-          let(:declaration_date) { application.schedule.applies_from.next_week }
-          let(:new_declaration_date) { application.schedule.applies_from.prev_week }
+          let(:declaration_date) { application.schedule.training_starts_at.next_week }
+          let(:new_declaration_date) { application.schedule.training_starts_at.prev_week }
 
           it "is not valid" do
             subject.declaration_date = new_declaration_date
@@ -283,7 +283,7 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when declaration_date is at the schedule start" do
-      before { subject.declaration_date = subject.application.schedule.applies_from }
+      before { subject.declaration_date = subject.application.schedule.training_starts_at }
 
       it { is_expected.to be_valid }
     end

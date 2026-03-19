@@ -109,8 +109,8 @@ RSpec.feature "submit declarations", :rack_test_driver, type: :feature do
 
       mixed_csv_content = <<~CSV
         participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-        #{participant.ecf_id},started,#{schedule.applies_from.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-        nonexistent-participant-id,started,#{(schedule.applies_from + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+        #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+        nonexistent-participant-id,started,#{(schedule.training_starts_at + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
       CSV
 
       mixed_file = tempfile_with_bom(mixed_csv_content)

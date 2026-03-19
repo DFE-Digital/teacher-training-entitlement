@@ -95,7 +95,7 @@ module Participants
           errors.add(:schedule_identifier, :invalidates_declaration)
         end
 
-        if declaration.declaration_date <= new_schedule.applies_from.beginning_of_day
+        if declaration.declaration_date <= new_schedule.training_starts_at.beginning_of_day
           errors.add(:schedule_identifier, :invalidates_declaration)
         end
       end

@@ -88,8 +88,8 @@ RSpec.describe BulkOperation::SubmitDeclarations do
       let(:csv) do
         <<~CSV
           participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-          #{participant.ecf_id},started,#{schedule.applies_from.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          #{participant2.ecf_id},started,#{(schedule.applies_from + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+          #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+          #{participant2.ecf_id},started,#{(schedule.training_starts_at + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
         CSV
       end
 
@@ -120,8 +120,8 @@ RSpec.describe BulkOperation::SubmitDeclarations do
       let(:csv) do
         <<~CSV
           participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-          #{participant.ecf_id},started,#{schedule.applies_from.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          nonexistent-participant-id,started,#{(schedule.applies_from + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+          #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+          nonexistent-participant-id,started,#{(schedule.training_starts_at + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
         CSV
       end
 
@@ -164,7 +164,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
         let(:csv) do
           <<~CSV
             participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-            #{participant_without_app.ecf_id},started,#{schedule.applies_from.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
+            #{participant_without_app.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
           CSV
         end
 
@@ -179,7 +179,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
         let(:csv) do
           <<~CSV
             participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-            #{participant.ecf_id},started,#{schedule.applies_from.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},NonExistentProvider,
+            #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},NonExistentProvider,
           CSV
         end
 

@@ -143,10 +143,7 @@
   - statement_id
   - updated_at
   :applications:
-  - DEPRECATED_itt_provider
   - raw_application_data
-  - type
-  - targeted_delivery_funding_eligibility
   :users:
   - archived_email
   - date_of_birth

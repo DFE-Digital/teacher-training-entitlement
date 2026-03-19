@@ -222,7 +222,7 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
 
       context "when existing declarations is not valid for new_schedule" do
         before do
-          schedule.update!(applies_from: declaration_date.prev_week)
+          schedule.update!(training_starts_at: declaration_date.prev_week)
           create(
             :declaration,
             application:,
@@ -248,8 +248,8 @@ RSpec.describe Participants::ChangeSchedule, type: :model do
           end
         end
 
-        context "when declaration_date is before new_schedule.applies_from" do
-          let(:declaration_date) { new_schedule.applies_from - 1.year }
+        context "when declaration_date is before new_schedule.training_starts_at" do
+          let(:declaration_date) { new_schedule.training_starts_at - 1.year }
 
           it "does not allow a change of schedule" do
             expect(subject.change_schedule).to be_falsey

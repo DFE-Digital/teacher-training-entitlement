@@ -135,7 +135,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     let(:participant) { application.user }
     let!(:participant_id) { participant.ecf_id }
     let(:declaration_type) { "completed" }
-    let(:declaration_date) { (schedule.applies_from + 1.day).rfc3339 }
+    let(:declaration_date) { (schedule.training_starts_at + 1.day).rfc3339 }
     let(:course_identifier) { course.identifier }
     let(:has_passed) { true }
     let(:delivery_partner_id) { create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id }

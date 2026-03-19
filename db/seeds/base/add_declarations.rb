@@ -24,7 +24,7 @@ lead_providers.each do |lead_provider|
 
         schedule.allowed_declaration_types.each.with_index do |declaration_type, i|
           declaration = nil
-          date        = schedule.applies_from + (application_count * i * 2).months
+          date        = schedule.training_starts_at + (application_count * i * 2).months
 
           next if date.future?
 

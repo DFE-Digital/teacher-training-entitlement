@@ -16,8 +16,8 @@ class Schedule < ApplicationRecord
   validates :name, presence: true
   validates :identifier, presence: true, uniqueness: { scope: :cohort_id }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
-  validates :applies_from, presence: true
-  validates :applies_to, presence: true
+  validates :training_starts_at, presence: true
+  validates :training_ends_at, presence: true
   validates :acceptance_window_start, presence: true, if: -> { new_record? || acceptance_window_start_was }
   validates :acceptance_window_end, presence: true, if: -> { new_record? || acceptance_window_end_was }
   validates :policy_descriptor, presence: true, numericality: { only_integer: true, greater_than: 0 }, if: -> { new_record? || policy_descriptor_was }

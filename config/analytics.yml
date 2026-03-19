@@ -45,8 +45,8 @@ shared:
     - cohort_id
     - name
     - identifier
-    - applies_from
-    - applies_to
+    - training_starts_at
+    - training_ends_at
     - allowed_declaration_types
     - created_at
     - updated_at

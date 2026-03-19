@@ -163,7 +163,7 @@ LeadProvider.find_each do |lead_provider|
                                                   lead_provider:,
                                                   cohort:,
                                                   course:,
-                                                  declaration_date: application.schedule.applies_from + 1.day)
+                                                  declaration_date: application.schedule.training_starts_at + 1.day)
 
     application.deferred_training_status!
   end

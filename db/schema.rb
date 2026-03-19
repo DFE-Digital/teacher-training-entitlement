@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_20_012058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -492,8 +492,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.date "acceptance_window_end"
     t.date "acceptance_window_start"
     t.enum "allowed_declaration_types", default: ["started", "retained-1", "retained-2", "completed"], array: true, enum_type: "declaration_types"
-    t.date "applies_from", null: false
-    t.date "applies_to", null: false
     t.bigint "cohort_id", null: false
     t.enum "course_group", enum_type: "course_group"
     t.datetime "created_at", null: false
@@ -501,6 +499,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.string "identifier", null: false
     t.string "name", null: false
     t.integer "policy_descriptor"
+    t.date "training_ends_at"
+    t.date "training_starts_at"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_schedules_on_cohort_id"
     t.index ["ecf_id"], name: "index_schedules_on_ecf_id", unique: true

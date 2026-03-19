@@ -13,7 +13,7 @@ RSpec.describe Declarations::Create, type: :model do
   let(:participant) { application.user }
   let(:participant_id) { participant.ecf_id }
   let(:declaration_type) { "started" }
-  let(:declaration_date) { schedule.applies_from + 1.hour }
+  let(:declaration_date) { schedule.training_starts_at + 1.hour }
   let(:course_identifier) { course.identifier }
   let(:has_passed) { true }
   let(:delivery_partner_id) { create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id }

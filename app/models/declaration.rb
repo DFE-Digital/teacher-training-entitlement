@@ -218,7 +218,7 @@ private
     return unless declaration_date
     return if persisted? && !declaration_date_changed?
 
-    if declaration_date < application.schedule.applies_from
+    if declaration_date < application.schedule.training_starts_at
       errors.add(:declaration_date, :declaration_before_schedule_start)
     end
   end

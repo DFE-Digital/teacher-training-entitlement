@@ -54,8 +54,8 @@
     table.with_head do |head|
       head.with_row do |row|
         row.with_cell(text: "Name")
-        row.with_cell(text: "Applies from")
-        row.with_cell(text: "Applies to")
+        row.with_cell(text: "Training starts")
+        row.with_cell(text: "Training ends")
         row.with_cell(text: "Declaration types")
         row.with_cell(text: "Milestones")
       end
@@ -66,8 +66,8 @@
       @cohort.schedules.includes(:milestones).order(:name).each do |schedule|
         body.with_row do |row|
           row.with_cell(text: govuk_link_to(schedule.name, admin_cohort_schedule_path(@cohort, schedule)))
-          row.with_cell(text: schedule.applies_from.to_fs(:govuk_short))
-          row.with_cell(text: schedule.applies_to.to_fs(:govuk_short))
+          row.with_cell(text: schedule.training_starts_at.to_fs(:govuk_short))
+          row.with_cell(text: schedule.training_ends_at.to_fs(:govuk_short))
           row.with_cell(text: schedule.allowed_declaration_types.count)
           row.with_cell(text: milestone_counts[schedule.id].to_i)
         end

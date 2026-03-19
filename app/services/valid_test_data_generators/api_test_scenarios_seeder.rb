@@ -171,8 +171,8 @@ module ValidTestDataGenerators
       ) do |schedule|
         schedule.name = "TTE Reception autumn"
         schedule.course_group = @course.course_group
-        schedule.applies_from = Date.new(cohort_year, 9, 1)
-        schedule.applies_to = Date.new(cohort_year + 1, 8, 31)
+        schedule.training_starts_at = Date.new(cohort_year, 9, 1)
+        schedule.training_ends_at = Date.new(cohort_year + 1, 8, 31)
         schedule.allowed_declaration_types = %w[started completed]
         schedule.policy_descriptor = 1
         schedule.acceptance_window_start = Date.new(cohort_year, 1, 1)
@@ -186,8 +186,8 @@ module ValidTestDataGenerators
       ) do |schedule|
         schedule.name = "TTE Reception autumn"
         schedule.course_group = @course.course_group
-        schedule.applies_from = Date.new(cohort_year + 1, 9, 1)
-        schedule.applies_to = Date.new(cohort_year + 2, 8, 31)
+        schedule.training_starts_at = Date.new(cohort_year + 1, 9, 1)
+        schedule.training_ends_at = Date.new(cohort_year + 2, 8, 31)
         schedule.allowed_declaration_types = %w[started completed]
         schedule.policy_descriptor = 1
         schedule.acceptance_window_start = Date.new(cohort_year + 1, 1, 1)

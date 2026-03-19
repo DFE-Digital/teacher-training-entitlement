@@ -86,7 +86,7 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.ya
     let(:course) { create(:course, :tte_early_years) }
     let!(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
     let(:application) { create(:application, :accepted, cohort:, course:, lead_provider:) }
-    let(:declaration_date) { schedule.applies_from + 1.day }
+    let(:declaration_date) { schedule.training_starts_at + 1.day }
     let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     let(:secondary_delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     let(:invalid_attributes) { { participant_id: "invalid" } }
@@ -94,7 +94,7 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.ya
       {
         participant_id: application.user.ecf_id,
         declaration_type: "started",
-        declaration_date: application.schedule.applies_from.rfc3339,
+        declaration_date: application.schedule.training_starts_at.rfc3339,
         course_identifier: course.identifier,
         delivery_partner_id: delivery_partner.ecf_id,
         secondary_delivery_partner_id: secondary_delivery_partner.ecf_id,
