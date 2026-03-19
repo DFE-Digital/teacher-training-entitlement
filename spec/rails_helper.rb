@@ -12,8 +12,10 @@ require "site_prism"
 Dir[Rails.root.join("spec/page_objects/**/*_section.rb")].sort.each { |f| require f }
 Dir[Rails.root.join("spec/page_objects/**/*_page.rb")].sort.each { |f| require f }
 
-require "axe-rspec"
-require "axe-capybara"
+# TODO: reinstate axe-rspec
+# this needs one of the following:
+# - cuprite to support it
+# - switch back to selenium
 
 require "active_support/core_ext/date/conversions"
 require "active_support/core_ext/time/conversions"
@@ -24,30 +26,26 @@ require "capybara/rspec"
 require "paper_trail/frameworks/rspec"
 require "dfe/analytics/testing"
 require "dfe/analytics/rspec/matchers"
-require "selenium-webdriver"
+require "capybara/cuprite"
 require "rack_session_access/capybara"
 
-Capybara.register_driver :headless_chrome do |app|
-  options = Selenium::WebDriver::Chrome::Options.new
-  options.add_argument("--headless=new")
-  options.add_argument("--no-sandbox")
-  options.add_argument("--disable-gpu")
-  options.add_argument("--window-size=1400,1400")
-
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+Capybara.register_driver(:cuprite) do |app|
+  Capybara::Cuprite::Driver.new(
+    app,
+    browser_options: { 'no-sandbox': nil },
+    window_size: [1400, 1400],
+    process_timeout: 60,
+    timeout: 20,
+  )
 end
 
 Capybara.configure do |config|
-  config.default_driver = :headless_chrome
-  config.javascript_driver = :headless_chrome
-  config.default_max_wait_time = 10
+  config.default_driver = :cuprite
+  config.javascript_driver = :cuprite
+  config.default_max_wait_time = 10 # without this, the default is 2
 end
 
 require "capybara-screenshot/rspec"
-
-Capybara::Screenshot.register_driver(:headless_chrome) do |driver, path|
-  driver.browser.save_screenshot(path)
-end
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -153,13 +151,6 @@ RSpec.configure do |config|
 
   config.before(:each, type: :feature) do
     Capybara.current_session.driver.browser.try(:download_path=, Capybara.save_path)
-  end
-
-  # Run accessibility check after all feature specs (skip with `skip_axe`)
-  config.after(:each, type: :feature) do |example|
-    if Capybara.current_driver != :rack_test && !example.metadata[:skip_axe]
-      expect(page).to be_accessible
-    end
   end
 
   config.before(:each, type: :view) do

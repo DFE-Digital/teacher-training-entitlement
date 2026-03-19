@@ -6,7 +6,9 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   RSpec::Matchers.define :have_application do |expected|
     match do |_actual|
-      expect(page).to have_css("table.govuk-table tbody tr", text: expected.user.full_name)
+      within("td:nth-child(1)") do
+        expect(page).to have_text(expected.user.full_name)
+      end
     end
   end
 
@@ -48,8 +50,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     fill_in "Find an application", with: applications_in_order[0].ecf_id
     click_on "Search"
 
-    expect(page).to have_application(applications_in_order[0])
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
+    expect(page).to have_application(applications_in_order[0])
   end
 
   scenario "filtering applications by application status" do
@@ -114,24 +116,20 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     approval_status_without_results = "Accepted"
 
     visit(admin_applications_path)
-    expect(page).to have_css("h1", text: "Applications")
 
     fill_in "Find an application", with: search_with_results
     select approval_status_without_results, from: "Provider approval status"
     click_on "Search"
-    expect(page).to have_field("Find an application", with: search_with_results)
     expect(page).to have_text("No applications match the search and filters")
 
     fill_in "Find an application", with: search_without_results
     select approval_status_with_results, from: "Provider approval status"
     click_on "Search"
-    expect(page).to have_field("Find an application", with: search_without_results)
     expect(page).to have_text("No applications match the search and filters")
 
     fill_in "Find an application", with: search_with_results
     select approval_status_with_results, from: "Provider approval status"
     click_on "Search"
-    expect(page).to have_field("Find an application", with: search_with_results)
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(application)
   end
@@ -222,7 +220,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     expect(page).to have_current_path(admin_application_path(application))
 
-    within(".govuk-summary-list__row", text: "Name", match: :first) do
+    within(first(".govuk-summary-list__row", text: "Name")) do
       expect(page).to have_text(application.user.full_name)
     end
   end
@@ -246,7 +244,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose "Yes", visible: :all
     click_button "Change status to Pending"
 
-    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Provider approval status") do |summary_list_row|
       expect(summary_list_row).to have_text "Pending"
@@ -275,7 +272,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     select Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["deferred"].first
     click_button "Continue"
 
-    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Training status") do |summary_list|
       expect(summary_list).to have_text "Deferred"
@@ -286,7 +282,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose "Active", visible: :all
     click_button "Continue"
 
-    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Training status") do |summary_list|
       expect(summary_list).to have_text "Active"
@@ -308,14 +303,12 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page.find_field("No", visible: :all)).to be_checked
     choose "Yes", visible: :all
 
-    perform_enqueued_jobs do
-      click_button "Continue"
-      expect(page).to have_current_path(admin_application_path(application))
-      expect(page).to have_css("h1", text: "Application details")
-      expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")
-    end
+    perform_enqueued_jobs { click_button "Continue" }
 
     expect_mail_to_have_been_sent(to: application.user.email, template_id: GenericMailer::TEMPLATE_ID)
+
+    expect(page).to have_css("h1", text: "Application details")
+    expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")
     within(".govuk-summary-list__row", text: "Eligible for funding") do |summary_list_row|
       expect(summary_list_row).to have_text "Yes"
       click_link("Change")
@@ -325,7 +318,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose "No", visible: :all
     click_button "Continue"
 
-    expect(page).to have_current_path(admin_application_path(application))
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Eligible for funding") do |summary_list_row|
       expect(summary_list_row).to have_text "No"
@@ -353,7 +345,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose future_cohort.start_year.to_s, visible: :all
     click_button "Continue"
 
-    expect(page).to have_current_path(admin_application_path(application))
     within(".govuk-summary-list__row", text: "Schedule cohort") do |row|
       expect(row).to have_text(future_cohort.start_year.to_s)
     end

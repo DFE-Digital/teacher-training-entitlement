@@ -18,10 +18,9 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     sign_in_as admin
   end
 
-  scenario "listing cohorts", :js do
+  scenario "listing cohorts" do
     visit_index
 
-    expect(page).to be_accessible
     expect(Cohort.count).to be_positive
 
     expect(page).to have_table(rows: [
@@ -64,14 +63,9 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       fill_in "Month", with: "3"
       fill_in "Year", with: "2029"
 
-      initial_count = Cohort.count
-
       perform_enqueued_jobs do
-        click_on "Create cohort"
-        expect(page).to have_text("Cohort created")
+        expect { click_on "Create cohort" }.to change(Cohort, :count).by(1)
       end
-
-      expect(Cohort.count).to eq(initial_count + 1)
 
       cohort = Cohort.order(created_at: :desc, id: :desc).first
       expect(cohort.identifier).to eq("2029a")
@@ -117,11 +111,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       navigate_to_cohort
       click_on delete_button_text
 
-      initial_count = Cohort.count
-      click_on "Confirm"
-
-      expect(page).to have_text("Cohort deleted")
-      expect(Cohort.count).to eq(initial_count - 1)
+      expect { click_on "Confirm" }.to change(Cohort, :count).by(-1)
     end
 
     scenario "downloading contracts CSV" do

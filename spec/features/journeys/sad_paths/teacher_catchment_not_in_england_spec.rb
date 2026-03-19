@@ -20,7 +20,7 @@ RSpec.feature "Sad journey", :with_default_schedules, type: :feature do
   def run_scenario
     stub_participant_validation_request
 
-    navigate_to_page(path: "/", submit_form: false) do
+    navigate_to_page(path: "/", submit_form: false, axe_check: false) do
       page.click_button("Start now")
     end
 
@@ -36,7 +36,7 @@ RSpec.feature "Sad journey", :with_default_schedules, type: :feature do
       page.choose(LeadProvider.first.name, visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+    expect_page_to_have(path: "/registration/teacher-catchment", axe_check: false, submit_form: true) do
       page.choose("No", visible: :all)
     end
 

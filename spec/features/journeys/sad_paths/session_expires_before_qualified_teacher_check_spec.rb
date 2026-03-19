@@ -13,7 +13,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   scenario "session expires before qualified teacher check - no DQT mismatch", :no_js do
     stub_participant_validation_request(trn: manually_entered_trn, response: { trn: manually_entered_trn, date_of_birth: "1980-12-13" })
 
-    navigate_to_page(path: "/", submit_form: false) do
+    navigate_to_page(path: "/", submit_form: false, axe_check: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")
     end
@@ -50,7 +50,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   scenario "session expires before qualified teacher check - DQT mismatch", :no_js do
     stub_inactive_participant_validation_request(trn: manually_entered_trn)
 
-    navigate_to_page(path: "/", submit_form: false) do
+    navigate_to_page(path: "/", submit_form: false, axe_check: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")
     end

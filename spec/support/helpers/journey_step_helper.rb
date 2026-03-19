@@ -78,7 +78,7 @@ module Helpers
 
     def choose_teacher_catchment(js:, region:)
       if js
-        expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+        expect_page_to_have(path: "/registration/teacher-catchment", axe_check: false, submit_form: true) do
           page.choose(region, visible: :all)
         end
       else
@@ -89,7 +89,7 @@ module Helpers
         # select(country_name, from: "Which country do you teach in?")
         #
         # instead we need to find all matches and select the first
-        expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+        expect_page_to_have(path: "/registration/teacher-catchment", axe_check: false, submit_form: true) do
           page.choose(region)
         end
       end
