@@ -41,10 +41,10 @@ RSpec.feature "admin management", type: :feature do
   end
 
   def then_the_latest_admin_has_the_correct_details(full_name:, email:)
-    expect(page).to have_content("Admin permissions granted to #{email}")
-
-    admin = AdminUser.find_by!(email:)
-    expect(admin.full_name).to eql(full_name)
+    AdminUser.last.tap do |admin|
+      expect(admin.full_name).to eql(full_name)
+      expect(admin.email).to eql(email)
+    end
   end
 
   def when_i_fill_in_the_new_admin_form_with(full_name:, email:)

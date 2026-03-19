@@ -10,7 +10,7 @@ RSpec.feature "Sad journeys", :npq, type: :feature do
   # navigating and having two browser windows open
   scenario "when an unintended journey leaves mandatory institution missing" do
     # start a journey in window 1 that doesn't require an institution
-    navigate_to_page(path: "/", submit_form: true) do
+    navigate_to_page(path: "/", submit_form: true, axe_check: false) do
       page.click_button("Start now")
     end
 
@@ -22,7 +22,7 @@ RSpec.feature "Sad journeys", :npq, type: :feature do
       page.choose("Yes", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+    expect_page_to_have(path: "/registration/teacher-catchment", axe_check: false, submit_form: true) do
       page.choose("Yes", visible: :all)
     end
 

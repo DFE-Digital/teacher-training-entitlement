@@ -27,12 +27,9 @@ RSpec.feature "Statement payment", type: :feature do
     perform_enqueued_jobs do
       check "Yes, I'm ready to authorise this for payment", visible: :all
       click_button "Authorise for payment"
-      expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{Date::MONTHNAMES[statement.month]} #{statement.year}")
     end
 
-    # Refresh to see the updated state after the job has run
-    visit current_path
-
+    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{Date::MONTHNAMES[statement.month]} #{statement.year}")
     expect(page).to have_css(".govuk-tag", text: /Authorised for payment at 1?\d:\d\d[ap]m on \d?\d [A-Z][a-z]{2} 20\d\d/)
   end
 

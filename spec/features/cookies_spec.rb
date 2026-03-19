@@ -21,7 +21,7 @@ RSpec.feature "Cookies", type: :feature do
     click_button("Hide this message")
 
     expect(page).to be_accessible
-    expect(page).not_to have_content("You've rejected additional cookies")
+    expect(page).not_to have_content("You’ve rejected additional cookies")
   end
 
   scenario "when accepting cookies" do
@@ -36,6 +36,6 @@ RSpec.feature "Cookies", type: :feature do
     click_button("Hide this message")
 
     expect(page).to be_accessible
-    expect(page).not_to have_content("You've accepted additional cookies")
+    expect(page).not_to have_content("You’ve accepted additional cookies")
   end
 end

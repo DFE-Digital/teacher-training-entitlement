@@ -95,8 +95,7 @@ RSpec.describe "Delivery Partners rake tasks" do
     before { partners }
     after { Rake::Task["delivery_partners:partners:export"].reenable }
 
-    let(:tempfile) { Tempfile.new }
-    let(:csv_file) { tempfile.path }
+    let(:csv_file) { Tempfile.new.path }
     let(:partners) { create_list :delivery_partner, 3 }
 
     it { is_expected.to have_attributes length: 4 }
@@ -230,8 +229,7 @@ RSpec.describe "Delivery Partners rake tasks" do
     before { partnerships }
     after { Rake::Task["delivery_partners:partnerships:export"].reenable }
 
-    let(:tempfile) { Tempfile.new }
-    let(:csv_file) { tempfile.path }
+    let(:csv_file) { Tempfile.new.path }
     let :partnerships do
       create_list(:delivery_partner, 3, lead_provider: create(:lead_provider))
         .flat_map(&:delivery_partnerships)
