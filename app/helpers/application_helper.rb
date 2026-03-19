@@ -102,7 +102,7 @@ module ApplicationHelper
     return [] unless current_user
 
     [
-      { href: identity_link_uri(request.original_url), text: "DfE Identity account" },
+      { href: one_login_home_url, text: "GOV.UK One Login" },
       npq_account_navigation_item,
       { href: sign_out_user_path, text: "Sign out" },
     ].compact
@@ -115,5 +115,9 @@ module ApplicationHelper
       href: application_count_based_account_url,
       text: "NPQ account",
     }
+  end
+
+  def one_login_home_url
+    ENV.fetch("ONE_LOGIN_HOME_URL")
   end
 end

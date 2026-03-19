@@ -1,2 +1,4 @@
 ---
-EXAMPLE_KEY: example value 2
+ONE_LOGIN_HOME_URL: https://home.integration.account.gov.uk
+TEACHER_AUTH_DOMAIN: https://preprod.authorise-access-to-a-teaching-record.education.gov.uk/
+TEACHER_AUTH_CLIENT_ID: teacher-training-entitlement

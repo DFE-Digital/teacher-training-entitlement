@@ -23,9 +23,6 @@ module "application_configuration" {
     RAILS_ENV        = var.environment
     AZURE_STORAGE_ACCOUNT_NAME = module.storage_account.name
     AZURE_STORAGE_CONTAINER    = "uploads"
-    TEACHER_AUTH_DOMAIN        = "https://preprod.authorise-access-to-a-teaching-record.education.gov.uk/",
-    TEACHER_AUTH_CLIENT_ID     = "teacher-training-entitlement",
-    TEACHER_AUTH_CLIENT_SECRET = "secret",
   }
   secret_variables = {
     DATABASE_URL = module.postgres.url
