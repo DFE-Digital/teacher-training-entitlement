@@ -1,0 +1,94 @@
+// GOV.UK One Login Header styles
+// Based on https://github.com/govuk-one-login/service-header
+
+.one-login-header {
+  background-color: govuk-colour("blue");
+}
+
+.one-login-header__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.one-login-header__logo {
+  padding: govuk-spacing(3) 0;
+  margin-right: govuk-spacing(2);
+}
+
+.one-login-header__link--homepage {
+  @include govuk-link-style-inverse;
+
+  &:hover {
+    text-decoration-thickness: 3px;
+  }
+
+  &:focus {
+    @include govuk-focused-text;
+  }
+}
+
+.one-login-header__logotype {
+  display: inline-flex;
+  align-items: center;
+  gap: govuk-spacing(1);
+}
+
+.one-login-header__logotype-crown {
+  fill: currentColor;
+}
+
+.one-login-header__logotype-text {
+  @include govuk-font($size: 24, $weight: bold);
+}
+
+.one-login-header__nav__list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.one-login-header__nav__list-item {
+  display: flex;
+  align-items: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.one-login-header__nav__link {
+  @include govuk-font($size: 16, $weight: bold);
+  @include govuk-link-style-inverse;
+  display: inline-flex;
+  align-items: center;
+  gap: govuk-spacing(1);
+  padding: govuk-spacing(3);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  appearance: none;
+  color: govuk-colour("white");
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+
+  &:focus {
+    @include govuk-focused-text;
+  }
+
+  &:link,
+  &:visited {
+    color: govuk-colour("white");
+  }
+}
+
+.one-login-header__nav__icon {
+  flex-shrink: 0;
+}
+
+.one-login-header__nav__button-form {
+  margin: 0;
+  padding: 0;
+}

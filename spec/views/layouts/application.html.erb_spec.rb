@@ -5,42 +5,30 @@ RSpec.describe "layouts/application.html.erb", type: :view do
 
   let(:service_name) { "Teacher training entitlement" }
   let(:one_login_link_text) { "GOV.UK One Login" }
-  let(:npq_account_link_text) { "NPQ account" }
   let(:sign_out_link_text) { "Sign out" }
 
   let(:user) { nil }
 
   before do
     allow(controller).to receive(:current_user).and_return(user)
-    allow(request).to receive(:original_url).and_return("http://example.com")
   end
 
   describe "service navigation" do
+    it { is_expected.to have_css(".govuk-service-navigation__container", text: service_name) }
+  end
+
+  describe "one login header" do
     context "when not logged in" do
-      it { is_expected.to have_css(".govuk-service-navigation__container", text: service_name) }
       it { is_expected.not_to have_link(one_login_link_text) }
-      it { is_expected.not_to have_link(npq_account_link_text) }
-      it { is_expected.not_to have_link(sign_out_link_text) }
+      it { is_expected.not_to have_button(sign_out_link_text) }
     end
 
-    context "when logged in as a user" do
+    context "when logged in" do
       let(:user) { build(:user) }
 
-      context "with no applications" do
-        it { is_expected.to have_css(".govuk-service-navigation__container", text: service_name) }
-        it { is_expected.to have_link(one_login_link_text) }
-        it { is_expected.not_to have_link(npq_account_link_text) }
-        it { is_expected.to have_link(sign_out_link_text) }
-      end
-
-      context "with applications" do
-        before { create(:application, user:) }
-
-        it { is_expected.to have_css(".govuk-service-navigation__container", text: service_name) }
-        it { is_expected.to have_link(one_login_link_text) }
-        it { is_expected.to have_link(npq_account_link_text) }
-        it { is_expected.to have_link(sign_out_link_text) }
-      end
+      it { is_expected.to have_css(".one-login-header") }
+      it { is_expected.to have_link(one_login_link_text) }
+      it { is_expected.to have_button(sign_out_link_text) }
     end
   end
 end

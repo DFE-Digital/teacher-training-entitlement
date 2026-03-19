@@ -98,25 +98,6 @@ module ApplicationHelper
     end
   end
 
-  def service_navigation_items
-    return [] unless current_user
-
-    [
-      { href: one_login_home_url, text: "GOV.UK One Login" },
-      npq_account_navigation_item,
-      { href: sign_out_user_path, text: "Sign out" },
-    ].compact
-  end
-
-  def npq_account_navigation_item
-    return unless current_user.applications.any?
-
-    {
-      href: application_count_based_account_url,
-      text: "NPQ account",
-    }
-  end
-
   def one_login_home_url
     ENV.fetch("ONE_LOGIN_HOME_URL")
   end

@@ -15,16 +15,9 @@
 
     <a tabindex="0" href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-    <%= govuk_header %>
+    <%= render OneLoginHeaderComponent.new(current_user: current_user) %>
 
-    <%=
-      govuk_service_navigation(
-        current_path: request.path,
-        navigation_items: service_navigation_items,
-        service_name: "Teacher training entitlement",
-        service_url: root_path,
-      )
-    %>
+    <%= govuk_service_navigation(service_name: "Teacher training entitlement") %>
 
     <aside class="govuk-width-container">
       <%= render GovukComponent::PhaseBannerComponent.new(

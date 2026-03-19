@@ -163,8 +163,7 @@ RSpec.feature "Service is closed", type: :feature do
 
     scenario "Register to email and unsubscribe" do
       visit "/"
-      click_button "Sign in to your DfE Identity account"
-      click_button "Request email updates"
+      click_button "Sign up for email updates"
       page.choose("Yes", visible: :all)
       click_button "Request email updates"
 
