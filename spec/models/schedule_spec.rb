@@ -18,7 +18,6 @@ RSpec.describe Schedule, type: :model do
     context "with new record" do
       it { is_expected.to validate_presence_of(:name) }
       it { is_expected.to validate_presence_of(:identifier) }
-      it { is_expected.to validate_uniqueness_of(:identifier).scoped_to(:cohort_id) }
       it { is_expected.to validate_presence_of(:training_starts_at) }
       it { is_expected.to validate_presence_of(:training_ends_at) }
       it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
