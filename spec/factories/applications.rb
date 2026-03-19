@@ -24,9 +24,13 @@ FactoryBot.define do
     funded_place { cohort&.funding_cap ? !!eligible_for_funding : nil }
 
     trait :with_school do
-      school
-      ukprn { school.ukprn }
-      private_childcare_provider_id { nil }
+      transient do
+        school { nil }
+        school_record { school || create(:school) }
+      end
+
+      institution { school_record.institution }
+      ukprn { school_record.ukprn }
 
       works_in_school { true }
       works_in_childcare { false }
@@ -34,7 +38,11 @@ FactoryBot.define do
     end
 
     trait :with_private_childcare_provider do
-      private_childcare_provider
+      transient do
+        provider_record { create(:private_childcare_provider) }
+      end
+
+      institution { provider_record.institution }
 
       works_in_school { false }
       works_in_childcare { true }
@@ -42,8 +50,11 @@ FactoryBot.define do
     end
 
     trait :with_public_childcare_provider do
-      school
-      private_childcare_provider_id { nil }
+      transient do
+        school_record { create(:school) }
+      end
+
+      institution { school_record.institution }
 
       works_in_school { false }
       works_in_childcare { true }

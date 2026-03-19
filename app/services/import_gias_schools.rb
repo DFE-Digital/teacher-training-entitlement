@@ -9,14 +9,19 @@ class ImportGiasSchools
 
   def call
     CSV.foreach(csv_file, headers: true, converters: [gias_converter]) do |row|
-      school = School.find_or_create_by!(urn: row["URN"]) do |s|
-        s.assign_attributes(attributes_from_row(row))
-      end
+      institution = Institution.find_by(institution_reference_number: row["URN"])
+      school = institution&.institutionable
 
-      if refresh_all? || school.last_changed_date.nil?
-        school.update!(attributes_from_row(row))
+      if school.nil?
+        school = School.create!(school_attributes_from_row(row))
+        update_institution!(school, row)
+        true
+      elsif refresh_all? || school.last_changed_date.nil?
+        school.update!(school_attributes_from_row(row))
+        update_institution!(school, row)
       elsif row["LastChangedDate"].present? && (school.last_changed_date < row["LastChangedDate"])
-        school.update!(attributes_from_row(row))
+        school.update!(school_attributes_from_row(row))
+        update_institution!(school, row)
       end
     end
   rescue CSV::MalformedCSVError => e
@@ -47,13 +52,10 @@ private
     end
   end
 
-  def attributes_from_row(row)
+  def school_attributes_from_row(row)
     {
       la_code: row["LA (code)"],
       la_name: row["LA (name)"],
-
-      establishment_number: row["EstablishmentNumber"],
-      name: row["EstablishmentName"],
 
       establishment_status_code: row["EstablishmentStatus (code)"],
       establishment_status_name: row["EstablishmentStatus (name)"],
@@ -68,6 +70,13 @@ private
       ukprn: row["UKPRN"],
       last_changed_date: row["LastChangedDate"],
 
+      number_of_pupils: row["NumberOfPupils"],
+    }
+  end
+
+  def institution_attributes_from_row(row)
+    {
+      name: row["EstablishmentName"],
       address_1: row["Street"],
       address_2: row["Locality"],
       address_3: row["Address3"],
@@ -75,13 +84,17 @@ private
       county: row["County (name)"],
       postcode: row["Postcode"],
       postcode_without_spaces: row["Postcode"]&.gsub(" ", ""),
-      easting: row["Easting"],
-      northing: row["Northing"],
       region: row["RSCRegion (name)"],
-      country: row["Country (name)"],
-
-      number_of_pupils: row["NumberOfPupils"],
+      institution_reference_number: row["URN"],
     }
+  end
+
+  def update_institution!(school, row)
+    if school.institution
+      school.institution.update!(institution_attributes_from_row(row))
+    else
+      school.create_institution!(institution_attributes_from_row(row))
+    end
   end
 
   def url_for_schools

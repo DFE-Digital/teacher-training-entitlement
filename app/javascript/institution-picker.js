@@ -22,7 +22,7 @@ institutionPicker.enhanceSelectElement = (configurationOptions) => {
 
   configurationOptions.onConfirm = function(object) {
     if (object !== undefined) {
-      configurationOptions.selectElement.value = object.identifier
+      configurationOptions.selectElement.value = object.id
     }
   }
 

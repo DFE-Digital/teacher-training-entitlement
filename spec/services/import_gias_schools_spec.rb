@@ -35,18 +35,16 @@ RSpec.describe ImportGiasSchools do
 
       rows = CSV.parse(File.open(file_fixture("gias_sample.csv"), "r:iso-8859-1:UTF-8").read, headers: true)
 
-      school = School.find_by(urn: rows[0]["URN"])
+      school = Institution.find_by(institution_reference_number: rows[0]["URN"])&.institutionable
 
       expect(school.establishment_type_code).to eql("2")
 
       rows.each do |row|
-        school = School.find_by(urn: row["URN"])
+        school = Institution.find_by(institution_reference_number: row["URN"])&.institutionable
 
+        # School attributes
         expect(school.la_code).to eql(row["LA (code)"])
         expect(school.la_name).to eql(row["LA (name)"])
-
-        expect(school.establishment_number).to eql(row["EstablishmentNumber"])
-        expect(school.name).to eql(row["EstablishmentName"])
 
         expect(school.establishment_status_code).to eql(row["EstablishmentStatus (code)"])
         expect(school.establishment_status_name).to eql(row["EstablishmentStatus (name)"])
@@ -61,19 +59,18 @@ RSpec.describe ImportGiasSchools do
         expect(school.ukprn).to eql(row["UKPRN"])
         expect(school.last_changed_date ? school.last_changed_date.strftime("%d-%m-%Y") : "").to eql(row["LastChangedDate"])
 
-        expect(school.address_1).to eql(row["Street"])
-        expect(school.address_2).to eql(row["Locality"])
-        expect(school.address_3).to eql(row["Address3"])
-        expect(school.town).to eql(row["Town"])
-        expect(school.county).to eql(row["County (name)"])
-        expect(school.postcode).to eql(row["Postcode"])
-        expect(school.postcode_without_spaces).to eql(row["Postcode"]&.gsub(" ", ""))
-        expect(school.easting.to_s).to eql(row["Easting"].to_s)
-        expect(school.northing.to_s).to eql(row["Northing"].to_s)
-        expect(school.region).to eql(row["RSCRegion (name)"])
-        expect(school.country).to eql(row["Country (name)"])
-
         expect(school.number_of_pupils).to eql(row["NumberOfPupils"].nil? ? nil : row["NumberOfPupils"].to_i)
+
+        # Institution attributes (via delegation)
+        expect(school.name).to eql(row["EstablishmentName"])
+        expect(school.institution.address_1).to eql(row["Street"])
+        expect(school.institution.address_2).to eql(row["Locality"])
+        expect(school.institution.address_3).to eql(row["Address3"])
+        expect(school.institution.town).to eql(row["Town"])
+        expect(school.institution.county).to eql(row["County (name)"])
+        expect(school.institution.postcode).to eql(row["Postcode"])
+        expect(school.institution.postcode_without_spaces).to eql(row["Postcode"]&.gsub(" ", ""))
+        expect(school.institution.region).to eql(row["RSCRegion (name)"])
       end
     end
 
@@ -100,13 +97,13 @@ RSpec.describe ImportGiasSchools do
       before do
         described_class.new.call
         described_class.new.call
-        School.update_all(name: "foo")
+        Institution.update_all(name: "foo")
       end
 
       it "updates everything" do
         described_class.new(refresh_all: true).call
 
-        expect(School.where(name: "foo").count).to be_zero
+        expect(Institution.where(name: "foo").count).to be_zero
       end
     end
 

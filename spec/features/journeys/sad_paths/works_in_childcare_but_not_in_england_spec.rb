@@ -112,7 +112,6 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
       "funding_choice" => "school",
       "funding_eligiblity_status_code" => "not_in_england",
       "kind_of_nursery" => nil,
-      "headteacher_status" => nil,
       "lead_provider_id" => LeadProvider.find_by(name: "Teach First").id,
       "notes" => nil,
       "private_childcare_provider_id" => nil,

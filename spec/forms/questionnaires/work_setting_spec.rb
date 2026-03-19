@@ -107,13 +107,13 @@ RSpec.describe Questionnaires::WorkSetting, type: :model do
       end
     end
 
-    context "when institution_identifier was previously set" do
-      let(:store) { { "institution_identifier" => "School-123456" } }
+    context "when institution_id was previously set" do
+      let(:store) { { "institution_id" => "123456" } }
       let(:work_setting) { "a_school" }
 
-      it "clears institution_identifier" do
+      it "clears institution_id" do
         subject.after_save
-        expect(subject.wizard.store["institution_identifier"]).to be_nil
+        expect(subject.wizard.store["institution_id"]).to be_nil
       end
     end
   end

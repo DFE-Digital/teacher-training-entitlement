@@ -5,7 +5,7 @@ class Admin::UsersController < AdminController
 
   def show
     @user = User.find(params[:id])
-    @applications = @user.applications.includes(:course, :lead_provider, :school).order(:created_at, :id)
+    @applications = @user.applications.includes(:course, :lead_provider, :institution).order(:created_at, :id)
   end
 
 private

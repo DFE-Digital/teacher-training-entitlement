@@ -2,8 +2,6 @@ module Questionnaires
   class EhcoNewHeadteacher < Base
     VALID_EHCO_NEW_HEADTEACHER_OPTIONS = %w[yes no].freeze
 
-    include Helpers::Institution
-
     attr_accessor :ehco_new_headteacher
 
     validates :ehco_new_headteacher, presence: true, inclusion: { in: VALID_EHCO_NEW_HEADTEACHER_OPTIONS }
@@ -51,7 +49,6 @@ module Questionnaires
       FundingEligibility.new(
         course:,
         institution:,
-        approved_itt_provider: approved_itt_provider?,
         inside_catchment: inside_catchment?,
         new_headteacher: new_headteacher?,
         trn:,
@@ -60,8 +57,7 @@ module Questionnaires
       )
     end
 
-    delegate :approved_itt_provider?,
-             :course,
+    delegate :course,
              :inside_catchment?,
              :trn,
              :get_an_identity_id,

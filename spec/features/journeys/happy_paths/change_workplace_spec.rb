@@ -14,7 +14,7 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
       "user_id" => user.id,
       "registration_store" => {
         "works_in_school" => "yes",
-        "institution_identifier" => "School-#{school.urn}",
+        "institution_id" => school.institution.id.to_s,
         "course_start_date" => "yes",
         "teacher_catchment" => "england",
         "work_setting" => "a_school",

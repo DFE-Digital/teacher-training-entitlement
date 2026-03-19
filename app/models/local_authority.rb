@@ -1,32 +1,11 @@
 class LocalAuthority < ApplicationRecord
-  include PgSearch::Model
+  has_one :institution, as: :institutionable, touch: true
 
-  pg_search_scope :search_by_name,
-                  against: %i[name address_1 address_2 address_3 town county postcode postcode_without_spaces],
-                  using: {
-                    tsearch: {
-                      prefix: true,
-                      dictionary: "english",
-                    },
-                  }
-  def display_name
-    name
-  end
+  delegate :name, :address, :address_string, :display_name, :name_with_address,
+           :town, :county, :postcode, :ukprn, to: :institution
 
   def urn
     nil
-  end
-
-  def address
-    [address_1, address_2, address_3, town, county, postcode].reject(&:blank?)
-  end
-
-  def address_string
-    address.join(", ")
-  end
-
-  def name_with_address
-    [display_name, address_string].join(" – ")
   end
 
   def identifier
@@ -39,9 +18,5 @@ class LocalAuthority < ApplicationRecord
 
   def eligible_establishment?
     true
-  end
-
-  def la_name
-    name
   end
 end

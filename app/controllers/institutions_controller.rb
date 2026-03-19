@@ -1,13 +1,10 @@
 class InstitutionsController < PublicPagesController
   def index
-    schools = School
-      .open
+    institutions = Institution
+      .where(institutionable_type: %w[School LocalAuthority])
+      .open_school_or_non_school
       .search_by_name(params[:name])
 
-    local_authorities = LocalAuthority
-      .search_by_name(params[:name])
-      .limit(100)
-
-    render(json: InstitutionSerializer.render(schools + local_authorities))
+    render(json: InstitutionSerializer.render(institutions))
   end
 end

@@ -12,42 +12,34 @@ RSpec.describe Questionnaires::ChoosePrivateChildcareProvider, :npq, type: :mode
   describe "validations" do
     subject { described_class.new(wizard:) }
 
-    before { create(:private_childcare_provider, provider_urn: "123456") }
+    let(:private_childcare_provider) { create(:private_childcare_provider) }
 
-    describe "#institution_identifier" do
-      it "can have institution_identifier as empty string" do
-        subject.institution_identifier = ""
+    describe "#institution_id" do
+      it "can have institution_id as empty string" do
+        subject.institution_id = ""
         expect(subject).to be_valid
       end
 
-      it "can have institution_identifier as 'other'" do
-        subject.institution_identifier = "other"
+      it "can have institution_id as 'other'" do
+        subject.institution_id = "other"
         expect(subject).to be_valid
       end
 
-      it "can have institution_identifier as 'PrivateChildcareProvider-123456'" do
-        subject.institution_identifier = "PrivateChildcareProvider-123456"
+      it "can have institution_id as a numeric string" do
+        subject.institution_id = private_childcare_provider.institution.id.to_s
         expect(subject).to be_valid
       end
 
-      it "is invalid when the institution_identifier contains a URN that doesn't exist" do
-        missing_identifier = "PrivateChildcareProvider-000000"
-        expected_message = "No private childcare providers with the URN 000000 were found, please try again"
-
-        subject.institution_identifier = missing_identifier
-
+      it "is invalid when the institution_id is non-numeric" do
+        subject.institution_id = "PrivateChildcareProvider-123456"
         expect(subject).to be_invalid
-        expect(subject.errors.messages[:institution_identifier]).to include(expected_message)
+        expect(subject.errors[:institution_id]).to be_present
       end
 
-      it "is invalid when the institution_identifier is in the wrong format" do
-        invalid_identifier = "PrivateChildcareProvider/999876"
-        expected_message = "No matching private childcare provider found"
-
-        subject.institution_identifier = invalid_identifier
-
+      it "is invalid when the institution_id does not exist" do
+        subject.institution_id = "999999999"
         expect(subject).to be_invalid
-        expect(subject.errors.messages[:institution_identifier]).to include(expected_message)
+        expect(subject.errors[:institution_id]).to be_present
       end
 
       it { is_expected.to validate_length_of(:institution_name).is_at_most(64) }
@@ -55,16 +47,16 @@ RSpec.describe Questionnaires::ChoosePrivateChildcareProvider, :npq, type: :mode
   end
 
   describe "#next_step" do
-    context "when institution_identifier is blank" do
+    context "when institution_id is blank" do
       it "is choose_private_childcare_provider" do
         expect(subject.next_step).to be(:choose_private_childcare_provider)
       end
     end
 
-    context "when institution_identifier is present" do
-      before { allow(subject).to receive(:institution_identifier).and_return("12345") }
+    context "when institution_id is present" do
+      before { allow(subject).to receive(:institution_id).and_return("12345") }
 
-      it "is choose_private_childcare_provider" do
+      it "is choose_your_npq" do
         expect(subject.next_step).to be(:choose_your_npq)
       end
     end

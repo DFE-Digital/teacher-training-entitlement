@@ -44,7 +44,7 @@
       <%=
         form.govuk_radio_button(
           question.name,
-          institution.identifier,
+          institution.id,
           label: { text: institution.display_name },
           hint: { text: institution.address_string },
           link_errors: index.zero?,

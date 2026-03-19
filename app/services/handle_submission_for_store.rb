@@ -1,6 +1,4 @@
 class HandleSubmissionForStore
-  include Helpers::Institution
-
   attr_reader :store, :application
 
   def initialize(store:)
@@ -12,8 +10,7 @@ class HandleSubmissionForStore
       @application = user.applications.create!(
         course_id: course.id,
         lead_provider_id: store["lead_provider_id"],
-        private_childcare_provider: private_childcare_provider_urn.present? && PrivateChildcareProvider.find_by(provider_urn: private_childcare_provider_urn),
-        school: school_urn.present? && School.find_by(urn: school_urn),
+        institution: (institution_from_store if inside_catchment?),
         ukprn:,
         eligible_for_funding: eligible_for_funding?,
         funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
@@ -55,37 +52,23 @@ private
            to: :query_store
 
   def primary_establishment
-    institution_from_store.is_a?(School) && institution_from_store.primary_education_phase?
+    institution_from_store&.school? && institution_from_store.school.primary_education_phase?
   end
 
   def number_of_pupils
-    institution_from_store.is_a?(School) && institution_from_store.number_of_pupils
+    institution_from_store&.school? && institution_from_store.school.number_of_pupils
   end
 
   def institution_from_store
-    @institution_from_store ||= institution(source: store["institution_identifier"])
-  end
+    return nil if store["institution_id"].blank?
 
-  def store_private_childcare_provider_urn?
-    inside_catchment? && institution_from_store.is_a?(PrivateChildcareProvider)
-  end
-
-  def private_childcare_provider_urn
-    institution_from_store.provider_urn if store_private_childcare_provider_urn?
-  end
-
-  def store_school_urn?
-    inside_catchment? && institution_from_store.is_a?(School)
-  end
-
-  def school_urn
-    institution_from_store.urn if store_school_urn?
+    @institution_from_store ||= Institution.find(store["institution_id"])
   end
 
   def store_ukprn?
     return false unless inside_catchment?
 
-    institution_from_store.is_a?(LocalAuthority) || institution_from_store.is_a?(School)
+    institution_from_store&.local_authority? || institution_from_store&.school?
   end
 
   def ukprn
@@ -124,10 +107,6 @@ private
 
   def course
     @course ||= query_store.course
-  end
-
-  def school
-    @school ||= School.find_by(urn: store["school_urn"])
   end
 
   def user

@@ -4,9 +4,8 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:user) { application.user }
   let(:course) { create(:course) }
   let(:cohort) { build(:cohort) }
-  let(:private_childcare_provider) { build(:private_childcare_provider) }
-  let(:school) { build(:school) }
-  let(:application) { build(:application, cohort:, course:, private_childcare_provider:, school:) }
+  let(:school) { create(:school) }
+  let(:application) { build(:application, cohort:, course:, institution: school.institution) }
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(application)) }
@@ -85,8 +84,8 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
 
     describe "school serialization" do
       it "serializes the `school_urn`" do
-        school.urn = "1234567"
-        expect(attributes["school_urn"]).to eq(school.urn)
+        school.institution.institution_reference_number = "1234567"
+        expect(attributes["school_urn"]).to eq("1234567")
       end
 
       it "serializes the `school_ukprn`" do
@@ -95,7 +94,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       end
 
       context "when `school` is `nil`" do
-        let(:school) { nil }
+        let(:application) { build(:application, cohort:, course:, institution: nil) }
 
         it { expect(attributes["school_urn"]).to be_nil }
         it { expect(attributes["school_ukprn"]).to eq(application.ukprn) }
@@ -117,24 +116,24 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       subject(:attributes) { JSON.parse(described_class.render(application.reload))["attributes"] }
 
       context "when the `private_childcare_provider` is set" do
-        let(:private_childcare_provider) { create(:private_childcare_provider) }
+        let(:provider) { create(:private_childcare_provider) }
+        let(:application) { build(:application, cohort:, course:, institution: provider.institution) }
 
         it "serializes the `private_childcare_provider_urn`" do
-          expect(attributes["private_childcare_provider_urn"]).to eq(private_childcare_provider.provider_urn)
+          expect(attributes["private_childcare_provider_urn"]).to eq(provider.urn)
         end
       end
 
       context "when `private_childcare_provider` is `nil`" do
-        let(:private_childcare_provider) { nil }
-
         it { expect(attributes["private_childcare_provider_urn"]).to be_nil }
       end
 
       context "when the `private_childcare_provider` is disabled" do
-        let(:private_childcare_provider) { create(:private_childcare_provider, :disabled, provider_urn: "disabled urn") }
+        let(:provider) { create(:private_childcare_provider, :disabled, provider_urn: "disabled_urn") }
+        let(:application) { build(:application, cohort:, course:, institution: provider.institution) }
 
         it "serializes the `private_childcare_provider`" do
-          expect(attributes["private_childcare_provider_urn"]).to eq(private_childcare_provider.provider_urn)
+          expect(attributes["private_childcare_provider_urn"]).to eq(provider.urn)
         end
       end
     end
@@ -187,7 +186,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   end
 
   context "when serializing the `v1` view" do
-    let(:application) { build(:application, :accepted, cohort:, course:, private_childcare_provider:, school:) }
+    let(:application) { build(:application, :accepted, cohort:, course:, institution: school.institution) }
 
     describe "nested attributes" do
       subject(:attributes) { JSON.parse(described_class.render(application, view: :v1))["attributes"] }

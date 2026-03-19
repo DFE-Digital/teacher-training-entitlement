@@ -2,11 +2,9 @@ module Questionnaires
   # This is for choosing *public* childcare providers, these are stored alongside schools in the educationl_institutions
   # table as type School, therefore, we search and display identically to as we do for schools
   class ChooseChildcareProvider < Base
-    include Helpers::Institution
+    attr_accessor :institution_name, :institution_id
 
-    attr_accessor :institution_name, :institution_identifier
-
-    validates :institution_identifier, format: { with: /\ASchool-\d{6,7}\z|\ALocalAuthority-\d+\z/, unless: -> { institution_identifier.blank? || institution_identifier == "other" } }
+    validates :institution_id, numericality: { only_integer: true }, unless: -> { institution_id.blank? || institution_id == "other" }
     validates :institution_name, length: { maximum: 64 }
 
     validate :validate_childcare_provider_name_returns_results
@@ -14,14 +12,14 @@ module Questionnaires
     def self.permitted_params
       %i[
         institution_name
-        institution_identifier
+        institution_id
       ]
     end
 
     def questions
       [
         QuestionTypes::AutoCompleteInstitution.new(
-          name: :institution_identifier,
+          name: :institution_id,
           locale_name: :choose_childcare_provider,
           picker: :nursery,
           options: possible_institutions,
@@ -35,9 +33,9 @@ module Questionnaires
     end
 
     def next_step
-      if institution_identifier == "other" || institution_identifier.blank?
+      if institution_id == "other" || institution_id.blank?
         :choose_childcare_provider
-      elsif !institution(source: institution_identifier).in_england? # Right now this is always true when it shouldn't be
+      elsif !selected_institution.in_england? # Right now this is always true when it shouldn't be
         :childcare_provider_not_in_england
       else
         :choose_your_npq
@@ -56,21 +54,20 @@ module Questionnaires
     end
 
     def possible_institutions
-      return @possible_institutions if @possible_institutions
-
-      schools = School
-                  .search_by_name(institution_name)
-                  .open
-                  .limit(10)
-
-      local_authorities = LocalAuthority
-                            .search_by_name(institution_name)
-                            .limit(10)
-
-      @possible_institutions = schools + local_authorities
+      @possible_institutions ||= Institution
+        .where(institutionable_type: %w[School LocalAuthority])
+        .open_school_or_non_school
+        .search_by_name(institution_name)
+        .limit(10)
     end
 
   private
+
+    def selected_institution
+      return nil if institution_id.blank? || institution_id == "other"
+
+      @selected_institution ||= Institution.find(institution_id)
+    end
 
     def institution_location
       wizard.store["institution_location"]

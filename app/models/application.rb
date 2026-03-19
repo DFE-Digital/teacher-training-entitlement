@@ -17,10 +17,18 @@ class Application < ApplicationRecord
   belongs_to :cohort, optional: true
   belongs_to :course
   belongs_to :lead_provider
-  belongs_to :school, optional: true
-  belongs_to :private_childcare_provider, optional: true
-  belongs_to :private_childcare_provider_including_disabled, -> { including_disabled }, optional: true, class_name: "PrivateChildcareProvider", foreign_key: :private_childcare_provider_id
+  belongs_to :institution, optional: true
   belongs_to :schedule, optional: true
+
+  # Convenience methods to access the institutionable through institution
+  # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
+  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
+
+  def private_childcare_provider_including_disabled
+    return nil unless institution&.private_childcare_provider?
+
+    PrivateChildcareProvider.including_disabled.find_by(id: institution.institutionable_id)
+  end
 
   has_many :participant_id_changes, through: :user
   has_many :application_states
@@ -147,16 +155,15 @@ class Application < ApplicationRecord
   end
 
   def employer_name_to_display
-    private_childcare_provider&.provider_name || school&.name.to_s
+    institution&.name || ""
   end
 
   def long_employer_name_to_display
-    private_childcare_provider&.long_name ||
-      school&.long_name.to_s
+    institution&.name_with_address || ""
   end
 
   def employer_urn
-    private_childcare_provider&.urn || school_urn || ""
+    institution&.urn || ""
   end
 
   def school_urn

@@ -1,7 +1,5 @@
 module Questionnaires
   class ChooseYourProvider < Base
-    include Helpers::Institution
-
     NOT_CHOSEN = "not_chosen".freeze
 
     attr_accessor :lead_provider_id
@@ -71,10 +69,8 @@ module Questionnaires
       providers.find_by(id: lead_provider_id)
     end
 
-    delegate :approved_itt_provider?,
-             :course,
+    delegate :course,
              :inside_catchment?,
-             :new_headteacher?,
              :trn,
              :get_an_identity_id,
              to: :query_store

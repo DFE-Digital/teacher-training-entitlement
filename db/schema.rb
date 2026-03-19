@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -117,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.boolean "funded_place"
     t.enum "funding_choice", enum_type: "funding_choices"
     t.string "funding_eligiblity_status_code"
+    t.bigint "institution_id"
     t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
     t.enum "lead_provider_approval_status", enum_type: "lead_provider_approval_statuses"
     t.bigint "lead_provider_id", null: false
@@ -125,13 +126,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.string "on_submission_trn"
     t.text "participant_outcome_state"
     t.boolean "primary_establishment", default: false
-    t.bigint "private_childcare_provider_id"
     t.jsonb "raw_application_data", default: {}
     t.enum "reason_for_rejection", enum_type: "reasons_for_rejection"
     t.string "referred_by_return_to_teaching_adviser"
     t.enum "review_status", enum_type: "review_statuses"
     t.bigint "schedule_id"
-    t.bigint "school_id"
     t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
@@ -147,11 +146,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.index ["cohort_id"], name: "index_applications_on_cohort_id"
     t.index ["course_id"], name: "index_applications_on_course_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
+    t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["lead_provider_approval_status", "lead_provider_id"], name: "idx_on_lead_provider_approval_status_lead_provider__299e5bac06"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
-    t.index ["private_childcare_provider_id"], name: "index_applications_on_private_childcare_provider_id"
     t.index ["schedule_id"], name: "index_applications_on_schedule_id"
-    t.index ["school_id"], name: "index_applications_on_school_id"
     t.index ["user_id", "cohort_id", "course_id"], name: "index_applications_on_user_id_and_cohort_id_and_course_id", unique: true, where: "(lead_provider_approval_status <> 'rejected'::lead_provider_approval_statuses)"
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
@@ -361,6 +359,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "institutions", force: :cascade do |t|
+    t.string "address_1"
+    t.string "address_2"
+    t.string "address_3"
+    t.string "county"
+    t.datetime "created_at", null: false
+    t.string "institution_reference_number"
+    t.bigint "institutionable_id", null: false
+    t.string "institutionable_type", null: false
+    t.string "name"
+    t.string "postcode"
+    t.string "postcode_without_spaces"
+    t.string "region"
+    t.string "town"
+    t.datetime "updated_at", null: false
+    t.index ["institution_reference_number"], name: "index_institutions_on_institution_reference_number"
+    t.index ["institutionable_type", "institutionable_id"], name: "idx_on_institutionable_type_institutionable_id_e617e86838", unique: true
+  end
+
   create_table "lead_providers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "ecf_id"
@@ -380,19 +397,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
   end
 
   create_table "local_authorities", force: :cascade do |t|
-    t.text "address_1"
-    t.text "address_2"
-    t.text "address_3"
-    t.text "county"
     t.datetime "created_at", null: false
     t.boolean "high_pupil_premium", default: false, null: false
-    t.text "name"
-    t.text "postcode"
-    t.text "postcode_without_spaces"
-    t.text "town"
-    t.text "ukprn"
     t.datetime "updated_at", null: false
-    t.index ["ukprn"], name: "index_local_authorities_on_ukprn"
   end
 
   create_table "milestone_statements", force: :cascade do |t|
@@ -457,29 +464,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
   end
 
   create_table "private_childcare_providers", force: :cascade do |t|
-    t.text "address_1"
-    t.text "address_2"
-    t.text "address_3"
     t.datetime "created_at", null: false
     t.datetime "disabled_at"
     t.json "early_years_individual_registers", default: []
     t.text "local_authority"
-    t.text "ofsted_region"
-    t.integer "places"
-    t.text "postcode"
-    t.text "postcode_without_spaces"
     t.boolean "provider_compulsory_childcare_register_flag"
     t.boolean "provider_early_years_register_flag"
-    t.text "provider_name"
-    t.text "provider_status"
-    t.text "provider_urn", null: false
-    t.text "region"
-    t.text "registered_person_name"
-    t.text "registered_person_urn"
-    t.text "registration_date"
-    t.text "town"
     t.datetime "updated_at", null: false
-    t.index ["provider_urn"], name: "index_private_childcare_providers_on_provider_urn"
   end
 
   create_table "registration_interests", force: :cascade do |t|
@@ -517,15 +508,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
   end
 
   create_table "schools", force: :cascade do |t|
-    t.text "address_1"
-    t.text "address_2"
-    t.text "address_3"
     t.date "close_date"
-    t.text "country"
-    t.text "county"
     t.datetime "created_at", null: false
-    t.integer "easting"
-    t.text "establishment_number"
     t.text "establishment_status_code"
     t.text "establishment_status_name"
     t.text "establishment_type_code"
@@ -535,20 +519,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
     t.text "la_code"
     t.text "la_name"
     t.date "last_changed_date"
-    t.text "name"
-    t.integer "northing"
     t.integer "number_of_pupils"
     t.string "phase_name", default: "Not applicable"
     t.integer "phase_type", default: 0
-    t.text "postcode"
-    t.text "postcode_without_spaces"
-    t.text "region"
-    t.text "town"
     t.text "ukprn"
     t.datetime "updated_at", null: false
-    t.text "urn", null: false
-    t.index "to_tsvector('english'::regconfig, COALESCE(name, ''::text))", name: "school_name_search_idx", using: :gin
-    t.index ["urn"], name: "index_schools_on_urn"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -648,10 +623,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_142639) do
   add_foreign_key "application_states", "lead_providers"
   add_foreign_key "applications", "cohorts"
   add_foreign_key "applications", "courses"
+  add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "lead_providers"
-  add_foreign_key "applications", "private_childcare_providers"
   add_foreign_key "applications", "schedules"
-  add_foreign_key "applications", "schools"
   add_foreign_key "applications", "users"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"

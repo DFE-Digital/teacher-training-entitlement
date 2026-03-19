@@ -2,7 +2,6 @@ require "active_support/time"
 
 class RegistrationWizard
   include ActiveModel::Model
-  include Helpers::Institution
   include ActionView::Helpers::TranslationHelper
 
   class InvalidStep < StandardError; end
@@ -121,8 +120,6 @@ class RegistrationWizard
 private
 
   delegate :course,
-           :employment_type_hospital_school?,
-           :employment_type_other?,
            :formatted_date_of_birth,
            :get_an_identity_id,
            :has_ofsted_urn?,
@@ -130,7 +127,6 @@ private
            :kind_of_nursery_private?,
            :kind_of_nursery_public?,
            :lead_provider,
-           :new_headteacher?,
            :teacher_catchment_humanized,
            :trn,
            :trn_set_via_fallback_verification_question?,
@@ -153,7 +149,9 @@ private
   end
 
   def institution_from_store
-    @institution_from_store ||= institution(source: store["institution_identifier"])
+    return nil if store["institution_id"].blank?
+
+    @institution_from_store ||= Institution.find(store["institution_id"])
   end
 
   def funding_eligibility_calculator

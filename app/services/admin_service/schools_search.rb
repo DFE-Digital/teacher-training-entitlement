@@ -9,8 +9,8 @@ class AdminService::SchoolsSearch
     chain = default_scope
 
     if q.present?
-      chain = chain.where(urn: q)
-      chain = chain.or(default_scope.where("name ILIKE ?", "%#{q}%"))
+      chain = chain.where("institutions.institution_reference_number = ?", q)
+      chain = chain.or(default_scope.where("institutions.name ILIKE ?", "%#{q}%"))
     end
 
     chain
@@ -19,6 +19,6 @@ class AdminService::SchoolsSearch
 private
 
   def default_scope
-    School.order(name: :asc)
+    School.joins(:institution).order("institutions.name ASC")
   end
 end

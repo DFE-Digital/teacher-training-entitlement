@@ -7,7 +7,7 @@ module Helpers
             page.fill_in "What is the name of your workplace?", with: name
           end
 
-          page.find("#registration-wizard-institution-identifier-field__option--0").click
+          page.find("#registration-wizard-institution-id-field__option--0").click
         end
       else
         navigate_to_page(path: "/registration/choose-school", submit_form: true) do

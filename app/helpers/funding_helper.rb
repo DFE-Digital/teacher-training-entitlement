@@ -1,5 +1,4 @@
 module FundingHelper
-  include Helpers::Institution
   def scholarship_funding_eligibility(application)
     funding_eligibility = funding_eligibility_calculator(application)
 
@@ -9,11 +8,10 @@ module FundingHelper
   def scholarship_eligibility_in_review?(application)
     return false if application.eligible_for_funding
     return false if !application.eligible_for_funding && application.funding_choice.present?
-    return false if application.employment_type == "other"
     return false unless application.inside_catchment?
     return true if application.referred_by_return_to_teaching_adviser == "yes"
 
-    application.work_setting == "another_setting" && application.employment_type != "lead_mentor_for_accredited_itt_provider" && application.course.identifier != "npq-early-headship-coaching-offer"
+    application.work_setting == "another_setting"
   end
 
   def targeted_support_funding
@@ -25,7 +23,7 @@ private
   def funding_eligibility_calculator(application)
     FundingEligibility.new(
       course: application.course,
-      institution: institution(source: application.raw_application_data["institution_identifier"], application:),
+      institution: application.institution,
       inside_catchment: application.teacher_catchment == "england",
       trn: application.user.trn,
       get_an_identity_id: application.user.get_an_identity_id,

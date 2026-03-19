@@ -43,7 +43,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
 
   describe "a summary card for a minimal application" do
     let :application do
-      build_stubbed :application, cohort: nil, school: nil
+      build_stubbed :application, cohort: nil, institution: nil
     end
 
     it { is_expected.to have_css "h1", text: "Application details" }

@@ -1,23 +1,22 @@
 module Questionnaires
   class ChoosePrivateChildcareProvider < Base
-    include Helpers::Institution
+    attr_accessor :institution_name, :institution_id
 
-    attr_accessor :institution_name, :institution_identifier
-
+    validates :institution_id, numericality: { only_integer: true }, unless: -> { institution_id.blank? || institution_id == "other" }
     validates :institution_name, length: { maximum: 64 }
 
-    validate :validate_institution_identifier
+    validate :validate_institution_id_selected
     validate :validate_private_childcare_provider_name_returns_results
 
     def self.permitted_params
       %i[
         institution_name
-        institution_identifier
+        institution_id
       ]
     end
 
     def next_step
-      if no_js_fallback_search_loop? || institution_identifier.blank?
+      if no_js_fallback_search_loop? || institution_id.blank?
         :choose_private_childcare_provider
       else
         :choose_your_npq
@@ -31,7 +30,7 @@ module Questionnaires
     def questions
       [
         QuestionTypes::AutoCompleteInstitution.new(
-          name: :institution_identifier,
+          name: :institution_id,
           locale_name: :choose_private_childcare_provider,
           picker: :"private-childcare-provider",
           options: possible_institutions,
@@ -45,19 +44,26 @@ module Questionnaires
     end
 
     def possible_institutions
-      return @possible_institutions if @possible_institutions
-
-      @possible_institutions = PrivateChildcareProvider.limit(10)
+      @possible_institutions ||= begin
+        base = Institution.where(institutionable_type: "PrivateChildcareProvider")
+        institution_name.present? ? base.search_by_name(institution_name).limit(10) : base.limit(10)
+      end
     end
 
   private
+
+    def selected_institution
+      return nil if institution_id.blank? || institution_id == "other"
+
+      @selected_institution ||= Institution.find(institution_id)
+    end
 
     def search_term_entered_in_no_js_fallback_form?
       wizard.store["institution_name"].present?
     end
 
     def no_js_fallback_search_loop?
-      institution_identifier == "other"
+      institution_id == "other"
     end
 
     def validate_private_childcare_provider_name_returns_results
@@ -66,17 +72,13 @@ module Questionnaires
       end
     end
 
-    def validate_institution_identifier
+    def validate_institution_id_selected
       return if no_js_fallback_search_loop?
-      return if institution_identifier.blank?
+      return if institution_id.blank?
 
-      unless institution_identifier.start_with?("PrivateChildcareProvider-")
-        errors.add(:institution_identifier, :invalid, urn: institution_identifier)
-      end
+      return if selected_institution.present?
 
-      return if institution(source: institution_identifier).present?
-
-      errors.add(:institution_identifier, :no_results, urn: institution_identifier.split("-").last)
+      errors.add(:institution_id, :no_results)
     end
   end
 end

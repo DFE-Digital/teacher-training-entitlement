@@ -66,6 +66,15 @@ RSpec.describe AdminService::UsersSearch do
       end
     end
 
+    context "when application#private_childcare_provider_urn match" do
+      let!(:application) { create(:application, :with_private_childcare_provider, user:) }
+      let(:q) { application.private_childcare_provider.urn }
+
+      it "returns the hit" do
+        expect(subject.call).to include(user)
+      end
+    end
+
     context "when the user has multiple applications" do
       let(:q) { user.full_name }
 

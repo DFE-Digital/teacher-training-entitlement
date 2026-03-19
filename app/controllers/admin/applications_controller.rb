@@ -1,6 +1,6 @@
 class Admin::ApplicationsController < AdminController
   def index
-    applications = Application.includes(:private_childcare_provider, :school, :user)
+    applications = Application.includes(:institution, :user)
                               .merge(filter_scope)
                               .merge(search_scope)
                               .order("applications.created_at ASC")

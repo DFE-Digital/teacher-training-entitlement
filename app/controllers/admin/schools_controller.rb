@@ -1,6 +1,6 @@
 class Admin::SchoolsController < AdminController
   def index
-    @pagy, @schools = pagy(scope)
+    @pagy, @institutions = pagy(scope)
   end
 
 private

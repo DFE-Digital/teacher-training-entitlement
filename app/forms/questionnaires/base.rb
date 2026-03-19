@@ -113,6 +113,12 @@ module Questionnaires
       wizard.query_store
     end
 
+    def institution
+      return nil if wizard.store["institution_id"].blank?
+
+      @institution ||= ::Institution.find(wizard.store["institution_id"])
+    end
+
     def build_option_struct(value:, label: nil, hint: nil, link_errors: false, divider: false, revealed_question: nil)
       QuestionTypes::RadioOption.new(
         value:,

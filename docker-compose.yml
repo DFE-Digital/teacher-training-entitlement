@@ -2,7 +2,7 @@ x-app: &app
   build:
     args:
       - BUNDLE_WITHOUT=production review
-      - EXTRA_PACKAGES=chromium chromium-chromedriver gcompat yarn
+      - EXTRA_PACKAGES=chromium chromium-chromedriver gcompat yarn graphviz
     context: .
   depends_on:
     - db

@@ -7,54 +7,54 @@ RSpec.describe AdminService::WorkplaceSearch do
   subject { described_class.new(q:).limit(limit).offset(offset) }
 
   describe "searching" do
-    context "when school matches the criteria" do
-      let!(:school) { create(:school) }
+    context "when school institution matches the criteria" do
+      let!(:institution) { create(:institution, :for_school) }
 
       context "when partial name match" do
-        let(:q) { school.name.split(" ").first }
+        let(:q) { institution.name.split(" ").first }
 
         it "returns the hit" do
-          expect(subject.each.to_a).to eq([school])
+          expect(subject.each.to_a).to eq([institution])
         end
       end
 
-      context "when school#urn match" do
-        let(:q) { school.urn }
+      context "when URN match" do
+        let(:q) { institution.urn }
 
         it "returns the hit" do
-          expect(subject.each.to_a).to eq([school])
+          expect(subject.each.to_a).to eq([institution])
         end
       end
     end
 
-    context "when private childcare provider matches the criteria" do
-      let!(:workplace) { create(:private_childcare_provider) }
+    context "when private childcare provider institution matches the criteria" do
+      let!(:institution) { create(:institution, :for_private_childcare_provider) }
 
       context "when partial name match" do
-        let(:q) { workplace.provider_name.split(" ").first }
+        let(:q) { institution.name.split(" ").first }
 
         it "returns the hit" do
-          expect(subject.each.to_a).to eq([workplace])
+          expect(subject.each.to_a).to eq([institution])
         end
       end
 
-      context "when school#urn match" do
-        let(:q) { workplace.provider_urn }
+      context "when URN match" do
+        let(:q) { institution.urn }
 
         it "returns the hit" do
-          expect(subject.each.to_a).to eq([workplace])
+          expect(subject.each.to_a).to eq([institution])
         end
       end
     end
 
-    context "when local authority matches the criteria" do
-      let!(:workplace) { create(:local_authority) }
+    context "when local authority institution matches the criteria" do
+      let!(:institution) { create(:institution, :for_local_authority) }
 
       context "when partial name match" do
-        let(:q) { workplace.name.split(" ").first }
+        let(:q) { institution.name.split(" ").first }
 
         it "returns the hit" do
-          expect(subject.each.to_a).to eq([workplace])
+          expect(subject.each.to_a).to eq([institution])
         end
       end
     end
@@ -62,18 +62,17 @@ RSpec.describe AdminService::WorkplaceSearch do
 
   describe "pagination" do
     let(:q) { nil }
-    let!(:school1) { create(:school, name: "School 1") }
-    let!(:school2) { create(:school, name: "School 2") }
-    let!(:pcp1) { create(:private_childcare_provider, provider_name: "PCP 1") }
-    let!(:pcp2) { create(:private_childcare_provider, provider_name: "PCP 2") }
-    let!(:la1) { create(:local_authority, name: "Barnet") }
-    let!(:la2) { create(:local_authority, name: "Ealing") }
+    let!(:institution1) { create(:institution, :for_school, name: "ASchool 1") }
+    let!(:institution2) { create(:institution, :for_school, name: "BSchool 2") }
+    let!(:institution3) { create(:institution, :for_private_childcare_provider, name: "CPCP 1") }
+    let!(:institution4) { create(:institution, :for_private_childcare_provider, name: "DPCP 2") }
+    let!(:institution5) { create(:institution, :for_local_authority, name: "EBarnet") }
+    let!(:institution6) { create(:institution, :for_local_authority, name: "FEaling") }
 
     context "when limit is higher than all records counts" do
-      let(:result) { [school1, school2, pcp1, pcp2, la1, la2] }
-
+      # Results are sorted by name alphabetically across all institution types
       it "displays all records" do
-        expect(subject.each.to_a).to eq(result)
+        expect(subject.each.to_a).to eq([institution1, institution2, institution3, institution4, institution5, institution6])
       end
     end
 
@@ -84,7 +83,7 @@ RSpec.describe AdminService::WorkplaceSearch do
         let(:offset) { 0 }
 
         it "displays correct records" do
-          expect(subject.each.to_a).to eq([school1, school2])
+          expect(subject.each.to_a).to eq([institution1, institution2])
         end
       end
 
@@ -92,7 +91,7 @@ RSpec.describe AdminService::WorkplaceSearch do
         let(:offset) { 2 }
 
         it "displays correct records" do
-          expect(subject.each.to_a).to eq([pcp1, pcp2])
+          expect(subject.each.to_a).to eq([institution3, institution4])
         end
       end
 
@@ -100,7 +99,7 @@ RSpec.describe AdminService::WorkplaceSearch do
         let(:offset) { 4 }
 
         it "displays correct records" do
-          expect(subject.each.to_a).to eq([la1, la2])
+          expect(subject.each.to_a).to eq([institution5, institution6])
         end
       end
     end
@@ -112,7 +111,7 @@ RSpec.describe AdminService::WorkplaceSearch do
         let(:offset) { 0 }
 
         it "displays correct records" do
-          expect(subject.each.to_a).to eq([school1, school2, pcp1, pcp2, la1])
+          expect(subject.each.to_a).to eq([institution1, institution2, institution3, institution4, institution5])
         end
       end
 
@@ -120,7 +119,7 @@ RSpec.describe AdminService::WorkplaceSearch do
         let(:offset) { 5 }
 
         it "displays correct records" do
-          expect(subject.each.to_a).to eq([la2])
+          expect(subject.each.to_a).to eq([institution6])
         end
       end
     end

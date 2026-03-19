@@ -96,9 +96,8 @@ module Applications
         .includes(
           :course,
           :user,
-          :school,
+          :institution,
           :cohort,
-          :private_childcare_provider_including_disabled,
           :schedule,
         )
     end

@@ -10,7 +10,7 @@ FactoryBot.define do
 
     current_user { create(:user) }
     course_identifier { course.identifier }
-    institution_identifier { "School-#{school.urn}" }
+    institution_id { school.institution.id }
     lead_provider_id { lead_provider.id }
     works_in_school { "yes" }
     teacher_catchment { "england" }

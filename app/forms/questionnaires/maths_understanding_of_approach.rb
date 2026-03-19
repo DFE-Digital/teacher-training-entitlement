@@ -1,7 +1,5 @@
 module Questionnaires
   class MathsUnderstandingOfApproach < Base
-    include Helpers::Institution
-
     QUESTION_NAME = :maths_understanding_of_approach
 
     attr_accessor QUESTION_NAME
@@ -48,15 +46,12 @@ module Questionnaires
 
   private
 
-    delegate :inside_catchment?, :approved_itt_provider?, :lead_mentor_for_accredited_itt_provider?, :trn,
-             :get_an_identity_id, :course, to: :query_store
+    delegate :inside_catchment?, :trn, :get_an_identity_id, :course, to: :query_store
 
     def funding_eligibility_calculator
       @funding_eligibility_calculator ||= FundingEligibility.new(
         course:,
         institution:,
-        approved_itt_provider: approved_itt_provider?,
-        lead_mentor: lead_mentor_for_accredited_itt_provider?,
         inside_catchment: inside_catchment?,
         trn:,
         get_an_identity_id:,

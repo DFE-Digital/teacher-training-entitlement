@@ -7,23 +7,12 @@ RSpec.describe Application do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to belong_to(:course) }
     it { is_expected.to belong_to(:lead_provider) }
-    it { is_expected.to belong_to(:school).optional }
-    it { is_expected.to belong_to(:private_childcare_provider).optional }
-    it { is_expected.to belong_to(:private_childcare_provider_including_disabled).optional.class_name("PrivateChildcareProvider").with_foreign_key(:private_childcare_provider_id) }
+    it { is_expected.to belong_to(:institution).optional }
     it { is_expected.to belong_to(:cohort).optional }
     it { is_expected.to belong_to(:schedule).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
     it { is_expected.to have_many(:application_states) }
     it { is_expected.to have_many(:declarations) }
-
-    context "when the providers are disabled" do
-      let(:private_childcare_provider) { create(:private_childcare_provider, :disabled) }
-      let(:application) { create(:application, private_childcare_provider:).reload }
-
-      it { expect(application.private_childcare_provider).to be_nil }
-
-      it { expect(application.private_childcare_provider_including_disabled).to eq(private_childcare_provider) }
-    end
   end
 
   describe "paper_trail" do
@@ -208,7 +197,15 @@ RSpec.describe Application do
   end
 
   describe "#inside_catchment?" do
-    subject { create(:application, cohort:, school:, teacher_catchment:).inside_catchment? }
+    subject { application.inside_catchment? }
+
+    let(:application) do
+      if school
+        create(:application, cohort:, school_record: school, teacher_catchment:)
+      else
+        create(:application, cohort:, institution: nil, teacher_catchment:, works_in_school: false)
+      end
+    end
 
     context "when the application is in the 2023 cohort or earlier" do
       let(:cohort) { create(:cohort, start_year: 2023) }
@@ -289,26 +286,24 @@ RSpec.describe Application do
     context "when the application has school attached" do
       let(:school) { create(:school) }
       let(:name) { school.name }
-      let(:application) { build(:application, school:) }
+      let(:application) { build(:application, school_record: school) }
 
       include_examples "employer_name"
     end
 
-    context "when the application has private school urn" do
+    context "when the application has private childcare provider" do
       let(:private_childcare_provider) { create(:private_childcare_provider) }
-      let(:name) { private_childcare_provider.provider_name }
-      let(:application) { build(:application, private_childcare_provider:) }
+      let(:name) { private_childcare_provider.name }
+      let(:application) { build(:application, :with_private_childcare_provider, provider_record: private_childcare_provider) }
 
       include_examples "employer_name"
     end
 
-    context "when no information about employer_name is available" do
-      let(:application) do
-        let(:name) { "" }
-        let(:application) { build(:application, school: nil, school_id: nil, employer_name: nil) }
+    context "when no institution is available" do
+      let(:name) { "" }
+      let(:application) { build(:application, institution: nil, works_in_school: false) }
 
-        include_examples "employer_name"
-      end
+      include_examples "employer_name"
     end
   end
 

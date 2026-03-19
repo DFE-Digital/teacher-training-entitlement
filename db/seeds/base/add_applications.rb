@@ -2,6 +2,7 @@
 
 all_courses = Course.all.to_a
 all_cohorts = Cohort.all.to_a
+all_schools = School.includes(:institution).limit(1000).to_a
 
 LeadProvider.find_each do |lead_provider|
   quantity = { "review" => 4, "development" => 1 }.fetch(Rails.env, 0)
@@ -15,6 +16,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       :with_participant_id_change,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       lead_provider_approval_status: "pending",
       cohort: all_cohorts.sample,
@@ -29,6 +31,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       user:,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       cohort: all_cohorts.sample,
     )
@@ -41,6 +44,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       user:,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       cohort: all_cohorts.sample,
     )
@@ -52,6 +56,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_user,
       :with_random_work_setting,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       participant_outcome_state: "passed",
       cohort: all_cohorts.sample,
@@ -65,6 +70,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_user,
       :with_random_work_setting,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       participant_outcome_state: "failed",
       cohort: all_cohorts.sample,
@@ -80,6 +86,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       :with_random_participant_outcome_state,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       cohort: all_cohorts.sample,
     )
@@ -93,6 +100,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       :with_participant_id_change,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       funded_place: Faker::Boolean.boolean(true_ratio: 0.6),
       cohort: Cohort.where(funding_cap: true).sample,
@@ -106,6 +114,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       :with_participant_id_change,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       funded_place: false,
       cohort: Cohort.where(funding_cap: true).sample,
@@ -120,6 +129,7 @@ LeadProvider.find_each do |lead_provider|
       :with_participant_id_change,
       eligible_for_funding: Faker::Boolean.boolean,
       lead_provider:,
+      school: all_schools.sample,
       course: all_courses.sample,
       cohort: Cohort.where(funding_cap: false).sample,
     )
@@ -142,6 +152,7 @@ LeadProvider.find_each do |lead_provider|
       :with_random_work_setting,
       :with_random_participant_outcome_state,
       lead_provider:,
+      school: all_schools.sample,
       course:,
       cohort:,
     )

@@ -65,16 +65,6 @@
   - updated_at
   :statements:
   - reconcile_amount
-  :schools:
-  - establishment_status_code
-  - establishment_status_name
-  - establishment_type_code
-  - establishment_type_name
-  - la_code
-  - la_name
-  - number_of_pupils
-  - phase_name
-  - phase_type
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -154,8 +144,6 @@
   - updated_at
   :applications:
   - DEPRECATED_itt_provider
-  - DEPRECATED_private_childcare_provider_urn
-  - DEPRECATED_school_urn
   - raw_application_data
   - type
   - targeted_delivery_funding_eligibility

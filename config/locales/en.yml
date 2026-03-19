@@ -485,20 +485,20 @@ en:
               invalid: Choose a valid provider
         questionnaires/choose_childcare_provider:
           attributes:
-            institution_identifier:
+            institution_id:
               invalid: No matching childcare provider found
             institution_name:
               no_results: No nurseries with the name %{name} were found, please try again
         questionnaires/choose_private_childcare_provider:
           attributes:
-            institution_identifier:
-              no_results: No private childcare providers with the URN %{urn} were found, please try again
+            institution_id:
+              no_results: No private childcare providers were found
               invalid: No matching private childcare provider found
             institution_name:
               no_results: No private childcare providers with the URN %{urn} were found, please try again
         questionnaires/choose_school:
           attributes:
-            institution_identifier:
+            institution_id:
               blank: Enter a workplace name
               invalid: No matching school found
             institution_name:

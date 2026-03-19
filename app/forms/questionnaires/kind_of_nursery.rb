@@ -58,7 +58,7 @@ module Questionnaires
     end
 
     def after_save
-      wizard.store.delete("institution_identifier") unless public_nursery?
+      wizard.store.delete("institution_id") unless public_nursery?
     end
   end
 end
