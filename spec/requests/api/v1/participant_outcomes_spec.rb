@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Participant outcome endpoints", type: :request do
+RSpec.describe "Outcome endpoints", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:query) { ParticipantOutcomes::Query }
   let(:serializer) { API::ParticipantOutcomeSerializer }
@@ -15,8 +15,8 @@ RSpec.describe "Participant outcome endpoints", type: :request do
     create(:participant_outcome, **attrs)
   end
 
-  describe "GET /api/v1/participants/outcomes" do
-    let(:path) { api_v1_participant_outcomes_path }
+  describe "GET /api/v1/outcomes" do
+    let(:path) { api_v1_outcomes_path }
     let(:resource_id_key) { :ecf_id }
 
     it_behaves_like "an API index endpoint"
