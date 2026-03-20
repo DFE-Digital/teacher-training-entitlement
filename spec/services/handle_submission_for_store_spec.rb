@@ -49,6 +49,8 @@ RSpec.describe HandleSubmissionForStore do
     }
   end
 
+  let!(:course_cohort) { create(:course_cohort, course:, cohort:) }
+
   before do
     travel_to(Date.new(cohort.start_year, 9, 26))
     allow_any_instance_of(School).to receive(:pp50?).and_return(false)
@@ -100,8 +102,7 @@ RSpec.describe HandleSubmissionForStore do
         expect(user.applications.reload.count).to eq 1
         last_application = user.applications.last
         expect(stable_as_json(last_application)).to match({
-          "course_id" => course.id,
-          "schedule_id" => nil,
+          "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
           "eligible_for_funding" => true,
           "funded_place" => nil,
@@ -112,7 +113,6 @@ RSpec.describe HandleSubmissionForStore do
           "participant_outcome_state" => nil,
           "lead_provider_id" => lead_provider.id,
           "notes" => nil,
-          "cohort_id" => last_application.cohort_id,
           "institution_id" => school.institution.id,
           "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => "england",
@@ -166,8 +166,7 @@ RSpec.describe HandleSubmissionForStore do
         expect(user.applications.reload.count).to eq 1
         last_application = user.applications.last
         expect(stable_as_json(last_application)).to match({
-          "course_id" => course.id,
-          "schedule_id" => nil,
+          "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,
@@ -178,7 +177,6 @@ RSpec.describe HandleSubmissionForStore do
           "lead_provider_id" => lead_provider.id,
           "notes" => nil,
           "kind_of_nursery" => "private_nursery",
-          "cohort_id" => last_application.cohort_id,
           "institution_id" => private_childcare_provider.institution.id,
           "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => "england",
@@ -255,8 +253,7 @@ RSpec.describe HandleSubmissionForStore do
         subject.call
 
         expect(stable_as_json(user.applications.last)).to match({
-          "course_id" => course.id,
-          "schedule_id" => nil,
+          "course_cohort_id" => course_cohort.id,
           "ecf_id" => user.applications.last.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,
@@ -267,7 +264,6 @@ RSpec.describe HandleSubmissionForStore do
           "participant_outcome_state" => nil,
           "lead_provider_id" => lead_provider.id,
           "notes" => nil,
-          "cohort_id" => cohort.id,
           "institution_id" => nil,
           "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => "another",
@@ -314,8 +310,7 @@ RSpec.describe HandleSubmissionForStore do
         subject.call
 
         expect(stable_as_json(user.applications.last)).to match({
-          "course_id" => course.id,
-          "schedule_id" => nil,
+          "course_cohort_id" => course_cohort.id,
           "ecf_id" => user.applications.last.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,
@@ -326,7 +321,6 @@ RSpec.describe HandleSubmissionForStore do
           "participant_outcome_state" => nil,
           "lead_provider_id" => lead_provider.id,
           "notes" => nil,
-          "cohort_id" => cohort.id,
           "institution_id" => nil,
           "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => nil,
@@ -383,8 +377,7 @@ RSpec.describe HandleSubmissionForStore do
         subject.call
 
         expect(stable_as_json(user.applications.last)).to match({
-          "course_id" => course.id,
-          "schedule_id" => nil,
+          "course_cohort_id" => course_cohort.id,
           "ecf_id" => user.applications.last.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,
@@ -395,7 +388,6 @@ RSpec.describe HandleSubmissionForStore do
           "participant_outcome_state" => nil,
           "lead_provider_id" => lead_provider.id,
           "notes" => nil,
-          "cohort_id" => cohort.id,
           "institution_id" => nil,
           "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => "another",

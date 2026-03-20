@@ -6,15 +6,12 @@ class Schedule < ApplicationRecord
   IDENTIFIERS = %w[tte-reception-autumn
                    tte-reception-spring].freeze
 
-  belongs_to :cohort
-  has_many :applications, dependent: :restrict_with_error
-  has_many :course_cohorts, dependent: :destroy
-  has_many :milestones
-  has_many :statements, through: :milestones
+  belongs_to :cohort # DEPRECATED
+
   has_many :course_cohorts, dependent: :destroy
   has_many :courses, through: :course_cohorts
-
-  scope :training_live, -> { where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..) }
+  has_many :milestones
+  has_many :statements, through: :milestones
 
   scope :training_live, -> { where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..) }
 

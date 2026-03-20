@@ -7,7 +7,6 @@ module Applications
 
     attribute :application
     attribute :funded_place
-    attribute :schedule_identifier, :string
 
     validates :application, presence: true
     validates :funded_place, inclusion: { in: [true, false], if: :validate_funded_place? }
@@ -15,8 +14,6 @@ module Applications
     validate :cannot_change_from_rejected
     validate :other_accepted_applications_with_same_course_and_cohort?
     validate :eligible_for_funded_place
-    validate :validate_schedule_exists
-    validate :validate_permitted_schedule_for_course
 
     def accept
       return false unless valid?
@@ -56,7 +53,6 @@ module Applications
     def accept_application!
       opts = {
         lead_provider_approval_status: "accepted",
-        schedule:,
         accepted_at: Time.zone.now,
         training_status: :active,
       }
@@ -83,9 +79,8 @@ module Applications
       @other_accepted_applications_with_same_course_and_cohort ||= Application
         .not_withdrawn
         .where(lead_provider_approval_status: "accepted",
-               course: course.rebranded_alternative_courses,
                user: [user, same_trn_users].flatten.compact.uniq,
-               cohort:)
+               course_cohort: CourseCohort.where(course: course.rebranded_alternative_courses, cohort:))
         .where.not(id: application.id)
     end
 
@@ -93,8 +88,8 @@ module Applications
       return if cohort.blank?
 
       @other_applications_in_same_cohort ||= Application
-                                              .where(cohort:, course:, user:)
-                                              .where.not(id: application.id)
+        .where(course_cohort: CourseCohort.where(cohort:, course:), user:)
+        .where.not(id: application.id)
     end
 
     def trn
@@ -120,34 +115,6 @@ module Applications
 
     def validate_funded_place?
       errors.blank? && cohort&.funding_cap?
-    end
-
-    def new_schedule
-      Schedule.where(identifier: schedule_identifier, cohort:).first
-    end
-
-    def schedule
-      @schedule ||= schedule_identifier.present? ? new_schedule : course.schedule_for(cohort:)
-    end
-
-    def validate_schedule_exists
-      return unless application
-      return if schedule
-
-      if schedule_identifier.present?
-        errors.add(:schedule_identifier, :not_found)
-      else
-        errors.add(:schedule, :blank)
-        Sentry.capture_message("Schedule could not be determined for application #{application.ecf_id}")
-      end
-    end
-
-    def validate_permitted_schedule_for_course
-      return if errors.any? || schedule_identifier.blank?
-
-      unless schedule && schedule.course_group == course.course_group
-        errors.add(:schedule_identifier, :invalid_for_course)
-      end
     end
 
     def create_application_state!

@@ -88,9 +88,9 @@
   - id
   - cohort_id
   - course_id
-  - schedule_id
   - created_at
   - updated_at
+  - schedule_id
   :courses:
   - position
   :contract_templates:

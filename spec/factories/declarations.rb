@@ -2,14 +2,16 @@ FactoryBot.define do
   factory :declaration do
     transient do
       user { create(:user) }
-      course { create(:course, :tte_early_years) }
+      course { nil }
+      course_cohort { course ? create(:course_cohort, course:) : create(:course_cohort) }
       statement { nil }
       paid_statement { nil }
     end
 
-    application { Application.accepted.find_by(user:, course:) || association(:application, :accepted, user:, course:) }
+    application { Application.accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
     lead_provider { application&.lead_provider || create(:lead_provider) }
-    cohort { application&.cohort || create(:cohort, :current, :without_funding_cap) }
+    cohort { course_cohort.cohort }
+
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     declaration_type { "started" }
     declaration_date { Date.current }
@@ -64,10 +66,6 @@ FactoryBot.define do
 
     trait :awaiting_clawback do
       state { :awaiting_clawback }
-    end
-
-    trait :voided do
-      state { :voided }
     end
 
     trait :billable_or_voidable do

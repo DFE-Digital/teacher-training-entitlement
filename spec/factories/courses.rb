@@ -29,7 +29,7 @@ FactoryBot.define do
         rescue StandardError
           create(:cohort, :current)
         end
-        schedule = Schedule.where(cohort:).first || create(:schedule, cohort:)
+        schedule = CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
         course.course_cohorts << create(:course_cohort, course:, cohort:, schedule:, lead_provider: evaluator.lead_provider)
       end
     end

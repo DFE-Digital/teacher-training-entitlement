@@ -177,7 +177,7 @@ shared:
   :applications:
     - id
     - user_id
-    - course_id
+    - course_cohort_id
     - lead_provider_id
     - created_at
     - updated_at
@@ -201,10 +201,8 @@ shared:
     - teacher_catchment_iso_country_code
     - targeted_support_funding_eligibility
     - notes
-    - cohort_id
     - funded_place
     - training_status
-    - schedule_id
     - referred_by_return_to_teaching_adviser
     - accepted_at
     - on_submission_trn

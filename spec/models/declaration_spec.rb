@@ -735,8 +735,9 @@ RSpec.describe Declaration, type: :model do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
       let(:delivery_partner) { create :delivery_partner }
-      let(:lead_provider) { create :lead_provider, delivery_partner: }
-      let(:declaration_as_primary) { create :declaration, lead_provider:, delivery_partner: }
+      let(:lead_provider) { create :lead_provider, delivery_partners: [delivery_partner] }
+      let(:application) { create(:application, :accepted, lead_provider:) }
+      let(:declaration_as_primary) { create :declaration, lead_provider:, application:, delivery_partner: }
 
       it { is_expected.to include declaration_as_primary }
 
@@ -745,6 +746,7 @@ RSpec.describe Declaration, type: :model do
 
         let :declaration_as_secondary do
           create :declaration, lead_provider:,
+                               application:,
                                delivery_partner: another_partner,
                                secondary_delivery_partner: delivery_partner
         end

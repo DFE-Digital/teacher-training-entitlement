@@ -6,9 +6,10 @@ RSpec.describe Statements::CourseCalculator do
   subject { calculator }
 
   let(:calculator)     { described_class.new(contract:) }
-  let(:cohort)         { create(:cohort, :current) }
-  let(:course)         { create(:course, :tte_early_years) }
-  let(:schedule)       { course.schedule_for(cohort:) }
+  let(:course_cohort)  { create(:course_cohort) }
+  let(:cohort)         { course_cohort.cohort }
+  let(:course)         { course_cohort.course }
+  let(:schedule)       { course_cohort.schedule }
   let(:statement)      { create(:statement, :next_output_fee, cohort:) }
   let(:paid_statement) { create(:statement, :paid, lead_provider:) }
   let(:lead_provider)  { statement.lead_provider }

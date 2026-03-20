@@ -60,18 +60,6 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
           expect { service.accept }.to raise_error(ActiveRecord::RecordInvalid)
         end
       end
-
-      context "when a schedule cannot be found" do
-        before { subject.course.schedules.delete_all }
-
-        it { is_expected.to have_error(:schedule, :blank, "Schedule cannot be determined") }
-
-        it "notifies sentry" do
-          allow(Sentry).to receive(:capture_message)
-          subject.valid?
-          expect(Sentry).to have_received(:capture_message)
-        end
-      end
     end
 
     context "when user applies for Recption but has accepted Send", :npq do
@@ -410,66 +398,6 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
             service.accept
             expect(service).to have_error(:funded_place, :inclusion, "Set '#/funded_place' to true or false.")
           end
-        end
-      end
-    end
-
-    describe "changing schedule on accept" do
-      let(:cohort) { create(:cohort, :current, :without_funding_cap) }
-      let(:course_group) { create(:course_group, name: "leadership") }
-      let(:course) { create(:course, :tte_early_years) }
-
-      let(:application) do
-        create(
-          :application,
-          :pending,
-          user:,
-          course:,
-          lead_provider:,
-          cohort:,
-        )
-      end
-
-      let(:params) { { application:, schedule_identifier: new_schedule.identifier } }
-
-      context "when changing to correct schedule" do
-        let!(:new_schedule) { create(:schedule, :tte_reception_spring, cohort:) }
-
-        it "changes schedule successfully" do
-          expect(ApplicationState.count).to be(0)
-          expect(service.application.lead_provider_approval_status).to eql("pending")
-
-          expect(service.accept).to be_truthy
-          expect(service.application.lead_provider_approval_status).to eql("accepted")
-          expect(service.application).to be_active_training_status
-          expect(service.application.schedule).to eql(new_schedule)
-          expect(service.application.accepted_at).to be_within(1.minute).of(Time.zone.now)
-
-          application_state = ApplicationState.first
-          expect(application_state.lead_provider).to eql(lead_provider)
-          expect(application_state.application).to eql(application)
-          expect(application_state).to be_active_state
-        end
-      end
-
-      context "when changing to a schedule that's not correct for the application course" do
-        let!(:new_schedule) { create(:schedule, :tte_send_autumn, cohort:) }
-
-        it "returns validation error" do
-          expect(service.accept).to be_falsey
-          expect(service.application.schedule).not_to eql(new_schedule)
-          expect(service).to have_error(:schedule_identifier, :invalid_for_course, "The selected schedule is not valid for the course")
-          expect(service).to have_error_count(1)
-        end
-      end
-
-      context "when a new schedule is not found given a wrong identifier" do
-        let(:params) { { application:, schedule_identifier: "any-schedule" } }
-
-        it "returns validation error" do
-          expect(service.accept).to be_falsey
-          expect(service).to have_error(:schedule_identifier, :not_found, "The selected schedule cannot be found in the application cohort")
-          expect(service).to have_error_count(1)
         end
       end
     end

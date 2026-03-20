@@ -7,8 +7,8 @@ end
 Course.find_each do |course|
   LeadProvider.find_each do |lead_provider|
     Cohort.find_each do |cohort|
-      schedule = Schedule.where(cohort:).first || FactoryBot.create(:schedule, cohort:)
-      course_cohort = CourseCohort.find_or_create_by!(course:, cohort:, schedule:)
+      course_cohort = CourseCohort.find_by(course:, cohort:)
+      course_cohort ||= CourseCohort.create!(course:, cohort:, schedule: FactoryBot.create(:schedule, cohort:))
 
       CourseCohortProvider.find_or_create_by!(
         lead_provider:,

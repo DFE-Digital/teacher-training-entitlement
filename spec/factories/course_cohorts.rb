@@ -4,11 +4,11 @@ FactoryBot.define do
     cohort
 
     schedule do
-      Schedule.where(cohort:).first || create(:schedule, cohort:)
+      CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
     end
 
     initialize_with do
-      CourseCohort.find_or_initialize_by(course:, cohort:, schedule:)
+      CourseCohort.find_or_initialize_by(course:, cohort:)
     end
 
     transient do

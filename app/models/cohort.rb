@@ -61,7 +61,7 @@ private
   end
 
   def changing_funding_cap_with_dependent_applications
-    return unless funding_cap_changed? && Application.where(cohort: self).any?
+    return unless funding_cap_changed? && Application.joins(:course_cohort).where(course_cohorts: { cohort: self }).any?
 
     errors.add(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
   end
