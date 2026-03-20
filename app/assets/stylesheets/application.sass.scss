@@ -17,7 +17,8 @@ $moj-images-path: "/";
 @import "admin";
 @import "api_guidance";
 @import "mermaid";
-@import "panel" ;
+@import "panel";
+@import "one_login_header";
 
 h1.govuk-fieldset__heading {
   margin-bottom: 10px;

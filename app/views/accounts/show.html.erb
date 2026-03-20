@@ -8,7 +8,7 @@
     <h1 class="govuk-heading-xl"><%= title ||= t(".pural_title") %></h1>
   <% end %>
   <div class="govuk-inset-text">
-    <%= link_to_identity_account(request.original_url, text: "Visit your DfE Identity account") %> to check or change your personal details.
+    <%= govuk_link_to "Visit your GOV.UK One Login", one_login_home_url %> to check or change your personal details.
   </div>
 <% end %>
 
