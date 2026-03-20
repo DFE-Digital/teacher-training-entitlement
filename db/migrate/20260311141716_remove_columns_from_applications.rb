@@ -16,10 +16,19 @@ class RemoveColumnsFromApplications < ActiveRecord::Migration[8.1]
       remove_column :applications, :teacher_catchment_synced_to_ecf, :boolean
       remove_column :applications, :DEPRECATED_cohort, :integer
       remove_column :applications, :DEPRECATED_itt_provider, :string
-      remove_column :applications, :DEPRECATED_private_childcare_provider_urn, :text
 
-      drop_enum :headteacher_statuses
-      drop_enum :employment_types
+      drop_enum :headteacher_statuses, %w[no
+                                          yes_when_course_starts
+                                          yes_in_first_two_years
+                                          yes_over_two_years
+                                          yes_in_first_five_years
+                                          yes_over_five_years]
+      drop_enum :employment_types, %w[hospital_school
+                                      lead_mentor_for_accredited_itt_provider
+                                      local_authority_supply_teacher
+                                      local_authority_virtual_school
+                                      young_offender_institution
+                                      other]
     end
   end
 end
