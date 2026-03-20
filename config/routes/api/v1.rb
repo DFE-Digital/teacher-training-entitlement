@@ -29,6 +29,8 @@ namespace :api do
       end
     end
 
+    resources :schedules, only: %i[index]
+
     resources :statements, only: %i[index show], param: :ecf_id
 
     resources :delivery_partners, path: "delivery-partners", only: %i[index show], param: :ecf_id
