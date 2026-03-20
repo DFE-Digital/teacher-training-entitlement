@@ -29,7 +29,7 @@ module API
       def reject
         service = Applications::Reject.new(
           application:,
-          reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider],
+          reason_for_rejection: rejection_reason,
         )
 
         if service.reject
@@ -49,6 +49,76 @@ module API
         end
       end
 
+      def defer
+        service = Applications::Defer.new(application:, reason: application_action_params[:reason])
+        service.call
+
+        if service.errors.blank?
+          render json: to_json(application.reload)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def resume
+        service = Applications::Resume.new(application:)
+        service.call
+
+        if service.errors.blank?
+          render json: to_json(application.reload)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def withdraw
+        service = Applications::Withdraw.new(application:, reason: application_action_params[:reason])
+        service.call
+
+        if service.errors.blank?
+          render json: to_json(application.reload)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def change_schedule
+        schedule = Schedule.find_by!(ecf_id: application_action_params[:schedule_id])
+        service = Participants::ChangeSchedule.new_filtering_attributes(
+          participant_id: application.user.ecf_id,
+          course_identifier: application.course.identifier,
+          schedule_identifier: schedule.identifier,
+          cohort: schedule.cohort.start_year,
+          lead_provider: current_lead_provider,
+        )
+
+        if service.change_schedule
+          render json: to_json(application.reload)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def declaration_started
+        service = Declarations::Create.new(declaration_params_for_application(declaration_type: "started"))
+
+        if service.create_declaration
+          render json: declaration_to_json(service.declaration)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def declaration_completed
+        service = Declarations::Create.new(declaration_params_for_application(declaration_type: "completed"))
+
+        if service.create_declaration
+          render json: declaration_to_json(service.declaration)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
     private
 
       def applications_query(conditions: {})
@@ -57,7 +127,7 @@ module API
       end
 
       def application
-        applications_query.application(ecf_id: application_params[:ecf_id])
+        @application ||= applications_query.application(ecf_id: application_params[:ecf_id])
       end
 
       def cohort_start_years
@@ -76,6 +146,10 @@ module API
         ApplicationSerializer.render(obj, view: :v1, root: "data")
       end
 
+      def declaration_to_json(obj)
+        DeclarationSerializer.render(obj, view: :v1, root: "data")
+      end
+
       def accept_permitted_params
         parameters = params
           .fetch(:data)
@@ -88,12 +162,48 @@ module API
         {}
       end
 
+      def application_action_params
+        @application_action_params ||= params
+          .require(:data)
+          .require(:attributes)
+          .permit(:reason, :schedule_id)
+      rescue ActionController::ParameterMissing
+        raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
+      end
+
+      def reject_permitted_params
+        params
+          .fetch(:data, {})
+          .permit(:type, attributes: %i[reason])
+      rescue ActionController::ParameterMissing
+        {}
+      end
+
+      def rejection_reason
+        reason = reject_permitted_params.dig("attributes", "reason")
+        reason.present? ? reason : Application.reason_for_rejections[:rejected_by_provider]
+      end
+
       def funded_place
         accept_permitted_params.dig("attributes", "funded_place")
       end
 
-      def schedule_identifier
-        accept_permitted_params.dig("attributes", "schedule_identifier")
+      def declaration_permitted_params
+        params
+          .fetch(:data)
+          .permit(:type, attributes: %i[declaration_date delivery_partner_id secondary_delivery_partner_id has_passed])
+          .fetch(:attributes, {})
+      rescue ActionController::ParameterMissing
+        raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
+      end
+
+      def declaration_params_for_application(declaration_type:)
+        declaration_permitted_params.merge(
+          lead_provider: current_lead_provider,
+          participant_id: application.user.ecf_id,
+          course_identifier: application.course.identifier,
+          declaration_type:,
+        )
       end
     end
   end

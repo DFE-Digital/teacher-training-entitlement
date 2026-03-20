@@ -1,7 +1,7 @@
 module API
   class DeclarationSerializer < Blueprinter::Base
     identifier :ecf_id, name: :id
-    field(:type) { "participant-declaration" }
+    field(:type) { "declaration" }
 
     class AttributesSerializer < Blueprinter::Base
       exclude :id
