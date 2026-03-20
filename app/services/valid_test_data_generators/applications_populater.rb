@@ -126,7 +126,6 @@ module ValidTestDataGenerators
       Applications::Accept.new(
         application:,
         funded_place:,
-        schedule_identifier: application.schedule.identifier,
       ).accept
       application.reload
     end

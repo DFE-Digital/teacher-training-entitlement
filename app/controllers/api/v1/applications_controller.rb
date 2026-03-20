@@ -17,7 +17,7 @@ module API
       end
 
       def accept
-        service = Applications::Accept.new(application:, funded_place:, schedule_identifier:)
+        service = Applications::Accept.new(application:, funded_place:)
 
         if service.accept
           render json: to_json(service.application)
