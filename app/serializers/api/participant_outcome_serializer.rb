@@ -1,7 +1,7 @@
 module API
   class ParticipantOutcomeSerializer < Blueprinter::Base
     identifier :ecf_id, name: :id
-    field(:type) { "participant-outcome" }
+    field(:type) { "outcome" }
 
     class AttributesSerializer < Blueprinter::Base
       exclude :id

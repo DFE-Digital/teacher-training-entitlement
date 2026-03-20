@@ -18,7 +18,7 @@ namespace :api do
       end
     end
 
-    resources :participant_outcomes, only: %i[index], path: "participants/outcomes", as: :participant_outcomes
+    resources :outcomes, only: %i[index]
 
     resources :participants, only: %i[index show], param: :ecf_id
 
