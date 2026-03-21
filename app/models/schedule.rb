@@ -31,6 +31,10 @@ class Schedule < ApplicationRecord
   end
 
   def training_live?
-    training_starts_at < Time.zone.today && training_ends_at > Time.zone.today
+    training_started? && training_ends_at > Time.zone.today
+  end
+
+  def training_started?
+    training_starts_at < Time.zone.today
   end
 end
