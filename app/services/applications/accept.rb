@@ -12,7 +12,6 @@ module Applications
     validates :funded_place, inclusion: { in: [true, false], if: :validate_funded_place? }
     validate :not_already_accepted
     validate :cannot_change_from_rejected
-    validate :other_accepted_applications_with_same_course_and_cohort?
     validate :eligible_for_funded_place
 
     def accept
@@ -21,7 +20,6 @@ module Applications
       ApplicationRecord.transaction do
         accept_application!
         create_application_state!
-        reject_other_applications_in_same_cohort!
       end
 
       application.reload
@@ -31,8 +29,7 @@ module Applications
 
   private
 
-    delegate :cohort, :user, :course, :lead_provider,
-             to: :application
+    delegate :cohort, :user, :lead_provider, to: :application
 
     def not_already_accepted
       return if application.blank?
@@ -46,10 +43,6 @@ module Applications
       errors.add(:application, :cannot_change_from_rejected) if application.rejected_lead_provider_approval_status?
     end
 
-    def other_accepted_applications_with_same_course_and_cohort?
-      errors.add(:application, :has_another_accepted_application) if other_accepted_applications_with_same_course_and_cohort.present?
-    end
-
     def accept_application!
       opts = {
         lead_provider_approval_status: "accepted",
@@ -57,56 +50,16 @@ module Applications
         training_status: :active,
       }
 
-      if cohort&.funding_cap?
+      if cohort.funding_cap?
         opts[:funded_place] = funded_place
       end
 
       application.update!(opts)
     end
 
-    def reject_other_applications_in_same_cohort!
-      return if other_applications_in_same_cohort.blank?
-
-      other_applications_in_same_cohort.update!(
-        lead_provider_approval_status: "rejected",
-        reason_for_rejection: Application.reason_for_rejections[:other_application_in_this_cohort_accepted],
-      )
-    end
-
-    def other_accepted_applications_with_same_course_and_cohort
-      return if application.blank?
-
-      @other_accepted_applications_with_same_course_and_cohort ||= Application
-        .not_withdrawn
-        .where(lead_provider_approval_status: "accepted",
-               user: [user, same_trn_users].flatten.compact.uniq,
-               course_cohort: CourseCohort.where(course: course.rebranded_alternative_courses, cohort:))
-        .where.not(id: application.id)
-    end
-
-    def other_applications_in_same_cohort
-      return if cohort.blank?
-
-      @other_applications_in_same_cohort ||= Application
-        .where(course_cohort: CourseCohort.where(cohort:, course:), user:)
-        .where.not(id: application.id)
-    end
-
-    def trn
-      @trn ||= user.trn_verified? ? user.trn : nil
-    end
-
-    def same_trn_users
-      return if trn.blank?
-
-      @same_trn_users ||= User
-                         .where(trn:)
-                         .where.not(id: user.id)
-    end
-
     def eligible_for_funded_place
       return if errors.any?
-      return unless cohort&.funding_cap?
+      return unless cohort.funding_cap?
 
       if funded_place && !application.eligible_for_funding
         errors.add(:application, :not_eligible_for_funded_place)
@@ -114,7 +67,7 @@ module Applications
     end
 
     def validate_funded_place?
-      errors.blank? && cohort&.funding_cap?
+      errors.blank? && cohort.funding_cap?
     end
 
     def create_application_state!
