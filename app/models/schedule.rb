@@ -29,4 +29,8 @@ class Schedule < ApplicationRecord
   def self.allowed_declaration_types
     Declaration.declaration_types.keys
   end
+
+  def training_live?
+    training_starts_at < Time.zone.today && training_ends_at > Time.zone.today
+  end
 end

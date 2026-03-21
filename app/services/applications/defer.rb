@@ -34,15 +34,15 @@ module Applications
   private
 
     def not_withdrawn
-      add_error(:base, :already_withdrawn) if @application&.withdrawn_training_status?
+      add_error(:base, :already_withdrawn) if @application.withdrawn_training_status?
     end
 
     def not_already_deferred
-      add_error(:base, :already_deferred) if @application&.deferred_training_status?
+      add_error(:base, :already_deferred) if @application.deferred_training_status?
     end
 
     def has_declarations
-      add_error(:base, :no_declarations) if @application&.declarations&.none?
+      add_error(:base, :no_declarations) if @application.declarations&.none?
     end
 
     def add_error(group, key)

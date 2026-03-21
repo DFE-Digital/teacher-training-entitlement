@@ -2,25 +2,41 @@
 
 module Applications
   class Resume
-    include ActiveModel::Validations
+    include ActiveModel::Model
+    include ActiveModel::Attributes
 
-    validate :not_already_active
+    attribute :application
+    attribute :course_cohort
 
-    def initialize(application:)
-      @application = application
-    end
+    validates :application, presence: true
+    validates :course_cohort, presence: true
+    validate :not_already_active, if: -> { application }
+    validate :incompatible_course, if: -> { application && course_cohort }
+    validate :cohort_not_in_training, if: -> { course_cohort }
 
     def call
       return if invalid?
 
-      @application.application_states.create!
-      @application.active_training_status!
+      application.application_states.create!
+      application.update!(training_status: "active", course_cohort:)
     end
 
   private
 
     def not_already_active
-      add_error(:base, :already_active) if @application&.active_training_status?
+      add_error(:base, :already_active) if application.active_training_status?
+    end
+
+    def incompatible_course
+      return if course_cohort.course == application.course
+
+      add_error(:application, :incompatible_schedule)
+    end
+
+    def cohort_not_in_training
+      return if course_cohort.schedule.training_live?
+
+      add_error(:base, :cohort_not_in_training)
     end
 
     def add_error(group, key)

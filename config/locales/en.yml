@@ -362,7 +362,11 @@ en:
         applications/resume:
           attributes:
             base:
-              already_active: The participant is already active              
+              already_active: The participant is already active
+              cohort_not_in_training: Selected schedule is not currently in training
+            application:
+              <<: *application
+              incompatible_schedule: Selected schedule is for a different course than the application
         admin/applications/change_cohort_form:
           attributes:
             cohort_id:

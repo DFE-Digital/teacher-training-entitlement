@@ -46,6 +46,7 @@ module Applications
       errors.add(:application, :cohort_does_not_accept_capping)
     end
 
+    # Make sure the application is has started the course
     def eligible_for_changing_funded_place
       return unless application.declarations&.billable_or_changeable&.any?
 
