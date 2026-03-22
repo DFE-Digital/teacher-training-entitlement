@@ -17,21 +17,24 @@ RSpec.describe Declaration, type: :model do
     context "with delivery partners" do
       subject do
         create(:declaration, application:,
+                             lead_provider:,
+                             cohort:,
                              delivery_partner: primary_partner,
                              secondary_delivery_partner: secondary_partner)
       end
 
       let(:application) { create(:application, :accepted) }
       let(:lead_provider) { application.lead_provider }
-      let(:primary_partner) { create(:delivery_partner, lead_provider:) }
-      let(:secondary_partner) { create(:delivery_partner, lead_provider:) }
+      let(:cohort) { application.cohort }
+      let(:primary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
+      let(:secondary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
 
       it { is_expected.to have_attributes delivery_partner: primary_partner }
       it { is_expected.to have_attributes secondary_delivery_partner: secondary_partner }
       it { is_expected.to have_attributes delivery_partners: [primary_partner, secondary_partner] }
 
       context "without secondary partner" do
-        subject { create(:declaration, application:, delivery_partner: primary_partner) }
+        subject { create(:declaration, application:, cohort:, lead_provider:, delivery_partner: primary_partner) }
 
         it { is_expected.to have_attributes delivery_partners: [primary_partner] }
       end
@@ -47,12 +50,13 @@ RSpec.describe Declaration, type: :model do
     context "with delivery_partners" do
       before { delivery_partner && old_cohort_partner }
 
+      let(:application) { create(:application, :accepted, lead_provider: declaration.lead_provider) }
       let :delivery_partner do
-        create :delivery_partner, lead_provider: declaration.lead_provider
+        create :delivery_partner, lead_providers: { application.cohort => declaration.lead_provider }
       end
 
       let :second_partner do
-        create :delivery_partner, lead_provider: declaration.lead_provider
+        create :delivery_partner, lead_providers: { application.cohort => application.lead_provider }
       end
 
       let :old_cohort_partner do
@@ -61,7 +65,6 @@ RSpec.describe Declaration, type: :model do
         }
       end
 
-      it { is_expected.to validate_presence_of(:delivery_partner_id) }
       it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
 
       context "when no delivery partner provided" do
@@ -69,25 +72,6 @@ RSpec.describe Declaration, type: :model do
 
         it { is_expected.not_to validate_absence_of(:delivery_partner_id) }
         it { is_expected.to validate_absence_of(:secondary_delivery_partner_id) }
-      end
-
-      it "allows delivery_partner who is on the available partners list" do
-        expect(declaration).to allow_value(delivery_partner.id).for(:delivery_partner_id)
-      end
-
-      it "rejects delivery_partner who is on not on the available partners list" do
-        expect(declaration).not_to allow_value(old_cohort_partner.id).for(:delivery_partner_id)
-      end
-
-      it "allows secondary_delivery_partner who is on the available partners list" do
-        declaration.delivery_partner = delivery_partner
-
-        expect(declaration).to allow_value(second_partner.id).for(:secondary_delivery_partner_id)
-      end
-
-      it "rejects secondary_delivery_partner who is on not on the available partners list" do
-        expect(declaration)
-          .not_to allow_value(old_cohort_partner.id).for(:secondary_delivery_partner_id)
       end
 
       describe "skipping validation for certain cases" do
@@ -171,44 +155,6 @@ RSpec.describe Declaration, type: :model do
         end
 
         it { is_expected.to be_eligible_state }
-      end
-
-      context "when delivery_partner unchanged but removed from lead providers list" do
-        before do
-          declaration.update!(delivery_partner:)
-          delivery_partner.delivery_partnerships.destroy_all
-        end
-
-        it { is_expected.to be_valid }
-      end
-
-      context "when delivery_partner is changed but not on lead providers list" do
-        before do
-          declaration.update!(delivery_partner:)
-          declaration.delivery_partner = old_cohort_partner
-        end
-
-        it { expect(declaration.tap(&:valid?).errors).to include :delivery_partner_id }
-      end
-
-      context "when secondary_delivery_partner unchanged but removed from lead providers list" do
-        before do
-          declaration.update!(delivery_partner:, secondary_delivery_partner: second_partner)
-          delivery_partner.delivery_partnerships
-                          .where(delivery_partner: second_partner)
-                          .destroy_all
-        end
-
-        it { is_expected.to be_valid }
-      end
-
-      context "when secondary_delivery_partner changed but not on lead providers list" do
-        before do
-          declaration.update!(delivery_partner:, secondary_delivery_partner: second_partner)
-          declaration.secondary_delivery_partner = old_cohort_partner
-        end
-
-        it { expect(declaration.tap(&:valid?).errors).to include :secondary_delivery_partner_id }
       end
 
       context "when delivery_partner is blank but secondary_delivery_partner is not" do
@@ -734,21 +680,34 @@ RSpec.describe Declaration, type: :model do
     describe ".for_delivery_partners" do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
-      let(:delivery_partner) { create :delivery_partner }
-      let(:lead_provider) { create :lead_provider, delivery_partners: [delivery_partner] }
-      let(:application) { create(:application, :accepted, lead_provider:) }
-      let(:declaration_as_primary) { create :declaration, lead_provider:, application:, delivery_partner: }
+      let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+      let(:declaration_date) { schedule.training_starts_at + 1.hour }
+      let(:course_cohort) { create(:course_cohort, schedule:) }
+      let(:lead_provider) { create(:lead_provider) }
+      let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+
+      let(:delivery_partner) do
+        create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+      end
+      let(:secondary_delivery_partner) do
+        create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+      end
+
+      let(:declaration_as_primary) do
+        create :declaration, lead_provider:, application:, delivery_partner:, cohort: application.cohort
+      end
 
       it { is_expected.to include declaration_as_primary }
 
       context "when declared as secondary partner" do
-        let(:another_partner) { create :delivery_partner, lead_provider: }
+        subject { Declaration.for_delivery_partners(secondary_delivery_partner) }
 
         let :declaration_as_secondary do
           create :declaration, lead_provider:,
                                application:,
-                               delivery_partner: another_partner,
-                               secondary_delivery_partner: delivery_partner
+                               cohort: application.cohort,
+                               delivery_partner:,
+                               secondary_delivery_partner:
         end
 
         it { is_expected.to include declaration_as_secondary }

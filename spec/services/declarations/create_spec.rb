@@ -3,395 +3,211 @@
 require "rails_helper"
 
 RSpec.describe Declarations::Create, type: :model do
-  let(:lead_provider) { LeadProvider.first }
-  let(:cohort) { create(:cohort, :current) }
-  let(:course) { create(:course, :tte_early_years) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-  let(:application) do
-    create(:application, :accepted, cohort:, course:, lead_provider:, schedule:)
-  end
-  let(:participant) { application.user }
-  let(:participant_id) { participant.ecf_id }
-  let(:declaration_type) { "started" }
-  let(:declaration_date) { schedule.training_starts_at + 1.hour }
-  let(:course_identifier) { course.identifier }
-  let(:has_passed) { true }
-  let(:delivery_partner_id) { create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id }
-  let(:secondary_delivery_partner_id) { create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id }
+  subject(:service) { described_class.new(**params) }
+
   let(:params) do
     {
-      lead_provider:,
-      participant_id:,
+      application:,
       declaration_type:,
       declaration_date: declaration_date.rfc3339,
-      course_identifier:,
       has_passed:,
       delivery_partner_id:,
       secondary_delivery_partner_id:,
     }
   end
-  let(:statement) { create(:statement, cohort:, lead_provider:) }
-  let!(:contract) { create(:contract, statement:, course:) }
-  let(:declaration) { Declaration.last }
+  let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+  let(:declaration_date) { schedule.training_starts_at + 1.hour }
+  let(:course_cohort) { create(:course_cohort, schedule:) }
+  let(:lead_provider) { create(:lead_provider) }
+  let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+  let(:has_passed) { true }
+  let(:delivery_partner_id) do
+    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+  end
+  let(:secondary_delivery_partner_id) do
+    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+  end
 
-  subject(:service) { described_class.new(**params) }
-
-  describe "validations" do
-    it { is_expected.to validate_presence_of(:lead_provider).with_message("Your update cannot be made as the '#/lead_provider' is not recognised. Check lead provider details and try again.") }
-    it { is_expected.to validate_presence_of(:participant_id).with_message("The property '#/participant_id' must be present") }
-    it { is_expected.to validate_presence_of(:declaration_type).with_message("Enter a '#/declaration_type'.") }
-    it { is_expected.to validate_presence_of(:declaration_date).with_message("Enter a '#/declaration_date'.") }
-    it { is_expected.to validate_presence_of(:delivery_partner_id).with_message("The property '#/delivery_partner_id' must be present") }
-    it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
-
-    it_behaves_like "a model that validates participant_id change" do
-      subject { service }
+  describe "started declaration" do
+    let(:declaration_type) { "started" }
+    let(:params) do
+      {
+        application:,
+        declaration_type:,
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
     end
 
-    context "when lead providers don't match" do
-      before { params[:lead_provider] = create(:lead_provider) }
+    describe "happy paths" do
+      it { expect { service.call }.to change(Declaration, :count).by(1) }
 
-      it { expect(subject).to have_error(:participant_id, :invalid_participant, "Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.") }
-    end
+      describe "created started declaration" do
+        let(:declaration) { service.declaration }
 
-    context "when the course is invalid" do
-      let(:course_identifier) { "invalid" }
+        before { service.call }
 
-      it { is_expected.to have_error(:course_identifier, :invalid, "The entered '#/course_identifier' is not recognised for the given participant. Check details and try again.") }
-
-      context "when there are other errors" do
-        let(:participant_id) { "not-found" }
-
-        it "omits the course_identifier error" do
-          expect(subject).to have_error(:participant_id)
-          expect(subject).not_to have_error(:course_identifier)
-        end
-      end
-    end
-
-    context "when the course is nil" do
-      let(:course_identifier) { nil }
-
-      it { expect(subject).to have_error(:course_identifier, :invalid, "The entered '#/course_identifier' is not recognised for the given participant. Check details and try again.") }
-    end
-
-    context "when declaration date is invalid" do
-      before { params[:declaration_date] = "2023-19-01T11:21:55Z" }
-
-      it { is_expected.to have_error(:declaration_date, :invalid, "Enter a valid RFC3339 '#/declaration_date'.") }
-    end
-
-    context "when declaration time is invalid" do
-      before { params[:declaration_date] = "2023-19-01T29:21:55Z" }
-
-      it { is_expected.to have_error(:declaration_date, :invalid, "Enter a valid RFC3339 '#/declaration_date'.") }
-    end
-
-    context "when the declaration_date is in the future" do
-      before { params[:declaration_date] = 1.day.from_now.rfc3339 }
-
-      it { is_expected.to have_error(:declaration_date, :future_declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.") }
-    end
-
-    context "when the declaration_date is today" do
-      before { params[:declaration_date] = Time.zone.today.rfc3339 }
-
-      it { is_expected.to be_valid }
-    end
-
-    context "when the declaration_date is in the past" do
-      before { params[:declaration_date] = 1.hour.ago.rfc3339 }
-
-      it { is_expected.to be_valid }
-    end
-
-    context "when a participant has been withdrawn" do
-      before do
-        travel_to(withdrawal_time) do
-          ApplicationState.create!(application:, lead_provider:, state: :withdrawn)
-          application.withdrawn_training_status!
-        end
+        it { expect(declaration.declaration_type).to eq(declaration_type) }
+        it { expect(declaration.application).to eq(application) }
+        it { expect(declaration.declaration_date).to eq(declaration_date) }
+        it { expect(declaration.lead_provider).to eq(application.lead_provider) }
+        it { expect(declaration.cohort).to eq(application.cohort) }
+        it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
+        it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
       end
 
-      context "when the declaration is made after the participant has been withdrawn" do
-        let(:withdrawal_time) { declaration_date - 1.day }
-
-        it { is_expected.to have_error(:participant_id, :declaration_must_be_before_withdrawal_date, "This participant withdrew from this course on #{application.application_states.last.created_at.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.") }
-      end
-    end
-
-    context "when an existing declaration already exists" do
-      before { service.create_declaration }
-
-      it { is_expected.to have_error(:base, :declaration_already_exists, "A declaration has already been submitted that will be, or has been, paid for this event") }
-
-      context "when the state submitted" do
-        it "does not create duplicates" do
-          expect { service.create_declaration }.not_to change(Declaration, :count)
-        end
+      it "does not create an participant outcome" do
+        expect { service.call }.not_to change(ParticipantOutcome, :count)
       end
 
-      context "with an fundable participant" do
-        let(:application) { create(:application, :eligible_for_funded_place, cohort:, course:, lead_provider:) }
-        let(:existing_declaration) { Declaration.last }
+      it "creates a statement when none exists"
 
-        %w[eligible payable paid].each do |state|
-          context "when the state is #{state}" do
-            before { existing_declaration.update!(state:) }
+      context "when secondary delivery partner omitted" do
+        let(:secondary_delivery_partner_id) { nil }
 
-            it "does not create duplicates" do
-              expect { service.create_declaration }.not_to change(Declaration, :count)
+        before { service.call }
 
-              expect(existing_declaration.state).to eq(state)
-            end
-          end
-        end
-      end
-    end
-
-    context "when a declaration exists for a different course", :npq do
-      let(:a_different_course) { create(:course, :headship) }
-      let(:another_application) { create(:application, :accepted, cohort:, course: a_different_course, lead_provider:, user: participant) }
-
-      before { create(:declaration, application: another_application, declaration_type:, declaration_date:) }
-
-      it "allows the declaration to be created" do
-        expect { service.create_declaration }.to change(Declaration, :count).by(1)
-      end
-    end
-
-    context "when submitting completed" do
-      let(:declaration_type) { "completed" }
-      let(:outcome) { declaration.participant_outcomes.first }
-
-      context "when has_passed is nil" do
-        let(:has_passed) { nil }
-
-        it { is_expected.to have_error(:has_passed, :invalid, "Enter 'true' or 'false' in the '#/has_passed' field to indicate whether this participant has passed or failed their course.") }
+        it { expect(service.declaration.secondary_delivery_partner).to be_nil }
       end
 
-      context "when has_passed is invalid text" do
-        let(:has_passed) { "no_supported" }
-
-        it { is_expected.to have_error(:has_passed, :invalid, "Enter 'true' or 'false' in the '#/has_passed' field to indicate whether this participant has passed or failed their course.") }
-      end
-
-      context "when has_passed is true" do
-        let(:has_passed) { true }
-
-        it "creates a passed participant outcome" do
-          expect {
-            service.create_declaration
-          }.to change(ParticipantOutcome, :count).by(1)
-
-          expect(outcome.completion_date).to eql(declaration.declaration_date.to_date)
-          expect(outcome).to be_passed_state
-        end
-      end
-
-      context "when has_passed is 'true'" do
-        let(:has_passed) { "true" }
-
-        it "creates a passed participant outcome" do
-          expect {
-            service.create_declaration
-          }.to change(ParticipantOutcome, :count).by(1)
-
-          expect(outcome.completion_date).to eql(declaration.declaration_date.to_date)
-          expect(outcome).to be_passed_state
-        end
-      end
-
-      context "when has_passed is false" do
-        let(:has_passed) { false }
-
-        it "creates a failed participant outcome" do
-          expect {
-            service.create_declaration
-          }.to change(ParticipantOutcome, :count).by(1)
-
-          expect(outcome.completion_date).to eql(declaration.declaration_date.to_date)
-          expect(outcome).to be_failed_state
-        end
-      end
-
-      context "when has_passed is 'false'" do
-        let(:has_passed) { "false" }
-
-        it "creates a failed participant outcome" do
-          expect {
-            service.create_declaration
-          }.to change(ParticipantOutcome, :count).by(1)
-
-          expect(outcome.completion_date).to eql(declaration.declaration_date.to_date)
-          expect(outcome).to be_failed_state
-        end
-      end
-
-      context "when ParticipantOutcomes::Create service class is invalid" do
-        before do
-          allow_any_instance_of(ParticipantOutcomes::Create).to receive(:valid?).and_return(false)
+      context "when application has a voided started declaration" do
+        let(:application) do
+          create(:application, :with_declaration, course_cohort:, lead_provider:)
         end
 
-        it "raises a ArgumentError exception" do
-          expect(Declaration.completed_declaration_type.count).to be(0)
-          expect { service.create_declaration }.to raise_error(ArgumentError).with_message(I18n.t(:cannot_create_completed_declaration))
-          expect(Declaration.completed_declaration_type.count).to be(0)
-        end
+        before { application.declarations.where(declaration_type:).first.mark_voided! }
+
+        it { expect { service.call }.to change(Declaration, :count).by(1) }
       end
     end
 
-    context "when there are no available output fee statements" do
-      before { lead_provider.next_output_fee_statement(cohort).update!(output_fee: false) }
+    describe "error scenarios" do
+      context "when delivery_partner_id is omitted" do
+        let(:delivery_partner_id) { nil }
 
-      context "when the declarations is submitted" do
-        it { is_expected.to be_valid }
+        it { is_expected.to validate_param(:delivery_partner_id).with_message("The property '#/delivery_partner_id' is missing") }
       end
 
-      context "when the declaration is eligible" do
-        let(:application) { create(:application, :eligible_for_funded_place, cohort:, course:, lead_provider:) }
+      context "when application receives `completed declaration` before `started declaration`" do
+        let(:declaration_type) { "completed" }
 
-        it { is_expected.to have_error(:cohort, :no_output_fee_statement, "You cannot submit or void declarations for the #{cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
+        it { is_expected.to validate_param(:declaration_type).with_message("A completed declaration cannot be submitted before a started declaration.") }
       end
 
-      context "when there is an existing billable declaration" do
-        before { create(:declaration, :paid, application:, declaration_date:) }
+      context "when application already has a started declaration" do
+        let(:application) { create(:application, :with_declaration, course_cohort:, lead_provider:) }
 
-        it { is_expected.to have_error(:cohort, :no_output_fee_statement, "You cannot submit or void declarations for the #{cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
+        it { is_expected.to validate_param(:base).with_message("A declaration has already been submitted that will be, or has been, paid for this event") }
       end
-    end
 
-    context "when lead provider has no contract for the cohort and course", :npq do
-      before { contract.update!(course: create(:course, :tte_early_years)) }
+      context "when application declaration-date is before schedule.training_start date" do
+        let(:declaration_date) { schedule.training_starts_at - 1.hour }
 
-      it { is_expected.to have_error(:cohort, :missing_contract_for_cohort_and_course, "You cannot submit a declaration for this participant as you do not have a contract for the cohort and course. Contact the DfE for assistance.") }
-    end
+        it { is_expected.to validate_param(:declaration_date).with_message("Enter a '#/declaration_date' that's on or after the schedule start.") }
+      end
 
-    context "when there is no schedule" do # bug CPDNPQ-2632
-      let(:declaration_date) { Time.zone.now }
-      let(:application) { create(:application, :eligible_for_funded_place, cohort:, course:, lead_provider:, schedule: nil) }
+      context "when delivery-partner is not found" do
+        let(:delivery_partner_id) { "bad-id" }
 
-      it { is_expected.to have_error(:application, :application_schedule_missing, "The application is missing a schedule.") }
-    end
+        it { is_expected.to validate_param(:delivery_partner_id).with_message("The property '#/delivery_partner_id' does not exist") }
+      end
 
-    context "when the declaration type does not exist for the schedule" do
-      let(:schedule) { create(:schedule, :tte_reception_spring, cohort:, allowed_declaration_types: %w[started retained-1 completed]) }
-      let(:declaration_type) { "retained-2" }
+      context "when secondary delivery partner is not found" do
+        let(:secondary_delivery_partner_id) { "bad-id" }
 
-      it { is_expected.to have_error(:declaration_type, :mismatch_declaration_type_for_schedule, "The property '#/declaration_type' does not exist for this schedule.") }
-    end
-
-    context "when the declaration_type is not valid" do
-      let(:declaration_type) { "started-1" }
-
-      it { is_expected.to have_error(:declaration_type, :inclusion, "The entered '#/declaration_type' is not recognised.") }
-    end
-
-    context "when the delivery partner is not on the available partners list" do
-      let(:delivery_partner_id) { create(:delivery_partner).ecf_id }
-
-      it { is_expected.to have_error(:delivery_partner_id, :inclusion, "The entered '#/delivery_partner_id' is not from your list of confirmed Delivery Partners for the Cohort") }
-    end
-
-    context "when the secondary delivery partner is not on the available partners list" do
-      let(:secondary_delivery_partner_id) { create(:delivery_partner).ecf_id }
-
-      it { is_expected.to have_error(:secondary_delivery_partner_id, :inclusion, "The entered '#/secondary_delivery_partner_id' is not from your list of confirmed Delivery Partners for the Cohort") }
-    end
-
-    context "when the delivery partner does not exist" do
-      let(:delivery_partner_id) { SecureRandom.uuid }
-      let(:secondary_delivery_partner_id) { nil }
-
-      it { is_expected.to have_error(:delivery_partner_id, :not_found, "The property '#/delivery_partner_id' does not exist") }
-    end
-
-    context "when the secondary delivery partner does not exist" do
-      let(:secondary_delivery_partner_id) { SecureRandom.uuid }
-
-      it { is_expected.to have_error(:secondary_delivery_partner_id, :not_found, "The property '#/secondary_delivery_partner_id' does not exist") }
-    end
-
-    context "when delivery_partner is blank but secondary_delivery_partner is not" do
-      let(:delivery_partner_id) { nil }
-
-      it { is_expected.to have_error(:secondary_delivery_partner_id, :present, "The property '#/secondary_delivery_partner_id' cannot be specified without the property '#/delivery_partner_id'") }
-    end
-
-    context "when delivery_partner and secondary_delivery partner are the same" do
-      let(:secondary_delivery_partner_id) { delivery_partner_id }
-
-      it { is_expected.to have_error(:secondary_delivery_partner_id, :duplicate_delivery_partner, "The property '#/secondary_delivery_partner_id' cannot have the same value as the property '#/delivery_partner_id'") }
+        it { is_expected.to validate_param(:secondary_delivery_partner_id).with_message("The property '#/secondary_delivery_partner_id' does not exist") }
+      end
     end
   end
 
-  describe "#create_declaration" do
-    subject { described_class.new(**params).create_declaration }
-
-    it "creates a declaration" do
-      expect { subject }.to change(Declaration, :count).by(1)
+  describe "completed declaration" do
+    let(:declaration_type) { "completed" }
+    let(:application) do
+      create(:application, :with_declaration, course_cohort:, lead_provider:)
     end
 
-    it "stores the correct data" do
-      subject
+    before { application } # this is to force declaration creation ahead of the test
 
-      expect(declaration.application).to eq(application)
-      expect(declaration.declaration_type).to eq(declaration_type)
-      expect(declaration.user.ecf_id).to eq(participant.ecf_id)
-      expect(declaration.course_identifier).to eq(course_identifier)
-      expect(declaration.lead_provider).to eq(lead_provider)
-      expect(declaration.cohort).to eq(cohort)
-      expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id)
-      expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id)
-    end
+    describe "happy paths" do
+      it { expect { service.call }.to change(Declaration, :count).by(1) }
+      it { expect { service.call }.to change(ParticipantOutcome, :count).by(1) }
 
-    context "when declaration is `submitted`" do
-      let(:application) { create(:application, :eligible_for_funded_place, cohort:, course:, lead_provider:) }
+      it "creates a statement when none exists"
 
-      it "calls `StatementAttacher`" do
-        expect_any_instance_of(Declarations::StatementAttacher).to receive(:attach)
-
-        subject
-      end
-    end
-
-    context "when declaration is not fundable" do
-      before do
-        application.update(eligible_for_funding: true, funded_place: false)
-      end
-
-      it "sets the declaration to submitted" do
-        subject
-
-        expect(declaration).to be_submitted_state
-      end
-    end
-
-    context "when posting for next cohort" do
-      let(:cohort) { create(:cohort, :next) }
-      let(:application) { create(:application, :eligible_for_funded_place, cohort:, course:, lead_provider:) }
-      let!(:statement) { create(:statement, cohort:, lead_provider:, deadline_date: declaration_date + 6.weeks) }
-
-      it "creates declaration to next cohort statement" do
-        travel_to declaration_date + 1.day do
-          expect { subject }.to change(Declaration, :count).by(1)
-
-          expect(declaration).to be_eligible_state
-          expect(declaration.statements).to include(statement)
+      context "when application has a voided completed declaration" do
+        before do
+          application.declarations << create(:declaration, :voided, declaration_type:, application:)
         end
+
+        it { expect { service.call }.to change(Declaration, :count).by(1) }
       end
     end
 
-    context "when duplicate declaration exists" do
-      let(:original_user) { create(:user, trn: participant.trn) }
-      let(:original_application) { create(:application, :accepted, cohort:, course:, user: original_user) }
-      let!(:original_declaration) { create(:declaration, application: original_application) }
+    describe "error scenarios" do
+      context "when application already have a completed declaration" do
+        before do
+          application.declarations << create(:declaration, :eligible, declaration_type:, application:)
+        end
 
-      it "creates an `ineligible` declaration superseded by the original declaration" do
-        subject
+        it { is_expected.to validate_param(:base).with_message("A declaration has already been submitted that will be, or has been, paid for this event") }
+      end
 
-        expect(declaration).to be_ineligible_state
-        expect(declaration.superseded_by).to eq(original_declaration)
+      context "when application `has_passed` field has wrong value" do
+        let(:has_passed) { "bad-value" }
+        let(:error_message) { "Enter 'true' or 'false' in the '#/has_passed' field to indicate whether this participant has passed or failed their course." }
+
+        it { is_expected.to validate_presence_of(:has_passed).with_message(error_message) }
+      end
+    end
+  end
+
+  describe "common error scenarios" do
+    let(:declaration_type) { "started" }
+
+    context "when application missing" do
+      let(:application) { nil }
+
+      it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
+    end
+
+    context "when application has status different from `accepted`" do
+      context "when pending" do
+        let(:application) { create(:application, :pending, course_cohort:, lead_provider:) }
+
+        it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+      end
+
+      context "when rejected" do
+        let(:application) { create(:application, :rejected, course_cohort:, lead_provider:) }
+
+        it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+      end
+
+      context "when deferred" do
+        let(:application) { create(:application, :deferred, course_cohort:, lead_provider:) }
+
+        it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+      end
+
+      context "when withdrawn" do
+        let(:application) { create(:application, :withdrawn, course_cohort:, lead_provider:) }
+
+        it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+      end
+    end
+
+    context "when application declaration-type is wrong" do
+      context "when value missing" do
+        let(:declaration_type) { nil }
+
+        it { is_expected.to validate_presence_of(:declaration_type).with_message("Enter a '#/declaration_type'.") }
+      end
+
+      context "when value unknown" do
+        let(:declaration_type) { "foo" }
+
+        it { is_expected.to validate_inclusion_of(:declaration_type).in_array(%w[started completed]).with_message("The entered '#/declaration_type' is not recognised.") }
       end
     end
   end

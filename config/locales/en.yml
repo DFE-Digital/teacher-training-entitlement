@@ -639,24 +639,22 @@ en:
           attributes:
             base:
               declaration_already_exists: A declaration has already been submitted that will be, or has been, paid for this event
-            participant_id:
-              <<: *participant_id
             declaration_date:
               <<: *declaration_date
             declaration_type:
               <<: *declaration_type
+              out_of_order: A completed declaration cannot be submitted before a started declaration.
             has_passed:
               <<: *has_passed
-            course_identifier:
-              <<: *participant_course_identifier
-            lead_provider:
-              <<: *lead_provider
             cohort:
               <<: *statement
               missing_contract_for_cohort_and_course: You cannot submit a declaration for this participant as you do not have a contract for the cohort and course. Contact the DfE for assistance.
             application:
+              <<: *application
               application_schedule_missing: The application is missing a schedule.
+              in_wrong_state: The application current state does not allow declaration creation.              
             delivery_partner_id:
+              blank: The property '#/delivery_partner_id' is missing
               not_found: The property '#/delivery_partner_id' does not exist
             secondary_delivery_partner_id:
               not_found: The property '#/secondary_delivery_partner_id' does not exist
