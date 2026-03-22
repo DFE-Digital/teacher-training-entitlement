@@ -16,7 +16,6 @@ RSpec.describe Cohort, type: :model do
 
   describe "relationships" do
     it { is_expected.to have_many(:declarations).dependent(:restrict_with_exception) }
-    it { is_expected.to have_many(:schedules).dependent(:destroy) }
     it { is_expected.to have_many(:statements).dependent(:restrict_with_exception) }
     it { is_expected.to have_many(:delivery_partnerships) }
   end

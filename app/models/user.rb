@@ -119,11 +119,11 @@ class User < ApplicationRecord
     trn_lookup_status == "Found"
   end
 
-  def active_applications_for(course:)
+  def active_applications_for(course:, cohort:)
     applications
       .active_applications
-      .where(course_id: course.id)
-      .where(cohort_id: Cohort.current.id)
+      .joins(:course_cohort)
+      .where(course_cohorts: { course_id: course.id, cohort_id: cohort.id })
   end
 
 private
