@@ -5,11 +5,8 @@ RSpec.describe Application do
 
   describe "relationships" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:course) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:institution).optional }
-    it { is_expected.to belong_to(:cohort).optional }
-    it { is_expected.to belong_to(:schedule).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
     it { is_expected.to have_many(:application_states) }
     it { is_expected.to have_many(:declarations) }
@@ -40,16 +37,6 @@ RSpec.describe Application do
   describe "validations" do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
 
-    context "when the schedule cohort does not match the application cohort" do
-      subject do
-        build(:application).tap do |application|
-          application.schedule = build(:schedule, cohort: build(:cohort, start_year: application.cohort.start_year + 1))
-        end
-      end
-
-      it { is_expected.to have_error(:schedule, :cohort_mismatch, "The schedule cohort must match the application cohort") }
-    end
-
     context "when the cohort has a funding cap" do
       let(:cohort) { create(:cohort, :current, :with_funding_cap) }
 
@@ -67,18 +54,6 @@ RSpec.describe Application do
           subject.eligible_for_funding = false
 
           expect(subject).to have_error(:funded_place, :not_eligible, "The participant is not eligible for funding, so '#/funded_place' cannot be set to true.")
-        end
-      end
-
-      context "when changing to wrong schedule" do
-        let(:new_schedule) { create(:schedule, cohort:, course_group: "send") }
-
-        subject { create(:application, :accepted, cohort:) }
-
-        it "returns validation error" do
-          subject.schedule = new_schedule
-
-          expect(subject).to have_error(:schedule, :invalid_for_course, "The selected schedule is not valid for the course")
         end
       end
     end

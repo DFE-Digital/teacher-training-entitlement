@@ -121,7 +121,6 @@ class Application < ApplicationRecord
 
     @previously_funded ||= user.applications
       .where.not(id:)
-      .where(course: course.rebranded_alternative_courses)
       .accepted
       .eligible_for_funding
       .where(funded_place: [nil, true])
