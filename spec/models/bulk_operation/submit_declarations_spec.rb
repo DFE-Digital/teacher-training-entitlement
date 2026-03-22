@@ -171,7 +171,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
         it "returns error message for missing application" do
           run
           result = JSON.parse(bulk_operation.reload.result)
-          expect(result["1"]).to include("Your update cannot be made as the '#/participant_id' is not recognised")
+          expect(result["1"]).to include("Application The entered '#/application' is missing from your request. Check details and try again.")
         end
       end
 
