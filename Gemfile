@@ -93,6 +93,7 @@ group :test do
   gem "cuprite"
   gem "rack_session_access"
   gem "rspec-default_http_header"
+  gem "selenium-webdriver"
   gem "shoulda-matchers"
   gem "site_prism"
   gem "webmock"

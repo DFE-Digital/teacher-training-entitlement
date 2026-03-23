@@ -28,6 +28,8 @@ require "dfe/analytics/testing"
 require "dfe/analytics/rspec/matchers"
 require "capybara/cuprite"
 require "rack_session_access/capybara"
+require "axe-rspec"
+require "axe-capybara"
 
 Capybara.register_driver(:cuprite) do |app|
   Capybara::Cuprite::Driver.new(
