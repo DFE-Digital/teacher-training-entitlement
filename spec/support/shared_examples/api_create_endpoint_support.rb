@@ -20,7 +20,11 @@ RSpec.shared_examples "an API create endpoint" do
       expect(response.status).to eq 200
       expect(response.content_type).to eql("application/json")
       expect(response.headers).to include("cache-control" => "no-store")
-      expect(parsed_response["data"]["id"]).to eq(resource_id)
+      if defined?(declaration)
+        expect(parsed_response["data"]["id"]).to eq(declaration.ecf_id)
+      else
+        expect(parsed_response["data"]["id"]).to eq(resource_id)
+      end
     end
 
     it "calls the correct service" do
@@ -38,7 +42,11 @@ RSpec.shared_examples "an API create endpoint" do
       serializer_params[:view] = serializer_version if defined?(serializer_version)
       serializer_params[:lead_provider] = serializer_lead_provider if defined?(serializer_lead_provider)
 
-      expect(serializer).to receive(:render).with(resource, **serializer_params).and_call_original
+      if defined?(declaration)
+        expect(serializer).to receive(:render).with(declaration, **serializer_params).and_call_original
+      else
+        expect(serializer).to receive(:render).with(resource, **serializer_params).and_call_original
+      end
 
       api_post(path, params:)
     end

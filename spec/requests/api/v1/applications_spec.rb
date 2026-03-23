@@ -193,20 +193,23 @@ RSpec.describe "Application endpoints", type: :request do
       {
         declaration_date: declaration_date.rfc3339,
         delivery_partner_id:,
-        secondary_delievry_partner_id:,
+        secondary_delivery_partner_id:,
       }
     end
     let(:service_args) do
       {
         application: resource,
-        declaration_type: "started",
+        declaration_type: :started,
         declaration_date: declaration_date.rfc3339,
         delivery_partner_id:,
         secondary_delivery_partner_id:,
       }
     end
+    let(:declaration) { create(:declaration) }
+    let(:service_methods) { { declaration: } }
+    let(:serializer) { API::DeclarationSerializer }
 
-    def path(id = nil)
+    def path(id = resource_id)
       started_declaration_api_v1_application_path(ecf_id: id)
     end
 
@@ -235,21 +238,24 @@ RSpec.describe "Application endpoints", type: :request do
         declaration_date: declaration_date.rfc3339,
         has_passed:,
         delivery_partner_id:,
-        secondary_delievry_partapiner_id:,
+        secondary_delivery_partner_id:,
       }
     end
     let(:service_args) do
       {
         application: resource,
-        declaration_type: "completed",
+        declaration_type: :completed,
         declaration_date: declaration_date.rfc3339,
         has_passed:,
         delivery_partner_id:,
         secondary_delivery_partner_id:,
       }
     end
+    let(:declaration) { create(:declaration) }
+    let(:service_methods) { { declaration: } }
+    let(:serializer) { API::DeclarationSerializer }
 
-    def path(id = nil)
+    def path(id = resource_id)
       completed_declaration_api_v1_application_path(ecf_id: id)
     end
 
