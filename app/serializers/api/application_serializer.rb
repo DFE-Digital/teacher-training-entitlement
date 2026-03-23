@@ -17,7 +17,7 @@ module API
       field(:institution_reference_number) { |a| a.institution.institution_reference_number }
       field(:institution_type) { |a| a.institution.institutionable_type.downcase }
       field(:ukprn) { |a| a.institution.ukprn }
-      field(:lead_provider_approval_status, name: :status)
+      field(:status) { |a| a.status }
       field(:reason_for_rejection)
       field(:works_in_school)
       field(:cohort) { |a| a.cohort&.start_year&.to_s }

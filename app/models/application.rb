@@ -4,7 +4,8 @@ class Application < ApplicationRecord
   # This constant is set so that despite still existing they won't be hooked up
   # within the rails model
   self.ignored_columns = %w[DEPRECATED_cohort]
-
+  # this is a temporary constant until PR on statuses is merged
+  ALL_STATUSES = %w[pending accepted rejected started completed deferred withdrawn].freeze
   UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
@@ -112,6 +113,13 @@ class Application < ApplicationRecord
     else
       funding_eligibility(with_funded_place:)
     end
+  end
+
+  def status
+    return training_status if accepted_lead_provider_approval_status? && !active_training_status?
+    return "started" if declarations.any?
+
+    lead_provider_approval_status
   end
 
   def previously_funded?

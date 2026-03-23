@@ -89,7 +89,7 @@ APPLICATION = {
             type: :string,
             nullable: true,
             example: Application.lead_provider_approval_statuses.keys.first,
-            enum: Application.lead_provider_approval_statuses.keys,
+            enum: Application::ALL_STATUSES,
           },
           reason_for_rejection: {
             description: "The reason why the application was rejected by the lead provider",
