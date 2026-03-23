@@ -9,14 +9,15 @@ Capybara.register_driver :selenium_headless do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
 
-RSpec.configure do |config|
-  config.before(:all, :axe) do
-    Capybara.reset_sessions!
+RSpec.shared_context "with axe driver" do
+  around do |example|
     Capybara.current_driver = :selenium_headless
-  end
-
-  config.after(:all, :axe) do
-    Capybara.reset_sessions!
+    example.run
+  ensure
     Capybara.current_driver = :cuprite
   end
+end
+
+RSpec.configure do |config|
+  config.include_context "with axe driver", :axe
 end
