@@ -16,7 +16,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       end
 
       scenario "the user should be updated with new email from DfE Identity" do
-        navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+        navigate_to_page(path: "/", submit_form: false) do
           page.click_button("Start now")
         end
 
@@ -32,7 +32,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       end
 
       scenario "the user should log in successfully" do
-        navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+        navigate_to_page(path: "/", submit_form: false) do
           page.click_button("Start now")
         end
 
@@ -51,7 +51,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       let!(:application_for_user_without_dfe_id) { create(:application, :accepted, user: user_without_dfe_id, course: create(:course, :leading_teaching)) }
 
       scenario "the clashing user account should be archived" do
-        navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+        navigate_to_page(path: "/", submit_form: false) do
           page.click_button("Start now")
         end
 
@@ -83,7 +83,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       let!(:existing_user_with_dfe_id) { create(:user, :with_get_an_identity_id, full_name: "old name", email: "old@example.com", provider: "teacher_auth") }
 
       scenario "the clashing user account should be archived" do
-        navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+        navigate_to_page(path: "/", submit_form: false) do
           page.click_button("Start now")
         end
 
@@ -112,7 +112,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       end
 
       scenario "the archived account should have its UID blanked, and the non-archived account should be updated with the UID" do
-        navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+        navigate_to_page(path: "/", submit_form: false) do
           page.click_button("Start now")
         end
 
@@ -135,7 +135,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
         end
 
         scenario "the user account should be updated with the UID" do
-          navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+          navigate_to_page(path: "/", submit_form: false) do
             page.click_button("Start now")
           end
 
@@ -158,7 +158,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
         end
 
         scenario "the clashing user account be updated with the new UID" do # or should it be archived, and a new user created? (way more complex to implement)
-          navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+          navigate_to_page(path: "/", submit_form: false) do
             page.click_button("Start now")
           end
 
@@ -183,7 +183,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       end
 
       scenario "a new user account should be created with the UID and email" do
-        navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+        navigate_to_page(path: "/", submit_form: false) do
           page.click_button("Start now")
         end
 

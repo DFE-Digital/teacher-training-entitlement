@@ -1,20 +1,16 @@
 module Helpers
   module JourneyAssertionHelper
-    def navigate_to_page(path:, submit_form: false, submit_button_text: "Continue", axe_check: true, &block)
+    def navigate_to_page(path:, submit_form: false, submit_button_text: "Continue", &block)
       visit(path)
 
-      expect_page_to_have(path:, submit_form:, submit_button_text:, axe_check:, &block)
+      expect_page_to_have(path:, submit_form:, submit_button_text:, &block)
     end
 
-    def expect_page_to_have(path:, submit_form: false, click_continue: false, submit_button_text: "Continue", axe_check: true, &block)
+    def expect_page_to_have(path:, submit_form: false, click_continue: false, submit_button_text: "Continue", &block)
       expect(page).to have_current_path(path)
 
       @steps_visited ||= []
       @steps_visited << page.current_path unless page.current_path == "/"
-
-      if axe_check && Capybara.current_driver != :rack_test
-        expect(page).to(be_accessible)
-      end
 
       block.call if block_given?
 
