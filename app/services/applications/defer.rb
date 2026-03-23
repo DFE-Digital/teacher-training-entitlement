@@ -2,7 +2,11 @@
 
 module Applications
   class Defer
-    include ActiveModel::Validations
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    attribute :application
+    attribute :reason
 
     DEFERRAL_REASONS = %w[
       bereavement
@@ -12,13 +16,6 @@ module Applications
       other
     ].freeze
 
-    def initialize(application:, reason:)
-      @application = application
-      @reason = reason
-    end
-
-    attr_reader :reason
-
     validates :reason, inclusion: { in: DEFERRAL_REASONS, message: :missing_reason }, allow_blank: false
     validate :not_already_deferred
     validate :not_withdrawn
@@ -27,22 +24,26 @@ module Applications
     def call
       return if invalid?
 
-      @application.application_states.create!(state: :deferred, reason:)
-      @application.deferred_training_status!
+      ApplicationRecord.transaction do
+        application.application_states.create!(state: :deferred, reason:)
+        application.deferred_training_status!
+      end
+
+      true
     end
 
   private
 
     def not_withdrawn
-      add_error(:base, :already_withdrawn) if @application.withdrawn_training_status?
+      add_error(:base, :already_withdrawn) if application.withdrawn_training_status?
     end
 
     def not_already_deferred
-      add_error(:base, :already_deferred) if @application.deferred_training_status?
+      add_error(:base, :already_deferred) if application.deferred_training_status?
     end
 
     def has_declarations
-      add_error(:base, :no_declarations) if @application.declarations&.none?
+      add_error(:base, :no_declarations) if application.declarations&.none?
     end
 
     def add_error(group, key)

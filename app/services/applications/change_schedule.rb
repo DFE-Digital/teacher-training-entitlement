@@ -19,6 +19,8 @@ module Applications
       return false unless valid?
 
       application.update!(course_cohort:)
+
+      true
     end
 
   private

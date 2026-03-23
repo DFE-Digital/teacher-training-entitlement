@@ -2,7 +2,11 @@
 
 module Applications
   class Withdraw
-    include ActiveModel::Validations
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    attribute :application
+    attribute :reason
 
     WITHDRAWAL_REASONS = %w[
       insufficient-capacity-to-undertake-programme
@@ -28,37 +32,34 @@ module Applications
       other
     ].freeze
 
-    attr_reader :reason
-
     validates :reason, inclusion: { in: WITHDRAWAL_REASONS, message: :missing_reason }, allow_blank: false
     validate :not_withdrawn
     validate :has_started_declarations
     validate :has_declarations
 
-    def initialize(application:, reason:)
-      @application = application
-      @reason = reason
-    end
-
     def call
       return if invalid?
 
-      @application.application_states.create!(state: :withdrawn, reason:)
-      @application.withdrawn_training_status!
+      ApplicationRecord.transaction do
+        application.application_states.create!(state: :withdrawn, reason:)
+        application.withdrawn_training_status!
+      end
+
+      true
     end
 
   private
 
     def not_withdrawn
-      add_error(:base, :already_withdrawn) if @application&.withdrawn_training_status?
+      add_error(:base, :already_withdrawn) if application.withdrawn_training_status?
     end
 
     def has_started_declarations
-      add_error(:base, :no_started_declarations) unless @application&.declarations&.any?(&:started_declaration_type?)
+      add_error(:base, :no_started_declarations) unless application.declarations.any?(&:started_declaration_type?)
     end
 
     def has_declarations
-      add_error(:base, :no_declarations) if @application&.declarations&.none?
+      add_error(:base, :no_declarations) if application.declarations.none?
     end
 
     def add_error(group, key)
