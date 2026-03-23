@@ -2,8 +2,9 @@ class Institution < ApplicationRecord
   include PgSearch::Model
 
   REDACTED_DATA_STRING = "REDACTED".freeze
+  TYPES = %w[School PrivateChildcareProvider LocalAuthority].freeze
 
-  delegated_type :institutionable, types: %w[School PrivateChildcareProvider LocalAuthority], dependent: :destroy
+  delegated_type :institutionable, types: TYPES, dependent: :destroy
 
   NAME_SYNONYMS = { "saint" => "st", "st" => "saint" }.freeze
   SEARCH_LIMIT = 100

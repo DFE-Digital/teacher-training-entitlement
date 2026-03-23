@@ -13,10 +13,10 @@ module API
       field(:funding_choice)
       field(:ineligible_for_funding_reason)
       field(:participant_id) { |a| a.user.ecf_id }
-      field(:private_childcare_provider_urn) { |a| a.private_childcare_provider_including_disabled&.urn }
       field(:teacher_reference_number) { |a| a.user.trn }
-      field(:school_urn) { |a| a.school&.urn }
-      field(:ukprn, name: :school_ukprn)
+      field(:institution_reference_number) { |a| a.institution.institution_reference_number }
+      field(:institution_type) { |a| a.institution.institutionable_type.downcase }
+      field(:ukprn) { |a| a.institution.ukprn }
       field(:lead_provider_approval_status, name: :status)
       field(:reason_for_rejection)
       field(:works_in_school)

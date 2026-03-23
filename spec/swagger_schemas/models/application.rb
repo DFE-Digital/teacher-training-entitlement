@@ -61,25 +61,25 @@ APPLICATION = {
             example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
             format: "uuid",
           },
-          private_childcare_provider_urn: {
-            description: "The Unique Reference Number (URN) of the private child care provider",
-            type: :string,
-            example: "EY944860",
-            nullable: true,
-          },
           teacher_reference_number: {
             description: "The Teacher Reference Number (TRN) for this participant",
             type: :string,
             example: "1234567",
             nullable: true,
           },
-          school_urn: {
-            description: "The Unique Reference Number (URN) of the school where this participant is employed",
+          institution_reference_number: {
+            description: "The Unique Reference Number (URN) of the institution where this participant is employed",
             type: :string,
             example: "106286",
           },
-          school_ukprn: {
-            description: "The UK Provider Reference Number (UK Provider Reference Number) of the school where this participant is employed",
+          institution_type: {
+            description: "The type of institution where this participant is employed",
+            type: :string,
+            example: Institution::TYPES.first,
+            enum: Institution::TYPES.map(&:downcase),
+          },
+          ukprn: {
+            description: "The UK Provider Reference Number (UK Provider Reference Number) of the institution where this participant is employed",
             nullable: true,
             type: :string,
             example: "10079319",
