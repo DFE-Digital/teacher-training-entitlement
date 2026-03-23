@@ -16,7 +16,7 @@ FactoryBot.define do
     end
 
     after(:create) do |course_cohort, evaluator|
-      if course_cohort.course_cohort_providers.empty?
+      if evaluator.lead_provider || course_cohort.course_cohort_providers.empty?
         lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
         course_cohort.course_cohort_providers << create(:course_cohort_provider, lead_provider:, course_cohort:)
       end
