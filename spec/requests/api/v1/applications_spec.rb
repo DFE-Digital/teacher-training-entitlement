@@ -80,143 +80,180 @@ RSpec.describe "Application endpoints", type: :request do
   end
 
   describe "PUT /api/v1/applications/:ecf_id/defer" do
-    let(:application) { create(:application, :accepted, :with_declaration, lead_provider: current_lead_provider) }
-    let(:resource_id) { application.ecf_id }
-    let(:params) { { data: { attributes: { reason: "career-break" } } } }
+    let(:resource) { create(:application, :accepted, :with_declaration, lead_provider: current_lead_provider) }
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Applications::Defer }
+    let(:action) { :call }
+    let(:attributes) { { reason: "career-break" } }
+    let(:service_args) { { application: resource, reason: "career-break" } }
 
-    before { api_put(defer_api_v1_application_path(ecf_id: application.ecf_id), params:) }
-
-    context "when the application can be deferred" do
-      it_behaves_like "a successful api call"
+    def path(id = nil)
+      defer_api_v1_application_path(ecf_id: id)
     end
 
-    context "when the application cannot be deferred" do
-      let(:application) { create(:application, :accepted, :with_declaration, training_status: "deferred", lead_provider: current_lead_provider) }
-      let(:expected_response) do
-        { "errors" => [{ "title" => "base", "detail" => "The participant is already deferred" }] }
-      end
-
-      it_behaves_like "an unprocessable content api call"
-    end
+    it_behaves_like "an API update endpoint"
   end
 
   describe "PUT /api/v1/applications/:ecf_id/resume" do
-    let(:application) { create(:application, :accepted, training_status: "deferred", lead_provider: current_lead_provider) }
-    let(:resource_id) { application.ecf_id }
-    let(:params) { { data: { attributes: {} } } }
+    let(:resource) { create(:application, :accepted, training_status: "deferred", lead_provider: current_lead_provider) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_provider: current_lead_provider) }
+    let(:course) { create(:course) }
+    let(:cohort) { create(:cohort, :previous) }
+    let(:schedule) { create(:schedule, training_starts_at: 1.year.ago, training_ends_at: 6.months.ago) }
 
-    before { api_put(resume_api_v1_application_path(ecf_id: application.ecf_id), params:) }
-
-    context "when the application can be resumed" do
-      it_behaves_like "a successful api call"
+    let(:target_course_cohort) do
+      create(:course_cohort,
+             course: target_course,
+             cohort: target_cohort,
+             schedule: target_schedule,
+             lead_provider: current_lead_provider)
     end
 
-    context "when the application cannot be resumed" do
-      let(:application) { create(:application, :accepted, lead_provider: current_lead_provider) }
-      let(:expected_response) do
-        { "errors" => [{ "title" => "base", "detail" => "The participant is already active" }] }
-      end
+    let(:target_course) { course }
+    let(:target_cohort) { create(:cohort, :current) }
+    let(:target_schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
 
-      it_behaves_like "an unprocessable content api call"
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Applications::Resume }
+    let(:action) { :call }
+    # let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
+    let(:attributes) { { schedule_id: target_course_cohort.id } }
+    let(:service_args) { { application: resource, course_cohort: target_course_cohort } }
+
+    def path(id = nil)
+      resume_api_v1_application_path(ecf_id: id)
     end
+
+    it_behaves_like "an API update endpoint"
   end
 
   describe "PUT /api/v1/applications/:ecf_id/withdraw" do
-    let(:application) { create(:application, :accepted, :with_declaration, lead_provider: current_lead_provider) }
-    let(:resource_id) { application.ecf_id }
-    let(:params) { { data: { attributes: { reason: "personal-reason-other" } } } }
+    let(:resource) { create(:application, :accepted, :with_declaration, lead_provider: current_lead_provider) }
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Applications::Withdraw }
+    let(:action) { :call }
+    let(:attributes) { { reason: "personal-reason-other" } }
+    let(:service_args) { { application: resource, reason: "personal-reason-other" } }
 
-    before { api_put(withdraw_api_v1_application_path(ecf_id: application.ecf_id), params:) }
-
-    context "when the application can be withdrawn" do
-      it_behaves_like "a successful api call"
+    def path(id = nil)
+      withdraw_api_v1_application_path(ecf_id: id)
     end
 
-    context "when the application cannot be withdrawn" do
-      let(:application) { create(:application, :accepted, :with_declaration, training_status: "withdrawn", lead_provider: current_lead_provider) }
-      let(:expected_response) do
-        { "errors" => [{ "title" => "base", "detail" => "The participant is already withdrawn" }] }
-      end
-
-      it_behaves_like "an unprocessable content api call"
-    end
+    it_behaves_like "an API update endpoint"
   end
 
   describe "PUT /api/v1/applications/:ecf_id/change-schedule" do
+    let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_provider: current_lead_provider) }
+    let(:course) { create(:course) }
     let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :tte_early_years) }
-    let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-    let(:new_schedule) { create(:schedule, :tte_reception_spring, cohort:) }
-    let!(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }
-    let(:application) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
-    let(:resource_id) { application.ecf_id }
-    let(:params) { { data: { attributes: { schedule_id: new_schedule.ecf_id } } } }
+    let(:schedule) { create(:schedule, training_starts_at: 1.month.from_now, training_ends_at: 6.months.from_now) }
 
-    before { api_put(change_schedule_api_v1_application_path(ecf_id: application.ecf_id), params:) }
-
-    context "when the schedule change is valid" do
-      it_behaves_like "a successful api call"
+    let(:target_course_cohort) do
+      create(:course_cohort,
+             course: target_course,
+             cohort: target_cohort,
+             schedule: target_schedule,
+             lead_provider: current_lead_provider)
     end
+
+    let(:target_course) { course }
+    let(:target_cohort) { create(:cohort, :next) }
+    let(:target_schedule) { create(:schedule, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now, change_training_dates: false) }
+
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Applications::ChangeSchedule }
+    let(:action) { :call }
+    let(:attributes) { { schedule_id: target_course_cohort.id } }
+    let(:service_args) { { application: resource, course_cohort: target_course_cohort } }
+
+    def path(id = nil)
+      change_schedule_api_v1_application_path(ecf_id: id)
+    end
+
+    it_behaves_like "an API update endpoint"
   end
 
   describe "POST /api/v1/applications/:ecf_id/declarations/started" do
-    let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :tte_early_years) }
-    let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_providers: [current_lead_provider]) }
-    let(:application) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
-    let(:declaration_date) { (schedule.training_starts_at + 1.day).rfc3339 }
-    let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => current_lead_provider }) }
-    let(:params) do
-      { data: { attributes: { declaration_date:, delivery_partner_id: delivery_partner.ecf_id } } }
+    let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
+    let(:declaration_date) { schedule.training_starts_at + 1.hour }
+    let(:course_cohort) { create(:course_cohort, schedule:) }
+    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let(:has_passed) { true }
+    let(:delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+    end
+    let(:secondary_delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
     end
 
-    before { api_post(declaration_started_api_v1_application_path(ecf_id: application.ecf_id), params:) }
-
-    context "when authorized" do
-      it "returns 200 with the created declaration" do
-        expect(response.status).to eq(200)
-        expect(parsed_response["data"]["attributes"]["declaration_type"]).to eq("started")
-        expect(parsed_response["data"]["attributes"]["application_id"]).to eq(application.ecf_id)
-      end
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Declarations::Create }
+    let(:action) { :call }
+    let(:attributes) do
+      {
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delievry_partner_id:,
+      }
+    end
+    let(:service_args) do
+      {
+        application: resource,
+        declaration_type: "started",
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
     end
 
-    context "when unauthorized" do
-      before { api_post(declaration_started_api_v1_application_path(ecf_id: application.ecf_id), params:, token: "bad-token") }
-
-      it "returns 401" do
-        expect(response.status).to eq(401)
-      end
+    def path(id = nil)
+      started_declaration_api_v1_application_path(ecf_id: id)
     end
+
+    it_behaves_like "an API create endpoint"
   end
 
   describe "POST /api/v1/applications/:ecf_id/declarations/completed" do
-    let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :tte_early_years) }
-    let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_providers: [current_lead_provider]) }
-    let(:application) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
-    let(:declaration_date) { (schedule.training_starts_at + 1.day).rfc3339 }
-    let(:params) do
-      { data: { attributes: { declaration_date:, has_passed: true } } }
+    let(:resource) { create(:application, :with_declaration, lead_provider: current_lead_provider) }
+    let(:declaration_date) { schedule.training_starts_at + 1.hour }
+    let(:course_cohort) { create(:course_cohort, schedule:) }
+    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let(:has_passed) { true }
+    let(:delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+    end
+    let(:secondary_delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
     end
 
-    before { api_post(declaration_completed_api_v1_application_path(ecf_id: application.ecf_id), params:) }
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Declarations::Create }
+    let(:action) { :call }
 
-    context "when authorized" do
-      it "returns 200 with the created declaration" do
-        expect(response.status).to eq(200)
-        expect(parsed_response["data"]["attributes"]["declaration_type"]).to eq("completed")
-        expect(parsed_response["data"]["attributes"]["application_id"]).to eq(application.ecf_id)
-      end
+    let(:attributes) do
+      {
+        declaration_date: declaration_date.rfc3339,
+        has_passed:,
+        delivery_partner_id:,
+        secondary_delievry_partapiner_id:,
+      }
+    end
+    let(:service_args) do
+      {
+        application: resource,
+        declaration_type: "completed",
+        declaration_date: declaration_date.rfc3339,
+        has_passed:,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
     end
 
-    context "when unauthorized" do
-      before { api_post(declaration_completed_api_v1_application_path(ecf_id: application.ecf_id), params:, token: "bad-token") }
-
-      it "returns 401" do
-        expect(response.status).to eq(401)
-      end
+    def path(id = nil)
+      completed_declaration_api_v1_application_path(ecf_id: id)
     end
+
+    it_behaves_like "an API create endpoint"
   end
 end

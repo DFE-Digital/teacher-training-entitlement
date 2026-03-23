@@ -6,9 +6,7 @@ module API
       include FilterByParticipantIds
 
       def index
-        conditions = { cohort_start_years:, participant_ids:, updated_since:, status:, course_identifier:, sort: }
-        applications = applications_query(conditions:).applications
-
+        applications = applications_query.applications
         render json: to_json(paginate(applications))
       end
 
@@ -29,10 +27,40 @@ module API
       def reject
         service = Applications::Reject.new(
           application:,
-          reason_for_rejection: rejection_reason,
+          reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider],
         )
 
         if service.reject
+          render json: to_json(service.application)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def defer
+        service = Applications::Defer.new(application:, reason:)
+
+        if service.call
+          render json: to_json(service.application)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def resume
+        service = Applications::Resume.new(application:, course_cohort:)
+
+        if service.call
+          render json: to_json(service.application)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
+      def withdraw
+        service = Applications::Withdraw.new(application:, reason:)
+
+        if service.call
           render json: to_json(service.application)
         else
           render json: API::Errors::Response.from(service), status: :unprocessable_content
@@ -49,70 +77,30 @@ module API
         end
       end
 
-      def defer
-        service = Applications::Defer.new(application:, reason: application_action_params[:reason])
-        service.call
-
-        if service.errors.blank?
-          render json: to_json(application.reload)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
-      end
-
-      def resume
-        service = Applications::Resume.new(application:)
-        service.call
-
-        if service.errors.blank?
-          render json: to_json(application.reload)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
-      end
-
-      def withdraw
-        service = Applications::Withdraw.new(application:, reason: application_action_params[:reason])
-        service.call
-
-        if service.errors.blank?
-          render json: to_json(application.reload)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
-      end
-
       def change_schedule
-        schedule = Schedule.find_by!(ecf_id: application_action_params[:schedule_id])
-        service = Participants::ChangeSchedule.new_filtering_attributes(
-          participant_id: application.user.ecf_id,
-          course_identifier: application.course.identifier,
-          schedule_identifier: schedule.identifier,
-          cohort: schedule.cohort.start_year,
-          lead_provider: current_lead_provider,
-        )
+        service = Applications::ChangeSchedule.new(application:, course_cohort:)
 
-        if service.change_schedule
-          render json: to_json(application.reload)
+        if service.call
+          render json: to_json(service.application)
         else
           render json: API::Errors::Response.from(service), status: :unprocessable_content
         end
       end
 
-      def declaration_started
-        service = Declarations::Create.new(declaration_params_for_application(declaration_type: "started"))
+      def started_declaration
+        service = Declarations::Create.new(application:, **declaration_permitted_params(:started))
 
-        if service.create_declaration
+        if service.call
           render json: declaration_to_json(service.declaration)
         else
           render json: API::Errors::Response.from(service), status: :unprocessable_content
         end
       end
 
-      def declaration_completed
-        service = Declarations::Create.new(declaration_params_for_application(declaration_type: "completed"))
+      def completed_declaration
+        service = Declarations::Create.new(application:, **declaration_permitted_params(:completed))
 
-        if service.create_declaration
+        if service.call
           render json: declaration_to_json(service.declaration)
         else
           render json: API::Errors::Response.from(service), status: :unprocessable_content
@@ -121,33 +109,55 @@ module API
 
     private
 
-      def applications_query(conditions: {})
-        conditions.merge!(lead_provider: current_lead_provider)
+      def application
+        @application ||= current_lead_provider
+                           .applications
+                           .includes(
+                             :user,
+                             :institution,
+                             course_cohort: %i[course cohort schedule],
+                           )
+                           .find_by!(ecf_id: params[:ecf_id])
+      end
+
+      def filter_params
+        params.permit(:sort, filter: %i[cohort updated_since participant_id status course])
+      end
+
+      def applications_query
+        conditions = {
+          cohort_start_years: filter_params.dig(:filter, :cohort),
+          participant_ids:, # from FilterableByParticipants
+          updated_since:, # from FilterableByDate
+          status: filter_params.dig(:filter, :status),
+          course_identifier: filter_params.dig(:filter, :course),
+          sort: filter_params[:sort],
+          lead_provider: current_lead_provider,
+        }
+
         Applications::Query.new(**conditions.compact)
       end
 
-      def application
-        @application ||= applications_query.application(ecf_id: application_params[:ecf_id])
+      def application_action_params
+        @application_action_params ||= params
+          .require(:data)
+          .require(:attributes)
+          .permit(:funded_place, :reason, :schedule_id)
+      rescue ActionController::ParameterMissing
+        raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
       end
 
-      def cohort_start_years
-        application_params.dig(:filter, :cohort)
+      def reason
+        application_action_params[:reason]
       end
 
-      def application_params
-        params.permit(:ecf_id, :sort, filter: %i[cohort updated_since participant_id status course])
+      def funded_place
+        application_action_params[:funded_place]
       end
 
-      def sort
-        application_params[:sort]
-      end
-
-      def status
-        application_params.dig(:filter, :status)
-      end
-
-      def course_identifier
-        application_params.dig(:filter, :course)
+      def course_cohort
+        course_cohort_id = application_action_params[:schedule_id]
+        current_lead_provider.course_cohorts.find_by!(id: course_cohort_id)
       end
 
       def to_json(obj)
@@ -158,60 +168,14 @@ module API
         DeclarationSerializer.render(obj, view: :v1, root: "data")
       end
 
-      def accept_permitted_params
-        parameters = params
-          .fetch(:data)
-          .permit(:type, attributes: %i[funded_place schedule_identifier])
-
-        return parameters if parameters["attributes"].present?
-
-        raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
-      rescue ActionController::ParameterMissing
-        {}
-      end
-
-      def application_action_params
-        @application_action_params ||= params
-          .require(:data)
-          .require(:attributes)
-          .permit(:reason, :schedule_id)
-      rescue ActionController::ParameterMissing
-        raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
-      end
-
-      def reject_permitted_params
-        params
-          .fetch(:data, {})
-          .permit(:type, attributes: %i[reason])
-      rescue ActionController::ParameterMissing
-        {}
-      end
-
-      def rejection_reason
-        reason = reject_permitted_params.dig("attributes", "reason")
-        reason.present? ? reason : Application.reason_for_rejections[:rejected_by_provider]
-      end
-
-      def funded_place
-        accept_permitted_params.dig("attributes", "funded_place")
-      end
-
-      def declaration_permitted_params
+      def declaration_permitted_params(declaration_type)
         params
           .fetch(:data)
           .permit(:type, attributes: %i[declaration_date delivery_partner_id secondary_delivery_partner_id has_passed])
           .fetch(:attributes, {})
+          .merge(declaration_type:)
       rescue ActionController::ParameterMissing
         raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
-      end
-
-      def declaration_params_for_application(declaration_type:)
-        declaration_permitted_params.merge(
-          lead_provider: current_lead_provider,
-          participant_id: application.user.ecf_id,
-          course_identifier: application.course.identifier,
-          declaration_type:,
-        )
       end
     end
   end
