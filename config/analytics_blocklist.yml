@@ -86,6 +86,7 @@
   - updated_at
   :course_cohorts:
   - id
+  - ecf_id
   - cohort_id
   - course_id
   - created_at

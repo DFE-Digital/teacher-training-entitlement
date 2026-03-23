@@ -116,8 +116,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Resume }
     let(:action) { :call }
-    # let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
-    let(:attributes) { { schedule_id: target_course_cohort.id } }
+    let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
     let(:service_args) { { application: resource, course_cohort: target_course_cohort } }
 
     def path(id = nil)
@@ -164,7 +163,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::ChangeSchedule }
     let(:action) { :call }
-    let(:attributes) { { schedule_id: target_course_cohort.id } }
+    let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
     let(:service_args) { { application: resource, course_cohort: target_course_cohort } }
 
     def path(id = nil)

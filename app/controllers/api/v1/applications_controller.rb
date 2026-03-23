@@ -156,8 +156,8 @@ module API
       end
 
       def course_cohort
-        course_cohort_id = application_action_params[:schedule_id]
-        current_lead_provider.course_cohorts.find_by!(id: course_cohort_id)
+        course_cohort_ecf_id = application_action_params[:schedule_id]
+        current_lead_provider.course_cohorts.find_by!(ecf_id: course_cohort_ecf_id)
       end
 
       def to_json(obj)

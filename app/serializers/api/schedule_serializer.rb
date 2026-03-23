@@ -1,6 +1,6 @@
 module API
   class ScheduleSerializer < Blueprinter::Base
-    identifier(:id) { |cc| cc.schedule.ecf_id }
+    identifier :ecf_id, name: :id
     field(:type) { "schedule" }
 
     class AttributesSerializer < Blueprinter::Base

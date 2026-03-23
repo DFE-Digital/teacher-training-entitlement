@@ -20,7 +20,7 @@ RSpec.describe "Schedule endpoints", type: :request do
 
       it "returns schedules for the lead provider" do
         expect(parsed_response["data"].length).to eq(1)
-        expect(parsed_response["data"].first["id"]).to eq(schedule.ecf_id)
+        expect(parsed_response["data"].first["id"]).to eq(course_cohort.ecf_id)
       end
 
       it "includes the correct attributes" do
@@ -37,7 +37,7 @@ RSpec.describe "Schedule endpoints", type: :request do
 
         api_get(api_v1_schedules_path)
 
-        expect(parsed_response["data"].length).to eq(1)
+        expect(parsed_response["data"].length).to eq(0)
       end
     end
 
