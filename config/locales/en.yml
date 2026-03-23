@@ -742,11 +742,6 @@ en:
     "yes": "Yes"
     "no": "No"
 
-  accounts:
-    show:
-      title: "Your NPQ registration"
-      pural_title: "Your NPQ registrations"
-
   admin:
     layout:
       title: "Admin"

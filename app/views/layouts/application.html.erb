@@ -13,7 +13,9 @@
 
     <%= render partial: "shared/cookies/banner" %>
 
-    <a tabindex="0" href="#main-content" class="govuk-skip-link">Skip to main content</a>
+    <nav aria-label="Skip link">
+      <a tabindex="0" href="#main-content" class="govuk-skip-link">Skip to main content</a>
+    </nav>
 
     <%= render OneLoginHeaderComponent.new(current_user: current_user) %>
 
