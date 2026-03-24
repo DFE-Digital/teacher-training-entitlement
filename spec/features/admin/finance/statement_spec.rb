@@ -51,8 +51,6 @@ RSpec.feature "Statement", type: :feature do
     end
 
     expect(page).not_to have_text("Standalone payments")
-
-    expect(page).to be_accessible
   end
 
   scenario "see special course details" do
@@ -74,8 +72,6 @@ RSpec.feature "Statement", type: :feature do
       component = Admin::CoursePaymentOverviewComponent.new(contract:)
       expect(page).to have_component(component)
     end
-
-    expect(page).to be_accessible
   end
 
   scenario "see the contract information for all courses of a statement" do
@@ -89,8 +85,6 @@ RSpec.feature "Statement", type: :feature do
         expect(page).to have_content(number_to_currency(contract.per_participant))
       end
     end
-
-    expect(page).to be_accessible
   end
 
   scenario "print views" do

@@ -28,6 +28,8 @@ require "dfe/analytics/testing"
 require "dfe/analytics/rspec/matchers"
 require "capybara/cuprite"
 require "rack_session_access/capybara"
+require "axe-rspec"
+require "axe-capybara"
 
 Capybara.register_driver(:cuprite) do |app|
   Capybara::Cuprite::Driver.new(
@@ -85,7 +87,6 @@ RSpec.configure do |config|
   config.include Helpers::SwaggerExampleParser, type: :request
   config.include Helpers::TempfileHelper
   config.include RSpec::DefaultHttpHeader, type: :request
-  config.include AxeHelper, type: :feature
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [

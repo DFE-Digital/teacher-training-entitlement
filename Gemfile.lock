@@ -620,6 +620,7 @@ GEM
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
     ruby-progressbar (1.13.0)
+    rubyzip (3.2.2)
     sass (3.7.4)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -632,6 +633,12 @@ GEM
     secure_headers (7.2.0)
       cgi (>= 0.1)
     securerandom (0.4.1)
+    selenium-webdriver (4.41.0)
+      base64 (~> 0.2)
+      logger (~> 1.4)
+      rexml (~> 3.2, >= 3.2.5)
+      rubyzip (>= 1.2.2, < 4.0)
+      websocket (~> 1.0)
     semantic_logger (4.17.0)
       concurrent-ruby (~> 1.0)
     sentry-delayed_job (6.5.0)
@@ -731,6 +738,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.2)
+    websocket (1.2.11)
     websocket-driver (0.8.0)
       base64
       websocket-extensions (>= 0.1.0)
@@ -819,6 +827,7 @@ DEPENDENCIES
   ruby-lsp
   scss_lint-govuk
   secure_headers
+  selenium-webdriver
   sentry-delayed_job
   sentry-rails
   sentry-ruby

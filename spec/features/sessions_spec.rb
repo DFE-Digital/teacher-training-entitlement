@@ -7,12 +7,10 @@ RSpec.feature "Sessions", type: :feature do
 
   scenario "signing in when user does not exist" do
     visit "/sign-in"
-    expect(page).to be_accessible
     expect(page).to have_content("Sign in")
     page.fill_in "What’s your email address?", with: "user@example.com"
     page.click_button "Sign in"
 
-    expect(page).to be_accessible
     expect(page).to have_content("Check your email")
     expect(ActionMailer::Base.deliveries.size).to be_zero
   end

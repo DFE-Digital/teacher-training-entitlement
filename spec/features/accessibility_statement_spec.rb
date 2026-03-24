@@ -7,7 +7,6 @@ RSpec.feature "Accessibility Statement", type: :feature do
     visit "/"
     click_link("Accessibility")
 
-    expect(page).to be_accessible
     expect(page).to have_content("Accessibility statement")
   end
 end

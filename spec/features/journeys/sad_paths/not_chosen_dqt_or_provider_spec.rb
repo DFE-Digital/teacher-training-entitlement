@@ -18,7 +18,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   def run_scenario(*)
     stub_participant_validation_request
 
-    navigate_to_page(path: "/", submit_form: false, axe_check: false) do
+    navigate_to_page(path: "/", submit_form: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")
     end
