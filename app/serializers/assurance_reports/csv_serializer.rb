@@ -11,7 +11,7 @@ class AssuranceReports::CsvSerializer
   end
 
   def filename
-    "NPQ-Declarations-#{lead_provider.name.gsub(/\W/, '')}-Cohort#{cohort.name}-#{statement_name(statement).gsub(/\W/, '')}.csv"
+    "TTE-Declarations-#{lead_provider.name.gsub(/\W/, '')}-Cohort#{cohort.name}-#{statement_name(statement).gsub(/\W/, '')}.csv"
   end
 
   def serialize
@@ -63,7 +63,7 @@ private
       record.schedule,
       record.eligible_for_funding,
       record.funded_place,
-      record.npq_lead_provider_name,
+      record.lead_provider_name,
       record.school_urn,
       record.school_name,
       record.training_status,

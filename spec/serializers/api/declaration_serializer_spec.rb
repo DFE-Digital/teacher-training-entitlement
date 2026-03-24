@@ -4,14 +4,20 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
   let(:declaration) do
     create(:declaration,
            application:,
-           delivery_partner: primary_partner,
-           secondary_delivery_partner: secondary_partner)
+           cohort:,
+           delivery_partner:,
+           secondary_delivery_partner:)
   end
 
   let(:application) { create(:application, :accepted) }
+  let(:cohort) { application.cohort }
   let(:lead_provider) { application.lead_provider }
-  let(:primary_partner) { create(:delivery_partner, lead_provider:) }
-  let(:secondary_partner) { create(:delivery_partner, lead_provider:) }
+  let(:delivery_partner) do
+    create(:delivery_partner, lead_providers: { cohort => lead_provider })
+  end
+  let(:secondary_delivery_partner) do
+    create(:delivery_partner, lead_providers: { cohort => lead_provider })
+  end
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(declaration)) }
@@ -25,7 +31,7 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
     it "serializes the `type`" do
       response = JSON.parse(described_class.render(declaration))
 
-      expect(response["type"]).to eq("participant-declaration")
+      expect(response["type"]).to eq("declaration")
     end
   end
 
@@ -130,19 +136,19 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
       end
 
       it "serializes the `delivery_partner_id`" do
-        expect(attributes["delivery_partner_id"]).to eq(primary_partner.ecf_id)
+        expect(attributes["delivery_partner_id"]).to eq(delivery_partner.ecf_id)
       end
 
       it "serializes the `delivery_partner_name`" do
-        expect(attributes["delivery_partner_name"]).to eq(primary_partner.name)
+        expect(attributes["delivery_partner_name"]).to eq(delivery_partner.name)
       end
 
       it "serializes the `secondary_delivery_partner_id`" do
-        expect(attributes["secondary_delivery_partner_id"]).to eq(secondary_partner.ecf_id)
+        expect(attributes["secondary_delivery_partner_id"]).to eq(secondary_delivery_partner.ecf_id)
       end
 
       it "serializes the `secondary_delivery_partner_name`" do
-        expect(attributes["secondary_delivery_partner_name"]).to eq(secondary_partner.name)
+        expect(attributes["secondary_delivery_partner_name"]).to eq(secondary_delivery_partner.name)
       end
 
       it "serializes the `created_at`" do
