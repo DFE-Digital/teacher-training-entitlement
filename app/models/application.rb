@@ -101,6 +101,10 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
   validate :validate_permitted_schedule_for_course
 
+  def can_change_provider?
+    pending_lead_provider_approval_status?
+  end
+
   # `eligible_for_dfe_funding?`  takes into consideration what we know
   # about user eligibility plus if it has been previously funded. We need
   # to keep this method in place to keep consistency during the split between

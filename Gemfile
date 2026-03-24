@@ -92,6 +92,7 @@ group :test do
   gem "axe-core-rspec"
   gem "cuprite"
   gem "rack_session_access"
+  gem "rails-controller-testing"
   gem "rspec-default_http_header"
   gem "shoulda-matchers"
   gem "site_prism"

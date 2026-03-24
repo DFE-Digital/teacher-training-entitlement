@@ -20,6 +20,11 @@
         <dd class="govuk-summary-list__value">
           <%= application.lead_provider.name %>
         </dd>
+        <dd class="govuk-summary-list__actions">
+          <% if pending?(application) %>
+            <a class="govuk-link" href="<%= application_change_provider_start_index_path(application.ecf_id) %>">Register with a different provider</a>
+          <% end %>
+        </dd>  
       </div>
 
       <div class="govuk-summary-list__row">
