@@ -1,15 +1,18 @@
 class Admin::ApplicationsController < AdminController
   def index
-    applications = Application.includes(:institution, :user)
-                              .merge(filter_scope)
-                              .merge(search_scope)
-                              .order("applications.created_at ASC")
+    applications = Application
+                     .includes(:institution, :user, course_cohort: %i[course cohort])
+                     .merge(filter_scope)
+                     .merge(search_scope)
+                     .order("applications.created_at ASC")
 
     @pagy, @applications = pagy(applications)
   end
 
   def show
-    @application = Application.find(params[:id])
+    @application = Application
+                     .includes(:institution, :user, :lead_provider, course_cohort: %i[course cohort schedule])
+                     .find(params[:id])
   end
 
 private
@@ -18,13 +21,15 @@ private
     params.permit %i[
       training_status
       lead_provider_approval_status
-      cohort_id
+      course_cohort_id
       work_setting
     ]
   end
 
   def filter_scope
-    Application.where(filter_params.compact_blank)
+    Application
+      .includes(course_cohort: %i[course cohort])
+      .where(filter_params.compact_blank)
   end
 
   def search_scope

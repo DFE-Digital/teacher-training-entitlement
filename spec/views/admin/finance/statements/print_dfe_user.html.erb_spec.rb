@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "admin/finance/statements/print_dfe_user", type: :view do
+RSpec.describe "admin/finance/statements/print_dfe_user", :revisit, type: :view do
   subject { render }
 
   let(:rendered) { Capybara.string(subject) }
