@@ -38,6 +38,21 @@ en:
     cannot_change_funded_place: You cannot change the funded place because declarations have been submitted. You will need to void the existing declarations and resubmit them after changing the funded place.
     cannot_reject_with_declarations: This application has declarations that prevent it from being rejected. Void the declarations first, or contact us for assistance.
 
+  applications:
+    change_provider:
+      start:
+        title: Change your provider for the %{course_name} course
+        what_happens:
+          title: What happens when you change provider
+          text:
+            - Your current provider will be notified that you are no longer registered with them and will stop all processes. You will not be able to start the course with that provider.
+            - Your new provider will send you a link to complete their application form and will start suitability checks.
+        form:
+          title: Please confirm you have not started the course and want to change provider?
+          yes_option: Yes, I have not started the course and want to change provider
+          no_option: No, I don't want to change provider
+          blank: Please confirm you have not started the course and want to change provider
+          cannot_change_provider: You cannot change provider for this application. Contact the DfE for assistance.
   declaration: &declaration
     blank: You must specify a declaration
     not_in_attachable_state: The declaration is not in a state eligible for attachment
@@ -741,6 +756,8 @@ en:
     continue: Continue
     "yes": "Yes"
     "no": "No"
+    provider: Provider
+    change: Change
 
   admin:
     layout:

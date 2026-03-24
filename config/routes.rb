@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  def dashed_resources(name, **options, &block)
+    resources name, **options.merge(path: name.to_s.dasherize), &block
+  end
+
   devise_for :users,
              controllers: { omniauth_callbacks: "omniauth" }
 
@@ -55,6 +59,13 @@ Rails.application.routes.draw do
   resource :cookie_preferences do
     member do
       post "hide"
+    end
+  end
+
+  resources :applications, param: :ecf_id, module: :applications do
+    namespace :change_provider, path: "change-provider" do
+      dashed_resources :start, only: %i[index create]
+      dashed_resources :providers, only: %i[index create]
     end
   end
 
