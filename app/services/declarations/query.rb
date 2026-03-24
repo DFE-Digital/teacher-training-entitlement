@@ -90,7 +90,7 @@ module Declarations
           :participant_outcomes,
           application: %i[
             user
-            course
+            course_cohort
             lead_provider
           ],
           statement_items: %i[

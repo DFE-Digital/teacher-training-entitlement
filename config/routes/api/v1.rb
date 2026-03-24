@@ -24,7 +24,7 @@ namespace :api do
 
     resources :declarations, only: %i[show index], path: "declarations", param: :ecf_id do
       member do
-        post :void, path: "void"
+        put :void, path: "void"
         put :change_delivery_partner, path: "change-delivery-partner"
       end
     end
