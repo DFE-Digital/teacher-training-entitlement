@@ -5,11 +5,13 @@ LEAD_PROVIDERS.each do |name|
 end
 
 Course.find_each do |course|
-  LeadProvider.find_each do |lead_provider|
-    Cohort.find_each do |cohort|
-      course_cohort = CourseCohort.find_by(course:, cohort:)
-      course_cohort ||= CourseCohort.create!(course:, cohort:, schedule: FactoryBot.create(:schedule, cohort:))
+  Cohort.find_each do |cohort|
+    schedule = Schedule.find_by(cohort:, course_group: course.course_group) || FactoryBot.create(:schedule, cohort:, course_group: course.course_group)
+    course_cohort = CourseCohort.find_or_create_by!(course:, cohort:) do |cc|
+      cc.schedule = schedule
+    end
 
+    LeadProvider.find_each do |lead_provider|
       CourseCohortProvider.find_or_create_by!(
         lead_provider:,
         course_cohort:,

@@ -8,67 +8,65 @@ lead_providers     = LeadProvider.alphabetical.limit(2) # it's very slow to do t
 application_count  = 1
 
 lead_providers.each do |lead_provider|
-  Schedule.find_each do |schedule|
-    schedule.courses.each do |course|
-      application_count.times do
-        application = FactoryBot.create(
-          :application,
-          :eligible_for_funded_place,
-          :with_random_user,
-          :with_random_work_setting,
-          cohort: schedule.cohort,
-          lead_provider:,
-          course:,
-          schedule:,
-        )
+  CourseCohort.includes(:course, :cohort, :schedule).find_each do |course_cohort|
+    schedule = course_cohort.schedule
 
-        schedule.allowed_declaration_types.each.with_index do |declaration_type, i|
-          declaration = nil
-          date        = schedule.training_starts_at + (application_count * i * 2).months
+    application_count.times do
+      application = FactoryBot.create(
+        :application,
+        :eligible_for_funded_place,
+        :with_random_user,
+        :with_random_work_setting,
+        course_cohort:,
+        lead_provider:,
+      )
 
-          next if date.future?
+      schedule.allowed_declaration_types.each.with_index do |declaration_type, i|
+        declaration = nil
+        date        = schedule.training_starts_at + (application_count * i * 2).months
 
-          helpers.travel_to date do
-            with_versioning do
-              declaration = FactoryBot.create(
-                :declaration,
-                :submitted_or_eligible,
-                :with_sometimes_nil_delivery_partner,
-                application:,
-                declaration_type:,
-              )
-            end
+        next if date.future?
 
-            Declarations::StatementAttacher.new(declaration:).attach
-
-            if declaration_type == "completed" && (application.id % 5).zero?
-              ParticipantOutcomes::Create::STATES.reverse.each do |state|
-                FactoryBot.create(:participant_outcome,
-                                  declaration:,
-                                  state:,
-                                  completion_date: declaration.declaration_date.to_s)
-                next unless state == "passed"
-
-                user = application.user
-                old_full_name = user.full_name
-                user.full_name = "Outcome #{old_full_name}"
-                user.save!
-              end
-            end
+        helpers.travel_to date do
+          with_versioning do
+            declaration = FactoryBot.create(
+              :declaration,
+              :submitted_or_eligible,
+              :with_sometimes_nil_delivery_partner,
+              application:,
+              declaration_type:,
+            )
           end
 
-          # create some voided declarations
-          if schedule.allowed_declaration_types.count < 4 && declaration_type == "retained-1" && declaration.statements.any?
-            voidable_statement = declaration.statements.first
-            helpers.travel_to voidable_statement.deadline_date + 1.month do
-              Declarations::Void.new(declaration:).void
+          Declarations::StatementAttacher.new(declaration:).attach
+
+          if declaration_type == "completed" && (application.id % 5).zero?
+            ParticipantOutcomes::Create::STATES.reverse.each do |state|
+              FactoryBot.create(:participant_outcome,
+                                declaration:,
+                                state:,
+                                completion_date: declaration.declaration_date.to_s)
+              next unless state == "passed"
+
+              user = application.user
+              old_full_name = user.full_name
+              user.full_name = "Outcome #{old_full_name}"
+              user.save!
             end
           end
         end
-      end
 
-      application_count += 1
-      application_count = 1 if application_count > 3
+        # create some voided declarations
+        if schedule.allowed_declaration_types.count < 4 && declaration_type == "retained-1" && declaration.statements.any?
+          voidable_statement = declaration.statements.first
+          helpers.travel_to voidable_statement.deadline_date + 1.month do
+            Declarations::Void.new(declaration:).void
+          end
+        end
+      end
     end
+
+    application_count += 1
+    application_count = 1 if application_count > 3
   end
 end

@@ -52,8 +52,7 @@ module ValidTestDataGenerators
 
       ActiveRecord::Base.transaction do
         cleanup_existing_data!
-        setup_cohorts!
-        setup_course_and_schedules!
+        setup_course_cohorts!
         create_applications!
         create_statements!
       end
@@ -145,6 +144,23 @@ module ValidTestDataGenerators
       logger.info "Cleanup complete"
     end
 
+    def setup_course_cohorts!
+      setup_cohorts!
+      setup_course_and_schedules!
+      @course_cohort_primary = CourseCohort.find_or_create_by!(
+        course: @course,
+        cohort: @cohort_primary,
+      ) do |cc|
+        cc.schedule = @schedule_primary
+      end
+      @course_cohort_secondary = CourseCohort.find_or_create_by!(
+        course: @course,
+        cohort: @cohort_secondary,
+      ) do |cc|
+        cc.schedule = @schedule_secondary
+      end
+    end
+
     def setup_cohorts!
       @cohort_primary = Cohort.find_or_create_by!(start_year: cohort_year, suffix: "a") do |cohort|
         cohort.description = "#{cohort_year} to #{cohort_year + 1}"
@@ -167,7 +183,6 @@ module ValidTestDataGenerators
       # Create schedule for primary cohort
       @schedule_primary = Schedule.find_or_create_by!(
         identifier: @schedule_identifier,
-        cohort: @cohort_primary,
       ) do |schedule|
         schedule.name = "TTE Reception autumn"
         schedule.course_group = @course.course_group
@@ -182,7 +197,6 @@ module ValidTestDataGenerators
       # Create schedule for secondary cohort
       @schedule_secondary = Schedule.find_or_create_by!(
         identifier: @schedule_identifier,
-        cohort: @cohort_secondary,
       ) do |schedule|
         schedule.name = "TTE Reception autumn"
         schedule.course_group = @course.course_group
@@ -201,16 +215,15 @@ module ValidTestDataGenerators
       @applications = {}
 
       applications_data.each do |app_data|
-        cohort = app_data[:cohort_offset].zero? ? @cohort_primary : @cohort_secondary
+        course_cohort = app_data[:cohort_offset].zero? ? @course_cohort_primary : @course_cohort_secondary
         school = School.open.order("RANDOM()").first || School.open.first
 
         user = create_user(app_data)
 
         application = Application.create!(
           user: user,
-          course: @course,
           lead_provider: lead_provider,
-          cohort: cohort,
+          course_cohort: course_cohort,
           institution: school.institution,
           lead_provider_approval_status: :pending,
           ecf_id: SecureRandom.uuid,

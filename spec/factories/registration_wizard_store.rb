@@ -3,7 +3,7 @@ FactoryBot.define do
     initialize_with { attributes.stringify_keys }
 
     transient do
-      course { create(Course::IDENTIFIERS.first.to_sym) }
+      course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
       school { create(:school, :funding_eligible_establishment_type_code) }
       lead_provider { LeadProvider.first }
     end

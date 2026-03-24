@@ -85,14 +85,23 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(Cohort.find_by(start_year: cohort_year + 1)).to be_present
         end
 
-        it "creates 11 applications in primary cohort and 1 in secondary cohort" do
+        it "creates 2 course_cohorts" do
           seeder.call
 
+          course = Course.find_by!(identifier: "tte-early-years")
           primary_cohort = Cohort.find_by(start_year: cohort_year)
-          primary_course_cohort = CourseCohort.find_by(cohort: primary_cohort)
-
           secondary_cohort = Cohort.find_by(start_year: cohort_year + 1)
-          secondary_course_cohort = CourseCohort.find_by(cohort: secondary_cohort)
+
+          expect(CourseCohort.find_by(course:, cohort: primary_cohort)).to be_present
+          expect(CourseCohort.find_by(course:, cohort: secondary_cohort)).to be_present
+        end
+
+        it "creates 11 applications in primary course_cohort and 1 in secondary course_cohort" do
+          seeder.call
+
+          course = Course.find_by!(identifier: "tte-early-years")
+          primary_course_cohort = CourseCohort.find_by(course:, cohort: Cohort.find_by(start_year: cohort_year))
+          secondary_course_cohort = CourseCohort.find_by(course:, cohort: Cohort.find_by(start_year: cohort_year + 1))
 
           expect(Application.where(course_cohort: primary_course_cohort, lead_provider: lead_provider).count).to eq(11)
           expect(Application.where(course_cohort: secondary_course_cohort, lead_provider: lead_provider).count).to eq(1)
@@ -159,12 +168,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         end
 
         it "resets all applications to pending status" do
-          # Accept some applications
-          schedule = Schedule.find_by(identifier: "tte-reception-autumn", cohort: Cohort.find_by(start_year: cohort_year))
           Application.where(lead_provider: lead_provider).limit(3).update_all(
-            course_cohort:,
             lead_provider_approval_status: "accepted",
-            schedule_id: schedule.id,
             training_status: "active",
           )
 

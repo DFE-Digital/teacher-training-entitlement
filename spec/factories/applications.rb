@@ -10,7 +10,7 @@ FactoryBot.define do
     ecf_id { SecureRandom.uuid }
 
     transient do
-      course { create(Course::IDENTIFIERS.first.to_sym) }
+      course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
       cohort do
         existing = user.persisted? &&
           user.applications.not_rejected
@@ -24,12 +24,12 @@ FactoryBot.define do
 
     course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
 
-    teacher_catchment { cohort && cohort.start_year > 2023 ? "england" : nil }
+    teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
     funding_choice { Application.funding_choices.keys.first }
     ukprn { rand(10_000_000..99_999_999).to_s }
-    funded_place { cohort&.funding_cap ? !!eligible_for_funding : nil }
+    funded_place { course_cohort.cohort.funding_cap ? !!eligible_for_funding : nil }
 
     trait :with_school do
       transient do
@@ -79,7 +79,7 @@ FactoryBot.define do
 
     trait :accepted do
       lead_provider_approval_status { :accepted }
-      funded_place { cohort.funding_cap ? !!eligible_for_funding : nil }
+      funded_place { course_cohort.cohort.funding_cap ? !!eligible_for_funding : nil }
       accepted_at { Time.zone.now }
       training_status { :active }
     end
@@ -99,7 +99,7 @@ FactoryBot.define do
     trait :eligible_for_funded_place do
       accepted
       eligible_for_funding
-      funded_place { cohort.funding_cap ? true : nil }
+      funded_place { course_cohort.cohort.funding_cap ? true : nil }
     end
 
     trait :with_funded_place do
