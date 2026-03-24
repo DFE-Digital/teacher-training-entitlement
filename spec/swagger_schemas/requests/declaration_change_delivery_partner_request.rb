@@ -1,10 +1,10 @@
-PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST = {
-  description: "A participant declaration change delivery partner request",
+DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST = {
+  description: "A declaration change delivery partner request",
   type: :object,
   required: %w[data],
   properties: {
     data: {
-      description: "A participant declaration change delivery partner request",
+      description: "A declaration change delivery partner request",
       type: :object,
       required: %w[type attributes],
       properties: {
@@ -12,9 +12,9 @@ PARTICIPANT_DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST = {
           type: :string,
           required: true,
           enum: %w[
-            participant-declaration
+            declaration
           ],
-          example: "participant-declaration",
+          example: "declaration",
         },
         attributes: {
           required: true,

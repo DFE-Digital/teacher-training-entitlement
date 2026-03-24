@@ -1,32 +1,24 @@
-PARTICIPANT_WITHDRAW_REQUEST = {
-  description: "A participant withdraw request",
+APPLICATION_WITHDRAW_REQUEST = {
+  description: "An application withdraw request",
   type: :object,
   required: %i[data],
   properties: {
     data: {
-      description: "A participant withdraw request data",
+      description: "An application withdraw request data",
       type: :object,
       required: %i[type attributes],
       properties: {
         type: {
           description: "The data typed",
           type: :string,
-          example: "participant-withdraw",
+          example: "application-withdraw",
           required: true,
         },
         attributes: {
-          description: "A participant withdraw request attributes",
+          description: "An application withdraw request attributes",
           type: :object,
-          required: %i[course_identifier reason],
+          required: %i[reason],
           properties: {
-            course_identifier: {
-              description: "The type of course the participant is enrolled in",
-              required: true,
-              nullable: false,
-              type: :string,
-              example: Course::IDENTIFIERS.first,
-              enum: Course::IDENTIFIERS,
-            },
             reason: {
               description: "The reason for the withdrawal",
               required: true,
