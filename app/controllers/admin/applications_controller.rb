@@ -21,15 +21,26 @@ private
     params.permit %i[
       training_status
       lead_provider_approval_status
-      course_cohort_id
+      cohort_id
       work_setting
     ]
   end
 
   def filter_scope
-    Application
-      .includes(course_cohort: %i[course cohort])
-      .where(filter_params.compact_blank)
+    filters = filter_params.except(:cohort_id)
+    scope = Application
+              .where(filters.compact_blank)
+
+    if filter_params[:cohort_id].present?
+      scope.merge!(
+        Application
+          .joins(:course_cohort)
+          .includes(course_cohort: %i[course cohort])
+          .where(course_cohorts: { cohort_id: filter_params[:cohort_id] }),
+      )
+    end
+
+    scope
   end
 
   def search_scope

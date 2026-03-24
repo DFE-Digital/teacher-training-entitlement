@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
+RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, :revisit, type: :feature do
   include Helpers::AdminLogin
 
   let(:admin)  { create :admin }

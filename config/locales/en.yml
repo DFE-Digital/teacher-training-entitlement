@@ -378,7 +378,7 @@ en:
               application_not_accepted: The application has not been accepted
         admin/applications/change_cohort_form:
           attributes:
-            cohort_id:
+            course_cohort_id:
               blank: "Choose a cohort"
         admin/adjustments/create_adjustment_form: &create_adjustment_form
           attributes:

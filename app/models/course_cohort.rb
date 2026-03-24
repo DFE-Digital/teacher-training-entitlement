@@ -7,4 +7,6 @@ class CourseCohort < ApplicationRecord
   has_many :lead_providers, through: :course_cohort_providers
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
+
+  delegate :name, to: :cohort
 end

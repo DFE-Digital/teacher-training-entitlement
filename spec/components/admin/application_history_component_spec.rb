@@ -35,7 +35,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
         ecf_id: original_ecf_id,
         course_cohort:,
       )
-      end
+    end
     let(:whodunnit) { "some user" }
     let(:schedule) { create(:schedule, course_group: application.course.course_group, identifier: application.schedule.identifier) }
 

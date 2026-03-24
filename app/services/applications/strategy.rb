@@ -11,7 +11,7 @@ module Applications
       when DEFERRED
         Defer.new(application:, reason:)
       when ACTIVE
-        Resume.new(application:)
+        Resume.new(application:, course_cohort: application.course_cohort)
       end
     end
   end

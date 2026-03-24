@@ -334,10 +334,12 @@ RSpec.describe Application do
   describe "#previously_funded?" do
     let(:user) { create(:user) }
     let(:course) { create(:course) }
-    let(:application) { create(:application, :previously_funded, user:, course:, cohort: cohort_with_funding_cap) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort: cohort_with_funding_cap) }
+    let(:application) { create(:application, :previously_funded, user:, course_cohort:) }
     let(:cohort_with_funding_cap) { create(:cohort, :with_funding_cap) }
     let(:cohort_without_funding_cap) { create(:cohort, :without_funding_cap) }
     let(:previous_application) { user.applications.where.not(id: application.id).first! }
+    let(:course_cohort_no_cap) { create(:course_cohort, course:, cohort: cohort_without_funding_cap) }
 
     subject { application }
 
@@ -347,9 +349,8 @@ RSpec.describe Application do
       context "when funded place is `nil`" do
         before do
           previous_application.update!(
-            cohort: cohort_without_funding_cap,
+            course_cohort: course_cohort_no_cap,
             funded_place: nil,
-            schedule: Schedule.find_by(cohort: cohort_without_funding_cap, course_group: previous_application.course.course_group),
           )
         end
 

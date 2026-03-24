@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
+RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder, :revisit do
   let(:seeder) { described_class.new(lead_provider:, cohort_year:) }
   let(:lead_provider) { create(:lead_provider) }
   let(:cohort_year) { 2026 }

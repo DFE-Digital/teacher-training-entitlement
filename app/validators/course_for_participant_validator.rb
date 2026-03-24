@@ -18,7 +18,7 @@ private
       .accepted
       .joins(:course_cohort)
       .where(course_cohorts: {
-               course: Course.find_by(identifier: record.course_identifier)&.rebranded_alternative_courses }
-      ).any?
+        course: Course.find_by(identifier: record.course_identifier)&.rebranded_alternative_courses,
+      }).any?
   end
 end

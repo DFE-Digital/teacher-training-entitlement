@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "update_application" do
+RSpec.describe "update_application", :revisit do
   include_context "with default schedules"
 
   let(:cohort) do
