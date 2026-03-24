@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::SchedulesController, :ecf_api_disabled, :revisit, type: :request do
+RSpec.describe Admin::SchedulesController, :revisit, :ecf_api_disabled, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   subject { response }

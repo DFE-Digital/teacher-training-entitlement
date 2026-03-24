@@ -8,7 +8,7 @@
   <% end %>
 </h1>
 
-<%= form_with model: [:admin, @schedule.cohort, @schedule] do |f| %>
+<%= form_with model: [:admin, @cohort, @schedule] do |f| %>
   <%= f.govuk_text_field :name, class: "govuk-input--width-20" %>
 
   <%= f.govuk_text_field :identifier, class: "govuk-input--width-20" %>

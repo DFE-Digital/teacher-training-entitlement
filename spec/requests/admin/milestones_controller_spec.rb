@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::MilestonesController, type: :request do
+RSpec.describe Admin::MilestonesController, :revisit, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   subject { response }
