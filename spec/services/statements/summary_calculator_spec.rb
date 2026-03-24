@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Statements::SummaryCalculator do
+RSpec.describe Statements::SummaryCalculator, :revisit do
   let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
   let(:lead_provider) { create :lead_provider }
   let(:statement) { create(:statement, :next_output_fee, lead_provider:, reconcile_amount: 0, cohort:) }

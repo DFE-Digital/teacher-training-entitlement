@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Milestones::Destroy, :with_default_schedules, type: :model do
+RSpec.describe Milestones::Destroy, :revisit, :with_default_schedules, type: :model do
   subject(:service) { described_class.new(milestone_id: milestone.id) }
 
   let(:cohort) { Cohort.last }

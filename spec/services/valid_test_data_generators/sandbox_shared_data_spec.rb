@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe ValidTestDataGenerators::SandboxSharedData, :with_default_schedules do
+RSpec.describe ValidTestDataGenerators::SandboxSharedData, :npq, :with_default_schedules do
   let(:shared_users_data) { YAML.load_file(Rails.root.join("db/seeds/sandbox_shared_data.yml")) }
   let(:lead_provider) { create(:lead_provider, name: shared_users_data.keys.sample) }
   let(:user_params) { shared_users_data[lead_provider.name] }

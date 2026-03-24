@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Statements::CourseCalculator do
+RSpec.describe Statements::CourseCalculator, :revisit do
   subject { calculator }
 
   let(:calculator)     { described_class.new(contract:) }

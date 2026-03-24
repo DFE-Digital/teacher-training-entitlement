@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ParticipantOutcomes::Create, type: :model do
+RSpec.describe ParticipantOutcomes::Create, :npq, type: :model do
   let(:date_format) { "%Y-%m-%d" }
   let(:participant_id) { completed_declaration.user.ecf_id }
   let(:lead_provider) { completed_declaration.lead_provider }

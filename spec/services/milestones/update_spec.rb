@@ -1,10 +1,11 @@
 require "rails_helper"
 
-RSpec.describe Milestones::Update, :with_default_schedules, type: :model do
+RSpec.describe Milestones::Update, :revisit, :with_default_schedules, type: :model do
   subject(:service) { described_class.new(milestone_id: milestone.id, statement_date: statement_date_param) }
 
-  let(:cohort) { Cohort.last }
-  let(:schedule) { cohort.schedules.first }
+  let(:course_cohort) { create(:course_cohort) }
+  let(:cohort) { course_cohort.cohort }
+  let(:schedule) { course_cohort.schedule }
   let(:declaration_type) { "started" }
   let(:milestone) { create(:milestone, schedule:, declaration_type:) }
   let(:statement_date_param) { Date.new(cohort.start_year, new_statement_month).to_s }

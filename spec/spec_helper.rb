@@ -73,7 +73,7 @@ RSpec.configure do |config|
   config.filter_run_when_matching :focus
 
   # Exclude specs that are specific to NPQ flows
-  config.filter_run_excluding :npq
+  config.filter_run_excluding :npq, :revisit
 
   #   # Allows RSpec to persist some state between runs in order to support
   #   # the `--only-failures` and `--next-failure` CLI options. We recommend

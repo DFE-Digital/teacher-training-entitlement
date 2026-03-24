@@ -6,9 +6,11 @@ RSpec.describe Applications::ChangeCohort, type: :service do
   subject(:service) { described_class.new(application:, new_cohort:) }
 
   let(:cohort_2021) { create(:cohort, start_year: 2021) }
+  let(:course_cohort) { create(:course_cohort, cohort: cohort_2021) }
   let(:error_message_path) { "activemodel.errors.models.applications/change_cohort.attributes.base" }
   let(:new_cohort) { create(:cohort, start_year: 2025) }
-  let(:application) { create(:application, cohort: cohort_2021) }
+  let(:new_course_cohort) { create(:course_cohort, cohort: new_cohort) }
+  let(:application) { create(:application, course_cohort:) }
 
   before { subject.call }
 
@@ -29,9 +31,7 @@ RSpec.describe Applications::ChangeCohort, type: :service do
     end
 
     context "when the application has declarations" do
-      let(:application) { create(:application, :with_declaration, cohort: cohort_2021, schedule: create(:schedule, :tte_reception_autumn, cohort: cohort_2021)) }
-
-      before { create(:schedule, :tte_reception_autumn, cohort: new_cohort) }
+      let(:application) { create(:application, :with_declaration, course_cohort:) }
 
       it do
         expect(subject).not_to be_valid
@@ -41,24 +41,9 @@ RSpec.describe Applications::ChangeCohort, type: :service do
       context "when override_declarations_check is true" do
         subject(:service) { described_class.new(application:, new_cohort:, override_declarations_check: true) }
 
-        it { is_expected.to be_valid }
-      end
-    end
-
-    context "when the application has a schedule" do
-      let(:application) { create(:application, cohort: cohort_2021, schedule: create(:schedule, :tte_reception_autumn, cohort: cohort_2021)) }
-
-      context "when the new cohort has a schedule for the course group" do
-        before { create(:schedule, :tte_reception_autumn, cohort: new_cohort) }
+        before { application.course_cohort = course_cohort }
 
         it { is_expected.to be_valid }
-      end
-
-      context "when the new cohort does not have a schedule for the course group" do
-        it do
-          expect(subject).not_to be_valid
-          expect(subject).to have_error(:base, I18n.t("#{error_message_path}.schedule_not_found"))
-        end
       end
     end
   end

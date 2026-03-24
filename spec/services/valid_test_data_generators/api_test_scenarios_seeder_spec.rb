@@ -89,10 +89,13 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           seeder.call
 
           primary_cohort = Cohort.find_by(start_year: cohort_year)
-          secondary_cohort = Cohort.find_by(start_year: cohort_year + 1)
+          primary_course_cohort = CourseCohort.find_by(cohort: primary_cohort)
 
-          expect(Application.where(cohort: primary_cohort, lead_provider: lead_provider).count).to eq(11)
-          expect(Application.where(cohort: secondary_cohort, lead_provider: lead_provider).count).to eq(1)
+          secondary_cohort = Cohort.find_by(start_year: cohort_year + 1)
+          secondary_course_cohort = CourseCohort.find_by(cohort: secondary_cohort)
+
+          expect(Application.where(course_cohort: primary_course_cohort, lead_provider: lead_provider).count).to eq(11)
+          expect(Application.where(course_cohort: secondary_course_cohort, lead_provider: lead_provider).count).to eq(1)
         end
 
         it "creates 2 statements" do
@@ -159,6 +162,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           # Accept some applications
           schedule = Schedule.find_by(identifier: "tte-reception-autumn", cohort: Cohort.find_by(start_year: cohort_year))
           Application.where(lead_provider: lead_provider).limit(3).update_all(
+            course_cohort:,
             lead_provider_approval_status: "accepted",
             schedule_id: schedule.id,
             training_status: "active",
