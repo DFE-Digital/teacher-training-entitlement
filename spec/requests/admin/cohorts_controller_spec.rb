@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
+RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   subject { response }

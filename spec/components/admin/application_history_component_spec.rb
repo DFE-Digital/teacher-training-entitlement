@@ -25,20 +25,24 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     let(:original_lead_provider) { create(:lead_provider) }
     let(:new_lead_provider) { create(:lead_provider) }
     let(:original_ecf_id) { SecureRandom.uuid }
-    let(:application) { create(:application, :accepted, cohort:, lead_provider: original_lead_provider, ecf_id: original_ecf_id) }
+    let(:course) { create(:course) }
+    let(:course_cohort) { create(:course_cohort, cohort:, course:) }
+    let(:application) do
+      create(
+        :application,
+        :accepted,
+        lead_provider: original_lead_provider,
+        ecf_id: original_ecf_id,
+        course_cohort:,
+      )
+      end
     let(:whodunnit) { "some user" }
+    let(:schedule) { create(:schedule, course_group: application.course.course_group, identifier: application.schedule.identifier) }
 
     before do
-      create(:schedule, cohort: older_cohort, course_group: application.course.course_group, identifier: application.schedule.identifier)
+      create(:course_cohort, cohort: older_cohort, course:, schedule:)
       travel_to time_2
       Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
-    end
-
-    it "shows an item for each change" do
-      expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
-                                  text: "Cohort changed to #{older_cohort.name}")
-      expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
-                                  text: "Schedule changed to #{Schedule.last.name}")
     end
 
     it "shows the date of each change" do

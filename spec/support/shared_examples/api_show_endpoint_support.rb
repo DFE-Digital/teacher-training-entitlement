@@ -19,7 +19,6 @@ RSpec.shared_examples "an API show endpoint" do
 
         expect(serializer).to receive(:render).with(resource, **serializer_params).and_call_original
 
-
         api_get(path(resource_id))
       end
     end

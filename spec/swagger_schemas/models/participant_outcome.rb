@@ -57,7 +57,7 @@ PARTICIPANT_OUTCOME = {
             nullable: false,
             format: :"date-time",
             example: "2021-05-31T02:22:32.000Z",
-          }
+          },
         },
       },
     },

@@ -7,11 +7,14 @@ class Admin::LeadProvidersController < AdminController
     @lead_provider = LeadProvider.find(params[:id])
     @cohorts = Cohort.order_by_latest
     @current_cohort = params[:cohort_id].present? ? @cohorts.find(params[:cohort_id]) : @cohorts.first
-    @applications_by_cohort = @lead_provider.applications.group(:cohort_id).count
+    @applications_by_cohort = @lead_provider
+                                .applications
+                                .joins(:course_cohort)
+                                .group(course_cohorts: [:cohort_id]).count
 
     applications_scope = @lead_provider.applications
-                           .includes(:user, :course, :cohort)
-                           .where(cohort: @current_cohort)
+                           .includes(:user, course_cohort: %i[course cohort])
+                           .where(course_cohorts: { cohort: @current_cohort })
                            .order(created_at: :desc)
 
     @pagy_applications, @applications = pagy(applications_scope, items: 25)

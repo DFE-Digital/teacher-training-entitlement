@@ -19,7 +19,7 @@ FactoryBot.define do
             .exists?
         existing ? create(:cohort, :unique) : create(:cohort, :current)
       end
-      schedule { CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:) }
+      schedule { CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule) }
     end
 
     course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
