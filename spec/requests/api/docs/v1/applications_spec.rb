@@ -202,11 +202,11 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
     describe "started declaration" do
       it_behaves_like "an API create on existing resource endpoint documentation",
                       "/api/v1/applications/{id}/declarations/started",
-                      "Applications started declaration",
+                      "Applications",
                       "Declare an application has reached the course started milestone",
                       "The application being started declaration being created",
                       "#/components/schemas/DeclarationResponse",
-                      "#/components/schemas/ApplicationDeclarationRequest" do
+                      "#/components/schemas/DeclarationStartedRequest" do
         let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
         let(:resource) { application }
         let(:declaration_date) { schedule.training_starts_at + 1.hour }
@@ -234,11 +234,11 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
     describe "completed declaration" do
       it_behaves_like "an API create on existing resource endpoint documentation",
                       "/api/v1/applications/{id}/declarations/completed",
-                      "Applications started declaration",
+                      "Applications",
                       "Declare an application has reached the course started milestone",
                       "The application being started declaration being created",
                       "#/components/schemas/DeclarationResponse",
-                      "#/components/schemas/ApplicationDeclarationRequest" do
+                      "#/components/schemas/DeclarationCompletedRequest" do
         let(:application) do
           create(:application, :with_declaration, course_cohort:, lead_provider:)
         end

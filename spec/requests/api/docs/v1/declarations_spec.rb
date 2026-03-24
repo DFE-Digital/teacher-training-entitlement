@@ -7,7 +7,7 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :
   it_behaves_like "an API index endpoint documentation",
                   "/api/v1/declarations",
                   "Declarations",
-                  "Declarations",
+                  "List declarations",
                   "#/components/schemas/ListDeclarationsFilter",
                   "#/components/schemas/DeclarationsResponse"
 
@@ -23,12 +23,12 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :
     it_behaves_like "an API show endpoint documentation",
                     "/api/v1/declarations/{id}",
                     "Declarations",
-                    "Declarations",
+                    "View a declarations",
                     "#/components/schemas/DeclarationResponse"
 
     it_behaves_like "an API update endpoint documentation",
                     "/api/v1/declarations/{id}/void",
-                    "declarations",
+                    "Declarations",
                     "Void a declaration",
                     "The declaration being voided",
                     "#/components/schemas/DeclarationResponse" do

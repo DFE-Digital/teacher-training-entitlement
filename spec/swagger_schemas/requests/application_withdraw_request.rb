@@ -11,7 +11,7 @@ APPLICATION_WITHDRAW_REQUEST = {
         type: {
           description: "The data typed",
           type: :string,
-          example: "application-withdraw",
+          example: "application",
           required: true,
         },
         attributes: {

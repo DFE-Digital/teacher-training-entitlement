@@ -78,7 +78,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v1/applications/{id}/accept":
-    post:
+    put:
       summary: Accept an application
       tags:
       - Applications
@@ -109,10 +109,10 @@ paths:
                         funding_choice: school
                         ineligible_for_funding_reason: previously-funded
                         participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
-                        private_childcare_provider_urn: EY944860
                         teacher_reference_number: '1234567'
-                        school_urn: '106286'
-                        school_ukprn: '10079319'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
                         status: accepted
                         reason_for_rejection: Application does not meet eligibility
                           criteria
@@ -158,8 +158,9 @@ paths:
           application/json:
             schema:
               "$ref": "#/components/schemas/ApplicationAcceptRequest"
+        required: true
   "/api/v1/applications/{id}/reject":
-    post:
+    put:
       summary: Reject an application
       tags:
       - Applications
@@ -190,10 +191,10 @@ paths:
                         funding_choice: school
                         ineligible_for_funding_reason: previously-funded
                         participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
-                        private_childcare_provider_urn: EY944860
                         teacher_reference_number: '1234567'
-                        school_urn: '106286'
-                        school_ukprn: '10079319'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
                         status: rejected
                         reason_for_rejection: Application does not meet eligibility
                           criteria
@@ -204,7 +205,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place:
+                        funded_place: 
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
@@ -254,10 +255,10 @@ paths:
                         funding_choice: school
                         ineligible_for_funding_reason: previously-funded
                         participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
-                        private_childcare_provider_urn: EY944860
                         teacher_reference_number: '1234567'
-                        school_urn: '106286'
-                        school_ukprn: '10079319'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
                         status: accepted
                         reason_for_rejection: Application does not meet eligibility
                           criteria
@@ -304,53 +305,58 @@ paths:
             schema:
               "$ref": "#/components/schemas/ApplicationChangeFundedPlaceRequest"
         required: true
-  "/api/v1/participant-declarations":
-    get:
-      summary: Retrieve multiple Participant declarations
+  "/api/v1/applications/{id}/defer":
+    put:
+      summary: Defer an application
       tags:
-      - Participant declarations
+      - Applications
       security:
       - api_key: []
       parameters:
-      - name: filter
-        in: query
-        required: false
+      - name: id
+        in: path
+        required: true
         schema:
-          "$ref": "#/components/schemas/ListParticipantDeclarationsFilter"
-        style: deepObject
-      - name: page
-        in: query
-        required: false
-        schema:
-          "$ref": "#/components/schemas/PaginationFilter"
-        style: deepObject
+          "$ref": "#/components/schemas/IDAttribute"
       responses:
         '200':
-          description: A list of Participant declarations
+          description: The application being deferred
           content:
             application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: application
+                      attributes:
+                        course_identifier: tte-early-years
+                        email: isabelle.macdonald2@some-school.example.com
+                        email_validated: true
+                        full_name: Isabelle MacDonald
+                        funding_choice: school
+                        ineligible_for_funding_reason: previously-funded
+                        participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+                        teacher_reference_number: '1234567'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
+                        status: deferred
+                        reason_for_rejection: Application does not meet eligibility
+                          criteria
+                        works_in_school: true
+                        cohort: '2022'
+                        eligible_for_funding: true
+                        teacher_catchment: true
+                        teacher_catchment_country: United Kingdom of Great Britain
+                          and Northern Ireland
+                        teacher_catchment_iso_country_code: GBR
+                        funded_place: true
+                        created_at: '2021-05-31T02:21:32.000Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+                        schedule_identifier: tte-reception-autumn
               schema:
-                "$ref": "#/components/schemas/ParticipantDeclarationsResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
-    post:
-      summary: Declare a participant has reached a milestone
-      tags:
-      - Participant declarations
-      security:
-      - api_key: []
-      parameters: []
-      responses:
-        '200':
-          description: The participant declaration being created
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ParticipantDeclarationResponse"
+                "$ref": "#/components/schemas/ApplicationResponse"
         '401':
           description: Unauthorized
           content:
@@ -369,48 +375,23 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UnprocessableEntityResponse"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ParticipantDeclarationRequest"
-  "/api/v1/participant-declarations/{id}":
-    get:
-      summary: Retrieve a single Participant declarations
-      tags:
-      - Participant declarations
-      security:
-      - api_key: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          "$ref": "#/components/schemas/IDAttribute"
-      responses:
-        '200':
-          description: A single Participant declarations
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ParticipantDeclarationResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
         '404':
           description: Not found
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
-  "/api/v1/participant-declarations/{id}/void":
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ApplicationDeferRequest"
+        required: true
+  "/api/v1/applications/{id}/resume":
     put:
-      summary: Void a declaration
+      summary: Resume an application
       tags:
-      - Participant declarations
+      - Applications
       security:
       - api_key: []
       parameters:
@@ -421,7 +402,7 @@ paths:
           "$ref": "#/components/schemas/IDAttribute"
       responses:
         '200':
-          description: The participant declaration being voided
+          description: The application being resumed
           content:
             application/json:
               examples:
@@ -429,28 +410,380 @@ paths:
                   value:
                     data:
                       id: d0b4a32e-a272-489e-b30a-cb17131457fc
-                      type: participant-declaration
+                      type: application
                       attributes:
-                        participant_id: db3a7848-7308-4879-942a-c4a70ced400a
-                        declaration_type: started
                         course_identifier: tte-early-years
-                        declaration_date: '2021-05-31T02:22:32Z'
-                        state: voided
-                        has_passed:
-                        statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
-                        clawback_statement_id:
-                        uplift_paid: true
-                        lead_provider_name: Example Institute
-                        ineligible_for_funding_reason: duplicate_declaration
-                        created_at: '2021-05-31T02:22:32.000Z'
-                        delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
-                        delivery_partner_name: Foo education
-                        secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
-                        secondary_delivery_partner_name: Bar education
-                        application_id: db3a7848-7308-4879-942a-c4a70ced400a
+                        email: isabelle.macdonald2@some-school.example.com
+                        email_validated: true
+                        full_name: Isabelle MacDonald
+                        funding_choice: school
+                        ineligible_for_funding_reason: previously-funded
+                        participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+                        teacher_reference_number: '1234567'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
+                        status: started
+                        reason_for_rejection: Application does not meet eligibility
+                          criteria
+                        works_in_school: true
+                        cohort: '2022'
+                        eligible_for_funding: true
+                        teacher_catchment: true
+                        teacher_catchment_country: United Kingdom of Great Britain
+                          and Northern Ireland
+                        teacher_catchment_iso_country_code: GBR
+                        funded_place: true
+                        created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        schedule_identifier: tte-reception-autumn
               schema:
-                "$ref": "#/components/schemas/ParticipantDeclarationResponse"
+                "$ref": "#/components/schemas/ApplicationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableEntityResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ApplicationResumeRequest"
+        required: true
+  "/api/v1/applications/{id}/withdraw":
+    put:
+      summary: Withdraw an application
+      tags:
+      - Applications
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The application being withdrawn
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: application
+                      attributes:
+                        course_identifier: tte-early-years
+                        email: isabelle.macdonald2@some-school.example.com
+                        email_validated: true
+                        full_name: Isabelle MacDonald
+                        funding_choice: school
+                        ineligible_for_funding_reason: previously-funded
+                        participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+                        teacher_reference_number: '1234567'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
+                        status: withdrawn
+                        reason_for_rejection: Application does not meet eligibility
+                          criteria
+                        works_in_school: true
+                        cohort: '2022'
+                        eligible_for_funding: true
+                        teacher_catchment: true
+                        teacher_catchment_country: United Kingdom of Great Britain
+                          and Northern Ireland
+                        teacher_catchment_iso_country_code: GBR
+                        funded_place: 
+                        created_at: '2021-05-31T02:21:32.000Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+                        schedule_identifier: tte-reception-autumn
+              schema:
+                "$ref": "#/components/schemas/ApplicationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableEntityResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ApplicationWithdrawRequest"
+        required: true
+  "/api/v1/applications/{id}/change-schedule":
+    put:
+      summary: Change the schedule of an application
+      tags:
+      - Applications
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The application's schedule being changed
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: application
+                      attributes:
+                        course_identifier: tte-early-years
+                        email: isabelle.macdonald2@some-school.example.com
+                        email_validated: true
+                        full_name: Isabelle MacDonald
+                        funding_choice: school
+                        ineligible_for_funding_reason: previously-funded
+                        participant_id: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+                        teacher_reference_number: '1234567'
+                        institution_reference_number: '106286'
+                        institution_type: School
+                        ukprn: '10079319'
+                        status: accepted
+                        reason_for_rejection: Application does not meet eligibility
+                          criteria
+                        works_in_school: true
+                        cohort: '2022'
+                        eligible_for_funding: true
+                        teacher_catchment: true
+                        teacher_catchment_country: United Kingdom of Great Britain
+                          and Northern Ireland
+                        teacher_catchment_iso_country_code: GBR
+                        funded_place: true
+                        created_at: '2021-05-31T02:21:32.000Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+                        schedule_identifier: tte-reception-autumn
+              schema:
+                "$ref": "#/components/schemas/ApplicationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableEntityResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ApplicationChangeScheduleRequest"
+        required: true
+  "/api/v1/applications/{id}/declarations/started":
+    post:
+      summary: Declare an application has reached the course started milestone
+      tags:
+      - Applications
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The application being started declaration being created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableEntityResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/DeclarationStartedRequest"
+  "/api/v1/applications/{id}/declarations/completed":
+    post:
+      summary: Declare an application has reached the course started milestone
+      tags:
+      - Applications
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The application being started declaration being created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableEntityResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/DeclarationCompletedRequest"
+  "/api/v1/declarations":
+    get:
+      summary: Retrieve multiple List declarations
+      tags:
+      - Declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/ListDeclarationsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      responses:
+        '200':
+          description: A list of List declarations
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v1/declarations/{id}":
+    get:
+      summary: Retrieve a single View a declarations
+      tags:
+      - Declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: A single View a declarations
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationResponse"
         '401':
           description: Unauthorized
           content:
@@ -463,11 +796,68 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
-  "/api/v1/participant-declarations/{id}/change-delivery-partner":
+  "/api/v1/declarations/{id}/void":
+    put:
+      summary: Void a declaration
+      tags:
+      - Declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The declaration being voided
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: declaration
+                      attributes:
+                        application_id: db3a7848-7308-4879-942a-c4a70ced400a
+                        participant_id: db3a7848-7308-4879-942a-c4a70ced400a
+                        declaration_type: started
+                        course_identifier: tte-early-years
+                        declaration_date: '2021-05-31T02:22:32Z'
+                        state: voided
+                        has_passed: 
+                        ineligible_for_funding_reason: duplicate_declaration
+                        delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
+                        delivery_partner_name: Foo education
+                        secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
+                        secondary_delivery_partner_name: Bar education
+                        statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
+                        clawback_statement_id: 
+                        uplift_paid: true
+                        lead_provider_name: Example Institute
+                        created_at: '2021-05-31T02:22:32.000Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+              schema:
+                "$ref": "#/components/schemas/DeclarationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v1/declarations/{id}/change-delivery-partner":
     put:
       summary: Change declaration delivery partner
       tags:
-      - Participant declarations
+      - Declarations
       security:
       - api_key: []
       parameters:
@@ -482,7 +872,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/ParticipantDeclarationResponse"
+                "$ref": "#/components/schemas/DeclarationResponse"
         '401':
           description: Unauthorized
           content:
@@ -511,7 +901,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/ParticipantDeclarationChangeDeliveryPartnerRequest"
+              "$ref": "#/components/schemas/DeclarationChangeDeliveryPartnerRequest"
         required: true
   "/api/v1/delivery-partners":
     get:
@@ -551,11 +941,11 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
-  "/api/v1/participants/outcomes":
+  "/api/v1/outcomes":
     get:
       summary: Retrieve multiple Outcomes for all participants
       tags:
-      - Participant Outcomes
+      - Outcomes
       security:
       - api_key: []
       parameters:
@@ -584,92 +974,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
-  "/api/v1/participants/{id}/outcomes":
-    get:
-      summary: Retrieve multiple Outcomes for a single participant
-      tags:
-      - Participant Outcomes
-      security:
-      - api_key: []
-      parameters:
-      - name: page
-        in: query
-        required: false
-        schema:
-          "$ref": "#/components/schemas/PaginationFilter"
-        style: deepObject
-      - name: id
-        in: path
-        required: true
-        schema:
-          "$ref": "#/components/schemas/IDAttribute"
-      responses:
-        '200':
-          description: A list of Outcomes for a single participant
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ParticipantOutcomesResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
-    post:
-      summary: Submit a Outcome for a single participant
-      tags:
-      - Participant Outcomes
-      security:
-      - api_key: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          "$ref": "#/components/schemas/IDAttribute"
-      responses:
-        '200':
-          description: The details of an Outcome
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/ParticipantOutcomeResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/BadRequestResponse"
-        '422':
-          description: Unprocessable entity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnprocessableEntityResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ParticipantOutcomeCreateRequest"
   "/api/v1/participants":
     get:
       summary: Retrieve multiple participants
@@ -740,322 +1044,39 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
-  "/api/v1/participants/{id}/resume":
-    put:
-      summary: Resume an participant
+  "/api/v1/schedules":
+    get:
+      summary: Retrieve multiple Lead providers available schedule details
       tags:
-      - Participants
+      - Schedules
       security:
       - api_key: []
       parameters:
-      - name: id
-        in: path
-        required: true
+      - name: filter
+        in: query
+        required: false
         schema:
-          "$ref": "#/components/schemas/IDAttribute"
+          "$ref": "#/components/schemas/ListSchedulesFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
       responses:
         '200':
-          description: The participant being resumed
+          description: A list of Lead providers available schedule details
           content:
             application/json:
-              examples:
-                success:
-                  value:
-                    data:
-                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
-                      type: participant
-                      attributes:
-                        full_name: Isabelle MacDonald
-                        teacher_reference_number: '1234567'
-                        updated_at: '2021-05-31T02:22:32.000Z'
-                        enrolments:
-                        - course_identifier: tte-early-years
-                          schedule_identifier: tte-reception-autumn
-                          cohort: '2022'
-                          application_id: db3a7848-7308-4879-942a-c4a70ced400a
-                          eligible_for_funding: true
-                          training_status: active
-                          school_urn: '106286'
-                          funded_place: true
-                          email: isabelle.macdonald2@some-school.example.com
-                          withdrawal:
-                          deferral:
-                          created_at: '2021-05-31T02:21:32.000Z'
-                        participant_id_changes:
-                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
-                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
-                          changed_at: '2021-05-31T02:22:32.000Z'
               schema:
-                "$ref": "#/components/schemas/ParticipantResponse"
+                "$ref": "#/components/schemas/SchedulesResponse"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/BadRequestResponse"
-        '422':
-          description: Unprocessable entity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnprocessableEntityResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ParticipantResumeRequest"
-        required: true
-  "/api/v1/participants/{id}/defer":
-    put:
-      summary: Defer an participant
-      tags:
-      - Participants
-      security:
-      - api_key: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          "$ref": "#/components/schemas/IDAttribute"
-      responses:
-        '200':
-          description: The participant being deferred
-          content:
-            application/json:
-              examples:
-                success:
-                  value:
-                    data:
-                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
-                      type: participant
-                      attributes:
-                        full_name: Isabelle MacDonald
-                        teacher_reference_number: '1234567'
-                        updated_at: '2021-05-31T02:22:32.000Z'
-                        enrolments:
-                        - course_identifier: tte-early-years
-                          schedule_identifier: tte-reception-autumn
-                          cohort: '2022'
-                          application_id: db3a7848-7308-4879-942a-c4a70ced400a
-                          eligible_for_funding: true
-                          training_status: deferred
-                          school_urn: '106286'
-                          funded_place: true
-                          email: isabelle.macdonald2@some-school.example.com
-                          withdrawal:
-                          deferral:
-                            reason: bereavement
-                            date: '2021-05-31T02:22:32.000Z'
-                          created_at: '2021-05-31T02:21:32.000Z'
-                        participant_id_changes:
-                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
-                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
-                          changed_at: '2021-05-31T02:22:32.000Z'
-              schema:
-                "$ref": "#/components/schemas/ParticipantResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/BadRequestResponse"
-        '422':
-          description: Unprocessable entity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnprocessableEntityResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ParticipantDeferRequest"
-        required: true
-  "/api/v1/participants/{id}/withdraw":
-    put:
-      summary: Withdraw an participant
-      tags:
-      - Participants
-      security:
-      - api_key: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          "$ref": "#/components/schemas/IDAttribute"
-      responses:
-        '200':
-          description: The participant being withdrawn
-          content:
-            application/json:
-              examples:
-                success:
-                  value:
-                    data:
-                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
-                      type: participant
-                      attributes:
-                        full_name: Isabelle MacDonald
-                        teacher_reference_number: '1234567'
-                        updated_at: '2021-05-31T02:22:32.000Z'
-                        enrolments:
-                        - course_identifier: tte-early-years
-                          schedule_identifier: tte-reception-autumn
-                          cohort: '2022'
-                          application_id: db3a7848-7308-4879-942a-c4a70ced400a
-                          eligible_for_funding: true
-                          training_status: withdrawn
-                          school_urn: '106286'
-                          funded_place: true
-                          email: isabelle.macdonald2@some-school.example.com
-                          withdrawal:
-                            reason: insufficient-capacity-to-undertake-programme
-                            date: '2021-05-31T02:22:32.000Z'
-                          deferral:
-                          created_at: '2021-05-31T02:21:32.000Z'
-                        participant_id_changes:
-                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
-                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
-                          changed_at: '2021-05-31T02:22:32.000Z'
-              schema:
-                "$ref": "#/components/schemas/ParticipantResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/BadRequestResponse"
-        '422':
-          description: Unprocessable entity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnprocessableEntityResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ParticipantWithdrawRequest"
-        required: true
-  "/api/v1/participants/{id}/change-schedule":
-    put:
-      summary: Notify that an participant is changing training schedule
-      tags:
-      - Participants
-      security:
-      - api_key: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          "$ref": "#/components/schemas/IDAttribute"
-      responses:
-        '200':
-          description: The participant changing schedule
-          content:
-            application/json:
-              examples:
-                success:
-                  value:
-                    data:
-                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
-                      type: participant
-                      attributes:
-                        full_name: Isabelle MacDonald
-                        teacher_reference_number: '1234567'
-                        updated_at: '2021-05-31T02:22:32.000Z'
-                        enrolments:
-                        - course_identifier: tte-early-years
-                          schedule_identifier: tte-reception-spring
-                          cohort: '2022'
-                          application_id: db3a7848-7308-4879-942a-c4a70ced400a
-                          eligible_for_funding: true
-                          training_status: active
-                          school_urn: '106286'
-                          funded_place: true
-                          email: isabelle.macdonald2@some-school.example.com
-                          withdrawal:
-                            reason: insufficient-capacity-to-undertake-programme
-                            date: '2021-05-31T02:22:32.000Z'
-                          deferral:
-                            reason: bereavement
-                            date: '2021-05-31T02:22:32.000Z'
-                          created_at: '2021-05-31T02:21:32.000Z'
-                        participant_id_changes:
-                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
-                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
-                          changed_at: '2021-05-31T02:22:32.000Z'
-              schema:
-                "$ref": "#/components/schemas/ParticipantResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/BadRequestResponse"
-        '422':
-          description: Unprocessable entity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnprocessableEntityResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              "$ref": "#/components/schemas/ParticipantChangeScheduleRequest"
-        required: true
   "/api/v1/statements":
     get:
       summary: Retrieve financial statements
@@ -1187,8 +1208,8 @@ components:
           description: Return only records that have this from Participant ID
           type: string
           example: 7e5bcdbf-c818-4961-8da5-439cab1984e0
-    ListParticipantDeclarationsFilter:
-      description: Refine participant declarations to return.
+    ListDeclarationsFilter:
+      description: Refine declarations to return.
       type: object
       properties:
         participant_id:
@@ -1228,6 +1249,15 @@ components:
             and time (ISO 8601 date format)
           type: string
           example: '2021-05-13T11:21:55Z'
+    ListSchedulesFilter:
+      description: Filter schedules to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return schedules associated to the specified cohort or cohorts.
+            This is a comma delimited string of years.
+          type: string
+          example: '2025,2026'
     UnauthorisedResponse:
       description: Authorization information is missing or invalid.
       type: object
@@ -1362,25 +1392,27 @@ components:
               type: string
               example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               format: uuid
-            private_childcare_provider_urn:
-              description: The Unique Reference Number (URN) of the private child
-                care provider
-              type: string
-              example: EY944860
-              nullable: true
             teacher_reference_number:
               description: The Teacher Reference Number (TRN) for this participant
               type: string
               example: '1234567'
               nullable: true
-            school_urn:
-              description: The Unique Reference Number (URN) of the school where this
-                participant is employed
+            institution_reference_number:
+              description: The Unique Reference Number (URN) of the institution where
+                this participant is employed
               type: string
               example: '106286'
-            school_ukprn:
+            institution_type:
+              description: The type of institution where this participant is employed
+              type: string
+              example: School
+              enum:
+              - school
+              - privatechildcareprovider
+              - localauthority
+            ukprn:
               description: The UK Provider Reference Number (UK Provider Reference
-                Number) of the school where this participant is employed
+                Number) of the institution where this participant is employed
               nullable: true
               type: string
               example: '10079319'
@@ -1393,6 +1425,10 @@ components:
               - pending
               - accepted
               - rejected
+              - started
+              - completed
+              - deferred
+              - withdrawn
             reason_for_rejection:
               description: The reason why the application was rejected by the lead
                 provider
@@ -1444,7 +1480,7 @@ components:
                 being funded by DfE
               nullable: true
               type: boolean
-              example:
+              example: 
             created_at:
               description: The date the application was created
               type: string
@@ -1482,7 +1518,7 @@ components:
               description: The data typed
               type: string
               required: true
-              example: application-accept
+              example: application
             attributes:
               description: An application acceptance request attributes
               type: object
@@ -1493,14 +1529,6 @@ components:
                   nullable: false
                   type: boolean
                   example: true
-                schedule_identifier:
-                  description: The new schedule of the participant
-                  nullable: false
-                  type: string
-                  example: tte-reception-autumn
-                  enum:
-                  - tte-reception-autumn
-                  - tte-reception-spring
     ApplicationChangeFundedPlaceRequest:
       description: An application change funded place request
       type: object
@@ -1518,7 +1546,7 @@ components:
               description: The data typed
               type: string
               required: true
-              example: application-change-funded-place
+              example: application
             attributes:
               description: An application change funded place request attributes
               type: object
@@ -1531,6 +1559,154 @@ components:
                   required: true
                   type: boolean
                   example: true
+    ApplicationResumeRequest:
+      description: An application resume request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: An application resume request data
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              description: The data typed
+              type: string
+              example: application
+              required: true
+            attributes:
+              description: An application resume request attributes
+              type: object
+              required:
+              - schedule_id
+              properties:
+                schedule_id:
+                  "$ref": "#/components/schemas/IDAttribute"
+                  description: schedule id for a same course as the application is
+                    enrolled in
+                  required: true
+                  nullable: false
+    ApplicationDeferRequest:
+      description: An application defer request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: An application defer request data
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              description: The data typed
+              type: string
+              required: true
+              example: application
+            attributes:
+              description: A application defer request attributes
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  description: The reason for the deferral
+                  required: true
+                  nullable: false
+                  type: string
+                  example: bereavement
+                  enum:
+                  - bereavement
+                  - long-term-sickness
+                  - parental-leave
+                  - career-break
+                  - other
+    ApplicationWithdrawRequest:
+      description: An application withdraw request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: An application withdraw request data
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              description: The data typed
+              type: string
+              example: application
+              required: true
+            attributes:
+              description: An application withdraw request attributes
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  description: The reason for the withdrawal
+                  required: true
+                  nullable: false
+                  type: string
+                  example: insufficient-capacity-to-undertake-programme
+                  enum:
+                  - insufficient-capacity-to-undertake-programme
+                  - personal-reason-health-or-pregnancy-related
+                  - personal-reason-moving-school
+                  - personal-reason-other
+                  - insufficient-capacity
+                  - change-in-developmental-or-personal-priorities
+                  - change-in-school-circumstances
+                  - change-in-school-leadership
+                  - quality-of-programme-structure-not-suitable.
+                  - quality-of-programme-content-not-suitable
+                  - quality-of-programme-facilitation-not-effective
+                  - quality-of-programme-accessibility
+                  - quality-of-programme-other
+                  - programme-not-appropriate-for-role-and-cpd-needs
+                  - started-in-error
+                  - expected-commitment-unclear
+                  - assessment-requirements-not-met
+                  - change-in-career
+                  - disengaged-and-unresponsive
+                  - non-payment-of-invoice
+                  - other
+    ApplicationChangeScheduleRequest:
+      description: The change schedule request for an application
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: An application change schedule request data
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              description: The data typed
+              type: string
+              example: application
+              required: true
+            attributes:
+              description: An application change schedule request attributes
+              type: object
+              required:
+              - schedule_id
+              properties:
+                schedule_id:
+                  "$ref": "#/components/schemas/IDAttribute"
+                  description: schedule id for a same course as the application is
+                    enrolled in
+                  required: true
+                  nullable: false
     ParticipantResponse:
       description: A single participant
       type: object
@@ -1667,7 +1843,7 @@ components:
                     required:
                     - reason
                     - date
-                    example:
+                    example: 
                     properties:
                       reason:
                         description: The reason a participant was withdrawn
@@ -1709,7 +1885,7 @@ components:
                     required:
                     - reason
                     - date
-                    example:
+                    example: 
                     properties:
                       reason:
                         description: The reason a participant was deferred
@@ -1762,196 +1938,6 @@ components:
                     type: string
                     format: date-time
                     example: '2021-05-31T02:22:32.000Z'
-    ParticipantResumeRequest:
-      description: A participant resume request
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          description: A participant resume request data
-          type: object
-          required:
-          - type
-          - attributes
-          properties:
-            type:
-              description: The data typed
-              type: string
-              example: participant-resume
-              required: true
-            attributes:
-              description: A participant resume request attributes
-              type: object
-              required:
-              - course_identifier
-              properties:
-                course_identifier:
-                  description: The type of course the participant is enrolled in
-                  required: true
-                  nullable: false
-                  type: string
-                  example: tte-early-years
-                  enum:
-                  - tte-early-years
-    ParticipantDeferRequest:
-      description: A participant defer request
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          description: A participant defer request data
-          type: object
-          required:
-          - type
-          - attributes
-          properties:
-            type:
-              description: The data typed
-              type: string
-              required: true
-              example: participant-defer
-            attributes:
-              description: A participant defer request attributes
-              type: object
-              required:
-              - course_identifier
-              - reason
-              properties:
-                course_identifier:
-                  description: The type of course the participant is enrolled in
-                  required: true
-                  nullable: false
-                  type: string
-                  example: tte-early-years
-                  enum:
-                  - tte-early-years
-                reason:
-                  description: The reason for the deferral
-                  required: true
-                  nullable: false
-                  type: string
-                  example: bereavement
-                  enum:
-                  - bereavement
-                  - long-term-sickness
-                  - parental-leave
-                  - career-break
-                  - other
-    ParticipantWithdrawRequest:
-      description: A participant withdraw request
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          description: A participant withdraw request data
-          type: object
-          required:
-          - type
-          - attributes
-          properties:
-            type:
-              description: The data typed
-              type: string
-              example: participant-withdraw
-              required: true
-            attributes:
-              description: A participant withdraw request attributes
-              type: object
-              required:
-              - course_identifier
-              - reason
-              properties:
-                course_identifier:
-                  description: The type of course the participant is enrolled in
-                  required: true
-                  nullable: false
-                  type: string
-                  example: tte-early-years
-                  enum:
-                  - tte-early-years
-                reason:
-                  description: The reason for the withdrawal
-                  required: true
-                  nullable: false
-                  type: string
-                  example: insufficient-capacity-to-undertake-programme
-                  enum:
-                  - insufficient-capacity-to-undertake-programme
-                  - personal-reason-health-or-pregnancy-related
-                  - personal-reason-moving-school
-                  - personal-reason-other
-                  - insufficient-capacity
-                  - change-in-developmental-or-personal-priorities
-                  - change-in-school-circumstances
-                  - change-in-school-leadership
-                  - quality-of-programme-structure-not-suitable.
-                  - quality-of-programme-content-not-suitable
-                  - quality-of-programme-facilitation-not-effective
-                  - quality-of-programme-accessibility
-                  - quality-of-programme-other
-                  - programme-not-appropriate-for-role-and-cpd-needs
-                  - started-in-error
-                  - expected-commitment-unclear
-                  - assessment-requirements-not-met
-                  - change-in-career
-                  - disengaged-and-unresponsive
-                  - non-payment-of-invoice
-                  - other
-    ParticipantChangeScheduleRequest:
-      description: The change schedule request for a participant
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          description: An participant change schedule request data
-          type: object
-          required:
-          - type
-          - attributes
-          properties:
-            type:
-              description: The data typed
-              type: string
-              example: participant-change-schedule
-              required: true
-            attributes:
-              description: An participant change schedule request attributes
-              type: object
-              required:
-              - schedule_identifier
-              - course_identifier
-              properties:
-                schedule_identifier:
-                  description: The new schedule of the participant
-                  required: true
-                  nullable: false
-                  type: string
-                  example:
-                  enum:
-                  - tte-reception-autumn
-                  - tte-reception-spring
-                course_identifier:
-                  description: The type of course the participant is enrolled in
-                  required: true
-                  nullable: false
-                  type: string
-                  example:
-                  enum:
-                  - tte-early-years
-                cohort:
-                  description: Providers may change a participant's cohort up until
-                    the point of submitting a started declaration. The value indicates
-                    which call-off contract funds this participant's training. 2023
-                    indicates a participant that has started, or will start, their
-                    training in the 2023/24 academic year.
-                  required: false
-                  nullable: true
-                  type: string
-                  example: '2023'
     ParticipantOutcome:
       description: The details of an outcome
       type: object
@@ -1965,9 +1951,9 @@ components:
         type:
           description: The data type
           type: string
-          example: participant-outcome
+          example: outcome
           enum:
-          - participant-outcome
+          - outcome
         attributes:
           properties:
             state:
@@ -2166,170 +2152,6 @@ components:
       - updated_at
       - "-updated_at"
       example: created_at
-    ParticipantDeclaration:
-      description: The details of a participant declaration
-      type: object
-      required:
-      - id
-      - type
-      - attributes
-      properties:
-        id:
-          "$ref": "#/components/schemas/IDAttribute"
-        type:
-          type: string
-          enum:
-          - participant-declaration
-          example: participant-declaration
-        attributes:
-          required:
-          - participant_id
-          - declaration_type
-          - declaration_date
-          - course_identifier
-          - state
-          - updated_at
-          properties:
-            participant_id:
-              description: The unique identifier of this participant declaration record
-              type: string
-              format: uuid
-              nullable: false
-              example: db3a7848-7308-4879-942a-c4a70ced400a
-            declaration_type:
-              description: The event declaration type
-              type: string
-              nullable: false
-              example: started
-              enum:
-              - started
-              - retained-1
-              - retained-2
-              - completed
-            course_identifier:
-              description: The course this application relates to
-              type: string
-              nullable: false
-              example: tte-early-years
-              enum:
-              - tte-early-years
-            declaration_date:
-              description: The event declaration date
-              type: string
-              nullable: false
-              example: '2021-05-31T02:22:32Z'
-            state:
-              description: Indicates the state of this payment declaration
-              type: string
-              nullable: false
-              example: submitted
-              enum:
-              - submitted
-              - eligible
-              - payable
-              - paid
-              - voided
-              - ineligible
-              - awaiting_clawback
-              - clawed_back
-            has_passed:
-              description: Whether the participant has failed or passed
-              type: string
-              example:
-              nullable: true
-            statement_id:
-              description: Unique ID of the statement the declaration will be paid
-                as part of
-              type: string
-              format: uuid
-              example: cd3a12347-7308-4879-942a-c4a70ced400a
-              nullable: true
-            clawback_statement_id:
-              description: Unique id of the statement to which the declaration will
-                be clawed back on, if any
-              type: string
-              format: uuid
-              example: cd3a12347-7308-4879-942a-c4a70ced400a
-              nullable: true
-            uplift_paid:
-              description: If participant is eligible for uplift, whether it has been
-                paid as part of this declaration
-              type: boolean
-              example: true
-            lead_provider_name:
-              description: The name of the provider that submitted the declaration
-              type: string
-              example: Example Institute
-              nullable: false
-            ineligible_for_funding_reason:
-              description: If the declaration is ineligible, the reason why
-              type: string
-              enum:
-              - duplicate_declaration
-              nullable: true
-              example: duplicate_declaration
-            created_at:
-              description: The date the application was created
-              type: string
-              nullable: false
-              format: date-time
-              example: '2021-05-31T02:22:32.000Z'
-            delivery_partner_id:
-              description: The delivery partner ID
-              type: string
-              format: uuid
-              required: true
-              nullable: true
-              example: 524df095-f9bf-4f9d-ba4c-772545a99e60
-            delivery_partner_name:
-              description: The delivery partner name
-              type: string
-              required: true
-              nullable: true
-              example: Foo education
-            secondary_delivery_partner_id:
-              description: The secondary delivery partner ID
-              type: string
-              format: uuid
-              required: true
-              nullable: true
-              example: f0de7abf-399b-4e68-83de-2c33b503810c
-            secondary_delivery_partner_name:
-              description: The secondary delivery partner name
-              type: string
-              required: true
-              nullable: true
-              example: Bar education
-            application_id:
-              description: The unique identifier of the application
-              type: string
-              format: uuid
-              nullable: false
-              example: db3a7848-7308-4879-942a-c4a70ced400a
-            updated_at:
-              description: The date the application was last updated
-              type: string
-              nullable: false
-              format: date-time
-              example: '2021-05-31T02:22:32.000Z'
-    ParticipantDeclarationResponse:
-      description: A single participant declaration.
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          "$ref": "#/components/schemas/ParticipantDeclaration"
-    ParticipantDeclarationsResponse:
-      description: A list of participant declarations.
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          type: array
-          items:
-            "$ref": "#/components/schemas/ParticipantDeclaration"
     ListDeliveryPartnersFilter:
       description: Filter delivery partners to return more specific results
       type: object
@@ -2409,14 +2231,178 @@ components:
       - "-updated_at"
       default: name
       example: created_at
-    ParticipantDeclarationRequest:
-      description: A participant declaration data request
+    Declaration:
+      description: The details of a declaration
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          type: string
+          enum:
+          - declaration
+          example: declaration
+        attributes:
+          required:
+          - application_id
+          - declaration_type
+          - declaration_date
+          - course_identifier
+          - state
+          - updated_at
+          properties:
+            application_id:
+              description: The unique identifier of the application
+              type: string
+              format: uuid
+              nullable: false
+              example: db3a7848-7308-4879-942a-c4a70ced400a
+            participant_id:
+              description: The unique identifier of this participant declaration record
+              type: string
+              format: uuid
+              nullable: false
+              example: db3a7848-7308-4879-942a-c4a70ced400a
+            declaration_type:
+              description: The event declaration type
+              type: string
+              nullable: false
+              example: started
+              enum:
+              - started
+              - retained-1
+              - retained-2
+              - completed
+            course_identifier:
+              description: The course this application relates to
+              type: string
+              nullable: false
+              example: tte-early-years
+              enum:
+              - tte-early-years
+            declaration_date:
+              description: The event declaration date
+              type: string
+              nullable: false
+              example: '2021-05-31T02:22:32Z'
+            state:
+              description: Indicates the state of this payment declaration
+              type: string
+              nullable: false
+              example: submitted
+              enum:
+              - submitted
+              - eligible
+              - payable
+              - paid
+              - voided
+              - ineligible
+              - awaiting_clawback
+              - clawed_back
+            has_passed:
+              description: Whether the participant has failed or passed
+              type: boolean
+              nullable: true
+              example: 
+            ineligible_for_funding_reason:
+              description: If the declaration is ineligible, the reason why
+              type: string
+              enum:
+              - duplicate_declaration
+              nullable: true
+              example: duplicate_declaration
+            delivery_partner_id:
+              description: The delivery partner ID
+              type: string
+              format: uuid
+              required: true
+              nullable: true
+              example: 524df095-f9bf-4f9d-ba4c-772545a99e60
+            delivery_partner_name:
+              description: The delivery partner name
+              type: string
+              required: true
+              nullable: true
+              example: Foo education
+            secondary_delivery_partner_id:
+              description: The secondary delivery partner ID
+              type: string
+              format: uuid
+              required: true
+              nullable: true
+              example: f0de7abf-399b-4e68-83de-2c33b503810c
+            secondary_delivery_partner_name:
+              description: The secondary delivery partner name
+              type: string
+              required: true
+              nullable: true
+              example: Bar education
+            statement_id:
+              description: Unique ID of the statement the declaration will be paid
+                as part of
+              type: string
+              format: uuid
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+              nullable: true
+            clawback_statement_id:
+              description: Unique id of the statement to which the declaration will
+                be clawed back on, if any
+              type: string
+              format: uuid
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+              nullable: true
+            uplift_paid:
+              description: If participant is eligible for uplift, whether it has been
+                paid as part of this declaration
+              type: boolean
+              example: true
+            lead_provider_name:
+              description: The name of the provider that submitted the declaration
+              type: string
+              example: Example Institute
+              nullable: false
+            created_at:
+              description: The date the application was created
+              type: string
+              nullable: false
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date the application was last updated
+              type: string
+              nullable: false
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    DeclarationResponse:
+      description: A single declaration.
       type: object
       required:
       - data
       properties:
         data:
-          description: A participant declaration data request
+          "$ref": "#/components/schemas/Declaration"
+    DeclarationsResponse:
+      description: A list of declarations.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Declaration"
+    DeclarationRequest:
+      description: A declaration data request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A declaration data request
           type: object
           required:
           - type
@@ -2426,34 +2412,18 @@ components:
               type: string
               required: true
               enum:
-              - participant-declaration
-              example: participant-declaration
+              - declaration
+              example: declaration
             attributes:
               required: true
               anyOf:
-              - "$ref": "#/components/schemas/ParticipantDeclarationStartedRequest"
-              - "$ref": "#/components/schemas/ParticipantDeclarationRetainedRequest"
-              - "$ref": "#/components/schemas/ParticipantDeclarationCompletedRequest"
-    ParticipantDeclarationStartedRequest:
-      description: An started participant declaration
+              - "$ref": "#/components/schemas/DeclarationStartedRequest"
+              - "$ref": "#/components/schemas/DeclarationCompletedRequest"
+    DeclarationStartedRequest:
+      description: An started declaration
       type: object
       additionalProperties: false
       properties:
-        participant_id:
-          description: The unique id of the participant
-          type: string
-          format: uuid
-          required: true
-          nullable: false
-          example: db3a7848-7308-4879-942a-c4a70ced400a
-        declaration_type:
-          description: The event declaration type
-          type: string
-          required: true
-          nullable: false
-          enum:
-          - started
-          example: started
         declaration_date:
           description: The event declaration date
           type: string
@@ -2461,14 +2431,6 @@ components:
           nullable: false
           format: date-time
           example: '2021-05-31T02:21:32Z'
-        course_identifier:
-          description: The type of course the participant is enrolled in
-          type: string
-          required: true
-          nullable: false
-          enum:
-          - tte-early-years
-          example: tte-early-years
         delivery_partner_id:
           description: The delivery partner ID
           type: string
@@ -2484,102 +2446,20 @@ components:
           nullable: false
           example: f0de7abf-399b-4e68-83de-2c33b503810c
       required:
-      - participant_id
-      - declaration_type
       - declaration_date
-      - course_identifier
+      - delivery_partner_id
       example:
-        participant_id: db3a7848-7308-4879-942a-c4a70ced400a
-        declaration_type: started
         declaration_date: '2021-05-31T02:21:32Z'
-        course_identifier: tte-early-years
         delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
-    ParticipantDeclarationRetainedRequest:
-      description: An participant retained declaration
-      type: object
-      additionalProperties: false
-      properties:
-        participant_id:
-          description: The unique id of the participant
-          type: string
-          format: uuid
-          required: true
-          nullable: false
-          example: db3a7848-7308-4879-942a-c4a70ced400a
-        declaration_type:
-          description: The event declaration type
-          type: string
-          required: true
-          nullable: false
-          enum:
-          - retained-1
-          - retained-2
-          example: retained-1
-        declaration_date:
-          description: The event declaration date
-          type: string
-          required: true
-          nullable: false
-          format: date-time
-          example: '2021-05-31T02:21:32Z'
-        course_identifier:
-          description: The type of course the participant is enrolled in
-          type: string
-          required: true
-          nullable: false
-          enum:
-          - tte-early-years
-          example: tte-early-years
-        delivery_partner_id:
-          description: The delivery partner ID
-          type: string
-          format: uuid
-          required: false
-          nullable: false
-          example: 524df095-f9bf-4f9d-ba4c-772545a99e60
-        secondary_delivery_partner_id:
-          description: The secondary delivery partner ID
-          type: string
-          format: uuid
-          required: false
-          nullable: false
-          example: f0de7abf-399b-4e68-83de-2c33b503810c
-      required:
-      - participant_id
-      - declaration_type
-      - declaration_date
-      - course_identifier
-      example:
-        participant_id: db3a7848-7308-4879-942a-c4a70ced400a
-        declaration_type: retained-1
-        declaration_date: '2021-05-31T02:21:32Z'
-        course_identifier: tte-early-years
-    ParticipantDeclarationCompletedRequest:
-      description: An completed participant declaration
+    DeclarationCompletedRequest:
+      description: An completed declaration
       type: object
       required:
-      - participant_id
-      - declaration_type
       - declaration_date
-      - course_identifier
       - has_passed
+      - delivery_partner_id
       additionalProperties: false
       properties:
-        participant_id:
-          description: The unique id of the participant
-          type: string
-          format: uuid
-          required: true
-          nullable: false
-          example: db3a7848-7308-4879-942a-c4a70ced400a
-        declaration_type:
-          description: The event declaration type
-          type: string
-          required: true
-          nullable: false
-          enum:
-          - completed
-          example: completed
         declaration_date:
           description: The event declaration date
           type: string
@@ -2587,14 +2467,6 @@ components:
           nullable: false
           format: date-time
           example: '2021-05-31T02:21:32Z'
-        course_identifier:
-          description: The type of course the participant is enrolled in
-          type: string
-          required: true
-          nullable: false
-          enum:
-          - tte-early-years
-          example: tte-early-years
         has_passed:
           description: Whether the participant has failed or passed
           type: boolean
@@ -2616,19 +2488,17 @@ components:
           nullable: false
           example: f0de7abf-399b-4e68-83de-2c33b503810c
       example:
-        participant_id: db3a7848-7308-4879-942a-c4a70ced400a
-        declaration_type: completed
         declaration_date: '2021-05-31T02:21:32Z'
-        course_identifier: tte-early-years
         has_passed: true
-    ParticipantDeclarationChangeDeliveryPartnerRequest:
-      description: A participant declaration change delivery partner request
+        delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
+    DeclarationChangeDeliveryPartnerRequest:
+      description: A declaration change delivery partner request
       type: object
       required:
       - data
       properties:
         data:
-          description: A participant declaration change delivery partner request
+          description: A declaration change delivery partner request
           type: object
           required:
           - type
@@ -2638,8 +2508,8 @@ components:
               type: string
               required: true
               enum:
-              - participant-declaration
-              example: participant-declaration
+              - declaration
+              example: declaration
             attributes:
               required: true
               anyOf:
@@ -2681,3 +2551,61 @@ components:
                 example:
                   delivery_partner_id: db3a7848-7308-4879-942a-c4a70ced400a
                   secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
+    Schedule:
+      description: A single schedule
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type
+          type: string
+          example: schedule
+          enum:
+          - schedule
+        attributes:
+          properties:
+            course_identifier:
+              description: The course this application relates to
+              type: string
+              nullable: false
+              example: tte-early-years
+              enum:
+              - tte-early-years
+            schedule_identifier:
+              description: The new schedule of the participant
+              nullable: true
+              type: string
+              example: tte-reception-autumn
+              enum:
+              - tte-reception-autumn
+              - tte-reception-spring
+            cohort:
+              description: The starting years of the cohorts the delivery partner
+                is valid for
+              type: array
+              items:
+                type: string
+                example: '2025'
+    ScheduleResponse:
+      description: A single schedule
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Schedule"
+    SchedulesResponse:
+      description: A list of schedules
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Schedule"

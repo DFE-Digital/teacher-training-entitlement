@@ -12,7 +12,7 @@ APPLICATION_CHANGE_FUNDED_PLACE_REQUEST = {
           description: "The data typed",
           type: :string,
           required: true,
-          example: "application-change-funded-place",
+          example: "application",
         },
         attributes: {
           description: "An application change funded place request attributes",

@@ -56,7 +56,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     it_behaves_like "an API show endpoint"
   end
 
-  describe "POST /api/v1/declarations/:ecf_id/void" do
+  describe "PUT /api/v1/declarations/:ecf_id/void" do
     let(:resource) { create(:declaration, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Declarations::Void }
@@ -67,7 +67,7 @@ RSpec.describe "Declaration endpoints", type: :request do
       void_api_v1_declaration_path(ecf_id: id)
     end
 
-    it_behaves_like "an API create on resource endpoint"
+    it_behaves_like "an API update endpoint"
   end
 
   describe "PUT /api/v1/declarations/:ecf_id/change-delivery-partner" do

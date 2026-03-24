@@ -11,7 +11,7 @@ APPLICATION_CHANGE_SCHEDULE_REQUEST = {
         type: {
           description: "The data typed",
           type: :string,
-          example: "application-change-schedule",
+          example: "application",
           required: true,
         },
         attributes: {

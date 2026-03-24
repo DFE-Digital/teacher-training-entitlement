@@ -22,8 +22,8 @@ RSpec.describe "Participant Outcomes endpoint", openapi_spec: "v1/swagger.yaml",
   before { create(:participant_outcome, declaration:) }
 
   it_behaves_like "an API index endpoint documentation",
-                  "/api/v1/participants/outcomes",
-                  "Participant Outcomes",
+                  "/api/v1/outcomes",
+                  "Outcomes",
                   "Outcomes for all participants",
                   "#/components/schemas/ListParticipantOutcomesFilter",
                   "#/components/schemas/ParticipantOutcomesResponse"

@@ -4,6 +4,7 @@ DECLARATION_COMPLETED_REQUEST = {
   required: %i[
     declaration_date
     has_passed
+    delivery_partner_id
   ],
   additionalProperties: false,
   properties: {
@@ -42,5 +43,6 @@ DECLARATION_COMPLETED_REQUEST = {
   example: {
     declaration_date: "2021-05-31T02:21:32Z",
     has_passed: true,
+    delivery_partner_id: "524df095-f9bf-4f9d-ba4c-772545a99e60",
   },
 }.freeze
