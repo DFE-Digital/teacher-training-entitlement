@@ -33,11 +33,8 @@ SCHEDULE = {
           },
           cohort: {
             description: "The starting years of the cohorts the delivery partner is valid for",
-            type: :array,
-            items: {
-              type: :string,
-              example: "2025",
-            },
+            type: :string,
+            example: "2025",
           },
         },
       },
