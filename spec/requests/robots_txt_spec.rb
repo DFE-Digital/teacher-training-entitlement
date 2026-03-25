@@ -27,7 +27,7 @@ RSpec.describe "robots.txt" do
     it "disallows specific paths, including admin paths" do
       expect(response.body).to eq <<~TXT
         User-agent: *
-        Disallow: /account
+        Disallow: /applications
         Disallow: /admin
         Disallow: /admin
         Disallow: /registration

@@ -29,7 +29,7 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
     context "without confirmation" do
       it "redirects to user registration path" do
         post url, params: { form: { confirmation: "0" } }
-        expect(response).to redirect_to(accounts_user_registration_path(application))
+        expect(response).to redirect_to(application_path(application.ecf_id))
       end
     end
 

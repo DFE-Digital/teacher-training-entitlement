@@ -8,7 +8,7 @@
   <% if current_user.applications.count > 1 %>
     <%= render GovukComponent::BackLinkComponent.new(
       text: "Back to your registrations",
-      href: account_path
+      href: applications_path
     ) %>
   <% else %>
     <%= render GovukComponent::BackLinkComponent.new(
@@ -22,7 +22,7 @@
 
 <p class="govuk-body"><strong>Application ID:</strong> <%= @application.ecf_id %></p>
 
-<%= render "accounts/course_details", application: @application %>
-<%= render "accounts/funding_details", application: @application %>
-<%= render "accounts/personal_details", application: @application %>
-<%= render "accounts/work_details", application: @application %>
+<%= render "course_details", application: @application %>
+<%= render "funding_details", application: @application %>
+<%= render "personal_details", application: @application %>
+<%= render "work_details", application: @application %>

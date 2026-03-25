@@ -20,7 +20,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
           page.click_button("Start now")
         end
 
-        expect(page).to have_current_path("/accounts/user_registrations/#{application_for_user_with_dfe_id.id}")
+        expect(page).to have_current_path("/applications/#{application_for_user_with_dfe_id.ecf_id}")
         expect(existing_user_with_dfe_id.reload.email).to eq "user@example.com"
       end
     end
@@ -36,7 +36,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
           page.click_button("Start now")
         end
 
-        expect(page).to have_current_path("/accounts/user_registrations/#{application_for_user_with_dfe_id.id}")
+        expect(page).to have_current_path("/applications/#{application_for_user_with_dfe_id.ecf_id}")
         expect(existing_user_with_dfe_id.reload.email).to eq "old@example.com"
       end
     end
@@ -55,7 +55,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
           page.click_button("Start now")
         end
 
-        expect(page).to have_current_path("/account")
+        expect(page).to have_current_path("/applications")
 
         expect(user_without_dfe_id.reload.email).to eq "archived-user@example.com"
         expect(user_without_dfe_id.uid).to be_nil
@@ -87,7 +87,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
           page.click_button("Start now")
         end
 
-        expect(page).to have_current_path("/account")
+        expect(page).to have_current_path("/applications")
 
         expect(user_with_same_email_different_dfe_uid.reload.email).to eq "archived-user@example.com"
         expect(user_with_same_email_different_dfe_uid.uid).to be_nil
@@ -116,7 +116,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
           page.click_button("Start now")
         end
 
-        expect(page).to have_current_path("/accounts/user_registrations/#{application_for_user.id}")
+        expect(page).to have_current_path("/applications/#{application_for_user.ecf_id}")
         expect(user.reload.uid).to eq existing_user_with_dfe_id.uid
       end
     end
@@ -139,7 +139,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
             page.click_button("Start now")
           end
 
-          expect(page).to have_current_path("/accounts/user_registrations/#{application_for_existing_user.id}")
+          expect(page).to have_current_path("/applications/#{application_for_existing_user.ecf_id}")
           expect(existing_user.reload.uid).to eq uid
           expect(existing_user.provider).to eq "teacher_auth"
           expect(existing_user.full_name).to eq "John Doe"
@@ -162,7 +162,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
             page.click_button("Start now")
           end
 
-          expect(page).to have_current_path("/accounts/user_registrations/#{application_for_clashing_user.id}")
+          expect(page).to have_current_path("/applications/#{application_for_clashing_user.ecf_id}")
 
           expect(clashing_user.reload.email).to eq "user@example.com"
           expect(clashing_user.uid).to eq uid

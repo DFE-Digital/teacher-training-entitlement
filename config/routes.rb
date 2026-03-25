@@ -44,12 +44,6 @@ Rails.application.routes.draw do
   get "/session/:step", to: "session_wizard#show", as: "session_wizard_show"
   patch "/session/:step", to: "session_wizard#update", as: "session_wizard_update"
 
-  resource :account
-
-  namespace :accounts do
-    resources :user_registrations, only: [:show]
-  end
-
   get "/cookies", to: "pages#show", page: "cookies"
   get "/privacy-policy", to: redirect("https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers#NPQ"), as: :privacy_policy
   get "/accessibility-statement", to: "pages#show", page: "accessibility"
@@ -62,7 +56,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :applications, param: :ecf_id, module: :applications do
+  resources :applications, only: %i[index show], param: :ecf_id, module: :applications do
     namespace :change_provider, path: "change-provider" do
       dashed_resources :start, only: %i[index create]
       dashed_resources :providers, only: %i[index create]

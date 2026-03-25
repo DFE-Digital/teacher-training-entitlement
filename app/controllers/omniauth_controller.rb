@@ -102,7 +102,7 @@ private
       return new_email_update_path
     end
 
-    return account_path if user.applications.any?
+    return applications_path if user.applications.any?
 
     start_questionnaire_path(user)
   end

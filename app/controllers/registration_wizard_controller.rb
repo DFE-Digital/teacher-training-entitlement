@@ -107,7 +107,7 @@ private
       message: "You have already made an application for #{@form.course.name}",
     }
 
-    redirect_to accounts_user_registration_path(active_applications.last)
+    redirect_to application_path(active_applications.last.ecf_id)
   end
 
   def check_end_of_journey
@@ -118,7 +118,7 @@ private
       title: "Registration successfully submitted",
       message: "Check the details of your registration and find out more about applying with your provider",
     }
-    redirect_to accounts_user_registration_path(current_user.applications.last)
+    redirect_to application_path(current_user.applications.last.ecf_id)
   end
 
   def check_course_defined

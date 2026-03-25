@@ -65,7 +65,7 @@ RSpec.describe RegistrationWizardController do
         let(:step) { "choose-your-course" }
 
         it "redirects to account/registration page with alert" do
-          expect(response).to redirect_to accounts_user_registration_path(application)
+          expect(response).to redirect_to application_path(application.ecf_id)
           expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
         end
       end
