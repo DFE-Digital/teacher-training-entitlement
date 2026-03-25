@@ -96,7 +96,7 @@ Notify DfE a participant has completed a course by submitting a `completed` decl
 
 A completed declaration may automatically create a participant outcome.
 
-Request bodies must include the `declaration_date` and `has_passed` attributes.
+Request bodies must include the `declaration_date`, `delivery_partner_id` and `has_passed` attributes.
 
 ### Example request body
 
@@ -106,7 +106,8 @@ Request bodies must include the `declaration_date` and `has_passed` attributes.
     "type": "declaration",
     "attributes": {
       "declaration_date": "2026-06-30T10:00:00Z",
-      "has_passed": true
+      "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60"
+      "has_passed": true,
     }
   }
 }
@@ -196,10 +197,10 @@ View a specific declaration which has been previously submitted. Check declarati
 ## Void a declaration
 
 ```
-POST /api/v1/declarations/{id}/void
+PUT /api/v1/declarations/{id}/void
 ```
 
-Void specific declarations which have been submitted in error. A void request must include a `reason` attribute.
+Void specific declarations which have been submitted in error.
 
 Successful requests will return a response body including updates to the declaration `state`, which will become:
 
