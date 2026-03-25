@@ -248,3 +248,25 @@ If a provider voids a `completed` declaration, the outcome will be retracted.
   }
 }
 ```
+
+
+## Change delivery partner
+
+```
+PUT /api/v1/declarations/{id}/change-delivery-partner
+```
+
+Providers can update the delivery partner for a declaration.
+
+### Example request body
+
+```json
+{
+  "data": {
+    "type": "declaration",
+    "attributes": {
+      "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60"
+    }
+  }
+}
+```
