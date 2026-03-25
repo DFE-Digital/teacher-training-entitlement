@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
+RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   subject { response }
@@ -13,7 +13,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
       cohort: {
         start_year: 2029,
         funding_cap: true,
-        registration_start_date: "2029-03-02",
+        registration_starts_at: "2029-03-02",
         name: "2029",
         description: "2029 to 2030",
       },

@@ -13,7 +13,7 @@ APPLICATION_ACCEPT_REQUEST = {
             description: "The data typed",
             type: :string,
             required: true,
-            example: "application-accept",
+            example: "application",
           },
           attributes: {
             description: "An application acceptance request attributes",
@@ -25,13 +25,6 @@ APPLICATION_ACCEPT_REQUEST = {
                 nullable: false,
                 type: :boolean,
                 example: true,
-              },
-              schedule_identifier: {
-                description: "The new schedule of the participant",
-                nullable: false,
-                type: :string,
-                example: Schedule::IDENTIFIERS.first,
-                enum: Schedule::IDENTIFIERS,
               },
             },
           },

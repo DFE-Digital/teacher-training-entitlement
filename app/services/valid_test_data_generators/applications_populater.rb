@@ -59,7 +59,7 @@ module ValidTestDataGenerators
 
       return if Faker::Boolean.boolean(true_ratio: 0.3)
 
-      current_date = schedule.applies_from + rand(5.days).seconds
+      current_date = schedule.training_starts_at + rand(5.days).seconds
 
       travel_to(current_date) do
         accept_application(application)
@@ -126,7 +126,6 @@ module ValidTestDataGenerators
       Applications::Accept.new(
         application:,
         funded_place:,
-        schedule_identifier: application.schedule.identifier,
       ).accept
       application.reload
     end

@@ -6,7 +6,7 @@ module Applications
 
     validate :declarations_present
     validate :different_cohort
-    validate :schedule_exists_in_new_cohort
+    validate :new_course_cohort
 
     def initialize(application:, new_cohort:, override_declarations_check: false)
       @application = application
@@ -17,11 +17,11 @@ module Applications
     def call
       return if invalid?
 
-      if @application.schedule.present?
-        @application.update!(cohort: @new_cohort, schedule: new_schedule)
-      else
-        @application.update!(cohort: @new_cohort)
-      end
+      @application.update!(course_cohort:)
+    end
+
+    def course_cohort
+      @course_cohort ||= CourseCohort.find_by(cohort: @new_cohort, course: @application.course)
     end
 
   private
@@ -30,24 +30,16 @@ module Applications
       add_error(:base, :must_be_different) if @new_cohort.id == @application.cohort.id
     end
 
-    def schedule_exists_in_new_cohort
-      return unless @application.schedule
-
-      add_error(:base, :schedule_not_found) unless @new_cohort.schedules.exists?(course_group: @application.course.course_group, identifier: @application.schedule.identifier)
-    end
-
     def declarations_present
       return if @override_declarations_check
 
       add_error(:base, :declarations_present) if @application.declarations.any?
     end
 
-    def new_schedule
-      Schedule.find_by(
-        course_group: @application.course.course_group,
-        cohort_id: @new_cohort.id,
-        identifier: @application.schedule.identifier,
-      )
+    def new_course_cohort
+      return if course_cohort
+
+      add_error(:course_cohort, :not_found)
     end
 
     def add_error(group, key)

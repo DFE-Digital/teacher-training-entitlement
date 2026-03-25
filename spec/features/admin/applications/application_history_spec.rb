@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "viewing application history", :versioning, type: :feature do
+RSpec.feature "viewing application history", :revisit, :versioning, type: :feature do
   include Helpers::AdminLogin
 
   let(:application) { create(:application) }

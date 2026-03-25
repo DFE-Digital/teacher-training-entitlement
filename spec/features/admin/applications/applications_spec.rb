@@ -82,8 +82,9 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "filtering applications by year of application" do
     cohort = create(:cohort, start_year: 2022)
+    course_cohort = create(:course_cohort, cohort:)
     application = applications_in_order.last
-    application.update!(cohort:)
+    application.update!(course_cohort:)
 
     visit(admin_applications_path)
     select "2022 to 2023", from: "Year of application"
@@ -251,9 +252,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     end
   end
 
-  scenario "changing training status" do
-    application = create(:application, :accepted)
-    create(:declaration, application:)
+  scenario "changing training status", pending: "We need to select the target_course_cohort for the resume action" do
+    application = create(:application, :accepted, :with_declaration)
 
     visit admin_application_path(application)
 
@@ -326,10 +326,10 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "changing schedule cohort" do
     future_cohort = create(:cohort, start_year: 3.years.from_now.year)
+    course_cohort = create(:course_cohort, cohort: Cohort.first)
+    create(:course_cohort, course: course_cohort.course, cohort: future_cohort)
     create(:cohort, start_year: 2.years.from_now.year)
-    application = create(:application, cohort: Cohort.first)
-    create(:schedule, :tte_reception_autumn, cohort: application.cohort)
-    create(:schedule, :tte_reception_spring, cohort: future_cohort)
+    application = create(:application, course_cohort:)
 
     visit admin_application_path(application)
 

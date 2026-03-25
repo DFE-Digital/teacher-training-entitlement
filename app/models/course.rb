@@ -7,18 +7,11 @@ class Course < ApplicationRecord
   has_many :course_cohorts, dependent: :destroy
   has_many :course_cohort_providers, through: :course_cohorts
   has_many :lead_providers, through: :course_cohort_providers
+  has_many :schedules, through: :course_cohorts
 
   scope :displayable, -> { where(display: true).order(:position) }
 
   IDENTIFIERS = %w[tte-early-years].freeze
-
-  def schedule_for(cohort: Cohort.current)
-    schedules.find_by(cohort:, identifier: "tte-reception-autumn")
-  end
-
-  def schedules
-    @schedules ||= Schedule.where(course_group:)
-  end
 
   def short_code
     super.tap do |sc|

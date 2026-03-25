@@ -7,7 +7,7 @@ RSpec.shared_context "with default schedules", shared_context: :metadata do
     (2021..end_year).each do |start_year|
       cohort = FactoryBot.create(:cohort, start_year:)
       Schedule::IDENTIFIERS.each do |schedule_identifier|
-        FactoryBot.create(:schedule, schedule_identifier.tr("-", "_"), cohort:, change_applies_dates: false)
+        FactoryBot.create(:schedule, schedule_identifier.tr("-", "_"), cohort:, change_training_dates: false)
       end
     end
   end

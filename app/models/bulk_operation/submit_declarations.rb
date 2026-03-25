@@ -28,17 +28,21 @@ private
     lead_provider = LeadProvider.find_by(name: row["lead_provider_name"])
     return "Lead provider not found" if lead_provider.nil?
 
+    course = Course.find_by(identifier: row["course_identifier"])
+    application = Application
+                    .joins(:course_cohort)
+                    .where(user: participant, lead_provider:, course_cohorts: { course: })
+                    .first
+
     service = Declarations::Create.new(
-      lead_provider: lead_provider,
-      participant_id: row["participant_id"],
+      application:,
       declaration_type: row["declaration_type"],
       declaration_date: row["declaration_date"],
-      course_identifier: row["course_identifier"],
       delivery_partner_id: row["delivery_partner_id"],
       has_passed: row["has_passed"].presence.try(:downcase),
     )
 
-    if service.create_declaration
+    if service.call
       "Declaration created successfully"
     else
       service.errors.full_messages.join(", ")

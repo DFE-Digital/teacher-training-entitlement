@@ -5,50 +5,47 @@ module Declarations
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :lead_provider
-    attribute :participant_id
+    attribute :application
     attribute :declaration_type, :string
     attribute :declaration_date, :datetime
-    attribute :course_identifier, :string
     attribute :has_passed
     attribute :delivery_partner_id
     attribute :secondary_delivery_partner_id
 
-    validates :lead_provider, presence: true
-    validates :participant_id, presence: true, participant_id_change: true
-    validates :participant, participant_presence: true, participant_not_withdrawn: true
-    validates :course_identifier, course_for_participant: true
-    validates :declaration_date, declaration_date: true
-    validates :declaration_date, presence: true
+    validates :application, presence: true
+    validate :application_is_declarable, if: -> { application }
+
     validates :declaration_type, presence: true
-    validates :declaration_type, inclusion: { in: Declaration.declaration_types.values }
+    validates :declaration_type, inclusion: { in: ->(service) { service.schedule.allowed_declaration_types } }, if: -> { application && declaration_type }
+    validate :declaration_type_out_of_order
 
-    validate :validate_schedule_exists, :validate_declaration_type_for_schedule # this needs to come before the cohort validation
+    validates :declaration_date, presence: true
+    validates :declaration_date, declaration_date: true
 
-    validates :cohort, contract_for_cohort_and_course: true
+    # validates :cohort, contract_for_cohort_and_course: true
+    # validate :output_fee_statement_available
+    validate :validate_has_passed_field, if: :completed_declaration?
+    validate :no_duplicate_billable_declaration
 
-    validate :output_fee_statement_available
-    validate :validate_has_passed_field, if: :validate_has_passed?
-    validate :validates_billable_slot_available
+    validates :delivery_partner_id, presence: true
     validate :delivery_partner_exists, if: :delivery_partner_id
     validate :secondary_delivery_partner_exists, if: :secondary_delivery_partner_id
+
     validate :declaration_valid
+
+    delegate :lead_provider, :schedule, :cohort, to: :application
 
     attr_reader :raw_declaration_date, :declaration
 
-    def create_declaration
+    def call
       return false unless valid?
 
       ApplicationRecord.transaction do
-        find_or_create_declaration!
+        @declaration = application.declarations.create!(declaration_parameters_for_create)
+        @declaration.mark_eligible!
 
-        # CPDNPQ-2808: this reload is here to stop bullet complaining about an unoptimized query
-        # the issue could not be replicated locally or in a review app
-        declaration.reload
-
-        set_eligibility!
-
-        statement_attacher.attach unless declaration.submitted_state?
+        # [TODO]: Define when to raise statement for TTE
+        # StatementAttacher.new(@declaration:).attach
         create_participant_outcome!
       end
 
@@ -60,72 +57,45 @@ module Declarations
       super
     end
 
-    def application
-      @application ||= participant
-        &.applications
-        &.accepted
-        &.includes(:course)
-        &.order(created_at: :desc, id: :desc)
-        &.find_by(lead_provider:, course: Course.find_by(identifier: course_identifier)&.rebranded_alternative_courses)
+    def active_declarations
+      @active_declarations ||= application.declarations.billable_or_changeable
     end
 
-    def participant
-      @participant ||= begin
-        Participants::Query.new(lead_provider:).participant(ecf_id: participant_id)
-      rescue ActiveRecord::RecordNotFound
-        nil
-      end
+    def completed_declaration?
+      declaration_type == "completed"
+    end
+
+    def started_declaration?
+      declaration_type == "started"
     end
 
   private
 
     attr_writer :raw_declaration_date
 
-    delegate :schedule, to: :application, allow_nil: true
-    delegate :cohort, to: :schedule
+    def delivery_partner
+      @delivery_partner ||= DeliveryPartner.find_by!(ecf_id: delivery_partner_id)
+    end
 
-    def declaration_parameters_for_find
-      {
-        declaration_date:,
-        declaration_type:,
-        lead_provider:,
-      }
+    def secondary_delivery_partner
+      @secondary_delivery_partner ||= DeliveryPartner.find_by!(ecf_id: secondary_delivery_partner_id)
     end
 
     def declaration_parameters_for_create
-      declaration_parameters_for_find.merge(
+      params = {
+        declaration_date:,
+        declaration_type:,
+        lead_provider:,
         application:,
         cohort:,
-        delivery_partner: DeliveryPartner.find_by(ecf_id: delivery_partner_id),
-        secondary_delivery_partner: DeliveryPartner.find_by(ecf_id: secondary_delivery_partner_id),
-      )
-    end
-
-    def existing_declaration
-      @existing_declaration ||= participant
-        .declarations
-        .joins(application: :course)
-        .submitted_state
-        .or(
-          participant
-            .declarations
-            .joins(application: :course)
-            .billable,
-        )
-        .find_by(declaration_parameters_for_find.merge(application: { courses: { identifier: course_identifier } }))
-    end
-
-    def find_or_create_declaration!
-      @declaration = existing_declaration || Declaration.create!(declaration_parameters_for_create)
-    end
-
-    def statement_attacher
-      @statement_attacher ||= StatementAttacher.new(declaration:)
+        delivery_partner:,
+      }
+      params.merge!(secondary_delivery_partner:) if secondary_delivery_partner_id
+      params
     end
 
     def output_fee_statement_available
       return if errors.any?
-      return if application.blank?
       return if existing_declaration&.submitted_state?
       return if existing_declaration.nil? && !application.fundable?
       return if lead_provider.next_output_fee_statement(cohort).present?
@@ -133,38 +103,16 @@ module Declarations
       errors.add(:cohort, :no_output_fee_statement, cohort: cohort.start_year)
     end
 
-    def set_eligibility!
-      if declaration.duplicate_declarations.any?
-        declaration.update!(superseded_by: original_declaration)
-        declaration.mark_ineligible!
-      elsif application.fundable?
-        declaration.mark_eligible!
-      end
-    end
-
     def validate_declaration_type_for_schedule
       return if errors.any?
-      return if schedule&.allowed_declaration_types&.include?(declaration_type)
+      return if schedule.allowed_declaration_types.include?(declaration_type)
 
       errors.add(:declaration_type, :mismatch_declaration_type_for_schedule)
     end
 
-    def validate_schedule_exists
+    def no_duplicate_billable_declaration
       return if errors.any?
-      return if schedule
-
-      errors.add(:application, :application_schedule_missing)
-    end
-
-    def original_declaration
-      @original_declaration ||= declaration.duplicate_declarations.order(created_at: :asc, id: :asc).first
-    end
-
-    def validates_billable_slot_available
-      return if errors.any?
-      return unless participant
-
-      return unless application.declarations.billable_or_changeable.where(declaration_type:).exists?
+      return unless active_declarations.where(declaration_type:).exists?
 
       errors.add(:base, :declaration_already_exists)
     end
@@ -177,18 +125,12 @@ module Declarations
       errors.add(:has_passed, :invalid)
     end
 
-    def validate_has_passed?
-      declaration_type == "completed"
-    end
-
     def create_participant_outcome!
-      return unless validate_has_passed?
+      return unless completed_declaration?
 
       service = ParticipantOutcomes::Create.new(
-        lead_provider:,
-        participant_id: participant.ecf_id,
-        course_identifier:,
-        state: has_passed.to_s == "true" ? "passed" : "failed", # TODO: DEFINE COURSE OUTCOME VALUES
+        application:,
+        state: has_passed.to_s == "true" ? "passed" : "failed",
         completion_date: declaration_date.rfc3339,
       )
 
@@ -207,15 +149,28 @@ module Declarations
     end
 
     def delivery_partner_exists
-      return if DeliveryPartner.exists?(ecf_id: delivery_partner_id)
-
+      delivery_partner
+    rescue ActiveRecord::RecordNotFound
       errors.add(:delivery_partner_id, :not_found)
     end
 
     def secondary_delivery_partner_exists
-      return if DeliveryPartner.exists?(ecf_id: secondary_delivery_partner_id)
-
+      secondary_delivery_partner
+    rescue ActiveRecord::RecordNotFound
       errors.add(:secondary_delivery_partner_id, :not_found)
+    end
+
+    def application_is_declarable
+      return if application.accepted_lead_provider_approval_status? && application.active_training_status?
+
+      errors.add(:application, :in_wrong_state)
+    end
+
+    def declaration_type_out_of_order
+      return if started_declaration?
+      return if completed_declaration? && active_declarations.where(declaration_type: "started").exists?
+
+      errors.add(:declaration_type, :out_of_order)
     end
   end
 end

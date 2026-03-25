@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.feature "Administering API Test Scenarios", type: :feature do
+RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
   include Helpers::AdminLogin
 
   let(:admin) { create(:admin) }

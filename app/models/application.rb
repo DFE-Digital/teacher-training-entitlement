@@ -4,7 +4,8 @@ class Application < ApplicationRecord
   # This constant is set so that despite still existing they won't be hooked up
   # within the rails model
   self.ignored_columns = %w[DEPRECATED_cohort]
-
+  # this is a temporary constant until PR on statuses is merged
+  ALL_STATUSES = %w[pending accepted rejected started completed deferred withdrawn].freeze
   UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
@@ -14,11 +15,13 @@ class Application < ApplicationRecord
   has_paper_trail meta: { note: :version_note }
 
   belongs_to :user
-  belongs_to :cohort, optional: true
-  belongs_to :course
+  belongs_to :course_cohort
   belongs_to :lead_provider
   belongs_to :institution, optional: true
-  belongs_to :schedule, optional: true
+
+  has_one :course, through: :course_cohort
+  has_one :cohort, through: :course_cohort
+  has_one :schedule, through: :course_cohort
 
   # Convenience methods to access the institutionable through institution
   # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
@@ -44,11 +47,10 @@ class Application < ApplicationRecord
 
   attr_accessor :version_note, :skip_touch_user_if_changed
 
-  validate :schedule_cohort_matches
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :user_id,
             uniqueness: {
-              scope: %i[cohort_id course_id],
+              scope: :course_cohort_id,
               conditions: -> { where.not(lead_provider_approval_status: "rejected") },
             }, unless: :provider_rejected?
   validate :ensure_change_training_status, if: -> { will_save_change_to_training_status? && persisted? }
@@ -99,7 +101,6 @@ class Application < ApplicationRecord
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
-  validate :validate_permitted_schedule_for_course
 
   # `eligible_for_dfe_funding?`  takes into consideration what we know
   # about user eligibility plus if it has been previously funded. We need
@@ -114,6 +115,13 @@ class Application < ApplicationRecord
     end
   end
 
+  def status
+    return training_status if accepted_lead_provider_approval_status? && !active_training_status?
+    return "started" if declarations.any?
+
+    lead_provider_approval_status
+  end
+
   def previously_funded?
     # This is an optimization used by the API Applications::Query in order
     # to speed up the bulk-retrieval of Applications.
@@ -121,7 +129,6 @@ class Application < ApplicationRecord
 
     @previously_funded ||= user.applications
       .where.not(id:)
-      .where(course: course.rebranded_alternative_courses)
       .accepted
       .eligible_for_funding
       .where(funded_place: [nil, true])
@@ -228,10 +235,6 @@ private
     eligible_for_funding && (funded_place.nil? || funded_place)
   end
 
-  def schedule_cohort_matches
-    errors.add(:schedule, :cohort_mismatch) if schedule && schedule.cohort != cohort
-  end
-
   def validate_funded_place?
     accepted_lead_provider_approval_status? && errors.blank? && cohort&.funding_cap?
   end
@@ -248,15 +251,6 @@ private
 
     if funded_place && !eligible_for_funding
       errors.add(:funded_place, :not_eligible)
-    end
-  end
-
-  def validate_permitted_schedule_for_course
-    return if errors.any?
-    return unless accepted_lead_provider_approval_status? && schedule && course
-
-    unless schedule.course_group == course.course_group
-      errors.add(:schedule, :invalid_for_course)
     end
   end
 

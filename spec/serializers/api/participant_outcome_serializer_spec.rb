@@ -15,7 +15,7 @@ RSpec.describe API::ParticipantOutcomeSerializer, type: :serializer do
     it "serializes the `type`" do
       response = JSON.parse(described_class.render(outcome))
 
-      expect(response["type"]).to eq("participant-outcome")
+      expect(response["type"]).to eq("outcome")
     end
   end
 

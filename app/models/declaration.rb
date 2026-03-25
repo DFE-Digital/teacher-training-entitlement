@@ -31,7 +31,7 @@ class Declaration < ApplicationRecord
   scope :awaiting_clawback, -> { where(state: :awaiting_clawback) }
   scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
   scope :completed, -> { where(declaration_type: "completed") }
-  scope :with_course_identifier, ->(course_identifier) { joins(application: :course).where(course: { identifier: course_identifier }) }
+  scope :with_course_identifier, ->(course_identifier) { joins(application: { course_cohort: :course }).where(courses: { identifier: course_identifier }) }
   scope :latest_first, -> { order(created_at: :desc, id: :desc) }
 
   scope :eligible_for_outcomes, lambda { |lead_provider, course_identifier|
@@ -179,7 +179,7 @@ class Declaration < ApplicationRecord
     self
       .class
       .billable_or_changeable
-      .joins(application: %i[user course])
+      .joins(application: [:user, { course_cohort: :course }])
       .where(user: { trn: application.user.trn })
       .where.not(user: { trn: nil })
       .where.not(user: { id: application.user_id })
@@ -187,7 +187,7 @@ class Declaration < ApplicationRecord
       .where(
         declaration_type:,
         superseded_by_id: nil,
-        application: { course: application.course.rebranded_alternative_courses },
+        courses: { id: application.course.rebranded_alternative_courses },
       )
   end
 
@@ -218,7 +218,7 @@ private
     return unless declaration_date
     return if persisted? && !declaration_date_changed?
 
-    if declaration_date < application.schedule.applies_from
+    if declaration_date < application.schedule.training_starts_at
       errors.add(:declaration_date, :declaration_before_schedule_start)
     end
   end

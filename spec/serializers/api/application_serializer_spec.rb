@@ -2,13 +2,16 @@ require "rails_helper"
 
 RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:user) { application.user }
-  let(:course) { create(:course) }
-  let(:cohort) { build(:cohort) }
-  let(:school) { create(:school) }
-  let(:application) { build(:application, cohort:, course:, institution: school.institution) }
+  let(:course) { create(:course, :tte_early_years) }
+  let(:cohort) { create(:cohort, :current) }
+  let(:schedule) { create(:schedule) }
+  let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }
+  let(:institution) { create(:institution, :for_school) }
+  let(:application) { build(:application, course_cohort:, institution:) }
+  let(:v1_json) { JSON.parse(described_class.render(application, view: :v1, root: "data")) }
 
   describe "core attributes" do
-    subject(:response) { JSON.parse(described_class.render(application)) }
+    subject(:response) { v1_json["data"] }
 
     it "serializes the `id`" do
       application.ecf_id = "fe1a5280-1b13-4b09-b9c7-e2b01d37e851"
@@ -22,10 +25,10 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   end
 
   describe "nested attributes" do
-    subject(:attributes) { JSON.parse(described_class.render(application))["attributes"] }
+    subject(:attributes) { v1_json.dig("data", "attributes") }
 
-    it "does not serialize `schedule_identifier`" do
-      expect(attributes).not_to have_key("schedule_identifier")
+    it "serializes the `schedule_identifier`" do
+      expect(attributes["schedule_identifier"]).to eq(application.schedule.identifier)
     end
 
     it "serializes the `funding_choice`" do
@@ -74,67 +77,30 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
         cohort.start_year = 2025
         expect(attributes["cohort"]).to eq(cohort.start_year.to_s)
       end
-
-      context "when `cohort` is `nil`" do
-        let(:cohort) { nil }
-
-        it { expect(attributes["cohort"]).to be_nil }
-      end
     end
 
-    describe "school serialization" do
-      it "serializes the `school_urn`" do
-        school.institution.institution_reference_number = "1234567"
-        expect(attributes["school_urn"]).to eq("1234567")
+    describe "institution serialization" do
+      it "serializes the `institution_reference_number`" do
+        expect(attributes["institution_reference_number"]).to eq(institution.institution_reference_number)
+        expect(attributes["institution_type"]).to eq(institution.institutionable_type.downcase)
       end
 
-      it "serializes the `school_ukprn`" do
-        application.ukprn = "1234567"
-        expect(attributes["school_ukprn"]).to eq("1234567")
+      it "serializes the `ukprn`" do
+        expect(attributes["ukprn"]).to eq(institution.ukprn)
       end
 
       context "when `school` is `nil`" do
         let(:application) { build(:application, cohort:, course:, institution: nil) }
 
-        it { expect(attributes["school_urn"]).to be_nil }
-        it { expect(attributes["school_ukprn"]).to eq(application.ukprn) }
+        it { expect(attributes["institution_reference_number"]).to be_nil }
+        it { expect(attributes["institution_type"]).to be_nil }
+        it { expect(attributes["ukprn"]).to be_nil }
       end
     end
 
     describe "course serialization" do
       it "serializes the `course_identifier`" do
-        course.identifier = "identifier"
         expect(attributes["course_identifier"]).to eq(course.identifier)
-      end
-    end
-
-    describe "private_childcare_provider serialization" do
-      # We need to persist and then reload the application
-      # to ensure the default scope is applied/accounted for.
-      before { application.save! }
-
-      subject(:attributes) { JSON.parse(described_class.render(application.reload))["attributes"] }
-
-      context "when the `private_childcare_provider` is set" do
-        let(:provider) { create(:private_childcare_provider) }
-        let(:application) { build(:application, cohort:, course:, institution: provider.institution) }
-
-        it "serializes the `private_childcare_provider_urn`" do
-          expect(attributes["private_childcare_provider_urn"]).to eq(provider.urn)
-        end
-      end
-
-      context "when `private_childcare_provider` is `nil`" do
-        it { expect(attributes["private_childcare_provider_urn"]).to be_nil }
-      end
-
-      context "when the `private_childcare_provider` is disabled" do
-        let(:provider) { create(:private_childcare_provider, :disabled, provider_urn: "disabled_urn") }
-        let(:application) { build(:application, cohort:, course:, institution: provider.institution) }
-
-        it "serializes the `private_childcare_provider`" do
-          expect(attributes["private_childcare_provider_urn"]).to eq(provider.urn)
-        end
       end
     end
 
@@ -182,29 +148,15 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
           expect(attributes["updated_at"]).to eq("2024-07-02T12:00:00Z")
         end
       end
-    end
-  end
 
-  context "when serializing the `v1` view" do
-    let(:application) { build(:application, :accepted, cohort:, course:, institution: school.institution) }
+      describe "reason_for_rejection serialization" do
+        let(:reason_for_rejection) { Application.reason_for_rejections[:registration_expired] }
+        let(:application) { build(:application, :rejected, reason_for_rejection:) }
 
-    describe "nested attributes" do
-      subject(:attributes) { JSON.parse(described_class.render(application, view: :v1))["attributes"] }
-
-      it "serializes the `schedule_identifier`" do
-        expect(attributes["schedule_identifier"]).to eq(application.schedule.identifier)
+        it "serializes the `reason_for_rejection`" do
+          expect(attributes["reason_for_rejection"]).to eq(reason_for_rejection)
+        end
       end
-    end
-  end
-
-  describe "reason_for_rejection serialization" do
-    subject(:attributes) { JSON.parse(described_class.render(application))["attributes"] }
-
-    let(:reason_for_rejection) { Application.reason_for_rejections[:registration_expired] }
-    let(:application) { build(:application, :rejected, reason_for_rejection:) }
-
-    it "serializes the `reason_for_rejection`" do
-      expect(attributes["reason_for_rejection"]).to eq(reason_for_rejection)
     end
   end
 end

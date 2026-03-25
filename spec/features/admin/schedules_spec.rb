@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
+RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, :revisit, type: :feature do
   include Helpers::AdminLogin
 
   let(:admin)  { create :admin }
@@ -27,8 +27,8 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
 
     expect(page).to have_css("h2", text: "Schedules")
     expect(page).to have_table(rows: [
-      [schedules[1].name, short_date(schedules[1].applies_from), short_date(schedules[1].applies_to), 2, 0],
-      [schedules[0].name, short_date(schedules[0].applies_from), short_date(schedules[0].applies_to), 4, 0],
+      [schedules[1].name, short_date(schedules[1].training_starts_at), short_date(schedules[1].training_ends_at), 2, 0],
+      [schedules[0].name, short_date(schedules[0].training_starts_at), short_date(schedules[0].training_ends_at), 4, 0],
     ])
   end
 
@@ -44,8 +44,8 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, type: :feature do
       expect(sl).to have_summary_item("Identifier", schedule.identifier)
       expect(sl).to have_summary_item("Policy descriptor", 11)
       expect(sl).to have_summary_item("Course group", schedule.course_group)
-      expect(sl).to have_summary_item("Applies from", long_date(schedule.applies_from))
-      expect(sl).to have_summary_item("Applies to", long_date(schedule.applies_to))
+      expect(sl).to have_summary_item("Training starts", long_date(schedule.training_starts_at))
+      expect(sl).to have_summary_item("Training ends", long_date(schedule.training_ends_at))
       expect(sl).to have_summary_item("Declaration types", "started, completed")
     end
   end
@@ -168,8 +168,8 @@ private
     expect(schedule.identifier).to eq("identifier")
     expect(schedule.policy_descriptor).to eq(42)
     expect(schedule.course_group).to eq(course_group)
-    expect(schedule.applies_from).to eq(Date.new(2026, 2, 1))
-    expect(schedule.applies_to).to eq(Date.new(2026, 4, 3))
+    expect(schedule.training_starts_at).to eq(Date.new(2026, 2, 1))
+    expect(schedule.training_ends_at).to eq(Date.new(2026, 4, 3))
     expect(schedule.acceptance_window_start).to eq(Date.new(2026, 6, 5))
     expect(schedule.acceptance_window_end).to eq(Date.new(2026, 8, 7))
     expect(schedule.allowed_declaration_types).to eq(%w[started retained-1 completed])

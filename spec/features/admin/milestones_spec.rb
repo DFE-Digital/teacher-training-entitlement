@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Milestones", :no_js, :with_default_schedules do
+RSpec.feature "Milestones", :no_js, :revisit, :with_default_schedules do
   include Helpers::AdminLogin
 
   let(:cohort) { Cohort.last }

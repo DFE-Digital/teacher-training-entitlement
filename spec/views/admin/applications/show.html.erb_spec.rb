@@ -11,17 +11,17 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
   end
 
   describe "a summary card for a full application" do
-    let :application do
-      build_stubbed :application, :accepted, :with_school
+    let(:application) do
+      build_stubbed :application, :accepted
     end
 
     let :declarations do
       [
-        build_stubbed(:declaration, application_id: application.id,
+        build_stubbed(:declaration, application: application,
                                     lead_provider: application.lead_provider,
                                     declaration_type: "started",
                                     delivery_partner: nil),
-        build_stubbed(:declaration, application_id: application.id,
+        build_stubbed(:declaration, application: application,
                                     lead_provider: application.lead_provider,
                                     declaration_type: "retained-1"),
       ]
@@ -43,7 +43,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
 
   describe "a summary card for a minimal application" do
     let :application do
-      build_stubbed :application, cohort: nil, institution: nil
+      build_stubbed :application, institution: nil
     end
 
     it { is_expected.to have_css "h1", text: "Application details" }

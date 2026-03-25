@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Applications in review", type: :feature do
+RSpec.feature "Applications in review", :npq, type: :feature do
   include Helpers::AdminLogin
 
   let!(:normal_application)                         { create(:application, :with_random_user) }

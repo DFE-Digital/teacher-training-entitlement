@@ -5,7 +5,7 @@ module Declarations
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider: :ignore, updated_since: :ignore, participant_ids: :ignore, cohort_start_years: :ignore, include_transferred_applications: false)
+    def initialize(lead_provider: :ignore, updated_since: :ignore, participant_ids: :ignore, cohort_start_years: :ignore, application_id: :ignore, declaration_type: :ignore, course_identifier: :ignore, include_transferred_applications: false)
       @scope = all_declarations
       @sort = sort
 
@@ -13,6 +13,9 @@ module Declarations
       where_updated_since(updated_since)
       where_participant_ids_in(participant_ids)
       where_cohort_start_year_in(cohort_start_years)
+      where_application_id_is(application_id)
+      where_declaration_type_in(declaration_type)
+      where_course_identifier_in(course_identifier)
     end
 
     def declarations
@@ -60,6 +63,24 @@ module Declarations
       scope.merge!(Declaration.where(cohort: { start_year: extract_conditions(cohort_start_years) }))
     end
 
+    def where_application_id_is(application_id)
+      return if ignore?(filter: application_id)
+
+      scope.merge!(Declaration.joins(:application).where(applications: { ecf_id: application_id }))
+    end
+
+    def where_declaration_type_in(declaration_type)
+      return if ignore?(filter: declaration_type)
+
+      scope.merge!(Declaration.where(declaration_type: extract_conditions(declaration_type)))
+    end
+
+    def where_course_identifier_in(course_identifier)
+      return if ignore?(filter: course_identifier)
+
+      scope.merge!(Declaration.joins(application: { course_cohort: :course }).where(courses: { identifier: extract_conditions(course_identifier) }))
+    end
+
     def all_declarations
       Declaration
         .distinct
@@ -69,7 +90,7 @@ module Declarations
           :participant_outcomes,
           application: %i[
             user
-            course
+            course_cohort
             lead_provider
           ],
           statement_items: %i[

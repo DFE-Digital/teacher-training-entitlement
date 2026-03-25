@@ -57,7 +57,8 @@ private
   def cohort_params
     params.require(:cohort).permit(
       :start_year,
-      :registration_start_date,
+      :registration_starts_at,
+      :registration_ends_at,
       :funding_cap,
       :suffix,
       :description,

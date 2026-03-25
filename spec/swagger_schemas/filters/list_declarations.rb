@@ -1,6 +1,6 @@
-LIST_PARTICIPANT_DECLARATIONS_FILTER = {
+LIST_DECLARATIONS_FILTER = {
   v1: {
-    description: "Refine participant declarations to return.",
+    description: "Refine declarations to return.",
     type: :object,
     properties: {
       participant_id: {

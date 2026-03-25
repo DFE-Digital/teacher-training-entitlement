@@ -1,31 +1,58 @@
 require "rails_helper"
 
 RSpec.describe Applications::Resume, type: :model do
-  subject(:service) { described_class.new(application:) }
+  subject(:service) { described_class.new(application:, course_cohort: target_course_cohort) }
 
-  let(:application) { create(:application, :accepted, :with_declaration) }
-  let(:reason) { nil }
-  let(:error_message_path) { "activemodel.errors.models.applications/resume.attributes" }
+  let(:application) { create(:application, :deferred, :with_declaration, course_cohort:) }
+  let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }
+  let(:course) { create(:course) }
+  let(:cohort) { create(:cohort, :previous) }
+  let(:schedule) { create(:schedule, training_starts_at: 1.year.ago, training_ends_at: 6.months.ago) }
 
-  before { service.call }
+  let(:target_course_cohort) do
+    create(:course_cohort,
+           course: target_course,
+           cohort: target_cohort,
+           schedule: target_schedule)
+  end
 
-  context "when resuming an active application" do
-    let(:application) { create(:application, :active, :with_declaration) }
+  let(:target_course) { course }
+  let(:target_cohort) { create(:cohort, :current) }
+  let(:target_schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
 
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:base])
-        .to include(I18n.t("#{error_message_path}.base.already_active"))
+  describe "happy path" do
+    it "updates application status" do
+      expect { service.call }.to change(application, :training_status).from("deferred").to("active")
+    end
+
+    it "updates the course_cohort" do
+      expect { service.call }.to change(application, :course_cohort).from(course_cohort).to(target_course_cohort)
     end
   end
 
-  context "when successfully resuming" do
-    let(:reason) { "other" }
-    let(:application) { create(:application, :deferred, :with_declaration) }
+  describe "errors scenarios" do
+    context "when application is not deferred" do
+      let(:application) { create(:application, :active, :with_declaration, course_cohort:) }
 
-    it do
-      expect(service.errors).to be_blank
-      expect(application.reload.training_status).to eq(Applications::Strategy::ACTIVE)
+      it { expect { service.call }.not_to change(application, :training_status) }
+    end
+
+    context "when application missing" do
+      let(:application) { nil }
+
+      it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
+    end
+
+    context "when course cohort has a different course than application" do
+      let(:target_course) { create(:course, name: "other course") }
+
+      it { expect { service.call }.not_to change(application, :training_status) }
+    end
+
+    context "when course cohort has a cohort not currently in training" do
+      let(:target_schedule) { build(:schedule, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now) }
+
+      it { expect { service.call }.not_to change(application, :training_status) }
     end
   end
 end

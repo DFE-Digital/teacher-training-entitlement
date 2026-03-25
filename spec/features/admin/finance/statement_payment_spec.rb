@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.feature "Statement payment", type: :feature do
+RSpec.feature "Statement payment", :revisit, type: :feature do
   include Helpers::AdminLogin
 
   let(:statement) { create(:statement, :open) }

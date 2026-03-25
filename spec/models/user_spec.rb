@@ -6,21 +6,23 @@ RSpec.describe User do
   describe "#active_applications_for(course:)" do
     let!(:cohort) { create(:cohort, :current) }
     let(:course) { create(:course) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort:) }
     let(:user) { create(:user) }
-    let!(:application) { create(:application, :active, course:, user:, cohort:) }
+    let!(:application) { create(:application, :active, user:, course_cohort:) }
 
     context "when there are active applications for the current cohort and course" do
       it do
-        expect(user.active_applications_for(course:)).to eq([application])
+        expect(user.active_applications_for(course:, cohort:)).to eq([application])
       end
     end
 
     context "when there are active applications for a different cohort but same course" do
       let(:previous_cohort) { create(:cohort, :previous) }
-      let!(:application) { create(:application, :active, course:, user:, cohort: previous_cohort) }
+      let(:course_cohort) { create(:course_cohort, course:, cohort: previous_cohort) }
+      let!(:application) { create(:application, :active, user:, course_cohort:) }
 
       it do
-        expect(user.active_applications_for(course:)).to be_blank
+        expect(user.active_applications_for(course:, cohort:)).to be_blank
       end
     end
 
@@ -28,7 +30,7 @@ RSpec.describe User do
       let(:another_course) { create(:course) }
 
       it do
-        expect(user.active_applications_for(course: another_course)).to be_blank
+        expect(user.active_applications_for(course: another_course, cohort:)).to be_blank
       end
     end
   end

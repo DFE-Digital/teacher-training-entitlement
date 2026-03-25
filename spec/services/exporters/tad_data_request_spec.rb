@@ -2,9 +2,10 @@ require "rails_helper"
 
 RSpec.describe Exporters::TadDataRequest do
   let(:file) { Tempfile.new }
-  let(:course) { create(:course, :tte_early_years, name: "NPQ Senior Leadership") }
+  let(:course) { create(:course, name: "Some course") }
   let(:cohort) { create(:cohort, start_year: 2023) }
   let(:schedule) { create(:schedule, cohort: cohort, course_group: course.course_group, name: "Schedule Autumn 2023") }
+  let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:) }
   let(:user) { create(:user, full_name: "John Doe", email: "john@example.com") }
   let(:user2) { create(:user) }
 
@@ -14,9 +15,7 @@ RSpec.describe Exporters::TadDataRequest do
       :accepted,
       :eligible_for_funding,
       user:,
-      course:,
-      schedule:,
-      cohort:,
+      course_cohort:,
     )
   end
 
@@ -26,9 +25,7 @@ RSpec.describe Exporters::TadDataRequest do
       :accepted,
       :eligible_for_funding,
       user: user2,
-      course:,
-      cohort:,
-      schedule:,
+      course_cohort:,
     )
   end
 
@@ -53,8 +50,8 @@ RSpec.describe Exporters::TadDataRequest do
   describe "#call" do
     let(:csv) do
       <<~CSV
-        Full Name,Email,User ID,Teacher Reference Number,School URN,Lead Provider Name,Course Name,Schedule,Cohort Start Year,Eligible for Funding,Participant Status,Targeted Support Funding Eligibility,Outcome 1,Outcome 1 Date,Outcome 2,Outcome 1 Date,Outcome 3,Outcome 3 Date,Outcome 4,Outcome 4 Date
-        John Doe,john@example.com,#{user.id},#{user.trn},#{application.school.urn},#{application.lead_provider.name},NPQ Senior Leadership,Schedule Autumn 2023,#{cohort.identifier},true,active,false
+        Full Name,Email,User ID,Teacher Reference Number,Institution URN,Lead Provider Name,Course Name,Schedule,Cohort Start Year,Eligible for Funding,Participant Status,Targeted Support Funding Eligibility,Outcome 1,Outcome 1 Date,Outcome 2,Outcome 1 Date,Outcome 3,Outcome 3 Date,Outcome 4,Outcome 4 Date
+        John Doe,john@example.com,#{user.id},#{user.trn},#{application.school.urn},#{application.lead_provider.name},#{course.name},Schedule Autumn 2023,#{cohort.identifier},true,active,false
       CSV
     end
 

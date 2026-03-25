@@ -27,7 +27,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
   describe "#filename" do
     subject { instance.filename }
 
-    it { is_expected.to match(%r{NPQ-Declarations-\w+-Cohort#{statement.cohort.name}-\w+\.csv}) }
+    it { is_expected.to match(%r{TTE-Declarations-\w+-Cohort#{statement.cohort.name}-\w+\.csv}) }
   end
 
   describe "#serialize" do

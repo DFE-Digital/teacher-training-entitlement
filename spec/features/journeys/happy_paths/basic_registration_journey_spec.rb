@@ -124,9 +124,7 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
 
     deep_compare_application_data(
       "accepted_at" => nil,
-      "cohort_id" => Cohort.current.id,
-      "course_id" => Course.find_by(identifier: "tte-early-years").id,
-      "schedule_id" => nil,
+      "course_cohort_id" => latest_application.course_cohort_id,
       "ecf_id" => latest_application.ecf_id,
       "eligible_for_funding" => true,
       "funded_place" => nil,

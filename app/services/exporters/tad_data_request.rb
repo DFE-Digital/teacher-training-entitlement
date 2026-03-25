@@ -18,7 +18,10 @@ class Exporters::TadDataRequest
     schedule_id = @schedules.pluck(:id)
 
     accepted_applications_ids = Declaration.billable.where(declaration_type: "started").where(cohort: @cohort).pluck(:application_id)
-    Application.where(id: accepted_applications_ids, schedule_id:, course_id:).includes(:user, :institution, declarations: :participant_outcomes)
+    Application
+      .joins(:course_cohort)
+      .where(id: accepted_applications_ids, course_cohorts: { schedule_id:, course_id: })
+      .includes(:user, :institution, declarations: :participant_outcomes)
   end
 
 private
@@ -26,7 +29,7 @@ private
   def generate_data
     applications.find_each(batch_size: 500) do |application|
       user = application.user
-      school = application.school
+      institution = application.institution
       lead_provider = application.lead_provider
       course = application.course
       schedule = application.schedule
@@ -42,7 +45,7 @@ private
         user&.email,
         user&.id,
         user&.trn,
-        school&.urn,
+        institution&.institution_reference_number,
         lead_provider&.name,
         course&.name,
         schedule&.name,
@@ -64,7 +67,7 @@ private
       "Email",
       "User ID",
       "Teacher Reference Number",
-      "School URN",
+      "Institution URN",
       "Lead Provider Name",
       "Course Name",
       "Schedule",

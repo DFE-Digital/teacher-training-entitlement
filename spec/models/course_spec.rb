@@ -9,15 +9,6 @@ RSpec.describe Course do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
   end
 
-  describe "#schedule_for" do
-    let!(:cohort) { build(:cohort, :current) }
-    let!(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-
-    it "calls course_group.schedule_for method" do
-      expect(schedule).to eq(subject.schedule_for(cohort:))
-    end
-  end
-
   describe "#short_code" do
     let(:course) { create(:course, :tte_early_years) }
 

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "particpant_outcome" do
+RSpec.describe "particpant_outcome", :npq do
   describe "create" do
     after { Rake::Task["participant_outcomes:create"].reenable }
 

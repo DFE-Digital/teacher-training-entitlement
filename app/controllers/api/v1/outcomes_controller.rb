@@ -1,11 +1,11 @@
 module API
   module V1
-    class ParticipantOutcomesController < BaseController
+    class OutcomesController < BaseController
       include Pagination
       include FilterByDate
 
       def index
-        conditions = { created_since: }
+        conditions = { created_since:, application_id: }
         outcomes = outcomes_query(conditions:).participant_outcomes
 
         render json: to_json(paginate(outcomes))
@@ -20,6 +20,10 @@ module API
 
       def to_json(obj)
         ParticipantOutcomeSerializer.render(obj, view: :v1, root: "data")
+      end
+
+      def application_id
+        params.dig(:filter, :application_id)
       end
     end
   end

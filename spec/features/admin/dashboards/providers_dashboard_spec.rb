@@ -8,7 +8,7 @@ RSpec.feature "Viewing the providers dashboard", type: :feature do
 
   let :previous_cohort do
     create(:cohort, start_year: current_cohort.start_year - 1,
-                    registration_start_date: (current_cohort.registration_start_date - 1.year))
+                    registration_starts_at: (current_cohort.registration_starts_at - 1.year))
   end
 
   before do
