@@ -186,27 +186,6 @@ It's not possible to change this information if the application has not been acc
 
 Successful requests will return a response body including updates to the `funded_place` attribute.
 
-## Change delivery partner
-
-```
-PUT /api/v1/applications/{id}/change-delivery-partner
-```
-
-Providers can update the delivery partner for an accepted application.
-
-### Example request body
-
-```json
-{
-  "data": {
-    "type": "application",
-    "attributes": {
-      "delivery_partner_id": "524df095-f9bf-4f9d-ba4c-772545a99e60"
-    }
-  }
-}
-```
-
 ## Defer a participant
 
 ```
@@ -251,7 +230,7 @@ When resuming, the provider must select a target cohort. Available cohorts can b
   "data": {
     "type": "application",
     "attributes": {
-      "cohort_id": "23b4a32e-a272-489e-12oe-cb17131457fc"
+      "schedule_id": "23b4a32e-a272-489e-12oe-cb17131457fc"
     }
   }
 }
@@ -260,7 +239,7 @@ When resuming, the provider must select a target cohort. Available cohorts can b
 ### Retrieving available cohorts
 
 ```
-GET /api/v1/cohorts
+GET /api/v1/schedules
 ```
 
 This endpoint returns active cohorts. Use it to find a compatible cohort when resuming a deferred application.
@@ -272,7 +251,7 @@ This endpoint returns active cohorts. Use it to find a compatible cohort when re
   "data": [
     {
       "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
-      "type": "cohort",
+      "type": "schedule",
       "attributes": {
         "course_identifier": "tte-early-years",
         "schedule_identifier": "tte-reception-spring",
@@ -281,7 +260,7 @@ This endpoint returns active cohorts. Use it to find a compatible cohort when re
     },
     {
       "id": "23b4a32e-a272-489e-12oe-cb17131457fc",
-      "type": "cohort",
+      "type": "schedule",
       "attributes": {
         "course_identifier": "tte-early-years",
         "schedule_identifier": "tte-reception-autumn",
