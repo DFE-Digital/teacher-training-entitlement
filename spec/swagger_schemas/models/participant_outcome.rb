@@ -10,9 +10,9 @@ PARTICIPANT_OUTCOME = {
       type: {
         description: "The data type",
         type: :string,
-        example: "participant-outcome",
+        example: "outcome",
         enum: %w[
-          participant-outcome
+          outcome
         ],
       },
       attributes: {
@@ -51,18 +51,15 @@ PARTICIPANT_OUTCOME = {
             format: :"date-time",
             example: "2021-05-31T02:21:32.000Z",
           },
+          updated_at: {
+            description: "The date and time the participant-outcome record was last updated",
+            type: :string,
+            nullable: false,
+            format: :"date-time",
+            example: "2021-05-31T02:22:32.000Z",
+          },
         },
       },
     },
   },
-}.tap { |h|
-  h[:v2] = h[:v1].deep_dup
-  h[:v3] = h[:v2].deep_dup
-  h[:v1][:properties][:attributes][:properties][:updated_at] = {
-    description: "The date and time the participant-outcome record was last updated",
-    type: :string,
-    nullable: false,
-    format: :"date-time",
-    example: "2021-05-31T02:22:32.000Z",
-  }
 }.freeze

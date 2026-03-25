@@ -5,12 +5,13 @@ module ParticipantOutcomes
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, participant_ids: :ignore, created_since: :ignore)
+    def initialize(lead_provider: :ignore, participant_ids: :ignore, created_since: :ignore, application_id: :ignore)
       @scope = all_participant_outcomes
 
       where_participant_ids_in(participant_ids)
       where_lead_provider_is(lead_provider)
       where_created_since(created_since)
+      where_application_id_is(application_id)
     end
 
     def participant_outcomes
@@ -37,11 +38,17 @@ module ParticipantOutcomes
       scope.merge!(ParticipantOutcome.where(created_at: created_since..))
     end
 
+    def where_application_id_is(application_id)
+      return if ignore?(filter: application_id)
+
+      scope.merge!(ParticipantOutcome.where(declaration: { application: { ecf_id: application_id } }))
+    end
+
     def all_participant_outcomes
       ParticipantOutcome.distinct.includes(
         declaration: {
           lead_provider: {},
-          application: %i[course user],
+          application: [:user, { course_cohort: :course }],
         },
       )
     end

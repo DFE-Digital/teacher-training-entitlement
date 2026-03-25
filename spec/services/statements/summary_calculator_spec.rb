@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Statements::SummaryCalculator do
+RSpec.describe Statements::SummaryCalculator, :revisit do
   let(:cohort) { create(:cohort, :has_targeted_delivery_funding) }
   let(:lead_provider) { create :lead_provider }
   let(:statement) { create(:statement, :next_output_fee, lead_provider:, reconcile_amount: 0, cohort:) }
@@ -311,7 +311,7 @@ RSpec.describe Statements::SummaryCalculator do
     end
 
     before do
-      application.schedule.update! applies_from: statement.deadline_date - 1.month
+      application.schedule.update! training_starts_at: statement.deadline_date - 1.month
       earlier_statement = create(:statement, :next_output_fee, deadline_date: statement.deadline_date - 1.month, lead_provider:)
 
       awaiting_clawback = travel_to(earlier_statement.deadline_date) do

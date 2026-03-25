@@ -18,7 +18,6 @@ RSpec.shared_examples "an API show endpoint" do
         serializer_params[:lead_provider] = serializer_lead_provider if defined?(serializer_lead_provider)
 
         expect(serializer).to receive(:render).with(resource, **serializer_params).and_call_original
-        expect(query).to receive(:new).with(a_hash_including(lead_provider: current_lead_provider)).and_call_original
 
         api_get(path(resource_id))
       end

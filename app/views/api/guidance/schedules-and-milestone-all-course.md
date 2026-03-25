@@ -4,7 +4,7 @@
 
 DfE pays providers in line with agreed contractual schedules and training criteria. Providers are paid based on how much time they spend supporting participants.
 
-Providers must [submit declarations](/api/guidance/how-to-guides/submit-view-and-void-declarations) ahead of milestone dates (deadlines) to ensure payments are made for a given milestone.
+Providers must [submit declarations](/api/guidance/how-to-guides/submit-view-and-void-declarations) against applications ahead of milestone dates (deadlines) to ensure payments are made for a given milestone.
 
 
 ## Concepts and definitions
@@ -27,7 +27,7 @@ Providers must [submit declarations](/api/guidance/how-to-guides/submit-view-and
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">Milestone dates</th>
-      <td class="govuk-table__cell">The deadline date a valid declaration can be made for a given milestone in order for DfE to be liable to make a payment the following month. Milestone dates are dependent on the participant’s schedule</td>
+      <td class="govuk-table__cell">The deadline date a valid declaration can be made for a given milestone in order for DfE to be liable to make a payment the following month. Milestone dates are dependent on the participant's schedule</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">Milestone period</th>
@@ -43,7 +43,7 @@ Providers must [submit declarations](/api/guidance/how-to-guides/submit-view-and
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">Milestone validation</th>
-      <td class="govuk-table__cell">The API’s process to validate declarations submitted by providers for participants in standard training schedules</td>
+      <td class="govuk-table__cell">The API's process to validate declarations submitted by providers for participants in standard training schedules</td>
     </tr>
   </tbody>
 </table>
@@ -58,7 +58,7 @@ For the 2026 cohort, the schedule is:
 
 For each of the milestones a provider is supporting a participant, DfE will pay the corresponding output payment according to valid declarations submitted.
 
-Declarations submitted for participants will be validated (accepted or rejected) against the milestone dates. 
+Declarations submitted for participants will be validated (accepted or rejected) against the milestone dates.
 
 Contact DfE contract managers via email for additional support or information.
 
@@ -98,7 +98,7 @@ Schedule identifiers:
 
 ## Validating declarations against milestones
 
-Declarations submitted for participants are subject to milestone validation.
-The API will perform milestone validation to reject a declaration if it is not submitted for the correct milestone. For example, the API will reject a retained-1 declaration if it is submitted during the started milestone period.
+Declarations submitted against applications are subject to milestone validation.
+The API will perform milestone validation to reject a declaration if it is not submitted for the correct milestone.
 
-If a declaration is submitted in a later milestone period (i.e. a started declaration submitted during the retained-1 milestone period), then it will be validated and paid at the next milestone payment.
+If a declaration is submitted in a later milestone period (i.e. a started declaration submitted during a later milestone period), then it will be validated and paid at the next milestone payment.

@@ -8,7 +8,7 @@ class HandleSubmissionForStore
   def call
     ActiveRecord::Base.transaction do
       @application = user.applications.create!(
-        course_id: course.id,
+        course_cohort: CourseCohort.find_by!(course:, cohort: Cohort.current),
         lead_provider_id: store["lead_provider_id"],
         institution: (institution_from_store if inside_catchment?),
         ukprn:,
@@ -27,7 +27,6 @@ class HandleSubmissionForStore
         on_submission_trn: store["trn"],
         teacher_catchment_country:,
         teacher_catchment_iso_country_code:,
-        cohort: Cohort.current,
         lead_provider_approval_status: Application.lead_provider_approval_statuses[:pending],
         review_status: nil,
       )

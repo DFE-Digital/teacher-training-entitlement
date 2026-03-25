@@ -1,7 +1,7 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "Participant Outcomes endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
+RSpec.describe "Participant Outcomes endpoint", :npq, openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
   let(:course) { create(:course, :tte_early_years) }

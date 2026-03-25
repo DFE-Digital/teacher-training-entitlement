@@ -28,9 +28,13 @@
                         link_errors: true,
                         label: { text: "Funding cap" } %>
 
-  <%= f.govuk_date_field :registration_start_date,
+  <%= f.govuk_date_field :registration_starts_at,
                          legend: { text: "Registration start date" },
-                         class: "govuk-!-margin-top-5" %>
+                         class: "govuk-!-margin-top-5 starts_at" %>
+
+  <%= f.govuk_date_field :registration_ends_at,
+                         legend: { text: "Registration end date" },
+                         class: "govuk-!-margin-top-5 ends_at" %>
 
   <%= f.govuk_submit @cohort.new_record? ? "Create cohort" : "Update cohort" %>
 <% end %>

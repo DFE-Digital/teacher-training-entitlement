@@ -1,11 +1,11 @@
 require "rails_helper"
 
-RSpec.describe "update_application" do
+RSpec.describe "update_application", :revisit do
   include_context "with default schedules"
 
   let(:cohort) do
     create(:cohort, :without_funding_cap, start_year: 1.year.ago.year,
-                                          registration_start_date: 1.year.ago)
+                                          registration_starts_at: 1.year.ago)
   end
 
   shared_examples "outputting an error" do |message: "Application not found: "|

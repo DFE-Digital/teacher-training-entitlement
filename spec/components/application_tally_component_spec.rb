@@ -1,16 +1,18 @@
 require "rails_helper"
 
 RSpec.describe ApplicationTallyComponent, type: :component do
-  subject { described_class.new(Application.where(cohort:), :course) }
+  subject { described_class.new(Application.joins(:course_cohort).where(course_cohorts: { cohort: }), :course) }
 
-  let(:cohort) { create :cohort, :current }
+  let(:cohort) { create(:cohort, :current) }
+  let(:course_cohort1) { create :course_cohort, cohort:, course: course_1 }
+  let(:course_cohort2) { create :course_cohort, cohort:, course: course_2 }
   let(:course_1) { create :course, :tte_early_years }
   let(:course_2) { create :course }
 
   before do
-    create(:application, cohort:, course: course_1)
-    create(:application, cohort:, course: course_1)
-    create(:application, cohort:, course: course_2)
+    create(:application, course_cohort: course_cohort1)
+    create(:application, course_cohort: course_cohort1)
+    create(:application, course_cohort: course_cohort2)
   end
 
   it "returns the correct dimension haeder" do
@@ -25,7 +27,7 @@ RSpec.describe ApplicationTallyComponent, type: :component do
   end
 
   context "when the dimension has a different label" do
-    subject { described_class.new(Application.where(cohort:), :lead_provider, dimension_header: "Course provider") }
+    subject { described_class.new(Application.joins(:course_cohort).where(course_cohorts: { cohort: }), :lead_provider, dimension_header: "Course provider") }
 
     it "returns the correct dimension header" do
       expect(subject.dimension_header).to eq("Course provider")

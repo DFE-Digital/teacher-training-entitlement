@@ -12,11 +12,15 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>application</code></th>
-      <td class="govuk-table__cell">The application a person makes to be trained on an course. Applications include funding details</td>
+      <td class="govuk-table__cell">The application a person makes to be trained on a course. Applications are the central resource — all lifecycle actions (declarations, deferrals, withdrawals, resumes) are performed against applications</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>participant</code></th>
-      <td class="govuk-table__cell">A person registered for an course</td>
+      <td class="govuk-table__cell">A person registered for a course. Participants are read-only — use application endpoints for all actions</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header"><code>cohort</code></th>
+      <td class="govuk-table__cell">A combination of course, schedule and academic year. Active cohorts are used when resuming a deferred application</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>schedule</code></th>
@@ -28,11 +32,11 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>outcome</code></th>
-      <td class="govuk-table__cell">The assessment result a participant achieves at the end of an course</td>
+      <td class="govuk-table__cell">The assessment result a participant achieves at the end of a course. Outcomes are automatically created when a completed declaration is submitted</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>declaration</code></th>
-      <td class="govuk-table__cell">The notification submitted by providers via the API to trigger output payments from DfE. Declarations are submitted where there is evidence of a participant’s engagement in training for a given milestone period</td>
+      <td class="govuk-table__cell">The notification submitted by providers via the API to trigger output payments from DfE. Declarations are submitted against applications where there is evidence of a participant's engagement in training for a given milestone period</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>statement</code></th>
@@ -51,15 +55,17 @@
 
 ## Application data states
 
-This API uses a `state` model to reflect the participant journey, meet contractual requirements for how providers should report participants’ training and how DfE will pay for this training.
+This API uses a `state` model to reflect the participant journey, meet contractual requirements for how providers should report participants' training and how DfE will pay for this training.
 
 Application states are defined by the `status` attribute.
 
-An application’s status value will determine whether a provider can:
+An application's status value will determine whether a provider can:
 
 * accept or reject applications
 
 * submit a declaration. For example, notifying DfE that a participant has started their training
+
+* defer, resume or withdraw a participant
 
 <table class="govuk-table">
   <caption class="govuk-table__caption govuk-table__caption--m">Application status values</caption>
@@ -73,31 +79,52 @@ An application’s status value will determine whether a provider can:
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>pending</code></th>
-      <td class="govuk-table__cell govuk-table__cell">Applications which have been made for an course</td>
+      <td class="govuk-table__cell govuk-table__cell">Applications which have been made for a course</td>
       <td class="govuk-table__cell govuk-table__cell">Accept or reject applications</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>accepted</code></th>
       <td class="govuk-table__cell govuk-table__cell">Applications which have been accepted by a provider</td>
-      <td class="govuk-table__cell govuk-table__cell">Submit declarations and update participant data</td>
+      <td class="govuk-table__cell govuk-table__cell">Submit declarations, defer, withdraw, change delivery partner</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>rejected</code></th>
       <td class="govuk-table__cell govuk-table__cell">Applications which have been rejected by a provider, or which have been accepted by another provider</td>
       <td class="govuk-table__cell govuk-table__cell">No action required</td>
     </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header"><code>started</code></th>
+      <td class="govuk-table__cell govuk-table__cell">Applications where a started declaration has been submitted</td>
+      <td class="govuk-table__cell govuk-table__cell">Submit completed declaration, defer, withdraw</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header"><code>deferred</code></th>
+      <td class="govuk-table__cell govuk-table__cell">Applications where the participant has deferred training. Deferred applications have a deadline — if not resumed in time, they are automatically withdrawn</td>
+      <td class="govuk-table__cell govuk-table__cell">Resume the application by selecting a target cohort from <code>GET /api/v1/cohorts</code></td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header"><code>withdrawn</code></th>
+      <td class="govuk-table__cell govuk-table__cell">Applications where the participant has withdrawn from training, either manually or automatically after a deferral deadline</td>
+      <td class="govuk-table__cell govuk-table__cell">Submit declarations if the <code>declaration_date</code> is backdated to before the withdrawal date</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header"><code>completed</code></th>
+      <td class="govuk-table__cell govuk-table__cell">Applications where a completed declaration has been submitted</td>
+      <td class="govuk-table__cell govuk-table__cell">View only</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header"><code>unassigned</code></th>
+      <td class="govuk-table__cell govuk-table__cell">Applications which have been reassigned to another provider. The <code>unassigned_at</code> field shows when the reassignment occurred</td>
+      <td class="govuk-table__cell govuk-table__cell">View only (read-only for the previous provider)</td>
+    </tr>
   </tbody>
 </table>
 
 ## Participant data states
 
-Participant states are defined by the `training_status` attribute.
+Participant states are defined by the `training_status` attribute within each enrolment.
 
-A participant’s `training_status` value will determine whether a provider can:
-
-* update their details. For example, notifying DfE that a participant has withdrawn from the course
-
-* submit a declaration. For example, notifying DfE that a participant has started their training
+Participants are read-only. To change a participant's training status, use the corresponding application endpoint (defer, resume, withdraw).
 
 <table class="govuk-table">
   <caption class="govuk-table__caption govuk-table__caption--m">Training status values</caption>
@@ -112,17 +139,17 @@ A participant’s `training_status` value will determine whether a provider can:
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>active</code></th>
       <td class="govuk-table__cell govuk-table__cell">Participants currently in training</td>
-      <td class="govuk-table__cell govuk-table__cell">Update participant data and submit declarations</td>
+      <td class="govuk-table__cell govuk-table__cell">Submit declarations and manage the application (defer, withdraw)</td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>deferred</code></th>
       <td class="govuk-table__cell govuk-table__cell">Participants who've deferred training</td>
-      <td class="govuk-table__cell govuk-table__cell">Notify DfE when the participant <a href="/api/docs/v1#/Participants/put_api_v1_participants__id__resume" class="govuk-link">resumes training</a></td>
+      <td class="govuk-table__cell govuk-table__cell">Resume the application via <code>PUT /api/v1/applications/{id}/resume</code></td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header"><code>withdrawn</code></th>
       <td class="govuk-table__cell govuk-table__cell">Participants who have withdrawn from training</td>
-      <td class="govuk-table__cell govuk-table__cell">Submit declarations for withdrawn participants if the <code>declaration_date</code> is backdated to before the <code>withdrawal_date</code></td>
+      <td class="govuk-table__cell govuk-table__cell">Submit declarations for withdrawn participants if the <code>declaration_date</code> is backdated to before the withdrawal date</td>
     </tr>
   </tbody>
 </table>
@@ -131,7 +158,7 @@ A participant’s `training_status` value will determine whether a provider can:
 
 Declaration states are defined by the `state` attribute.
 
-Providers must submit declarations to confirm a participant has engaged in training within a given milestone period. A declaration’s `state` value will reflect if and when DfE will pay providers for the training delivered.
+Providers must submit declarations against applications to confirm a participant has engaged in training within a given milestone period. A declaration's `state` value will reflect if and when DfE will pay providers for the training delivered.
 
 <table class="govuk-table">
   <caption class="govuk-table__caption govuk-table__caption--m">Declaration status values</caption>

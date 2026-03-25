@@ -25,8 +25,8 @@ module AssuranceReports
           sch.identifier                          AS schedule,
           a.eligible_for_funding                  AS eligible_for_funding,
           a.funded_place                          AS funded_place,
-          lp.name                                 AS npq_lead_provider_name,
-          lp.ecf_id                               AS npq_lead_provider_id,
+          lp.name                                 AS lead_provider_name,
+          lp.id                                   AS lead_provider_id,
           i.institution_reference_number          AS school_urn,
           i.name                                  AS school_name,
           a.training_status                       AS training_status,
@@ -44,9 +44,10 @@ module AssuranceReports
         JOIN statements s                   ON s.id = si.statement_id
         JOIN lead_providers lp              ON lp.id = d.lead_provider_id
         JOIN applications a                 ON a.id = d.application_id
-        JOIN courses c                      ON c.id = a.course_id
+        JOIN course_cohorts cc              ON cc.id = a.course_cohort_id
+        JOIN courses c                      ON c.id = cc.course_id
         JOIN users u                        ON u.id = a.user_id
-        JOIN schedules sch                  ON sch.id = a.schedule_id
+        JOIN schedules sch                  ON sch.id = cc.schedule_id
         LEFT OUTER JOIN institutions i      ON i.id = a.institution_id
         LEFT OUTER JOIN schools sc          ON sc.id = i.institutionable_id AND i.institutionable_type = 'School'
         LEFT OUTER JOIN (

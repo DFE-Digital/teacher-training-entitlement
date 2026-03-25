@@ -59,9 +59,11 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       fill_in "Description", with: "2029 to 2030"
       fill_in "Start year", with: "2029"
       check "Funding cap", visible: :all
-      fill_in "Day", with: "2"
-      fill_in "Month", with: "3"
-      fill_in "Year", with: "2029"
+      within(".starts_at") do
+        fill_in "Day", with: "2"
+        fill_in "Month", with: "3"
+        fill_in "Year", with: "2029"
+      end
 
       perform_enqueued_jobs do
         expect { click_on "Create cohort" }.to change(Cohort, :count).by(1)
@@ -74,7 +76,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(cohort.start_year).to be(2029)
       expect(cohort.suffix).to eq("a")
       expect(cohort.funding_cap).to be(true)
-      expect(cohort.registration_start_date).to eq(Date.new(2029, 3, 2))
+      expect(cohort.registration_starts_at).to eq(Date.new(2029, 3, 2))
       expect(cohort.delivery_partnerships.pluck(:delivery_partner_id, :lead_provider_id)).to eq(partnerships.pluck(:delivery_partner_id, :lead_provider_id))
     end
 
@@ -89,10 +91,11 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       fill_in "Start year", with: "2025"
       fill_in "Suffix", with: "b"
       check "Funding cap", visible: :all
-      fill_in "Day", with: "6"
-      fill_in "Month", with: "5"
-      fill_in "Year", with: "2025"
-
+      within(".starts_at") do
+        fill_in "Day", with: "6"
+        fill_in "Month", with: "5"
+        fill_in "Year", with: "2025"
+      end
       expect { click_on "Update cohort" }.not_to(change(Cohort, :count))
       expect(page).to have_text("Cohort updated")
 
@@ -104,7 +107,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(cohort.start_year).to be(2025)
       expect(cohort.suffix).to eq("b")
       expect(cohort.funding_cap).to be(true)
-      expect(cohort.registration_start_date.to_date).to eq(Date.new(2025, 5, 6))
+      expect(cohort.registration_starts_at.to_date).to eq(Date.new(2025, 5, 6))
     end
 
     scenario "deletion" do

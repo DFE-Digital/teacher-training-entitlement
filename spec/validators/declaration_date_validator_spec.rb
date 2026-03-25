@@ -30,14 +30,14 @@ RSpec.describe DeclarationDateValidator do
   end
 
   let(:declaration_date) { Date.new(2022, 1, 30) }
-  let(:schedule_applies_from_date) { declaration_date - 1.day }
-  let(:schedule_applies_to_date) { declaration_date + 1.day }
+  let(:schedule_training_starts_at) { declaration_date - 1.day }
+  let(:schedule_training_ends_at) { declaration_date + 1.day }
 
   subject { model_class.new(declaration_date: declaration_date.rfc3339) }
 
   before do
-    allow_any_instance_of(Schedule).to receive(:applies_from).and_return(schedule_applies_from_date)
-    allow_any_instance_of(Schedule).to receive(:applies_to).and_return(schedule_applies_to_date)
+    allow_any_instance_of(Schedule).to receive(:training_starts_at).and_return(schedule_training_starts_at)
+    allow_any_instance_of(Schedule).to receive(:training_ends_at).and_return(schedule_training_ends_at)
   end
 
   describe "#declaration_date" do
@@ -79,7 +79,7 @@ RSpec.describe DeclarationDateValidator do
     end
 
     context "when declaration_date is before the schedule start" do
-      let(:schedule_applies_from_date) { declaration_date + 1.day }
+      let(:schedule_training_starts_at) { declaration_date + 1.day }
 
       it "has a meaningful error", :aggregate_failures do
         expect(subject).to be_invalid
@@ -88,7 +88,7 @@ RSpec.describe DeclarationDateValidator do
     end
 
     context "when declaration_date is at the schedule start" do
-      let(:schedule_applies_from_date) { declaration_date }
+      let(:schedule_training_starts_at) { declaration_date }
 
       it { is_expected.to be_valid }
     end
@@ -98,7 +98,7 @@ RSpec.describe DeclarationDateValidator do
     end
 
     context "when declaration_date is at the schedule end" do
-      let(:schedule_applies_to_date) { declaration_date }
+      let(:schedule_training_ends_at) { declaration_date }
 
       it { is_expected.to be_valid }
     end

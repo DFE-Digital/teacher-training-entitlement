@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :cohort do
     sequence(:start_year, 0) { |n| 2021 + n % 9 }
     suffix { "a" }
-    registration_start_date { Date.new(start_year, 4, 3) }
+    registration_starts_at { Date.new(start_year, 4, 3) }
     funding_cap { true }
 
     description do

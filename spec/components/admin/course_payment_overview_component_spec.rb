@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
+RSpec.describe Admin::CoursePaymentOverviewComponent, :revisit, type: :component do
   subject(:rendered) { render_inline component }
 
   let(:component) { described_class.new(contract:) }

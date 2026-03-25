@@ -99,7 +99,7 @@ private
   def check_duplicate_applications
     return unless @wizard.current_step.to_s == "choose_your_course" && @form.course_identifier.present?
 
-    active_applications = current_user.active_applications_for(course: @form.course)
+    active_applications = current_user.active_applications_for(course: @form.course, cohort: Cohort.current)
     return if active_applications.empty?
 
     flash[:alert] = {

@@ -10,10 +10,10 @@ module Applications
 
     validates :application, presence: true
     validates :funded_place, inclusion: { in: [true, false] }
-    validate :accepted_application
-    validate :eligible_for_funding
-    validate :cohort_has_funding_cap
-    validate :eligible_for_changing_funded_place
+    validate :accepted_application, if: -> { application }
+    validate :eligible_for_funding, if: -> { application }
+    validate :cohort_has_funding_cap, if: -> { application }
+    validate :eligible_for_changing_funded_place, if: -> { application }
 
     def change
       return false unless valid?
@@ -27,7 +27,7 @@ module Applications
     delegate :cohort, to: :application
 
     def accepted_application
-      return if application&.accepted_lead_provider_approval_status?
+      return if application.accepted_lead_provider_approval_status?
 
       errors.add(:application, :cannot_change_funded_status_from_non_accepted)
     end
@@ -41,13 +41,14 @@ module Applications
 
     def cohort_has_funding_cap
       return if errors.any?
-      return if cohort&.funding_cap?
+      return if cohort.funding_cap?
 
       errors.add(:application, :cohort_does_not_accept_capping)
     end
 
+    # Make sure the application is has started the course
     def eligible_for_changing_funded_place
-      return unless application&.declarations&.billable_or_changeable&.any?
+      return unless application.declarations&.billable_or_changeable&.any?
 
       errors.add(:application, :cannot_change_funded_place)
     end

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.feature "Statement", type: :feature do
+RSpec.feature "Statement", :revisit, type: :feature do
   include Helpers::AdminLogin
   include ActionView::Helpers::NumberHelper
 

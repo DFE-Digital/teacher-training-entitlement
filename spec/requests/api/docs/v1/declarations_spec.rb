@@ -1,37 +1,37 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
+RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
   it_behaves_like "an API index endpoint documentation",
-                  "/api/v1/participant-declarations",
-                  "Participant declarations",
-                  "Participant declarations",
-                  "#/components/schemas/ListParticipantDeclarationsFilter",
-                  "#/components/schemas/ParticipantDeclarationsResponse"
+                  "/api/v1/declarations",
+                  "Declarations",
+                  "List declarations",
+                  "#/components/schemas/ListDeclarationsFilter",
+                  "#/components/schemas/DeclarationsResponse"
 
   describe "single declarations" do
     let(:lead_provider) { create(:lead_provider) }
-    let(:type) { "participant-declaration" } # check
+    let(:type) { "declaration" }
     let(:application) { create(:application, :accepted, :with_declaration, lead_provider:) }
     let(:resource) { application.declarations.first }
     let(:base_response_example) do
-      extract_swagger_example(schema: "#/components/schemas/ParticipantDeclarationResponse", version: :v1)
+      extract_swagger_example(schema: "#/components/schemas/DeclarationResponse", version: :v1)
     end
 
     it_behaves_like "an API show endpoint documentation",
-                    "/api/v1/participant-declarations/{id}",
-                    "Participant declarations",
-                    "Participant declarations",
-                    "#/components/schemas/ParticipantDeclarationResponse"
+                    "/api/v1/declarations/{id}",
+                    "Declarations",
+                    "View a declarations",
+                    "#/components/schemas/DeclarationResponse"
 
     it_behaves_like "an API update endpoint documentation",
-                    "/api/v1/participant-declarations/{id}/void",
-                    "Participant declarations",
+                    "/api/v1/declarations/{id}/void",
+                    "Declarations",
                     "Void a declaration",
-                    "The participant declaration being voided",
-                    "#/components/schemas/ParticipantDeclarationResponse" do
+                    "The declaration being voided",
+                    "#/components/schemas/DeclarationResponse" do
       let(:response_example) do
         base_response_example.tap do |example|
           example[:data][:attributes][:state] = "voided"
@@ -43,15 +43,17 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.ya
 
     describe "change delivery partner" do
       it_behaves_like "an API update endpoint documentation",
-                      "/api/v1/participant-declarations/{id}/change-delivery-partner",
-                      "Participant declarations",
+                      "/api/v1/declarations/{id}/change-delivery-partner",
+                      "Declarations",
                       "Change declaration delivery partner",
                       "The declaration delivery partner is going to be changed",
-                      "#/components/schemas/ParticipantDeclarationResponse",
-                      "#/components/schemas/ParticipantDeclarationChangeDeliveryPartnerRequest" do
+                      "#/components/schemas/DeclarationResponse",
+                      "#/components/schemas/DeclarationChangeDeliveryPartnerRequest" do
       end
       let(:lead_provider) { create(:lead_provider) }
       let(:cohort) { create(:cohort, :current) }
+      let(:course_cohort) { create(:course_cohort, cohort:, course: create(:course, :tte_early_years)) }
+      let(:application) { create(:application, :accepted, course_cohort:) }
       let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
       let(:secondary_delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
       let(:new_delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
@@ -59,7 +61,7 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.ya
       let(:delivery_partner_id) { new_delivery_partner.ecf_id }
       let(:secondary_delivery_partner_id) { new_secondary_delivery_partner.ecf_id }
 
-      let(:resource) { create(:declaration, lead_provider: lead_provider) }
+      let(:resource) { create(:declaration, lead_provider: lead_provider, cohort:, application:) }
       let(:resource_id) { resource.ecf_id }
 
       let(:service_args) { { declaration: resource, delivery_partner_id:, secondary_delivery_partner_id: } }
@@ -77,41 +79,5 @@ RSpec.describe "Participant Declarations endpoint", openapi_spec: "v1/swagger.ya
         }
       end
     end
-  end
-
-  describe "create declarations" do
-    let(:lead_provider) { create(:lead_provider) }
-    let(:type) { "participant-declaration" }
-    let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :tte_early_years) }
-    let!(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-    let(:application) { create(:application, :accepted, cohort:, course:, lead_provider:) }
-    let(:declaration_date) { schedule.applies_from + 1.day }
-    let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    let(:secondary_delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    let(:invalid_attributes) { { participant_id: "invalid" } }
-    let(:attributes) do
-      {
-        participant_id: application.user.ecf_id,
-        declaration_type: "started",
-        declaration_date: application.schedule.applies_from.rfc3339,
-        course_identifier: course.identifier,
-        delivery_partner_id: delivery_partner.ecf_id,
-        secondary_delivery_partner_id: secondary_delivery_partner.ecf_id,
-      }
-    end
-
-    before do
-      statement = create(:statement, cohort:, lead_provider:)
-      create(:contract, statement:, course:)
-    end
-
-    it_behaves_like "an API create on resource endpoint documentation",
-                    "/api/v1/participant-declarations",
-                    "Participant declarations",
-                    "Declare a participant has reached a milestone",
-                    "The participant declaration being created",
-                    "#/components/schemas/ParticipantDeclarationResponse",
-                    "#/components/schemas/ParticipantDeclarationRequest"
   end
 end

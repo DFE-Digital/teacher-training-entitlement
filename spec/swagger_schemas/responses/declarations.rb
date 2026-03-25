@@ -1,11 +1,12 @@
-PARTICIPANT_DECLARATION_RESPONSE = {
+DECLARATIONS_RESPONSE = {
   v1: {
-    description: "A single participant declaration.",
+    description: "A list of declarations.",
     type: :object,
     required: %i[data],
     properties: {
       data: {
-        "$ref": "#/components/schemas/ParticipantDeclaration",
+        type: :array,
+        items: { "$ref": "#/components/schemas/Declaration" },
       },
     },
   },

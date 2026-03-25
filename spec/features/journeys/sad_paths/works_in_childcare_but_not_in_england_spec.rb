@@ -103,9 +103,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
 
     deep_compare_application_data(
       "accepted_at" => nil,
-      "cohort_id" => latest_application.cohort_id,
-      "course_id" => Course.find_by(identifier: "npq-senior-leadership").id,
-      "schedule_id" => nil,
+      "course_cohort_id" => latest_application.course_cohort_id,
       "ecf_id" => latest_application.ecf_id,
       "eligible_for_funding" => false,
       "funded_place" => nil,

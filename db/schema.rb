@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -109,8 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
 
   create_table "applications", force: :cascade do |t|
     t.datetime "accepted_at"
-    t.bigint "cohort_id"
-    t.bigint "course_id", null: false
+    t.bigint "course_cohort_id"
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "eligible_for_funding", default: false, null: false
@@ -130,7 +129,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.enum "reason_for_rejection", enum_type: "reasons_for_rejection"
     t.string "referred_by_return_to_teaching_adviser"
     t.enum "review_status", enum_type: "review_statuses"
-    t.bigint "schedule_id"
     t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
@@ -143,14 +141,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.boolean "works_in_childcare"
     t.boolean "works_in_nursery"
     t.boolean "works_in_school"
-    t.index ["cohort_id"], name: "index_applications_on_cohort_id"
-    t.index ["course_id"], name: "index_applications_on_course_id"
+    t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["lead_provider_approval_status", "lead_provider_id"], name: "idx_on_lead_provider_approval_status_lead_provider__299e5bac06"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
-    t.index ["schedule_id"], name: "index_applications_on_schedule_id"
-    t.index ["user_id", "cohort_id", "course_id"], name: "index_applications_on_user_id_and_cohort_id_and_course_id", unique: true, where: "(lead_provider_approval_status <> 'rejected'::lead_provider_approval_statuses)"
+    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
 
@@ -178,7 +174,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.uuid "ecf_id"
     t.boolean "funding_cap", default: false, null: false
     t.virtual "identifier", type: :string, as: "(start_year || (suffix)::text)", stored: true
-    t.datetime "registration_start_date", null: false
+    t.date "registration_ends_at"
+    t.date "registration_starts_at"
     t.integer "start_year", null: false
     t.string "suffix", limit: 1, default: "a", null: false
     t.datetime "updated_at", null: false
@@ -231,10 +228,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.bigint "cohort_id", null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
+    t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "schedule_id"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
     t.index ["course_id"], name: "index_course_cohorts_on_course_id"
+    t.index ["ecf_id"], name: "index_course_cohorts_on_ecf_id", unique: true
+    t.index ["schedule_id"], name: "index_course_cohorts_on_schedule_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -492,8 +493,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.date "acceptance_window_end"
     t.date "acceptance_window_start"
     t.enum "allowed_declaration_types", default: ["started", "retained-1", "retained-2", "completed"], array: true, enum_type: "declaration_types"
-    t.date "applies_from", null: false
-    t.date "applies_to", null: false
     t.bigint "cohort_id", null: false
     t.enum "course_group", enum_type: "course_group"
     t.datetime "created_at", null: false
@@ -501,6 +500,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
     t.string "identifier", null: false
     t.string "name", null: false
     t.integer "policy_descriptor"
+    t.date "training_ends_at"
+    t.date "training_starts_at"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_schedules_on_cohort_id"
     t.index ["ecf_id"], name: "index_schedules_on_ecf_id", unique: true
@@ -621,11 +622,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_13_102949) do
   add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "application_states", "applications"
   add_foreign_key "application_states", "lead_providers"
-  add_foreign_key "applications", "cohorts"
-  add_foreign_key "applications", "courses"
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "lead_providers"
-  add_foreign_key "applications", "schedules"
   add_foreign_key "applications", "users"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"

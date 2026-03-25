@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Milestones::Create, :with_default_schedules, type: :model do
+RSpec.describe Milestones::Create, :revisit, :with_default_schedules, type: :model do
   subject(:service) { described_class.new(schedule_id: schedule.id, declaration_type:, statement_date: statement_date_param) }
 
   let(:cohort) { Cohort.last }

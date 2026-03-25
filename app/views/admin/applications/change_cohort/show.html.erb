@@ -3,7 +3,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">
-      Change Schedule Cohort
+      Choose a cohort
     </h1>
 
     <div class="govuk-inset-text">
@@ -15,11 +15,11 @@
     </div>
 
     <%= form_for @form,
-                 as: :form, 
+                 as: :form,
                  url: admin_applications_change_cohort_path(@form.application) do |f| %>
       <%= f.govuk_error_summary %>
-      <%= f.govuk_collection_radio_buttons :cohort_id,
-                                           @form.cohort_options,
+      <%= f.govuk_collection_radio_buttons :course_cohort_id,
+                                           @form.course_cohort_options,
                                            :id,
                                            :name,
                                            legend: { tag: 'h1', size: 'm' } %>

@@ -6,26 +6,20 @@ module ParticipantOutcomes
     include ActiveModel::Attributes
 
     STATES = %w[passed failed].freeze
-    UNSUPPORTED_COURSES = %w[npq-early-headship-coaching-offer npq-additional-support-offer].freeze
-    PERMITTED_COURSES = Course::IDENTIFIERS.excluding(UNSUPPORTED_COURSES).freeze
     COMPLETION_DATE_FORMAT = /\d{4}-\d{2}-\d{2}/
+    PERMITTED_COURSES = Course::IDENTIFIERS
 
     attr_reader :created_outcome
 
-    attribute :lead_provider
-    attribute :participant_id
-    attribute :course_identifier
+    attribute :application
     attribute :state
     attribute :completion_date
 
-    validates :lead_provider, presence: true
-    validates :participant_id, presence: true, participant_id_change: true
-    validates :course_identifier, inclusion: { in: PERMITTED_COURSES }, presence: true
+    validates :application, presence: true
     validates :state, inclusion: { in: STATES }, presence: true
     validates :completion_date, presence: true, format: { with: COMPLETION_DATE_FORMAT }
-    validate :participant_has_no_completed_declarations
+    validate :application_has_no_completed_declarations, if: -> { application }
     validate :completion_date_not_in_the_future
-    validate :participant_exists
 
     def create_outcome
       return false unless valid?
@@ -43,12 +37,6 @@ module ParticipantOutcomes
       true
     end
 
-    def participant
-      @participant ||= Participants::Query.new(lead_provider:).participant(ecf_id: participant_id)
-    rescue ActiveRecord::RecordNotFound, ArgumentError
-      nil
-    end
-
   private
 
     def outcome_already_exists?
@@ -62,9 +50,11 @@ module ParticipantOutcomes
     end
 
     def completed_declarations
-      return Declaration.none unless participant
-
-      @completed_declarations ||= participant.declarations.eligible_for_outcomes(lead_provider, course_identifier)
+      @completed_declarations ||= application
+                                    .declarations
+                                    .completed
+                                    .billable_or_voidable
+                                    .latest_first
     end
 
     def latest_completed_declaration
@@ -72,10 +62,16 @@ module ParticipantOutcomes
     end
 
     def latest_existing_outcome
-      @latest_existing_outcome ||= participant&.latest_participant_outcome(lead_provider, course_identifier)
+      @latest_existing_outcome ||= application
+                                     .declarations
+                                     .billable_or_voidable
+                                     .latest_first
+                                     .first
+                                     &.participant_outcomes
+                                     &.latest
     end
 
-    def participant_has_no_completed_declarations
+    def application_has_no_completed_declarations
       errors.add(:base, :no_completed_declarations) unless completed_declarations.exists?
     end
 
@@ -83,10 +79,6 @@ module ParticipantOutcomes
       return if errors.key?(:completion_date)
 
       errors.add(:completion_date, :future_date) if completion_date&.to_date&.future?
-    end
-
-    def participant_exists
-      errors.add(:participant_id, :invalid_participant) if participant.blank?
     end
   end
 end

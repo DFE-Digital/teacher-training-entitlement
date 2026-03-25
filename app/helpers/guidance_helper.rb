@@ -32,8 +32,8 @@ module GuidanceHelper
             prefix: "/api/guidance/how-to-guides/view-accept-or-reject-applications",
           ),
           NavigationStructure::Node.new(
-            name: "View and update participant data",
-            href: api_guidance_page_path(page: "how-to-guides/view-and-update-participant-data"),
+            name: "View participant data",
+            href: api_guidance_page_path(page: "how-to-guides/view-participant-data"),
             prefix: "/api/guidance/how-to-guides/view-and-update-participant-data",
           ),
           NavigationStructure::Node.new(

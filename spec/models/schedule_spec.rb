@@ -4,8 +4,8 @@ RSpec.describe Schedule, type: :model do
   let(:schedule) do
     build(
       :schedule,
-      applies_from: 1.month.ago,
-      applies_to: 1.month.from_now,
+      training_starts_at: 1.month.ago,
+      training_ends_at: 1.month.from_now,
       policy_descriptor: 5,
       acceptance_window_start: 2.months.ago,
       acceptance_window_end: 1.month.ago,
@@ -18,9 +18,8 @@ RSpec.describe Schedule, type: :model do
     context "with new record" do
       it { is_expected.to validate_presence_of(:name) }
       it { is_expected.to validate_presence_of(:identifier) }
-      it { is_expected.to validate_uniqueness_of(:identifier).scoped_to(:cohort_id) }
-      it { is_expected.to validate_presence_of(:applies_from) }
-      it { is_expected.to validate_presence_of(:applies_to) }
+      it { is_expected.to validate_presence_of(:training_starts_at) }
+      it { is_expected.to validate_presence_of(:training_ends_at) }
       it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
       it { is_expected.to validate_numericality_of(:policy_descriptor).only_integer.is_greater_than(0) }
       it { is_expected.to validate_presence_of(:policy_descriptor) }

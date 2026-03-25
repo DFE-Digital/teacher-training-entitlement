@@ -3,6 +3,10 @@ FactoryBot.define do
     course
     cohort
 
+    schedule do
+      CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
+    end
+
     initialize_with do
       CourseCohort.find_or_initialize_by(course:, cohort:)
     end
@@ -12,7 +16,7 @@ FactoryBot.define do
     end
 
     after(:create) do |course_cohort, evaluator|
-      if course_cohort.course_cohort_providers.empty?
+      if evaluator.lead_provider || course_cohort.course_cohort_providers.empty?
         lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
         course_cohort.course_cohort_providers << create(:course_cohort_provider, lead_provider:, course_cohort:)
       end
