@@ -18,7 +18,7 @@
     <% end %>
 
     <% if current_user.applications.any? %>
-      <p class="govuk-body"><a class="govuk-link" href="<%= application_count_based_account_url %>">View your existing registrations</a>.</p>
+      <p class="govuk-body"><%= govuk_link_to "View your existing registrations", applications_path %>.</p>
     <% end %>
 
   </div>
