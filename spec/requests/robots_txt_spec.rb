@@ -29,7 +29,6 @@ RSpec.describe "robots.txt" do
         User-agent: *
         Disallow: /applications
         Disallow: /admin
-        Disallow: /admin
         Disallow: /registration
         Disallow: /session
         Disallow: /sign-in
