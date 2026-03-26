@@ -13,28 +13,16 @@
     %>
 
     <div class="govuk-grid-row">
+  
       <div class="govuk-grid-column-one-half">
         <%=
           f.govuk_collection_select(
-            :training_status,
-            Application.training_statuses.keys,
+            :status,
+            Application::STATUSES,
             :to_s,
             :humanize,
-            options: { selected: params[:training_status], include_blank: "All" },
+            options: { selected: params[:status], include_blank: "All" },
             label: { text: "Application status", size: "s" },
-          )
-        %>
-      </div>
-
-      <div class="govuk-grid-column-one-half">
-        <%=
-          f.govuk_collection_select(
-            :lead_provider_approval_status,
-            Application.lead_provider_approval_statuses.keys,
-            :to_s,
-            :humanize,
-            options: { selected: params[:lead_provider_approval_status], include_blank: "All" },
-            label: { text: "Provider approval status", size: "s" },
           )
         %>
       </div>
@@ -73,6 +61,7 @@
         row.with_cell(text: "Submitted")
         row.with_cell(text: "Name")
         row.with_cell(text: "Workplace")
+        row.with_cell(text: "Status")
         row.with_cell(text: "Actions")
       end
     end
@@ -83,6 +72,7 @@
           row.with_cell(text: application.created_at.to_fs(:govuk_short))
           row.with_cell(text: application.user.full_name)
           row.with_cell(text: application.employer_name_to_display)
+          row.with_cell(text: application.status.to_s.humanize)
           row.with_cell(text: govuk_link_to("View", admin_application_path(application.id)))
         end
       end

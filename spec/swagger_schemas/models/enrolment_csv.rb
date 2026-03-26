@@ -9,12 +9,12 @@ ENROLMENT_CSV = {
       cohort
       npq_application_id
       eligible_for_funding
-      training_status
+      status
       school_urn
     ],
     properties: {
       participant_id: {
-        description: "The unique identifier of this NPQ participant",
+        description: "The unique identifier of this participant",
         type: :string,
         example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         format: "uuid",
@@ -39,21 +39,21 @@ ENROLMENT_CSV = {
         example: "2022",
       },
       npq_application_id: {
-        description: "The unique identifier of this NPQ application that was accepted to create this enrolment",
+        description: "The unique identifier of this application that was accepted to create this enrolment",
         type: :string,
         example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         format: "uuid",
       },
       eligible_for_funding: {
-        description: "Indicates whether this NPQ participant would be eligible for funding from the DfE",
+        description: "Indicates whether this participant would be eligible for funding from the DfE",
         type: :boolean,
         example: true,
       },
-      training_status: {
-        description: "The training status of the ECF participant",
+      status: {
+        description: "The status of the participant",
         type: :string,
-        example: Application.training_statuses.keys.first,
-        enum: Application.training_statuses.keys,
+        example: Application::STATUSES.first,
+        enum: Application::STATUSES,
       },
       school_urn: {
         description: "The Unique Reference Number (URN) of the school where this NPQ participant is teaching",
@@ -61,7 +61,7 @@ ENROLMENT_CSV = {
         example: "106286",
       },
       funded_place: {
-        description: "Indicates whether this NPQ participant is funded by DfE",
+        description: "Indicates whether this participant is funded by DfE",
         nullable: true,
         type: :boolean,
         example: true,

@@ -8,9 +8,10 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
   let(:cohort) { create(:cohort, :current) }
   let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:user) { create(:user, :with_verified_trn) }
+  let(:application_status_trait) { :accepted }
   let(:application) do
     create(:application,
-           :accepted,
+           application_status_trait,
            :with_declaration,
            :eligible_for_funded_place,
            :with_participant_id_change,

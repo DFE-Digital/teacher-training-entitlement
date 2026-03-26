@@ -32,7 +32,7 @@
           Provider application
         </dt>
         <dd class="govuk-summary-list__value">
-          <% if application.lead_provider_approval_status.blank? || pending?(application) %>
+          <% if application.status.blank? || pending?(application) %>
             <%= govuk_tag(text: "Apply with provider", colour: "yellow") %>
             <%= render 'provider_pending_status' %>
           <% elsif accepted?(application) %>
@@ -43,7 +43,7 @@
         </dd>
       </div>
 
-      <% if application.lead_provider_approval_status.blank? || pending?(application) %>
+      <% if application.status.blank? || pending?(application) %>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Course start

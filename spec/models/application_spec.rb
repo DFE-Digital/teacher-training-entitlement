@@ -13,7 +13,7 @@ RSpec.describe Application do
   end
 
   describe "paper_trail" do
-    subject { create(:application, lead_provider_approval_status: "pending") }
+    subject { create(:application, status: Application::PENDING) }
 
     it "enables paper trail" do
       expect(subject).to be_versioned
@@ -24,12 +24,12 @@ RSpec.describe Application do
         expect(PaperTrail).to be_enabled
 
         subject.update!(
-          lead_provider_approval_status: "rejected",
+          status: Application::REJECTED,
           version_note: "This is a test",
         )
         version = subject.versions.last
         expect(version.note).to eq("This is a test")
-        expect(version.object_changes["lead_provider_approval_status"]).to eq(%w[pending rejected])
+        expect(version.object_changes["status"]).to eq(%w[pending rejected])
       end
     end
   end
@@ -92,22 +92,6 @@ RSpec.describe Application do
       ).backed_by_column_of_type(:enum).with_suffix
     }
 
-    it {
-      expect(subject).to define_enum_for(:lead_provider_approval_status).with_values(
-        pending: "pending",
-        accepted: "accepted",
-        rejected: "rejected",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-
-    it {
-      expect(subject).to define_enum_for(:training_status).with_values(
-        active: "active",
-        deferred: "deferred",
-        withdrawn: "withdrawn",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-
     it "defines an enum for review_status" do
       expect(subject).to define_enum_for(:review_status).with_values(
         "Needs review" => "needs_review",
@@ -159,7 +143,7 @@ RSpec.describe Application do
     describe ".not_withdrawn" do
       subject { described_class.not_withdrawn.to_a }
 
-      let!(:no_training_status_application) { create(:application, training_status: nil) }
+      let!(:no_status_application) { create(:application, status: nil) }
       let!(:active_application) { create(:application, :accepted) }
       let!(:deferred_application) { create(:application, :deferred) }
 
@@ -167,7 +151,7 @@ RSpec.describe Application do
         create(:application, :withdrawn)
       end
 
-      it { is_expected.to contain_exactly(no_training_status_application, active_application, deferred_application) }
+      it { is_expected.to contain_exactly(no_status_application, active_application, deferred_application) }
     end
   end
 
@@ -284,18 +268,18 @@ RSpec.describe Application do
 
   describe "versioning", :versioning do
     context "when changing versioned fields" do
-      let(:application) { create(:application, lead_provider_approval_status: "pending", participant_outcome_state: nil) }
+      let(:application) { create(:application, status: Application::PENDING, participant_outcome_state: nil) }
 
       before do
-        application.update!(lead_provider_approval_status: "accepted", participant_outcome_state: "passed", funded_place: false)
+        application.update!(status: Application::ACCEPTED, participant_outcome_state: "passed", funded_place: false)
       end
 
       it "has history of changes" do
         previous_application = application.versions.last.reify
-        expect(application.lead_provider_approval_status).to eq("accepted")
+        expect(application.status).to eq(Application::ACCEPTED)
         expect(application.participant_outcome_state).to eq("passed")
 
-        expect(previous_application.lead_provider_approval_status).to eq("pending")
+        expect(previous_application.status).to eq(Application::PENDING)
         expect(previous_application.participant_outcome_state).to be_nil
       end
     end
@@ -371,7 +355,7 @@ RSpec.describe Application do
     end
 
     context "when the application has not been previously funded (previous application not accepted)" do
-      before { previous_application.update!(lead_provider_approval_status: "rejected") }
+      before { previous_application.update_status!(status: Application::REJECTED, reason: nil, admin_user: create(:admin)) }
 
       it { is_expected.not_to be_previously_funded }
     end
@@ -541,13 +525,13 @@ RSpec.describe Application do
         end
       end
 
-      context "when lead_provider_approval_status is changed" do
+      context "when status is changed" do
         it "updates user.updated_at" do
           freeze_time do
             expect(user.updated_at).to be_within(1.second).of(old_datetime)
             expect(application.updated_at).to be_within(1.second).of(old_datetime)
 
-            application.rejected_lead_provider_approval_status!
+            application.rejected_status!
 
             expect(application.updated_at).to eq(Time.zone.now)
             expect(user.updated_at).to eq(Time.zone.now)
@@ -560,7 +544,7 @@ RSpec.describe Application do
               expect(user.updated_at).to be_within(1.second).of(old_datetime)
               expect(application.updated_at).to be_within(1.second).of(old_datetime)
 
-              application.update!(lead_provider_approval_status: "rejected", skip_touch_user_if_changed: true)
+              application.update!(status: Application::REJECTED, skip_touch_user_if_changed: true)
 
               expect(application.updated_at).to eq(Time.zone.now)
               expect(user.updated_at).to be_within(1.second).of(old_datetime)

@@ -6,7 +6,7 @@ en:
   not_found: "Not found"
   invalid_date_filter: "The filter '#/%{parameterized_attribute}' must be a valid ISO 8601 date"
   invalid_participant_id_filter: "The filter '#/participant_id' must be a comma-delimited list of valid UUIDs"
-  invalid_training_status: "The filter '#/training_status' must be %{valid_training_status}"
+  invalid_status: "The filter '#/status' must be %{valid_status}"
   invalid_page_parameters: "The '#/page[page]' and '#/page[per_page]' parameter values must be a valid positive number"
   invalid_data_structure: correct json data structure required. See API docs for reference
   schedule_invalid_for_course: "The selected schedule is not valid for the course"
@@ -78,7 +78,7 @@ en:
 
   participant_id: &participant_id
     blank: "The property '#/participant_id' must be present"
-    already_active: The participant is already active
+    already_accepted: The participant is already accepted
     already_deferred: The participant is already deferred
     already_withdrawn: The participant is already withdrawn
     no_declarations: You cannot defer a participant that has no declarations
@@ -166,12 +166,13 @@ en:
               format: You can only enter numeric values in the adjustment amount field
         application:
           attributes:
-            training_status:
-              inclusion: Choose a valid training status
+            status:
+              inclusion: Choose a valid status
               invalid_deferral_no_declarations: You cannot defer a participant that has no declarations
-              pending_lead_provider_approval_status: You cannot change the training status of an application which is in a pending state
+              pending_status: You cannot change the status of an application which is in a pending state
+              invalid_status_transition: Invalid status transition %{from} to %{to}
             reason:
-              inclusion: Choose a valid reason for the training status change
+              inclusion: Choose a valid reason for the status change
             schedule:
               <<: *schedule
             funded_place:
@@ -377,11 +378,13 @@ en:
         applications/resume:
           attributes:
             base:
-              already_active: The participant is already active
+              already_started: The application is already started
+              already_accepted: The application is already accepted
               cohort_not_in_training: Selected schedule is not currently in training
-            application:
-              <<: *application
+              cohort_missing: Cohort for the selected schedule cannot be found
               incompatible_schedule: Selected schedule is for a different course than the application
+            application:
+              <<: *application              
         applications/change_schedule:
           attributes:
             base:
@@ -391,6 +394,7 @@ en:
               incompatible_schedule: Selected schedule is for a different course than the application
               application_has_started_training: The application has already started its training
               application_not_accepted: The application has not been accepted
+              already_accepted: The participant is already active              
         admin/applications/change_cohort_form:
           attributes:
             course_cohort_id:
@@ -424,7 +428,7 @@ en:
           attributes:
             change_status_to_pending:
               inclusion: Confirm you wish to change the status to Pending
-            lead_provider_approval_status:
+            status:
               inclusion: Current course provider approval status is not Accepted
             base:
               pending_unremoveable_declarations: There are already declarations for this participant on this course, please ask the provider to void any declarations they have made before attempting to revert the application.
@@ -921,8 +925,8 @@ en:
         funding_eligibility_senco: "Funding"
 
     legend:
-      applications_change_training_status:
-        training_status: Choose a different training status
+      applications_change_status:
+        status: Choose a different status
       applications_change_funding_eligibility:
         eligible_for_funding: Is eligible for funding?
       applications_change_lead_provider:
@@ -960,7 +964,7 @@ en:
         senco_start_date: "When did you become a SENCO?"
         funding_eligibility_senco: "Funding"
     hint:
-      applications_change_training_status:
+      applications_change_status:
         reason: Required for deferred or withdrawn
 
       registration_wizard:
@@ -1015,7 +1019,7 @@ en:
         work_setting: Make sure the information you provide is correct, as your course provider will check your details. Register using your current workplace details, even if they will change soon.
 
     label:
-      applications_change_training_status:
+      applications_change_status:
         reason: Reason for change
 
       statements_payment_authorisation_form:

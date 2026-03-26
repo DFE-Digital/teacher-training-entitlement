@@ -31,7 +31,7 @@ module Participants
     def application
       @application ||= participant
         &.applications
-        &.accepted
+        &.accepted_or_withdrawn_or_deferred
         &.includes(:course)
         &.find_by(lead_provider:, course: { identifier: course_identifier })
     end

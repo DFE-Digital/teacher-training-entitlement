@@ -8,11 +8,11 @@ LIST_PARTICIPANTS_FILTER = {
         type: :string,
         example: "2021-05-13T11:21:55Z",
       },
-      training_status: {
-        description: "Return only records that have this training status",
+      status: {
+        description: "Return only records that have this status",
         type: :string,
-        enum: Application.training_statuses.keys,
-        example: Application.training_statuses.keys.first,
+        enum: Application::STATUSES,
+        example: Application::STATUSES.first,
       },
       from_participant_id: {
         description: "Return only records that have this from Participant ID",

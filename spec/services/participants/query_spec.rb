@@ -23,14 +23,14 @@ RSpec.describe Participants::Query do
 
     it "does not fetch participants with pending applications" do
       participant3 = create(:user, :with_application, lead_provider:)
-      participant3.applications.update_all(lead_provider_approval_status: :pending)
+      participant3.applications.update_all(status: Application::PENDING)
 
       expect(query.participants).to eq([participant1, participant2])
     end
 
     it "does not fetch participants with rejected applications" do
       participant3 = create(:user, :with_application, lead_provider:)
-      participant3.applications.update_all(lead_provider_approval_status: :rejected)
+      participant3.applications.update_all(status: Application::REJECTED)
 
       expect(query.participants).to eq([participant1, participant2])
     end
@@ -183,54 +183,36 @@ RSpec.describe Participants::Query do
         end
       end
 
-      describe "training status" do
-        context "when a training status is supplied" do
-          let(:params) { { training_status: "withdrawn" } }
+      describe "status" do
+        context "when a status is supplied" do
+          let(:params) { { status: Application::WITHDRAWN } }
 
-          before { participant1.applications.first.update!(training_status: ApplicationState.states[:withdrawn]) }
+          before { participant1.applications.first.update_columns(status: Application::WITHDRAWN) }
 
-          it "filters by training status" do
+          it "filters by status" do
             expect(query.participants).to contain_exactly(participant1)
           end
         end
 
-        context "when the participant has multiple applications with different training statuses" do
-          let(:params) { { training_status: "withdrawn" } }
+        context "when the participant has multiple applications with different statuses" do
+          let(:params) { { status: Application::WITHDRAWN } }
 
           before do
-            participant1.applications.first.update!(training_status: ApplicationState.states[:withdrawn])
-            create(:application, :accepted, user: participant1, lead_provider:, training_status: :active)
+            participant1.applications.first.update_columns(status: Application::WITHDRAWN)
+            create(:application, :accepted, user: participant1, lead_provider:)
           end
 
-          it "filters the users by training status and only returns applications with the matching training status" do
+          it "filters the users by status and only returns applications with the matching status" do
             expect(query.participants).to contain_exactly(participant1)
-            expect(query.participants.map(&:applications).flatten.map(&:training_status)).to all(eq("withdrawn"))
+            expect(query.participants.map(&:applications).flatten.map(&:status)).to all(eq(Application::WITHDRAWN))
           end
         end
 
-        context "when a training status is not supplied" do
-          it "does not filter by training status" do
-            condition_string = %("training_status")
-
-            expect(query.scope.to_sql).not_to include(condition_string)
-          end
-        end
-
-        context "when training status is blank" do
-          let(:params) { { training_status: " " } }
-
-          it "does not filter by from training status" do
-            condition_string = %("training_status")
-
-            expect(query.scope.to_sql).not_to include(condition_string)
-          end
-        end
-
-        context "when an invalid training status is supplied" do
-          let(:params) { { training_status: "not_valid_status" } }
+        context "when an invalid status is supplied" do
+          let(:params) { { status: "not_valid_status" } }
 
           it "raises an error" do
-            expect { query.scope.to_sql }.to raise_error(API::Errors::FilterValidationError).with_message(%(The filter '#/training_status' must be ["active", "deferred", "withdrawn"]))
+            expect { query.scope.to_sql }.to raise_error(API::Errors::FilterValidationError).with_message(%(The filter '#/status' must be ["accepted", "deferred", "withdrawn"]))
           end
         end
       end
@@ -279,7 +261,7 @@ RSpec.describe Participants::Query do
         context "when an invalid from participant id is supplied" do
           let(:params) { { from_participant_id: SecureRandom.uuid } }
 
-          it "does not filter by training status" do
+          it "does not filter by status" do
             expect(query.participants).to be_empty
           end
         end

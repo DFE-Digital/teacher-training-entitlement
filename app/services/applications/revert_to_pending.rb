@@ -7,11 +7,13 @@ module Applications
 
     attribute :change_status_to_pending
     attribute :application
-    delegate :lead_provider_approval_status, to: :application
+    attribute :admin_user
+    delegate :status, to: :application
 
     validates :change_status_to_pending, inclusion: { in: %w[yes no] }
-    validates :lead_provider_approval_status, inclusion: { in: %w[accepted rejected] }, if: :application
+    validates :status, inclusion: { in: [Application::ACCEPTED, Application::REJECTED] }, if: :application
     validates :application, presence: true
+    validates :admin_user, presence: true
     validate :application_has_no_unremoveable_declarations, if: :application
 
     def revert
@@ -19,12 +21,11 @@ module Applications
       return false if invalid?
 
       Application.transaction do
+        application.update_columns(status: Application::PENDING, funded_place: nil)
         application.application_states.destroy_all
-        application.funded_place = nil
-        application.pending_lead_provider_approval_status!
-
-        true
       end
+
+      true
     end
 
   private

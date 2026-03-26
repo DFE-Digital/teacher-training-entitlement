@@ -73,7 +73,7 @@ RSpec.describe Declarations::Create, type: :model do
 
       context "when application has a voided started declaration" do
         let(:application) do
-          create(:application, :with_declaration, course_cohort:, lead_provider:)
+          create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
         end
 
         before { application.declarations.where(declaration_type:).first.mark_voided! }
@@ -96,7 +96,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when application already has a started declaration" do
-        let(:application) { create(:application, :with_declaration, course_cohort:, lead_provider:) }
+        let(:application) { create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:base).with_message("A declaration has already been submitted that will be, or has been, paid for this event") }
       end
@@ -124,7 +124,7 @@ RSpec.describe Declarations::Create, type: :model do
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
     let(:application) do
-      create(:application, :with_declaration, course_cohort:, lead_provider:)
+      create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
     end
 
     before { application } # this is to force declaration creation ahead of the test

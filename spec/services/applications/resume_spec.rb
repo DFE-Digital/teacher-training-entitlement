@@ -22,7 +22,7 @@ RSpec.describe Applications::Resume, type: :model do
 
   describe "happy path" do
     it "updates application status" do
-      expect { service.call }.to change(application, :training_status).from("deferred").to("active")
+      expect { service.call }.to change(application, :status).from(Application::DEFERRED).to(Application::STARTED)
     end
 
     it "updates the course_cohort" do
@@ -32,27 +32,21 @@ RSpec.describe Applications::Resume, type: :model do
 
   describe "errors scenarios" do
     context "when application is not deferred" do
-      let(:application) { create(:application, :active, :with_declaration, course_cohort:) }
+      let(:application) { create(:application, :accepted, :with_declaration, course_cohort:) }
 
-      it { expect { service.call }.not_to change(application, :training_status) }
-    end
-
-    context "when application missing" do
-      let(:application) { nil }
-
-      it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
+      it { expect { service.call }.not_to change(application, :status) }
     end
 
     context "when course cohort has a different course than application" do
       let(:target_course) { create(:course, name: "other course") }
 
-      it { expect { service.call }.not_to change(application, :training_status) }
+      it { expect { service.call }.not_to change(application, :status) }
     end
 
     context "when course cohort has a cohort not currently in training" do
       let(:target_schedule) { build(:schedule, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now) }
 
-      it { expect { service.call }.not_to change(application, :training_status) }
+      it { expect { service.call }.not_to change(application, :status) }
     end
   end
 end

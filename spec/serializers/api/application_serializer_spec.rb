@@ -46,8 +46,8 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `status`" do
-      application.lead_provider_approval_status = "pending"
-      expect(attributes["status"]).to eq(application.lead_provider_approval_status)
+      application.status = Application::PENDING
+      expect(attributes["status"]).to eq(application.status)
     end
 
     it "serializes the `eligible_for_funding` (previously funded)" do

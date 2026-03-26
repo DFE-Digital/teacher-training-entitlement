@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Applications::Defer, type: :model do
-  subject(:service) { described_class.new(application:, reason:) }
+  subject(:service) { described_class.new(application:, reason:, admin_user: create(:admin)) }
 
   let(:application) { create(:application, :accepted, :with_declaration) }
   let(:reason) { nil }
@@ -56,7 +56,7 @@ RSpec.describe Applications::Defer, type: :model do
 
     it do
       expect(service.errors).to be_blank
-      expect(application.reload.training_status).to eq(Applications::Strategy::DEFERRED)
+      expect(application.reload.status).to eq(Application::DEFERRED)
     end
   end
 end

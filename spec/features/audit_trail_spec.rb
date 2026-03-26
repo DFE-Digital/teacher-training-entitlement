@@ -11,7 +11,7 @@ RSpec.feature "Recording audit trail via papertrail", :revisit, :versioning, typ
     before do
       sign_in_as_admin
 
-      post admin_applications_change_training_status_path(application, params:)
+      post admin_applications_change_status_path(application, params:)
     end
 
     let :application do
@@ -23,8 +23,8 @@ RSpec.feature "Recording audit trail via papertrail", :revisit, :versioning, typ
     let :params do
       {
         form: {
-          training_status: :withdrawn,
-          reason: Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["withdrawn"].first,
+          status: :withdrawn,
+          reason: Admin::Applications::ChangeStatusForm::REASON_OPTIONS["withdrawn"].first,
         },
       }
     end

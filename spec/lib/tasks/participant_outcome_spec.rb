@@ -10,15 +10,18 @@ RSpec.describe "particpant_outcome", :npq do
     let(:completion_date) { Date.new(2025, 8, 1).as_json }
     let(:application) { create(:application, :accepted, user:, course:, lead_provider:) }
     let(:declaration) { create(:declaration, :completed, user:, lead_provider:, course:, application:) }
+    let(:user_ecf_id) { user.ecf_id }
+    let(:lead_provider_ecf_id) { lead_provider.ecf_id }
+    let(:state) { nil }
 
     before { declaration }
 
-    context "when the user does not exist" do
-      subject(:run_task) do
-        Rake::Task["participant_outcomes:create"]
-          .invoke(user_ecf_id, lead_provider.ecf_id, course.identifier, completion_date)
-      end
+    subject(:run_task) do
+      Rake::Task["participant_outcomes:create"]
+        .invoke(application.id, user_ecf_id, lead_provider_ecf_id, course.identifier, completion_date, state)
+    end
 
+    context "when the user does not exist" do
       let(:user_ecf_id) { "non-existent-id" }
 
       it "raises an error" do
@@ -27,11 +30,6 @@ RSpec.describe "particpant_outcome", :npq do
     end
 
     context "when the lead provider does not exist" do
-      subject(:run_task) do
-        Rake::Task["participant_outcomes:create"]
-          .invoke(user.ecf_id, lead_provider_ecf_id, course.identifier, completion_date)
-      end
-
       let(:lead_provider_ecf_id) { "non-existent-id" }
 
       it "raises an error" do
@@ -40,11 +38,6 @@ RSpec.describe "particpant_outcome", :npq do
     end
 
     context "when there is a validation error" do
-      subject(:run_task) do
-        Rake::Task["participant_outcomes:create"]
-          .invoke(user.ecf_id, lead_provider.ecf_id, course.identifier, completion_date)
-      end
-
       let(:completion_date) { "invalid-date" }
 
       it "raises an error" do
@@ -55,11 +48,6 @@ RSpec.describe "particpant_outcome", :npq do
     end
 
     context "when state is not specified" do
-      subject(:run_task) do
-        Rake::Task["participant_outcomes:create"]
-          .invoke(user.ecf_id, lead_provider.ecf_id, course.identifier, completion_date)
-      end
-
       it "creates a passed participant outcome" do
         expect { run_task }.to change { ParticipantOutcome.all.to_a }.from([]).to(
           [an_object_having_attributes(
@@ -72,11 +60,6 @@ RSpec.describe "particpant_outcome", :npq do
     end
 
     context "when state is specified" do
-      subject(:run_task) do
-        Rake::Task["participant_outcomes:create"]
-          .invoke(user.ecf_id, lead_provider.ecf_id, course.identifier, completion_date, state)
-      end
-
       context "when the state is invalid" do
         let(:state) { "invalid_state" }
 

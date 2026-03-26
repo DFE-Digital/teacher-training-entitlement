@@ -24,7 +24,7 @@ module API
               cohort: application.cohort&.start_year&.to_s,
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
-              training_status: application.training_status,
+              status: application.status,
               school_urn: application.school&.urn,
               withdrawal: withdrawal(application:, lead_provider: options[:lead_provider]),
               deferral: deferral(application:, lead_provider: options[:lead_provider]),
@@ -45,16 +45,16 @@ module API
         def applications(object, options)
           return Application.none unless options[:lead_provider]
 
-          object.applications.select { |application| application.accepted_lead_provider_approval_status? && application.lead_provider_id == options[:lead_provider].id }
+          object.applications.select { |application| application.has_been_accepted? && application.lead_provider_id == options[:lead_provider].id }
         end
 
         def withdrawal(application:, lead_provider:)
-          if application.withdrawn_training_status?
+          if application.withdrawn_status?
             # We are doing this in memory to avoid running those as queries on each request
             latest_application_state = application
               .application_states.sort_by(&:created_at)
               .reverse!
-              .find { |as| as.state == ApplicationState.states[:withdrawn] && as.lead_provider_id == lead_provider.id }
+              .find { |as| as.status == Application::WITHDRAWN && as.lead_provider_id == lead_provider.id }
 
             if latest_application_state.present?
               {
@@ -66,12 +66,12 @@ module API
         end
 
         def deferral(application:, lead_provider:)
-          if application.deferred_training_status?
+          if application.deferred_status?
             # We are doing this in memory to avoid running those as queries on each request
             latest_application_state = application
               .application_states.sort_by(&:created_at)
               .reverse!
-              .find { |as| as.state == ApplicationState.states[:deferred] && as.lead_provider_id == lead_provider.id }
+              .find { |as| as.status == Application::DEFERRED && as.lead_provider_id == lead_provider.id }
 
             if latest_application_state.present?
               {

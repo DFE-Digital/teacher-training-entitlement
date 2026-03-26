@@ -16,10 +16,13 @@ class UpdateApplicationRakeTask
       end
 
       desc "Revert an application to pending"
-      task :revert_to_pending, %i[application_ecf_id] => :versioned_environment do |_t, args|
+      task :revert_to_pending, %i[application_ecf_id admin_user_id] => :versioned_environment do |_t, args|
         find_application(args.application_ecf_id)
 
-        service = Applications::RevertToPending.new(application:, change_status_to_pending: "yes")
+        admin_user = AdminUser.find(args.admin_user_id)
+        raise "Admin user not found: #{args.admin_user_id}" unless admin_user
+
+        service = Applications::RevertToPending.new(application:, change_status_to_pending: "yes", admin_user:)
 
         result = service.revert
         log_result("Application #{args.application_ecf_id} reverted to pending", result, service.errors)
@@ -40,12 +43,15 @@ class UpdateApplicationRakeTask
       end
 
       desc "Withdraw an application"
-      task :withdraw, %i[application_ecf_id reason] => :versioned_environment do |_t, args|
+      task :withdraw, %i[application_ecf_id reason admin_user_id] => :versioned_environment do |_t, args|
         find_application(args.application_ecf_id)
 
         reason = args.reason
 
-        service = ::Applications::Withdraw.new(application:, reason:)
+        admin_user = AdminUser.find(args.admin_user_id)
+        raise "Admin user not found: #{args.admin_user_id}" unless admin_user
+
+        service = ::Applications::Withdraw.new(application:, reason:, admin_user:)
         service.call
         log_result("Participant #{application.user.ecf_id} withdrawn from application #{args.application_ecf_id}", service.errors.blank?, service.errors)
       end

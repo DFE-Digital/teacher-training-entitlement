@@ -3,7 +3,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">
-      Change training status
+      Change status
     </h1>
 
     <div class="govuk-inset-text">
@@ -15,17 +15,17 @@
       <p class="govuk-body">
         <strong>Training status</strong>
         <br/>
-        <%= @form.application.training_status&.humanize || "-" %>
+        <%= @form.application.status&.humanize || "-" %>
       </p>
     </div>
 
     <%= form_for @form,
                 as: :form,
-                 url: admin_applications_change_training_status_path(@form.application) do |f| %>
+                 url: admin_applications_change_status_path(@form.application) do |f| %>
       <%= f.govuk_error_summary %>
 
-      <%= f.govuk_collection_radio_buttons :training_status,
-                                           @form.training_status_options,
+      <%= f.govuk_collection_radio_buttons :status,
+                                           @form.status_options,
                                            :to_s,
                                            :humanize,
                                            legend: { tag: 'h1', size: 'm' } %>

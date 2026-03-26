@@ -225,7 +225,7 @@ module ValidTestDataGenerators
           lead_provider: lead_provider,
           course_cohort: course_cohort,
           institution: school.institution,
-          lead_provider_approval_status: :pending,
+          status: Application::PENDING,
           ecf_id: SecureRandom.uuid,
           eligible_for_funding: app_data[:funding_eligible],
           funded_place: nil,

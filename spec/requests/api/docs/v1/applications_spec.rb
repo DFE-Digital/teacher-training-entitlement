@@ -102,7 +102,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application being deferred",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationDeferRequest" do
-        let(:application) { create(:application, :accepted, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
+        let(:application) { create(:application, :started, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
         let(:resource) { application }
         let(:type) { "application" }
         let(:attributes) { { reason: ::Applications::Defer::DEFERRAL_REASONS.first } }
@@ -155,7 +155,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application being withdrawn",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationWithdrawRequest" do
-        let(:application) { create(:application, :accepted, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
+        let(:application) { create(:application, :started, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
         let(:resource) { application }
         let(:type) { "application" }
         let(:attributes) { { reason: ::Applications::Withdraw::WITHDRAWAL_REASONS.first } }
@@ -240,7 +240,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "#/components/schemas/DeclarationResponse",
                       "#/components/schemas/DeclarationCompletedRequest" do
         let(:application) do
-          create(:application, :with_declaration, course_cohort:, lead_provider:)
+          create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
         end
         let(:resource) { application }
         let(:declaration_date) { schedule.training_starts_at + 1.hour }

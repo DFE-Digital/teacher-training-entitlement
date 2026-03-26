@@ -27,7 +27,7 @@ class HandleSubmissionForStore
         on_submission_trn: store["trn"],
         teacher_catchment_country:,
         teacher_catchment_iso_country_code:,
-        lead_provider_approval_status: Application.lead_provider_approval_statuses[:pending],
+        status: Application::PENDING,
         review_status: nil,
       )
       enqueue_send_application_submission_email_job(application)

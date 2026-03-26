@@ -36,7 +36,7 @@ RSpec.feature "viewing application history", :revisit, :versioning, type: :featu
       Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).call
       create(:declaration, application:)
-      ::Applications::Defer.new(application: application, reason: "other").call
+      ::Applications::Defer.new(application: application, reason: "other", admin_user: create(:admin)).call
     end
 
     scenario "viewing application history" do
@@ -46,7 +46,7 @@ RSpec.feature "viewing application history", :revisit, :versioning, type: :featu
       expect(page).to have_content("by test user")
       expect(page).to have_css("h2", text: "Eligible for funding changed to yes")
       expect(page).to have_css("li", text: "Status code changed to marked_funded_by_policy")
-      expect(page).to have_css("h2", text: "Training status changed to deferred")
+      expect(page).to have_css("h2", text: "Status changed to deferred")
       expect(page).to have_css("div.govuk-inset-text", text: "Reason for training status change: other")
     end
   end

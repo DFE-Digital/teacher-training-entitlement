@@ -39,32 +39,17 @@ module API
 
       def defer
         service = Applications::Defer.new(application:, reason:)
-
-        if service.call
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        call_and_render(service:)
       end
 
       def resume
         service = Applications::Resume.new(application:, course_cohort:)
-
-        if service.call
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        call_and_render(service:)
       end
 
       def withdraw
         service = Applications::Withdraw.new(application:, reason:)
-
-        if service.call
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        call_and_render(service:)
       end
 
       def change_funded_place
@@ -108,6 +93,20 @@ module API
       end
 
     private
+
+      def call_and_render(service:)
+        if application.nil?
+          service.errors.add(:base, :application_not_found)
+        else
+          service.call
+        end
+
+        if service.errors.blank?
+          render json: to_json(application)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
 
       def application
         @application ||= current_lead_provider
@@ -156,8 +155,10 @@ module API
       end
 
       def course_cohort
-        course_cohort_ecf_id = application_action_params[:schedule_id]
-        current_lead_provider.course_cohorts.find_by(ecf_id: course_cohort_ecf_id)
+        @course_cohort ||= begin
+          course_cohort_ecf_id = application_action_params[:schedule_id]
+          current_lead_provider.course_cohorts.find_by(ecf_id: course_cohort_ecf_id)
+        end
       end
 
       def to_json(obj)

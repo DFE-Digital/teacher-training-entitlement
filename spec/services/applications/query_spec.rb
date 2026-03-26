@@ -6,7 +6,7 @@ RSpec.describe Applications::Query do
       lead_provider:,
       cohort_start_years:,
       updated_since:,
-      lead_provider_approval_status:,
+      status:,
       participant_ids:,
       sort:,
     )
@@ -15,7 +15,7 @@ RSpec.describe Applications::Query do
   let(:lead_provider) { create(:lead_provider) }
   let(:updated_since) { :ignore }
   let(:cohort_start_years) { :ignore }
-  let(:lead_provider_approval_status) { :ignore }
+  let(:status) { :ignore }
   let(:participant_ids) { :ignore }
   let(:sort) { nil }
 
@@ -110,19 +110,19 @@ RSpec.describe Applications::Query do
         end
       end
 
-      context "when filtering by lead_provider_approval_status" do
-        let(:lead_provider_approval_status) { "accepted" }
+      context "when filtering by status" do
+        let(:status) { Application::ACCEPTED }
 
-        it "filters by lead_provider_approval_status" do
+        it "filters by status" do
           create(:application, :pending, lead_provider:)
           application = create(:application, :accepted, lead_provider:)
           expect(query.applications).to contain_exactly(application)
         end
 
         context "with multiple values" do
-          let(:lead_provider_approval_status) { "accepted,rejected" }
+          let(:status) { [Application::ACCEPTED, Application::REJECTED] }
 
-          it "filters by multiple lead_provider_approval_status" do
+          it "filters by multiple status" do
             application1 = create(:application, :accepted, lead_provider:)
             application2 = create(:application, :rejected, lead_provider:)
             create(:application, :pending, lead_provider:)
@@ -132,13 +132,13 @@ RSpec.describe Applications::Query do
         end
 
         context "with bad value" do
-          let(:lead_provider_approval_status) { "unknown" }
+          let(:status) { "unknown" }
 
           it { expect(query.applications).to be_empty }
         end
 
         context "when not supplied" do
-          it { expect(query.scope.to_sql).to include(%("lead_provider_approval_status")) }
+          it { expect(query.scope.to_sql).to include(%("status")) }
         end
       end
 
@@ -174,7 +174,9 @@ RSpec.describe Applications::Query do
         end
 
         context "when not supplied" do
-          it { expect(query.scope.to_sql).to include(%("ecf_id")) }
+          it {
+            expect(query.scope.to_sql).not_to include(%("ecf_id"))
+          }
         end
       end
     end

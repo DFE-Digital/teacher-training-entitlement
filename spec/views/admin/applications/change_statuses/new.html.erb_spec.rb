@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "admin/applications/change_training_statuses/new", type: :view do
+RSpec.describe "admin/applications/change_statuses/new", type: :view do
   subject { render }
 
   before do
@@ -11,13 +11,13 @@ RSpec.describe "admin/applications/change_training_statuses/new", type: :view do
   end
 
   let(:application) { create(:application, :accepted) }
-  let(:form) { Admin::Applications::ChangeTrainingStatusForm.new(id: application.id) }
-  let(:form_path) { admin_applications_change_training_status_path(application) }
+  let(:form) { Admin::Applications::ChangeStatusForm.new(id: application.id) }
+  let(:form_path) { admin_applications_change_status_path(application) }
 
-  it { is_expected.to have_css("h1", text: "Change training status") }
+  it { is_expected.to have_css("h1", text: "Change status") }
 
   it { is_expected.to have_css(".govuk-inset-text p:first-of-type", text: application.user.id) }
-  it { is_expected.to have_css(".govuk-inset-text p:last-of-type", text: "Active") }
+  it { is_expected.to have_css(".govuk-inset-text p:last-of-type", text: "Accepted") }
   it { is_expected.to have_css(%(form[action="#{form_path}"]), count: 1) }
   it { is_expected.to have_css(%(.govuk-form-group fieldset label), text: "Deferred") }
   it { is_expected.to have_css(%(.govuk-form-group fieldset label), text: "Withdrawn") }

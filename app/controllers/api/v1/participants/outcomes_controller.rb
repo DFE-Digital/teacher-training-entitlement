@@ -31,6 +31,7 @@ module API
             .require(:attributes)
             .permit(:course_identifier, :state, :completion_date)
             .merge(
+              application:,
               lead_provider: current_lead_provider,
               participant_id: participant.ecf_id,
             )
@@ -46,6 +47,14 @@ module API
           participants_query.participant(ecf_id: params[:ecf_id])
         end
 
+        def application
+          @application ||= participant
+            &.applications
+            &.accepted
+            &.includes(:course)
+            &.find_by(lead_provider: current_lead_provider, course: { identifier: course_identifier })
+        end
+
         def outcomes_query(conditions: {})
           conditions.merge!(lead_provider: current_lead_provider)
           ParticipantOutcomes::Query.new(**conditions.compact)
@@ -53,6 +62,10 @@ module API
 
         def to_json(obj)
           ParticipantOutcomeSerializer.render(obj, view: :v1, root: "data")
+        end
+
+        def course_identifier
+          params.dig(:data, :attributes, :course_identifier)
         end
       end
     end

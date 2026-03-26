@@ -8,7 +8,7 @@ RSpec.describe User do
     let(:course) { create(:course) }
     let(:course_cohort) { create(:course_cohort, course:, cohort:) }
     let(:user) { create(:user) }
-    let!(:application) { create(:application, :active, user:, course_cohort:) }
+    let!(:application) { create(:application, :accepted, user:, course_cohort:) }
 
     context "when there are active applications for the current cohort and course" do
       it do
@@ -19,7 +19,7 @@ RSpec.describe User do
     context "when there are active applications for a different cohort but same course" do
       let(:previous_cohort) { create(:cohort, :previous) }
       let(:course_cohort) { create(:course_cohort, course:, cohort: previous_cohort) }
-      let!(:application) { create(:application, :active, user:, course_cohort:) }
+      let!(:application) { create(:application, :accepted, user:, course_cohort:) }
 
       it do
         expect(user.active_applications_for(course:, cohort:)).to be_blank

@@ -28,7 +28,7 @@ RSpec.describe Applications::ChangeSchedule, type: :model do
 
   describe "errors scenarios" do
     context "when application training has already started" do
-      let(:application) { create(:application, :active, :with_declaration, course_cohort:) }
+      let(:application) { create(:application, :accepted, :with_declaration, course_cohort:) }
 
       it { expect { service.call }.not_to change(application, :course_cohort) }
     end

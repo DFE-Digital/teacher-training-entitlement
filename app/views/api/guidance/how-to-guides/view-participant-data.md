@@ -14,7 +14,7 @@ GET /api/v1/participants
 Providers can filter results by adding updated_since filters to the parameter. For example: <code>GET /api/v1/participants?filter[updated_since]=2025-11-13T11:21:55Z</code>
 </div>
 
-Providers can also filter by `training_status`. For example: `GET /api/v1/participants?filter[training_status]=active`
+Providers can also filter by `status`. For example: `GET /api/v1/participants?filter[status]=accepted`
 
 For more detailed information, see the ['Retrieve multiple participants' endpoint documentation](/api/docs/v1#/Participants/get_api_v1_participants).
 
@@ -38,7 +38,7 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
             "cohort": "2025",
             "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
             "eligible_for_funding": true,
-            "training_status": "active",
+            "status": "accepted",
             "school_urn": "106286",
             "withdrawal": null,
             "deferral": null,

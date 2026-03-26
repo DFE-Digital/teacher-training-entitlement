@@ -80,65 +80,93 @@ RSpec.describe "Application endpoints", type: :request do
   end
 
   describe "PUT /api/v1/applications/:ecf_id/defer" do
-    let(:resource) { create(:application, :accepted, :with_declaration, lead_provider: current_lead_provider) }
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Applications::Defer }
-    let(:action) { :call }
-    let(:attributes) { { reason: "career-break" } }
-    let(:service_args) { { application: resource, reason: "career-break" } }
+    let(:expected_data_id) { application.ecf_id }
+    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
+    let(:application_status_trait) { :started }
+    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course: course_cohort.course) }
+    let(:params) { { data: { attributes: { reason: "career-break" } } } }
 
-    def path(id = nil)
-      defer_api_v1_application_path(ecf_id: id)
+    before do
+      api_put(defer_api_v1_application_path(ecf_id: application.ecf_id), params:)
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when the application can be deferred" do
+      it_behaves_like "a successful api call"
+    end
+
+    context "when the application cannot be deferred" do
+      let(:application_status_trait) { :deferred }
+      let(:expected_response) do
+        {
+          "errors" => [
+            { "title" => "base", "detail" => I18n.t("activemodel.errors.models.applications/defer.attributes.base.already_deferred") },
+          ],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/resume" do
-    let(:resource) { create(:application, :accepted, training_status: "deferred", lead_provider: current_lead_provider) }
-    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_provider: current_lead_provider) }
-    let(:course) { create(:course) }
-    let(:cohort) { create(:cohort, :previous) }
-    let(:schedule) { create(:schedule, training_starts_at: 1.year.ago, training_ends_at: 6.months.ago) }
+    let(:expected_data_id) { application.ecf_id }
+    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
+    let(:application_status_trait) { :deferred }
+    let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course: course_cohort.course) }
+    let(:params) { { data: { attributes: { schedule_id: course_cohort.ecf_id } } } }
 
-    let(:target_course_cohort) do
-      create(:course_cohort,
-             course: target_course,
-             cohort: target_cohort,
-             schedule: target_schedule,
-             lead_provider: current_lead_provider)
+    before do
+      api_put(resume_api_v1_application_path(ecf_id: application.ecf_id), params:)
     end
 
-    let(:target_course) { course }
-    let(:target_cohort) { create(:cohort, :current) }
-    let(:target_schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
-
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Applications::Resume }
-    let(:action) { :call }
-    let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
-    let(:service_args) { { application: resource, course_cohort: target_course_cohort } }
-
-    def path(id = nil)
-      resume_api_v1_application_path(ecf_id: id)
+    context "when the application can be resumed" do
+      it_behaves_like "a successful api call"
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when the application cannot be resumed" do
+      let(:application_status_trait) { :started }
+      let(:expected_response) do
+        {
+          "errors" => [
+            { "title" => "base", "detail" => I18n.t("activemodel.errors.models.applications/resume.attributes.base.already_started") },
+          ],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/withdraw" do
-    let(:resource) { create(:application, :accepted, :with_declaration, lead_provider: current_lead_provider) }
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Applications::Withdraw }
-    let(:action) { :call }
-    let(:attributes) { { reason: "personal-reason-other" } }
-    let(:service_args) { { application: resource, reason: "personal-reason-other" } }
+    let(:expected_data_id) { application.ecf_id }
+    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
+    let(:application_status_trait) { :started }
+    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course: course_cohort.course) }
+    let(:params) { { data: { attributes: { reason: "insufficient-capacity" } } } }
 
-    def path(id = nil)
-      withdraw_api_v1_application_path(ecf_id: id)
+    before do
+      api_put(withdraw_api_v1_application_path(ecf_id: application.ecf_id), params:)
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when the application can be withdrawn" do
+      it_behaves_like "a successful api call"
+    end
+
+    context "when the application cannot be withdrawn" do
+      let(:application_status_trait) { :withdrawn }
+      let(:expected_response) do
+        {
+          "errors" => [
+            { "title" => "base", "detail" => I18n.t("activemodel.errors.models.applications/withdraw.attributes.base.already_withdrawn") },
+          ],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/change-schedule" do

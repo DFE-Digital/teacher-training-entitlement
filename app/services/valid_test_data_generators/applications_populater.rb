@@ -70,11 +70,11 @@ module ValidTestDataGenerators
 
         return if Faker::Boolean.boolean(true_ratio: 0.3)
 
-        if Faker::Boolean.boolean(true_ratio: 0.5)
-          defer_application(application)
-        else
-          withdrawn_application(application)
-        end
+        # if Faker::Boolean.boolean(true_ratio: 0.5)
+        #   defer_application(application)
+        # else
+        #   withdrawn_application(application)
+        # end
 
         # TTE only has one course at the momemnt
         # return if Faker::Boolean.boolean(true_ratio: 0.3)

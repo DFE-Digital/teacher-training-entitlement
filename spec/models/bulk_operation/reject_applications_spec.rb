@@ -10,10 +10,10 @@ RSpec.describe BulkOperation::RejectApplications do
   describe "#run!" do
     subject(:run) { bulk_operation.run! }
 
-    context "when the application is already lead_provider_approval_status: rejected" do
+    context "when the application is already status: rejected" do
       let(:application) { create(:application, :rejected, reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider]) }
 
-      it { expect { run }.not_to(change { application.reload.lead_provider_approval_status }) }
+      it { expect { run }.not_to(change { application.reload.status }) }
       it { expect { run }.not_to(change { application.reload.reason_for_rejection }) }
 
       it "saves the result" do
@@ -22,10 +22,10 @@ RSpec.describe BulkOperation::RejectApplications do
       end
     end
 
-    context "when the application is lead_provider_approval_status: pending" do
+    context "when the application is status: pending" do
       let(:application) { create(:application, :pending) }
 
-      it { expect { run }.to(change { application.reload.lead_provider_approval_status }.from("pending").to("rejected")) }
+      it { expect { run }.to(change { application.reload.status }.from(Application::PENDING).to(Application::REJECTED)) }
       it { expect { run }.to(change { application.reload.reason_for_rejection }.from(nil).to(Application.reason_for_rejections[:registration_expired])) }
       it { expect(run[application.ecf_id]).to eq("Changed to rejected") }
 

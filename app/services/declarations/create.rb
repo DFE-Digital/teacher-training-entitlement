@@ -62,11 +62,11 @@ module Declarations
     end
 
     def completed_declaration?
-      declaration_type == "completed"
+      declaration_type == Declaration::COMPLETED
     end
 
     def started_declaration?
-      declaration_type == "started"
+      declaration_type == Declaration::STARTED
     end
 
   private
@@ -161,14 +161,14 @@ module Declarations
     end
 
     def application_is_declarable
-      return if application.accepted_lead_provider_approval_status? && application.active_training_status?
+      return if application.accepted_status?
 
       errors.add(:application, :in_wrong_state)
     end
 
     def declaration_type_out_of_order
       return if started_declaration?
-      return if completed_declaration? && active_declarations.where(declaration_type: "started").exists?
+      return if completed_declaration? && active_declarations.where(declaration_type: Declaration::STARTED).exists?
 
       errors.add(:declaration_type, :out_of_order)
     end

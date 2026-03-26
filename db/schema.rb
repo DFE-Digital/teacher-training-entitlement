@@ -21,14 +21,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "api_token_scopes", ["lead_provider", "teacher_record_service"]
-  create_enum "application_statuses", ["active", "deferred", "withdrawn"]
+  create_enum "application_statuses", ["pending", "accepted", "started", "rejected", "completed", "deferred", "withdrawn"]
   create_enum "course_group", ["reception", "send"]
   create_enum "declaration_state_reasons", ["duplicate"]
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
   create_enum "funding_choices", ["school", "trust", "self", "another", "employer"]
   create_enum "kind_of_nurseries", ["local_authority_maintained_nursery", "preschool_class_as_part_of_school", "private_nursery", "another_early_years_setting", "childminder"]
-  create_enum "lead_provider_approval_statuses", ["pending", "accepted", "rejected"]
   create_enum "outcome_states", ["passed", "failed", "voided"]
   create_enum "reasons_for_rejection", ["registration_expired", "rejected_by_provider", "other_application_in_this_cohort_accepted"]
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
@@ -100,11 +99,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.uuid "ecf_id"
     t.bigint "lead_provider_id"
     t.text "reason"
-    t.enum "state", default: "active", null: false, enum_type: "application_statuses"
+    t.enum "status", enum_type: "application_statuses"
     t.datetime "updated_at", null: false
     t.index ["application_id"], name: "index_application_states_on_application_id"
     t.index ["ecf_id"], name: "index_application_states_on_ecf_id", unique: true
     t.index ["lead_provider_id"], name: "index_application_states_on_lead_provider_id"
+    t.index ["status"], name: "index_application_states_on_status"
   end
 
   create_table "applications", force: :cascade do |t|
@@ -118,7 +118,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.string "funding_eligiblity_status_code"
     t.bigint "institution_id"
     t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
-    t.enum "lead_provider_approval_status", enum_type: "lead_provider_approval_statuses"
     t.bigint "lead_provider_id", null: false
     t.string "notes"
     t.integer "number_of_pupils", default: 0
@@ -129,11 +128,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.enum "reason_for_rejection", enum_type: "reasons_for_rejection"
     t.string "referred_by_return_to_teaching_adviser"
     t.enum "review_status", enum_type: "review_statuses"
+    t.enum "status", enum_type: "application_statuses"
     t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
     t.string "teacher_catchment_iso_country_code", limit: 3
-    t.enum "training_status", enum_type: "application_statuses"
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -144,8 +143,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
-    t.index ["lead_provider_approval_status", "lead_provider_id"], name: "idx_on_lead_provider_approval_status_lead_provider__299e5bac06"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
+    t.index ["status"], name: "index_applications_on_status"
     t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
     t.index ["user_id"], name: "index_applications_on_user_id"
   end

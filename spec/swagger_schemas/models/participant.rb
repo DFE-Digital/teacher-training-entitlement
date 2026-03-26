@@ -100,7 +100,7 @@ PARTICIPANT = {
     items: {
       description: "The details of an Participant enrolment",
       type: :object,
-      required: %i[course_identifier application_id eligible_for_funding training_status],
+      required: %i[course_identifier application_id eligible_for_funding status],
       properties: {
         course_identifier: {
           description: "The course this application relates to",
@@ -135,11 +135,11 @@ PARTICIPANT = {
           nullable: false,
           example: true,
         },
-        training_status: {
-          description: "The training status of the participant",
+        status: {
+          description: "The status of the participant",
           type: :string,
-          enum: Application.training_statuses.keys,
-          example: Application.training_statuses.keys.first,
+          enum: Application::STATUSES,
+          example: Application::STATUSES.first,
         },
         school_urn: {
           description: "The Unique Reference Number (URN) of the school where this participant is employed",

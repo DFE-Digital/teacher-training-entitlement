@@ -4,15 +4,15 @@ FactoryBot.define do
   factory :application_state do
     application
     lead_provider { LeadProvider.first }
-    state { "active" }
+    status { Application::ACCEPTED }
 
     trait :withdrawn do
-      state { ApplicationState.states[:withdrawn] }
+      status { Application::WITHDRAWN }
       reason { "other" }
     end
 
     trait :deferred do
-      state { ApplicationState.states[:deferred] }
+      status { Application::DEFERRED }
       reason { "other" }
     end
   end

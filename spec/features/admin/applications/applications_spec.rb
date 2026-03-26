@@ -56,7 +56,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "filtering applications by application status" do
     application = applications_in_order.last
-    application.update_column(:training_status, :deferred)
+    application.update_column(:status, Application::DEFERRED)
 
     visit(admin_applications_path)
     select "Deferred", from: "Application status"
@@ -67,15 +67,15 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_application(application)
   end
 
-  scenario "filtering applications by provider approval status" do
+  scenario "filtering applications by Application status" do
     application = applications_in_order.last
-    application.update! lead_provider_approval_status: :accepted, funded_place: false
+    application.update! status: Application::ACCEPTED, funded_place: false
 
     visit(admin_applications_path)
-    select "Accepted", from: "Provider approval status"
+    select "Accepted", from: "Application status"
     click_on "Search"
 
-    expect(page).to have_select("Provider approval status", selected: "Accepted")
+    expect(page).to have_select("Application status", selected: "Accepted")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(application)
   end
@@ -119,17 +119,17 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     visit(admin_applications_path)
 
     fill_in "Find an application", with: search_with_results
-    select approval_status_without_results, from: "Provider approval status"
+    select approval_status_without_results, from: "Application status"
     click_on "Search"
     expect(page).to have_text("No applications match the search and filters")
 
     fill_in "Find an application", with: search_without_results
-    select approval_status_with_results, from: "Provider approval status"
+    select approval_status_with_results, from: "Application status"
     click_on "Search"
     expect(page).to have_text("No applications match the search and filters")
 
     fill_in "Find an application", with: search_with_results
-    select approval_status_with_results, from: "Provider approval status"
+    select approval_status_with_results, from: "Application status"
     click_on "Search"
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(application)
@@ -142,7 +142,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     application.update!(
       eligible_for_funding: true,
       funded_place: true,
-      lead_provider_approval_status: :accepted,
+      status: Application::ACCEPTED,
       funding_eligiblity_status_code: 123,
     )
 
@@ -165,8 +165,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       expect(summary_list).to have_summary_item("Course", application.course.name)
       expect(summary_list).to have_summary_item("Course identifier", application.course.identifier)
       expect(summary_list).to have_summary_item("Provider", application.lead_provider.name)
-      expect(summary_list).to have_summary_item("Provider approval status", application.lead_provider_approval_status.humanize)
-      expect(summary_list).to have_summary_item("Training status", application.training_status)
+      expect(summary_list).to have_summary_item("Application status", application.status.humanize)
       expect(summary_list).to have_summary_item("Created", application.created_at.to_fs(:govuk_short))
       expect(summary_list).to have_summary_item("Updated", application.updated_at.to_fs(:govuk_short))
     end
@@ -226,16 +225,16 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     end
   end
 
-  scenario "changing lead provider approval status" do
+  scenario "revert to pending" do
     application = create(:application, :accepted)
 
     visit admin_application_path(application)
 
     expect(page).to have_css("h1", text: "Application details")
 
-    within(".govuk-summary-list__row", text: "Provider approval status") do |summary_list_row|
+    within(".govuk-summary-list__row", text: "Application status") do |summary_list_row|
       expect(summary_list_row).to have_text "Accepted"
-      click_link("Change")
+      click_link("Revert to Pending")
     end
 
     expect(page).to have_css("h1", text: "Are you sure you want to change the status to Pending?")
@@ -246,45 +245,49 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     click_button "Change status to Pending"
 
     expect(page).to have_css("h1", text: "Application details")
-    within(".govuk-summary-list__row", text: "Provider approval status") do |summary_list_row|
+    within(".govuk-summary-list__row", text: "Application status") do |summary_list_row|
       expect(summary_list_row).to have_text "Pending"
       expect(summary_list_row).not_to have_link("Change")
     end
   end
 
-  scenario "changing training status", pending: "We need to select the target_course_cohort for the resume action" do
-    application = create(:application, :accepted, :with_declaration)
+  scenario "changing status" do
+    lead_provider = create(:lead_provider)
+    schedule = create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
+    course_cohort = create(:course_cohort, lead_provider: lead_provider, schedule:)
+    application = create(:application, :accepted, course_cohort:, lead_provider:)
+    create(:declaration, application:, course: course_cohort.course, cohort: course_cohort.cohort, lead_provider:, declaration_type: "started", declaration_date: schedule.training_starts_at + 1.hour)
 
     visit admin_application_path(application)
 
     expect(page).to have_css("h1", text: "Application details")
 
-    within(".govuk-summary-list__row", text: "Training status") do |summary_list|
-      expect(summary_list).to have_text "Active"
-      click_on "Change"
+    within(".govuk-summary-list__row", text: "Application status") do |summary_list|
+      expect(summary_list).to have_text "Accepted"
+      click_on "Defer/Withdraw"
     end
 
-    expect(page).to have_css("h1", text: "Change training status")
-    choose "Defer", visible: :all
+    expect(page).to have_css("h1", text: "Change status")
+    choose "Deferred", visible: :all
     click_button "Continue"
 
-    expect(page).to have_css(".govuk-error-message", text: "Choose a valid reason for the training status change")
-    select Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["deferred"].first
+    expect(page).to have_css(".govuk-error-message", text: "Choose a valid reason for the status change")
+    select Admin::Applications::ChangeStatusForm::REASON_OPTIONS["deferred"].first
     click_button "Continue"
 
     expect(page).to have_css("h1", text: "Application details")
-    within(".govuk-summary-list__row", text: "Training status") do |summary_list|
+    within(".govuk-summary-list__row", text: "status") do |summary_list|
       expect(summary_list).to have_text "Deferred"
-      click_on "Change"
+      click_on "Accept"
     end
 
-    expect(page).to have_css("h1", text: "Change training status")
-    choose "Active", visible: :all
+    expect(page).to have_css("h1", text: "Change status")
+    choose "Accepted", visible: :all
     click_button "Continue"
 
     expect(page).to have_css("h1", text: "Application details")
-    within(".govuk-summary-list__row", text: "Training status") do |summary_list|
-      expect(summary_list).to have_text "Active"
+    within(".govuk-summary-list__row", text: "status") do |summary_list|
+      expect(summary_list).to have_text "Started"
     end
   end
 

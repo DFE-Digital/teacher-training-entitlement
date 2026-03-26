@@ -57,7 +57,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
       expect(page).to have_content "#{Application.first.ecf_id}Changed to rejected"
       expect(page).to have_content "#{Application.last.ecf_id}Changed to rejected"
       expect(page).not_to have_button("Reject applications")
-      expect(Application.all.pluck(:lead_provider_approval_status)).to eq %w[rejected rejected]
+      expect(Application.all.pluck(:status)).to eq %w[rejected rejected]
     end
 
     scenario "when the bulk operation has started but not finished" do

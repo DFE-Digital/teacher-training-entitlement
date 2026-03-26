@@ -1,17 +1,13 @@
 module Applications
   class Strategy
-    WITHDRAWN = "withdrawn".freeze
-    DEFERRED = "deferred".freeze
-    ACTIVE = "active".freeze
-
-    def self.for(application:, training_status:, reason:)
-      case training_status
-      when WITHDRAWN
-        Withdraw.new(application:, reason:)
-      when DEFERRED
-        Defer.new(application:, reason:)
-      when ACTIVE
-        Resume.new(application:, course_cohort: application.course_cohort)
+    def self.for(application:, status:, reason:, admin_user:)
+      case status
+      when Application::WITHDRAWN
+        Withdraw.new(application:, reason:, admin_user:)
+      when Application::DEFERRED
+        Defer.new(application:, reason:, admin_user:)
+      when Application::ACCEPTED
+        Resume.new(application:, course_cohort: application.course_cohort, admin_user:)
       end
     end
   end

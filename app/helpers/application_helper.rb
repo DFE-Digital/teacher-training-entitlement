@@ -35,15 +35,15 @@ module ApplicationHelper
   end
 
   def accepted?(application)
-    application.accepted_lead_provider_approval_status?
+    application.accepted_status?
   end
 
   def pending?(application)
-    application.pending_lead_provider_approval_status?
+    application.pending_status?
   end
 
   def rejected?(application)
-    application.rejected_lead_provider_approval_status?
+    application.rejected_status?
   end
 
   def application_course_start_date
@@ -56,16 +56,16 @@ module ApplicationHelper
     tag.p("OTP code: #{admin.otp_hash}")
   end
 
-  def lead_provider_approval_status_badge(lead_provider_approval_status)
-    return nil unless lead_provider_approval_status
+  def application_status_badge(status)
+    return nil unless status.presence
 
     colour = {
       pending: "blue",
       accepted: "green",
       rejected: "red",
-    }.fetch(lead_provider_approval_status.to_sym, "grey")
+    }.fetch(status.to_sym, "grey")
 
-    govuk_tag(text: lead_provider_approval_status.humanize, colour:)
+    govuk_tag(text: status.humanize, colour:)
   end
 
   def sentry_javascript_tag

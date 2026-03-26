@@ -30,6 +30,9 @@ module ParticipantOutcomes
                            else
                              new_outcome = build_outcome.tap(&:save!)
                              new_outcome.declaration.touch(time: new_outcome.updated_at)
+                             application.application_states.create!(status: :completed)
+                             application.completed_status!
+
                              new_outcome
                            end
       end

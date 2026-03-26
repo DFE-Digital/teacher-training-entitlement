@@ -169,7 +169,7 @@ shared:
     - id
     - application_id
     - lead_provider_id
-    - state
+    - status
     - reason
     - created_at
     - updated_at
@@ -195,14 +195,13 @@ shared:
     - work_setting
     - primary_establishment
     - number_of_pupils
-    - lead_provider_approval_status
+    - status
     - participant_outcome_state
     - institution_id
     - teacher_catchment_iso_country_code
     - targeted_support_funding_eligibility
     - notes
     - funded_place
-    - training_status
     - referred_by_return_to_teaching_adviser
     - accepted_at
     - on_submission_trn

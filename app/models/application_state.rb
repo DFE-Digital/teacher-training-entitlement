@@ -6,10 +6,14 @@ class ApplicationState < ApplicationRecord
 
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
-  enum :state, {
-    active: "active",
-    deferred: "deferred",
-    withdrawn: "withdrawn",
+  enum :status, {
+    pending: Application::PENDING,
+    accepted: Application::ACCEPTED,
+    started: Application::STARTED,
+    rejected: Application::REJECTED,
+    completed: Application::COMPLETED,
+    deferred: Application::DEFERRED,
+    withdrawn: Application::WITHDRAWN,
   }, suffix: true
 
   scope :most_recent, -> { order("created_at desc").limit(1) }

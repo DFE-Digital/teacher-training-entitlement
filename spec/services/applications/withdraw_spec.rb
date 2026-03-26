@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Applications::Withdraw, type: :model do
-  subject(:service) { described_class.new(application:, reason:) }
+  subject(:service) { described_class.new(application:, reason:, admin_user: create(:admin)) }
 
   let(:application) { create(:application, :accepted, :with_declaration) }
   let(:reason) { nil }
@@ -34,6 +34,7 @@ RSpec.describe Applications::Withdraw, type: :model do
 
     it do
       expect(service.errors).not_to be_blank
+      expect(service.errors[:base]).not_to be_blank
       expect(service.errors[:base])
         .to include(I18n.t("#{error_message_path}.base.already_withdrawn"))
     end
@@ -45,7 +46,7 @@ RSpec.describe Applications::Withdraw, type: :model do
 
     it do
       expect(service.errors).to be_blank
-      expect(application.reload.training_status).to eq(Applications::Strategy::WITHDRAWN)
+      expect(application.reload.status).to eq(Application::WITHDRAWN)
     end
   end
 end

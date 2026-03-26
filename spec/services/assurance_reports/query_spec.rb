@@ -13,12 +13,12 @@ RSpec.describe AssuranceReports::Query do
   let(:lead_provider)       { create(:lead_provider) }
   let(:other_lead_provider) { create(:lead_provider) }
   let(:statement)           { create(:statement, lead_provider:) }
-  let(:training_status)     { :active }
+  let(:status)     { Application::ACCEPTED }
 
   let :declaration do
     travel_to(statement.deadline_date) do
       create(:declaration, lead_provider:) do |declaration|
-        declaration.application.update!(training_status:)
+        declaration.application.update_columns(status:)
         create(:statement_item, statement:, declaration:)
       end
     end
@@ -72,8 +72,8 @@ RSpec.describe AssuranceReports::Query do
       it { is_expected.to have_attributes lead_provider_id: declaration.lead_provider.id }
       it { is_expected.to have_attributes school_urn: declaration.application.school.urn }
       it { is_expected.to have_attributes school_name: declaration.application.school.name }
-      it { is_expected.to have_attributes training_status: declaration.application.training_status }
-      it { is_expected.to have_attributes training_status_reason: be_nil }
+      it { is_expected.to have_attributes status: declaration.application.status }
+      it { is_expected.to have_attributes status_reason: be_nil }
       it { is_expected.to have_attributes declaration_id: be_present }
       it { is_expected.to have_attributes declaration_id: declaration.ecf_id }
       it { is_expected.to have_attributes declaration_status: declaration.statement_items.first.state }
@@ -86,15 +86,15 @@ RSpec.describe AssuranceReports::Query do
       it { is_expected.to have_attributes statement_year: statement.year }
 
       context "when last status update was 'withdrawn'" do
-        let(:training_status) { :withdrawn }
+        let(:status) { Application::WITHDRAWN }
 
         before do
           create(:application_state, :withdrawn, application: declaration.application,
                                                  lead_provider: declaration.lead_provider)
         end
 
-        it { is_expected.to have_attributes training_status: "withdrawn" }
-        it { is_expected.to have_attributes training_status_reason: "other" }
+        it { is_expected.to have_attributes status: Application::WITHDRAWN }
+        it { is_expected.to have_attributes status_reason: "other" }
 
         context "with later second declaration for same lead provider" do
           before do
@@ -102,7 +102,7 @@ RSpec.describe AssuranceReports::Query do
 
             travel_to(statement.deadline_date) do
               create(:declaration, lead_provider:) do |declaration|
-                declaration.application.update! training_status: "withdrawn"
+                declaration.application.update_columns(status: Application::WITHDRAWN)
 
                 create(:statement_item, statement:, declaration:)
                 create(:application_state, :withdrawn, application: declaration.application,
@@ -112,21 +112,21 @@ RSpec.describe AssuranceReports::Query do
             end
           end
 
-          it { is_expected.to have_attributes training_status: "withdrawn" }
-          it { is_expected.to have_attributes training_status_reason: "other" }
+          it { is_expected.to have_attributes status: Application::WITHDRAWN }
+          it { is_expected.to have_attributes status_reason: "other" }
         end
       end
 
       context "when last status update was 'deferred'" do
-        let(:training_status) { :deferred }
+        let(:status) { Application::DEFERRED }
 
         before do
           create(:application_state, :deferred, application: declaration.application,
                                                 lead_provider: declaration.lead_provider)
         end
 
-        it { is_expected.to have_attributes training_status: "deferred" }
-        it { is_expected.to have_attributes training_status_reason: be_nil }
+        it { is_expected.to have_attributes status: Application::DEFERRED }
+        it { is_expected.to have_attributes status_reason: "other" }
       end
     end
   end

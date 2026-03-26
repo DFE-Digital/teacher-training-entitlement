@@ -36,19 +36,15 @@
       row.with_value(text: @application.lead_provider.name)
     end
     sl.with_row do |row|
-      row.with_key(text: "Provider approval status")
-      row.with_value(text: @application.lead_provider_approval_status.try(:humanize))
-      unless @application.pending_lead_provider_approval_status?
+      row.with_key(text: "Application status")
+      row.with_value(text: @application.status.try(:humanize))
+      unless @application.pending_status?
         row.with_action(
-          text: "Change",
+          text: "Revert to Pending",
           href: new_admin_applications_revert_to_pending_path(@application))
-      end
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Training status")
-      row.with_value(text: @application.lead_provider_approval_status == 'pending' ? '-' : @application.training_status.try(:humanize))
-      unless @application.lead_provider_approval_status == 'pending'
-        row.with_action(text: "Change", href: new_admin_applications_change_training_status_path(@application))
+        row.with_action(
+          text: @application.accepted_status? ? "Defer/Withdraw" : "Accept", 
+          href: new_admin_applications_change_status_path(@application))  
       end
     end
     sl.with_row do |row|

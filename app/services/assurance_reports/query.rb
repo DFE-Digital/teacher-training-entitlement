@@ -29,8 +29,8 @@ module AssuranceReports
           lp.id                                   AS lead_provider_id,
           i.institution_reference_number          AS school_urn,
           i.name                                  AS school_name,
-          a.training_status                       AS training_status,
-          st.reason                               AS training_status_reason,
+          a.status                                AS status,
+          st.reason                               AS status_reason,
           d.ecf_id                                AS declaration_id,
           si.state                                AS declaration_status,
           d.declaration_type                      AS declaration_type,
@@ -51,13 +51,12 @@ module AssuranceReports
         LEFT OUTER JOIN institutions i      ON i.id = a.institution_id
         LEFT OUTER JOIN schools sc          ON sc.id = i.institutionable_id AND i.institutionable_type = 'School'
         LEFT OUTER JOIN (
-             SELECT DISTINCT ON (lead_provider_id, application_id) lead_provider_id, application_id, state, reason
+             SELECT DISTINCT ON (lead_provider_id, application_id) lead_provider_id, application_id, status, reason
              FROM application_states
              ORDER BY lead_provider_id, application_id, created_at DESC
         ) AS st ON
           st.application_id = a.id AND
-          st.lead_provider_id = d.lead_provider_id AND
-          st.state = 'withdrawn'
+          st.lead_provider_id = d.lead_provider_id
         WHERE #{where_values}
         ORDER BY u.full_name ASC
       EOSQL

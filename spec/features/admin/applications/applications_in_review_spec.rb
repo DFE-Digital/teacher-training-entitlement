@@ -32,7 +32,7 @@ RSpec.feature "Applications in review", :npq, type: :feature do
         application.user.full_name,
         application.review_status,
         application.eligible_for_funding ? "Yes" : "No",
-        application.lead_provider_approval_status.humanize,
+        application.status.humanize,
         application.notes.to_s,
         "View",
       ]
@@ -157,7 +157,7 @@ RSpec.feature "Applications in review", :npq, type: :feature do
       expect(summary_list).to have_summary_item("Name", application.user.full_name)
       expect(summary_list).to have_summary_item("Course", application.course.name)
       expect(summary_list).to have_summary_item("Provider", application.lead_provider.name)
-      expect(summary_list).to have_summary_item("Provider approval status", application.lead_provider_approval_status.humanize)
+      expect(summary_list).to have_summary_item("Application status", application.status.humanize)
     end
 
     expect(page).to have_css("h2", text: "Funding details")

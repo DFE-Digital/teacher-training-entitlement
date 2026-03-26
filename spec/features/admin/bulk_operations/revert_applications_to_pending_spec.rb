@@ -58,7 +58,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
       expect(page).to have_content "#{Application.first.ecf_id}Changed to pending"
       expect(page).to have_content "#{Application.last.ecf_id}Changed to pending"
       expect(page).not_to have_button("Revert applications to pending")
-      expect(Application.all.pluck(:lead_provider_approval_status)).to eq %w[pending pending]
+      expect(Application.all.pluck(:status)).to eq %w[pending pending]
     end
 
     scenario "when the bulk operation has started but not finished" do

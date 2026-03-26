@@ -87,12 +87,16 @@ class Declaration < ApplicationRecord
     end
   end
 
-  enum :declaration_type, {
-    started: "started",
-    "retained-1": "retained-1",
-    "retained-2": "retained-2",
-    completed: "completed",
-  }, suffix: true, validate: true
+  DECLARATION_TYPES = [
+    STARTED = "started".freeze,
+    RETAINED_1 = "retained-1".freeze,
+    RETAINED_2 = "retained-2".freeze,
+    COMPLETED = "completed".freeze,
+  ].freeze
+
+  enum :declaration_type,
+       DECLARATION_TYPES.index_with(&:itself),
+       suffix: true, validate: true
 
   enum :state_reason, {
     duplicate: "duplicate",

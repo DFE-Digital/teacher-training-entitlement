@@ -7,7 +7,7 @@ module Admin
 
       def create
         if @form.invalid?
-          render :show, status: :unprocessable_entity and return
+          render :show, status: :unprocessable_content and return
         end
 
         service = ::Applications::ChangeCohort.new(
@@ -20,7 +20,7 @@ module Admin
 
         if service.errors.any?
           @form.errors.copy!(service.errors)
-          render :show, status: :unprocessable_entity
+          render :show, status: :unprocessable_content
         else
           redirect_to admin_application_path(application)
         end

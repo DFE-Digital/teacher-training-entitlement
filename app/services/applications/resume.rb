@@ -3,40 +3,55 @@
 module Applications
   class Resume
     include ActiveModel::Model
-    include ActiveModel::Attributes
+    include ActiveModel::Validations
 
-    attribute :application
-    attribute :course_cohort
+    validate :not_already_started
+    validate :not_already_accepted
+    validate :incompatible_course
+    validate :cohort_not_in_training
+    validate :cohort_exists
 
-    validates :application, presence: true
-    validates :course_cohort, presence: true
-    validate :not_already_active, if: -> { application }
-    validate :incompatible_course, if: -> { application && course_cohort }
-    validate :cohort_not_in_training, if: -> { course_cohort }
+    def initialize(application:, course_cohort:, admin_user: nil)
+      @application = application
+      @course_cohort = course_cohort
+      @admin_user = admin_user
+    end
 
     def call
       return if invalid?
 
-      application.application_states.create!
-      application.update!(training_status: "active", course_cohort:)
+      @application.update_status!(status: Application::STARTED,
+                                  reason: nil,
+                                  admin_user: @admin_user,
+                                  course_cohort: @course_cohort)
     end
 
   private
 
-    def not_already_active
-      add_error(:base, :already_active) if application.active_training_status?
+    def not_already_started
+      add_error(:base, :already_started) if @application.started_status?
+    end
+
+    def not_already_accepted
+      add_error(:base, :already_accepted) if @application.accepted_status?
     end
 
     def incompatible_course
-      return if course_cohort.course == application.course
+      return if @course_cohort.nil? || @course_cohort.course == @application.course
 
-      add_error(:application, :incompatible_schedule)
+      add_error(:base, :incompatible_schedule)
     end
 
     def cohort_not_in_training
-      return if course_cohort.schedule.training_live?
+      return if @course_cohort.nil? || @course_cohort.schedule.training_live?
 
       add_error(:base, :cohort_not_in_training)
+    end
+
+    def cohort_exists
+      return if @course_cohort
+
+      add_error(:base, :cohort_missing)
     end
 
     def add_error(group, key)

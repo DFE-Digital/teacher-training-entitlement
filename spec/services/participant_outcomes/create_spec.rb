@@ -13,7 +13,8 @@ RSpec.describe ParticipantOutcomes::Create, :npq, type: :model do
       create(:declaration, :completed, :payable, course:)
     end
   end
-  let(:instance) { described_class.new(lead_provider:, participant_id:, completion_date:, state:, course_identifier:) }
+  let(:application) { completed_declaration.application }
+  let(:instance) { described_class.new(application:, lead_provider:, participant_id:, completion_date:, state:, course_identifier:) }
 
   describe "validations" do
     it { expect(instance).to be_valid }
@@ -106,6 +107,8 @@ RSpec.describe ParticipantOutcomes::Create, :npq, type: :model do
             state:,
             completion_date: completion_date.to_date,
           })
+          expect(application.reload).to be_completed_status
+          expect(application.application_states.where(status: :completed)).to exist
         end
       end
 
