@@ -17,7 +17,8 @@ module MultiStepFormSession
   end
 
   def store_session_form_data!(attrs)
-    session[current_session_key] = session_form_data.merge(attrs.to_h)
+    storable_attrs = attrs.select { |_, value| simple_type?(value) }
+    session[current_session_key] = session_form_data.merge(storable_attrs)
   end
 
   def clear_session_form_data!
@@ -25,6 +26,15 @@ module MultiStepFormSession
   end
 
 private
+
+  def simple_type?(obj)
+    case obj
+    when String, Numeric, TrueClass, FalseClass, NilClass
+      true
+    else
+      false
+    end
+  end
 
   def current_session_key
     self.class._session_form_data_key || :mutli_step_session

@@ -60,6 +60,7 @@ Rails.application.routes.draw do
     namespace :change_provider, path: "change-provider" do
       dashed_resources :start, only: %i[index create]
       dashed_resources :providers, only: %i[index create]
+      dashed_resources :check_answers, only: %i[index create]
     end
   end
 
