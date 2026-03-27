@@ -46,8 +46,8 @@ module Participants
     def where_status_is(status)
       return if ignore?(filter: status)
 
-      unless status.to_s.in?(Application::API_STATUSES)
-        raise API::Errors::FilterValidationError, I18n.t(:invalid_status, valid_status: Application::API_STATUSES)
+      unless status.to_s.in?(Application::STATUSES)
+        raise API::Errors::FilterValidationError, I18n.t(:invalid_status, valid_status: Application::STATUSES)
       end
 
       scope.merge!(User.includes(:applications).where(applications: { status: }))
@@ -66,7 +66,7 @@ module Participants
     def all_participants
       User
         .distinct
-        .joins(:applications).merge(Application.started_or_accepted_or_withdrawn_or_deferred)
+        .joins(:applications).merge(Application.accepted)
         .includes(
           :participant_id_changes,
           applications: %i[

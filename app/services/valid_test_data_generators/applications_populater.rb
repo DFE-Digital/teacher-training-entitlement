@@ -67,24 +67,6 @@ module ValidTestDataGenerators
         create_declarations(application)
         create_outcomes(application)
         void_completed_declaration_for(application)
-
-        return if Faker::Boolean.boolean(true_ratio: 0.3)
-
-        # if Faker::Boolean.boolean(true_ratio: 0.5)
-        #   defer_application(application)
-        # else
-        #   withdrawn_application(application)
-        # end
-
-        # TTE only has one course at the momemnt
-        # return if Faker::Boolean.boolean(true_ratio: 0.3)
-
-        # course = courses.reject { |c| c.identifier == course.identifier }.sample
-        # application = create_application(user, school, course, schedule)
-
-        # return if Faker::Boolean.boolean(true_ratio: 0.3)
-
-        # reject_application(application)
       end
     end
 

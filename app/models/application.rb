@@ -30,7 +30,7 @@ class Application < ApplicationRecord
   has_many :application_states
   has_many :declarations
 
-  scope :expired_applications, -> { where(status: REJECTED).where("created_at < ?", cut_off_date_for_expired_applications) }
+  scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications) }
   scope :accepted, -> { where(status: ACCEPTED) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
@@ -56,18 +56,17 @@ class Application < ApplicationRecord
 
   after_commit :touch_user_if_changed
 
-  API_STATUSES = [
-    ACCEPTED = "accepted".freeze,
-    DEFERRED = "deferred".freeze,
-    WITHDRAWN = "withdrawn".freeze,
-  ].freeze
+  API_STATUSES = [].freeze
 
-  STATUSES = API_STATUSES +
+  STATUSES =
     [
       PENDING = "pending".freeze,
+      ACCEPTED = "accepted".freeze,
       STARTED = "started".freeze,
-      REJECTED = "rejected".freeze,
       COMPLETED = "completed".freeze,
+      DEFERRED = "deferred".freeze,
+      WITHDRAWN = "withdrawn".freeze,
+      REJECTED = "rejected".freeze,
     ].freeze
 
   STATUS_TRANSITIONS = {

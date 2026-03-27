@@ -34,12 +34,6 @@ module Applications
 
   private
 
-    def where_lead_provider_approval_status_in(lead_provider_approval_status)
-      return if ignore?(filter: lead_provider_approval_status)
-
-      scope.merge!(Application.where(lead_provider_approval_status: extract_conditions(lead_provider_approval_status, allowlist: Application.lead_provider_approval_statuses.values)))
-    end
-
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
 

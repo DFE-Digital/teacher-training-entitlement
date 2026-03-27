@@ -212,7 +212,7 @@ RSpec.describe Participants::Query do
           let(:params) { { status: "not_valid_status" } }
 
           it "raises an error" do
-            expect { query.scope.to_sql }.to raise_error(API::Errors::FilterValidationError).with_message(%(The filter '#/status' must be ["accepted", "deferred", "withdrawn"]))
+            expect { query.scope.to_sql }.to raise_error(API::Errors::FilterValidationError).with_message(%(The filter '#/status' must be #{Application::STATUSES}))
           end
         end
       end

@@ -297,7 +297,7 @@ RSpec.shared_examples "an API index endpoint with filter by status" do
 
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.content_type).to match(/application\/json.*/)
-        expect(parsed_response.dig("errors", 0, "detail")).to include(%(The filter '#/status' must be ["accepted", "deferred", "withdrawn"]))
+        expect(parsed_response.dig("errors", 0, "detail")).to include(%(The filter '#/status' must be #{Application::STATUSES}))
       end
     end
   end
