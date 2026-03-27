@@ -3,8 +3,7 @@ module CourseHelper
     I18n.t(course.identifier, scope: "course.name")
   end
 
-  # Returns either "the #{course_name}" (for EHCO) or "the #{course_name} NPQ" in all other cases
-  # Saves having this logic in a bunch of different templates
+  # Returns either "the #{course_name} TTE"
   def localise_sentence_embedded_course_name(course)
     I18n.t("course.embedded_sentence.default", course_name: localise_course_name(course))
   end
