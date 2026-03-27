@@ -9,7 +9,10 @@ module Applications
     def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, lead_provider_approval_status: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
       @scope = lead_provider.applications.includes(
         :user,
-        :institution,
+        :course,
+        :cohort,
+        :schedule,
+        institution: :institutionable,
         course_cohort: %i[course cohort schedule],
       )
       @sort = sort
