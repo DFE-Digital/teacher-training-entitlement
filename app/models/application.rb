@@ -47,7 +47,7 @@ class Application < ApplicationRecord
             uniqueness: {
               scope: :course_cohort_id,
               conditions: -> { where.not(status: REJECTED) },
-            }, unless: :provider_rejected?
+            }, unless: -> { rejected_status? }
   validate :ensure_change_status, if: -> { will_save_change_to_status? && persisted? }
   validate :ensure_valid_status_transition, if: -> { status_changed? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
@@ -154,10 +154,6 @@ class Application < ApplicationRecord
       .exists?
   end
 
-  def provider_rejected?
-    rejected_status?
-  end
-
   def ineligible_for_funding_reason
     return "previously-funded" if previously_funded?
 
@@ -238,9 +234,11 @@ class Application < ApplicationRecord
       raise StandardError, "Admin user must be provided"
     end
 
-    application_states.create!(status:, reason:)
-    assign_attributes(additional_attributes.merge(status:))
-    save!(validate: valid_transition)
+    transaction do
+      application_states.create!(status:, reason:)
+      assign_attributes(additional_attributes.merge(status:))
+      save!(validate: valid_transition)
+    end
   end
 
 private
