@@ -1,10 +1,6 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def application_count_based_account_url
-    current_user.applications.size == 1 ? accounts_user_registration_path(current_user.applications.first) : account_path
-  end
-
   def npq_registration_link
     if signed_in?
       if Feature.trn_required? && current_user.trn.blank?

@@ -1,20 +1,20 @@
 require "rails_helper"
 
-RSpec.feature "Account", type: :feature do
+RSpec.feature "Applications", type: :feature do
   include_context "Stub Teacher Auth Responses"
 
-  describe "accounts page" do
+  describe "applications index page" do
     scenario "when not logged in, it redirects to sign in" do
-      visit "/account"
+      visit "/applications"
       expect(page).to have_current_path("/sign-in")
     end
   end
 
-  describe "accounts user registration page" do
+  describe "application show page" do
     let!(:application) { create(:application) }
 
     scenario "when not logged in, it redirects to sign in" do
-      visit(accounts_user_registration_path(application.id))
+      visit(application_path(application.ecf_id))
 
       expect(page).to have_current_path("/sign-in")
     end

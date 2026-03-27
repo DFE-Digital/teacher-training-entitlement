@@ -62,9 +62,9 @@ RSpec.describe "Omniauth callbacks", type: :request do
             create(:application, user: user)
           end
 
-          it "redirects to account path" do
+          it "redirects to user registrations path" do
             subject
-            expect(response).to redirect_to(account_path)
+            expect(response).to redirect_to(applications_path)
           end
         end
       end

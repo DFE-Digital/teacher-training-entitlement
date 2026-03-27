@@ -1,0 +1,27 @@
+<% application_count = current_user.applications.count %>
+<% title = "Your TTE #{"registration".pluralize(application_count)}" %>
+
+<% content_for :title, title %>
+<h1 class="govuk-heading-xl"><%= title %></h1>
+<% if application_count > 0 %>
+  <div class="govuk-inset-text">
+    <%= govuk_link_to "Visit your GOV.UK One Login", one_login_home_url %> to check or change your personal details.
+  </div>
+<% end %>
+
+<% active_applications = current_user.applications.active_applications.includes(:course, :lead_provider).order(created_at: :desc, id: :desc) %>
+<% expired_applications = current_user.applications.expired_applications.includes(:course, :lead_provider).order(created_at: :desc, id: :desc) %>
+
+<% active_applications.each do |application| %>
+  <%= render "active_application_table", application: application %>
+<% end %>
+
+<% if expired_applications.any? %>
+  <h3 class="govuk-heading-l">Expired registrations</h3>
+
+  <% expired_applications.each do |application| %>
+    <%= render "expired_application_table", application: application %>
+  <% end %>
+<% end %>
+
+<%= render partial: 'registration_wizard/shared/register_for_an_npq' %>

@@ -1,6 +1,5 @@
 User-agent: *
-Disallow: /account
-Disallow: /admin
+Disallow: /applications
 Disallow: /admin
 Disallow: /registration
 Disallow: /session

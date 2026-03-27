@@ -90,12 +90,12 @@ RSpec.feature "Happy journeys", :with_default_schedules, :with_default_school, t
       end
     end
     if User.last.applications.count == 1
-      navigate_to_page(path: "/accounts/user_registrations/#{User.last.applications.last.id}", submit_form: false) do
+      navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
     else
-      navigate_to_page(path: "/account", submit_form: false) do
+      navigate_to_page(path: "/applications", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("Early Years")
       end
