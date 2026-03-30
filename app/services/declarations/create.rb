@@ -178,7 +178,7 @@ module Declarations
     end
 
     def application_is_declarable
-      return if application.accepted_status?
+      return if application.accepted_status? || application.started_status?
 
       errors.add(:application, :in_wrong_state)
     end

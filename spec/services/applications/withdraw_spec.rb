@@ -9,16 +9,6 @@ RSpec.describe Applications::Withdraw, type: :model do
 
   before { service.call }
 
-  context "when withdrawing with no declarations" do
-    let(:application) { create(:application, :accepted, declarations: []) }
-
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:base])
-        .to include(I18n.t("#{error_message_path}.base.no_started_declarations"))
-    end
-  end
-
   context "when withdrawing without a reason" do
     let(:reason) { nil }
 

@@ -48,7 +48,6 @@ class Application < ApplicationRecord
               scope: :course_cohort_id,
               conditions: -> { where.not(status: REJECTED) },
             }, unless: -> { rejected_status? }
-  validate :ensure_change_status, if: -> { will_save_change_to_status? && persisted? }
   validate :ensure_valid_status_transition, if: -> { status_changed? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
@@ -73,10 +72,11 @@ class Application < ApplicationRecord
     nil => [PENDING].freeze,
     PENDING => [ACCEPTED, REJECTED].freeze,
     ACCEPTED => [STARTED, COMPLETED].freeze,
-    STARTED => [COMPLETED, DEFERRED, WITHDRAWN].freeze,
+    STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
     DEFERRED => [STARTED].freeze,
     WITHDRAWN => [STARTED].freeze,
     REJECTED => [PENDING].freeze,
+    COMPLETED => [STARTED].freeze,
   }.freeze
 
   enum :status,
@@ -236,12 +236,6 @@ private
 
     if STATUS_TRANSITIONS.fetch(from, []).exclude?(to)
       errors.add(:status, :invalid_status_transition, from: from || "blank", to:)
-    end
-  end
-
-  def ensure_change_status
-    if accepted_status? && declarations.blank? && deferred_status?
-      errors.add(:status, :invalid_deferral_no_declarations)
     end
   end
 

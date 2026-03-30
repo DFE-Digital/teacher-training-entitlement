@@ -27,7 +27,6 @@ module Applications
     validates :reason, inclusion: { in: DEFERRAL_REASONS, message: :missing_reason }, allow_blank: false
     validate :not_already_deferred
     validate :not_withdrawn
-    validate :has_declarations
 
     def call
       return if invalid?
@@ -48,10 +47,6 @@ module Applications
 
     def not_already_deferred
       add_error(:base, :already_deferred) if @application&.deferred_status?
-    end
-
-    def has_declarations
-      add_error(:base, :no_declarations) if @application.declarations.none?
     end
 
     def add_error(group, key)

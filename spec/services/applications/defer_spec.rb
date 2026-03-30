@@ -9,16 +9,6 @@ RSpec.describe Applications::Defer, type: :model do
 
   before { service.call }
 
-  context "when deferring with no declarations" do
-    let(:application) { create(:application, :accepted, declarations: []) }
-
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:base])
-        .to include(I18n.t("#{error_message_path}.base.no_declarations"))
-    end
-  end
-
   context "when deferring without a reason" do
     let(:reason) { nil }
 

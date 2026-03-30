@@ -31,8 +31,6 @@ module Applications
 
     validate :not_withdrawn
     validate :not_missing_reason
-    validate :has_started_declarations
-    validate :has_declarations
 
     def initialize(application:, reason:, admin_user: nil)
       @application = application
@@ -61,14 +59,6 @@ module Applications
 
     def not_withdrawn
       add_error(:base, :already_withdrawn) if @application.withdrawn_status?
-    end
-
-    def has_started_declarations
-      add_error(:base, :no_started_declarations) unless @application.declarations.any?(&:started_declaration_type?)
-    end
-
-    def has_declarations
-      add_error(:base, :no_declarations) if @application.declarations.none?
     end
 
     def add_error(group, key)
