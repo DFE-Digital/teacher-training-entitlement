@@ -355,7 +355,7 @@ RSpec.describe Application do
     end
 
     context "when the application has not been previously funded (previous application not accepted)" do
-      before { previous_application.update_status!(status: Application::REJECTED, reason: nil, admin_user: create(:admin)) }
+      before { previous_application.update_column(:status, Application::REJECTED) }
 
       it { is_expected.not_to be_previously_funded }
     end

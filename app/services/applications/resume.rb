@@ -20,10 +20,13 @@ module Applications
     def call
       return if invalid?
 
-      @application.update_status!(status: Application::STARTED,
-                                  reason: nil,
-                                  admin_user: @admin_user,
-                                  course_cohort: @course_cohort)
+      Application.transaction do
+        @application.application_states.create!(status: Application::STARTED,
+                                                reason: @reason)
+        @application.assign_attributes(status: Application::STARTED,
+                                       course_cohort: @course_cohort)
+        @application.save!(validate: @admin_user.nil?)
+      end
     end
 
   private

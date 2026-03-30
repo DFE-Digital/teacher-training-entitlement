@@ -32,9 +32,12 @@ module Applications
     def call
       return if invalid?
 
-      @application.update_status!(status: Application::DEFERRED,
-                                  reason:,
-                                  admin_user: @admin_user)
+      Application.transaction do
+        @application.application_states.create!(status: Application::DEFERRED,
+                                                reason: @reason)
+        @application.status = Application::DEFERRED
+        @application.save!(validate: @admin_user.nil?)
+      end
     end
 
   private

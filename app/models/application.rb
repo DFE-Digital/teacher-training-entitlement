@@ -228,19 +228,6 @@ class Application < ApplicationRecord
     }&.reason
   end
 
-  def update_status!(status:, reason:, admin_user:, **additional_attributes)
-    valid_transition = can_transition_to?(status)
-    if !valid_transition && admin_user.nil?
-      raise StandardError, "Admin user must be provided"
-    end
-
-    transaction do
-      application_states.create!(status:, reason:)
-      assign_attributes(additional_attributes.merge(status:))
-      save!(validate: valid_transition)
-    end
-  end
-
 private
 
   def ensure_valid_status_transition

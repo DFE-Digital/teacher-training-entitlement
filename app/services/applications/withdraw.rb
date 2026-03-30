@@ -43,9 +43,12 @@ module Applications
     def call
       return if invalid?
 
-      @application.update_status!(status: Application::WITHDRAWN,
-                                  reason: @reason,
-                                  admin_user: @admin_user)
+      Application.transaction do
+        @application.application_states.create!(status: Application::WITHDRAWN,
+                                                reason: @reason)
+        @application.status = Application::WITHDRAWN
+        @application.save!(validate: @admin_user.nil?)
+      end
     end
 
   private
