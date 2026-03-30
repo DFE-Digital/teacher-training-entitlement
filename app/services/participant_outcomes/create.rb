@@ -25,22 +25,21 @@ module ParticipantOutcomes
       return false unless valid?
 
       ApplicationRecord.transaction do
-        @created_outcome = if outcome_already_exists?
-                             latest_existing_outcome
-                           else
-                             new_outcome = build_outcome.tap(&:save!)
-                             new_outcome.declaration.touch(time: new_outcome.updated_at)
-                             application.application_states.create!(status: :completed)
-                             application.completed_status!
-
-                             new_outcome
-                           end
+        @created_outcome = create_outcome!
       end
 
       true
     end
 
   private
+
+    def create_outcome!
+      return latest_existing_outcome if outcome_already_exists?
+
+      new_outcome = build_outcome.tap(&:save!)
+      new_outcome.declaration.touch(time: new_outcome.updated_at)
+      new_outcome
+    end
 
     def outcome_already_exists?
       return unless latest_existing_outcome

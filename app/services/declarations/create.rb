@@ -44,12 +44,29 @@ module Declarations
         @declaration = application.declarations.create!(declaration_parameters_for_create)
         @declaration.mark_eligible!
 
-        # [TODO]: Define when to raise statement for TTE
-        # StatementAttacher.new(@declaration:).attach
-        create_participant_outcome!
+        if started_declaration?
+          application_started!
+        elsif completed_declaration?
+          # [TODO]: Define when to raise statement for TTE
+          # StatementAttacher.new(@declaration:).attach
+          create_participant_outcome!
+
+          create_participant_outcome!
+          application_completed!
+        end
       end
 
       true
+    end
+
+    def application_completed!
+      application.application_states.create!(status: :completed)
+      application.update!(status: Application::COMPLETED)
+    end
+
+    def application_started!
+      application.update!(status: Application::STARTED)
+      application.application_states.create!(status: Application::STARTED)
     end
 
     def declaration_date=(raw_declaration_date)

@@ -28,6 +28,14 @@ RSpec.describe Declarations::Create, type: :model do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
   end
 
+  RSpec.shared_examples "does not update the application" do
+    it do
+      expect { service.call }
+        .to not_change(ApplicationState, :count)
+        .and not_change(application, :status)
+    end
+  end
+
   describe "started declaration" do
     let(:declaration_type) { "started" }
     let(:params) do
@@ -55,6 +63,11 @@ RSpec.describe Declarations::Create, type: :model do
         it { expect(declaration.cohort).to eq(application.cohort) }
         it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
         it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
+
+        it "sets the application to started" do
+          expect(application.reload).to be_started_status
+          expect(application.application_states.last&.status).to eq(Application::STARTED)
+        end
       end
 
       it "does not create an participant outcome" do
@@ -140,6 +153,13 @@ RSpec.describe Declarations::Create, type: :model do
           application.declarations << create(:declaration, :voided, declaration_type:, application:)
         end
 
+        it "sets the application to completed" do
+          service.call
+
+          expect(application.reload).to be_completed_status
+          expect(application.application_states.last&.status).to eq(Application::COMPLETED)
+        end
+
         it { expect { service.call }.to change(Declaration, :count).by(1) }
       end
     end
@@ -151,6 +171,8 @@ RSpec.describe Declarations::Create, type: :model do
         end
 
         it { is_expected.to validate_param(:base).with_message("A declaration has already been submitted that will be, or has been, paid for this event") }
+
+        it_behaves_like "does not update the application"
       end
 
       context "when application `has_passed` field has wrong value" do
@@ -176,24 +198,32 @@ RSpec.describe Declarations::Create, type: :model do
         let(:application) { create(:application, :pending, course_cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+
+        it_behaves_like "does not update the application"
       end
 
       context "when rejected" do
         let(:application) { create(:application, :rejected, course_cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+
+        it_behaves_like "does not update the application"
       end
 
       context "when deferred" do
         let(:application) { create(:application, :deferred, course_cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+
+        it_behaves_like "does not update the application"
       end
 
       context "when withdrawn" do
         let(:application) { create(:application, :withdrawn, course_cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
+
+        it_behaves_like "does not update the application"
       end
     end
 
@@ -202,12 +232,16 @@ RSpec.describe Declarations::Create, type: :model do
         let(:declaration_type) { nil }
 
         it { is_expected.to validate_presence_of(:declaration_type).with_message("Enter a '#/declaration_type'.") }
+
+        it_behaves_like "does not update the application"
       end
 
       context "when value unknown" do
         let(:declaration_type) { "foo" }
 
         it { is_expected.to validate_inclusion_of(:declaration_type).in_array(%w[started completed]).with_message("The entered '#/declaration_type' is not recognised.") }
+
+        it_behaves_like "does not update the application"
       end
     end
   end
