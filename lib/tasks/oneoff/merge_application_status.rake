@@ -24,6 +24,13 @@ namespace :oneoff do
       elsif application.declarations.where(declaration_type: Application::STARTED).any?
         application.update_columns(status: Application::STARTED)
         application.application_states.find_or_create_by!(status: Application::STARTED)
+      #
+      # Reset to pending and wipe any application states and declarations
+      #
+      else
+        application.update_columns(status: Application::PENDING)
+        application.application_states.delete_all
+        application.declarations.delete_all
       end
     end
   end
