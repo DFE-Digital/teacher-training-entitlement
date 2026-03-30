@@ -3,9 +3,12 @@
 require "rails_helper"
 
 RSpec.describe Declarations::Void, type: :model do
+  let(:application) { create(:application, :started) }
   let(:statement) { create(:statement, :next_output_fee) }
-  let(:declaration) { create(:declaration, lead_provider: statement.lead_provider, cohort: statement.cohort) }
-  let(:instance) { described_class.new(declaration:) }
+  let(:declaration_type) { :started }
+  let(:declaration) { create(:declaration, declaration_type, application:, lead_provider: statement.lead_provider, cohort: statement.cohort) }
+
+  subject(:service) { described_class.new(declaration:) }
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:declaration) }
@@ -18,7 +21,7 @@ RSpec.describe Declarations::Void, type: :model do
           context "when the declaration is already voided" do
             before { declaration.update!(state: :voided) }
 
-            it { expect(instance).to have_error(:declaration, :already_voided, "This declaration has already been voided.") }
+            it { expect(service).to have_error(:declaration, :already_voided, "This declaration has already been voided.") }
           end
         end
       end
@@ -33,14 +36,14 @@ RSpec.describe Declarations::Void, type: :model do
             context "when the declaration already has a #{ineligible_state} statement item" do
               before { create(:statement_item, declaration:, state: ineligible_state) }
 
-              it { expect(instance).to have_error(:declaration, :not_already_refunded, "The declaration will or has been be refunded.") }
+              it { expect(service).to have_error(:declaration, :not_already_refunded, "The declaration will or has been be refunded.") }
             end
           end
 
           context "when there is no output fee statement" do
             before { statement.update!(output_fee: false) }
 
-            it { expect(instance).to have_error(:declaration, :no_output_fee_statement, "You cannot submit or void declarations for the #{declaration.cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
+            it { expect(service).to have_error(:declaration, :no_output_fee_statement, "You cannot submit or void declarations for the #{declaration.cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
           end
         end
       end
@@ -49,13 +52,13 @@ RSpec.describe Declarations::Void, type: :model do
         context "when the declaration is #{state}" do
           before { declaration.update!(state:) }
 
-          it { expect(instance).to have_error(:declaration, :must_be_paid, "The declaration must be paid before it can be clawed back.") }
+          it { expect(service).to have_error(:declaration, :must_be_paid, "The declaration must be paid before it can be clawed back.") }
 
           context "when there are other declaration errors" do
             before { create(:statement_item, declaration:, state: StatementItem::REFUNDABLE_STATES.sample) }
 
-            it { expect(instance).to have_error(:declaration) }
-            it { expect(instance).not_to have_error(:declaration, :must_be_paid) }
+            it { expect(service).to have_error(:declaration) }
+            it { expect(service).not_to have_error(:declaration, :must_be_paid) }
           end
         end
       end
@@ -63,14 +66,14 @@ RSpec.describe Declarations::Void, type: :model do
   end
 
   describe "#void" do
-    subject(:void) { instance.void }
+    subject(:void) { service.void }
 
     it { is_expected.to be(true) }
 
     it "reloads declaration after action" do
-      allow(instance.declaration).to receive(:reload)
+      allow(service.declaration).to receive(:reload)
       void
-      expect(instance.declaration).to have_received(:reload)
+      expect(service.declaration).to have_received(:reload)
     end
 
     Declaration::VOIDABLE_STATES.each do |declaration_state|
@@ -88,11 +91,11 @@ RSpec.describe Declarations::Void, type: :model do
         end
 
         it "calls the void participant outcome service" do
-          service = instance_double(ParticipantOutcomes::Void)
-          allow(service).to receive(:void_outcome)
-          expect(service).to receive(:void_outcome)
+          service_double = instance_double(ParticipantOutcomes::Void)
+          allow(service_double).to receive(:void_outcome)
+          expect(service_double).to receive(:void_outcome)
 
-          allow(ParticipantOutcomes::Void).to receive(:new).with(declaration:).and_return(service)
+          allow(ParticipantOutcomes::Void).to receive(:new).with(declaration:).and_return(service_double)
           expect(ParticipantOutcomes::Void).to receive(:new).with(declaration:)
 
           void
@@ -112,11 +115,11 @@ RSpec.describe Declarations::Void, type: :model do
       end
 
       it "calls the void participant outcome service" do
-        service = instance_double(ParticipantOutcomes::Void)
-        allow(service).to receive(:void_outcome)
-        expect(service).to receive(:void_outcome)
+        service_double = instance_double(ParticipantOutcomes::Void)
+        allow(service_double).to receive(:void_outcome)
+        expect(service_double).to receive(:void_outcome)
 
-        allow(ParticipantOutcomes::Void).to receive(:new).with(declaration:).and_return(service)
+        allow(ParticipantOutcomes::Void).to receive(:new).with(declaration:).and_return(service_double)
         expect(ParticipantOutcomes::Void).to receive(:new).with(declaration:)
 
         void
@@ -128,6 +131,39 @@ RSpec.describe Declarations::Void, type: :model do
 
       it { is_expected.to be(false) }
       it { expect { void }.not_to(change { declaration.reload.state }) }
+    end
+  end
+
+  describe "Updating application status when voiding" do
+    context "when voiding a started declaration" do
+      let(:declaration_type) { :started }
+
+      before do
+        create(:application_state, :accepted, application:)
+        subject.void
+      end
+
+      it do
+        expect(application.reload.status).to eq(Application::ACCEPTED)
+        expect(application.application_states.count).to eq 1
+        expect(application.application_states.first.status).to eq(Application::ACCEPTED)
+      end
+    end
+
+    context "when voiding a completed declaration" do
+      let(:declaration_type) { :completed }
+
+      before do
+        create(:application_state, :accepted, application:)
+        create(:application_state, :started, application:)
+        subject.void
+      end
+
+      it do
+        expect(application.reload.status).to eq(Application::STARTED)
+        expect(application.application_states.count).to eq 1
+        expect(application.application_states.first.status).to eq(Application::STARTED)
+      end
     end
   end
 end

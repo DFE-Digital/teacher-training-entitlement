@@ -17,13 +17,23 @@ module Declarations
     validate :output_fee_statement_available, if: :clawing_back?
     validate :declaration_is_paid, if: :clawing_back?
 
+    delegate :application, to: :declaration
+
     def void
       return false unless valid?
 
       ApplicationRecord.transaction do
         clawing_back? ? clawback_declaration : void_declaration
 
-        void_participant_outcome
+        ParticipantOutcomes::Void.new(declaration:).void_outcome
+
+        if declaration.started_declaration_type?
+          application.update!(status: Application::ACCEPTED)
+        elsif declaration.completed_declaration_type?
+          application.application_states.reject(&:started_status?).each(&:destroy)
+          application.update!(status: Application::STARTED)
+        end
+
         declaration.reload
       end
 
@@ -75,10 +85,6 @@ module Declarations
 
     def voiding?
       !clawing_back?
-    end
-
-    def void_participant_outcome
-      ParticipantOutcomes::Void.new(declaration:).void_outcome
     end
   end
 end

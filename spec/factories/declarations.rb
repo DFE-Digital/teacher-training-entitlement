@@ -13,7 +13,7 @@ FactoryBot.define do
     cohort { course_cohort.cohort }
 
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    declaration_type { "started" }
+    started
     declaration_date { Date.current }
     state { "submitted" }
     ecf_id { SecureRandom.uuid }
@@ -54,6 +54,10 @@ FactoryBot.define do
 
     trait :voided do
       state { :voided }
+    end
+
+    trait :started do
+      declaration_type { :started }
     end
 
     trait :completed do
