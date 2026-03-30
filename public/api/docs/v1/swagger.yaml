@@ -1200,14 +1200,14 @@ components:
           description: Return only records that have this status
           type: string
           enum:
+          - pending
           - accepted
+          - started
+          - completed
           - deferred
           - withdrawn
-          - pending
-          - started
           - rejected
-          - completed
-          example: accepted
+          example: pending
         from_participant_id:
           description: Return only records that have this from Participant ID
           type: string
@@ -1424,15 +1424,15 @@ components:
               description: The current state of the application
               type: string
               nullable: true
-              example: accepted
+              example: pending
               enum:
+              - pending
               - accepted
+              - started
+              - completed
               - deferred
               - withdrawn
-              - pending
-              - started
               - rejected
-              - completed
             reason_for_rejection:
               description: The reason why the application was rejected by the lead
                 provider
@@ -1819,14 +1819,14 @@ components:
                     description: The status of the participant
                     type: string
                     enum:
+                    - pending
                     - accepted
+                    - started
+                    - completed
                     - deferred
                     - withdrawn
-                    - pending
-                    - started
                     - rejected
-                    - completed
-                    example: accepted
+                    example: pending
                   school_urn:
                     description: The Unique Reference Number (URN) of the school where
                       this participant is employed
