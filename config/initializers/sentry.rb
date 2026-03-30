@@ -9,7 +9,16 @@ Sentry.init do |config|
   filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
   config.before_send = lambda do |event, _hint|
     # use Rails' parameter filter to sanitize the event
-    filter.filter(event.to_hash)
+    if event.request
+      event.request.data = filter.filter(event.request.data) if event.request.data
+      event.request.headers = filter.filter(event.request.headers) if event.request.headers
+      event.request.query_string = filter.filter(event.request.query_string) if event.request.query_string
+    end
+    event.user = filter.filter(event.user) if event.user
+    event.extra = filter.filter(event.extra) if event.extra
+    event.tags = filter.filter(event.tags) if event.tags
+    event.contexts = filter.filter(event.contexts) if event.contexts
+    event
   end
 
   config.excluded_exceptions += %w[
