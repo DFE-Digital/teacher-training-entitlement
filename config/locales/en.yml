@@ -638,10 +638,14 @@ en:
               presence: The entered '#/delivery_partner_id' is not from your list of confirmed Delivery Partners for the Cohort
             secondary_delivery_partner:
               presence: The entered '#/secondary_delivery_partner_id' is not from your list of confirmed Delivery Partners for the Cohort
-
+        declarations/clawback:
+          attributes:
+            base:
+              <<: *statement
+              <<: *declaration
         declarations/void:
           attributes:
-            declaration:
+            base:
               <<: *statement
               <<: *declaration
         participant_outcomes:

@@ -161,7 +161,7 @@ module ValidTestDataGenerators
       return if Faker::Boolean.boolean(true_ratio: 0.3)
 
       completed_declaration = application.declarations.eligible_for_outcomes(lead_provider, application.course.identifier).first
-      Declarations::Void.new(declaration: completed_declaration).void
+      Declarations::Void.new(declaration: completed_declaration).call
     end
   end
 end

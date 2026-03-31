@@ -84,7 +84,9 @@ RSpec.describe Statements::SummaryCalculator, :revisit do
 
         travel_to 1.month.from_now do
           create(:statement, :next_output_fee, lead_provider:, cohort: application.cohort)
-          Declarations::Void.new(declaration: awaiting_clawback).void || raise("Could not void")
+          service = Declarations::Clawback.new(declaration: awaiting_clawback)
+          service.call
+          raise("Could not void: #{service.errors.full_messages}") if service.errors.any?
         end
       end
 

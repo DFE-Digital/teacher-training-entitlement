@@ -57,17 +57,30 @@ RSpec.describe "Declaration endpoints", type: :request do
   end
 
   describe "PUT /api/v1/declarations/:ecf_id/void" do
-    let(:resource) { create(:declaration, lead_provider: current_lead_provider) }
-    let(:resource_id) { resource.ecf_id }
-    let(:service) { Declarations::Void }
-    let(:action) { :void }
-    let(:service_args) { { declaration: resource } }
+    let(:expected_data_id) { declaration.ecf_id }
+    let(:params) { {} }
+    let(:declaration) { nil }
 
-    def path(id = nil)
-      void_api_v1_declaration_path(ecf_id: id)
+    context "when declaration should be clawback" do
+      let(:declaration) { create(:declaration, :submitted, lead_provider: current_lead_provider) }
+
+      before do
+        api_put(void_api_v1_declaration_path(ecf_id: declaration.ecf_id), params:)
+      end
+
+      it_behaves_like "a successful api call"
     end
 
-    it_behaves_like "an API update endpoint"
+    context "when declaration should be voided" do
+      let(:statement) { create(:statement, :next_output_fee, lead_provider: current_lead_provider) }
+      let(:declaration) { create(:declaration, :paid, cohort: statement.cohort, lead_provider: current_lead_provider) }
+
+      before do
+        api_put(void_api_v1_declaration_path(ecf_id: declaration.ecf_id), params:)
+      end
+
+      it_behaves_like "a successful api call"
+    end
   end
 
   describe "PUT /api/v1/declarations/:ecf_id/change-delivery-partner" do

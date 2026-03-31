@@ -5,6 +5,13 @@ class Declaration < ApplicationRecord
   COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT = %w[npq-additional-support-offer npq-early-headship-coaching-offer].freeze
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
   DELIVER_PARTNER_REQUIRED_FROM = 2024
+  CLAWBACK_STATES = %w[paid awaiting_clawback clawed_back].freeze
+  DECLARATION_TYPES = [
+    STARTED = "started".freeze,
+    RETAINED_1 = "retained-1".freeze,
+    RETAINED_2 = "retained-2".freeze,
+    COMPLETED = "completed".freeze,
+  ].freeze
 
   has_paper_trail ignore: [:updated_at]
 
@@ -87,13 +94,6 @@ class Declaration < ApplicationRecord
     end
   end
 
-  DECLARATION_TYPES = [
-    STARTED = "started".freeze,
-    RETAINED_1 = "retained-1".freeze,
-    RETAINED_2 = "retained-2".freeze,
-    COMPLETED = "completed".freeze,
-  ].freeze
-
   enum :declaration_type,
        DECLARATION_TYPES.index_with(&:itself),
        suffix: true, validate: true
@@ -149,6 +149,10 @@ class Declaration < ApplicationRecord
         ELSE 2
       END
     SQL
+  end
+
+  def clawbackable?
+    state.to_s.in?(CLAWBACK_STATES)
   end
 
   def billable_statement

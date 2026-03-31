@@ -15,7 +15,7 @@ FactoryBot.define do
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     started
     declaration_date { Date.current }
-    state { "submitted" }
+    submitted
     ecf_id { SecureRandom.uuid }
 
     after(:create) do |declaration, evaluator|
@@ -40,6 +40,9 @@ FactoryBot.define do
       end
     end
 
+    trait :submitted do
+      state { :submitted }
+    end
     trait :payable do
       state { :payable }
     end
