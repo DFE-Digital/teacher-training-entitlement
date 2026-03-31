@@ -24,10 +24,13 @@ module Declarations
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?
-          @application.update!(status: Application::ACCEPTED)
+          @application.accepted_status!
+          @application.application_states.create!(status: Application::ACCEPTED,
+                                                  reason: "started declaration voided")
         elsif @declaration.completed_declaration_type?
-          @application.application_states.reject(&:started_status?).each(&:destroy)
-          @application.update!(status: Application::STARTED)
+          @application.started_status!
+          @application.application_states.create!(status: Application::STARTED,
+                                                  reason: "completed declaration voided")
         end
       end
     end

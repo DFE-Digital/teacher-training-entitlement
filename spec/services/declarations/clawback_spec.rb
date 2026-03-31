@@ -65,8 +65,9 @@ RSpec.describe Declarations::Clawback, type: :model do
 
       it do
         expect(application.reload.status).to eq(Application::ACCEPTED)
-        expect(application.application_states.count).to eq 1
-        expect(application.application_states.first.status).to eq(Application::ACCEPTED)
+        expect(application.application_states.count).to eq 2
+        expect(application.application_states.last.status).to eq(Application::ACCEPTED)
+        expect(application.application_states.last.reason).to eq("started declaration voided")
       end
     end
 
@@ -82,8 +83,9 @@ RSpec.describe Declarations::Clawback, type: :model do
 
       it do
         expect(application.reload.status).to eq(Application::STARTED)
-        expect(application.application_states.count).to eq 1
-        expect(application.application_states.first.status).to eq(Application::STARTED)
+        expect(application.application_states.count).to eq 3
+        expect(application.application_states.last.status).to eq(Application::STARTED)
+        expect(application.application_states.last.reason).to eq("completed declaration voided")
       end
     end
   end
