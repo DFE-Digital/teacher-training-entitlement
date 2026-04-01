@@ -22,6 +22,7 @@ RSpec.describe Declarations::Clawback, type: :model do
 
       context "when the application has been completed and the declaration is completed" do
         let(:declaration_type) { :completed }
+        let(:declaration_state) { :paid }
         let(:application) { create(:application, :completed) }
 
         it {
@@ -55,7 +56,7 @@ RSpec.describe Declarations::Clawback, type: :model do
 
       Declaration::CLAWBACK_STATES.excluding("paid").each do |state|
         context "when the declaration is #{state}" do
-          before { declaration.update!(state:) }
+          let(:declaration_state) { state }
 
           it { expect(service).to have_error(:base, :must_be_paid, "The declaration must be paid before it can be clawed back.") }
 

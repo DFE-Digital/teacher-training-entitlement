@@ -30,7 +30,7 @@ RSpec.describe Declarations::Void, type: :model do
       end
 
       context "when the declaration is already voided" do
-        let(:declaration_state) { :voided }
+        let(:declaration_trait) { :voided }
 
         it {
           service.call

@@ -58,7 +58,9 @@ module Declarations
     def output_fee_statement_available
       return if statement_attacher.valid?
 
-      errors.add(:base, :no_output_fee_statement, cohort: @declaration.cohort.start_year)
+      statement_attacher.errors.each do |error|
+        errors.add(:base, error.type, **error.options)
+      end
     end
 
     def declaration_is_paid
