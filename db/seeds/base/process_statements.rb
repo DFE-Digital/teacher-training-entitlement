@@ -27,7 +27,7 @@ Cohort.all.find_each do |cohort|
       next unless claw_back_from_statement
 
       claw_back_from_statement.declarations.where.not(state: "voided").limit(2).each do |declaration|
-        errors = Declarations::Void.new(declaration:).tap(&:void).errors
+        errors = Declarations::Clawback.new(declaration:).tap(&:call).errors
         fail(errors.full_messages.join(", ")) if errors.any?
       end
     end
