@@ -20,11 +20,11 @@
               row.with_cell(text: application.course.name)
               row.with_cell do
                 case application.status
-                when ApplicationStatus::ACCEPTED
+                when Application::ACCEPTED
                   tag.strong("Accepted", class: "govuk-tag govuk-tag--green")
-                when ApplicationStatus::REJECTED
+                when Application::REJECTED
                   tag.strong("Rejected", class: "govuk-tag govuk-tag--red")
-                when ApplicationStatus::PENDING
+                when Application::PENDING
                   tag.strong("Pending", class: "govuk-tag govuk-tag--yellow")
                 else
                   application.status.titleize
