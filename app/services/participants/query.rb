@@ -5,13 +5,13 @@ module Participants
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider: :ignore, updated_since: :ignore, training_status: :ignore, from_participant_id: :ignore, sort: nil)
+    def initialize(lead_provider: :ignore, updated_since: :ignore, status: :ignore, from_participant_id: :ignore, sort: nil)
       @scope = all_participants
       @sort = sort
 
       where_lead_provider_is(lead_provider)
       where_updated_since(updated_since)
-      where_training_status_is(training_status)
+      where_status_is(status)
       where_from_participant_id_is(from_participant_id)
     end
 
@@ -43,14 +43,14 @@ module Participants
       scope.merge!(users_updated_since.or(applications_updated_since).or(participant_id_changes_updated_since))
     end
 
-    def where_training_status_is(training_status)
-      return if ignore?(filter: training_status)
+    def where_status_is(status)
+      return if ignore?(filter: status)
 
-      unless Application.training_statuses[training_status]
-        raise API::Errors::FilterValidationError, I18n.t(:invalid_training_status, valid_training_status: Application.training_statuses.keys)
+      unless status.to_s.in?(Application::STATUSES)
+        raise API::Errors::FilterValidationError, I18n.t(:invalid_status, valid_status: Application::STATUSES)
       end
 
-      scope.merge!(User.includes(:applications).where(applications: { training_status: }))
+      scope.merge!(User.includes(:applications).where(applications: { status: }))
     end
 
     def where_from_participant_id_is(from_participant_id)
@@ -66,7 +66,7 @@ module Participants
     def all_participants
       User
         .distinct
-        .joins(:applications).merge(Application.accepted)
+        .joins(:applications).merge(Application.has_been_accepted)
         .includes(
           :participant_id_changes,
           applications: %i[

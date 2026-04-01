@@ -14,7 +14,7 @@ module Applications
     def reject
       return false unless valid?
 
-      application.update!(lead_provider_approval_status: "rejected", reason_for_rejection:)
+      application.update!(status: Application::REJECTED, reason_for_rejection:)
       application.reload
 
       true
@@ -24,7 +24,7 @@ module Applications
 
     def not_already_rejected
       return unless application
-      return unless application.rejected_lead_provider_approval_status?
+      return unless application.rejected_status?
 
       errors.add(:application, :has_already_been_rejected)
     end

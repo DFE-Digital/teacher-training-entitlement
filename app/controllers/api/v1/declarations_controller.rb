@@ -19,10 +19,12 @@ module API
       end
 
       def void
-        service = Declarations::Void.new(declaration:)
+        service = Declarations::VoidStrategy.for(declaration:)
 
-        if service.void
-          render json: to_json(service.declaration)
+        service.call
+
+        if service.errors.blank?
+          render json: to_json(declaration.reload)
         else
           render json: API::Errors::Response.from(service), status: :unprocessable_content
         end
@@ -49,7 +51,7 @@ module API
       end
 
       def declaration
-        declarations_query.declaration(ecf_id: params[:ecf_id])
+        @declaration ||= declarations_query.declaration(ecf_id: params[:ecf_id])
       end
 
       def change_delivery_partner_params

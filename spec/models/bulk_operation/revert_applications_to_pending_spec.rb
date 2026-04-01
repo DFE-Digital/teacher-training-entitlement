@@ -11,7 +11,7 @@ RSpec.describe BulkOperation::RevertApplicationsToPending do
     subject(:run) { bulk_operation.run! }
 
     RSpec.shared_examples "changes to pending" do |initial_state|
-      it { expect { run }.to(change { application.reload.lead_provider_approval_status }.from(initial_state).to("pending")) }
+      it { expect { run }.to(change { application.reload.status }.from(initial_state).to("pending")) }
 
       it "saves the result" do
         run
@@ -25,7 +25,7 @@ RSpec.describe BulkOperation::RevertApplicationsToPending do
     end
 
     RSpec.shared_examples "does not change to pending" do |result|
-      it { expect { run }.not_to(change { application.reload.lead_provider_approval_status }) }
+      it { expect { run }.not_to(change { application.reload.status }) }
 
       it "saves the result" do
         run
@@ -58,7 +58,7 @@ RSpec.describe BulkOperation::RevertApplicationsToPending do
         context "when the application is rejected" do
           let(:application) do
             declaration.application.tap do |application|
-              application.update!(lead_provider_approval_status: "rejected")
+              application.update_columns(status: Application::REJECTED)
             end
           end
 

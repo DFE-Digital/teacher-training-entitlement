@@ -6,7 +6,7 @@ module Applications
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, lead_provider_approval_status: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
+    def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
       @scope = lead_provider.applications.includes(
         :user,
         :institution,
@@ -14,7 +14,6 @@ module Applications
       )
       @sort = sort
 
-      where_lead_provider_approval_status_in(lead_provider_approval_status)
       where_cohort_start_year_in(cohort_start_years)
       where_updated_since(updated_since)
       where_participant_ids_in(participant_ids)
@@ -34,12 +33,6 @@ module Applications
     end
 
   private
-
-    def where_lead_provider_approval_status_in(lead_provider_approval_status)
-      return if ignore?(filter: lead_provider_approval_status)
-
-      scope.merge!(Application.where(lead_provider_approval_status: extract_conditions(lead_provider_approval_status, allowlist: Application.lead_provider_approval_statuses.values)))
-    end
 
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
@@ -67,20 +60,10 @@ module Applications
       scope.merge!(Application.where(users: { ecf_id: extract_conditions(participant_ids) }))
     end
 
-    def where_status_in(statuses)
-      return if ignore?(filter: statuses)
+    def where_status_in(status)
+      return if ignore?(filter: status)
 
-      status_list = extract_conditions(statuses)
-      approval_statuses = status_list & Application.lead_provider_approval_statuses.keys
-      training_statuses = status_list & Application.training_statuses.keys
-
-      conditions = []
-      conditions << Application.where(lead_provider_approval_status: approval_statuses) if approval_statuses.any?
-      conditions << Application.where(training_status: training_statuses) if training_statuses.any?
-
-      return if conditions.none?
-
-      scope.merge!(conditions.reduce { |memo, cond| memo.or(cond) })
+      scope.merge!(Application.where(status: extract_conditions(status, allowlist: Application::STATUSES)))
     end
 
     def where_course_identifier_in(course_identifier)

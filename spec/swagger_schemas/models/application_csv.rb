@@ -88,17 +88,17 @@ APPLICATION_CSV = {
         enum: Application.funding_choices.keys,
       },
       course_identifier: {
-        description: "The NPQ course this NPQ application relates to",
+        description: "The course this application relates to",
         type: :string,
         example: Course::IDENTIFIERS.first,
         enum: Course::IDENTIFIERS,
       },
       status: {
-        description: "The current state of the NPQ application",
+        description: "The current state of the application",
         type: :string,
         nullable: true,
-        example: Application.lead_provider_approval_statuses.keys.first,
-        enum: Application.lead_provider_approval_statuses.keys,
+        example: Application::STATUSES.first,
+        enum: Application::STATUSES,
       },
       works_in_school: {
         description: "Indicates whether the participant is currently employed by school",

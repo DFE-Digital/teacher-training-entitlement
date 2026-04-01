@@ -127,8 +127,8 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-  describe "#lead_provider_approval_status_badge" do
-    subject { lead_provider_approval_status_badge(status) }
+  describe "#application_status_badge" do
+    subject { application_status_badge(status) }
 
     context "with pending" do
       let(:status) { "pending" }
@@ -154,7 +154,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       it { is_expected.to have_css ".govuk-tag--grey", text: "Something else" }
     end
 
-    context "without a lead_provider_approval_status" do
+    context "without an application status" do
       let(:status) { nil }
 
       it { is_expected.to be_nil }

@@ -1,19 +1,20 @@
 require "rails_helper"
 
 RSpec.describe Applications::RevertToPending, type: :model do
-  subject(:instance) { described_class.new(application:) }
-
+  let(:admin_user) { create(:admin) }
   let :application do
     create(:application, :accepted, :without_funded_place) do |application|
       create(:application_state, application:)
     end
   end
 
+  subject(:instance) { described_class.new(application:, admin_user:) }
+
   describe "#valid?" do
     it { is_expected.to validate_inclusion_of(:change_status_to_pending).in_array(%w[yes no]) }
 
-    context "with lead_provider_approval_status attribute" do
-      subject { instance.tap(&:valid?).errors.messages[:lead_provider_approval_status] }
+    context "with status attribute" do
+      subject { instance.tap(&:valid?).errors.messages[:status] }
 
       context "with accepted application" do
         it { is_expected.to be_empty }
@@ -50,7 +51,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
   end
 
   describe "#revert" do
-    subject(:instance) { described_class.new(application:, change_status_to_pending:) }
+    subject(:instance) { described_class.new(application:, admin_user:, change_status_to_pending:) }
 
     let(:change_status_to_pending) { "yes" }
 
@@ -59,11 +60,11 @@ RSpec.describe Applications::RevertToPending, type: :model do
         expect(instance.revert).to be true
       end
 
-      it "updates lead provider approval status" do
+      it "updates status" do
         expect { instance.revert }
-          .to change { application.reload.lead_provider_approval_status }
-                     .from("accepted")
-                     .to("pending")
+          .to change { application.reload.status }
+                     .from(Application::ACCEPTED)
+                     .to(Application::PENDING)
       end
 
       it "empties the funded_place attribute" do
@@ -97,7 +98,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
 
       it "succeeds but does not change the attributes" do
         expect { instance.revert }
-          .to not_change { application.reload.lead_provider_approval_status }
+          .to not_change { application.reload.status }
               .and not_change(application, :funded_place)
       end
 
@@ -126,7 +127,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
 
       it "succeeds but does not change the attributes" do
         expect { instance.revert }
-          .to not_change { application.reload.lead_provider_approval_status }
+          .to not_change { application.reload.status }
               .and not_change(application, :funded_place)
       end
 
@@ -152,9 +153,9 @@ RSpec.describe Applications::RevertToPending, type: :model do
 
           it "updates the state" do
             expect { instance.revert }
-              .to change { application.reload.lead_provider_approval_status }
-                  .from("accepted")
-                  .to("pending")
+              .to change { application.reload.status }
+                  .from(Application::ACCEPTED)
+                  .to(Application::PENDING)
               .and(not_change { application.declarations.count })
           end
         end
@@ -168,9 +169,9 @@ RSpec.describe Applications::RevertToPending, type: :model do
             expect(instance.revert).to be false
           end
 
-          it "does not change the lead provider approval status" do
+          it "does not change the status" do
             expect { instance.revert }
-              .to not_change { application.reload.lead_provider_approval_status }
+              .to not_change { application.reload.status }
               .and(not_change { application.declarations.count })
           end
         end

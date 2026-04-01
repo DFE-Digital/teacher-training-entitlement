@@ -51,7 +51,7 @@ RSpec.describe Exporters::TadDataRequest do
     let(:csv) do
       <<~CSV
         Full Name,Email,User ID,Teacher Reference Number,Institution URN,Lead Provider Name,Course Name,Schedule,Cohort Start Year,Eligible for Funding,Participant Status,Targeted Support Funding Eligibility,Outcome 1,Outcome 1 Date,Outcome 2,Outcome 1 Date,Outcome 3,Outcome 3 Date,Outcome 4,Outcome 4 Date
-        John Doe,john@example.com,#{user.id},#{user.trn},#{application.school.urn},#{application.lead_provider.name},#{course.name},Schedule Autumn 2023,#{cohort.identifier},true,active,false
+        John Doe,john@example.com,#{user.id},#{user.trn},#{application.school.urn},#{application.lead_provider.name},#{application.course.name},Schedule Autumn 2023,#{cohort.identifier},true,accepted,false
       CSV
     end
 

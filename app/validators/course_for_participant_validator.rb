@@ -15,7 +15,7 @@ private
 
     record.participant
       .applications
-      .accepted
+      .has_been_accepted
       .joins(:course_cohort)
       .where(course_cohorts: {
         course: Course.find_by(identifier: record.course_identifier)&.rebranded_alternative_courses,

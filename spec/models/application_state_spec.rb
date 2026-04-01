@@ -14,16 +14,6 @@ RSpec.describe ApplicationState do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
   end
 
-  describe "enums" do
-    it {
-      expect(subject).to define_enum_for(:state).with_values(
-        active: "active",
-        deferred: "deferred",
-        withdrawn: "withdrawn",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-  end
-
   describe "scopes" do
     describe ".most_recent" do
       let!(:another_application_state) { create(:application_state, application:) }

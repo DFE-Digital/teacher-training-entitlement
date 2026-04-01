@@ -1,7 +1,10 @@
 namespace :participant_outcomes do
   desc "Create a participant outcome"
-  task :create, %i[user_ecf_id lead_provider_ecf_id course_identifier completion_date state] => :environment do |_t, args|
+  task :create, %i[application_id user_ecf_id lead_provider_ecf_id course_identifier completion_date state] => :environment do |_t, args|
     logger = Rails.env.test? ? Rails.logger : Logger.new($stdout)
+
+    application = Application.find_by(id: args.application_id)
+    raise "Application not found: #{args.application_id}" unless application
 
     user = User.find_by(ecf_id: args.user_ecf_id)
     raise "User not found: #{args.user_ecf_id}" unless user
@@ -12,6 +15,7 @@ namespace :participant_outcomes do
     state = args.state || "passed"
 
     participant_outcome_creator = ParticipantOutcomes::Create.new(
+      application:,
       participant_id: user.ecf_id,
       lead_provider:,
       course_identifier: args.course_identifier,

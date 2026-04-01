@@ -44,12 +44,29 @@ module Declarations
         @declaration = application.declarations.create!(declaration_parameters_for_create)
         @declaration.mark_eligible!
 
-        # [TODO]: Define when to raise statement for TTE
-        # StatementAttacher.new(@declaration:).attach
-        create_participant_outcome!
+        if started_declaration?
+          application_started!
+        elsif completed_declaration?
+          # [TODO]: Define when to raise statement for TTE
+          # StatementAttacher.new(@declaration:).attach
+          create_participant_outcome!
+
+          create_participant_outcome!
+          application_completed!
+        end
       end
 
       true
+    end
+
+    def application_completed!
+      application.application_states.create!(status: :completed)
+      application.update!(status: Application::COMPLETED)
+    end
+
+    def application_started!
+      application.update!(status: Application::STARTED)
+      application.application_states.create!(status: Application::STARTED)
     end
 
     def declaration_date=(raw_declaration_date)
@@ -62,11 +79,11 @@ module Declarations
     end
 
     def completed_declaration?
-      declaration_type == "completed"
+      declaration_type == Declaration::COMPLETED
     end
 
     def started_declaration?
-      declaration_type == "started"
+      declaration_type == Declaration::STARTED
     end
 
   private
@@ -161,14 +178,14 @@ module Declarations
     end
 
     def application_is_declarable
-      return if application.accepted_lead_provider_approval_status? && application.active_training_status?
+      return if application.accepted_status? || application.started_status?
 
       errors.add(:application, :in_wrong_state)
     end
 
     def declaration_type_out_of_order
       return if started_declaration?
-      return if completed_declaration? && active_declarations.where(declaration_type: "started").exists?
+      return if completed_declaration? && active_declarations.where(declaration_type: Declaration::STARTED).exists?
 
       errors.add(:declaration_type, :out_of_order)
     end

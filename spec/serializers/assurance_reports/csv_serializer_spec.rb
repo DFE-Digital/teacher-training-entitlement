@@ -13,7 +13,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
   let(:cohort)        { create(:cohort, :current, suffix: "b") }
 
   let :application do
-    create(:application, :eligible_for_funded_place, lead_provider:, cohort:)
+    create(:application, :accepted, :with_schedule, :eligible_for_funded_place, lead_provider:, cohort:)
   end
 
   let :declaration do
@@ -48,8 +48,8 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           "Lead Provider Name",
           "School Urn",
           "School Name",
-          "Training Status",
-          "Training Status Reason",
+          "Status",
+          "Status Reason",
           "Declaration ID",
           "Declaration Status",
           "Declaration Type",
@@ -66,8 +66,8 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
     describe "a data row" do
       subject { rows.second }
 
-      let(:training_status)        { "active" }
-      let(:training_status_reason) { nil }
+      let(:status)        { Application::ACCEPTED }
+      let(:status_reason) { nil }
 
       let :expected_data do
         [
@@ -81,8 +81,8 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           lead_provider.name,
           declaration.application.school.urn,
           declaration.application.school.name,
-          training_status,
-          training_status_reason,
+          status,
+          status_reason,
           declaration.ecf_id,
           statement.statement_items.first.state,
           declaration.declaration_type,
@@ -97,27 +97,28 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
 
       context "when withdrawn" do
         before do
-          declaration.application.update! training_status: "withdrawn"
+          declaration.application.update_columns(status: Application::WITHDRAWN)
 
           create(:application_state, :withdrawn, application: declaration.application,
                                                  lead_provider: declaration.lead_provider)
         end
 
-        let(:training_status)        { "withdrawn" }
-        let(:training_status_reason) { "other" }
+        let(:status)        { Application::WITHDRAWN }
+        let(:status_reason) { "other" }
 
         it { is_expected.to eq expected_data }
       end
 
       context "when deferred" do
         before do
-          declaration.application.update! training_status: "deferred"
+          declaration.application.update_columns(status: Application::DEFERRED)
 
           create(:application_state, :deferred, application: declaration.application,
                                                 lead_provider: declaration.lead_provider)
         end
 
-        let(:training_status) { "deferred" }
+        let(:status) { Application::DEFERRED }
+        let(:status_reason) { "other" }
 
         it { is_expected.to eq expected_data }
       end

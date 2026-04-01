@@ -26,7 +26,7 @@ module Applications
   private
 
     def accepted_application
-      return if application.accepted_lead_provider_approval_status?
+      return if application.accepted_status?
 
       errors.add(:application, :application_not_accepted)
     end

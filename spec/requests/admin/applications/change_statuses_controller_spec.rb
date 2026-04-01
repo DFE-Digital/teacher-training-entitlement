@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Admin::Applications::ChangeTrainingStatusesController, :ecf_api_disabled, type: :request do
+RSpec.describe Admin::Applications::ChangeStatusesController, :ecf_api_disabled, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   subject { response }
@@ -18,24 +18,24 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusesController, :ecf_api_d
 
     describe "#new" do
       before do
-        get new_admin_applications_change_training_status_path(application)
+        get new_admin_applications_change_status_path(application)
       end
 
       it { is_expected.to have_http_status :success }
-      it { is_expected.to have_attributes body: /Change.*training status/i }
+      it { is_expected.to have_attributes body: /Change.* status/i }
     end
 
     describe "#create" do
       before do
-        post admin_applications_change_training_status_path(application, params:)
+        post admin_applications_change_status_path(application, params:)
       end
 
       context "with valid update" do
         let :params do
           {
             form: {
-              training_status: :withdrawn,
-              reason: Admin::Applications::ChangeTrainingStatusForm::REASON_OPTIONS["withdrawn"].first,
+              status: :withdrawn,
+              reason: Admin::Applications::ChangeStatusForm::REASON_OPTIONS["withdrawn"].first,
             },
           }
         end
@@ -44,24 +44,24 @@ RSpec.describe Admin::Applications::ChangeTrainingStatusesController, :ecf_api_d
       end
 
       context "with invalid update" do
-        let(:params) { { change_training_status: { training_status: "unexpected" } } }
+        let(:params) { { change_status: { status: "unexpected" } } }
 
         it { is_expected.to have_http_status :unprocessable_content }
-        it { is_expected.to have_attributes body: /Change.*training status/i }
+        it { is_expected.to have_attributes body: /Change.* status/i }
       end
     end
   end
 
   context "when not logged in" do
     describe "#edit" do
-      before { get new_admin_applications_change_training_status_path(application) }
+      before { get new_admin_applications_change_status_path(application) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
 
     describe "#update" do
       before do
-        post admin_applications_change_training_status_path(application, params: {})
+        post admin_applications_change_status_path(application, params: {})
       end
 
       it { is_expected.to redirect_to sign_in_path }

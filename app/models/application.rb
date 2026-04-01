@@ -1,11 +1,4 @@
 class Application < ApplicationRecord
-  # These columns are no longer populated with data for future applications
-  # but are still in place because they contain historical data.
-  # This constant is set so that despite still existing they won't be hooked up
-  # within the rails model
-  self.ignored_columns = %w[DEPRECATED_cohort]
-  # this is a temporary constant until PR on statuses is merged
-  ALL_STATUSES = %w[pending accepted rejected started completed deferred withdrawn].freeze
   UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
@@ -37,13 +30,13 @@ class Application < ApplicationRecord
   has_many :application_states
   has_many :declarations
 
-  scope :expired_applications, -> { where(lead_provider_approval_status: "rejected").where("created_at < ?", cut_off_date_for_expired_applications) }
+  scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications) }
-  scope :accepted, -> { where(lead_provider_approval_status: "accepted") }
+  scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
   scope :for_manual_review, -> { where.not(review_status: nil) }
-  scope :not_withdrawn, -> { where.not(training_status: "withdrawn").or(where(training_status: nil)) }
-  scope :not_rejected, -> { where.not(lead_provider_approval_status: "rejected") }
+  scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
+  scope :not_rejected, -> { where.not(status: REJECTED) }
 
   attr_accessor :version_note, :skip_touch_user_if_changed
 
@@ -51,11 +44,42 @@ class Application < ApplicationRecord
   validates :user_id,
             uniqueness: {
               scope: :course_cohort_id,
-              conditions: -> { where.not(lead_provider_approval_status: "rejected") },
-            }, unless: :provider_rejected?
-  validate :ensure_change_training_status, if: -> { will_save_change_to_training_status? && persisted? }
+              conditions: -> { where.not(status: REJECTED) },
+            }, unless: -> { rejected_status? }
+  validate :ensure_valid_status_transition, if: -> { status_changed? }
+  validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
+  validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
+  validate :eligible_for_funded_place
 
   after_commit :touch_user_if_changed
+
+  API_STATUSES = [].freeze
+
+  STATUSES =
+    [
+      PENDING = "pending".freeze,
+      ACCEPTED = "accepted".freeze,
+      STARTED = "started".freeze,
+      COMPLETED = "completed".freeze,
+      DEFERRED = "deferred".freeze,
+      WITHDRAWN = "withdrawn".freeze,
+      REJECTED = "rejected".freeze,
+    ].freeze
+
+  STATUS_TRANSITIONS = {
+    nil => [PENDING].freeze,
+    PENDING => [ACCEPTED, REJECTED].freeze,
+    ACCEPTED => [STARTED, COMPLETED].freeze,
+    STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
+    DEFERRED => [STARTED].freeze,
+    WITHDRAWN => [STARTED].freeze,
+    REJECTED => [PENDING].freeze,
+    COMPLETED => [STARTED].freeze,
+  }.freeze
+
+  enum :status,
+       STATUSES.index_with(&:itself),
+       suffix: true
 
   enum :kind_of_nursery, {
     local_authority_maintained_nursery: "local_authority_maintained_nursery",
@@ -73,22 +97,10 @@ class Application < ApplicationRecord
     employer: "employer",
   }, suffix: true
 
-  enum :lead_provider_approval_status, {
-    pending: "pending",
-    accepted: "accepted",
-    rejected: "rejected",
-  }, suffix: true
-
   enum :reason_for_rejection, {
     registration_expired: "registration_expired",
     rejected_by_provider: "rejected_by_provider",
     other_application_in_this_cohort_accepted: "other_application_in_this_cohort_accepted",
-  }, suffix: true
-
-  enum :training_status, {
-    active: "active",
-    deferred: "deferred",
-    withdrawn: "withdrawn",
   }, suffix: true
 
   enum :review_status, {
@@ -103,7 +115,11 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
 
   def can_change_provider?
-    pending_lead_provider_approval_status?
+    pending_status?
+  end
+
+  def can_transition_to?(new_status)
+    STATUS_TRANSITIONS[status]&.include?(new_status.to_s)
   end
 
   # `eligible_for_dfe_funding?`  takes into consideration what we know
@@ -119,11 +135,8 @@ class Application < ApplicationRecord
     end
   end
 
-  def status
-    return training_status if accepted_lead_provider_approval_status? && !active_training_status?
-    return "started" if declarations.any?
-
-    lead_provider_approval_status
+  def has_been_accepted?
+    !status.to_s.in?([PENDING, REJECTED])
   end
 
   def previously_funded?
@@ -133,14 +146,10 @@ class Application < ApplicationRecord
 
     @previously_funded ||= user.applications
       .where.not(id:)
-      .accepted
+      .has_been_accepted
       .eligible_for_funding
       .where(funded_place: [nil, true])
       .exists?
-  end
-
-  def provider_rejected?
-    lead_provider_approval_status.to_s == "rejected"
   end
 
   def ineligible_for_funding_reason
@@ -182,10 +191,10 @@ class Application < ApplicationRecord
   end
 
   def get_approval_status
-    case lead_provider_approval_status
-    when "accepted" then "rejected"
-    when "rejected" then "pending"
-    else "accepted"
+    case status
+    when ACCEPTED then REJECTED
+    when REJECTED then PENDING
+    else ACCEPTED
     end
   end
 
@@ -213,23 +222,18 @@ class Application < ApplicationRecord
     application_states.find { |application_state|
       application_state.created_at >= changed_at - variance &&
         application_state.created_at <= changed_at + variance &&
-        application_state.state == changed_status
+        application_state.status == changed_status
     }&.reason
   end
 
 private
 
-  def ensure_change_training_status
-    if training_status.blank?
-      errors.add(:training_status, :inclusion)
-    end
+  def ensure_valid_status_transition
+    from, to = changes[:status]
+    return if from.nil? # allow setting initial status
 
-    if accepted_lead_provider_approval_status? && declarations.blank? && deferred_training_status?
-      errors.add(:training_status, :invalid_deferral_no_declarations)
-    end
-
-    if pending_lead_provider_approval_status?
-      errors.add(:training_status, :pending_lead_provider_approval_status)
+    if STATUS_TRANSITIONS.fetch(from, []).exclude?(to)
+      errors.add(:status, :invalid_status_transition, from: from || "blank", to:)
     end
   end
 
@@ -240,11 +244,11 @@ private
   end
 
   def validate_funded_place?
-    accepted_lead_provider_approval_status? && errors.blank? && cohort&.funding_cap?
+    accepted_status? && errors.blank? && cohort&.funding_cap?
   end
 
   def funded_place_nil_for_cohort_with_ineligible_for_funding_cap
-    if accepted_lead_provider_approval_status? && errors.blank? && !cohort&.funding_cap? && !funded_place.nil?
+    if accepted_status? && errors.blank? && !cohort&.funding_cap? && !funded_place.nil?
       errors.add(:funded_place, :should_not_be_set)
     end
   end
@@ -260,7 +264,7 @@ private
 
   def touch_user_if_changed
     return if skip_touch_user_if_changed
-    return unless saved_change_to_lead_provider_approval_status?
+    return unless saved_change_to_status?
 
     user.touch(time: updated_at)
   end

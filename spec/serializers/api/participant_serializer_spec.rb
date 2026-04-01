@@ -6,7 +6,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
   let(:school) { application.school }
   let(:participant_id_change) { application.participant_id_changes.last }
   let(:cohort) { application.cohort }
-  let(:application) { create(:application, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
+  let(:application) { create(:application, :accepted, :eligible_for_funded_place, :with_schedule, :with_participant_id_change, lead_provider:, funded_place: true) }
   let(:participant) { application.user }
 
   describe "core attributes" do
@@ -93,7 +93,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             cohort: application.cohort.start_year.to_s,
             application_id: application.ecf_id,
             eligible_for_funding: application.eligible_for_funding,
-            training_status: application.training_status,
+            status: application.status,
             school_urn: application.school.urn,
             withdrawal: nil,
             deferral: nil,
@@ -115,7 +115,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               cohort: application.cohort.start_year.to_s,
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
-              training_status: application.training_status,
+              status: application.status,
               school_urn: application.school.urn,
               withdrawal: {
                 reason: application.application_states.last.reason,
@@ -141,7 +141,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               cohort: application.cohort.start_year.to_s,
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
-              training_status: application.training_status,
+              status: application.status,
               school_urn: application.school.urn,
               withdrawal: nil,
               deferral: {

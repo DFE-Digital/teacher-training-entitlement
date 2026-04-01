@@ -56,7 +56,7 @@ RSpec.describe ValidTestDataGenerators::ApplicationsPopulater, :revisit, :with_d
       it "creates accepted applications" do
         expect {
           subject.populate
-        }.to(change { Application.accepted_lead_provider_approval_status.count })
+        }.to(change { Application.accepted_status.count })
       end
 
       it "creates participant id changes" do
@@ -70,7 +70,7 @@ RSpec.describe ValidTestDataGenerators::ApplicationsPopulater, :revisit, :with_d
       it "creates rejected applications", :npq do
         expect {
           subject.populate
-        }.to(change { Application.rejected_lead_provider_approval_status.count })
+        }.to(change { Application.rejected_status.count })
       end
 
       it "creates eligible for funding applications" do

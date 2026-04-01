@@ -6,9 +6,9 @@
 
 <div class="govuk-inset-text">
   <p class="govuk-body">
-    Provider approval status:
+    Application status:
     <br />
-    <strong><%= @application.lead_provider_approval_status&.humanize %></strong>
+    <strong><%= @application.status&.humanize %></strong>
   </p>
 </div>
 

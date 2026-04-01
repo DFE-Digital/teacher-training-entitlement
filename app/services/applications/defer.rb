@@ -16,34 +16,37 @@ module Applications
       other
     ].freeze
 
+    def initialize(application:, reason:, admin_user: nil)
+      @application = application
+      @reason = reason
+      @admin_user = admin_user
+    end
+
+    attr_reader :reason
+
     validates :reason, inclusion: { in: DEFERRAL_REASONS, message: :missing_reason }, allow_blank: false
     validate :not_already_deferred
     validate :not_withdrawn
-    validate :has_declarations
 
     def call
       return if invalid?
 
-      ApplicationRecord.transaction do
-        application.application_states.create!(state: :deferred, reason:)
-        application.deferred_training_status!
+      Application.transaction do
+        @application.application_states.create!(status: Application::DEFERRED,
+                                                reason: @reason)
+        @application.status = Application::DEFERRED
+        @application.save!(validate: @admin_user.nil?)
       end
-
-      true
     end
 
   private
 
     def not_withdrawn
-      add_error(:base, :already_withdrawn) if application.withdrawn_training_status?
+      add_error(:base, :already_withdrawn) if @application&.withdrawn_status?
     end
 
     def not_already_deferred
-      add_error(:base, :already_deferred) if application.deferred_training_status?
-    end
-
-    def has_declarations
-      add_error(:base, :no_declarations) if application.declarations&.none?
+      add_error(:base, :already_deferred) if @application&.deferred_status?
     end
 
     def add_error(group, key)

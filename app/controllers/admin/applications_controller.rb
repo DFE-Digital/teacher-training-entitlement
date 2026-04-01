@@ -19,8 +19,7 @@ private
 
   def filter_params
     params.permit %i[
-      training_status
-      lead_provider_approval_status
+      status
       cohort_id
       work_setting
     ]

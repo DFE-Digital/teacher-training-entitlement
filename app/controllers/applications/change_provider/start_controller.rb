@@ -6,7 +6,7 @@ module Applications
       def index; end
 
       def create
-        render :index, status: :unprocessable_entity and return unless @form.valid?
+        render :index, status: :unprocessable_content and return unless @form.valid?
 
         if @form.confirmation
           redirect_to application_change_provider_providers_path(application.ecf_id)

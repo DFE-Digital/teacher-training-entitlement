@@ -205,7 +205,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
@@ -515,7 +515,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
@@ -827,14 +827,14 @@ paths:
                         course_identifier: tte-early-years
                         declaration_date: '2021-05-31T02:22:32Z'
                         state: voided
-                        has_passed: 
+                        has_passed:
                         ineligible_for_funding_reason: duplicate_declaration
                         delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
                         delivery_partner_name: Foo education
                         secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
                         secondary_delivery_partner_name: Bar education
                         statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
-                        clawback_statement_id: 
+                        clawback_statement_id:
                         uplift_paid: true
                         lead_provider_name: Example Institute
                         created_at: '2021-05-31T02:22:32.000Z'
@@ -1196,14 +1196,18 @@ components:
             and time (ISO 8601 date format).
           type: string
           example: '2021-05-13T11:21:55Z'
-        training_status:
-          description: Return only records that have this training status
+        status:
+          description: Return only records that have this status
           type: string
           enum:
-          - active
+          - pending
+          - accepted
+          - started
+          - completed
           - deferred
           - withdrawn
-          example: active
+          - rejected
+          example: pending
         from_participant_id:
           description: Return only records that have this from Participant ID
           type: string
@@ -1424,11 +1428,11 @@ components:
               enum:
               - pending
               - accepted
-              - rejected
               - started
               - completed
               - deferred
               - withdrawn
+              - rejected
             reason_for_rejection:
               description: The reason why the application was rejected by the lead
                 provider
@@ -1480,7 +1484,7 @@ components:
                 being funded by DfE
               nullable: true
               type: boolean
-              example: 
+              example:
             created_at:
               description: The date the application was created
               type: string
@@ -1770,7 +1774,7 @@ components:
                 - course_identifier
                 - application_id
                 - eligible_for_funding
-                - training_status
+                - status
                 - email
                 properties:
                   course_identifier:
@@ -1811,14 +1815,18 @@ components:
                     type: boolean
                     nullable: false
                     example: true
-                  training_status:
-                    description: The training status of the participant
+                  status:
+                    description: The status of the participant
                     type: string
                     enum:
-                    - active
+                    - pending
+                    - accepted
+                    - started
+                    - completed
                     - deferred
                     - withdrawn
-                    example: active
+                    - rejected
+                    example: pending
                   school_urn:
                     description: The Unique Reference Number (URN) of the school where
                       this participant is employed
@@ -1843,7 +1851,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was withdrawn
@@ -1885,7 +1893,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was deferred
@@ -2307,7 +2315,7 @@ components:
               description: Whether the participant has failed or passed
               type: boolean
               nullable: true
-              example: 
+              example:
             ineligible_for_funding_reason:
               description: If the declaration is ineligible, the reason why
               type: string

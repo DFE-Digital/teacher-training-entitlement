@@ -1,23 +1,13 @@
 require "rails_helper"
 
 RSpec.describe Applications::Defer, type: :model do
-  subject(:service) { described_class.new(application:, reason:) }
+  subject(:service) { described_class.new(application:, reason:, admin_user: create(:admin)) }
 
   let(:application) { create(:application, :accepted, :with_declaration) }
   let(:reason) { nil }
   let(:error_message_path) { "activemodel.errors.models.applications/defer.attributes" }
 
   before { service.call }
-
-  context "when deferring with no declarations" do
-    let(:application) { create(:application, :accepted, declarations: []) }
-
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:base])
-        .to include(I18n.t("#{error_message_path}.base.no_declarations"))
-    end
-  end
 
   context "when deferring without a reason" do
     let(:reason) { nil }
@@ -56,7 +46,7 @@ RSpec.describe Applications::Defer, type: :model do
 
     it do
       expect(service.errors).to be_blank
-      expect(application.reload.training_status).to eq(Applications::Strategy::DEFERRED)
+      expect(application.reload.status).to eq(Application::DEFERRED)
     end
   end
 end

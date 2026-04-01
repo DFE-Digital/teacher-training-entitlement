@@ -36,7 +36,7 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
     context "with invalid form" do
       it "renders index with unprocessable entity status" do
         post url, params: { form: { confirmation: nil } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response).to render_template(:index)
         expect(assigns[:form]).not_to be_nil
         expect(assigns[:form].errors[:confirmation]).to eq([I18n.t("applications.change_provider.start.form.blank")])
@@ -48,7 +48,7 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
 
       it "redirects to accounts page with alert" do
         post url, params: { form: { confirmation: "1" } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response).to render_template(:index)
         expect(assigns[:form]).not_to be_nil
         expect(assigns[:form].errors[:cannot_change_provider]).to eq([I18n.t("applications.change_provider.start.form.cannot_change_provider")])

@@ -3,82 +3,45 @@
 module Declarations
   class Void
     include ActiveModel::Model
-    include ActiveModel::Attributes
+    include ActiveModel::Validations
 
-    CLAWBACK_STATES = %w[paid awaiting_clawback clawed_back].freeze
+    def initialize(declaration:)
+      @declaration = declaration
+      @application = declaration.application
+    end
 
-    attribute :declaration
+    validate :declaration_not_already_voided
+    validate :application_status_not_completed
 
-    validates :declaration, presence: true
-
-    validate :declaration_not_already_voided, if: :voiding?
-
-    validate :declaration_not_already_refunded, if: :clawing_back?
-    validate :output_fee_statement_available, if: :clawing_back?
-    validate :declaration_is_paid, if: :clawing_back?
-
-    def void
-      return false unless valid?
+    def call
+      return unless valid?
 
       ApplicationRecord.transaction do
-        clawing_back? ? clawback_declaration : void_declaration
+        @declaration.mark_voided!
+        @declaration.statement_items.with_state(:eligible, :ineligible, :payable).first&.mark_voided!
 
-        void_participant_outcome
-        declaration.reload
+        ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
+
+        if @declaration.started_declaration_type?
+          @application.update!(status: Application::ACCEPTED)
+        elsif @declaration.completed_declaration_type?
+          @application.application_states.reject(&:started_status?).each(&:destroy)
+          @application.update!(status: Application::STARTED)
+        end
       end
-
-      true
     end
 
   private
 
-    def clawback_declaration
-      declaration.mark_awaiting_clawback!
-      statement_attacher.attach
-    end
+    def application_status_not_completed
+      if @declaration.started_declaration_type? && @application.completed_status?
 
-    def void_declaration
-      declaration.mark_voided!
-      declaration.statement_items.with_state(:eligible, :ineligible, :payable).first&.mark_voided!
+        errors.add(:base, :application_status_completed)
+      end
     end
 
     def declaration_not_already_voided
-      return unless declaration
-
-      errors.add(:declaration, :already_voided) if declaration.voided_state?
-    end
-
-    def declaration_not_already_refunded
-      return unless declaration
-
-      already_refunded = declaration.statement_items.refundable.exists?
-      errors.add(:declaration, :not_already_refunded) if already_refunded
-    end
-
-    def output_fee_statement_available
-      errors.add(:declaration, :no_output_fee_statement, cohort: declaration.cohort.start_year) unless statement_attacher.valid?
-    end
-
-    def declaration_is_paid
-      return if errors[:declaration].any?
-
-      errors.add(:declaration, :must_be_paid) unless declaration&.paid_state?
-    end
-
-    def statement_attacher
-      @statement_attacher ||= StatementAttacher.new(declaration:)
-    end
-
-    def clawing_back?
-      declaration&.state.in?(CLAWBACK_STATES)
-    end
-
-    def voiding?
-      !clawing_back?
-    end
-
-    def void_participant_outcome
-      ParticipantOutcomes::Void.new(declaration:).void_outcome
+      errors.add(:base, :already_voided) if @declaration.voided_state?
     end
   end
 end

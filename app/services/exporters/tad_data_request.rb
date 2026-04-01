@@ -51,7 +51,7 @@ private
         schedule&.name,
         cohort&.identifier,
         application.eligible_for_funding,
-        application.training_status,
+        application.status,
         application.targeted_support_funding_eligibility,
       ] + outcomes
     end

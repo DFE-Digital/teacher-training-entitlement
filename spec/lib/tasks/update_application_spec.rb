@@ -23,7 +23,7 @@ RSpec.describe "update_application", :revisit do
 
     it "accepts the application" do
       run_task
-      expect(application.reload.lead_provider_approval_status).to eq "accepted"
+      expect(application.reload.status).to eq Application::ACCEPTED
     end
 
     context "when the application does not exist" do
@@ -34,7 +34,7 @@ RSpec.describe "update_application", :revisit do
   end
 
   describe "update_application:revert_to_pending" do
-    subject(:run_task) { Rake::Task["update_application:revert_to_pending"].invoke(application.ecf_id) }
+    subject(:run_task) { Rake::Task["update_application:revert_to_pending"].invoke(application.ecf_id, create(:admin).id) }
 
     after { Rake::Task["update_application:revert_to_pending"].reenable }
 
@@ -42,11 +42,11 @@ RSpec.describe "update_application", :revisit do
 
     it "reverts the application to pending" do
       run_task
-      expect(application.reload.lead_provider_approval_status).to eq "pending"
+      expect(application.reload.status).to eq Application::PENDING
     end
 
     context "when the application does not exist" do
-      subject(:run_task) { Rake::Task["update_application:revert_to_pending"].invoke(SecureRandom.uuid) }
+      subject(:run_task) { Rake::Task["update_application:revert_to_pending"].invoke(SecureRandom.uuid, create(:admin).id) }
 
       it_behaves_like "outputting an error"
     end
@@ -67,7 +67,7 @@ RSpec.describe "update_application", :revisit do
   end
 
   describe "update_application:withdraw" do
-    subject(:run_task) { Rake::Task["update_application:withdraw"].invoke(application.ecf_id, "started-in-error") }
+    subject(:run_task) { Rake::Task["update_application:withdraw"].invoke(application.ecf_id, "started-in-error", create(:admin).id) }
 
     after { Rake::Task["update_application:withdraw"].reenable }
 
@@ -76,7 +76,7 @@ RSpec.describe "update_application", :revisit do
 
     it "withdraws the application" do
       run_task
-      expect(application.reload.training_status).to eq "withdrawn"
+      expect(application.reload.status).to eq "withdrawn"
     end
   end
 

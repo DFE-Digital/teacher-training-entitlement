@@ -268,36 +268,36 @@ RSpec.shared_examples "an API index endpoint with filter by participant_id" do
   end
 end
 
-RSpec.shared_examples "an API index endpoint with filter by training_status" do
-  context "when filtering by training_status" do
+RSpec.shared_examples "an API index endpoint with filter by status" do
+  context "when filtering by status" do
     context "when valid" do
       let!(:resource) { create_resource(lead_provider: current_lead_provider) }
-      let(:training_status) { ApplicationState.states[:withdrawn] }
+      let(:status) { Application::WITHDRAWN }
 
-      before { resource.applications.first.update!(training_status:) }
+      before { resource.applications.first.update_columns(status:) }
 
-      it "returns resources with the given `training_status`" do
+      it "returns resources with the given `status`" do
         create_resource(lead_provider: current_lead_provider)
 
-        api_get(path, params: { filter: { training_status: } })
+        api_get(path, params: { filter: { status: } })
 
         expect(parsed_response["data"].size).to eq(1)
       end
 
       it "calls the correct query" do
-        expect(query).to receive(:new).with(a_hash_including(lead_provider: current_lead_provider, training_status:)).and_call_original
+        expect(query).to receive(:new).with(a_hash_including(lead_provider: current_lead_provider, status:)).and_call_original
 
-        api_get(path, params: { filter: { training_status: } })
+        api_get(path, params: { filter: { status: } })
       end
     end
 
     context "when invalid" do
       it "returns an error" do
-        api_get(path, params: { filter: { training_status: "not_valid_status" } })
+        api_get(path, params: { filter: { status: "not_valid_status" } })
 
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.content_type).to match(/application\/json.*/)
-        expect(parsed_response.dig("errors", 0, "detail")).to include(%(The filter '#/training_status' must be ["active", "deferred", "withdrawn"]))
+        expect(parsed_response.dig("errors", 0, "detail")).to include(%(The filter '#/status' must be #{Application::STATUSES}))
       end
     end
   end

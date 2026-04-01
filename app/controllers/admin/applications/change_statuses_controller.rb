@@ -2,7 +2,7 @@
 
 module Admin
   module Applications
-    class ChangeTrainingStatusesController < AdminController
+    class ChangeStatusesController < AdminController
       before_action :set_form
 
       def create
@@ -12,8 +12,9 @@ module Admin
 
         service = ::Applications::Strategy.for(
           application: @form.application,
-          training_status: @form.training_status,
+          status: @form.status,
           reason: @form.reason,
+          admin_user: current_admin,
         )
 
         service.call
@@ -29,14 +30,14 @@ module Admin
     private
 
       def set_form
-        @form = Admin::Applications::ChangeTrainingStatusForm.new(
-          training_status_params,
+        @form = Admin::Applications::ChangeStatusForm.new(
+          status_params,
         )
       end
 
-      def training_status_params
+      def status_params
         params.fetch(:form, {})
-          .permit(:training_status, :reason)
+          .permit(:status, :reason)
           .merge(id: params[:id])
       end
     end

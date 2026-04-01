@@ -15,7 +15,7 @@ private
 
   def process_csv_row(application_ecf_id)
     application = Application.find_by(ecf_id: application_ecf_id)
-    revert_to_pending = Applications::RevertToPending.new(application:, change_status_to_pending: "yes")
+    revert_to_pending = Applications::RevertToPending.new(application:, admin_user: admin, change_status_to_pending: "yes")
     success = revert_to_pending.revert
     outcome(success, application, revert_to_pending.errors)
   end

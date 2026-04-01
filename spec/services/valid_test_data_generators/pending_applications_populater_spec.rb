@@ -30,7 +30,7 @@ RSpec.describe ValidTestDataGenerators::PendingApplicationsPopulater, :revisit, 
 
         expect(User.count).to eq(22)
         expect(Application.count).to eq(22)
-        expect(Application.where(lead_provider_approval_status: "pending").count).to eq(22)
+        expect(Application.where(status: Application::PENDING).count).to eq(22)
         expect(Application.all.map(&:cohort).uniq.first).to eq(cohort)
         expect(Application.all.map(&:lead_provider).uniq.first).to eq(lead_provider)
       end

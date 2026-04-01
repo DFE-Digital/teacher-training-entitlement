@@ -19,15 +19,15 @@
               row.with_cell(text: application.user.email)
               row.with_cell(text: application.course.name)
               row.with_cell do
-                case application.lead_provider_approval_status
-                when "accepted"
+                case application.status
+                when Application::ACCEPTED
                   tag.strong("Accepted", class: "govuk-tag govuk-tag--green")
-                when "rejected"
+                when Application::REJECTED
                   tag.strong("Rejected", class: "govuk-tag govuk-tag--red")
-                when "pending"
+                when Application::PENDING
                   tag.strong("Pending", class: "govuk-tag govuk-tag--yellow")
                 else
-                  application.lead_provider_approval_status.titleize
+                  application.status.titleize
                 end
               end
               row.with_cell do

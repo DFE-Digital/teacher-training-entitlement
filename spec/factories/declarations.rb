@@ -8,14 +8,14 @@ FactoryBot.define do
       paid_statement { nil }
     end
 
-    application { Application.accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
+    application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
     lead_provider { application&.lead_provider || create(:lead_provider) }
     cohort { course_cohort.cohort }
 
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    declaration_type { "started" }
+    started
     declaration_date { Date.current }
-    state { "submitted" }
+    submitted
     ecf_id { SecureRandom.uuid }
 
     after(:create) do |declaration, evaluator|
@@ -40,6 +40,9 @@ FactoryBot.define do
       end
     end
 
+    trait :submitted do
+      state { :submitted }
+    end
     trait :payable do
       state { :payable }
     end
@@ -54,6 +57,10 @@ FactoryBot.define do
 
     trait :voided do
       state { :voided }
+    end
+
+    trait :started do
+      declaration_type { :started }
     end
 
     trait :completed do

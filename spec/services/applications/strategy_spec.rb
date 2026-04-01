@@ -1,14 +1,14 @@
 require "rails_helper"
 
 RSpec.describe Applications::Strategy, type: :model do
-  subject(:service) { Applications::Strategy.for(application:, training_status:, reason:) }
+  subject(:service) { Applications::Strategy.for(application:, status:, reason:, admin_user: create(:admin)) }
 
   let(:application) { build(:application) }
-  let(:training_status) { nil }
+  let(:status) { nil }
   let(:reason) { "other" }
 
   context "when withdrawing an application" do
-    let(:training_status) { Applications::Strategy::WITHDRAWN }
+    let(:status) { Application::WITHDRAWN }
 
     it do
       expect(service).to be_a(Applications::Withdraw)
@@ -16,7 +16,7 @@ RSpec.describe Applications::Strategy, type: :model do
   end
 
   context "when resuming an application" do
-    let(:training_status) { Applications::Strategy::ACTIVE }
+    let(:status) { Application::ACCEPTED }
 
     it do
       expect(service).to be_a(Applications::Resume)
@@ -24,7 +24,7 @@ RSpec.describe Applications::Strategy, type: :model do
   end
 
   context "when deferring an application" do
-    let(:training_status) { Applications::Strategy::DEFERRED }
+    let(:status) { Application::DEFERRED }
 
     it do
       expect(service).to be_a(Applications::Defer)

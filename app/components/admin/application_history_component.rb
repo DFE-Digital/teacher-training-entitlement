@@ -46,7 +46,7 @@ module Admin
 
     def description(record, object_changes, created_at, key, value)
       case key
-      when "training_status"
+      when "status"
         reason = record.lookup_state_change_reason(changed_at: created_at, changed_status: value[1])
         { inset: "Reason for training status change: #{reason}" } if reason
       when "notes"

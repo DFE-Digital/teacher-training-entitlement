@@ -34,20 +34,19 @@ module Applications
     def not_already_accepted
       return if application.blank?
 
-      errors.add(:application, :has_already_been_accepted) if application.accepted_lead_provider_approval_status?
+      errors.add(:application, :has_already_been_accepted) if application.accepted_status?
     end
 
     def cannot_change_from_rejected
       return if application.blank?
 
-      errors.add(:application, :cannot_change_from_rejected) if application.rejected_lead_provider_approval_status?
+      errors.add(:application, :cannot_change_from_rejected) if application.rejected_status?
     end
 
     def accept_application!
       opts = {
-        lead_provider_approval_status: "accepted",
+        status: Application::ACCEPTED,
         accepted_at: Time.zone.now,
-        training_status: :active,
       }
 
       if cohort.funding_cap?
@@ -74,7 +73,7 @@ module Applications
       ApplicationState.create!(
         application:,
         lead_provider:,
-        state: "active",
+        status: Application::ACCEPTED,
       )
     end
   end

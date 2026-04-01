@@ -69,7 +69,7 @@ end
 RSpec.shared_examples "a participant state transition" do |action, from_states, to_state|
   let(:lead_provider) { application.lead_provider }
   let(:participant_id) { application.user.ecf_id }
-  let(:application) { create(:application, :accepted, :with_declaration, training_status: from_states.sample) }
+  let(:application) { create(:application, :accepted, :with_declaration, status: from_states.sample) }
   let(:course_identifier) { application.course.identifier }
 
   it { expect(instance).to be_valid }
@@ -81,7 +81,7 @@ RSpec.shared_examples "a participant state transition" do |action, from_states, 
 
     from_states.each do |from_state|
       context "when the application is #{from_state}" do
-        let(:application) { create(:application, :accepted, :with_declaration, training_status: from_state) }
+        let(:application) { create(:application, :accepted, :with_declaration, status: from_state) }
 
         it "creates a #{to_state} application state" do
           expect { perform_action }.to change(ApplicationState, :count).by(1)
@@ -97,8 +97,8 @@ RSpec.shared_examples "a participant state transition" do |action, from_states, 
           expect(application.application_states.last).to have_attributes(expected_attributes)
         end
 
-        it "updates the application training status to #{to_state}" do
-          expect { perform_action }.to change { application.reload.training_status }.to(to_state)
+        it "updates the application status to #{to_state}" do
+          expect { perform_action }.to change { application.reload.status }.to(to_state)
         end
       end
     end

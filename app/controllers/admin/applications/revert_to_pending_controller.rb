@@ -4,8 +4,6 @@ module Admin
       before_action :set_application
       before_action :set_revert_to_pending_form
 
-      def new; end
-
       def create
         if @revert_to_pending_form.revert
           redirect_to admin_application_path(@application)
@@ -24,6 +22,7 @@ module Admin
         params.fetch(:applications_revert_to_pending, {})
           .permit(:change_status_to_pending)
           .merge(application: @application)
+          .merge(admin_user: current_admin)
       end
 
       def set_application

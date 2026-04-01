@@ -60,7 +60,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder, :revisit do
           seeder.call
 
           applications = Application.where(lead_provider: lead_provider)
-          expect(applications.pluck(:lead_provider_approval_status).uniq).to eq(%w[pending])
+          expect(applications.pluck(:status).uniq).to eq([Application::PENDING])
         end
 
         it "creates applications with correct funding eligibility" do
@@ -169,14 +169,13 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder, :revisit do
 
         it "resets all applications to pending status" do
           Application.where(lead_provider: lead_provider).limit(3).update_all(
-            lead_provider_approval_status: "accepted",
-            training_status: "active",
+            status: Application::ACCEPTED,
           )
 
           seeder.call
 
           applications = Application.where(lead_provider: lead_provider)
-          expect(applications.pluck(:lead_provider_approval_status).uniq).to eq(%w[pending])
+          expect(applications.pluck(:status).uniq).to eq([Application::PENDING])
         end
 
         it "does not delete users with other applications" do

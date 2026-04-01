@@ -120,40 +120,6 @@ An application's status value will determine whether a provider can:
   </tbody>
 </table>
 
-## Participant data states
-
-Participant states are defined by the `training_status` attribute within each enrolment.
-
-Participants are read-only. To change a participant's training status, use the corresponding application endpoint (defer, resume, withdraw).
-
-<table class="govuk-table">
-  <caption class="govuk-table__caption govuk-table__caption--m">Training status values</caption>
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">Training status</th>
-      <th scope="col" class="govuk-table__header govuk-table__header">Definition</th>
-      <th scope="col" class="govuk-table__header govuk-table__header">What providers can do</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header"><code>active</code></th>
-      <td class="govuk-table__cell govuk-table__cell">Participants currently in training</td>
-      <td class="govuk-table__cell govuk-table__cell">Submit declarations and manage the application (defer, withdraw)</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header"><code>deferred</code></th>
-      <td class="govuk-table__cell govuk-table__cell">Participants who've deferred training</td>
-      <td class="govuk-table__cell govuk-table__cell">Resume the application via <code>PUT /api/v1/applications/{id}/resume</code></td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header"><code>withdrawn</code></th>
-      <td class="govuk-table__cell govuk-table__cell">Participants who have withdrawn from training</td>
-      <td class="govuk-table__cell govuk-table__cell">Submit declarations for withdrawn participants if the <code>declaration_date</code> is backdated to before the withdrawal date</td>
-    </tr>
-  </tbody>
-</table>
-
 ## Declaration data states
 
 Declaration states are defined by the `state` attribute.

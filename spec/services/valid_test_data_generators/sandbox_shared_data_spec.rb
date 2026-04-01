@@ -76,7 +76,7 @@ RSpec.describe ValidTestDataGenerators::SandboxSharedData, :npq, :with_default_s
       it "creates accepted applications" do
         expect {
           subject.populate
-        }.to(change { Application.accepted.count })
+        }.to(change { Application.has_been_accepted.count })
       end
 
       it "creates participant id changes" do
@@ -88,7 +88,7 @@ RSpec.describe ValidTestDataGenerators::SandboxSharedData, :npq, :with_default_s
       it "creates rejected applications", :npq do
         expect {
           subject.populate
-        }.to(change { Application.where(lead_provider_approval_status: "rejected").count })
+        }.to(change { Application.where(status: Application::REJECTED).count })
       end
 
       it "creates eligible for funding applications" do
