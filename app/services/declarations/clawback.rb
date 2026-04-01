@@ -13,6 +13,7 @@ module Declarations
     validate :declaration_not_already_refunded
     validate :output_fee_statement_available
     validate :declaration_is_paid
+    validate :application_status_not_completed
 
     def call
       return unless valid?
@@ -39,6 +40,13 @@ module Declarations
 
     def statement_attacher
       @statement_attacher ||= StatementAttacher.new(declaration: @declaration)
+    end
+
+    def application_status_not_completed
+      if @declaration.started_declaration_type? && @application.completed_status?
+
+        errors.add(:base, :application_status_completed)
+      end
     end
 
     def declaration_not_already_refunded

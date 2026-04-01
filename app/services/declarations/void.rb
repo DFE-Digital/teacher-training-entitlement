@@ -11,6 +11,7 @@ module Declarations
     end
 
     validate :declaration_not_already_voided
+    validate :application_status_not_completed
 
     def call
       return unless valid?
@@ -31,6 +32,13 @@ module Declarations
     end
 
   private
+
+    def application_status_not_completed
+      if @declaration.started_declaration_type? && @application.completed_status?
+
+        errors.add(:base, :application_status_completed)
+      end
+    end
 
     def declaration_not_already_voided
       errors.add(:base, :already_voided) if @declaration.voided_state?

@@ -12,6 +12,23 @@ RSpec.describe Declarations::Void, type: :model do
 
   describe "validations" do
     context "when voiding the declaration" do
+      context "when the application has been completed and the declaration is started" do
+        let(:declaration_type) { :started }
+        let(:application) { create(:application, :completed) }
+
+        it { expect(service).to have_error(:base, :application_status_completed, I18n.t("declaration.application_status_completed")) }
+      end
+
+      context "when the application has been completed and the declaration is completed" do
+        let(:declaration_type) { :completed }
+        let(:application) { create(:application, :completed) }
+
+        it {
+          service.call
+          expect(service.errors).to be_blank
+        }
+      end
+
       Declaration::VOIDABLE_STATES.each do |state|
         context "with a #{state} declaration" do
           before { declaration.update!(state:) }
