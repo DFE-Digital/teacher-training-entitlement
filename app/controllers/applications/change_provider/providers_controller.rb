@@ -6,6 +6,8 @@ module Applications
       before_action :set_form
       storing_form_session_as :change_provider
 
+      def index; end
+
       def create
         render :index, status: :unprocessable_content and return unless @form.valid?
 

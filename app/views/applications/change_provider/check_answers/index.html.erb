@@ -30,7 +30,7 @@
       <hr/>
       <div class="govuk-body govuk-!-padding-top-4">
         <%= f.govuk_submit t("applications.change_provider.check_answers.form.button") %>
-        <%= govuk_link_to t("shared.cancel"), accounts_user_registration_path(application), class: "govuk-!-padding-left-4" %>
+        <%= govuk_link_to t("shared.cancel"), application_path(application.ecf_id), class: "govuk-!-padding-left-4" %>
       </div>
     <% end %>
   </div>

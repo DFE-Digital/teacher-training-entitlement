@@ -54,9 +54,11 @@ en:
           blank: Please confirm you have not started the course and want to change provider
           cannot_change_provider: You cannot change provider for this application. Contact the DfE for assistance.
       providers:
-        current_provider: Your current provider is
+        current_provider: 
+          - You are currently registered with %{current_provider}.
+          - Select a different provider
         form:
-          title: Select your new provider          
+          title: Select a training provider          
           blank: Please select a provider
           different_provider: Please choose a different provider to your current provider
         check_provider_is_open: Before selecting your provider, you must check that they are currently open to accepting applications.
@@ -65,8 +67,8 @@ en:
         current_provider: Current provider
         new_provider: New provider
         success:
-          title: Application successfully updated - you have changed your provider
-          message: Your previous provider has been notified that you are no longer registered with them. Your new provider will be in contact with you.
+          title: Registration successfully updated - you have registered with a new provider
+          message: Your previous provider has been notified that you are no longer registered with them. Your new provider will be in contact with you soon.
         form:
           button: Submit change
   declaration: &declaration

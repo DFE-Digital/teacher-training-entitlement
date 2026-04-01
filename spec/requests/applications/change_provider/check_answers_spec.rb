@@ -44,7 +44,7 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
 
       it "updates the application's lead provider and redirects to user registrations path" do
         post url
-        expect(response).to redirect_to(accounts_user_registration_path(application.id))
+        expect(response).to redirect_to(application_path(application.ecf_id))
         expect(application.reload.lead_provider_id).to eq(session_provider_id)
         expect(flash[:notice][:title]).to eq(I18n.t("applications.change_provider.check_answers.success.title"))
         expect(flash[:notice][:message]).to eq(I18n.t("applications.change_provider.check_answers.success.message"))

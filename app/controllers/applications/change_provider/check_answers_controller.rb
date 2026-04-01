@@ -21,7 +21,7 @@ module Applications
           message: t("applications.change_provider.check_answers.success.message"),
         }
 
-        redirect_to accounts_user_registration_path(application)
+        redirect_to application_path(application.ecf_id)
       end
 
       helper_method :new_provider
