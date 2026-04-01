@@ -3,14 +3,12 @@ module Applications
     helper_method :application
 
     def index
-      Rails.logger.info "!!!!!!!!!!!! INDEX"
       return unless current_user.applications.count == 1
 
       redirect_to application_path(current_user.applications.first.ecf_id)
     end
 
     def show
-      Rails.logger.info "!!!!!!!!!!!! SHOW"
       @application = current_user.applications.find_by_ecf_id!(params[:ecf_id])
     end
 
