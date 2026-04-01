@@ -3,29 +3,26 @@
     <h1 class="govuk-heading-l">
       <%= t("applications.change_provider.start.title", course_name: application.course.name) %>
     </h1>
-    
     <h2 class="govuk-heading-m">
       <%= t("applications.change_provider.start.what_happens.title") %>
     </h2>
     <p class="govuk-body">
       <ul class="govuk-list govuk-list--bullet">
-          <% t("applications.change_provider.start.what_happens.text").each do |line| %>
-              <li><%= line %></li>
-          <% end %>
+        <% t("applications.change_provider.start.what_happens.text").each do |line| %>
+          <li><%= line %></li>
+        <% end %>
       </ul>
-  
-    
-    <%= form_for @form, as: :form, url: application_change_provider_start_index_path(application.ecf_id) do |f| %>
-      <%= f.govuk_error_summary %>
-      <%= f.govuk_radio_buttons_fieldset :confirmation, legend: { text: t("applications.change_provider.start.form.title"), tag: 'h1', size: 'm' } do %>
-        <%= f.govuk_radio_button :confirmation, '1', label: { text: t("applications.change_provider.start.form.yes_option") }, link_errors: true %>
-        <%= f.govuk_radio_button :confirmation, '0', label: { text: t("applications.change_provider.start.form.no_option") } %>
-      <% end %>
 
-      <div class="govuk-button-group">
-        <%= f.govuk_submit t("shared.continue") %>
-        <%= govuk_link_to t("shared.cancel"), application_path(application.ecf_id) %>
-      </div>
-    <% end %>
-    
-</div>
+      <%= form_for @form, as: :form, url: application_change_provider_start_index_path(application.ecf_id) do |f| %>
+        <%= f.govuk_error_summary %>
+        <%= f.govuk_radio_buttons_fieldset :confirmation, legend: { text: t("applications.change_provider.start.form.title"), tag: 'h1', size: 'm' } do %>
+          <%= f.govuk_radio_button :confirmation, '1', label: { text: t("applications.change_provider.start.form.yes_option") }, link_errors: true %>
+          <%= f.govuk_radio_button :confirmation, '0', label: { text: t("applications.change_provider.start.form.no_option") } %>
+        <% end %>
+        <div class="govuk-button-group">
+          <%= f.govuk_submit t("shared.continue") %>
+          <%= govuk_link_to t("shared.cancel"), application_path(application.ecf_id) %>
+        </div>
+      <% end %>
+    </div>
+  </div>

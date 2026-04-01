@@ -1,0 +1,37 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: application_change_provider_providers_path(application.ecf_id)) %>
+    <h1 class="govuk-heading-l">
+      <%= t("applications.change_provider.check_answers.title") %>
+    </h1>
+
+    <%= form_for :form, url: application_change_provider_check_answers_path(application.ecf_id) do |f| %>
+      <div id="current-provider" class="govuk-grid-row govuk-body">
+        <div class="govuk-grid-column-one-third">
+          <strong><%= t("applications.change_provider.check_answers.current_provider") %></strong>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div><%= application.lead_provider.name %></div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+      </div>
+      <div id="new-provider" class="govuk-grid-row govuk-body">
+        <div class="govuk-grid-column-one-third">
+          <strong><%= t("applications.change_provider.check_answers.new_provider") %></strong>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div><%= new_provider.name %></div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div><%= govuk_link_to t("shared.change"), application_change_provider_providers_path(application.ecf_id) %></div>
+        </div>
+      </div>
+      <hr/>
+      <div class="govuk-body govuk-!-padding-top-4">
+        <%= f.govuk_submit t("applications.change_provider.check_answers.form.button") %>
+        <%= govuk_link_to t("shared.cancel"), application_path(application.ecf_id), class: "govuk-!-padding-left-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>

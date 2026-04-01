@@ -1,5 +1,26 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-body">Ticket #244 defines this page</p>
+    <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: application_change_provider_start_index_path(application.ecf_id)) %>
+    <h1 class="govuk-heading-l"><%= t("applications.change_provider.providers.form.title") %></h1>
+
+    <%= form_for @form, as: :form, url: application_change_provider_providers_path(application.ecf_id) do |f| %>
+      <%= f.govuk_error_summary %>
+      <%= f.govuk_radio_buttons_fieldset :provider_id, legend: {class: "govuk-visually-hidden", text: t("applications.change_provider.providers.form.title"),  } do %>
+        <p class="govuk-body gov-uk govuk-!-padding-bottom-4"">
+          <% t("applications.change_provider.providers.current_provider", current_provider: application.lead_provider.name).each do |l| %>
+            <%= l %>
+            <br/>
+          <% end %>
+        </p>
+        <% providers.each do |provider| %>
+          <%= f.govuk_radio_button :provider_id, provider.id, label: { text: provider.name }, link_errors: true %>
+        <% end %>
+      <% end %>
+      <%= govuk_warning_text(text: t('applications.change_provider.providers.check_provider_is_open')) %>
+      <div class="govuk-button-group">
+        <%= f.govuk_submit t("shared.continue") %>
+        <%= govuk_link_to t("shared.cancel"), application_path(application.ecf_id) %>
+      </div>
+    <% end %>
   </div>
 </div>
