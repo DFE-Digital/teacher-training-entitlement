@@ -66,7 +66,7 @@ module Participants
     def all_participants
       User
         .distinct
-        .joins(:applications).merge(Application.accepted)
+        .joins(:applications).merge(Application.has_been_accepted)
         .includes(
           :participant_id_changes,
           applications: %i[

@@ -32,13 +32,11 @@ class Application < ApplicationRecord
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications) }
-  scope :accepted, -> { where(status: ACCEPTED) }
+  scope :has_been_accepted, -> { where(status: ACCEPTED) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
   scope :for_manual_review, -> { where.not(review_status: nil) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
-  scope :accepted_or_withdrawn_or_deferred, -> { where(status: [ACCEPTED, WITHDRAWN, DEFERRED]) }
-  scope :started_or_accepted_or_withdrawn_or_deferred, -> { where(status: [STARTED, ACCEPTED, WITHDRAWN, DEFERRED]) }
 
   attr_accessor :version_note, :skip_touch_user_if_changed
 
@@ -148,7 +146,7 @@ class Application < ApplicationRecord
 
     @previously_funded ||= user.applications
       .where.not(id:)
-      .accepted
+      .has_been_accepted
       .eligible_for_funding
       .where(funded_place: [nil, true])
       .exists?

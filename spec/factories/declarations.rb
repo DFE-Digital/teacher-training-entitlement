@@ -8,7 +8,7 @@ FactoryBot.define do
       paid_statement { nil }
     end
 
-    application { Application.accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
+    application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
     lead_provider { application&.lead_provider || create(:lead_provider) }
     cohort { course_cohort.cohort }
 

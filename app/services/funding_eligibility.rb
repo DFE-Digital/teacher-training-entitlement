@@ -110,7 +110,7 @@ private
     @accepted_applications ||= begin
       application_ids = users.flat_map do |user|
         user.applications
-            .accepted
+            .has_been_accepted
             .eligible_for_funding
             .where(funded_place: [nil, true])
             .pluck(:id)
