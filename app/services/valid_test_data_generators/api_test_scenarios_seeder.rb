@@ -150,15 +150,16 @@ module ValidTestDataGenerators
       @course_cohort_primary = CourseCohort.find_or_create_by!(
         course: @course,
         cohort: @cohort_primary,
-      ) do |cc|
-        cc.schedule = @schedule_primary
-      end
+        schedule: @schedule_primary,
+      )
+      @course_cohort_primary.course_cohort_providers.create!(lead_provider:)
+
       @course_cohort_secondary = CourseCohort.find_or_create_by!(
         course: @course,
         cohort: @cohort_secondary,
-      ) do |cc|
-        cc.schedule = @schedule_secondary
-      end
+        schedule: @schedule_secondary,
+      )
+      @course_cohort_secondary.course_cohort_providers.create!(lead_provider:)
     end
 
     def setup_cohorts!
