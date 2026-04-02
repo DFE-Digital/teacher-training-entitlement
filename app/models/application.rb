@@ -38,7 +38,7 @@ class Application < ApplicationRecord
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
 
-  attr_accessor :version_note, :skip_touch_user_if_changed
+  attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :user_id,
@@ -46,7 +46,7 @@ class Application < ApplicationRecord
               scope: :course_cohort_id,
               conditions: -> { where.not(status: REJECTED) },
             }, unless: -> { rejected_status? }
-  validate :ensure_valid_status_transition, if: -> { status_changed? }
+  validate :ensure_valid_status_transition, if: -> { status_changed? && not_admin_user? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
@@ -227,6 +227,10 @@ class Application < ApplicationRecord
   end
 
 private
+
+  def not_admin_user?
+    admin_user.blank?
+  end
 
   def ensure_valid_status_transition
     from, to = changes[:status]

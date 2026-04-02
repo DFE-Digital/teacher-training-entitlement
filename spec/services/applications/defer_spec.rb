@@ -1,52 +1,73 @@
 require "rails_helper"
 
 RSpec.describe Applications::Defer, type: :model do
-  subject(:service) { described_class.new(application:, reason:, admin_user: create(:admin)) }
+  subject(:service) { described_class.new(application:, reason:, admin_user:) }
 
-  let(:application) { create(:application, :accepted, :with_declaration) }
-  let(:reason) { nil }
+  let(:reason) { "other" }
   let(:error_message_path) { "activemodel.errors.models.applications/defer.attributes" }
+  let(:admin_user) { nil }
 
   before { service.call }
 
-  context "when deferring without a reason" do
-    let(:reason) { nil }
+  describe "performed by admin user" do
+    let(:admin_user) { build(:admin) }
 
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:reason])
-        .to include(I18n.t("#{error_message_path}.reason.missing_reason"))
+    context "when deferring without a reason" do
+      let(:reason) { nil }
+      let(:application) { create(:application, :started) }
+
+      it { is_expected.to have_error(:reason, :inclusion) }
+    end
+
+    context "when deferring a withdrawn application" do
+      let(:application) { create(:application, :withdrawn) }
+
+      it { expect(application.reload.status).to eq(Application::DEFERRED) }
+    end
+
+    context "when deferring a deferred application" do
+      let(:application) { create(:application, :deferred) }
+
+      it { is_expected.to have_error(:application, :has_already_been_deferred) }
+    end
+
+    context "when successfully deferring" do
+      let(:application) { create(:application, :started) }
+
+      it do
+        expect(service.errors).to be_blank
+        expect(application.reload.status).to eq(Application::DEFERRED)
+      end
     end
   end
 
-  context "when deferring a withdrawn application" do
-    let(:application) { create(:application, :withdrawn, :with_declaration) }
+  describe "performed by lead provider" do
+    context "when deferring without a reason" do
+      let(:reason) { nil }
+      let(:application) { create(:application, :started) }
 
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:base])
-        .to include(I18n.t("#{error_message_path}.base.already_withdrawn"))
+      it { is_expected.to have_error(:reason, :inclusion) }
     end
-  end
 
-  context "when deferring a deferred application" do
-    let(:reason) { nil }
-    let(:application) { create(:application, :deferred, :with_declaration) }
+    context "when deferring a withdrawn application" do
+      let(:application) { create(:application, :withdrawn) }
 
-    it do
-      expect(service.errors).not_to be_blank
-      expect(service.errors[:base])
-        .to include(I18n.t("#{error_message_path}.base.already_deferred"))
+      it { is_expected.to have_error(:application, :not_deferrable) }
     end
-  end
 
-  context "when successfully deferring" do
-    let(:reason) { "other" }
-    let(:application) { create(:application, :accepted, :with_declaration) }
+    context "when deferring a deferred application" do
+      let(:application) { create(:application, :deferred) }
 
-    it do
-      expect(service.errors).to be_blank
-      expect(application.reload.status).to eq(Application::DEFERRED)
+      it { is_expected.to have_error(:application, :has_already_been_deferred) }
+    end
+
+    context "when successfully deferring" do
+      let(:application) { create(:application, :started) }
+
+      it do
+        expect(service.errors).to be_blank
+        expect(application.reload.status).to eq(Application::DEFERRED)
+      end
     end
   end
 end
