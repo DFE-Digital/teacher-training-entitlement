@@ -31,31 +31,31 @@ en:
           contact technical support if this problem persists.
     features:
       show:
-        unused_registration_open_html: |
+        registration_open_html: |
           <p class="govuk-body">When this feature is turned on, registration is open. Users can register for a course as normal.</p>
           <p class="govuk-body">When this feature is turned off, registration is closed. Users cannot register for a course, unless the <a href="/admin/features/Closed%20registration%20enabled" class="govuk-link">Closed registration enabled</a> feature is turned on to allow certain users to register late.</p>
-        unused_closed_registration_enabled_html: |
+        closed_registration_enabled_html: |
           <p class="govuk-body">When this feature is turned on, specified users can register for a course even when the service is closed to the general public.</p>
           <p class="govuk-body">Use the <a href="/admin/features/Registration%20open" class="govuk-link">Registration open</a> feature flag if you need to close the service to the general public.
           <p class="govuk-body">To view or manage who can register while the service is closed, visit <a href="/admin/closed_registration_users" class="govuk-link">Closed registration users</a>.</p>
           <p class="govuk-body">When both the Registration open and Closed registration enabled feature flags are turned off, no one will be able to register.</p>
-        unused_declarations_require_delivery_partner_html: |
+        declarations_require_delivery_partner_html: |
           <p class="govuk-body">When this feature is turned on, submitting a declaration for the 2024 cohort onwards will require the delivery partner to be included.</p>
           <p class="govuk-body">When this feature is turned off, submitting a declaration does not require a delivery partner, but will still accept a declaration with a delivery partner.</p>
-        unused_maintenance_banner_html: '<p class="govuk-body">When this feature is
+        maintenance_banner_html: '<p class="govuk-body">When this feature is
           turned on, a banner will be displayed at the top of every page to inform
           users that the service is down for maintenance.</p>
 
           '
-        unused_dfe_analytics_enabled_html: '<p class="govuk-body">When this feature
+        dfe_analytics_enabled_html: '<p class="govuk-body">When this feature
           is turned on, events will be sent to DfE Analytics.</p>
 
           '
-        unused_lead_provider_transferred_declarations_visibility_html: '<p class="govuk-body">When
+        lead_provider_transferred_declarations_visibility_html: '<p class="govuk-body">When
           this feature is turned on, lead providers can see transferred declarations.</p>
 
           '
-        unused_use_suffixed_cohorts_html: |
+        use_suffixed_cohorts_html: |
           <p class="govuk-body">When turned on any new applications will be assigned to the latest suffixed cohort<p>
           <p class="govuk-body">When turned off any new applications will be assigned to the latest cohort with a suffix of 1</p>
           <p class"govuk-body">This enables the rollout of suffixed cohorts</p>
@@ -95,9 +95,9 @@ en:
         payment_authorisations:
           new:
             button: Authorise for payment
-            unused_title: Check %{statement_name} statement details before authorising
+            title: Check %{statement_name} statement details before authorising
               for payment
-            unused_checks_done_legend: Have all necessary assurance checks been done?
+            checks_done_legend: Have all necessary assurance checks been done?
           tag:
             unused_content: Authorised for payment at %{statement_marked_as_paid_at}
           banner:
