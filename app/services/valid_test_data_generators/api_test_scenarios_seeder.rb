@@ -152,14 +152,14 @@ module ValidTestDataGenerators
         cohort: @cohort_primary,
         schedule: @schedule_primary,
       )
-      @course_cohort_primary.course_cohort_providers.create!(lead_provider:)
+      @course_cohort_primary.course_cohort_providers.find_or_create_by!(lead_provider:)
 
       @course_cohort_secondary = CourseCohort.find_or_create_by!(
         course: @course,
         cohort: @cohort_secondary,
         schedule: @schedule_secondary,
       )
-      @course_cohort_secondary.course_cohort_providers.create!(lead_provider:)
+      @course_cohort_secondary.course_cohort_providers.find_or_create_by!(lead_provider:)
     end
 
     def setup_cohorts!
