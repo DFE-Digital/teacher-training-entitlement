@@ -7,11 +7,17 @@ module Applications
     attr_reader :scope, :sort
 
     def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
-      @scope = lead_provider.applications.includes(
-        :user,
-        :institution,
-        course_cohort: %i[course cohort schedule],
-      )
+      @scope = lead_provider
+                 .applications
+                 .includes(
+                   :user,
+                   :course,
+                   :cohort,
+                   :schedule,
+                   :institution,
+                   course_cohort: %i[course cohort schedule],
+                 )
+                 .preload(institution: :institutionable)
       @sort = sort
 
       where_cohort_start_year_in(cohort_start_years)

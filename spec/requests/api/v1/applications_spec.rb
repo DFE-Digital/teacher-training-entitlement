@@ -100,7 +100,7 @@ RSpec.describe "Application endpoints", type: :request do
       let(:expected_response) do
         {
           "errors" => [
-            { "title" => "base", "detail" => I18n.t("activemodel.errors.models.applications/defer.attributes.base.already_deferred") },
+            { "title" => "application", "detail" => I18n.t("activemodel.errors.models.applications/defer.attributes.application.has_already_been_deferred") },
           ],
         }
       end
