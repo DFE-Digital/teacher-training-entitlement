@@ -3,6 +3,7 @@ en:
   unpermitted_parameters: "Unpermitted parameters"
   unauthorized: "HTTP Token: Access denied"
   bad_request: "Bad request"
+  resource_not_found: "Resource not found"
   not_found: "Not found"
   invalid_date_filter: "The filter '#/%{parameterized_attribute}' must be a valid ISO 8601 date"
   invalid_participant_id_filter: "The filter '#/participant_id' must be a comma-delimited list of valid UUIDs"

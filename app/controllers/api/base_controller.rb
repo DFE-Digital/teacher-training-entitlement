@@ -12,6 +12,7 @@ module API
     rescue_from ActionController::UnpermittedParameters, with: :unpermitted_parameter_response
     rescue_from ActionController::BadRequest, with: :bad_request_response
     rescue_from ArgumentError, with: :bad_request_response
+    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
     rescue_from API::Errors::FilterValidationError, with: :filter_validation_error_response
 
   private
@@ -27,6 +28,10 @@ module API
     def bad_request_response(exception)
       Sentry.capture_exception(exception)
       render json: { errors: API::Errors::Response.new(error: I18n.t(:bad_request), params: exception.message).call }, status: :bad_request
+    end
+
+    def record_not_found(_exception)
+      render json: { error: I18n.t(:resource_not_found) }, status: :not_found
     end
 
     def filter_validation_error_response(exception)
