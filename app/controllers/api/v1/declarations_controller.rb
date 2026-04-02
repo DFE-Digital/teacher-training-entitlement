@@ -7,7 +7,7 @@ module API
       before_action :ensure_declaration_belongs_to_lead_provider, only: %i[void change_delivery_partner]
 
       def index
-        conditions = { updated_since:, cohort_start_years:, application_id:, declaration_type:, course_identifier: }
+        conditions = { updated_since:, cohort_start_years:, application_id:, declaration_type:, course_identifier:, participant_ids: }
         declarations = declarations_query(conditions:).declarations
                          .includes(:delivery_partner, :secondary_delivery_partner)
 
@@ -81,6 +81,10 @@ module API
 
       def course_identifier
         params.dig(:filter, :course)
+      end
+
+      def participant_ids
+        params.dig(:filter, :participant_id)
       end
 
       def to_json(obj)
