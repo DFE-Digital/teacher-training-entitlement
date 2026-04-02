@@ -237,6 +237,8 @@ module ValidTestDataGenerators
           works_in_school: true,
           works_in_childcare: false,
           ukprn: school.ukprn,
+          # This is for change provider feature
+          # unassigned: app_data[:label] == APP-006 ? Time.zone.now : nil
         )
 
         @applications[app_data[:label]] = application
