@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Applications::Withdraw, type: :model do
-  subject(:service) { described_class.new(application:, reason:, admin_user: create(:admin)) }
+  subject(:service) { described_class.new(application:, reason:, admin_user: build(:admin)) }
 
   let(:application) { create(:application, :accepted, :with_declaration) }
   let(:reason) { nil }

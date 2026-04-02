@@ -391,6 +391,8 @@ en:
               already_withdrawn: The participant is already withdrawn
         applications/withdraw:
           attributes:
+            application:
+              <<: *application
             reason:
               missing_reason: A valid reason for withdrawal must be provided
             base:

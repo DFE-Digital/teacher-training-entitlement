@@ -31,11 +31,14 @@ module Applications
 
     validate :not_withdrawn
     validate :not_missing_reason
+    validate :application_withdrawable, if: -> { application }
+
+    attr_reader :application
 
     def initialize(application:, reason:, admin_user: nil)
       @application = application
+      @application.admin_user = admin_user
       @reason = reason
-      @admin_user = admin_user
     end
 
     def call
@@ -44,8 +47,7 @@ module Applications
       Application.transaction do
         @application.application_states.create!(status: Application::WITHDRAWN,
                                                 reason: @reason)
-        @application.status = Application::WITHDRAWN
-        @application.save!(validate: @admin_user.nil?)
+        @application.withdrawn_status!
       end
     end
 
@@ -59,6 +61,13 @@ module Applications
 
     def not_withdrawn
       add_error(:base, :already_withdrawn) if @application.withdrawn_status?
+    end
+
+    def application_withdrawable
+      old_status = @application.status
+      @application.status = Application::WITHDRAWN
+      errors.add(:application, :not_withdrawable) if @application.invalid?
+      @application.status = old_status
     end
 
     def add_error(group, key)
