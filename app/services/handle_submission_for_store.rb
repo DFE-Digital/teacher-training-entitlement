@@ -12,7 +12,7 @@ class HandleSubmissionForStore
         lead_provider_id: store["lead_provider_id"],
         institution: (institution_from_store if inside_catchment?),
         ukprn:,
-        eligible_for_funding: eligible_for_funding?,
+        eligible_for_funding: funding_eligibility_service.funded?,
         funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
         funding_choice:,
         teacher_catchment:,
@@ -78,7 +78,7 @@ private
     # It is possible that the applicant had chosen a non-funded path and selected a funding choice
     # before going back a few steps and choosing a funded route. We should clear the funding choice
     # to nil here to reduce confusion
-    if eligible_for_funding?
+    if funding_eligibility_service.funded?
       nil
     else
       store["funding"]
@@ -98,10 +98,6 @@ private
       get_an_identity_id: query_store.get_an_identity_id,
       query_store:,
     )
-  end
-
-  def eligible_for_funding?
-    funding_eligibility_service.funded?
   end
 
   def course
