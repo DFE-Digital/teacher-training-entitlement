@@ -154,6 +154,13 @@ module ValidTestDataGenerators
       )
       @course_cohort_primary.course_cohort_providers.find_or_create_by!(lead_provider:)
 
+      @course_cohort_resume = CourseCohort.find_or_create_by!(
+        course: @course,
+        cohort: @cohort_resume,
+        schedule: @schedule_resume,
+      )
+      @course_cohort_resume.course_cohort_providers.find_or_create_by!(lead_provider:)
+
       @course_cohort_secondary = CourseCohort.find_or_create_by!(
         course: @course,
         cohort: @cohort_secondary,
@@ -165,6 +172,11 @@ module ValidTestDataGenerators
     def setup_cohorts!
       @cohort_primary = Cohort.find_or_create_by!(start_year: cohort_year, suffix: "a") do |cohort|
         cohort.description = "#{cohort_year} to #{cohort_year + 1}"
+        cohort.registration_starts_at = Date.new(cohort_year, 4, 3)
+        cohort.funding_cap = true
+      end
+      @cohort_resume = Cohort.find_or_create_by!(start_year: cohort_year, suffix: "b") do |cohort|
+        cohort.description = "#{cohort_year} to #{cohort_year + 1} -b"
         cohort.registration_starts_at = Date.new(cohort_year, 4, 3)
         cohort.funding_cap = true
       end
@@ -182,31 +194,87 @@ module ValidTestDataGenerators
       @course = Course.find_by!(identifier: @course_identifier)
 
       # Create schedule for primary cohort
-      @schedule_primary = Schedule.find_or_create_by!(
-        identifier: @schedule_identifier,
-      ) do |schedule|
-        schedule.name = "TTE Reception autumn"
-        schedule.course_group = @course.course_group
-        schedule.training_starts_at = Date.new(cohort_year, 9, 1)
-        schedule.training_ends_at = Date.new(cohort_year + 1, 8, 31)
-        schedule.allowed_declaration_types = %w[started completed]
-        schedule.policy_descriptor = 1
-        schedule.acceptance_window_start = Date.new(cohort_year, 1, 1)
-        schedule.acceptance_window_end = Date.new(cohort_year, 12, 31)
+      @schedule_primary = Schedule.find_by(identifier: @schedule_identifier)
+      if @schedule_primary
+        @schedule_primary.update!(
+          name: "TTE Reception autumn",
+          course_group: @course.course_group,
+          training_starts_at: 1.day.ago,
+          training_ends_at: 1.month.from_now,
+          allowed_declaration_types: %w[started completed],
+          policy_descriptor: 1,
+          acceptance_window_start: Date.new(cohort_year, 1, 1),
+          acceptance_window_end: Date.new(cohort_year, 12, 31),
+        )
+      else
+        @schedule_primary = Schedule.create!(
+          cohort: @cohort_primary,
+          identifier: @schedule_identifier,
+          name: "TTE Reception autumn",
+          course_group: @course.course_group,
+          training_starts_at: 1.day.ago,
+          training_ends_at: 1.month.from_now,
+          allowed_declaration_types: %w[started completed],
+          policy_descriptor: 1,
+          acceptance_window_start: Date.new(cohort_year, 1, 1),
+          acceptance_window_end: Date.new(cohort_year, 12, 31),
+        )
+      end
+
+      # Create schedule for resume cohort
+      @schedule_resume = Schedule.find_by(identifier: "tte-reception-spring")
+      if @schedule_resume
+        @schedule_resume.update!(
+          name: "TTE Reception spring",
+          course_group: @course.course_group,
+          training_starts_at: 1.day.ago,
+          training_ends_at: 1.month.from_now,
+          allowed_declaration_types: %w[started completed],
+          policy_descriptor: 1,
+          acceptance_window_start: Date.new(cohort_year, 1, 1),
+          acceptance_window_end: Date.new(cohort_year, 12, 31),
+        )
+      else
+        @schedule_resume = Schedule.create!(
+          cohort: @cohort_resume,
+          identifier: "tte-reception-spring",
+          name: "TTE Reception autumn",
+          course_group: @course.course_group,
+          training_starts_at: 1.day.ago,
+          training_ends_at: 1.month.from_now,
+          allowed_declaration_types: %w[started completed],
+          policy_descriptor: 1,
+          acceptance_window_start: Date.new(cohort_year, 1, 1),
+          acceptance_window_end: Date.new(cohort_year, 12, 31),
+        )
       end
 
       # Create schedule for secondary cohort
-      @schedule_secondary = Schedule.find_or_create_by!(
-        identifier: @schedule_identifier,
-      ) do |schedule|
-        schedule.name = "TTE Reception autumn"
-        schedule.course_group = @course.course_group
-        schedule.training_starts_at = Date.new(cohort_year + 1, 9, 1)
-        schedule.training_ends_at = Date.new(cohort_year + 2, 8, 31)
-        schedule.allowed_declaration_types = %w[started completed]
-        schedule.policy_descriptor = 1
-        schedule.acceptance_window_start = Date.new(cohort_year + 1, 1, 1)
-        schedule.acceptance_window_end = Date.new(cohort_year + 1, 12, 31)
+      @schedule_secondary = Schedule.find_by(identifier: @schedule_identifier)
+      if @schedule_secondary
+        @schedule_secondary.update!(
+          name: "TTE Reception autumn",
+          course_group: @course.course_group,
+          training_starts_at: 1.day.ago,
+          training_ends_at: 1.month.from_now,
+          allowed_declaration_types: %w[started completed],
+          policy_descriptor: 1,
+          acceptance_window_start: Date.new(cohort_year, 1, 1),
+          acceptance_window_end: Date.new(cohort_year, 12, 31),
+        )
+      else
+        @schedule_secondary = Schedule.create!(
+          cohort: @cohort_secondary,
+          identifier: @schedule_identifier,
+          name: "TTE Reception autumn",
+          course_group: @course.course_group,
+          training_starts_at: 1.day.ago,
+          training_ends_at: 1.month.from_now,
+          allowed_declaration_types: %w[started completed],
+          policy_descriptor: 1,
+          acceptance_window_start: Date.new(cohort_year, 1, 1),
+          acceptance_window_end: Date.new(cohort_year, 12, 31),
+        )
       end
 
       logger.info "✓ Course and schedules setup"
