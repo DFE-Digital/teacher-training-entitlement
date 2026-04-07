@@ -153,7 +153,7 @@ FactoryBot.define do
 
     trait :completed do
       started
-      status { Application::COMPLETEED }
+      status { Application::COMPLETED }
       after(:create) do |application|
         application.declarations << create(:declaration, :completed, application:)
       end
