@@ -1,0 +1,3872 @@
+{
+  "info": {
+    "_postman_id": "3319c4b4-4eaa-4fb2-9445-7123d238d49c",
+    "name": "TTE Lead Provider API - Test Scenarios",
+    "description": "Postman collection implementing all test scenarios from the Lead Provider API Test Scenarios document for the Teacher Training Entitlement (TTE) API.\n\nFunctional areas:\n1. Registration (REG-001 to REG-025)\n2. Declarations (DCL-001 to DCL-029)\n3. Application Lifecycle (PAR-007 to PAR-017)\n4. Participants (PAR-001 to PAR-006)\n5. Schedules (SCH-001 to SCH-004)\n6. Statements (STM-001 to STM-006)\n\nSetup:\n- Set collection variables: `baseUrl`, `apiKey`\n- Set application ID variables: `appId001` through `appId012`\n- Set statement ID variables: `stmtId001`, `stmtId002`\n- IDs for declarations and participants are captured automatically via test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53673888",
+    "_collection_link": "https://go.postman.co/collection/53673888-3319c4b4-4eaa-4fb2-9445-7123d238d49c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Registration",
+      "item": [
+        {
+          "name": "1.1 Listing Applications",
+          "item": [
+            {
+              "name": "REG-001 List all applications (expect 12)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-001: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-001: Response has data array', () => pm.expect(json.data).to.be.an('array'));",
+                      "pm.test('REG-001: Returns 12 applications', () => pm.expect(json.data.length).to.eql(12));",
+                      "",
+                      "// Auto-capture all appId variables by matching email username",
+                      "const emailToVar = {",
+                      "  'test-accept-01':   'appId001',",
+                      "  'test-accept-02':   'appId002',",
+                      "  'test-reject-01':   'appId003',",
+                      "  'test-accept-03':   'appId004',",
+                      "  'test-withdraw-01': 'appId005',",
+                      "  'test-edge-01':     'appId006',",
+                      "  'test-nodecl-01':   'appId007',",
+                      "  'test-adm-started':    'appId008',",
+                      "  'test-adm-completed':  'appId009',",
+                      "  'test-adm-failed':     'appId010',",
+                      "  'test-adm-voided':     'appId011',",
+                      "  'test-adm-deferred':   'appId012'",
+                      "};",
+                      "",
+                      "let captured = 0;",
+                      "json.data.forEach(app => {",
+                      "  const email = app.attributes && app.attributes.email;",
+                      "  if (!email) return;",
+                      "  const username = email.split('@')[0];",
+                      "  const varName = emailToVar[username];",
+                      "  if (varName) {",
+                      "    pm.collectionVariables.set(varName, app.id);",
+                      "    const parVarName = varName.replace(\"app\",\"par\");",
+                      "    pm.collectionVariables.set(parVarName, app.attributes.participant_id)",
+                      "    captured++;",
+                      "    console.log('Captured', varName, '=', app.id, '(', email, ')');",
+                      "  }",
+                      "});",
+                      "",
+                      "pm.test('REG-001: All 12 appId variables captured from email matching', () => pm.expect(captured).to.eql(12));"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-002 List applications filtered by cohort 2026 (expect 11)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-002: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-002: Returns 11 applications (APP-006 excluded)', () => pm.expect(json.data.length).to.eql(11));",
+                      "pm.test('REG-002: No cohort 2027 applications present', () => {",
+                      "  const hasWrongCohort = json.data.some(app => app.attributes.cohort === '2027');",
+                      "  pm.expect(hasWrongCohort).to.be.false;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2026",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[cohort]",
+                      "value": "2026"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-003 List applications filtered by cohort 2000 (expect empty)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-003: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-003: Returns empty data array', () => pm.expect(json.data.length).to.eql(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2000",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[cohort]",
+                      "value": "2000"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1.2 Single Application",
+          "item": [
+            {
+              "name": "REG-004 Get single application APP-002",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-004: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-004: full_name attribute present', () => pm.expect(json.data.attributes.full_name).to.be.a('string').and.not.empty);",
+                      "const username = json.data.attributes.email.split('@')[0];",
+                      "pm.test('REG-004: email matches APP-002', () => pm.expect(username).to.eql('test-accept-02'));",
+                      "console.log('APP-002 full_name:', json.data.attributes.full_name);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId002}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId002}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-005 Get non-existent application (expect 404)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-005: Status 404', () => pm.response.to.have.status(404));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-005: Error message present', () => pm.expect(json.errors || json.error).to.exist);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{nonExistentUuid}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{nonExistentUuid}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1.3 Accepting Applications",
+          "item": [
+            {
+              "name": "REG-006 Accept APP-001 with funded place",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-006: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-006: Status is accepted', () => pm.expect(json.data.attributes.status).to.eql('accepted'));",
+                      "pm.test('REG-006: funded_place is true', () => pm.expect(json.data.attributes.funded_place).to.be.true);",
+                      "pm.collectionVariables.set('partId001', json.data.attributes.participant_id);",
+                      "console.log('PART-001 participant_id captured:', json.data.attributes.participant_id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-007 Accept APP-002 with funded place",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-007: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-007: Status is accepted', () => pm.expect(json.data.attributes.status).to.eql('accepted'));",
+                      "pm.test('REG-007: funded_place is true', () => pm.expect(json.data.attributes.funded_place).to.be.true);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId002}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId002}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-008 Accept APP-004 without funded place (not eligible)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-008: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-008: Status is accepted', () => pm.expect(json.data.attributes.status).to.eql('accepted'));",
+                      "pm.test('REG-008: funded_place is false', () => pm.expect(json.data.attributes.funded_place).to.be.false);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": false\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId004}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId004}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-009 Accept APP-005 with funded place",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-009: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-009: Status is accepted', () => pm.expect(json.data.attributes.status).to.eql('accepted'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId005}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId005}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-010 Accept APP-007 with funded place",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-010: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-010: Status is accepted', () => pm.expect(json.data.attributes.status).to.eql('accepted'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId007}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId007}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-011 Accept APP-008 with funded place (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-011: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId008}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId008}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-012 Accept APP-009 with funded place (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-012: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId009}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId009}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-013 Accept APP-010 with funded place (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-013: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId010}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId010}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-014 Accept APP-011 with funded place (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-014: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId011}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId011}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-015 Accept APP-012 with funded place (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-015: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId012}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId012}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-016 Accept APP-001 again (expect error — already accepted)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-016: Non-200 error response (already accepted)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('REG-016: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-017 Accept APP-004 with funded place (expect error — not eligible)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-017: Non-200 error response (not eligible for funding)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('REG-017: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId004}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId004}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1.4 Rejecting Applications",
+          "item": [
+            {
+              "name": "REG-018 Reject APP-003",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-018: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-018: Status is rejected', () => pm.expect(json.data.attributes.status).to.eql('rejected'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId003}}/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId003}}",
+                    "reject"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-019 Reject APP-003 again (expect error — already rejected)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-019: Non-200 error (already rejected)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('REG-019: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId003}}/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId003}}",
+                    "reject"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-020 Reject APP-001 (expect error — already accepted)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-020: Non-200 error (cannot reject accepted application)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('REG-020: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "reject"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-021 Reject APP-006 (expect error — different cohort / not owned)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-021: Non-200 error (cross-cohort boundary or access denied)', () => pm.expect(pm.response.code).to.be.oneOf([400, 404, 422]));",
+                      "pm.test('REG-021: Response body contains error information', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId006}}/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId006}}",
+                    "reject"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1.5 Change Funded Place",
+          "item": [
+            {
+              "name": "REG-022 Change APP-001 funded place to false",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-022: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-022: funded_place is false', () => pm.expect(json.data.attributes.funded_place).to.be.false);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": false\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/change-funded-place",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "change-funded-place"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-023 Change APP-001 funded place back to true",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-023: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-023: funded_place is true', () => pm.expect(json.data.attributes.funded_place).to.be.true);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/change-funded-place",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "change-funded-place"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-024 Change funded place on rejected APP-003 (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-024: Non-200 error (application not accepted)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('REG-024: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId003}}/change-funded-place",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId003}}",
+                    "change-funded-place"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "REG-025 Set funded place to true on APP-004 (expect error — not eligible)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-025: Non-200 error (not eligible for funding)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('REG-025: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId004}}/change-funded-place",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId004}}",
+                    "change-funded-place"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "Objective: Validate that the lead provider can successfully list, accept, and reject applications via the API."
+    },
+    {
+      "name": "2. Declarations",
+      "item": [
+        {
+          "name": "2.0 Setup — Capture Delivery Partner ID",
+          "item": [
+            {
+              "name": "SETUP List delivery partners and capture deliveryPartnerId",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('SETUP: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('SETUP: Delivery partners array returned', () => pm.expect(json.data).to.be.an('array').with.lengthOf.at.least(1));",
+                      "const first = json.data[0];",
+                      "pm.collectionVariables.set('deliveryPartnerId', first.id);",
+                      "console.log('deliveryPartnerId captured:', first.id, '— name:', first.attributes.name);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/delivery-partners",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "delivery-partners"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.1 Submitting Started Declarations",
+          "item": [
+            {
+              "name": "DCL-001 Submit started declaration for APP-001",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-001: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-001: Declaration type is started', () => pm.expect(json.data.attributes.declaration_type).to.eql('started'));",
+                      "pm.test('DCL-001: State is submitted or eligible', () => pm.expect(json.data.attributes.state).to.be.oneOf(['submitted', 'eligible']));",
+                      "pm.collectionVariables.set('declId_APP001_started', json.data.id);",
+                      "console.log('APP-001 started declaration ID captured:', json.data.id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-002 Submit started declaration for APP-002",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-002: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-002: Declaration created', () => pm.expect(json.data.id).to.exist);",
+                      "pm.collectionVariables.set('declId_APP002_started', json.data.id);",
+                      "console.log('APP-002 started declaration ID captured:', json.data.id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId002}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId002}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-003 Submit started declaration for APP-005",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-003: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.test('DCL-003: Declaration created for APP-005', () => pm.expect(pm.response.json().data.id).to.exist);",
+                      "pm.collectionVariables.set('declId_APP005_started', pm.response.json().data.id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId005}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId005}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-004 Submit started declaration for APP-008 (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-004: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId008}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId008}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-005 Submit started declaration for APP-009 (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-005: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId009}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId009}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-006 Submit started declaration for APP-010 (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-006: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId010}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId010}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-007 Submit started declaration for APP-011 (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-007: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.collectionVariables.set('declId_APP011_started', pm.response.json().data.id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId011}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId011}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-008 Submit started declaration for APP-012 (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-008: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId012}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId012}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-009 Duplicate started declaration for APP-001 (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-009: Non-200 error (duplicate declaration)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('DCL-009: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-010 Started declaration on non-existent application (expect 404)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-010: Status 404', () => pm.response.to.have.status(404));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{nonExistentUuid}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{nonExistentUuid}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-011 Declaration with missing declaration_date (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-011: Non-200 error (missing declaration_date)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('DCL-011: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-012 Declaration with future declaration_date (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-012: Non-200 error (future declaration_date)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('DCL-012: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"2099-01-01T00:00:00Z\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.2 Submitting Completed Declarations",
+          "item": [
+            {
+              "name": "DCL-013 Submit completed declaration for APP-001 (has_passed: true)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-013: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-013: Declaration type is completed', () => pm.expect(json.data.attributes.declaration_type).to.eql('completed'));",
+                      "pm.test('DCL-013: has_passed is true', () => pm.expect(json.data.attributes.has_passed).to.be.true);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"has_passed\": true,\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/declarations/completed",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "declarations",
+                    "completed"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-014 Submit completed declaration for APP-002 (has_passed: false)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-014: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-014: has_passed is false', () => pm.expect(json.data.attributes.has_passed).to.be.false);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"has_passed\": false,\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId002}}/declarations/completed",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId002}}",
+                    "declarations",
+                    "completed"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-015 Submit completed declaration for APP-009 (has_passed: true, admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-015: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"has_passed\": true,\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId009}}/declarations/completed",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId009}}",
+                    "declarations",
+                    "completed"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-016 Submit completed declaration for APP-010 (has_passed: false, admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-016: Status 200', () => pm.response.to.have.status(200));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"has_passed\": false,\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId010}}/declarations/completed",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId010}}",
+                    "declarations",
+                    "completed"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-017 Completed declaration for APP-007 with no prior started (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-017: Non-200 error (no prior started declaration)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('DCL-017: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"has_passed\": true,\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId007}}/declarations/completed",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId007}}",
+                    "declarations",
+                    "completed"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-018 Duplicate completed declaration for APP-001 (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-018: Non-200 error (duplicate completed declaration)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('DCL-018: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"has_passed\": true,\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/declarations/completed",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "declarations",
+                    "completed"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.3 Listing Declarations",
+          "item": [
+            {
+              "name": "DCL-019 List all declarations",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-019: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-019: Response has data array', () => pm.expect(json.data).to.be.an('array'));",
+                      "pm.test('DCL-019: At least one declaration returned', () => pm.expect(json.data.length).to.be.greaterThan(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-020 List declarations filtered by APP-001 application_id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-020: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-020: Only APP-001 declarations returned', () => {",
+                      "  json.data.forEach(d => pm.expect(d.attributes.participant_id).to.eql(pm.collectionVariables.get('partId001')));",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations?filter[participant_id]={{partId001}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[participant_id]",
+                      "value": "{{partId001}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-021 List declarations filtered by cohort 2026",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-021: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-021: Only cohort 2026 declarations returned', () => pm.expect(json.data).to.be.an('array'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations?filter[cohort]=2026",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[cohort]",
+                      "value": "2026"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-022 List declarations with non-existent participant_id (expect empty)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-022: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-022: Returns empty data array', () => pm.expect(json.data.length).to.eql(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations?filter[participant_id]={{nonExistentUuid}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[participant_id]",
+                      "value": "{{nonExistentUuid}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.4 Single Declaration",
+          "item": [
+            {
+              "name": "DCL-023 Get started declaration for APP-001",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-023: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-023: state attribute present', () => pm.expect(json.data.attributes.state).to.be.a('string'));",
+                      "pm.test('DCL-023: declaration_type attribute present', () => pm.expect(json.data.attributes.declaration_type).to.be.a('string'));",
+                      "console.log('DCL-023 state:', json.data.attributes.state);",
+                      "console.log('DCL-023 declaration_type:', json.data.attributes.declaration_type);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations/{{declId_APP001_started}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations",
+                    "{{declId_APP001_started}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-024 Get declaration with invalid ID (expect 404)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-024: Status 404', () => pm.response.to.have.status(404));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations/{{nonExistentUuid}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations",
+                    "{{nonExistentUuid}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.5 Voiding Declarations",
+          "item": [
+            {
+              "name": "DCL-025 Void started declaration for APP-002",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-025: Status 422', () => pm.response.to.have.status(422));",
+                      "const json = pm.response.json();",
+                      "pm.test('DCL-025: Declaration state is voided', () => pm.expect(json.errors).to.exist);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations/{{declId_APP002_started}}/void",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations",
+                    "{{declId_APP002_started}}",
+                    "void"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-026 Void started declaration for APP-011 (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-026: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.test('DCL-026: Declaration state is voided', () => pm.expect(pm.response.json().data.attributes.state).to.eql('voided'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations/{{declId_APP011_started}}/void",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations",
+                    "{{declId_APP011_started}}",
+                    "void"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-027 Submit new started declaration for APP-011 (replacing voided)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-027: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.collectionVariables.set('declId_APP002_started_v2', pm.response.json().data.id);",
+                      "console.log('APP-002 replacement started declaration ID:', pm.response.json().data.id);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId011}}/declarations/started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId011}}",
+                    "declarations",
+                    "started"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-028 Void APP-002 original declaration again (expect error — already voided)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('DCL-028: Non-200 error (already voided)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('DCL-028: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations/{{declId_APP002_started}}/void",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations",
+                    "{{declId_APP002_started}}",
+                    "void"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "DCL-029 Void a paid declaration (expect error) — BLOCKED need to create a paid declaration",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// NOTE: Requires DfE to advance a declaration to 'paid' state first.",
+                      "// Replace 'REPLACE_WITH_PAID_DECLARATION_ID' with the actual ID once available.",
+                      "//pm.test('DCL-029: Non-200 error (paid declarations cannot be voided)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "//pm.test('DCL-029: Response body contains errors', () => {",
+                      "//  const json = pm.response.json();",
+                      "//  pm.expect(json.errors || json.error).to.exist;",
+                      "//});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "Objective: Validate that the lead provider can submit, list, view, and void declarations via the API.\nPrerequisites: Section 1 completed."
+    },
+    {
+      "name": "3. Schedules",
+      "item": [
+        {
+          "name": "SCH-001 List all schedules",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('SCH-001: Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('SCH-001: Schedules array returned', () => pm.expect(json.data).to.be.an('array').with.lengthOf.at.least(1));",
+                  "const first = json.data[0];",
+                  "pm.test('SCH-001: course_identifier present', () => pm.expect(first.attributes.course_identifier).to.be.a('string'));",
+                  "pm.test('SCH-001: schedule_identifier present', () => pm.expect(first.attributes.schedule_identifier).to.be.a('string'));",
+                  "pm.test('SCH-001: cohort present', () => pm.expect(first.attributes.cohort).to.be.a('string'));",
+                  "// Capture a schedule ID for use in PAR-012",
+                  "const schedule = json.data.find(s => s.attributes.schedule_identifier === \"tte-reception-autumn\");",
+                  "const springSchedule = json.data.find(s => s.attributes.schedule_identifier === \"tte-reception-spring\");",
+                  "pm.collectionVariables.set('scheduleId', schedule.id)",
+                  "pm.collectionVariables.set('springScheduleId', springSchedule.id);",
+                  "console.log('SCH-001: scheduleId captured:', schedule.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SCH-002 List schedules filtered by course tte-early-years",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('SCH-002: Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('SCH-002: Only TTE Early Years schedules returned', () => {",
+                  "  json.data.forEach(s => pm.expect(s.attributes.course_identifier).to.eql('tte-early-years'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules?filter[course_identifier]=tte-early-years",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules"
+              ],
+              "query": [
+                {
+                  "key": "filter[course_identifier]",
+                  "value": "tte-early-years"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SCH-003 List schedules filtered by cohort 2026",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('SCH-003: Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('SCH-003: Only cohort 2026 schedules returned', () => {",
+                  "  json.data.forEach(s => pm.expect(s.attributes.cohort).to.eql('2026'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules?filter[cohort]=2026",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules"
+              ],
+              "query": [
+                {
+                  "key": "filter[cohort]",
+                  "value": "2026"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SCH-004 List schedules with non-existent course identifier (expect empty)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('SCH-004: Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('SCH-004: Returns empty data array', () => pm.expect(json.data.length).to.eql(0));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules?filter[course]=non-existant",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules"
+              ],
+              "query": [
+                {
+                  "key": "filter[course]",
+                  "value": "non-existant"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Objective: Validate retrieval of available schedules. scheduleId is captured here for use in PAR-012 (resume)."
+    },
+    {
+      "name": "4. Application Lifecycle",
+      "item": [
+        {
+          "name": "4.1 Deferring Applications",
+          "item": [
+            {
+              "name": "PAR-007 Defer APP-001 with reason parental-leave",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-007: Status 422', () => pm.response.to.have.status(422));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-007: Status is deferred', () => pm.expect(json.errors).to.exist);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"parental-leave\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/defer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "defer"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-008 Defer APP-012 with reason career-break (admin verification)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-008: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.test('PAR-008: Status is deferred', () => pm.expect(pm.response.json().data.attributes.status).to.eql('deferred'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"career-break\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId012}}/defer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId012}}",
+                    "defer"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-009 Defer APP-001 again (expect error — already deferred)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-009: Non-200 error (already deferred)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-009: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"parental-leave\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/defer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "defer"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-010 Defer with invalid reason (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-010: Non-200 error (invalid reason)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-010: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"not-a-valid-reason\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/defer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "defer"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-011 Defer APP-007 with no declarations (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-011: Non-200 error (no declarations exist)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-011: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"bereavement\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId007}}/defer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId007}}",
+                    "defer"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "4.2 Resuming Applications",
+          "item": [
+            {
+              "name": "PAR-012 Resume APP-001 with schedule_id from GET /schedules",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-012: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-012: Status returned is not deferred', () => pm.expect(json.data.attributes.status).to.not.eql('deferred'));"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"schedule_id\": \"{{springScheduleId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/resume",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "resume"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-013 Resume APP-001 again (expect error — already active)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-013: Non-200 error (already active)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-013: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"schedule_id\": \"{{scheduleId}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId001}}/resume",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId001}}",
+                    "resume"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "4.3 Withdrawing Applications",
+          "item": [
+            {
+              "name": "PAR-014 Withdraw APP-005 with reason personal-reason-other",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-014: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-014: Status is withdrawn', () => pm.expect(json.data.attributes.status).to.eql('withdrawn'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"personal-reason-other\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId005}}/withdraw",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId005}}",
+                    "withdraw"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-015 Withdraw APP-005 again (expect error — already withdrawn)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-015: Non-200 error (already withdrawn)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-015: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"personal-reason-other\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId005}}/withdraw",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId005}}",
+                    "withdraw"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-016 Withdraw APP-007 with no started declaration (expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-016: Non-200 error (no started declaration)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-016: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"personal-reason-other\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId007}}/withdraw",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId007}}",
+                    "withdraw"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-017 Defer APP-005 (already withdrawn — expect error)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-017: Non-200 error (cannot defer withdrawn application)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
+                      "pm.test('PAR-017: Response body contains errors', () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.errors || json.error).to.exist;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"bereavement\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId005}}/defer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId005}}",
+                    "defer"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "Objective: Validate defer, resume, and withdraw via applications.\nPrerequisites: Section 2 completed — started declarations must exist."
+    },
+    {
+      "name": "5. Participants",
+      "item": [
+        {
+          "name": "5.1 Listing Participants",
+          "item": [
+            {
+              "name": "PAR-001 List all participants",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-001: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-001: Response has data array', () => pm.expect(json.data).to.be.an('array'));",
+                      "pm.test('PAR-001: At least one participant returned', () => pm.expect(json.data.length).to.be.greaterThan(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/participants",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "participants"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-002 List participants filtered by status=started",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-002: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-002: All returned participants are active', () => {",
+                      "  json.data.forEach(p => {",
+                      "    p.attributes.enrolments.forEach(e => pm.expect(e.status).to.eql('started'));",
+                      "  });",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/participants?filter[status]=started",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "participants"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[status]",
+                      "value": "started"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-003 List participants updated_since date before today",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-003: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-003: All participants returned', () => pm.expect(json.data.length).to.be.greaterThan(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/participants?filter[updated_since]=2020-01-01T00:00:00Z",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "participants"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[updated_since]",
+                      "value": "2020-01-01T00:00:00Z"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-004 List participants filtered by training_status=withdrawn (expect empty)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-004: Status 200', () => pm.response.to.have.status(200));",
+                      "// NOTE: Run this before section 3 to confirm empty; after section 3 APP-005 will appear.",
+                      "console.log('PAR-004: Withdrawn participants count:', pm.response.json().data.length);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/participants?filter[training_status]=withdrawn",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "participants"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[training_status]",
+                      "value": "withdrawn"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "5.2 Single Participant",
+          "item": [
+            {
+              "name": "PAR-005 Get participant PART-001 (from APP-001)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-005: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "const enrolments = json.data.attributes.enrolments;",
+                      "pm.test('PAR-005: Enrolments array present', () => pm.expect(enrolments).to.be.an('array').with.lengthOf.at.least(1));",
+                      "const enrolment = enrolments[0];",
+                      "pm.test('PAR-005: status present', () => pm.expect(enrolment.status).to.be.a('string'));",
+                      "pm.test('PAR-005: course_identifier is tte-early-years', () => pm.expect(enrolment.course_identifier).to.eql('tte-early-years'));",
+                      "pm.test('PAR-005: schedule_identifier present', () => pm.expect(enrolment.schedule_identifier).to.be.a('string'));",
+                      "console.log('PAR-005 status:', enrolment.status);",
+                      "console.log('PAR-005 course_identifier:', enrolment.course_identifier);",
+                      "console.log('PAR-005 schedule_identifier:', enrolment.schedule_identifier);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/participants/{{partId001}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "participants",
+                    "{{partId001}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PAR-006 Get participant with invalid ID (expect 404)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('PAR-006: Status 404', () => pm.response.to.have.status(404));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/participants/{{nonExistentUuid}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "participants",
+                    "{{nonExistentUuid}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "Objective: Validate list and view of participants (read-only).\nPrerequisites: Section 1 completed — applications must be accepted."
+    },
+    {
+      "name": "6. Statements",
+      "item": [
+        {
+          "name": "6.1 Listing Statements",
+          "item": [
+            {
+              "name": "STM-001 List all statements",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('STM-001: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('STM-001: Statements array returned', () => pm.expect(json.data).to.be.an('array'));",
+                      "pm.test('STM-001: At least one statement present', () => pm.expect(json.data.length).to.be.greaterThan(0));",
+                      "",
+                      "// Auto-capture stmtId001 (paid=true) and stmtId002 (paid=false)",
+                      "const paidStmt   = json.data.find(s => s.attributes.paid === true);",
+                      "const unpaidStmt = json.data.find(s => s.attributes.paid === false);",
+                      "",
+                      "pm.test('STM-001: At least one paid statement found for stmtId001', () => pm.expect(paidStmt).to.exist);",
+                      "pm.test('STM-001: At least one unpaid statement found for stmtId002', () => pm.expect(unpaidStmt).to.exist);",
+                      "",
+                      "if (paidStmt) {",
+                      "  pm.collectionVariables.set('stmtId001', paidStmt.id);",
+                      "  console.log('stmtId001 (paid) captured:', paidStmt.id, '—', paidStmt.attributes.month, paidStmt.attributes.year);",
+                      "}",
+                      "if (unpaidStmt) {",
+                      "  pm.collectionVariables.set('stmtId002', unpaidStmt.id);",
+                      "  console.log('stmtId002 (unpaid) captured:', unpaidStmt.id, '—', unpaidStmt.attributes.month, unpaidStmt.attributes.year);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/statements",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "statements"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "STM-002 List statements filtered by cohort 2026",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('STM-002: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('STM-002: Only cohort 2026 statements returned', () => {",
+                      "  json.data.forEach(s => pm.expect(s.attributes.cohort).to.eql('2026'));",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/statements?filter[cohort]=2026",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "statements"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[cohort]",
+                      "value": "2026"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "STM-003 List statements updated_since date before today",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('STM-003: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.test('STM-003: At least one statement returned', () => pm.expect(pm.response.json().data.length).to.be.greaterThan(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/statements?filter[updated_since]=2020-01-01T00:00:00Z",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "statements"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[updated_since]",
+                      "value": "2020-01-01T00:00:00Z"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "STM-004 List statements filtered by cohort 2000 (expect empty)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('STM-004: Status 200', () => pm.response.to.have.status(200));",
+                      "pm.test('STM-004: Returns empty data array', () => pm.expect(pm.response.json().data.length).to.eql(0));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/statements?filter[cohort]=2000",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "statements"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter[cohort]",
+                      "value": "2000"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "6.2 Single Statement",
+          "item": [
+            {
+              "name": "STM-005 Get STMT-001 (paid statement) and inspect fields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('STM-005: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "const attr = json.data.attributes;",
+                      "pm.test('STM-005: month present', () => pm.expect(attr.month).to.be.a('string'));",
+                      "pm.test('STM-005: year present', () => pm.expect(attr.year).to.be.a('string'));",
+                      "pm.test('STM-005: cohort present', () => pm.expect(attr.cohort).to.be.a('string'));",
+                      "pm.test('STM-005: cut_off_date present', () => pm.expect(attr.cut_off_date).to.be.a('string'));",
+                      "pm.test('STM-005: payment_date present', () => pm.expect(attr.payment_date).to.be.a('string'));",
+                      "pm.test('STM-005: paid is a boolean', () => pm.expect(attr.paid).to.be.a('boolean'));",
+                      "console.log('STM-005 month:', attr.month, 'year:', attr.year, 'cohort:', attr.cohort);",
+                      "console.log('STM-005 cut_off_date:', attr.cut_off_date, 'payment_date:', attr.payment_date, 'paid:', attr.paid);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/statements/{{stmtId001}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "statements",
+                    "{{stmtId001}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "STM-006 Get statement with invalid ID (expect 404)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('STM-006: Status 404', () => pm.response.to.have.status(404));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/statements/{{nonExistentUuid}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "statements",
+                    "{{nonExistentUuid}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "Objective: Validate list and view of financial statements.\nPrerequisites: Declarations progressed to payable/paid by DfE digital team."
+    },
+    {
+      "name": "Auth Sanity Check",
+      "item": [
+        {
+          "name": "401 Unauthorized — invalid API key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Auth sanity: Status 401 with invalid key', () => pm.response.to.have.status(401));",
+                  "const json = pm.response.json();",
+                  "pm.test('Auth sanity: error field present', () => pm.expect(json.error).to.be.a('string'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                },
+                {
+                  "key": "value",
+                  "value": "Bearer INVALID_KEY",
+                  "type": "string"
+                },
+                {
+                  "key": "in",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "applications"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Verify that requests with an invalid API key return 401. Run this first to confirm auth is correctly configured."
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "Bearer {{apiKey}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "// Set today's date in ISO 8601 format for use as declaration_date",
+          "const today = new Date().toISOString().replace(/\\.\\d{3}Z$/, 'Z');",
+          "pm.collectionVariables.set('today', today);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://your-sandbox-host.example.com",
+      "description": "Base URL of the TTE sandbox environment"
+    },
+    {
+      "key": "apiKey",
+      "value": "YOUR_API_KEY_HERE",
+      "description": "Bearer token supplied by DfE"
+    },
+    {
+      "key": "appId001",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-accept-01@example.com)"
+    },
+    {
+      "key": "appId002",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-accept-02@example.com)"
+    },
+    {
+      "key": "appId003",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-reject-01@example.com)"
+    },
+    {
+      "key": "appId004",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-accept-03@example.com)"
+    },
+    {
+      "key": "appId005",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-withdraw-01@example.com)"
+    },
+    {
+      "key": "appId006",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-edge-01@example.com, cohort 2027)"
+    },
+    {
+      "key": "appId007",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-nodecl-01@example.com)"
+    },
+    {
+      "key": "appId008",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-adm-started@example.com)"
+    },
+    {
+      "key": "appId009",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-adm-completed@example.com)"
+    },
+    {
+      "key": "appId010",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-adm-failed@example.com)"
+    },
+    {
+      "key": "appId011",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-adm-voided@example.com)"
+    },
+    {
+      "key": "appId012",
+      "value": "",
+      "description": "Auto-captured by REG-001 (test-adm-deferred@example.com)"
+    },
+    {
+      "key": "stmtId001",
+      "value": "",
+      "description": "Auto-captured by STM-001 (first statement where paid=true)"
+    },
+    {
+      "key": "stmtId002",
+      "value": "",
+      "description": "Auto-captured by STM-001 (first statement where paid=false)"
+    },
+    {
+      "key": "deliveryPartnerId",
+      "value": "",
+      "description": "Auto-captured by SETUP in section 2 (first delivery partner from GET /api/v1/delivery-partners)"
+    },
+    {
+      "key": "scheduleId",
+      "value": "",
+      "description": "Auto-captured from SCH-001. Used in PAR-012 (resume)"
+    },
+    {
+      "key": "declId_APP001_started",
+      "value": "",
+      "description": "Auto-captured: started declaration ID for APP-001"
+    },
+    {
+      "key": "declId_APP002_started",
+      "value": "",
+      "description": "Auto-captured: started declaration ID for APP-002"
+    },
+    {
+      "key": "declId_APP002_started_v2",
+      "value": "",
+      "description": "Auto-captured: replacement started declaration ID for APP-002 (after void)"
+    },
+    {
+      "key": "declId_APP005_started",
+      "value": "",
+      "description": "Auto-captured: started declaration ID for APP-005"
+    },
+    {
+      "key": "declId_APP011_started",
+      "value": "",
+      "description": "Auto-captured: started declaration ID for APP-011"
+    },
+    {
+      "key": "partId001",
+      "value": "",
+      "description": "Auto-captured: participant ID for PART-001 (from APP-001 accept response)"
+    },
+    {
+      "key": "nonExistentUuid",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "description": "A UUID guaranteed not to exist in the system"
+    },
+    {
+      "key": "today",
+      "value": "",
+      "description": "Auto-set by collection pre-request script to today's date in ISO 8601 format (e.g. 2026-04-02T10:00:00Z)"
+    },
+    {
+      "key": "parId001",
+      "value": ""
+    },
+    {
+      "key": "parId002",
+      "value": ""
+    },
+    {
+      "key": "parId003",
+      "value": ""
+    },
+    {
+      "key": "parId004",
+      "value": ""
+    },
+    {
+      "key": "parId005",
+      "value": ""
+    },
+    {
+      "key": "parId006",
+      "value": ""
+    },
+    {
+      "key": "parId007",
+      "value": ""
+    },
+    {
+      "key": "parId008",
+      "value": ""
+    },
+    {
+      "key": "parId009",
+      "value": ""
+    },
+    {
+      "key": "parId010",
+      "value": ""
+    },
+    {
+      "key": "parId011",
+      "value": ""
+    },
+    {
+      "key": "parId012",
+      "value": ""
+    },
+    {
+      "key": "springSuheduleId",
+      "value": ""
+    },
+    {
+      "key": "springScheduleId",
+      "value": ""
+    }
+  ]
+}
