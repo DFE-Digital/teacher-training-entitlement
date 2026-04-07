@@ -114,7 +114,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
     let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
     let(:application_status_trait) { :deferred }
-    let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course: course_cohort.course) }
+    let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course_cohort:) }
     let(:params) { { data: { attributes: { schedule_id: course_cohort.ecf_id } } } }
 
     before do
@@ -144,7 +144,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
     let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
     let(:application_status_trait) { :started }
-    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course: course_cohort.course) }
+    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course_cohort:) }
     let(:params) { { data: { attributes: { reason: "insufficient-capacity" } } } }
 
     before do
