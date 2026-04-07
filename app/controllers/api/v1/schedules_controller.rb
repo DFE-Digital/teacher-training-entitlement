@@ -4,14 +4,21 @@ module API
       include Pagination
 
       def index
-        course_cohorts = current_lead_provider
-          .course_cohorts
-          .includes(:schedule, :course, :cohort)
-
-        render json: to_json(paginate(course_cohorts))
+        render json: to_json(paginate(schedules_query.course_cohorts))
       end
 
     private
+
+      def schedules_query
+        conditions = {
+          lead_provider: current_lead_provider,
+          cohort_start_years: params.dig(:filter, :cohort),
+          course_identifier: params.dig(:filter, :course),
+          sort: params[:sort],
+        }
+
+        Schedules::Query.new(**conditions.compact)
+      end
 
       def to_json(obj)
         ScheduleSerializer.render(obj, view: :v1, root: "data")

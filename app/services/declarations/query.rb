@@ -88,11 +88,7 @@ module Declarations
           :cohort,
           :lead_provider,
           :participant_outcomes,
-          application: %i[
-            user
-            course_cohort
-            lead_provider
-          ],
+          application: [:user, :lead_provider, { course_cohort: [:course] }],
           statement_items: %i[
             statement
           ],

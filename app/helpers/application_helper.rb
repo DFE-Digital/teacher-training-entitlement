@@ -62,7 +62,10 @@ module ApplicationHelper
     colour = {
       pending: "blue",
       accepted: "green",
+      started: "green",
+      deferred: "yellow",
       rejected: "red",
+      withdrawn: "red",
     }.fetch(status.to_sym, "grey")
 
     govuk_tag(text: status.humanize, colour:)

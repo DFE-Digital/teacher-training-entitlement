@@ -43,7 +43,7 @@ applications:
     full_name: Test Edge One
     cohort_offset: 1
     funding_eligible: true
-    purpose: Different cohort. Listing/filter edge case
+    purpose: Different cohort. Listing/filter edge case. Change provider
 
   - label: APP-007
     email: test-nodecl-01@example.com

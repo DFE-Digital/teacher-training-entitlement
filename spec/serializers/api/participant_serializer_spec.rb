@@ -6,7 +6,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
   let(:school) { application.school }
   let(:participant_id_change) { application.participant_id_changes.last }
   let(:cohort) { application.cohort }
-  let(:application) { create(:application, :accepted, :eligible_for_funded_place, :with_schedule, :with_participant_id_change, lead_provider:, funded_place: true) }
+  let(:application) { create(:application, :accepted, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
   let(:participant) { application.user }
 
   describe "core attributes" do

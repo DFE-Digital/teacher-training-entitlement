@@ -5,9 +5,6 @@ module Applications
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :application
-    attribute :reason
-
     DEFERRAL_REASONS = %w[
       bereavement
       long-term-sickness
@@ -18,15 +15,17 @@ module Applications
 
     def initialize(application:, reason:, admin_user: nil)
       @application = application
+      @application.admin_user = admin_user
       @reason = reason
       @admin_user = admin_user
     end
 
-    attr_reader :reason
+    attr_reader :application, :reason
 
     validates :reason, inclusion: { in: DEFERRAL_REASONS, message: :missing_reason }, allow_blank: false
-    validate :not_already_deferred
-    validate :not_withdrawn
+    validates :application, presence: true
+    validate :application_already_deferred, if: -> { application }
+    validate :application_deferrable, if: -> { application }
 
     def call
       return if invalid?
@@ -34,24 +33,21 @@ module Applications
       Application.transaction do
         @application.application_states.create!(status: Application::DEFERRED,
                                                 reason: @reason)
-        @application.status = Application::DEFERRED
-        @application.save!(validate: @admin_user.nil?)
+        @application.deferred_status!
       end
     end
 
   private
 
-    def not_withdrawn
-      add_error(:base, :already_withdrawn) if @application&.withdrawn_status?
+    def application_already_deferred
+      errors.add(:application, :has_already_been_deferred) if @application.deferred_status?
     end
 
-    def not_already_deferred
-      add_error(:base, :already_deferred) if @application&.deferred_status?
-    end
-
-    def add_error(group, key)
-      message = I18n.t("activemodel.errors.models.applications/defer.attributes.#{group}.#{key}")
-      errors.add(group, message)
+    def application_deferrable
+      old_status = @application.status
+      @application.status = Application::DEFERRED
+      errors.add(:application, :not_deferrable) if @application.invalid?
+      @application.status = old_status
     end
   end
 end

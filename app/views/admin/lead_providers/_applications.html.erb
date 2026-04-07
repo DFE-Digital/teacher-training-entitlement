@@ -19,16 +19,7 @@
               row.with_cell(text: application.user.email)
               row.with_cell(text: application.course.name)
               row.with_cell do
-                case application.status
-                when Application::ACCEPTED
-                  tag.strong("Accepted", class: "govuk-tag govuk-tag--green")
-                when Application::REJECTED
-                  tag.strong("Rejected", class: "govuk-tag govuk-tag--red")
-                when Application::PENDING
-                  tag.strong("Pending", class: "govuk-tag govuk-tag--yellow")
-                else
-                  application.status.titleize
-                end
+                  application_status_badge(application.status)
               end
               row.with_cell do
                 if application.cohort.funding_cap?

@@ -12,7 +12,8 @@ module API
         field(:email_validated) { true }
         field(:full_name) { |a| a.user.full_name }
         field(:funding_choice)
-        field(:ineligible_for_funding_reason)
+        field(:funding_eligiblity_status_code, name: :ineligible_for_funding_reason)
+        field(:eligible_for_funding)
         field(:participant_id) { |a| a.user.ecf_id }
         field(:teacher_reference_number) { |a| a.user.trn }
         field(:institution_reference_number) { |a| a.institution&.institution_reference_number }
@@ -22,7 +23,6 @@ module API
         field(:reason_for_rejection)
         field(:works_in_school)
         field(:cohort) { |a| a.cohort&.start_year&.to_s }
-        field(:eligible_for_dfe_funding?, name: :eligible_for_funding)
         field(:inside_uk_catchment?, name: :teacher_catchment)
         field(:teacher_catchment_country)
         field(:teacher_catchment_iso_country_code)

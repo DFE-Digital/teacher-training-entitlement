@@ -69,37 +69,6 @@ FactoryBot.define do
       kind_of_nursery { Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.first }
     end
 
-    trait :with_declaration do
-      after(:create) do |application|
-        application.declarations << create(:declaration, application:)
-      end
-    end
-
-    trait :with_schedule do
-      schedule { Schedule.find_by(cohort:, course_group: course.course_group) || create(:schedule, course_group: course.course_group, cohort:) }
-    end
-
-    trait :accepted do
-      with_schedule
-      status { Application::ACCEPTED }
-      funded_place { cohort.funding_cap ? !!eligible_for_funding : nil }
-      accepted_at { Time.zone.now }
-    end
-
-    trait :started do
-      with_schedule
-      status { Application::STARTED }
-      accepted_at { 2.days.ago }
-    end
-
-    trait :rejected do
-      status { Application::REJECTED }
-    end
-
-    trait :pending do
-      status { Application::PENDING }
-    end
-
     trait :eligible_for_funding do
       eligible_for_funding { true }
     end
@@ -156,8 +125,42 @@ FactoryBot.define do
       end
     end
 
+    trait :with_declaration do
+      after(:create) do |application|
+        application.declarations << create(:declaration, :started, application:)
+      end
+    end
+
+    trait :pending do
+      status { Application::PENDING }
+    end
+
+    trait :rejected do
+      status { Application::REJECTED }
+    end
+
+    trait :accepted do
+      status { Application::ACCEPTED }
+      funded_place { cohort.funding_cap ? !!eligible_for_funding : nil }
+      accepted_at { Time.zone.now }
+    end
+
+    trait :started do
+      with_declaration
+      status { Application::STARTED }
+      accepted_at { 2.days.ago }
+    end
+
+    trait :completed do
+      started
+      status { Application::COMPLETED }
+      after(:create) do |application|
+        application.declarations << create(:declaration, :completed, application:)
+      end
+    end
+
     trait :withdrawn do
-      with_schedule
+      with_declaration
       status { Application::WITHDRAWN }
       accepted_at { Time.zone.now }
 
@@ -170,13 +173,11 @@ FactoryBot.define do
     end
 
     trait :deferred do
-      with_schedule
+      with_declaration
       accepted_at { Time.zone.now }
       status { Application::DEFERRED }
 
       after(:create) do |application|
-        application.declarations << create(:declaration, application:) if application.declarations.blank?
-
         create(:application_state,
                :deferred,
                application:,

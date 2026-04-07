@@ -8,8 +8,9 @@ module Applications
 
     validates :application, presence: true
     validates :reason_for_rejection, presence: true
-    validate :not_already_rejected
-    validate :no_billable_or_changeable_declarations
+    validate :application_already_accepted, if: -> { application }
+    validate :application_already_rejected, if: -> { application }
+    validate :application_rejectable, if: -> { application }
 
     def reject
       return false unless valid?
@@ -22,18 +23,19 @@ module Applications
 
   private
 
-    def not_already_rejected
-      return unless application
-      return unless application.rejected_status?
-
-      errors.add(:application, :has_already_been_rejected)
+    def application_already_accepted
+      errors.add(:application, :has_already_been_accepted) if application.has_been_accepted?
     end
 
-    def no_billable_or_changeable_declarations
-      return unless application
-      return unless application.declarations.billable_or_changeable.any?
+    def application_already_rejected
+      errors.add(:application, :has_already_been_rejected) if application.rejected_status?
+    end
 
-      errors.add(:application, :cannot_reject_with_declarations)
+    def application_rejectable
+      old_status = application.status
+      application.status = Application::REJECTED
+      errors.add(:application, :not_rejectable) if application.invalid?
+      application.status = old_status
     end
   end
 end

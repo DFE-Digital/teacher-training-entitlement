@@ -13,7 +13,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
   let(:cohort)        { create(:cohort, :current, suffix: "b") }
 
   let :application do
-    create(:application, :accepted, :with_schedule, :eligible_for_funded_place, lead_provider:, cohort:)
+    create(:application, :accepted, :eligible_for_funded_place, lead_provider:, cohort:)
   end
 
   let :declaration do
