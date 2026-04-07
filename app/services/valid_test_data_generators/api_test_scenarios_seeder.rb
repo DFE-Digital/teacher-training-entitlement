@@ -4,6 +4,9 @@ module ValidTestDataGenerators
   # Service to seed test data for Lead Provider API Test Scenarios
   # Based on: @tte-board/documentation/lead_provider_api_test_scenarios.md
   #
+  # NOTE: for change provider feature, the application label APP-006 should
+  # marked as unassigned and be read-only
+
   class APITestScenariosSeeder
     attr_reader :lead_provider, :cohort_year, :logger
 
@@ -305,8 +308,6 @@ module ValidTestDataGenerators
           works_in_school: true,
           works_in_childcare: false,
           ukprn: school.ukprn,
-          # This is for change provider feature
-          # unassigned: app_data[:label] == APP-006 ? Time.zone.now : nil
         )
 
         @applications[app_data[:label]] = application
