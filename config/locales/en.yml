@@ -42,6 +42,7 @@ en:
     invalid_status_transition: This application status does not allow this request
     not_rejectable: This application cannot be rejected
     not_deferrable: This application cannot be deferred
+    not_resumable: This application cannot be resumed
 
   applications:
     change_provider:

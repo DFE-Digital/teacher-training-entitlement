@@ -10,9 +10,11 @@ module Applications
     validate :incompatible_course
     validate :cohort_not_in_training
     validate :cohort_exists
+    validate :application_resumable
 
     def initialize(application:, course_cohort:, admin_user: nil)
       @application = application
+      @application.admin_user = admin_user
       @course_cohort = course_cohort
       @admin_user = admin_user
     end
@@ -23,9 +25,8 @@ module Applications
       Application.transaction do
         @application.application_states.create!(status: Application::STARTED,
                                                 reason: @reason)
-        @application.assign_attributes(status: Application::STARTED,
-                                       course_cohort: @course_cohort)
-        @application.save!(validate: @admin_user.nil?)
+        @application.update!(status: Application::STARTED,
+                             course_cohort: @course_cohort)
       end
     end
 
@@ -49,6 +50,13 @@ module Applications
       return if @course_cohort.nil? || @course_cohort.schedule.training_live?
 
       add_error(:base, :cohort_not_in_training)
+    end
+
+    def application_resumable
+      old_status = @application.status
+      @application.status = Application::STARTED
+      errors.add(:application, :not_resumable) if @application.invalid?
+      @application.status = old_status
     end
 
     def cohort_exists
