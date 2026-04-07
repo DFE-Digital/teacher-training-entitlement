@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Choose a TTE and provider", :with_default_schedules, type: :feature do
+RSpec.feature "Choose a TTE and provider", :with_default_lead_provider, :with_default_schedules, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
 
