@@ -87,72 +87,72 @@ en:
         form:
           button: Submit change
   declaration:
-    unused_blank: You must specify a declaration
-    unused_not_in_attachable_state: The declaration is not in a state eligible for
+    UNUSED_blank: You must specify a declaration
+    UNUSED_not_in_attachable_state: The declaration is not in a state eligible for
       attachment
-    unused_already_voided: This declaration has already been voided.
-    unused_not_already_refunded: The declaration will or has been be refunded.
-    unused_must_be_paid: The declaration must be paid before it can be clawed back.
+    UNUSED_already_voided: This declaration has already been voided.
+    UNUSED_not_already_refunded: The declaration will or has been be refunded.
+    UNUSED_must_be_paid: The declaration must be paid before it can be clawed back.
     application_status_completed: A started declaration cannot be voided when
       application is completed.
   cohort:
-    unused_cannot_change: You cannot change the '#/%{parameterized_attribute}' field
-    unused_missing_contract_for_cohort_and_course: You cannot change a participant
+    UNUSED_cannot_change: You cannot change the '#/%{parameterized_attribute}' field
+    UNUSED_missing_contract_for_cohort_and_course: You cannot change a participant
       to this cohort as you do not have a contract for the cohort and course. Contact
       the DfE for assistance.
-    unused_cannot_change_with_declarations: You cannot change the '#/cohort' field
+    UNUSED_cannot_change_with_declarations: You cannot change the '#/cohort' field
       when there are submitted, eligible, payable, or paid declarations in the new
       cohort
-    unused_cannot_change_to_cohort_without_funding_cap: You cannot change the '#/cohort'
+    UNUSED_cannot_change_to_cohort_without_funding_cap: You cannot change the '#/cohort'
       field from one with a funding cap to one without a funding cap
   schedule:
-    unused_cohort_mismatch: The schedule cohort must match the application cohort
-    unused_invalid_for_course: The selected schedule is not valid for the course
+    UNUSED_cohort_mismatch: The schedule cohort must match the application cohort
+    UNUSED_invalid_for_course: The selected schedule is not valid for the course
   funded_place:
-    unused_inclusion: Set '#/%{parameterized_attribute}' to true or false.
-    unused_not_eligible: The participant is not eligible for funding, so '#/funded_place'
+    UNUSED_inclusion: Set '#/%{parameterized_attribute}' to true or false.
+    UNUSED_not_eligible: The participant is not eligible for funding, so '#/funded_place'
       cannot be set to true.
-    unused_should_not_be_set: The '#//funded_place' field should not be set for cohorts
+    UNUSED_should_not_be_set: The '#//funded_place' field should not be set for cohorts
       that do not have a funding cap.
   participant_id:
     changed: The participant_id '%{from_participant_id}' has been replaced with '%{to_participant_id}'.
-    unused_blank: The property '#/participant_id' must be present
-    unused_already_accepted: The participant is already accepted
-    unused_already_deferred: The participant is already deferred
-    unused_already_withdrawn: The participant is already withdrawn
-    unused_no_started_declarations: A participant who has not got a started declaration
+    UNUSED_blank: The property '#/participant_id' must be present
+    UNUSED_already_accepted: The participant is already accepted
+    UNUSED_already_deferred: The participant is already deferred
+    UNUSED_already_withdrawn: The participant is already withdrawn
+    UNUSED_no_started_declarations: A participant who has not got a started declaration
       cannot be withdrawn. Please contact support for assistance
-    unused_declaration_must_be_before_withdrawal_date: This participant withdrew from
+    UNUSED_declaration_must_be_before_withdrawal_date: This participant withdrew from
       this course on %{withdrawal_date}. Enter a '#/declaration_date' that's on or
       before the withdrawal date.
-    unused_invalid_participant: Your update cannot be made as the '#/participant_id'
+    UNUSED_invalid_participant: Your update cannot be made as the '#/participant_id'
       is not recognised. Check participant details and try again.
-    unused_application_not_found: Your update cannot be made as an accepted application
+    UNUSED_application_not_found: Your update cannot be made as an accepted application
       cannot be found for the given '#/participant_id' and '#/course_identifier'.
   declaration_date:
-    unused_blank: Enter a '#/%{parameterized_attribute}'.
-    unused_invalid: Enter a valid RFC3339 '#/%{parameterized_attribute}'.
-    unused_declaration_before_schedule_start: Enter a '#/%{parameterized_attribute}'
+    UNUSED_blank: Enter a '#/%{parameterized_attribute}'.
+    UNUSED_invalid: Enter a valid RFC3339 '#/%{parameterized_attribute}'.
+    UNUSED_declaration_before_schedule_start: Enter a '#/%{parameterized_attribute}'
       that's on or after the schedule start.
-    unused_future_declaration_date: The '#/%{parameterized_attribute}' value cannot
+    UNUSED_future_declaration_date: The '#/%{parameterized_attribute}' value cannot
       be a future date. Check the date and try again.
   declaration_type:
-    unused_blank: Enter a '#/%{parameterized_attribute}'.
-    unused_mismatch_declaration_type_for_schedule: The property '#/%{parameterized_attribute}'
+    UNUSED_blank: Enter a '#/%{parameterized_attribute}'.
+    UNUSED_mismatch_declaration_type_for_schedule: The property '#/%{parameterized_attribute}'
       does not exist for this schedule.
-    unused_inclusion: The entered '#/%{parameterized_attribute}' is not recognised.
+    UNUSED_inclusion: The entered '#/%{parameterized_attribute}' is not recognised.
   has_passed:
-    unused_invalid: Enter 'true' or 'false' in the '#/%{parameterized_attribute}'
+    UNUSED_invalid: Enter 'true' or 'false' in the '#/%{parameterized_attribute}'
       field to indicate whether this participant has passed or failed their course.
   completion_date:
-    unused_future_date: The '#/%{parameterized_attribute}' value cannot be a future
+    UNUSED_future_date: The '#/%{parameterized_attribute}' value cannot be a future
       date. Check the date and try again.
-    unused_blank: The '#/%{parameterized_attribute}' is missing from your request.
+    UNUSED_blank: The '#/%{parameterized_attribute}' is missing from your request.
       Please include a completion_date value and try again.
-    unused_invalid: 'The ''#/%{parameterized_attribute}'' value must be in the following
+    UNUSED_invalid: 'The ''#/%{parameterized_attribute}'' value must be in the following
       format: ''yyyy-mm-dd'''
   statement:
-    unused_no_output_fee_statement: You cannot submit or void declarations for the
+    UNUSED_no_output_fee_statement: You cannot submit or void declarations for the
       %{cohort} cohort. The funding contract for this cohort has ended. Get in touch
       if you need to discuss this with us.
   lead_provider:
@@ -163,14 +163,14 @@ en:
       format:
         unit: "£"
   participant_course_identifier:
-    unused_blank: Enter a '#/%{parameterized_attribute}' value for this participant.
-    unused_inclusion: The entered '#/%{parameterized_attribute}' is not recognised
+    UNUSED_blank: Enter a '#/%{parameterized_attribute}' value for this participant.
+    UNUSED_inclusion: The entered '#/%{parameterized_attribute}' is not recognised
       for the given participant. Check details and try again.
-    unused_invalid: The entered '#/%{parameterized_attribute}' is not recognised for
+    UNUSED_invalid: The entered '#/%{parameterized_attribute}' is not recognised for
       the given participant. Check details and try again.
   participant_reason:
-    unused_blank: The property '#/%{parameterized_attribute}' must be present
-    unused_inclusion: The property '#/%{parameterized_attribute}' must be a valid
+    UNUSED_blank: The property '#/%{parameterized_attribute}' must be present
+    UNUSED_inclusion: The property '#/%{parameterized_attribute}' must be a valid
       reason
   schedule_identifier:
     blank: The property '#/%{parameterized_attribute}' must be present
@@ -191,14 +191,14 @@ en:
   activerecord:
     attributes:
       application:
-        unused_lead_provider: Provider
-        unused_funding_eligiblity_status_code: Funding eligibility status code
+        UNUSED_lead_provider: Provider
+        UNUSED_funding_eligiblity_status_code: Funding eligibility status code
       statement:
-        unused_output_fee: Payment run
+        UNUSED_output_fee: Payment run
     errors:
       messages:
         restrict_dependent_destroy:
-          unused_has_many: Cannot delete because associated %{record} exist
+          UNUSED_has_many: Cannot delete because associated %{record} exist
       models:
         adjustment:
           attributes:
@@ -214,17 +214,17 @@ en:
         application:
           attributes:
             status:
-              unused_inclusion: Choose a valid status
-              unused_pending_status: You cannot change the status of an application
+              UNUSED_inclusion: Choose a valid status
+              UNUSED_pending_status: You cannot change the status of an application
                 which is in a pending state
-              unused_invalid_status_transition: Invalid status transition %{from}
+              UNUSED_invalid_status_transition: Invalid status transition %{from}
                 to %{to}
             reason:
-              unused_inclusion: Choose a valid reason for the status change
+              UNUSED_inclusion: Choose a valid reason for the status change
             schedule:
-              unused_cohort_mismatch: The schedule cohort must match the application
+              UNUSED_cohort_mismatch: The schedule cohort must match the application
                 cohort
-              unused_invalid_for_course: The selected schedule is not valid for the
+              UNUSED_invalid_for_course: The selected schedule is not valid for the
                 course
             funded_place:
               inclusion: Set '#/%{parameterized_attribute}' to true or false.
@@ -384,9 +384,9 @@ en:
         milestone_statement:
           attributes:
             statement:
-              unused_must_be_output_fee_true: Statement must have output fee set to
+              UNUSED_must_be_output_fee_true: Statement must have output fee set to
                 true
-              unused_different_statement_date_for_milestone: Statement month and year
+              UNUSED_different_statement_date_for_milestone: Statement month and year
                 must be the same as other statements for this milestone
         participant_id_change:
           attributes:
@@ -396,11 +396,11 @@ en:
         participant_outcome:
           attributes:
             completion_date:
-              unused_future_date: The '#/%{parameterized_attribute}' value cannot
+              UNUSED_future_date: The '#/%{parameterized_attribute}' value cannot
                 be a future date. Check the date and try again.
-              unused_blank: The '#/%{parameterized_attribute}' is missing from your
+              UNUSED_blank: The '#/%{parameterized_attribute}' is missing from your
                 request. Please include a completion_date value and try again.
-              unused_invalid: 'The ''#/%{parameterized_attribute}'' value must be
+              UNUSED_invalid: 'The ''#/%{parameterized_attribute}'' value must be
                 in the following format: ''yyyy-mm-dd'''
             ecf_id:
               blank: Enter an ECF ID
@@ -452,15 +452,15 @@ en:
     attributes:
       questionnaires/funding_your_course:
         funding_options:
-          unused_school: My workplace is covering the cost
-          unused_trust: My trust is paying
-          unused_self: I am paying
-          unused_another: My TTE course is being paid for in another way
+          UNUSED_school: My workplace is covering the cost
+          UNUSED_trust: My trust is paying
+          UNUSED_self: I am paying
+          UNUSED_another: My TTE course is being paid for in another way
       questionnaires/teacher_catchment:
-        unused_teacher_catchment:
+        UNUSED_teacher_catchment:
           one: nil
       statements/payment_authorisation_form:
-        unused_checks_done: Yes, I'm ready to authorise this for payment
+        UNUSED_checks_done: Yes, I'm ready to authorise this for payment
     errors:
       models:
         applications/defer:
@@ -551,9 +551,6 @@ en:
           attributes:
             continue:
               inclusion: Select ‘Yes’ or ‘No’ to continue
-        shared_change_funding_eligibility: &shared_change_funding_eligibility
-          declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
-          funded_application: "Eligibility can not be changed because the application is funded"
         admin/applications/change_funding_eligibility_form:
           attributes:
             eligible_for_funding:
@@ -588,8 +585,8 @@ en:
         applications/change_lead_provider:
           attributes:
             lead_provider_id:
-              unused_blank: Choose a provider
-              unused_unchanged: You cannot change to the same course provider
+              UNUSED_blank: Choose a provider
+              UNUSED_unchanged: You cannot change to the same course provider
         eligibility_lists/update:
           attributes:
             file:
@@ -600,25 +597,25 @@ en:
         milestones/create:
           attributes:
             declaration_type:
-              unused_blank: Please choose a declaration type
+              UNUSED_blank: Please choose a declaration type
             statement_date:
-              unused_blank: Please choose a statement date
+              UNUSED_blank: Please choose a statement date
         milestones/update:
           attributes:
             statement_date:
-              unused_blank: Please choose a statement date
+              UNUSED_blank: Please choose a statement date
         questionnaires/teacher_reference_number:
           attributes:
             trn_knowledge:
-              unused_blank: Please select an answer
+              UNUSED_blank: Please select an answer
         questionnaires/chosen_start_date:
           attributes:
             chosen_start_date:
-              unused_blank: Select whether you have agreed a start date
+              UNUSED_blank: Select whether you have agreed a start date
         questionnaires/provider_check:
           attributes:
             chosen_provider:
-              unused_blank: Select ‘Yes’ or ‘No’ to tell us if you've chosen an NPQ
+              UNUSED_blank: Select ‘Yes’ or ‘No’ to tell us if you've chosen an NPQ
                 and provider
         questionnaires/share_provider:
           attributes:
@@ -627,35 +624,35 @@ en:
         questionnaires/referred_by_return_to_teaching_adviser:
           attributes:
             referred_by_return_to_teaching_adviser:
-              unused_blank: Select 'Yes' or 'No'
+              UNUSED_blank: Select 'Yes' or 'No'
         questionnaires/qualified_teacher_check:
           attributes:
             trn:
-              unused_blank: Teacher reference number cannot be blank
-              unused_wrong_length: Teacher reference number is %{count} digits long
-              unused_invalid: Teacher reference number must only contain numbers
-              unused_not_real: You must enter a valid teacher reference number (TRN)
+              UNUSED_blank: Teacher reference number cannot be blank
+              UNUSED_wrong_length: Teacher reference number is %{count} digits long
+              UNUSED_invalid: Teacher reference number must only contain numbers
+              UNUSED_not_real: You must enter a valid teacher reference number (TRN)
             full_name:
-              unused_blank: Full name cannot be blank
+              UNUSED_blank: Full name cannot be blank
             date_of_birth:
-              unused_blank: Date of birth cannot be blank
-              unused_in_future: Date of birth must be in the past
-              unused_invalid: Date of birth must be a valid date
+              UNUSED_blank: Date of birth cannot be blank
+              UNUSED_in_future: Date of birth must be in the past
+              UNUSED_invalid: Date of birth must be a valid date
             national_insurance_number:
-              unused_too_long: National Insurance number is too long (maximum is %{count}
+              UNUSED_too_long: National Insurance number is too long (maximum is %{count}
                 characters)
-              unused_blank: National Insurance number cannot be blank
+              UNUSED_blank: National Insurance number cannot be blank
         questionnaires/choose_your_npq:
           attributes:
             course_identifier:
               maths_eligibility_teaching_for_mastery:
-                unused_blank: Select ‘Yes’ if you took one year of the primary maths
+                UNUSED_blank: Select ‘Yes’ if you took one year of the primary maths
                   Teaching for Mastery programme
-              unused_blank: Select a national professional qualification course
+              UNUSED_blank: Select a national professional qualification course
         questionnaires/maths_understanding_of_approach:
           attributes:
             maths_understanding_of_approach:
-              unused_blank: Select an option that tells us about your experience of
+              UNUSED_blank: Select an option that tells us about your experience of
                 mastery approaches to teaching maths.
         questionnaires/course_start_date:
           attributes:
@@ -669,17 +666,17 @@ en:
         questionnaires/choose_childcare_provider:
           attributes:
             institution_id:
-              unused_invalid: No matching childcare provider found
+              UNUSED_invalid: No matching childcare provider found
             institution_name:
-              unused_no_results: No nurseries with the name %{name} were found, please
+              UNUSED_no_results: No nurseries with the name %{name} were found, please
                 try again
         questionnaires/choose_private_childcare_provider:
           attributes:
             institution_id:
-              unused_no_results: No private childcare providers were found
-              unused_invalid: No matching private childcare provider found
+              UNUSED_no_results: No private childcare providers were found
+              UNUSED_invalid: No matching private childcare provider found
             institution_name:
-              unused_no_results: No private childcare providers with the URN %{urn}
+              UNUSED_no_results: No private childcare providers with the URN %{urn}
                 were found, please try again
         questionnaires/choose_school:
           attributes:
@@ -692,11 +689,11 @@ en:
         questionnaires/find_school:
           attributes:
             institution_location:
-              unused_blank: School location can’t be blank
+              UNUSED_blank: School location can’t be blank
         questionnaires/find_childcare_provider:
           attributes:
             institution_location:
-              unused_blank: Enter the location of your workplace
+              UNUSED_blank: Enter the location of your workplace
         questionnaires/funding_your_course:
           attributes:
             funding:
@@ -705,25 +702,25 @@ en:
         questionnaires/npqh_status:
           attributes:
             npqh_status:
-              unused_blank: Select what stage you are at with the Headship NPQ
+              UNUSED_blank: Select what stage you are at with the Headship NPQ
         questionnaires/ehco_headteacher:
           attributes:
             ehco_headteacher:
-              unused_blank: Choose whether or not you are a headteacher
+              UNUSED_blank: Choose whether or not you are a headteacher
         questionnaires/ehco_funding_not_available:
           attributes:
             ehco_funding:
-              unused_blank: Choose whether or not you want to pay for the Early Headship
+              UNUSED_blank: Choose whether or not you want to pay for the Early Headship
                 Coaching Offer in another way?
         questionnaires/funding_your_ehco:
           attributes:
             ehco_funding_choice:
-              unused_inclusion: Choose one of the following funding options
-              unused_blank: Choose one of the following funding options
+              UNUSED_inclusion: Choose one of the following funding options
+              UNUSED_blank: Choose one of the following funding options
         questionnaires/ehco_new_headteacher:
           attributes:
             ehco_new_headteacher:
-              unused_blank: Select ‘Yes’ if you're in your first 5 years of headship
+              UNUSED_blank: Select ‘Yes’ if you're in your first 5 years of headship
         questionnaires/kind_of_nursery:
           attributes:
             kind_of_nursery:
@@ -733,8 +730,8 @@ en:
             teacher_catchment:
               blank: Select ‘Yes’ if you work in England
             teacher_catchment_country:
-              unused_blank: Select which country you work in
-              unused_inclusion: Select one of the listed countries
+              UNUSED_blank: Select which country you work in
+              UNUSED_inclusion: Select one of the listed countries
         questionnaires/registration_interest_notification:
           attributes:
             notification_option:
@@ -750,18 +747,18 @@ en:
         email_updates:
           attributes:
             email_updates_status:
-              unused_blank: You must choose an option to continue
+              UNUSED_blank: You must choose an option to continue
         questionnaires/senco_in_role:
           attributes:
             senco_in_role:
-              unused_blank: Select if you work as a SENCO or if you have any plans
+              UNUSED_blank: Select if you work as a SENCO or if you have any plans
                 to become one
         questionnaires/senco_start_date:
           attributes:
             senco_start_date:
-              unused_blank: Enter the date you became a SENCO
-              unused_in_future: The date you became a SENCO must be in the past
-              unused_invalid: The date you became a SENCO must be a real date
+              UNUSED_blank: Enter the date you became a SENCO
+              UNUSED_in_future: The date you became a SENCO must be in the past
+              UNUSED_invalid: The date you became a SENCO must be a real date
         session_wizard_steps/sign_in:
           attributes:
             email:
@@ -774,52 +771,52 @@ en:
         participants/change_schedule:
           attributes:
             course_identifier:
-              unused_blank: Enter a '#/%{parameterized_attribute}' value for this
+              UNUSED_blank: Enter a '#/%{parameterized_attribute}' value for this
                 participant.
-              unused_inclusion: The entered '#/%{parameterized_attribute}' is not
+              UNUSED_inclusion: The entered '#/%{parameterized_attribute}' is not
                 recognised for the given participant. Check details and try again.
-              unused_invalid: The entered '#/%{parameterized_attribute}' is not recognised
+              UNUSED_invalid: The entered '#/%{parameterized_attribute}' is not recognised
                 for the given participant. Check details and try again.
             participant_id:
-              unused_blank: The property '#/participant_id' must be present
-              unused_already_accepted: The participant is already accepted
-              unused_already_deferred: The participant is already deferred
-              unused_already_withdrawn: The participant is already withdrawn
-              unused_no_started_declarations: A participant who has not got a started
+              UNUSED_blank: The property '#/participant_id' must be present
+              UNUSED_already_accepted: The participant is already accepted
+              UNUSED_already_deferred: The participant is already deferred
+              UNUSED_already_withdrawn: The participant is already withdrawn
+              UNUSED_no_started_declarations: A participant who has not got a started
                 declaration cannot be withdrawn. Please contact support for assistance
-              unused_declaration_must_be_before_withdrawal_date: This participant
+              UNUSED_declaration_must_be_before_withdrawal_date: This participant
                 withdrew from this course on %{withdrawal_date}. Enter a '#/declaration_date'
                 that's on or before the withdrawal date.
-              unused_invalid_participant: Your update cannot be made as the '#/participant_id'
+              UNUSED_invalid_participant: Your update cannot be made as the '#/participant_id'
                 is not recognised. Check participant details and try again.
-              unused_changed: The participant_id '%{from_participant_id}' has been
+              UNUSED_changed: The participant_id '%{from_participant_id}' has been
                 replaced with '%{to_participant_id}'.
-              unused_application_not_found: Your update cannot be made as an accepted
+              UNUSED_application_not_found: Your update cannot be made as an accepted
                 application cannot be found for the given '#/participant_id' and '#/course_identifier'.
             schedule_identifier:
-              unused_blank: The property '#/%{parameterized_attribute}' must be present
-              unused_invalidates_declaration: Changing schedule would invalidate existing
+              UNUSED_blank: The property '#/%{parameterized_attribute}' must be present
+              UNUSED_invalidates_declaration: Changing schedule would invalidate existing
                 declarations. Please void them first.
-              unused_schedule_has_not_changed: The participant already has the specified
+              UNUSED_schedule_has_not_changed: The participant already has the specified
                 schedule
-              unused_invalid_for_course: The selected schedule is not valid for the
+              UNUSED_invalid_for_course: The selected schedule is not valid for the
                 course
-              unused_not_found: The selected schedule cannot be found in the application
+              UNUSED_not_found: The selected schedule cannot be found in the application
                 cohort
             cohort:
-              unused_cannot_change: You cannot change the '#/%{parameterized_attribute}'
+              UNUSED_cannot_change: You cannot change the '#/%{parameterized_attribute}'
                 field
-              unused_missing_contract_for_cohort_and_course: You cannot change a participant
+              UNUSED_missing_contract_for_cohort_and_course: You cannot change a participant
                 to this cohort as you do not have a contract for the cohort and course.
                 Contact the DfE for assistance.
-              unused_cannot_change_with_declarations: You cannot change the '#/cohort'
+              UNUSED_cannot_change_with_declarations: You cannot change the '#/cohort'
                 field when there are submitted, eligible, payable, or paid declarations
                 in the new cohort
-              unused_cannot_change_to_cohort_without_funding_cap: You cannot change
+              UNUSED_cannot_change_to_cohort_without_funding_cap: You cannot change
                 the '#/cohort' field from one with a funding cap to one without a
                 funding cap
             lead_provider:
-              unused_blank: Your update cannot be made as the '#/%{parameterized_attribute}'
+              UNUSED_blank: Your update cannot be made as the '#/%{parameterized_attribute}'
                 is not recognised. Check lead provider details and try again.
         participants/change_trn:
           attributes:
@@ -877,11 +874,11 @@ en:
         participant_outcomes:
           attributes:
             completion_date:
-              unused_future_date: The '#/%{parameterized_attribute}' value cannot
+              UNUSED_future_date: The '#/%{parameterized_attribute}' value cannot
                 be a future date. Check the date and try again.
-              unused_blank: The '#/%{parameterized_attribute}' is missing from your
+              UNUSED_blank: The '#/%{parameterized_attribute}' is missing from your
                 request. Please include a completion_date value and try again.
-              unused_invalid: 'The ''#/%{parameterized_attribute}'' value must be
+              UNUSED_invalid: 'The ''#/%{parameterized_attribute}'' value must be
                 in the following format: ''yyyy-mm-dd'''
         declarations/create:
           attributes:
@@ -908,7 +905,7 @@ en:
                 field to indicate whether this participant has passed or failed their
                 course.
             cohort:
-              unused_no_output_fee_statement: You cannot submit or void declarations
+              UNUSED_no_output_fee_statement: You cannot submit or void declarations
                 for the %{cohort} cohort. The funding contract for this cohort has
                 ended. Get in touch if you need to discuss this with us.
               missing_contract_for_cohort_and_course: You cannot submit a declaration
@@ -917,31 +914,31 @@ en:
             application:
               blank: The entered '#/%{parameterized_attribute}' is missing
                 from your request. Check details and try again.
-              unused_has_already_been_accepted: This NPQ application has already been
+              UNUSED_has_already_been_accepted: This NPQ application has already been
                 accepted
-              unused_cannot_change_from_rejected: Once rejected an application cannot
+              UNUSED_cannot_change_from_rejected: Once rejected an application cannot
                 change state
-              unused_has_another_accepted_application: The participant has already
+              UNUSED_has_another_accepted_application: The participant has already
                 had an application accepted for this course.
-              unused_not_eligible_for_funded_place: The participant is not eligible
+              UNUSED_not_eligible_for_funded_place: The participant is not eligible
                 for funding, so '#/funded_place' cannot be set to true.
-              unused_has_already_been_rejected: This NPQ application has already been
+              UNUSED_has_already_been_rejected: This NPQ application has already been
                 rejected
-              unused_cannot_change_funded_status_from_non_accepted: You must accept
+              UNUSED_cannot_change_funded_status_from_non_accepted: You must accept
                 the application before attempting to change the '#/funded_place' setting.
-              unused_cannot_change_funded_status_non_eligible: This participant is
+              UNUSED_cannot_change_funded_status_non_eligible: This participant is
                 not eligible for funding. Contact us if you think this is wrong.
-              unused_cohort_does_not_accept_capping: Leave the '#/funded_place' field
+              UNUSED_cohort_does_not_accept_capping: Leave the '#/funded_place' field
                 blank. It's only needed for participants starting NPQs from autumn
                 2024 onwards.
-              unused_cannot_change_funded_place: You cannot change the funded place
+              UNUSED_cannot_change_funded_place: You cannot change the funded place
                 because declarations have been submitted. You will need to void the
                 existing declarations and resubmit them after changing the funded
                 place.
-              unused_cannot_reject_with_declarations: This application has declarations
+              UNUSED_cannot_reject_with_declarations: This application has declarations
                 that prevent it from being rejected. Void the declarations first,
                 or contact us for assistance.
-              unused_application_schedule_missing: The application is missing a schedule.
+              UNUSED_application_schedule_missing: The application is missing a schedule.
               in_wrong_state: The application current state does not allow
                 declaration creation.
             delivery_partner_id:
@@ -953,118 +950,118 @@ en:
         participant_outcomes/create:
           attributes:
             base:
-              unused_no_completed_declarations: The participant has not had a 'completed'
+              UNUSED_no_completed_declarations: The participant has not had a 'completed'
                 declaration submitted for them. Therefore you cannot update their
                 outcome.
             completion_date:
-              unused_future_date: The '#/%{parameterized_attribute}' value cannot
+              UNUSED_future_date: The '#/%{parameterized_attribute}' value cannot
                 be a future date. Check the date and try again.
-              unused_blank: The '#/%{parameterized_attribute}' is missing from your
+              UNUSED_blank: The '#/%{parameterized_attribute}' is missing from your
                 request. Please include a completion_date value and try again.
-              unused_invalid: 'The ''#/%{parameterized_attribute}'' value must be
+              UNUSED_invalid: 'The ''#/%{parameterized_attribute}'' value must be
                 in the following format: ''yyyy-mm-dd'''
             course_identifier:
-              unused_blank: Enter a '#/%{parameterized_attribute}' value for this
+              UNUSED_blank: Enter a '#/%{parameterized_attribute}' value for this
                 participant.
-              unused_inclusion: The entered '#/%{parameterized_attribute}' is not
+              UNUSED_inclusion: The entered '#/%{parameterized_attribute}' is not
                 recognised for the given participant. Check details and try again.
-              unused_invalid: The entered '#/%{parameterized_attribute}' is not recognised
+              UNUSED_invalid: The entered '#/%{parameterized_attribute}' is not recognised
                 for the given participant. Check details and try again.
             state:
-              unused_blank: The '#/%{parameterized_attribute}' is missing from your
+              UNUSED_blank: The '#/%{parameterized_attribute}' is missing from your
                 request. Please include a 'passed' or 'failed' value and try again.
-              unused_inclusion: The attribute '#/%{parameterized_attribute}' can only
+              UNUSED_inclusion: The attribute '#/%{parameterized_attribute}' can only
                 include 'passed' or 'failed' values. If you need to void an outcome,
                 you will need to void the associated 'completed' declaration.
             participant_id:
-              unused_blank: The property '#/participant_id' must be present
-              unused_already_accepted: The participant is already accepted
-              unused_already_deferred: The participant is already deferred
-              unused_already_withdrawn: The participant is already withdrawn
-              unused_no_started_declarations: A participant who has not got a started
+              UNUSED_blank: The property '#/participant_id' must be present
+              UNUSED_already_accepted: The participant is already accepted
+              UNUSED_already_deferred: The participant is already deferred
+              UNUSED_already_withdrawn: The participant is already withdrawn
+              UNUSED_no_started_declarations: A participant who has not got a started
                 declaration cannot be withdrawn. Please contact support for assistance
-              unused_declaration_must_be_before_withdrawal_date: This participant
+              UNUSED_declaration_must_be_before_withdrawal_date: This participant
                 withdrew from this course on %{withdrawal_date}. Enter a '#/declaration_date'
                 that's on or before the withdrawal date.
-              unused_invalid_participant: Your update cannot be made as the '#/participant_id'
+              UNUSED_invalid_participant: Your update cannot be made as the '#/participant_id'
                 is not recognised. Check participant details and try again.
-              unused_changed: The participant_id '%{from_participant_id}' has been
+              UNUSED_changed: The participant_id '%{from_participant_id}' has been
                 replaced with '%{to_participant_id}'.
-              unused_application_not_found: Your update cannot be made as an accepted
+              UNUSED_application_not_found: Your update cannot be made as an accepted
                 application cannot be found for the given '#/participant_id' and '#/course_identifier'.
             lead_provider:
-              unused_blank: Your update cannot be made as the '#/%{parameterized_attribute}'
+              UNUSED_blank: Your update cannot be made as the '#/%{parameterized_attribute}'
                 is not recognised. Check lead provider details and try again.
         applications/accept:
           attributes:
             application:
-              unused_blank: The entered '#/%{parameterized_attribute}' is missing
+              UNUSED_blank: The entered '#/%{parameterized_attribute}' is missing
                 from your request. Check details and try again.
-              unused_has_already_been_accepted: This NPQ application has already been
+              UNUSED_has_already_been_accepted: This NPQ application has already been
                 accepted
-              unused_cannot_change_from_rejected: Once rejected an application cannot
+              UNUSED_cannot_change_from_rejected: Once rejected an application cannot
                 change state
-              unused_has_another_accepted_application: The participant has already
+              UNUSED_has_another_accepted_application: The participant has already
                 had an application accepted for this course.
-              unused_not_eligible_for_funded_place: The participant is not eligible
+              UNUSED_not_eligible_for_funded_place: The participant is not eligible
                 for funding, so '#/funded_place' cannot be set to true.
-              unused_has_already_been_rejected: This NPQ application has already been
+              UNUSED_has_already_been_rejected: This NPQ application has already been
                 rejected
-              unused_cannot_change_funded_status_from_non_accepted: You must accept
+              UNUSED_cannot_change_funded_status_from_non_accepted: You must accept
                 the application before attempting to change the '#/funded_place' setting.
-              unused_cannot_change_funded_status_non_eligible: This participant is
+              UNUSED_cannot_change_funded_status_non_eligible: This participant is
                 not eligible for funding. Contact us if you think this is wrong.
-              unused_cohort_does_not_accept_capping: Leave the '#/funded_place' field
+              UNUSED_cohort_does_not_accept_capping: Leave the '#/funded_place' field
                 blank. It's only needed for participants starting NPQs from autumn
                 2024 onwards.
-              unused_cannot_change_funded_place: You cannot change the funded place
+              UNUSED_cannot_change_funded_place: You cannot change the funded place
                 because declarations have been submitted. You will need to void the
                 existing declarations and resubmit them after changing the funded
                 place.
-              unused_cannot_reject_with_declarations: This application has declarations
+              UNUSED_cannot_reject_with_declarations: This application has declarations
                 that prevent it from being rejected. Void the declarations first,
                 or contact us for assistance.
             schedule_identifier:
-              unused_blank: The property '#/%{parameterized_attribute}' must be present
-              unused_invalidates_declaration: Changing schedule would invalidate existing
+              UNUSED_blank: The property '#/%{parameterized_attribute}' must be present
+              UNUSED_invalidates_declaration: Changing schedule would invalidate existing
                 declarations. Please void them first.
-              unused_schedule_has_not_changed: The participant already has the specified
+              UNUSED_schedule_has_not_changed: The participant already has the specified
                 schedule
-              unused_invalid_for_course: The selected schedule is not valid for the
+              UNUSED_invalid_for_course: The selected schedule is not valid for the
                 course
-              unused_not_found: The selected schedule cannot be found in the application
+              UNUSED_not_found: The selected schedule cannot be found in the application
                 cohort
             funded_place:
-              unused_inclusion: Set '#/%{parameterized_attribute}' to true or false.
-              unused_not_eligible: The participant is not eligible for funding, so
+              UNUSED_inclusion: Set '#/%{parameterized_attribute}' to true or false.
+              UNUSED_not_eligible: The participant is not eligible for funding, so
                 '#/funded_place' cannot be set to true.
-              unused_should_not_be_set: The '#//funded_place' field should not be
+              UNUSED_should_not_be_set: The '#//funded_place' field should not be
                 set for cohorts that do not have a funding cap.
             schedule:
-              unused_blank: Schedule cannot be determined
+              UNUSED_blank: Schedule cannot be determined
         applications/reject:
           attributes:
             application:
               blank: The entered '#/%{parameterized_attribute}' is missing
                 from your request. Check details and try again.
-              unused_has_already_been_accepted: This NPQ application has already been
+              UNUSED_has_already_been_accepted: This NPQ application has already been
                 accepted
-              unused_cannot_change_from_rejected: Once rejected an application cannot
+              UNUSED_cannot_change_from_rejected: Once rejected an application cannot
                 change state
-              unused_has_another_accepted_application: The participant has already
+              UNUSED_has_another_accepted_application: The participant has already
                 had an application accepted for this course.
-              unused_not_eligible_for_funded_place: The participant is not eligible
+              UNUSED_not_eligible_for_funded_place: The participant is not eligible
                 for funding, so '#/funded_place' cannot be set to true.
               has_already_been_rejected: This NPQ application has already been
                 rejected
-              unused_cannot_change_funded_status_from_non_accepted: You must accept
+              UNUSED_cannot_change_funded_status_from_non_accepted: You must accept
                 the application before attempting to change the '#/funded_place' setting.
-              unused_cannot_change_funded_status_non_eligible: This participant is
+              UNUSED_cannot_change_funded_status_non_eligible: This participant is
                 not eligible for funding. Contact us if you think this is wrong.
-              unused_cohort_does_not_accept_capping: Leave the '#/funded_place' field
+              UNUSED_cohort_does_not_accept_capping: Leave the '#/funded_place' field
                 blank. It's only needed for participants starting NPQs from autumn
                 2024 onwards.
-              unused_cannot_change_funded_place: You cannot change the funded place
+              UNUSED_cannot_change_funded_place: You cannot change the funded place
                 because declarations have been submitted. You will need to void the
                 existing declarations and resubmit them after changing the funded
                 place.
@@ -1101,10 +1098,10 @@ en:
                 that prevent it from being rejected. Void the declarations first,
                 or contact us for assistance.
             funded_place:
-              unused_inclusion: Set '#/%{parameterized_attribute}' to true or false.
-              unused_not_eligible: The participant is not eligible for funding, so
+              UNUSED_inclusion: Set '#/%{parameterized_attribute}' to true or false.
+              UNUSED_not_eligible: The participant is not eligible for funding, so
                 '#/funded_place' cannot be set to true.
-              unused_should_not_be_set: The '#//funded_place' field should not be
+              UNUSED_should_not_be_set: The '#//funded_place' field should not be
                 set for cohorts that do not have a funding cap.
         contracts/change_per_participant:
           attributes:
@@ -1171,30 +1168,30 @@ en:
     change: Change
   admin:
     layout:
-      unused_title: Admin
-      unused_dashboard: Dashboard
-      unused_applications: Applications
-      unused_schools: Schools
-      unused_webhook_messages: Webhook Messages
+      UNUSED_title: Admin
+      UNUSED_dashboard: Dashboard
+      UNUSED_applications: Applications
+      UNUSED_schools: Schools
+      UNUSED_webhook_messages: Webhook Messages
     applications:
       show:
-        unused_title: Application
-        unused_details: Details
-        unused_sync_log: ECF Sync Log
-        unused_tabs: Tabs
+        UNUSED_title: Application
+        UNUSED_details: Details
+        UNUSED_sync_log: ECF Sync Log
+        UNUSED_tabs: Tabs
     users:
       show:
-        unused_title: User
-        unused_details: Details
-        unused_sync_log: ECF Sync Log
-        unused_tabs: Tabs
-        unused_applications: Applications
+        UNUSED_title: User
+        UNUSED_details: Details
+        UNUSED_sync_log: ECF Sync Log
+        UNUSED_tabs: Tabs
+        UNUSED_applications: Applications
   course:
     embedded_sentence:
       default: the %{course_name} TTE
       title: "%{course_name} TTE"
-      unused_ehco: the %{course_name}
-      unused_title_ehco: "%{course_name}"
+      UNUSED_ehco: the %{course_name}
+      UNUSED_title_ehco: "%{course_name}"
     short_code:
       tte-early-years: TTEEY
     name:
@@ -1224,28 +1221,28 @@ en:
       way.
     ineligible_setting: You’re not eligible for scholarship funding as you
       do not work in one of the eligible settings, such as state-funded schools.
-    unused_inside_catchment: You’re not eligible for scholarship funding as you do
+    UNUSED_inside_catchment: You’re not eligible for scholarship funding as you do
       not work in England.
-    unused_no_Ofsted: You’re not eligible for schools funding as you or your employer
+    UNUSED_no_Ofsted: You’re not eligible for schools funding as you or your employer
       is not registered on the Ofsted Early Years Register or with a registered Childminder
       Agency.
-    unused_previously_funded: You have already been allocated scholarship funding
+    UNUSED_previously_funded: You have already been allocated scholarship funding
       for %{course_name}.
-    unused_not_eligible_ehco: You’re not eligible for scholarship funding for %{course_name}.
-    unused_not_a_pp50: You’re not eligible for scholarship funding for the NPQ as
+    UNUSED_not_eligible_ehco: You’re not eligible for scholarship funding for %{course_name}.
+    UNUSED_not_a_pp50: You’re not eligible for scholarship funding for the NPQ as
       your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
       of settings that are eligible for funding</a>.
-    unused_not_entitled_ey_institution: You’re not eligible for scholarship funding
+    UNUSED_not_entitled_ey_institution: You’re not eligible for scholarship funding
       for the NPQ as your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
       of settings that are eligible for funding</a>.
-    unused_not_entitled_childminder: You’re not eligible for scholarship funding for
+    UNUSED_not_entitled_childminder: You’re not eligible for scholarship funding for
       the NPQ as you or your employer is not registered on the Ofsted early years
       register or with a registered Childminder Agency.
-    unused_scholarship_eligibility: You’re not eligible for scholarship funding.
-    unused_subject_to_review: You may be eligible for scholarship funding, subject
+    UNUSED_scholarship_eligibility: You’re not eligible for scholarship funding.
+    UNUSED_subject_to_review: You may be eligible for scholarship funding, subject
       to review of your application by DfE.
   provider_details:
-    unused_expired_status_when_service_is_closed: Your registration has expired but
+    UNUSED_expired_status_when_service_is_closed: Your registration has expired but
       you can register again later for courses starting in October 2024. You'll receive
       an email when registrations open. This is usually around June.
   course_start_details:
@@ -1333,11 +1330,11 @@ en:
         funding_eligibility_senco: Funding
     legend:
       applications_change_status:
-        unused_status: Choose a different status
+        UNUSED_status: Choose a different status
       applications_change_funding_eligibility:
-        unused_eligible_for_funding: Is eligible for funding?
+        UNUSED_eligible_for_funding: Is eligible for funding?
       applications_change_lead_provider:
-        unused_lead_provider_id: Choose a different provider
+        UNUSED_lead_provider_id: Choose a different provider
       applications_change_cohort:
         cohort_id: Choose a cohort
       form:
@@ -1378,7 +1375,7 @@ en:
         funding_eligibility_senco: Funding
     hint:
       applications_change_status:
-        unused_reason: Required for deferred or withdrawn
+        UNUSED_reason: Required for deferred or withdrawn
       registration_wizard:
         choose_your_course:
         - This course is aimed at teachers who have completed their induction and
@@ -1400,37 +1397,37 @@ en:
           provider and are throughout the year.
         maths_understanding_of_approach_html: Your provider will ask you for details.
         work_setting_options:
-          unused_a_16_to_19_educational_setting_html: Includes:<ul class="question-hint-list"><li>sixth
+          UNUSED_a_16_to_19_educational_setting_html: Includes:<ul class="question-hint-list"><li>sixth
             form colleges</li><li>further education colleges</li><li>schools that
             also teach ages 16 to 19</li></ul>
-          unused_a_school_html: Includes:<ul class="question-hint-list"><li>local
+          UNUSED_a_school_html: Includes:<ul class="question-hint-list"><li>local
             authority maintained schools (some may provide hospital education, for
             example pupil referral units, alternative provision or special schools)</li><li>secure
             children’s homes and secure training centres</li></ul>
-          unused_an_academy_trust_html: <div class="govuk-!-margin-bottom-1">Some
+          UNUSED_an_academy_trust_html: <div class="govuk-!-margin-bottom-1">Some
             may provide hospital education (for example, alternative provision or
             academy special schools)</p>
-          unused_another_setting_html: 'For example: <ul class="question-hint-list"><li>local
+          UNUSED_another_setting_html: 'For example: <ul class="question-hint-list"><li>local
             authority (for staff in a direct teaching role, virtual school headteachers
             and staff in defined deputy headteacher roles)</li><li>initial teacher
             training (ITT) providers (for ITT lead mentors)</li><li>independent hospital
             education organisations</li><li>young offender institutions</li></ul>'
-          unused_other_html: Select ‘Other’ if you were referred by the Return to
+          UNUSED_other_html: Select ‘Other’ if you were referred by the Return to
             Teaching Advisory (RTTA) service, or if none of the above options apply
             to you, for example you’re:<ul class="question-hint-list"><li>self-employed</li><li>not
             working in an educational setting</li><li>an agency supply teacher</li><li>working
             in any other independent setting</li></ul>
         employment_type_options:
-          unused_local_authority_supply_teacher: This could be as a supply teacher
+          UNUSED_local_authority_supply_teacher: This could be as a supply teacher
             or peripatetic teacher.
         employment_role: 'For example: Administrator, business manager'
         employer_name: For example 'Essex County Council', or 'I'm self employed'
         ehco_funding_choice_options:
-          unused_another: For example, I am sharing the costs with my workplace
+          UNUSED_another: For example, I am sharing the costs with my workplace
         funding_options:
-          unused_another: For example, I am sharing the costs with my workplace
+          UNUSED_another: For example, I am sharing the costs with my workplace
         course_identifier_options:
-          unused_npq-early-headship-coaching-offer: Structured support and networking
+          UNUSED_npq-early-headship-coaching-offer: Structured support and networking
             opportunities if you’re a headteacher in your first 5 years of headship.
         npqh_status_title_hint: To be eligible for the Early headship coaching offer
           you need to do the Headship NPQ.
@@ -1480,7 +1477,7 @@ en:
       form:
         course_cohort_id: Course Cohort
       applications_change_status:
-        unused_reason: Reason for change
+        UNUSED_reason: Reason for change
       statements_payment_authorisation_form:
         checks_done_options:
           1: Yes, I'm ready to authorise this for payment
@@ -1493,28 +1490,28 @@ en:
           another_setting: Another setting
           other: Other
         maths_eligibility_teaching_for_mastery_options:
-          unused_yes: 'Yes'
-          unused_no: 'No'
+          UNUSED_yes: 'Yes'
+          UNUSED_no: 'No'
         course_start_date_options:
           "yes": 'Yes'
           "no": No, I want to start later
         emai_updates_status:
-          unused_senco: 'Yes'
-          unused_no: No, I want to start later
+          UNUSED_senco: 'Yes'
+          UNUSED_no: No, I want to start later
         maths_understanding_of_approach_options:
-          unused_taken_a_similar_course: No – but taken a similar course
-          unused_another_way: No – but can show understanding of mastery approaches
+          UNUSED_taken_a_similar_course: No – but taken a similar course
+          UNUSED_another_way: No – but can show understanding of mastery approaches
             another way
-          unused_cannot_show: I cannot show an understanding of mastery approaches
+          UNUSED_cannot_show: I cannot show an understanding of mastery approaches
             to teaching maths
         senco_in_role_options:
-          unused_yes: 'Yes'
-          unused_no_but_i_plan_to_become_one: No, but I plan to become one
-          unused_no_i_do_not_plan_to_be_a_SENCO: No, I do not plan to be a SENCO
+          UNUSED_yes: 'Yes'
+          UNUSED_no_but_i_plan_to_become_one: No, but I plan to become one
+          UNUSED_no_i_do_not_plan_to_be_a_SENCO: No, I do not plan to be a SENCO
         senco_start_date: When did you become a SENCO?
         referred_by_return_to_teaching_adviser_options:
-          unused_yes: 'Yes'
-          unused_no: 'No'
+          UNUSED_yes: 'Yes'
+          UNUSED_no: 'No'
         kind_of_nursery_options:
           local_authority_maintained_nursery: Local authority-maintained nursery
           preschool_class_as_part_of_school: Pre-school class or nursery that’s
@@ -1523,53 +1520,53 @@ en:
           childminder: As a childminder
           another_early_years_setting: Another early years setting
         employment_type_options:
-          unused_local_authority_virtual_school: In a virtual school (local authority
+          UNUSED_local_authority_virtual_school: In a virtual school (local authority
             run organisations that support the education of children in care)
-          unused_hospital_school: In an independent hospital education organisation
-          unused_young_offender_institution: In a young offender institution
-          unused_local_authority_supply_teacher: As a teacher employed by a local
+          UNUSED_hospital_school: In an independent hospital education organisation
+          UNUSED_young_offender_institution: In a young offender institution
+          UNUSED_local_authority_supply_teacher: As a teacher employed by a local
             authority to teach in more than one school
-          unused_lead_mentor_for_accredited_itt_provider: As a lead mentor for an
+          UNUSED_lead_mentor_for_accredited_itt_provider: As a lead mentor for an
             accredited initial teacher training (ITT) provider
-          unused_other: Other
+          UNUSED_other: Other
         itt_provider: Enter the name of the ITT provider you are working with
         ehco_funding_choice_options:
-          unused_school: My workplace is covering the cost
-          unused_trust: My trust is paying
-          unused_self: I am paying
-          unused_another: Another way
+          UNUSED_school: My workplace is covering the cost
+          UNUSED_trust: My trust is paying
+          UNUSED_self: I am paying
+          UNUSED_another: Another way
         funding_options:
           school: My workplace is covering the cost
           trust: My trust is paying
           self: I am paying
           another: My TTE course is being paid for in another way
         teacher_catchment_options:
-          unused_england: England
-          unused_scotland: Scotland
-          unused_wales: Wales
-          unused_northern_ireland: Northern Ireland
-          unused_jersey_guernsey_isle_of_man: Jersey, Guernsey or the Isle of Man
-          unused_another: Another country
+          UNUSED_england: England
+          UNUSED_scotland: Scotland
+          UNUSED_wales: Wales
+          UNUSED_northern_ireland: Northern Ireland
+          UNUSED_jersey_guernsey_isle_of_man: Jersey, Guernsey or the Isle of Man
+          UNUSED_another: Another country
         teacher_catchment_country: Which country do you teach in?
         npqh_status_options:
-          unused_completed_npqh: I’ve completed it
-          unused_studying_npqh: I’m doing it
-          unused_will_start_npqh: I’m starting it soon
-          unused_none: None of the above
+          UNUSED_completed_npqh: I’ve completed it
+          UNUSED_studying_npqh: I’m doing it
+          UNUSED_will_start_npqh: I’m starting it soon
+          UNUSED_none: None of the above
         has_ofsted_urn_options:
-          unused_yes: 'Yes'
-          unused_no: 'No'
+          UNUSED_yes: 'Yes'
+          UNUSED_no: 'No'
         lead_provider_id_options:
           not_chosen: I have not chosen a provider yet
         ehco_headteacher_options:
-          unused_yes: 'Yes'
-          unused_no: 'No'
+          UNUSED_yes: 'Yes'
+          UNUSED_no: 'No'
         ehco_new_headteacher_options:
-          unused_yes: 'Yes'
-          unused_no: 'No'
+          UNUSED_yes: 'Yes'
+          UNUSED_no: 'No'
         trn_knowledge_options:
-          unused_yes: 'Yes'
-          unused_no-dont-have: No, I need to request one
+          UNUSED_yes: 'Yes'
+          UNUSED_no-dont-have: No, I need to request one
         choose_childcare_provider: What is the name of your workplace?
         choose_childcare_provider_search: Workplace not shown above
         choose_childcare_provider_fallback: Select your workplace
@@ -1587,4 +1584,4 @@ en:
         can_share_choices_options:
           1: Yes, I agree to share my information
   not_found: Not found
-  unused_schedule_invalid_for_course: The selected schedule is not valid for the course
+  UNUSED_schedule_invalid_for_course: The selected schedule is not valid for the course

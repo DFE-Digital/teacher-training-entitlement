@@ -6,8 +6,7 @@ en:
         title: Add a new admin
       index:
         super_admins:
-          summary_text: What's the difference between super admins and regular
-            admins?
+          summary_text: What's the difference between super admins and regular admins?
           text_html: |
             Regular admins are capable of logging into the admin interface to view the dashboard, users, applications, along with triggering syncs of unsynced data.
             <br>
@@ -20,10 +19,10 @@ en:
           delete: Delete
           elevate: Make Super Admin
         confirm:
-          unused_elevate: Are you sure you want to make this user a super admin? This
+          UNUSED_elevate: Are you sure you want to make this user a super admin? This
             will give them access to all admin features and the ability to make other
             users super admins. It cannot be reverted without developer intervention.
-          unused_delete: This record will be permenantly deleted.
+          UNUSED_delete: This record will be permenantly deleted.
     super_admins:
       update:
         success: Super admin permissions granted to %{email}
@@ -99,7 +98,7 @@ en:
               for payment
             checks_done_legend: Have all necessary assurance checks been done?
           tag:
-            unused_content: Authorised for payment at %{statement_marked_as_paid_at}
+            content: Authorised for payment at %{statement_marked_as_paid_at}
           banner:
             title: Authorising for payment
             content: Requested at %{statement_marked_as_paid_at}. This may take up
@@ -107,11 +106,11 @@ en:
     webhook_messages:
       show:
         title: Webhook message
-        unused_message_id: Message ID
-        unused_message_type: Message Type
-        unused_status: Status
-        unused_sent_at: Sent at
-        unused_created_at: Received at
-        unused_processed_at: Processed at
-        unused_status_comment: Status Comment
-        unused_message: Message
+        message_id: Message ID
+        message_type: Message Type
+        status: Status
+        sent_at: Sent at
+        created_at: Received at
+        processed_at: Processed at
+        status_comment: Status Comment
+        message: Message
