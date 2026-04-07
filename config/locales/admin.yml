@@ -3,12 +3,12 @@ en:
   admin:
     admins:
       new:
-        unused_title: Add a new admin
+        title: Add a new admin
       index:
         super_admins:
-          unused_summary_text: What's the difference between super admins and regular
+          summary_text: What's the difference between super admins and regular
             admins?
-          unused_text_html: |
+          text_html: |
             Regular admins are capable of logging into the admin interface to view the dashboard, users, applications, along with triggering syncs of unsynced data.
             <br>
             <br>
@@ -26,8 +26,8 @@ en:
           unused_delete: This record will be permenantly deleted.
     super_admins:
       update:
-        unused_success: Super admin permissions granted to %{email}
-        unused_failure: Failed to grant super admin permissions to %{email}, please
+        success: Super admin permissions granted to %{email}
+        failure: Failed to grant super admin permissions to %{email}, please
           contact technical support if this problem persists.
     features:
       show:
@@ -60,16 +60,16 @@ en:
           <p class="govuk-body">When turned off any new applications will be assigned to the latest cohort with a suffix of 1</p>
           <p class"govuk-body">This enables the rollout of suffixed cohorts</p>
     course_payment_overview_component:
-      unused_course_total: Course total
-      unused_output_payment: Output payment
-      unused_users: Users
-      unused_payment_per_participant: Payment per participant
-      unused_payment_type: Payment type
-      unused_service_fee: Service fee
-      unused_targeted_delivery_funding: Targeted delivery funding
-      unused_total_declarations: Total declarations
-      unused_total_not_eligible_for_funding: Total not eligible for funding
-      unused_total: Total
+      course_total: Course total
+      output_payment: Output payment
+      users: Users
+      payment_per_participant: Payment per participant
+      payment_type: Payment type
+      service_fee: Service fee
+      targeted_delivery_funding: Targeted delivery funding
+      total_declarations: Total declarations
+      total_not_eligible_for_funding: Total not eligible for funding
+      total: Total
     statement_details_component:
       clawbacks: Clawbacks
       cut_off_date: Output payment cut off date

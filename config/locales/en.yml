@@ -559,10 +559,15 @@ en:
             eligible_for_funding:
               unchanged: Please choose a different funding eligibility status to continue
             base:
-              << *shared_change_funding_eligibility
+              declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
+              funded_application: "Eligibility can not be changed because the application is funded"
         applications/change_funding_eligibility:
-          base:
-            << *shared_change_funding_eligibility
+          attributes:
+            eligible_for_funding:
+              unchanged: Please choose a different funding eligibility status to continue
+            base:
+              declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
+              funded_application: "Eligibility can not be changed because the application is funded"
         applications/revert_to_pending:
           attributes:
             change_status_to_pending:
@@ -722,7 +727,7 @@ en:
         questionnaires/kind_of_nursery:
           attributes:
             kind_of_nursery:
-              unused_blank: Select an option
+              blank: Select an option
         questionnaires/teacher_catchment:
           attributes:
             teacher_catchment:
@@ -1334,9 +1339,9 @@ en:
       applications_change_lead_provider:
         unused_lead_provider_id: Choose a different provider
       applications_change_cohort:
-        unused_cohort_id: Choose a cohort
+        cohort_id: Choose a cohort
       form:
-        unused_cohort_id: Choose a cohort
+        course_cohort_id: Choose a cohort
       registration_wizard:
         can_share_choices: Sharing your TTE information
         ehco_headteacher: Are you a headteacher?
@@ -1472,6 +1477,8 @@ en:
           provider will check your details. Register using your current workplace
           details, even if they will change soon.
     label:
+      form:
+        course_cohort_id: Course Cohort
       applications_change_status:
         unused_reason: Reason for change
       statements_payment_authorisation_form:
@@ -1579,5 +1586,5 @@ en:
         date_of_birth: What is your date of birth?
         can_share_choices_options:
           1: Yes, I agree to share my information
-  unused_not_found: Not found
+  not_found: Not found
   unused_schedule_invalid_for_course: The selected schedule is not valid for the course
