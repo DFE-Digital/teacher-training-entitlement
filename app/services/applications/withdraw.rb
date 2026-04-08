@@ -26,6 +26,7 @@ module Applications
       change-in-career
       disengaged-and-unresponsive
       non-payment-of-invoice
+      deferred-for-over-12-months
       other
     ].freeze
 

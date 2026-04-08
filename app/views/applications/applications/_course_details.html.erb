@@ -42,6 +42,9 @@
           <% elsif deferred?(application) %>
             <%= application_status_badge(application.status) %>
             <%= render "deferral_details", application: application %>
+          <% elsif withdrawn?(application) %>
+            <%= application_status_badge(application.status) %>
+            <%= render "withdrawal_details", application: application %>
           <% end %>
         </dd>
       </div>

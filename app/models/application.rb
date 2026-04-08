@@ -71,7 +71,7 @@ class Application < ApplicationRecord
     PENDING => [ACCEPTED, REJECTED].freeze,
     ACCEPTED => [STARTED, COMPLETED].freeze,
     STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
-    DEFERRED => [STARTED].freeze,
+    DEFERRED => [STARTED, WITHDRAWN].freeze,
     WITHDRAWN => [STARTED].freeze,
     REJECTED => [PENDING].freeze,
     COMPLETED => [STARTED].freeze,
@@ -143,6 +143,12 @@ class Application < ApplicationRecord
     return nil unless deferred_status?
 
     application_states.where(status: DEFERRED).order(created_at: :desc).first&.created_at
+  end
+
+  def withdrawn_at
+    return nil unless withdrawn_status?
+
+    application_states.where(status: WITHDRAWN).order(created_at: :desc).first&.created_at
   end
 
   def previously_funded?

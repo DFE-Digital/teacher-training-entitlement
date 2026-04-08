@@ -613,6 +613,25 @@ RSpec.describe Application do
     end
   end
 
+  describe "#withdrawn_at" do
+    subject { application.withdrawn_at }
+
+    context "when application is not withdrawn" do
+      let(:application) { create(:application, :accepted) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when application is withdrawn" do
+      let(:application) { create(:application, :withdrawn) }
+
+      it "returns the created_at of the withdrawn application state" do
+        withdrawn_state = application.application_states.find_by(status: "withdrawn")
+        expect(subject).to eq(withdrawn_state.created_at)
+      end
+    end
+  end
+
   describe "#lookup_state_change_reason" do
     subject(:lookup_state_change_reason) { application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "deferred") }
 

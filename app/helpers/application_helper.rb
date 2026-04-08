@@ -50,6 +50,10 @@ module ApplicationHelper
     application.deferred_status?
   end
 
+  def withdrawn?(application)
+    application.withdrawn_status?
+  end
+
   def application_course_start_date
     "autumn 2025"
   end
