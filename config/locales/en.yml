@@ -43,7 +43,6 @@ en:
     not_rejectable: This application cannot be rejected
     not_deferrable: This application cannot be deferred
     not_resumable: This application cannot be resumed
-
   applications:
     change_provider:
       start:
@@ -496,28 +495,7 @@ en:
             base:
               cohort_in_training: Selected schedule training has already started
             application:
-              blank: The entered '#/%{parameterized_attribute}' is missing from your
-                request. Check details and try again.
-              has_already_been_accepted: This NPQ application has already been accepted
-              cannot_change_from_rejected: Once rejected an application cannot change
-                state
-              has_another_accepted_application: The participant has already had an
-                application accepted for this course.
-              not_eligible_for_funded_place: The participant is not eligible for funding,
-                so '#/funded_place' cannot be set to true.
-              has_already_been_rejected: This NPQ application has already been rejected
-              cannot_change_funded_status_from_non_accepted: You must accept the application
-                before attempting to change the '#/funded_place' setting.
-              cannot_change_funded_status_non_eligible: This participant is not eligible
-                for funding. Contact us if you think this is wrong.
-              cohort_does_not_accept_capping: Leave the '#/funded_place' field blank.
-                It's only needed for participants starting NPQs from autumn 2024 onwards.
-              cannot_change_funded_place: You cannot change the funded place because
-                declarations have been submitted. You will need to void the existing
-                declarations and resubmit them after changing the funded place.
-              cannot_reject_with_declarations: This application has declarations that
-                prevent it from being rejected. Void the declarations first, or contact
-                us for assistance.
+              <<: *application
               incompatible_schedule: Selected schedule is for a different course than
                 the application
               application_has_started_training: The application has already started
@@ -551,20 +529,17 @@ en:
           attributes:
             continue:
               inclusion: Select ‘Yes’ or ‘No’ to continue
+        shared_change_funding_eligibility: &shared_change_funding_eligibility
+          attributes:
+            eligible_for_funding:
+              unchanged: Please choose a different funding eligibility status to continue
+            base:
+              declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
+              funded_application: "Eligibility can not be changed because the application is funded"
         admin/applications/change_funding_eligibility_form:
-          attributes:
-            eligible_for_funding:
-              unchanged: Please choose a different funding eligibility status to continue
-            base:
-              declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
-              funded_application: "Eligibility can not be changed because the application is funded"
+          <<: *shared_change_funding_eligibility
         applications/change_funding_eligibility:
-          attributes:
-            eligible_for_funding:
-              unchanged: Please choose a different funding eligibility status to continue
-            base:
-              declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
-              funded_application: "Eligibility can not be changed because the application is funded"
+          <<: *shared_change_funding_eligibility
         applications/revert_to_pending:
           attributes:
             change_status_to_pending:
@@ -912,33 +887,7 @@ en:
                 for this participant as you do not have a contract for the cohort
                 and course. Contact the DfE for assistance.
             application:
-              blank: The entered '#/%{parameterized_attribute}' is missing
-                from your request. Check details and try again.
-              UNUSED_has_already_been_accepted: This NPQ application has already been
-                accepted
-              UNUSED_cannot_change_from_rejected: Once rejected an application cannot
-                change state
-              UNUSED_has_another_accepted_application: The participant has already
-                had an application accepted for this course.
-              UNUSED_not_eligible_for_funded_place: The participant is not eligible
-                for funding, so '#/funded_place' cannot be set to true.
-              UNUSED_has_already_been_rejected: This NPQ application has already been
-                rejected
-              UNUSED_cannot_change_funded_status_from_non_accepted: You must accept
-                the application before attempting to change the '#/funded_place' setting.
-              UNUSED_cannot_change_funded_status_non_eligible: This participant is
-                not eligible for funding. Contact us if you think this is wrong.
-              UNUSED_cohort_does_not_accept_capping: Leave the '#/funded_place' field
-                blank. It's only needed for participants starting NPQs from autumn
-                2024 onwards.
-              UNUSED_cannot_change_funded_place: You cannot change the funded place
-                because declarations have been submitted. You will need to void the
-                existing declarations and resubmit them after changing the funded
-                place.
-              UNUSED_cannot_reject_with_declarations: This application has declarations
-                that prevent it from being rejected. Void the declarations first,
-                or contact us for assistance.
-              UNUSED_application_schedule_missing: The application is missing a schedule.
+              <<: *application
               in_wrong_state: The application current state does not allow
                 declaration creation.
             delivery_partner_id:
@@ -995,32 +944,7 @@ en:
         applications/accept:
           attributes:
             application:
-              UNUSED_blank: The entered '#/%{parameterized_attribute}' is missing
-                from your request. Check details and try again.
-              UNUSED_has_already_been_accepted: This NPQ application has already been
-                accepted
-              UNUSED_cannot_change_from_rejected: Once rejected an application cannot
-                change state
-              UNUSED_has_another_accepted_application: The participant has already
-                had an application accepted for this course.
-              UNUSED_not_eligible_for_funded_place: The participant is not eligible
-                for funding, so '#/funded_place' cannot be set to true.
-              UNUSED_has_already_been_rejected: This NPQ application has already been
-                rejected
-              UNUSED_cannot_change_funded_status_from_non_accepted: You must accept
-                the application before attempting to change the '#/funded_place' setting.
-              UNUSED_cannot_change_funded_status_non_eligible: This participant is
-                not eligible for funding. Contact us if you think this is wrong.
-              UNUSED_cohort_does_not_accept_capping: Leave the '#/funded_place' field
-                blank. It's only needed for participants starting NPQs from autumn
-                2024 onwards.
-              UNUSED_cannot_change_funded_place: You cannot change the funded place
-                because declarations have been submitted. You will need to void the
-                existing declarations and resubmit them after changing the funded
-                place.
-              UNUSED_cannot_reject_with_declarations: This application has declarations
-                that prevent it from being rejected. Void the declarations first,
-                or contact us for assistance.
+              <<: *application
             schedule_identifier:
               UNUSED_blank: The property '#/%{parameterized_attribute}' must be present
               UNUSED_invalidates_declaration: Changing schedule would invalidate existing
@@ -1042,67 +966,13 @@ en:
         applications/reject:
           attributes:
             application:
-              blank: The entered '#/%{parameterized_attribute}' is missing
-                from your request. Check details and try again.
-              UNUSED_has_already_been_accepted: This NPQ application has already been
-                accepted
-              UNUSED_cannot_change_from_rejected: Once rejected an application cannot
-                change state
-              UNUSED_has_another_accepted_application: The participant has already
-                had an application accepted for this course.
-              UNUSED_not_eligible_for_funded_place: The participant is not eligible
-                for funding, so '#/funded_place' cannot be set to true.
-              has_already_been_rejected: This NPQ application has already been
-                rejected
-              UNUSED_cannot_change_funded_status_from_non_accepted: You must accept
-                the application before attempting to change the '#/funded_place' setting.
-              UNUSED_cannot_change_funded_status_non_eligible: This participant is
-                not eligible for funding. Contact us if you think this is wrong.
-              UNUSED_cohort_does_not_accept_capping: Leave the '#/funded_place' field
-                blank. It's only needed for participants starting NPQs from autumn
-                2024 onwards.
-              UNUSED_cannot_change_funded_place: You cannot change the funded place
-                because declarations have been submitted. You will need to void the
-                existing declarations and resubmit them after changing the funded
-                place.
-              cannot_reject_with_declarations: This application has declarations
-                that prevent it from being rejected. Void the declarations first,
-                or contact us for assistance.
+              <<: *application              
             reason_for_rejection:
               blank: The reason_for_rejection cannot be blank.
         applications/change_funded_place:
           attributes:
             application:
-              blank: The entered '#/%{parameterized_attribute}' is missing
-                from your request. Check details and try again.
-              has_already_been_accepted: This NPQ application has already been
-                accepted
-              cannot_change_from_rejected: Once rejected an application cannot
-                change state
-              not_eligible_for_funded_place: The participant is not eligible
-                for funding, so '#/funded_place' cannot be set to true.
-              has_already_been_rejected: This NPQ application has already been
-                rejected
-              cannot_change_funded_status_from_non_accepted: You must accept
-                the application before attempting to change the '#/funded_place' setting.
-              cannot_change_funded_status_non_eligible: This participant is
-                not eligible for funding. Contact us if you think this is wrong.
-              cohort_does_not_accept_capping: Leave the '#/funded_place' field
-                blank. It's only needed for participants starting NPQs from autumn
-                2024 onwards.
-              cannot_change_funded_place: You cannot change the funded place
-                because declarations have been submitted. You will need to void the
-                existing declarations and resubmit them after changing the funded
-                place.
-              cannot_reject_with_declarations: This application has declarations
-                that prevent it from being rejected. Void the declarations first,
-                or contact us for assistance.
-            funded_place:
-              UNUSED_inclusion: Set '#/%{parameterized_attribute}' to true or false.
-              UNUSED_not_eligible: The participant is not eligible for funding, so
-                '#/funded_place' cannot be set to true.
-              UNUSED_should_not_be_set: The '#//funded_place' field should not be
-                set for cohorts that do not have a funding cap.
+              <<: *application
         contracts/change_per_participant:
           attributes:
             contract:
