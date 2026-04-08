@@ -63,7 +63,11 @@ module ApplicationHelper
   def application_status_badge(status)
     return nil unless status.presence
 
-    colour = {
+    govuk_tag(text: status.humanize, colour: application_status_colour(status))
+  end
+
+  def application_status_colour(status)
+    {
       pending: "blue",
       accepted: "green",
       started: "green",
@@ -71,8 +75,6 @@ module ApplicationHelper
       rejected: "red",
       withdrawn: "red",
     }.fetch(status.to_sym, "grey")
-
-    govuk_tag(text: status.humanize, colour:)
   end
 
   def sentry_javascript_tag
