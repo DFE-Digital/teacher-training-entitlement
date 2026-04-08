@@ -18,11 +18,6 @@ en:
         buttons:
           delete: Delete
           elevate: Make Super Admin
-        confirm:
-          UNUSED_elevate: Are you sure you want to make this user a super admin? This
-            will give them access to all admin features and the ability to make other
-            users super admins. It cannot be reverted without developer intervention.
-          UNUSED_delete: This record will be permenantly deleted.
     super_admins:
       update:
         success: Super admin permissions granted to %{email}
