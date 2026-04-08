@@ -813,16 +813,9 @@ en:
         ehco_unavailable: You cannot register for the Early Headship Coaching Offer
         choose_your_npq: Choose an NPQ
         choose_your_course: Choose a TTE course
-        before_you_can_register_for_this_NPQ: Before you can register for this NPQ
-        maths_understanding_of_approach: How can you show your understanding of mastery
-          approaches to teaching maths?
         course_start_date: Course start
-        funding_eligibility_maths: Funding Eligibility
-        npqh_status: Eligibility for the Early headship coaching offer
         childcare_provider_not_in_england: Nursery must be in England, Guernsey, Jersey
           or the Isle of Man
-        maths_cannot_register: You cannot register for the leading primary mathematics
-          NPQ
         cannot_register_yet: You cannot register yet
         check_answers: Check your answers and confirm
         institution_location: What is the first part of your workplace postcode?
@@ -843,9 +836,6 @@ en:
         national_insurance_number_optional: National Insurance number (optional)
         change_your_course_or_provider: Change your course or provider
         choose_a_tte_and_provider: Choose a TTE course and provider
-        senco_in_role: Do you work as a special educational needs co-ordinator (SENCO)?
-        senco_start_date: When did you become a SENCO?
-        funding_eligibility_senco: Funding
     legend:
       applications_change_status:
       applications_change_funding_eligibility:
@@ -865,15 +855,8 @@ en:
         kind_of_nursery: Which early years setting do you work in?
         course_identifier: You are registering for the early years development TTE
           course
-        maths_eligibility_teaching_for_mastery: Have you taken at least one year of
-          the primary maths Teaching for Mastery programme?
-        maths_understanding_of_approach: How can you show your understanding of mastery
-          approaches to teaching maths?
         course_start_date: Do you want to start a course before April 2024?
-        funding_eligibility_maths: Funding Eligibility
-        ehco_funding_choice: How are you funding the Early headship coaching offer?
         itt_provider: Enter the name of the ITT provider you are working with
-        npqh_status: What stage are you at with the Headship NPQ?
         trn_knowledge: Do you have a TRN?
         lead_provider_id: Select your provider
         chosen_provider: Have you chosen an NPQ and provider?
@@ -891,20 +874,11 @@ en:
           are currently teaching reception age children, or plan to in the future.
         - If you do not want to do this course, %{link} to find the right course for
           you.
-        choose_your_npq_html: To register for an NPQ and the <a href="https://professional-development-for-teachers-leaders.education.gov.uk/early-headship-coaching-offer"
-          class="govuk-link">Early headship coaching offer</a>, submit 2 separate
-          registrations.
-        maths_eligibility_teaching_for_mastery_html_one: You need to be able to demonstrate
-          that you have an understanding of mastery approaches to teaching maths.
-        maths_eligibility_teaching_for_mastery_two_html: You can demonstrate this
-          if you’ve taken at least one year of the <a href="https://www.gov.uk/guidance/join-the-maths-teaching-for-mastery-programme"
-          class="govuk-link">primary maths Teaching for Mastery programme</a>.
         course_start_date_one: NPQ courses start once a year every autumn.
         course_start_date_two: Registrations are currently open for courses starting
           in autumn 2025.
         course_start_date_three: Early headship coaching offer start dates vary by
           provider and are throughout the year.
-        maths_understanding_of_approach_html: Your provider will ask you for details.
         work_setting_options:
             form colleges</li><li>further education colleges</li><li>schools that
             also teach ages 16 to 19</li></ul>
@@ -921,12 +895,6 @@ en:
             to you, for example you’re:<ul class="question-hint-list"><li>self-employed</li><li>not
             working in an educational setting</li><li>an agency supply teacher</li><li>working
             in any other independent setting</li></ul>
-        employment_type_options:
-            or peripatetic teacher.
-        employment_role: 'For example: Administrator, business manager'
-        employer_name: For example 'Essex County Council', or 'I'm self employed'
-        ehco_funding_choice_options:
-        funding_options:
         course_identifier_options:
             opportunities if you’re a headteacher in your first 5 years of headship.
         npqh_status_title_hint: To be eligible for the Early headship coaching offer
@@ -953,12 +921,8 @@ en:
         institution_location_html: Enter <strong>just the first part of your workplace
           postcode</strong>, for example SW19. If you work for a trust, use the postcode
           of one of its schools.
-        maths_eligibility_teaching_for_mastery_hint: You may be able to demonstrate
-          your understanding of mastery approaches to teaching maths another way
         course_start_date_hint: You can also select this option if you have already
           started
-        maths_understanding_of_approach_hint: For example, a reference from a professional
-          who has supported your mastery professional development.
         lead_provider_id: These are the training providers who provide <b>%{course_name}</b>.
           Providers may have different entry requirements.
         trn: TRNs are 7 digits long. Teachers can find it on their payslip, teaching
