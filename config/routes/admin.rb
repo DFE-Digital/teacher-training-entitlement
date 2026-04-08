@@ -1,6 +1,16 @@
 namespace :admin do
   get "/", to: "dashboards#index"
 
+  concern :cohortable do |options|
+    member do
+      get "cohorts/:cohort_id", to: options[:to], as: :cohort
+    end
+
+    collection do
+      get "cohorts/:cohort_id", to: options[:to], as: :cohort
+    end
+  end
+
   resources :webhook_messages, only: %i[index show], path: "webhook-messages" do
     resources :processing_jobs, only: %i[create], controller: "webhook_messages/processing_jobs", path: "processing-jobs"
   end
@@ -33,6 +43,7 @@ namespace :admin do
   end
 
   resources :applications, only: %i[index show] do
+    concerns :cohortable, to: "applications#index"
     collection do
       resources :reviews, controller: "applications/reviews", as: "application_reviews", only: %i[index show] do
         resource :review_status, controller: "applications/review_statuses", only: %i[edit update]
@@ -129,9 +140,7 @@ namespace :admin do
   end
 
   resources :lead_providers, only: %i[index show], path: "providers" do
-    member do
-      get "cohorts/:cohort_id", to: "lead_providers#show", as: :cohort
-    end
+    concerns :cohortable, to: "lead_providers#show"
   end
   resources :admins, only: %i[index]
 

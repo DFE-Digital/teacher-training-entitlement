@@ -13,7 +13,7 @@
     %>
 
     <div class="govuk-grid-row">
-  
+
       <div class="govuk-grid-column-one-half">
         <%=
           f.govuk_collection_select(
@@ -27,17 +27,6 @@
         %>
       </div>
     </div>
-
-    <%=
-      f.govuk_collection_select(
-        :cohort_id,
-        Cohort.all.order_by_latest,
-        :id,
-        :description,
-        options: { selected: params[:cohort_id], include_blank: "All" },
-        label: { text: "Year of application", size: "s" }
-      )
-    %>
 
     <%=
       f.govuk_collection_select(
@@ -72,7 +61,9 @@
           row.with_cell(text: application.created_at.to_fs(:govuk_short))
           row.with_cell(text: application.user.full_name)
           row.with_cell(text: application.employer_name_to_display)
-          row.with_cell(text: application.status.to_s.humanize)
+          row.with_cell do
+            application_status_badge(application.status)
+          end
           row.with_cell(text: govuk_link_to("View", admin_application_path(application.id)))
         end
       end
