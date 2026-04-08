@@ -139,6 +139,12 @@ class Application < ApplicationRecord
     !status.to_s.in?([PENDING, REJECTED])
   end
 
+  def deferred_at
+    return nil unless deferred_status?
+
+    application_states.where(status: DEFERRED).order(created_at: :desc).first&.created_at
+  end
+
   def previously_funded?
     # This is an optimization used by the API Applications::Query in order
     # to speed up the bulk-retrieval of Applications.

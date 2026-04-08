@@ -46,6 +46,10 @@ module ApplicationHelper
     application.rejected_status?
   end
 
+  def deferred?(application)
+    application.deferred_status?
+  end
+
   def application_course_start_date
     "autumn 2025"
   end

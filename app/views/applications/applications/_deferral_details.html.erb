@@ -1,0 +1,13 @@
+<p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+  <%= I18n.t('deferral_details.date_deferred', deferred_at: application.deferred_at&.to_fs(:govuk_short)) %>
+</p>
+<p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+  <%= I18n.t('deferral_details.if_you_restart') %>
+</p>
+<p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+  <%= I18n.t('deferral_details.if_you_do_not_restart') %>
+  <% if application.eligible_for_funding %>
+    <%= I18n.t('deferral_details.funded_place') %>
+  <% end %>
+</p>
+

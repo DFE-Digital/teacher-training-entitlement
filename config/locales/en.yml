@@ -877,6 +877,11 @@ en:
     subject_to_review: "You may be eligible for scholarship funding, subject to review of your application by DfE."
   provider_details:
     expired_status_when_service_is_closed: "Your registration has expired but you can register again later for courses starting in October 2024. You'll receive an email when registrations open. This is usually around June."
+  deferral_details:
+      date_deferred: "Date deferred: %{deferred_at}"
+      if_you_restart: If you wish to restart the course, you must do so within 12 months of deferring. Please contact your provider to do this.
+      if_you_do_not_restart: If you do not restart the course within 12 months your registration will expire and you will be withdrawn from the course.
+      funded_place: After you have been withdrawn, you will not be eligible for further funding.
   course_start_details:
     eligible_for_funding: "If your provider does not confirm you’ve started the course by %{date}, your registration will expire. You can register again later, but your funding may change."
     not_eligible_for_funding: "If your provider does not confirm you’ve started the course by %{date}, your registration will expire. You can register again later."

@@ -20,11 +20,11 @@
         <dd class="govuk-summary-list__value">
           <%= application.lead_provider.name %>
         </dd>
-        <dd class="govuk-summary-list__actions">
-          <% if pending?(application) %>
+        <% if pending?(application) %>
+          <dd class="govuk-summary-list__actions">
             <a class="govuk-link" href="<%= application_change_provider_start_index_path(application.ecf_id) %>">Register with a different provider</a>
-          <% end %>
-        </dd>  
+          </dd>
+        <% end %>
       </div>
 
       <div class="govuk-summary-list__row">
@@ -39,6 +39,9 @@
             <%= govuk_tag(text: "Successful", colour: "green") %>
           <% elsif rejected?(application) %>
             <%= govuk_tag(text: "Unsuccessful", colour: "red") %>
+          <% elsif deferred?(application) %>
+            <%= application_status_badge(application.status) %>
+            <%= render "deferral_details", application: application %>
           <% end %>
         </dd>
       </div>

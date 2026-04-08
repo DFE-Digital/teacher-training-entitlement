@@ -148,6 +148,12 @@ RSpec.describe ApplicationHelper, type: :helper do
       it { is_expected.to have_css ".govuk-tag--red", text: "Rejected" }
     end
 
+    context "with deferred" do
+      let(:status) { "deferred" }
+
+      it { is_expected.to have_css ".govuk-tag--yellow", text: "Deferred" }
+    end
+
     context "with something else" do
       let(:status) { "something_else" }
 

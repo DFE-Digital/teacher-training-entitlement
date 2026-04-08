@@ -594,6 +594,25 @@ RSpec.describe Application do
     end
   end
 
+  describe "#deferred_at" do
+    subject { application.deferred_at }
+
+    context "when application is not deferred" do
+      let(:application) { create(:application, :accepted) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when application is deferred" do
+      let(:application) { create(:application, :deferred) }
+
+      it "returns the created_at of the deferred application state" do
+        deferred_state = application.application_states.find_by(status: "deferred")
+        expect(subject).to eq(deferred_state.created_at)
+      end
+    end
+  end
+
   describe "#lookup_state_change_reason" do
     subject(:lookup_state_change_reason) { application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "deferred") }
 
