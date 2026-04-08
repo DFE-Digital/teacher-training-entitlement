@@ -7,6 +7,13 @@ RSpec.describe "choosing the correct controller to inherit from" do
   shared_examples "not allowing an unauthenticated user access" do
     it "does not allow unauthenticated user access" do
       get :index
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
+  shared_examples "redirecting an unauthenticated user to admin sign in" do
+    it "does not allow unauthenticated user access" do
+      get :index
       expect(response).to redirect_to(sign_in_path)
     end
   end
@@ -48,7 +55,7 @@ RSpec.describe "choosing the correct controller to inherit from" do
       session[:admin_id] = admin_user.id
       session[:admin_sign_in_at] = Time.zone.now
       get :index
-      expect(response).to redirect_to(sign_in_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
@@ -83,7 +90,7 @@ RSpec.describe "choosing the correct controller to inherit from" do
       end
     end
 
-    it_behaves_like "not allowing an unauthenticated user access"
+    it_behaves_like "redirecting an unauthenticated user to admin sign in"
     it_behaves_like "not allowing an authenticated user access"
     it_behaves_like "allowing an admin access"
   end
