@@ -1680,6 +1680,7 @@ components:
                   - change-in-career
                   - disengaged-and-unresponsive
                   - non-payment-of-invoice
+                  - deferred-for-over-12-months
                   - other
     ApplicationChangeScheduleRequest:
       description: The change schedule request for an application
@@ -1879,6 +1880,7 @@ components:
                         - change-in-career
                         - disengaged-and-unresponsive
                         - non-payment-of-invoice
+                        - deferred-for-over-12-months
                         - other
                       date:
                         description: The date and time the participant was withdrawn
