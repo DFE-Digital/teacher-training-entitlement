@@ -19,6 +19,11 @@ class Crons::ExpireDeferredApplicationsJob < CronJob
 
 private
 
+  # Ordinarily, an application would only be deferred once,
+  # but we need to handle the edge case where an application is:
+  # 1. Deferred 16 months ago
+  # 2. Resumed
+  # 3. Deferred again 2 months ago
   def expired_deferred_applications
     Application
       .includes(:application_states)

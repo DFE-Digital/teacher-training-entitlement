@@ -54,5 +54,25 @@ RSpec.describe Crons::ExpireDeferredApplicationsJob do
         expect(Applications::Withdraw).not_to have_received(:new)
       end
     end
+
+    context "when application was deferred, resumed, then deferred again recently" do
+      let(:application) { create(:application, :started) }
+
+      before do
+        # First deferral 16 months ago
+        application.application_states.create!(status: "deferred", created_at: 16.months.ago)
+        # Resumed
+        application.application_states.create!(status: "started", created_at: 10.months.ago)
+        # Second deferral 2 months ago
+        application.application_states.create!(status: "deferred", created_at: 2.months.ago)
+        application.update!(status: "deferred")
+      end
+
+      it "does not call the withdraw service because the most recent deferral is recent" do
+        described_class.perform_now
+
+        expect(Applications::Withdraw).not_to have_received(:new)
+      end
+    end
   end
 end
