@@ -8,8 +8,8 @@ module Helpers
       get url, params:, headers:
     end
 
-    def api_post(url, params: {}, headers: {}, token: nil)
-      token ||= lead_provider_token
+    def api_post(url, lead_provider: nil, params: {}, headers: {}, token: nil)
+      token ||= lead_provider_token(lead_provider:)
       headers ||= {}
       headers["Authorization"] = "Bearer #{token}"
       headers["Content-Type"] = "application/json"

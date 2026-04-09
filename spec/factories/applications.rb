@@ -131,6 +131,10 @@ FactoryBot.define do
       end
     end
 
+    trait :superceded do
+      status { Application::SUPERCEDED }
+    end
+
     trait :pending do
       status { Application::PENDING }
     end

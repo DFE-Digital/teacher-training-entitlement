@@ -12,7 +12,7 @@ module Applications
     validate :application_already_rejected, if: -> { application }
     validate :application_rejectable, if: -> { application }
 
-    def reject
+    def call
       return false unless valid?
 
       application.update!(status: Application::REJECTED, reason_for_rejection:)

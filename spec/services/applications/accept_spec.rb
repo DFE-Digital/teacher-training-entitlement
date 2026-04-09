@@ -25,14 +25,14 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         let(:funded_place) { true }
 
         it "updates application record" do
-          expect(service.accept).to be true
+          expect(service.call).to be true
 
           expect(service.application.status).to eq(Application::ACCEPTED)
           expect(service.funded_place).to be true
         end
 
         it "creates applications state" do
-          expect { service.accept }.to change(ApplicationState, :count).by(1)
+          expect { service.call }.to change(ApplicationState, :count).by(1)
         end
       end
 
@@ -40,14 +40,14 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         let(:funded_place) { false }
 
         it "updates application record" do
-          expect(service.accept).to be true
+          expect(service.call).to be true
 
           expect(service.application.status).to eq(Application::ACCEPTED)
           expect(service.funded_place).to be false
         end
 
         it "creates applications state" do
-          expect { service.accept }.to change(ApplicationState, :count).by(1)
+          expect { service.call }.to change(ApplicationState, :count).by(1)
         end
       end
     end
@@ -59,13 +59,13 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         let(:funded_place) { true }
 
         it "bad request error" do
-          expect(service.accept).to be false
+          expect(service.call).to be false
 
           expect(service.application.status).to eq(Application::PENDING)
         end
 
         it "does not create applications state" do
-          expect { service.accept }.not_to change(ApplicationState, :count)
+          expect { service.call }.not_to change(ApplicationState, :count)
         end
       end
 
@@ -73,7 +73,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         let(:funded_place) { false }
 
         it "updates application record" do
-          expect(service.accept).to be true
+          expect(service.call).to be true
 
           expect(service.application.status).to eq(Application::ACCEPTED)
           expect(service.application.eligible_for_funding).to be false
@@ -81,7 +81,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         end
 
         it "creates applications state" do
-          expect { service.accept }.to change(ApplicationState, :count).by(1)
+          expect { service.call }.to change(ApplicationState, :count).by(1)
         end
       end
     end
@@ -91,27 +91,27 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     context "when application missing" do
       let(:application) { nil }
 
-      it { expect(service.accept).to be false }
+      it { expect(service.call).to be false }
     end
 
     context "with bad funded place value" do
       let(:funded_place) { "something else" }
 
-      it { expect(service.accept).to be false }
+      it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::PENDING) }
     end
 
     context "when application already accepted" do
       let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
 
-      it { expect(service.accept).to be false }
+      it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::ACCEPTED) }
     end
 
     context "when application already rejected" do
       let(:application) { create(:application, :rejected, lead_provider:, course_cohort:) }
 
-      it { expect(service.accept).to be false }
+      it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::REJECTED) }
     end
   end

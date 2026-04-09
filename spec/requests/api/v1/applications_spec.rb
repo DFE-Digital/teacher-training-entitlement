@@ -84,7 +84,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Accept }
-    let(:action) { :accept }
+    let(:action) { :call }
     let(:attributes) { { funded_place: true } }
     let(:service_args) { attributes.merge(application: resource) }
     let(:service_methods) { { application: resource } }
@@ -104,7 +104,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -113,7 +113,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Reject }
-    let(:action) { :reject }
+    let(:action) { :call }
     let(:attributes) { { reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider] } }
     let(:service_args) { attributes.merge(application: resource) }
     let(:service_methods) { { application: resource } }
@@ -133,7 +133,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -142,7 +142,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::ChangeFundedPlace }
-    let(:action) { :change }
+    let(:action) { :call }
     let(:attributes) { { funded_place: false } }
     let(:service_args) { attributes.merge(application: resource) }
 
@@ -161,7 +161,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -203,7 +203,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -245,7 +245,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -287,7 +287,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -332,7 +332,7 @@ RSpec.describe "Application endpoints", type: :request do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
           .not_to(change { old_application.reload.status })
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -385,10 +385,10 @@ RSpec.describe "Application endpoints", type: :request do
       let(:params) { { data: { attributes: } } }
 
       it "the old provider cannot create the declaration" do
-        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+        expect { api_post(path, lead_provider: old_lead_provider, params:) }
           .not_to(change(Declaration, :count))
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end
@@ -440,14 +440,14 @@ RSpec.describe "Application endpoints", type: :request do
 
     context "when an application changed provider" do
       include_context "with application which changed provider"
-      let(:path) { change_funded_place_api_v1_application_path(ecf_id: old_application.ecf_id) }
+      let(:path) { completed_declaration_api_v1_application_path(ecf_id: old_application.ecf_id) }
       let(:params) { { data: { attributes: } } }
 
       it "the old provider cannot create the declaration" do
-        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+        expect { api_post(path, lead_provider: old_lead_provider, params:) }
           .not_to(change(Declaration, :count))
 
-        expect(response).to be_not_found
+        expect(response).to be_forbidden
       end
     end
   end

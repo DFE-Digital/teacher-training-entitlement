@@ -24,6 +24,7 @@ module Applications
     def save_applications!
       Application.transaction do
         @current_application.update!(status: Application::SUPERCEDED)
+        @current_application.application_states.create!(status: Application::SUPERCEDED)
         new_application.save!
         @current_application.update!(superceding_application: new_application)
       end

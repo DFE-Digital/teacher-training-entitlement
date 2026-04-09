@@ -32,7 +32,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
         let(:funded_place) { true }
 
         it "no application record changes" do
-          expect { service.change }.not_to(change { application.reload.funded_place })
+          expect { service.call }.not_to(change { application.reload.funded_place })
         end
       end
 
@@ -40,7 +40,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
         let(:funded_place) { false }
 
         it "updates application record" do
-          expect { service.change }.to change { application.reload.funded_place }.from(true).to(false)
+          expect { service.call }.to change { application.reload.funded_place }.from(true).to(false)
         end
       end
     end
@@ -59,7 +59,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
         let(:funded_place) { true }
 
         it "bad request error" do
-          expect { service.change }.not_to(change { application.reload.funded_place })
+          expect { service.call }.not_to(change { application.reload.funded_place })
         end
       end
 
@@ -67,14 +67,14 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
         let(:funded_place) { false }
 
         it "no application record changes" do
-          expect { service.change }.not_to(change { application.reload.funded_place })
+          expect { service.call }.not_to(change { application.reload.funded_place })
         end
       end
     end
   end
 
   describe "#change errors scenarios" do
-    before { service.change }
+    before { service.call }
 
     context "when application is missing" do
       it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }

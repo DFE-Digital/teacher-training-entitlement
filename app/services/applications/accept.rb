@@ -14,7 +14,7 @@ module Applications
     validate :cannot_change_from_rejected
     validate :eligible_for_funded_place
 
-    def accept
+    def call
       return false unless valid?
 
       ApplicationRecord.transaction do

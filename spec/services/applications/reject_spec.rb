@@ -36,17 +36,17 @@ RSpec.describe Applications::Reject, type: :model do
     let(:application) { create(:application, :pending) }
 
     it "marks the status as rejected" do
-      expect { service.reject }.to change { application.reload.status }.from(Application::PENDING).to(Application::REJECTED)
+      expect { service.call }.to change { application.reload.status }.from(Application::PENDING).to(Application::REJECTED)
     end
 
     it "reloads application after action" do
       allow(service.application).to receive(:reload)
-      service.reject
+      service.call
       expect(service.application).to have_received(:reload)
     end
 
     it "sets the reason for rejection" do
-      expect { service.reject }.to change { application.reload.reason_for_rejection }.from(nil).to(reason_for_rejection)
+      expect { service.call }.to change { application.reload.reason_for_rejection }.from(nil).to(reason_for_rejection)
     end
   end
 end
