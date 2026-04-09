@@ -1,22 +1,13 @@
 <% content_for :side_navigation do %>
-    <h2 class="govuk-heading-m">Cohorts</h2>
-    <%=
-    render SubNavigationComponent.new(
+    <%= render CohortsComponent.new(
         request.path,
-        structure:
-        @cohorts.map do |cohort|
-        NavigationStructure::Node.new(
-            name: cohort.description,
-            href: cohort_admin_lead_provider_path(@lead_provider, cohort),
-            prefix: cohort_admin_lead_provider_path(@lead_provider, cohort),
-        )
-        end
-    )
-    %>
+        cohorts: @cohorts,
+        base_path: :admin_lead_provider_path,
+        resource: @lead_provider,
+    ) %>
 <% end %>
 
-<span class="govuk-caption-l"><%= @lead_provider.name %></span>
-<%= tag.h1("Cohort #{@current_cohort.description}", class: "govuk-heading-l") %>
+<h1 class="govuk-heading-l"><%= @lead_provider.name %></h1>
 
 <%= govuk_tabs do |tabs| %>
     <%= tabs.with_tab(label: "Applications") do %>

@@ -3,10 +3,11 @@ class CohortsComponent < BaseComponent
 
   attr_accessor :current_path, :current_section, :heading
 
-  def initialize(current_path, cohorts:, base_path:)
+  def initialize(current_path, cohorts:, base_path:, resource: nil)
     @current_path = current_path
     @cohorts = cohorts
     @base_path = base_path
+    @resource = resource
     @heading = { text: "Cohorts", visible: true }
   end
 
@@ -18,8 +19,8 @@ class CohortsComponent < BaseComponent
     @cohorts.map do |cohort|
       NavigationStructure::Node.new(
         name: cohort.description,
-        href: public_send(:"cohort_#{@base_path}", cohort),
-        prefix: public_send(:"cohort_#{@base_path}", cohort),
+        href: cohort_resource_path(cohort),
+        prefix: cohort_resource_path(cohort),
       )
     end
   end
@@ -27,8 +28,8 @@ class CohortsComponent < BaseComponent
   def all_node
     NavigationStructure::Node.new(
       name: "All",
-      href: public_send(@base_path),
-      prefix: public_send(@base_path),
+      href: resource_path,
+      prefix: resource_path,
     )
   end
 
@@ -68,6 +69,22 @@ class CohortsComponent < BaseComponent
   end
 
 private
+
+  def cohort_resource_path(cohort)
+    if @resource
+      public_send(:"cohort_#{@base_path}", @resource, cohort)
+    else
+      public_send(:"cohort_#{@base_path}", cohort)
+    end
+  end
+
+  def resource_path
+    if @resource
+      public_send(@base_path, @resource)
+    else
+      public_send(@base_path)
+    end
+  end
 
   def current?(prefix)
     # return nil instead of false so Rails' link helper drops the

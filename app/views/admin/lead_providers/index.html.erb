@@ -1,13 +1,33 @@
+<% content_for :side_navigation do %>
+    <%= render CohortsComponent.new(
+        request.path,
+        cohorts: @cohorts,
+        base_path: :admin_lead_providers_path,
+    ) %>
+<% end %>
+
 <h1 class="govuk-heading-l">Providers</h1>
+<%=
+govuk_table do |table|
+    table.with_head do |header|
+        header.with_row do |row|
+            row.with_cell(text: "Name")
+            row.with_cell(text: "Nb applications")
+        end
+    end
 
-<p class="govuk-body">
-  Select a provider to see which delivery partners they work with to deliver NPQs.
-</p>
-
-<ul class="govuk-list">
-  <% LeadProvider.order(:name).each do |lead_provider| %>
-    <li>
-      <%= link_to lead_provider.name, admin_lead_provider_path(lead_provider), class: "govuk-link" %>
-    </li>
-  <% end %>
-</ul>
+    table.with_body do |body|
+        @resources.each do |resource|
+            body.with_row do |row|
+                if @current_cohort
+                    row.with_cell(text: govuk_link_to(resource.name, cohort_admin_lead_provider_path(resource, @current_cohort)))
+                    row.with_cell(text: @apps_by_provider[resource.id].size)
+                else
+                    row.with_cell(text: govuk_link_to(resource.name, admin_lead_provider_path(resource)))
+                    row.with_cell(text: resource.applications.size)
+                end
+            end
+        end
+    end
+end
+%>
