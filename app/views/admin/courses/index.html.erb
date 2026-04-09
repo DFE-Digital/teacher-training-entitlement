@@ -7,7 +7,11 @@
 <% end %>
 
 
-<h1 class="govuk-heading-l">All courses</h1>
+<% if @current_cohort %>
+    <h1 class="govuk-heading-l">Courses for cohort <%= @current_cohort.description %></h1>
+<% else %>
+    <h1 class="govuk-heading-l">All courses</h1>
+<% end %>
 <%=
 govuk_table do |table|
     table.with_head do |header|
