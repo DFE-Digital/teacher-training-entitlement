@@ -1,23 +1,25 @@
-class Admin::LeadProvidersController < AdminController
-  def index
-    @lead_providers = LeadProvider.all
-  end
+module Admin
+  class LeadProvidersController < AdminController
+    include Cohortable
 
-  def show
-    @lead_provider = LeadProvider.find(params[:id])
-    @cohorts = Cohort.order_by_latest
-    @current_cohort = params[:cohort_id].present? ? @cohorts.find(params[:cohort_id]) : @cohorts.first
+    def index
+      @lead_providers = LeadProvider.all
+    end
 
-    # Added extra includes :course, :cohort to stop bogus warning issues;
-    applications_scope = @lead_provider.applications
-                           .includes(:user, :course, :cohort, course_cohort: %i[course cohort])
-                           .where(course_cohorts: { cohort: @current_cohort })
-                           .order(created_at: :desc)
+    def show
+      @lead_provider = LeadProvider.find(params[:id])
 
-    @pagy_applications, @applications = pagy(applications_scope, items: 25)
+      # Added extra includes :course, :cohort to stop bogus warning issues;
+      applications_scope = @lead_provider.applications
+                             .includes(:user, :course, :cohort, course_cohort: %i[course cohort])
+                             .where(course_cohorts: { cohort: @current_cohort })
+                             .order(created_at: :desc)
 
-    @pagy_delivery_partners, @delivery_partners = pagy(@lead_provider.delivery_partners_for_cohort(@current_cohort))
+      @pagy_applications, @applications = pagy(applications_scope, items: 25)
 
-    @pagy_statements, @statements = pagy(@lead_provider.statements.where(cohort: @current_cohort))
+      @pagy_delivery_partners, @delivery_partners = pagy(@lead_provider.delivery_partners_for_cohort(@current_cohort))
+
+      @pagy_statements, @statements = pagy(@lead_provider.statements.where(cohort: @current_cohort))
+    end
   end
 end

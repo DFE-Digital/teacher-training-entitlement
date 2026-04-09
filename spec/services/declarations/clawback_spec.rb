@@ -17,7 +17,7 @@ RSpec.describe Declarations::Clawback, type: :model do
         let(:declaration_type) { :started }
         let(:application) { create(:application, :completed) }
 
-        it { expect(service).to have_error(:base, :application_status_completed, I18n.t("declaration.application_status_completed")) }
+        it { expect(service).to have_error(:base, :application_status_completed, I18n.t("activemodel.errors.models.declarations/clawback.attributes.base.application_status_completed")) }
       end
 
       context "when the application has been completed and the declaration is completed" do

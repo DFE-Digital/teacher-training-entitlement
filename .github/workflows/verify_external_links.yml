@@ -5,6 +5,9 @@ on:
   # schedule:
   #   - cron: "0 4 * * *" # 4am every day
 
+permissions:
+  contents: read
+
 env:
   RAILS_ENV: staging
   SECRET_KEY_BASE: ${{ secrets.RAILS_SECRET_KEY_BASE_STAGING }}

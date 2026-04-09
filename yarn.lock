@@ -2314,10 +2314,10 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@4.17.23, lodash-es@^4.17.21, lodash-es@^4.17.23:
-  version "4.17.23"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.23.tgz#58c4360fd1b5d33afc6c0bbd3d1149349b1138e0"
-  integrity sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==
+lodash-es@4.17.23, lodash-es@^4.17.21, lodash-es@^4.17.23, lodash-es@^4.18.0:
+  version "4.18.1"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.18.1.tgz#b962eeb80d9d983a900bf342961fb7418ca10b1d"
+  integrity sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
@@ -2629,10 +2629,10 @@ rw@1:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.98.0:
-  version "1.98.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.98.0.tgz#924ce85a3745ccaccd976262fdc1bc0c13aa8e57"
-  integrity sha512-+4N/u9dZ4PrgzGgPlKnaaRQx64RO0JBKs9sDhQ2pLgN6JQZ25uPQZKQYaBJU48Kd5BxgXoJ4e09Dq7nMcOUW3A==
+sass@^1.99.0:
+  version "1.99.0"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.99.0.tgz#ff9d1594da4886249dfaafabbeea2dea2dc74b26"
+  integrity sha512-kgW13M54DUB7IsIRM5LvJkNlpH+WhMpooUcaWGFARkF1Tc82v9mIWkCbCYf+MBvpIUBSeSOTilpZjEPr2VYE6Q==
   dependencies:
     chokidar "^4.0.0"
     immutable "^5.1.5"
@@ -2728,10 +2728,10 @@ svg-pan-zoom@^3.6.2:
   resolved "https://registry.yarnpkg.com/svg-pan-zoom/-/svg-pan-zoom-3.6.2.tgz#be136506211b242627a234a9656f8128fcbbabed"
   integrity sha512-JwnvRWfVKw/Xzfe6jriFyfey/lWJLq4bUh2jwoR5ChWQuQoOH8FEh1l/bEp46iHHKHEJWIyFJETbazraxNWECg==
 
-swagger-ui-dist@^5.32.1:
-  version "5.32.1"
-  resolved "https://registry.yarnpkg.com/swagger-ui-dist/-/swagger-ui-dist-5.32.1.tgz#21abc8944763901c9fade461c2c669f5621985e3"
-  integrity sha512-6HQoo7+j8PA2QqP5kgAb9dl1uxUjvR0SAoL/WUp1sTEvm0F6D5npgU2OGCLwl++bIInqGlEUQ2mpuZRZYtyCzQ==
+swagger-ui-dist@^5.32.2:
+  version "5.32.2"
+  resolved "https://registry.yarnpkg.com/swagger-ui-dist/-/swagger-ui-dist-5.32.2.tgz#149d1e0e5120ffa9300a332d10236116b54e01e9"
+  integrity sha512-t6Ns52nS8LU2hqi0+rezMjFO1ZrCsCrnommXrU7Nfrg2va2dWahdvM6TuSwzdHpG29v6BHJyU1c/UWFhgVZzVQ==
   dependencies:
     "@scarf/scarf" "=1.4.0"
 
@@ -2895,10 +2895,10 @@ webpack-sources@^3.3.4:
   resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-3.3.4.tgz#a338b95eb484ecc75fbb196cbe8a2890618b4891"
   integrity sha512-7tP1PdV4vF+lYPnkMR0jMY5/la2ub5Fc/8VQrrU+lXkiM6C4TjVfGw7iKfyhnTQOsD+6Q/iKw0eFciziRgD58Q==
 
-webpack@^5.105.4:
-  version "5.105.4"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.105.4.tgz#1b77fcd55a985ac7ca9de80a746caffa38220169"
-  integrity sha512-jTywjboN9aHxFlToqb0K0Zs9SbBoW4zRUlGzI2tYNxVYcEi/IPpn+Xi4ye5jTLvX2YeLuic/IvxNot+Q1jMoOw==
+webpack@^5.106.0:
+  version "5.106.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.106.0.tgz#ee374da5573eef1e47b2650d6be8e40fb928d697"
+  integrity sha512-Pkx5joZ9RrdgO5LBkyX1L2ZAJeK/Taz3vqZ9CbcP0wS5LEMx5QkKsEwLl29QJfihZ+DKRBFldzy1O30pJ1MDpA==
   dependencies:
     "@types/eslint-scope" "^3.7.7"
     "@types/estree" "^1.0.8"
