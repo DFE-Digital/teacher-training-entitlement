@@ -22,6 +22,8 @@ module Applications
         }
 
         redirect_to application_path(application.ecf_id)
+
+        clear_session_form_data!
       end
 
       helper_method :new_provider

@@ -1,12 +1,17 @@
 module Applications
   module ChangeProvider
     class StartController < ::Applications::ApplicationsController
+      include MultiStepFormSession
+
       before_action :set_form
+      storing_form_session_as :change_provider
 
       def index; end
 
       def create
         render :index, status: :unprocessable_content and return unless @form.valid?
+
+        store_session_form_data!(@form.attributes)
 
         if @form.confirmation
           redirect_to application_change_provider_providers_path(application.ecf_id)
@@ -22,7 +27,8 @@ module Applications
       end
 
       def form_params
-        params.fetch(:form, {}).permit(:confirmation).merge(application:)
+        params.fetch(:form, { confirmation: session_form_data[:confirmation] })
+          .permit(:confirmation).merge(application:)
       end
     end
   end

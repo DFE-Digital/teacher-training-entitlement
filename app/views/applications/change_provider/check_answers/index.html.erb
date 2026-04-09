@@ -6,16 +6,6 @@
     </h1>
 
     <%= form_for :form, url: application_change_provider_check_answers_path(application.ecf_id) do |f| %>
-      <div id="current-provider" class="govuk-grid-row govuk-body">
-        <div class="govuk-grid-column-one-third">
-          <strong><%= t("applications.change_provider.check_answers.current_provider") %></strong>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <div><%= application.lead_provider.name %></div>
-        </div>
-        <div class="govuk-grid-column-one-third">
-        </div>
-      </div>
       <div id="new-provider" class="govuk-grid-row govuk-body">
         <div class="govuk-grid-column-one-third">
           <strong><%= t("applications.change_provider.check_answers.new_provider") %></strong>
