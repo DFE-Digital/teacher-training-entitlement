@@ -12,7 +12,7 @@ RSpec.feature "Viewing the dashboard introduction", type: :feature do
     visit(admin_dashboards_path)
 
     expect(page).to have_css("h1", text: "Dashboards")
-    expect(page).to have_link("Courses dashboard")
-    expect(page).to have_link("Providers dashboard")
+    expect(page).to have_link("courses")
+    expect(page).to have_link("providers")
   end
 end

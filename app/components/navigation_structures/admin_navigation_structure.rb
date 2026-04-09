@@ -47,16 +47,6 @@ module NavigationStructures
     def admin_nodes
       nodes = {
         Node.new(
-          name: "Dashboards",
-          href: admin_path,
-          prefix: "/admin/dashboard",
-        ) => dashboard_nodes,
-        Node.new(
-          name: "Applications",
-          href: admin_applications_path,
-          prefix: "/admin/applications",
-        ) => [],
-        Node.new(
           name: "Cohorts",
           href: admin_cohorts_path,
           prefix: "/admin/cohorts",
@@ -65,6 +55,21 @@ module NavigationStructures
           name: "Courses",
           href: admin_courses_path,
           prefix: "/admin/courses",
+        ) => [],
+        Node.new(
+          name: "Applications",
+          href: admin_applications_path,
+          prefix: "/admin/applications",
+        ) => [],
+        Node.new(
+          name: "Providers",
+          href: admin_lead_providers_path,
+          prefix: "/admin/providers",
+        ) => [],
+        Node.new(
+          name: "Delivery partners",
+          href: admin_delivery_partners_path,
+          prefix: "/admin/delivery-partners",
         ) => [],
         Node.new(
           name: "Users",
@@ -82,24 +87,9 @@ module NavigationStructures
           prefix: "/admin/schools",
         ) => [],
         Node.new(
-          name: "Providers",
-          href: admin_lead_providers_path,
-          prefix: "/admin/providers",
-        ) => [],
-        Node.new(
-          name: "Delivery partners",
-          href: admin_delivery_partners_path,
-          prefix: "/admin/delivery-partners",
-        ) => [],
-        Node.new(
           name: "Bulk changes",
           href: admin_bulk_operations_path,
           prefix: "/admin/bulk-changes",
-        ) => [],
-        Node.new(
-          name: "Webhook messages",
-          href: admin_webhook_messages_path,
-          prefix: "/admin/webhook-messages",
         ) => [],
         Node.new(
           name: "Registration closed",
@@ -122,21 +112,6 @@ module NavigationStructures
       )] = []
 
       nodes
-    end
-
-    def dashboard_nodes
-      [
-        Node.new(
-          name: "Courses dashboard",
-          href: admin_dashboard_path("courses-dashboard"),
-          prefix: "/admin/dashboards/courses-dashboard",
-        ),
-        Node.new(
-          name: "Providers dashboard",
-          href: admin_dashboard_path("providers-dashboard"),
-          prefix: "/admin/dashboards/providers-dashboard",
-        ),
-      ]
     end
   end
 end
