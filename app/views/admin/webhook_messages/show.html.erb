@@ -39,12 +39,12 @@
 
     sl.with_row do |row|
       row.with_key(text: t('.sent_at'))
-      row.with_value(text: @webhook_message.sent_at.to_fs(:govuk_short))
+      row.with_value(text: @webhook_message.sent_at&.to_fs(:govuk_short))
     end
 
     sl.with_row do |row|
       row.with_key(text: t('.created_at'))
-      row.with_value(text: @webhook_message.created_at.to_fs(:govuk_short))
+      row.with_value(text: @webhook_message.created_at&.to_fs(:govuk_short))
     end
 
     sl.with_row do |row|
@@ -58,4 +58,3 @@
     end
   end
 %>
-

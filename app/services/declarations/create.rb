@@ -50,8 +50,6 @@ module Declarations
           # [TODO]: Define when to raise statement for TTE
           # StatementAttacher.new(@declaration:).attach
           create_participant_outcome!
-
-          create_participant_outcome!
           application_completed!
         end
       end
