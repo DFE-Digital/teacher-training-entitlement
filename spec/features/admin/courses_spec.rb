@@ -13,7 +13,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
   scenario "viewing the list of courses" do
     visit(admin_courses_path)
 
-    expect(page).to have_css("h1", text: "All courses")
+    expect(page).to have_css("h1", text: "Courses")
 
     Course.order(name: :asc).limit(courses_per_page).each do |course|
       expect(page).to have_link(course.name, href: admin_course_path(course))

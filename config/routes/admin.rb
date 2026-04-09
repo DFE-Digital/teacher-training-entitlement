@@ -95,7 +95,10 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show]
+  resources :courses, only: %i[index show] do
+    concerns :cohortable, to: "courses#index"
+  end
+
   resources :users, only: %i[index show] do
     member do
       namespace :users, path: nil do

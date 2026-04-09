@@ -7,7 +7,7 @@ class CohortsComponent < BaseComponent
     @current_path = current_path
     @cohorts = cohorts
     @base_path = base_path
-    @heading = { text: "Cohorts" }
+    @heading = { text: "Cohorts", visible: true }
   end
 
   def render?
@@ -33,7 +33,7 @@ class CohortsComponent < BaseComponent
   end
 
   def structure
-    [*cohort_nodes, all_node]
+    [all_node, *cohort_nodes]
   end
 
   def navigation_link(section)

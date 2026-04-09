@@ -10,7 +10,7 @@ module Admin
 
     def set_cohorts
       @cohorts = Cohort.order_by_latest
-      @current_cohort = params[:cohort_id].present? ? @cohorts.find(params[:cohort_id]) : @cohorts.first
+      @current_cohort = params[:cohort_id] ? @cohorts.find(params[:cohort_id]) : nil
     end
   end
 end
