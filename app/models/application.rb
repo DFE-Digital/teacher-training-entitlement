@@ -11,6 +11,7 @@ class Application < ApplicationRecord
   belongs_to :course_cohort
   belongs_to :lead_provider
   belongs_to :institution, optional: true
+  belongs_to :superceding_application, class_name: "Application", optional: true
 
   has_one :course, through: :course_cohort
   has_one :cohort, through: :course_cohort
@@ -32,13 +33,14 @@ class Application < ApplicationRecord
   has_one :withdrawn_state, -> { where(status: WITHDRAWN).order(created_at: :desc) }, class_name: "ApplicationState"
   has_many :declarations
 
-  scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
+  scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN, SUPERCEDED]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications) }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
   scope :for_manual_review, -> { where.not(review_status: nil) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
+  scope :not_superceded, -> { where.not(status: SUPERCEDED) }
 
   attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
 
@@ -46,12 +48,13 @@ class Application < ApplicationRecord
   validates :user_id,
             uniqueness: {
               scope: :course_cohort_id,
-              conditions: -> { where.not(status: REJECTED) },
-            }, unless: -> { rejected_status? }
+              conditions: -> { where.not(status: [REJECTED, SUPERCEDED]) },
+            }, unless: -> { rejected_status? || superceded_status? }
   validate :ensure_valid_status_transition, if: -> { status_changed? && not_admin_user? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
+  validate :ensure_application_not_superceded
 
   after_commit :touch_user_if_changed
 
@@ -66,11 +69,12 @@ class Application < ApplicationRecord
       DEFERRED = "deferred".freeze,
       WITHDRAWN = "withdrawn".freeze,
       REJECTED = "rejected".freeze,
+      SUPERCEDED = "superceded".freeze,
     ].freeze
 
   STATUS_TRANSITIONS = {
     nil => [PENDING].freeze,
-    PENDING => [ACCEPTED, REJECTED].freeze,
+    PENDING => [ACCEPTED, REJECTED, SUPERCEDED].freeze,
     ACCEPTED => [STARTED, COMPLETED].freeze,
     STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
     DEFERRED => [STARTED, WITHDRAWN].freeze,
@@ -285,5 +289,11 @@ private
     return unless saved_change_to_status?
 
     user.touch(time: updated_at)
+  end
+
+  def ensure_application_not_superceded
+    return if !persisted? || superceding_application.nil? || superceding_application_id_was.nil?
+
+    errors.add(:base, :application_was_superceded)
   end
 end

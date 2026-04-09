@@ -43,6 +43,8 @@ en:
     not_rejectable: This application cannot be rejected
     not_deferrable: This application cannot be deferred
     not_resumable: This application cannot be resumed
+    application_was_superceded: This application can no longer be updated because it was superceded
+  
   applications:
     change_provider:
       start:

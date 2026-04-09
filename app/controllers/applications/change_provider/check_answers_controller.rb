@@ -12,18 +12,27 @@ module Applications
       def create
         redirect_to application_change_provider_start_index_path(application.ecf_id) and return if new_provider.nil?
 
-        # TODO: - Create new application with new provider and retire old application
-        # Don't leave this in :)
-        application.update!(lead_provider_id: new_provider.id)
+        service = Applications::ChangeLeadProvider.new(current_application: application, new_provider:)
+
+        service.call
+
+        if service.errors.any?
+          flash[:alert] = {
+            title: t("applications.change_provider.check_answers.fail.title"),
+            message: service.errors.full_messages.join("; "),
+          }
+
+          redirect_to application_change_provider_check_answers_path(application.ecf_id) and return
+        end
 
         flash[:notice] = {
           title: t("applications.change_provider.check_answers.success.title"),
           message: t("applications.change_provider.check_answers.success.message"),
         }
 
-        redirect_to application_path(application.ecf_id)
-
         clear_session_form_data!
+
+        redirect_to application_path(application.superceding_application.ecf_id)
       end
 
       helper_method :new_provider

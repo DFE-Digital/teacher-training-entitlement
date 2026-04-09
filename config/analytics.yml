@@ -207,6 +207,7 @@ shared:
     - on_submission_trn
     - review_status
     - reason_for_rejection
+    - superceding_application_id
   :users:
     - id
     - created_at

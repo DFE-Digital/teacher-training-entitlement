@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_084307) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "api_token_scopes", ["lead_provider", "teacher_record_service"]
-  create_enum "application_statuses", ["pending", "accepted", "started", "rejected", "completed", "deferred", "withdrawn"]
+  create_enum "application_statuses", ["pending", "accepted", "started", "rejected", "completed", "deferred", "withdrawn", "superceded"]
   create_enum "course_group", ["reception", "send"]
   create_enum "declaration_state_reasons", ["duplicate"]
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
@@ -129,6 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.string "referred_by_return_to_teaching_adviser"
     t.enum "review_status", enum_type: "review_statuses"
     t.enum "status", enum_type: "application_statuses"
+    t.bigint "superceding_application_id"
     t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
@@ -145,7 +146,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
     t.index ["status"], name: "index_applications_on_status"
-    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
+    t.index ["superceding_application_id"], name: "index_applications_on_superceding_application_id"
+    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true, where: "(status <> ALL (ARRAY['rejected'::application_statuses, 'superceded'::application_statuses]))"
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
 
@@ -621,6 +623,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
   add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "application_states", "applications"
   add_foreign_key "application_states", "lead_providers"
+  add_foreign_key "applications", "applications", column: "superceding_application_id", validate: false
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "lead_providers"
   add_foreign_key "applications", "users"

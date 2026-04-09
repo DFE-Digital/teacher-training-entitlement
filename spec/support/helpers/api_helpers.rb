@@ -1,7 +1,7 @@
 module Helpers
   module APIHelpers
-    def api_get(url, params: {}, headers: {}, token: nil)
-      token ||= lead_provider_token
+    def api_get(url, lead_provider: nil, params: {}, headers: {}, token: nil)
+      token ||= lead_provider_token(lead_provider:)
       headers ||= {}
       headers["Authorization"] = "Bearer #{token}"
 
@@ -17,8 +17,8 @@ module Helpers
       post url, params: params.to_json, headers:
     end
 
-    def api_put(url, params: {}, headers: {}, token: nil)
-      token ||= lead_provider_token
+    def api_put(url, lead_provider: nil, params: {}, headers: {}, token: nil)
+      token ||= lead_provider_token(lead_provider:)
       headers ||= {}
       headers["Authorization"] = "Bearer #{token}"
       headers["Content-Type"] = "application/json"
@@ -38,9 +38,11 @@ module Helpers
       CSV.parse(response.body)
     end
 
-    def lead_provider_token
-      lead_provider = current_lead_provider if defined?(current_lead_provider)
-      lead_provider ||= FactoryBot.create(:lead_provider)
+    def lead_provider_token(lead_provider: nil)
+      if lead_provider.nil?
+        lead_provider = current_lead_provider if defined?(current_lead_provider)
+        lead_provider ||= FactoryBot.create(:lead_provider)
+      end
 
       APIToken.create_with_random_token!(lead_provider:, scope: "lead_provider")
     end
