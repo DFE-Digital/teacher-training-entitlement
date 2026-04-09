@@ -21,7 +21,8 @@ private
 
   def expired_deferred_applications
     Application
-      .where(status: Application::DEFERRED)
+      .includes(:application_states)
+      .deferred_status
       .where(
         "id IN (
           SELECT application_id FROM application_states
