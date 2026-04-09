@@ -3,7 +3,10 @@ name: "Refresh Knapsack manifest"
 on:
   schedule:
     - cron: '0 8 * * 1' # Monday at 8am
-  workflow_dispatch: 
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   refresh_manifest:

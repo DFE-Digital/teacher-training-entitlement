@@ -35,6 +35,7 @@ env:
   HEALTHCHECK_CMD: 'healthcheck'
 
 permissions:
+  contents: read
   id-token: write
   pull-requests: write
   packages: write
