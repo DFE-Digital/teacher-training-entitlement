@@ -3,7 +3,7 @@
 # need to disable Lint/PercentStringArray here, because CSP keywords need to be single-quoted
 # rubocop:disable Lint/PercentStringArray
 SecureHeaders::Configuration.default do |config|
-  config.x_frame_options = "DENY"
+  config.x_frame_options = Rails.env.development? ? "SAMEORIGIN" : "DENY"
   config.x_content_type_options = "nosniff"
   config.x_xss_protection = "0"
   config.x_download_options = "noopen"
