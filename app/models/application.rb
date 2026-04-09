@@ -28,6 +28,8 @@ class Application < ApplicationRecord
 
   has_many :participant_id_changes, through: :user
   has_many :application_states
+  has_one :deferred_state, -> { where(status: DEFERRED).order(created_at: :desc) }, class_name: "ApplicationState"
+  has_one :withdrawn_state, -> { where(status: WITHDRAWN).order(created_at: :desc) }, class_name: "ApplicationState"
   has_many :declarations
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
@@ -142,13 +144,13 @@ class Application < ApplicationRecord
   def deferred_at
     return nil unless deferred_status?
 
-    application_states.where(status: DEFERRED).order(created_at: :desc).first&.created_at
+    deferred_state&.created_at
   end
 
   def withdrawn_at
     return nil unless withdrawn_status?
 
-    application_states.where(status: WITHDRAWN).order(created_at: :desc).first&.created_at
+    withdrawn_state&.created_at
   end
 
   def previously_funded?
