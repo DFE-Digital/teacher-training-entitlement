@@ -46,18 +46,15 @@ en:
   applications:
     change_provider:
       start:
-        title: Change your provider for the %{course_name} course
+        title: Register with a different provider for the %{course_name} course
+        text: You can only register with a different provider if you haven't started the course yet.
         what_happens:
           title: What happens when you change provider
           text:
-          - Your current provider will be notified that you are no longer registered
-            with them and will stop all processes. You will not be able to start the
-            course with that provider.
-          - Your new provider will send you a link to complete their application form
-            and will start suitability checks.
+            - We will notify your current provider that you are no longer registered with them
+            - Your new provider will contact you to complete their application form
         form:
-          title: Please confirm you have not started the course and want to change
-            provider?
+          title: Confirm you have not started the course and want to register with a different provider
           yes_option: Yes, I have not started the course and want to change provider
           no_option: No, I don't want to change provider
           blank: Please confirm you have not started the course and want to change
@@ -65,19 +62,16 @@ en:
           cannot_change_provider: You cannot change provider for this application.
             Contact the DfE for assistance.
       providers:
-        current_provider:
-        - You are currently registered with %{current_provider}.
-        - Select a different provider
+        current_provider: 
+          - You are currently registered with %{current_provider}.
+          - Select a different provider.
         form:
           title: Select a training provider
           blank: Please select a provider
           different_provider: Please choose a different provider to your current provider
-        check_provider_is_open: Before selecting your provider, you must check that
-          they are currently open to accepting applications.
       check_answers:
         title: Check your answer and submit
-        current_provider: Current provider
-        new_provider: New provider
+        new_provider: Provider
         success:
           title: Registration successfully updated - you have registered with a new
             provider
@@ -805,10 +799,6 @@ en:
     total_completed: Total completed
     total_voids: Total voids
   helpers:
-    warnings:
-      registration_wizard:
-        check_provider_is_open: Before selecting your provider, you must check that
-          they are currently open to accepting NPQ applications.
     title:
       registration_wizard:
         get_an_identity: Get an identity

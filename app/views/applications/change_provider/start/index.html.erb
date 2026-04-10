@@ -3,6 +3,7 @@
     <h1 class="govuk-heading-l">
       <%= t("applications.change_provider.start.title", course_name: application.course.name) %>
     </h1>
+    <p class="govuk-body"><%= t("applications.change_provider.start.text") %></p>
     <h2 class="govuk-heading-m">
       <%= t("applications.change_provider.start.what_happens.title") %>
     </h2>
@@ -16,7 +17,7 @@
       <%= form_for @form, as: :form, url: application_change_provider_start_index_path(application.ecf_id) do |f| %>
         <%= f.govuk_error_summary %>
         <%= f.govuk_radio_buttons_fieldset :confirmation, legend: { text: t("applications.change_provider.start.form.title"), tag: 'h1', size: 'm' } do %>
-          <%= f.govuk_radio_button :confirmation, '1', label: { text: t("applications.change_provider.start.form.yes_option") }, link_errors: true %>
+          <%= f.govuk_radio_button :confirmation, '1', checked: @form.confirmation, label: { text: t("applications.change_provider.start.form.yes_option") }, link_errors: true %>
           <%= f.govuk_radio_button :confirmation, '0', label: { text: t("applications.change_provider.start.form.no_option") } %>
         <% end %>
         <div class="govuk-button-group">
