@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
   has_paper_trail meta: { note: :version_note }, ignore: %i[raw_tra_provider_data updated_at feature_flag_id]
 
-  has_many :applications, dependent: :destroy
+  has_many :applications, -> { not_superceded }, dependent: :destroy
   has_many :declarations, through: :applications
   has_many :participant_id_changes, -> { order("created_at desc") }
   has_many :declarations, through: :applications

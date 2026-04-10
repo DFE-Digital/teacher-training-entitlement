@@ -3,13 +3,16 @@ module Applications
     helper_method :application
 
     def index
-      return unless current_user.applications.count == 1
+      @applications = current_user.applications
+      redirect_to application_path(@applications.first.ecf_id) if @applications.one?
 
-      redirect_to application_path(current_user.applications.first.ecf_id)
+      @active_applications = @applications.active_applications.order(created_at: :desc, id: :desc)
+      @expired_applications = @applications.expired_applications.order(created_at: :desc, id: :desc)
     end
 
     def show
-      @application = current_user.applications.find_by_ecf_id!(params[:ecf_id])
+      @application = current_user.applications.find_by_ecf_id(params[:ecf_id])
+      redirect_to applications_path if @application.nil?
     end
 
   protected
