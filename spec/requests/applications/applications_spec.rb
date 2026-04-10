@@ -48,7 +48,7 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
     end
 
     context "when the user visits a superceded application" do
-      it "redirects you back to aaa" do
+      it "redirects you back to the applications index" do
         get "/applications/#{superceded_application.ecf_id}"
 
         expect(response).to redirect_to(applications_path)

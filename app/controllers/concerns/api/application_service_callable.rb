@@ -14,8 +14,19 @@ module API
       if service.errors.blank?
         render json: yield
       else
-        status = application.superceded_status? ? :forbidden : :unprocessable_content
-        render json: API::Errors::Response.from(service), status:
+        render json: API::Errors::Response.from(service), status: error_status_for(application:)
+      end
+    end
+
+  private
+
+    def error_status_for(application:)
+      if application.nil?
+        :not_found
+      elsif application.superceded_status?
+        :forbidden
+      else
+        :unprocessable_content
       end
     end
   end
