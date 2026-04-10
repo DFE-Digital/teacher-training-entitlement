@@ -27,6 +27,10 @@ class GenericMailer < ApplicationMailer
     view_mail(TEMPLATE_ID, to: params[:to], subject: "Registration open - #{params[:course_name]}")
   end
 
+  def deferral_expiring_notification
+    view_mail(TEMPLATE_ID, to: params[:to], subject: "Registration about to expire - #{params[:course_name]}")
+  end
+
 private
 
   def application

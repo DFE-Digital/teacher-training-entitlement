@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Applications::Defer, type: :job do
+RSpec.describe Applications::Defer, type: :model do
   subject(:service) { described_class.new(application:, reason:, admin_user:) }
 
   let(:reason) { "other" }

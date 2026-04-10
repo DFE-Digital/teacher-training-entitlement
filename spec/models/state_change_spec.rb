@@ -8,7 +8,16 @@ RSpec.describe StateChange do
       deferred = create(:application, :deferred)
       deferred.state_changes.last.update!(created_at: 15.months.ago)
 
-      expect(described_class.expired_deferrals(months_ago: 14).pluck(:application_id)).to eq([deferred.id])
+      expect(described_class.expired_deferrals.pluck(:application_id)).to eq([deferred.id])
+    end
+  end
+
+  describe ".expiring_deferrals" do
+    it "returns application_ids where deferral is around 11 months old" do
+      expiring = create(:application, :deferred)
+      expiring.state_changes.last.update!(created_at: 11.months.ago)
+
+      expect(described_class.expiring_deferrals.pluck(:application_id)).to eq([expiring.id])
     end
   end
 

@@ -233,4 +233,38 @@ RSpec.describe GenericMailer, type: :mailer do
 
     it_behaves_like "a mailer with redacted logs"
   end
+
+  describe "#deferral_expiring_notification" do
+    let(:to) { "recipient@example.com" }
+    let(:full_name) { "Example User" }
+    let(:course_name) { "Early Years TTE" }
+    let(:deferral_date) { "10 November 2026" }
+    let(:ecf_id) { "ABC123" }
+
+    subject(:mail) do
+      described_class.with(
+        to:,
+        full_name:,
+        course_name:,
+        deferral_date:,
+        ecf_id:,
+      ).deferral_expiring_notification
+    end
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Registration about to expire - #{course_name}")
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(course_name)
+        expect(body).to include(deferral_date)
+        expect(body).to include(ecf_id)
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
+  end
 end
