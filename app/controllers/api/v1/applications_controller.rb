@@ -67,7 +67,7 @@ module API
                             :user,
                             :institution,
                             course_cohort: %i[course cohort schedule],
-                          ).find_by!(ecf_id:)
+                          ).find_by!(ecf_id: params[:ecf_id])
       end
 
       def filter_params
@@ -90,10 +90,6 @@ module API
         }
 
         Applications::Query.new(**conditions.compact)
-      end
-
-      def ecf_id
-        params[:ecf_id]
       end
 
       def call_and_render(service:)

@@ -2,12 +2,14 @@ module API
   module V1
     class ApplicationDeclarationsController < ApplicationsController
       def started
-        service = Declarations::Create.new(application:, **declaration_permitted_params(:started))
+        service = Declarations::Create.new(application:,
+                                           **declaration_permitted_params(:started))
         call_and_render(service:)
       end
 
       def completed
-        service = Declarations::Create.new(application:, **declaration_permitted_params(:completed))
+        service = Declarations::Create.new(application:,
+                                           **declaration_permitted_params(:completed))
         call_and_render(service:)
       end
 
@@ -17,10 +19,6 @@ module API
         call_application_service_and_render(service:, application:) do
           DeclarationSerializer.render(service.declaration, view: :v1, root: "data")
         end
-      end
-
-      def ecf_id
-        params[:ecf_id]
       end
 
       def declaration_permitted_params(declaration_type)
