@@ -86,7 +86,7 @@ private
   end
 
   def enqueue_send_application_submission_email_job(application)
-    SendApplicationSubmissionEmailJob.perform_later(application:)
+    Emails::SendApplicationSubmissionEmailJob.perform_later(application:)
   end
 
   def funding_eligibility_service
