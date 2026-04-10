@@ -1,21 +1,19 @@
 ---
 en:
   # Errors
-  unpermitted_parameters: "Unpermitted parameters"
+  unpermitted_parameters: Unpermitted parameters
   unauthorized: "HTTP Token: Access denied"
-  bad_request: "Bad request"
-  resource_not_found: "Resource not found"
-  not_found: "Not found"
+  bad_request: Bad request
+  resource_not_found: Resource not found
+  not_found: Not found
   invalid_date_filter: "The filter '#/%{parameterized_attribute}' must be a valid ISO 8601 date"
   invalid_participant_id_filter: "The filter '#/participant_id' must be a comma-delimited list of valid UUIDs"
   invalid_status: "The filter '#/status' must be %{valid_status}"
   invalid_page_parameters: "The '#/page[page]' and '#/page[per_page]' parameter values must be a valid positive number"
   invalid_data_structure: correct json data structure required. See API docs for reference
-  cannot_create_completed_declaration: Could not create completed declaration. Contact
-    the DfE for support.
-  schedule_invalid_for_course: "The selected schedule is not valid for the course"
-  cannot_create_completed_declaration: "Could not create completed declaration. Contact the DfE for support."
-  application_superceded: Application could no long updateable 
+  schedule_invalid_for_course: The selected schedule is not valid for the course
+  cannot_create_completed_declaration: Could not create completed declaration. Contact the DfE for support.
+  application_superceded: Application is no longer updateable
   application_not_found: Application could not be found
 
   errors:
