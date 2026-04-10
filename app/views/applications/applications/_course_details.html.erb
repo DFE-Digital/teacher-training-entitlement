@@ -20,11 +20,11 @@
         <dd class="govuk-summary-list__value">
           <%= application.lead_provider.name %>
         </dd>
-        <dd class="govuk-summary-list__actions">
-          <% if pending?(application) %>
+        <% if pending?(application) %>
+          <dd class="govuk-summary-list__actions">
             <a class="govuk-link" href="<%= application_change_provider_start_index_path(application.ecf_id) %>">Register with a different provider</a>
-          <% end %>
-        </dd>  
+          </dd>
+        <% end %>
       </div>
 
       <div class="govuk-summary-list__row">
@@ -33,12 +33,18 @@
         </dt>
         <dd class="govuk-summary-list__value">
           <% if application.status.blank? || pending?(application) %>
-            <%= govuk_tag(text: "Apply with provider", colour: "yellow") %>
+            <%= govuk_tag(text: "Apply with provider", colour: application_status_colour(application.status)) %>
             <%= render 'provider_pending_status' %>
           <% elsif accepted?(application) %>
-            <%= govuk_tag(text: "Successful", colour: "green") %>
+            <%= govuk_tag(text: "Successful", colour: application_status_colour(application.status)) %>
           <% elsif rejected?(application) %>
-            <%= govuk_tag(text: "Unsuccessful", colour: "red") %>
+            <%= govuk_tag(text: "Unsuccessful", colour: application_status_colour(application.status)) %>
+          <% elsif deferred?(application) %>
+            <%= application_status_badge(application.status) %>
+            <%= render "deferral_details", application: application %>
+          <% elsif withdrawn?(application) %>
+            <%= application_status_badge(application.status) %>
+            <%= render "withdrawal_details", application: application %>
           <% end %>
         </dd>
       </div>

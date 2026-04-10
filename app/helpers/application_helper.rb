@@ -46,6 +46,14 @@ module ApplicationHelper
     application.rejected_status?
   end
 
+  def deferred?(application)
+    application.deferred_status?
+  end
+
+  def withdrawn?(application)
+    application.withdrawn_status?
+  end
+
   def application_course_start_date
     "autumn 2025"
   end
@@ -59,7 +67,11 @@ module ApplicationHelper
   def application_status_badge(status)
     return nil unless status.presence
 
-    colour = {
+    govuk_tag(text: status.humanize, colour: application_status_colour(status))
+  end
+
+  def application_status_colour(status)
+    {
       pending: "blue",
       accepted: "green",
       started: "green",
@@ -67,8 +79,6 @@ module ApplicationHelper
       rejected: "red",
       withdrawn: "red",
     }.fetch(status.to_sym, "grey")
-
-    govuk_tag(text: status.humanize, colour:)
   end
 
   def sentry_javascript_tag
