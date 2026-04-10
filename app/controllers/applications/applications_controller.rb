@@ -3,7 +3,7 @@ module Applications
     helper_method :application
 
     def index
-      @applications = current_user.applications
+      @applications = current_user.applications.includes(:course, :lead_provider)
       redirect_to application_path(@applications.first.ecf_id) if @applications.one?
 
       @active_applications = @applications.active_applications.order(created_at: :desc, id: :desc)
