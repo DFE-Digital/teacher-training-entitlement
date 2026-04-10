@@ -23,6 +23,10 @@ class GenericMailer < ApplicationMailer
     view_mail(TEMPLATE_ID, to: params[:to], subject: "Notification of deferral - #{params[:course_name]}")
   end
 
+  def registration_open_notification
+    view_mail(TEMPLATE_ID, to: params[:to], subject: "Registration open - #{params[:course_name]}")
+  end
+
 private
 
   def application
@@ -34,7 +38,8 @@ private
 
     application.notifications.create!(
       event: action_name,
-      metadata: { recipient: params[:to] },
+      recipient: params[:to],
+      cohort_id: params[:cohort_id].presence,
     )
   end
 end

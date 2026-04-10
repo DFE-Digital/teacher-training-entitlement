@@ -45,4 +45,15 @@ class GenericMailerPreview < ActionMailer::Preview
       ecf_id: "abc-123-def-456",
     ).deferral_notification
   end
+
+  def registration_open_notification
+    GenericMailer.with(
+      to: "test@example.com",
+      full_name: "Jane Smith",
+      course_name: "Early Years TTE",
+      next_course_start_date: "February 2027",
+      deferral_date: "10 November 2026",
+      ecf_id: "abc-123-def-456",
+    ).registration_open_notification
+  end
 end
