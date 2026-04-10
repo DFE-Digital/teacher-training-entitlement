@@ -15,6 +15,8 @@ module Applications
       begin
         save_applications!
       rescue StandardError => e
+        Rails.logger.info("[#{self.class.name}] Errored saving applications: #{e.message}")
+        e.backtrace.take(10).each { |l| Rails.logger.info("[#{self.class.name}] #{l}") }
         errors.add(:base, e.message)
       end
     end
