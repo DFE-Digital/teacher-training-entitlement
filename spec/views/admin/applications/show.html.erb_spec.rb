@@ -54,4 +54,56 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     it { is_expected.to have_summary_item "UK Provider Reference Number (UKPRN)", "" }
     it { is_expected.to have_summary_item "Schedule identifier", "-" }
   end
+
+  describe "Links for actions" do
+    let(:superceding_application) { build_stubbed(:application, :pending) }
+    let(:application) { build_stubbed(:application, :superceded, superceding_application:) }
+
+    context "when the application is superceded" do
+      let(:superceding_application) { build_stubbed(:application, :pending) }
+      let(:application) { build_stubbed(:application, :superceded, superceding_application:) }
+
+      it do
+        expect(subject).not_to have_link("Revert to Pending")
+        expect(subject).not_to have_link("Defer/Withdraw")
+        expect(subject).not_to have_link("Accept")
+        expect(subject).not_to have_link("Change")
+        expect(subject).to have_link("View superceding application",
+                                     href: admin_application_path(application.superceding_application))
+      end
+    end
+
+    context "when the application is pending" do
+      let(:application) { build_stubbed(:application, :pending) }
+
+      it do
+        expect(subject).not_to have_link("Revert to Pending")
+        expect(subject).not_to have_link("Defer/Withdraw")
+        expect(subject).not_to have_link("Accept")
+        expect(subject).not_to have_link("View superceding application")
+      end
+    end
+
+    context "when the application is accepted" do
+      let(:application) { build_stubbed(:application, :accepted) }
+
+      it do
+        expect(subject).to have_link("Revert to Pending")
+        expect(subject).to have_link("Defer/Withdraw")
+        expect(subject).not_to have_link("Accept")
+        expect(subject).not_to have_link("View superceding application")
+      end
+    end
+
+    context "when the application is withdrawn" do
+      let(:application) { build_stubbed(:application, :withdrawn) }
+
+      it do
+        expect(subject).to have_link("Revert to Pending")
+        expect(subject).to have_link("Accept")
+        expect(subject).not_to have_link("Defer/Withdraw")
+        expect(subject).not_to have_link("View superceding application")
+      end
+    end
+  end
 end
