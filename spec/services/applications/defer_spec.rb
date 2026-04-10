@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Applications::Defer, type: :model do
+RSpec.describe Applications::Defer, type: :job do
   subject(:service) { described_class.new(application:, reason:, admin_user:) }
 
   let(:reason) { "other" }
@@ -38,6 +38,10 @@ RSpec.describe Applications::Defer, type: :model do
         expect(service.errors).to be_blank
         expect(application.reload.status).to eq(Application::DEFERRED)
       end
+
+      it "enqueues a deferral notification email" do
+        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
+      end
     end
   end
 
@@ -67,6 +71,10 @@ RSpec.describe Applications::Defer, type: :model do
       it do
         expect(service.errors).to be_blank
         expect(application.reload.status).to eq(Application::DEFERRED)
+      end
+
+      it "enqueues a deferral notification email" do
+        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
       end
     end
   end

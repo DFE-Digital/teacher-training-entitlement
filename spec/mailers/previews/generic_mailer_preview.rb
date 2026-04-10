@@ -34,4 +34,15 @@ class GenericMailerPreview < ActionMailer::Preview
       unsubscribe_link: "https://example.service.gov.uk/unsubscribe?token=abc123",
     ).email_updates_confirmation
   end
+
+  def deferral_notification
+    GenericMailer.with(
+      to: "test@example.com",
+      full_name: "Jane Smith",
+      provider_name: "Ambition Institute",
+      course_name: "Early Years TTE",
+      deferral_date: "10 November 2026",
+      ecf_id: "abc-123-def-456",
+    ).deferral_notification
+  end
 end

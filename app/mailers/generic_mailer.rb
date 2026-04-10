@@ -19,6 +19,10 @@ class GenericMailer < ApplicationMailer
     view_mail(TEMPLATE_ID, to: params[:to], subject: "Email Updates Confirmation")
   end
 
+  def deferral_notification
+    view_mail(TEMPLATE_ID, to: params[:to], subject: "Notification of deferral - #{params[:course_name]}")
+  end
+
 private
 
   def application
