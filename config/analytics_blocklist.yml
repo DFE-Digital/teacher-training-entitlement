@@ -86,12 +86,12 @@
   - updated_at
   :course_cohorts:
   - id
-  - ecf_id
   - cohort_id
   - course_id
   - created_at
-  - updated_at
+  - ecf_id
   - schedule_id
+  - updated_at
   :courses:
   - position
   :contract_templates:
