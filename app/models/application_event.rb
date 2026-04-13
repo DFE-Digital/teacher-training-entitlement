@@ -2,8 +2,8 @@ class ApplicationEvent < ApplicationRecord
   belongs_to :application
   belongs_to :lead_provider, optional: true
 
-  STATE_CHANGE_PREFIX = "StateChange::"
-  NOTIFICATION_PREFIX = "Notification::"
+  STATE_CHANGE_PREFIX = "StateChange::".freeze
+  NOTIFICATION_PREFIX = "Notification::".freeze
 
   validates :event, presence: true
   validate :valid_event_format
