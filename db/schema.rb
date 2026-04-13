@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_101619) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_101621) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -104,20 +104,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_101619) do
     t.index ["created_at"], name: "index_application_events_on_created_at"
     t.index ["event"], name: "index_application_events_on_event"
     t.index ["lead_provider_id"], name: "index_application_events_on_lead_provider_id"
-  end
-
-  create_table "application_states", force: :cascade do |t|
-    t.bigint "application_id", null: false
-    t.datetime "created_at", null: false
-    t.uuid "ecf_id"
-    t.bigint "lead_provider_id"
-    t.text "reason"
-    t.enum "status", enum_type: "application_statuses"
-    t.datetime "updated_at", null: false
-    t.index ["application_id"], name: "index_application_states_on_application_id"
-    t.index ["ecf_id"], name: "index_application_states_on_ecf_id", unique: true
-    t.index ["lead_provider_id"], name: "index_application_states_on_lead_provider_id"
-    t.index ["status"], name: "index_application_states_on_status"
   end
 
   create_table "applications", force: :cascade do |t|
@@ -634,8 +620,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_101619) do
   add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "application_events", "applications"
   add_foreign_key "application_events", "lead_providers"
-  add_foreign_key "application_states", "applications"
-  add_foreign_key "application_states", "lead_providers"
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "lead_providers"
   add_foreign_key "applications", "users"
