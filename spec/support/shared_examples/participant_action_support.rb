@@ -83,18 +83,17 @@ RSpec.shared_examples "a participant state transition" do |action, from_states, 
       context "when the application is #{from_state}" do
         let(:application) { create(:application, :accepted, :with_declaration, status: from_state) }
 
-        it "creates a #{to_state} application state" do
-          expect { perform_action }.to change(ApplicationState, :count).by(1)
+        it "creates a #{to_state} application event" do
+          expect { perform_action }.to change(ApplicationEvent, :count).by(1)
 
           expected_attributes = {
             lead_provider:,
             application:,
-            state: to_state,
+            event: "#{to_state}_state_change",
           }
 
-          expected_attributes[:reason] = reason if defined?(reason)
-
-          expect(application.application_states.last).to have_attributes(expected_attributes)
+          expect(application.application_events.last).to have_attributes(expected_attributes)
+          expect(application.application_events.last.reason).to eq(reason) if defined?(reason)
         end
 
         it "updates the application status to #{to_state}" do

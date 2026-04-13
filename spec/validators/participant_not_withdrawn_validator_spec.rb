@@ -38,7 +38,7 @@ RSpec.describe ParticipantNotWithdrawnValidator do
     context "when participant was withdrawn before declaration_date" do
       before do
         travel_to declaration_date - 10.days do
-          application.application_states.create!(status: Application::WITHDRAWN, lead_provider:)
+          application.application_events.create!(event: "StateChange::Application::WITHDRAWN", lead_provider:)
           application.update_columns(status: Application::WITHDRAWN)
         end
       end
@@ -49,7 +49,7 @@ RSpec.describe ParticipantNotWithdrawnValidator do
     context "when participant was withdrawn after declaration_date" do
       before do
         travel_to declaration_date + 10.days do
-          application.application_states.create!(status: Application::WITHDRAWN, lead_provider:)
+          application.application_events.create!(event: "StateChange::Application::WITHDRAWN", lead_provider:)
           application.update_columns(status: Application::WITHDRAWN)
         end
       end
@@ -61,7 +61,7 @@ RSpec.describe ParticipantNotWithdrawnValidator do
       let(:application) { create(:application, :withdrawn, lead_provider:) }
 
       before do
-        application.application_states.create!(lead_provider:)
+        application.application_events.create!(event: "StateChange::Application::ACCEPTED", lead_provider:)
         application.update_columns(status: Application::ACCEPTED)
       end
 
@@ -70,7 +70,7 @@ RSpec.describe ParticipantNotWithdrawnValidator do
 
     context "when participant was withdrawn by another lead provider" do
       before do
-        application.application_states.create!(status: :withdrawn, lead_provider: LeadProvider.where.not(id: lead_provider.id).first)
+        application.application_events.create!(event: "StateChange::Application::WITHDRAWN", lead_provider: LeadProvider.where.not(id: lead_provider.id).first)
         application.update_columns(status: Application::WITHDRAWN)
       end
 

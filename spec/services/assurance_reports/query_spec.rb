@@ -89,7 +89,7 @@ RSpec.describe AssuranceReports::Query do
         let(:status) { Application::WITHDRAWN }
 
         before do
-          create(:application_state, :withdrawn, application: declaration.application,
+          create(:application_event, :withdrawn, application: declaration.application,
                                                  lead_provider: declaration.lead_provider)
         end
 
@@ -105,9 +105,9 @@ RSpec.describe AssuranceReports::Query do
                 declaration.application.update_columns(status: Application::WITHDRAWN)
 
                 create(:statement_item, statement:, declaration:)
-                create(:application_state, :withdrawn, application: declaration.application,
+                create(:application_event, :withdrawn, application: declaration.application,
                                                        lead_provider: declaration.lead_provider,
-                                                       reason: "a different reason")
+                                                       metadata: { "reason" => "a different reason" })
               end
             end
           end
@@ -121,7 +121,7 @@ RSpec.describe AssuranceReports::Query do
         let(:status) { Application::DEFERRED }
 
         before do
-          create(:application_state, :deferred, application: declaration.application,
+          create(:application_event, :deferred, application: declaration.application,
                                                 lead_provider: declaration.lead_provider)
         end
 

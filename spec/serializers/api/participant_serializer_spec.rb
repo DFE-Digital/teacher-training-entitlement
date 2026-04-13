@@ -118,8 +118,8 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               status: application.status,
               school_urn: application.school.urn,
               withdrawal: {
-                reason: application.application_states.last.reason,
-                date: application.application_states.last.created_at.rfc3339,
+                reason: application.application_events.last.reason,
+                date: application.application_events.last.created_at.rfc3339,
               },
               deferral: nil,
               created_at: application.accepted_at.rfc3339,
@@ -145,8 +145,8 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               school_urn: application.school.urn,
               withdrawal: nil,
               deferral: {
-                reason: application.application_states.last.reason,
-                date: application.application_states.last.created_at.rfc3339,
+                reason: application.application_events.last.reason,
+                date: application.application_events.last.created_at.rfc3339,
               },
               created_at: application.accepted_at.rfc3339,
               funded_place: application.funded_place,

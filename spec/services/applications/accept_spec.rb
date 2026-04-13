@@ -32,7 +32,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         end
 
         it "creates applications state" do
-          expect { service.accept }.to change(ApplicationState, :count).by(1)
+          expect { service.accept }.to change(ApplicationEvent, :count).by(1)
         end
       end
 
@@ -47,7 +47,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         end
 
         it "creates applications state" do
-          expect { service.accept }.to change(ApplicationState, :count).by(1)
+          expect { service.accept }.to change(ApplicationEvent, :count).by(1)
         end
       end
     end
@@ -65,7 +65,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         end
 
         it "does not create applications state" do
-          expect { service.accept }.not_to change(ApplicationState, :count)
+          expect { service.accept }.not_to change(ApplicationEvent, :count)
         end
       end
 
@@ -81,7 +81,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
         end
 
         it "creates applications state" do
-          expect { service.accept }.to change(ApplicationState, :count).by(1)
+          expect { service.accept }.to change(ApplicationEvent, :count).by(1)
         end
       end
     end

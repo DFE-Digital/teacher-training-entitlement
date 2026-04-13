@@ -4,7 +4,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
   let(:admin_user) { create(:admin) }
   let :application do
     create(:application, :accepted, :without_funded_place) do |application|
-      create(:application_state, application:)
+      create(:application_event, application:)
     end
   end
 
@@ -74,11 +74,12 @@ RSpec.describe Applications::RevertToPending, type: :model do
                      .to(nil)
       end
 
-      it "removes Application states" do
+      it "creates a pending state change event" do
         expect { instance.revert }
-          .to change { application.application_states.count }
+          .to change { application.application_events.count }
                      .from(1)
-                     .to(0)
+                     .to(2)
+        expect(application.application_events.last.event).to eq("StateChange::Application::PENDING")
       end
     end
 
@@ -86,7 +87,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
       let :application do
         create(:application, :eligible_for_funded_place).tap do |application|
           create(:declaration, :voided, application:)
-          create(:application_state, application:)
+          create(:application_event, application:)
         end
       end
 
@@ -102,9 +103,9 @@ RSpec.describe Applications::RevertToPending, type: :model do
               .and not_change(application, :funded_place)
       end
 
-      it "succeeds but does not remove application_states" do
+      it "succeeds but does not remove application_events" do
         expect { instance.revert }
-          .to not_change(application.application_states, :count)
+          .to not_change(application.application_events, :count)
       end
 
       it "succeeds but does not remove declarations" do
@@ -117,7 +118,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
       let :application do
         create(:application, :pending, :with_funded_place).tap do |application|
           create(:declaration, :voided, application:)
-          create(:application_state, application:)
+          create(:application_event, application:)
         end
       end
 
@@ -131,9 +132,9 @@ RSpec.describe Applications::RevertToPending, type: :model do
               .and not_change(application, :funded_place)
       end
 
-      it "succeeds but does not remove application_states" do
+      it "succeeds but does not remove application_events" do
         expect { instance.revert }
-          .to not_change(application.application_states, :count)
+          .to not_change(application.application_events, :count)
       end
 
       it "succeeds but does not remove declarations" do

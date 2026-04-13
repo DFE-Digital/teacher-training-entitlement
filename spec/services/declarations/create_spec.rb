@@ -31,7 +31,7 @@ RSpec.describe Declarations::Create, type: :model do
   RSpec.shared_examples "does not update the application" do
     it do
       expect { service.call }
-        .to not_change(ApplicationState, :count)
+        .to not_change(ApplicationEvent, :count)
         .and not_change(application, :status)
     end
   end
@@ -66,7 +66,7 @@ RSpec.describe Declarations::Create, type: :model do
 
         it "sets the application to started" do
           expect(application.reload).to be_started_status
-          expect(application.application_states.last&.status).to eq(Application::STARTED)
+          expect(application.application_events.last&.event).to eq("StateChange::Application::STARTED")
         end
       end
 
@@ -157,7 +157,7 @@ RSpec.describe Declarations::Create, type: :model do
           service.call
 
           expect(application.reload).to be_completed_status
-          expect(application.application_states.last&.status).to eq(Application::COMPLETED)
+          expect(application.application_events.last&.event).to eq("StateChange::Application::COMPLETED")
         end
 
         it { expect { service.call }.to change(Declaration, :count).by(1) }

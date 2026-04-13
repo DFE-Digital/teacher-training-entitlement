@@ -108,7 +108,7 @@ RSpec.describe ParticipantOutcomes::Create, :npq, type: :model do
             completion_date: completion_date.to_date,
           })
           expect(application.reload).to be_completed_status
-          expect(application.application_states.where(status: :completed)).to exist
+          expect(application.application_events.where(event: "StateChange::Application::COMPLETED")).to exist
         end
       end
 
