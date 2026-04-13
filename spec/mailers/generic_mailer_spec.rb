@@ -123,4 +123,25 @@ RSpec.describe GenericMailer, type: :mailer do
 
     it_behaves_like "a mailer with redacted logs"
   end
+
+  describe "notification logging" do
+    let(:application) { create(:application) }
+    let(:to) { "recipient@example.com" }
+
+    it "creates an application event when ecf_id matches an application" do
+      expect {
+        described_class.with(to:, ecf_id: application.ecf_id, full_name: "Test", provider_name: "Test", course_name: "Test").application_submitted.deliver_now
+      }.to change { application.application_events.count }.by(1)
+
+      event = application.application_events.last
+      expect(event.event).to eq("Notification::ApplicationSubmitted")
+      expect(event.metadata).to eq({ "recipient" => to })
+    end
+
+    it "does not create an event when ecf_id is missing" do
+      expect {
+        described_class.with(to:, code: "123").confirmation_code.deliver_now
+      }.not_to change(ApplicationEvent, :count)
+    end
+  end
 end
