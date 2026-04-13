@@ -51,15 +51,15 @@ module API
         def withdrawal(application:, lead_provider:)
           if application.withdrawn_status?
             # We are doing this in memory to avoid running those as queries on each request
-            latest_application_state = application
-              .application_states.sort_by(&:created_at)
+            latest_event = application
+              .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |as| as.status == Application::WITHDRAWN && as.lead_provider_id == lead_provider.id }
+              .find { |e| e.status == Application::WITHDRAWN && e.lead_provider_id == lead_provider.id }
 
-            if latest_application_state.present?
+            if latest_event.present?
               {
-                reason: latest_application_state.reason,
-                date: latest_application_state.created_at.rfc3339,
+                reason: latest_event.reason,
+                date: latest_event.created_at.rfc3339,
               }
             end
           end
@@ -68,15 +68,15 @@ module API
         def deferral(application:, lead_provider:)
           if application.deferred_status?
             # We are doing this in memory to avoid running those as queries on each request
-            latest_application_state = application
-              .application_states.sort_by(&:created_at)
+            latest_event = application
+              .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |as| as.status == Application::DEFERRED && as.lead_provider_id == lead_provider.id }
+              .find { |e| e.status == Application::DEFERRED && e.lead_provider_id == lead_provider.id }
 
-            if latest_application_state.present?
+            if latest_event.present?
               {
-                reason: latest_application_state.reason,
-                date: latest_application_state.created_at.rfc3339,
+                reason: latest_event.reason,
+                date: latest_event.created_at.rfc3339,
               }
             end
           end
