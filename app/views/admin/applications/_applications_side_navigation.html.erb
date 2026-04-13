@@ -1,16 +1,7 @@
 <% content_for :side_navigation do %>
-    <h2 class="govuk-heading-m">Cohorts</h2>
-    <%=
-    render SubNavigationComponent.new(
+    <%= render CohortsComponent.new(
         request.path,
-        structure:
-        @cohorts.map do |cohort|
-        NavigationStructure::Node.new(
-            name: cohort.description,
-            href: cohort_admin_applications_path(cohort),
-            prefix: cohort_admin_applications_path(cohort),
-        )
-        end
-    )
-    %>
+        cohorts: @cohorts,
+        base_path: :admin_applications_path,
+    ) %>
 <% end %>

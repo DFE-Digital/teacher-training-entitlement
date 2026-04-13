@@ -2,12 +2,16 @@ namespace :admin do
   get "/", to: "dashboards#index"
 
   concern :cohortable do |options|
-    member do
-      get "cohorts/:cohort_id", to: options[:to], as: :cohort
+    if options.key?(:index)
+      collection do
+        get "cohorts/:cohort_id", to: options[:index], as: :cohort
+      end
     end
 
-    collection do
-      get "cohorts/:cohort_id", to: options[:to], as: :cohort
+    if options.key?(:show)
+      member do
+        get "cohorts/:cohort_id", to: options[:show], as: :cohort
+      end
     end
   end
 
@@ -43,7 +47,7 @@ namespace :admin do
   end
 
   resources :applications, only: %i[index show] do
-    concerns :cohortable, to: "applications#index"
+    concerns :cohortable, index: "applications#index"
     collection do
       resources :reviews, controller: "applications/reviews", as: "application_reviews", only: %i[index show] do
         resource :review_status, controller: "applications/review_statuses", only: %i[edit update]
@@ -95,7 +99,10 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show]
+  resources :courses, only: %i[index show] do
+    concerns :cohortable, index: "courses#index"
+  end
+
   resources :users, only: %i[index show] do
     member do
       namespace :users, path: nil do
@@ -140,7 +147,7 @@ namespace :admin do
   end
 
   resources :lead_providers, only: %i[index show], path: "providers" do
-    concerns :cohortable, to: "lead_providers#show"
+    concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
   end
   resources :admins, only: %i[index]
 

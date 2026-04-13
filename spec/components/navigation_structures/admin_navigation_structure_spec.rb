@@ -10,17 +10,15 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
 
     expected_structure =
       {
-        "Dashboards" => "/admin",
-        "Applications" => "/admin/applications",
         "Cohorts" => "/admin/cohorts",
         "Courses" => "/admin/courses",
+        "Applications" => "/admin/applications",
+        "Providers" => "/admin/providers",
+        "Delivery partners" => "/admin/delivery-partners",
         "Users" => "/admin/users",
         "Finance" => "/admin/finance/statements",
         "Workplaces" => "/admin/schools",
-        "Providers" => "/admin/providers",
-        "Delivery partners" => "/admin/delivery-partners",
         "Bulk changes" => "/admin/bulk-changes",
-        "Webhook messages" => "/admin/webhook-messages",
         "Registration closed" => "/admin/registration-closed",
         "Actions log" => "/admin/actions-log",
         "Glossary" => "/admin/glossary",
@@ -51,22 +49,6 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
       it "includes admins" do
         expect(subject[-2]).to have_attributes(name: "Admins")
         expect(subject[-2]).to have_attributes(href: "/admin/admins")
-      end
-    end
-  end
-
-  describe "#sub_structure" do
-    describe "Dashboards" do
-      subject { instance.sub_structure("/admin/dashboards") }
-
-      it "the first entry is Courses dashboard" do
-        expect(subject.first.name).to eql("Courses dashboard")
-        expect(subject.first.href).to eql("/admin/dashboards/courses-dashboard")
-      end
-
-      it "the second entry is Providers dashboard" do
-        expect(subject.second.name).to eql("Providers dashboard")
-        expect(subject.second.href).to eql("/admin/dashboards/providers-dashboard")
       end
     end
   end

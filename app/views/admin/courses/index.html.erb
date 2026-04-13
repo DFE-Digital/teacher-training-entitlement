@@ -1,20 +1,30 @@
-<h1 class="govuk-heading-l">All courses</h1>
+<% content_for :side_navigation do %>
+    <%= render CohortsComponent.new(
+        request.path,
+        cohorts: @cohorts,
+        base_path: :admin_courses_path,
+    ) %>
+<% end %>
+
+<h1 class="govuk-heading-l">Courses</h1>
 <%=
-  govuk_table do |table|
+govuk_table do |table|
     table.with_head do |header|
-      header.with_row do |row|
-        row.with_cell(text: "Name")
-      end
-    end
-  
-    table.with_body do |body|
-      @courses.each do |course|
-        body.with_row do |row|
-          row.with_cell(text: govuk_link_to(course.name, admin_course_path(course)))
+        header.with_row do |row|
+            row.with_cell(text: "Name")
+            row.with_cell(text: "Nb applications")
         end
-      end
     end
-  end
+
+    table.with_body do |body|
+        @resources.each do |course|
+            body.with_row do |row|
+                row.with_cell(text: govuk_link_to(course.name, admin_course_path(course)))
+                row.with_cell(text: course.applications.size)
+            end
+        end
+    end
+end
 %>
 
 <%= govuk_pagination(pagy: @pagy) %>
