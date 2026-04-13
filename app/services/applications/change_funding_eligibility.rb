@@ -3,6 +3,9 @@
 module Applications
   class ChangeFundingEligibility
     include ActiveModel::Validations
+    include Validations::ApplicationNotSuperceded
+
+    attr_reader :application
 
     def initialize(application:, eligible_for_funding:)
       @application = application

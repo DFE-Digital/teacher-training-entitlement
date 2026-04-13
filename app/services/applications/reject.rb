@@ -2,6 +2,7 @@ module Applications
   class Reject
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::ApplicationNotSuperceded
 
     attribute :application
     attribute :reason_for_rejection

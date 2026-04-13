@@ -48,5 +48,15 @@ RSpec.describe Applications::Resume, type: :model do
 
       it { expect { service.call }.not_to change(application, :status) }
     end
+
+    context "when application was superceded" do
+      let(:application) { create(:application, :superceded) }
+
+      before { subject.call }
+
+      it do
+        expect(subject).to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded"))
+      end
+    end
   end
 end

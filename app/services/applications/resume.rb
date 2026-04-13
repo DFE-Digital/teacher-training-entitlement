@@ -4,6 +4,7 @@ module Applications
   class Resume
     include ActiveModel::Model
     include ActiveModel::Validations
+    include Validations::ApplicationNotSuperceded
 
     validate :not_already_started
     validate :not_already_accepted
@@ -11,6 +12,8 @@ module Applications
     validate :cohort_not_in_training
     validate :cohort_exists
     validate :application_resumable
+
+    attr_reader :application
 
     def initialize(application:, course_cohort:, admin_user: nil)
       @application = application

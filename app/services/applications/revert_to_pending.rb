@@ -4,6 +4,7 @@ module Applications
 
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::ApplicationNotSuperceded
 
     attribute :change_status_to_pending
     attribute :application

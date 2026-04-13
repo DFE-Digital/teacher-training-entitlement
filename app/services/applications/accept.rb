@@ -4,6 +4,7 @@ module Applications
   class Accept
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::ApplicationNotSuperceded
 
     attribute :application
     attribute :funded_place

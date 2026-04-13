@@ -30,6 +30,12 @@ RSpec.describe Applications::Reject, type: :model do
 
       it { is_expected.to have_error(:application, :not_rejectable) }
     end
+
+    context "when application was superceded" do
+      let(:application) { build(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
   end
 
   describe ".reject" do

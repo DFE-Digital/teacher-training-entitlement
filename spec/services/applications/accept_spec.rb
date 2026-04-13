@@ -114,5 +114,11 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
       it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::REJECTED) }
     end
+
+    context "when application was superceded" do
+      let(:application) { build(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
   end
 end

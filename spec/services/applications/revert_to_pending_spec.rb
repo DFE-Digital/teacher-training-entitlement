@@ -48,6 +48,12 @@ RSpec.describe Applications::RevertToPending, type: :model do
         it { is_expected.not_to include(/already declarations/i) }
       end
     end
+
+    context "when application was superceded" do
+      let(:application) { create(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
   end
 
   describe "#revert" do

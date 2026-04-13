@@ -39,4 +39,14 @@ RSpec.describe Applications::Withdraw, type: :model do
       expect(application.reload.status).to eq(Application::WITHDRAWN)
     end
   end
+
+  context "when application was superceded" do
+    let(:application) { create(:application, :superceded) }
+
+    before { subject.call }
+
+    it do
+      expect(subject).to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded"))
+    end
+  end
 end

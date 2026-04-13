@@ -76,6 +76,12 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
   describe "#change errors scenarios" do
     before { service.call }
 
+    context "when application was superceded" do
+      let(:application) { build(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
+
     context "when application is missing" do
       it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
     end

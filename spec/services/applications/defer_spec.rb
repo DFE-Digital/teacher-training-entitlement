@@ -9,6 +9,14 @@ RSpec.describe Applications::Defer, type: :model do
 
   before { service.call }
 
+  describe "validations" do
+    context "when application was superceded" do
+      let(:application) { build(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
+  end
+
   describe "performed by admin user" do
     let(:admin_user) { build(:admin) }
 

@@ -4,6 +4,7 @@ module Applications
   class ChangeSchedule
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::ApplicationNotSuperceded
 
     attribute :application
     attribute :course_cohort

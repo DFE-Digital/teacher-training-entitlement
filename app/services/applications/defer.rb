@@ -4,6 +4,7 @@ module Applications
   class Defer
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::ApplicationNotSuperceded
 
     DEFERRAL_REASONS = %w[
       bereavement

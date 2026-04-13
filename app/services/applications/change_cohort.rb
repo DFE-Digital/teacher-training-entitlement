@@ -3,6 +3,9 @@
 module Applications
   class ChangeCohort
     include ActiveModel::Validations
+    include Validations::ApplicationNotSuperceded
+
+    attr_reader :application
 
     validate :declarations_present
     validate :different_cohort

@@ -4,6 +4,7 @@ module Applications
   class Withdraw
     include ActiveModel::Model
     include ActiveModel::Validations
+    include Validations::ApplicationNotSuperceded
 
     WITHDRAWAL_REASONS = %w[
       insufficient-capacity-to-undertake-programme

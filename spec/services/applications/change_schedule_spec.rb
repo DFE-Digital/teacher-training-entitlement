@@ -51,4 +51,12 @@ RSpec.describe Applications::ChangeSchedule, type: :model do
       it { expect { service.call }.not_to change(application, :course_cohort) }
     end
   end
+
+  describe "validations" do
+    context "when application was superceded" do
+      let(:application) { build(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
+  end
 end

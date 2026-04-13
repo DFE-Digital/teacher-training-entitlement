@@ -46,5 +46,11 @@ RSpec.describe Applications::ChangeCohort, type: :service do
         it { is_expected.to be_valid }
       end
     end
+
+    context "when application was superceded" do
+      let(:application) { build(:application, :superceded) }
+
+      it { is_expected.to have_error(:application, :application_was_superceded, I18n.t("application.application_was_superceded")) }
+    end
   end
 end

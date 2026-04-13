@@ -2,6 +2,7 @@ module Applications
   class ChangeLeadProvider
     include ActiveModel::Model
     include ActiveModel::Validations
+    include Validations::ApplicationNotSuperceded
 
     def initialize(current_application:, new_provider:)
       @current_application = current_application
