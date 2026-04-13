@@ -10,19 +10,20 @@ class ParticipantNotWithdrawnValidator < ActiveModel::Validator
 private
 
   def validate_withdrawals(record)
-    return unless record.application.present? && (latest_state = latest_participant_application_state(record))
-    return unless latest_state.withdrawn_status? && latest_state.created_at <= record.declaration_date
+    return unless record.application.present? && (latest_event = latest_participant_application_event(record))
+    return unless latest_event.status == Application::WITHDRAWN && latest_event.created_at <= record.declaration_date
 
     record
       .errors
-      .add(:participant_id, :declaration_must_be_before_withdrawal_date, withdrawal_date: latest_state.created_at.rfc3339)
+      .add(:participant_id, :declaration_must_be_before_withdrawal_date, withdrawal_date: latest_event.created_at.rfc3339)
   end
 
-  def latest_participant_application_state(record)
+  def latest_participant_application_event(record)
     record.application
-      .application_states
-      .for_lead_provider(record.lead_provider)
-      .most_recent
+      .application_events
+      .state_changes
+      .where(lead_provider: record.lead_provider)
+      .order(created_at: :desc)
       .first
   end
 end

@@ -26,16 +26,16 @@ private
   # 3. Deferred again 2 months ago
   def expired_deferred_applications
     Application
-      .includes(:application_states)
+      .includes(:application_events)
       .deferred_status
       .where(
         "id IN (
-          SELECT application_id FROM application_states
-          WHERE status = ?
+          SELECT application_id FROM application_events
+          WHERE event = ?
           GROUP BY application_id
           HAVING MAX(created_at) < ?
         )",
-        Application::DEFERRED,
+        "StateChange::Application::DEFERRED",
         DEFERRAL_EXPIRY_MONTHS.months.ago,
       )
   end
