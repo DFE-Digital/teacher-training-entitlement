@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_101619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -91,6 +91,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
     t.index ["hashed_token"], name: "index_api_tokens_on_hashed_token", unique: true
     t.index ["lead_provider_id"], name: "index_api_tokens_on_lead_provider_id"
     t.check_constraint "lead_provider_id IS NOT NULL AND scope = 'lead_provider'::api_token_scopes OR lead_provider_id IS NULL AND scope <> 'lead_provider'::api_token_scopes"
+  end
+
+  create_table "application_events", force: :cascade do |t|
+    t.bigint "application_id", null: false
+    t.datetime "created_at", null: false
+    t.string "event", null: false
+    t.bigint "lead_provider_id"
+    t.jsonb "metadata", default: {}
+    t.datetime "updated_at", null: false
+    t.index ["application_id"], name: "index_application_events_on_application_id"
+    t.index ["created_at"], name: "index_application_events_on_created_at"
+    t.index ["event"], name: "index_application_events_on_event"
+    t.index ["lead_provider_id"], name: "index_application_events_on_lead_provider_id"
   end
 
   create_table "application_states", force: :cascade do |t|
@@ -619,6 +632,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_094136) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "adjustments", "statements"
   add_foreign_key "api_tokens", "lead_providers"
+  add_foreign_key "application_events", "applications"
+  add_foreign_key "application_events", "lead_providers"
   add_foreign_key "application_states", "applications"
   add_foreign_key "application_states", "lead_providers"
   add_foreign_key "applications", "institutions"
