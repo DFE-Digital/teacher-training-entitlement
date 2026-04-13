@@ -30,6 +30,8 @@ require "capybara/cuprite"
 require "rack_session_access/capybara"
 require "axe-rspec"
 require "axe-capybara"
+require "rspec/default_http_header"
+require "shoulda-matchers"
 
 Capybara.register_driver(:cuprite) do |app|
   Capybara::Cuprite::Driver.new(
