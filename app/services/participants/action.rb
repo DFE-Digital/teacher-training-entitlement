@@ -36,8 +36,12 @@ module Participants
         &.find_by(lead_provider:, course: { identifier: course_identifier })
     end
 
-    def create_application_state!(kwargs = {})
-      ApplicationState.create!({ application:, lead_provider: }.merge(kwargs))
+    def create_application_event!(event:, metadata: {})
+      application.application_events.create!(
+        event:,
+        lead_provider:,
+        metadata:,
+      )
     end
 
     def application_exists
