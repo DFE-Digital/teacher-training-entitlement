@@ -6,7 +6,6 @@ module ValidTestDataGenerators
   #
   # NOTE: for change provider feature, the application label APP-006 should
   # marked as unassigned and be read-only
-
   class APITestScenariosSeeder
     attr_reader :lead_provider, :cohort_year, :logger
 
@@ -51,17 +50,15 @@ module ValidTestDataGenerators
         return Outcome[success: false, error: "Only available in development, review, and sandbox environments"]
       end
 
-      logger.info "APITestScenariosSeeder: Started for #{lead_provider.name} (cohort #{cohort_year})"
-
       ActiveRecord::Base.transaction do
-        cleanup_existing_data!
-        setup_course_cohorts!
-        create_applications!
-        create_statements!
+        test_scenarios_drop_data!
+        test_scenarios_create_data!
+        2.times do |i|
+          # create data for past cohorts
+          year = cohort_year - i - 2
+          create_data!(registration_starts_at: Date.new(year, 7, 1))
+        end
       end
-
-      logger.info "APITestScenariosSeeder: Finished for #{lead_provider.name}"
-      logger.info "Created #{applications_data.size} applications"
 
       Outcome[
         success: true,
@@ -77,6 +74,90 @@ module ValidTestDataGenerators
 
     def test_emails
       applications_data.map { |app| user_email(app[:email]) }
+    end
+
+    def test_scenarios_drop_data!
+      test_users = User.includes(:applications).where(email: test_emails)
+
+      # Delete applications for these test users with this lead provider
+      applications_to_delete = Application.where(user: test_users, lead_provider: lead_provider)
+
+      if applications_to_delete.any?
+        declaration_ids = Declaration.where(application: applications_to_delete).pluck(:id)
+
+        if declaration_ids.any?
+          # Find statements through statement_items
+          statement_ids = StatementItem.where(declaration_id: declaration_ids).pluck(:statement_id).uniq
+
+          # Delete participant outcomes associated with declarations
+          ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
+
+          # Delete statement items
+          StatementItem.where(declaration_id: declaration_ids).delete_all
+
+          # Delete statements and their associated records
+          if statement_ids.any?
+            Adjustment.where(statement_id: statement_ids).delete_all
+            MilestoneStatement.where(statement_id: statement_ids).delete_all
+            Contract.where(statement_id: statement_ids).delete_all
+            Statement.where(id: statement_ids).delete_all
+          end
+        end
+
+        # Delete declarations and application states
+        Declaration.where(application: applications_to_delete).delete_all
+        ApplicationState.where(application: applications_to_delete).delete_all
+
+        applications_to_delete.delete_all
+      end
+
+      # Delete test users if they have no other applications
+      test_users.each do |user|
+        if user.applications.reload.empty?
+          user.delete
+        end
+      end
+    end
+
+    def test_scenarios_create_data!
+      date = Date.new(cohort_year, 7, 1)
+
+      course_cohort_primary = course_cohort_setup(
+        registration_starts_at: date,
+        suffix: "a",
+        training_starts_now: true,
+      )
+
+      # for resume scenario
+      course_cohort_setup(
+        registration_starts_at: Date.new(date.year, 9, 1),
+        suffix: "b",
+        training_starts_now: true,
+      )
+
+      course_cohort_secondary = course_cohort_setup(
+        registration_starts_at: date + 1.year,
+        suffix: "a",
+        training_starts_now: true,
+      )
+
+      applications_data.each do |app_data|
+        course_cohort = app_data[:cohort_offset].zero? ? course_cohort_primary : course_cohort_secondary
+        create_app(
+          course_cohort:,
+          status: Application::PENDING,
+          eligible_for_funding: app_data[:funding_eligible],
+          user: create_user(app_data),
+        )
+      end
+
+      statements_setup(course_cohort: course_cohort_primary)
+    end
+
+    def create_data!(registration_starts_at:)
+      course_cohort = course_cohort_setup(registration_starts_at:)
+      applications_setup(course_cohort:)
+      statements_setup(course_cohort:)
     end
 
   private
@@ -96,222 +177,20 @@ module ValidTestDataGenerators
       self.class.applications_data
     end
 
-    def cleanup_existing_data!
-      logger.info "Cleaning up existing test data..."
-
-      test_users = User.where(email: test_emails)
-
-      # Delete applications for these test users with this lead provider
-      applications_to_delete = Application.where(user: test_users, lead_provider: lead_provider)
-
-      if applications_to_delete.any?
-        app_count = applications_to_delete.count
-        declaration_ids = Declaration.where(application: applications_to_delete).pluck(:id)
-
-        if declaration_ids.any?
-          # Find statements through statement_items
-          statement_ids = StatementItem.where(declaration_id: declaration_ids).pluck(:statement_id).uniq
-
-          # Delete participant outcomes associated with declarations
-          ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
-
-          # Delete statement items
-          StatementItem.where(declaration_id: declaration_ids).delete_all
-
-          # Delete statements and their associated records
-          if statement_ids.any?
-            Adjustment.where(statement_id: statement_ids).delete_all
-            MilestoneStatement.where(statement_id: statement_ids).delete_all
-            Contract.where(statement_id: statement_ids).delete_all
-            Statement.where(id: statement_ids).delete_all
-            logger.info "✓ Deleted #{statement_ids.count} statements connected to test declarations"
-          end
-        end
-
-        # Delete declarations and application states
-        Declaration.where(application: applications_to_delete).delete_all
-        ApplicationState.where(application: applications_to_delete).delete_all
-
-        applications_to_delete.delete_all
-        logger.info "✓ Deleted #{app_count} existing test applications"
-      end
-
-      # Delete test users if they have no other applications
-      test_users.each do |user|
-        if user.applications.reload.empty?
-          user.delete
-          logger.info "✓ Deleted test user: #{user.email}"
-        end
-      end
-
-      logger.info "Cleanup complete"
+    def course
+      @course ||= Course.find_by!(identifier: @course_identifier)
     end
 
-    def setup_course_cohorts!
-      setup_cohorts!
-      setup_course_and_schedules!
-      @course_cohort_primary = CourseCohort.find_or_create_by!(
-        course: @course,
-        cohort: @cohort_primary,
-        schedule: @schedule_primary,
-      )
-      @course_cohort_primary.course_cohort_providers.find_or_create_by!(lead_provider:)
+    def create_random_user(status:, index: nil)
+      email = "jdoe-#{status}-#{index}@#{to_dns_name(@lead_provider.name)}.com"
 
-      @course_cohort_resume = CourseCohort.find_or_create_by!(
-        course: @course,
-        cohort: @cohort_resume,
-        schedule: @schedule_resume,
-      )
-      @course_cohort_resume.course_cohort_providers.find_or_create_by!(lead_provider:)
-
-      @course_cohort_secondary = CourseCohort.find_or_create_by!(
-        course: @course,
-        cohort: @cohort_secondary,
-        schedule: @schedule_secondary,
-      )
-      @course_cohort_secondary.course_cohort_providers.find_or_create_by!(lead_provider:)
-    end
-
-    def setup_cohorts!
-      @cohort_primary = Cohort.find_or_create_by!(start_year: cohort_year, suffix: "a") do |cohort|
-        cohort.description = "#{cohort_year} to #{cohort_year + 1}"
-        cohort.registration_starts_at = Date.new(cohort_year, 4, 3)
-        cohort.funding_cap = true
-      end
-      @cohort_resume = Cohort.find_or_create_by!(start_year: cohort_year, suffix: "b") do |cohort|
-        cohort.description = "#{cohort_year} to #{cohort_year + 1} -b"
-        cohort.registration_starts_at = Date.new(cohort_year, 4, 3)
-        cohort.funding_cap = true
-      end
-
-      @cohort_secondary = Cohort.find_or_create_by!(start_year: cohort_year + 1, suffix: "a") do |cohort|
-        cohort.description = "#{cohort_year + 1} to #{cohort_year + 2}"
-        cohort.registration_starts_at = Date.new(cohort_year + 1, 4, 3)
-        cohort.funding_cap = true
-      end
-
-      logger.info "✓ Cohorts setup: #{cohort_year}, #{cohort_year + 1}"
-    end
-
-    def setup_course_and_schedules!
-      @course = Course.find_by!(identifier: @course_identifier)
-
-      # Create schedule for primary cohort
-      @schedule_primary = Schedule.find_by(identifier: @schedule_identifier)
-      if @schedule_primary
-        @schedule_primary.update!(
-          name: "TTE Reception autumn",
-          course_group: @course.course_group,
-          training_starts_at: 1.day.ago,
-          training_ends_at: 1.month.from_now,
-          allowed_declaration_types: %w[started completed],
-          policy_descriptor: 1,
-          acceptance_window_start: Date.new(cohort_year, 1, 1),
-          acceptance_window_end: Date.new(cohort_year, 12, 31),
-        )
-      else
-        @schedule_primary = Schedule.create!(
-          cohort: @cohort_primary,
-          identifier: @schedule_identifier,
-          name: "TTE Reception autumn",
-          course_group: @course.course_group,
-          training_starts_at: 1.day.ago,
-          training_ends_at: 1.month.from_now,
-          allowed_declaration_types: %w[started completed],
-          policy_descriptor: 1,
-          acceptance_window_start: Date.new(cohort_year, 1, 1),
-          acceptance_window_end: Date.new(cohort_year, 12, 31),
-        )
-      end
-
-      # Create schedule for resume cohort
-      @schedule_resume = Schedule.find_by(identifier: "tte-reception-spring")
-      if @schedule_resume
-        @schedule_resume.update!(
-          name: "TTE Reception spring",
-          course_group: @course.course_group,
-          training_starts_at: 1.day.ago,
-          training_ends_at: 1.month.from_now,
-          allowed_declaration_types: %w[started completed],
-          policy_descriptor: 1,
-          acceptance_window_start: Date.new(cohort_year, 1, 1),
-          acceptance_window_end: Date.new(cohort_year, 12, 31),
-        )
-      else
-        @schedule_resume = Schedule.create!(
-          cohort: @cohort_resume,
-          identifier: "tte-reception-spring",
-          name: "TTE Reception autumn",
-          course_group: @course.course_group,
-          training_starts_at: 1.day.ago,
-          training_ends_at: 1.month.from_now,
-          allowed_declaration_types: %w[started completed],
-          policy_descriptor: 1,
-          acceptance_window_start: Date.new(cohort_year, 1, 1),
-          acceptance_window_end: Date.new(cohort_year, 12, 31),
-        )
-      end
-
-      # Create schedule for secondary cohort
-      @schedule_secondary = Schedule.find_by(identifier: @schedule_identifier)
-      if @schedule_secondary
-        @schedule_secondary.update!(
-          name: "TTE Reception autumn",
-          course_group: @course.course_group,
-          training_starts_at: 1.day.ago,
-          training_ends_at: 1.month.from_now,
-          allowed_declaration_types: %w[started completed],
-          policy_descriptor: 1,
-          acceptance_window_start: Date.new(cohort_year, 1, 1),
-          acceptance_window_end: Date.new(cohort_year, 12, 31),
-        )
-      else
-        @schedule_secondary = Schedule.create!(
-          cohort: @cohort_secondary,
-          identifier: @schedule_identifier,
-          name: "TTE Reception autumn",
-          course_group: @course.course_group,
-          training_starts_at: 1.day.ago,
-          training_ends_at: 1.month.from_now,
-          allowed_declaration_types: %w[started completed],
-          policy_descriptor: 1,
-          acceptance_window_start: Date.new(cohort_year, 1, 1),
-          acceptance_window_end: Date.new(cohort_year, 12, 31),
-        )
-      end
-
-      logger.info "✓ Course and schedules setup"
-    end
-
-    def create_applications!
-      @applications = {}
-
-      applications_data.each do |app_data|
-        course_cohort = app_data[:cohort_offset].zero? ? @course_cohort_primary : @course_cohort_secondary
-        school = School.open.order("RANDOM()").first || School.open.first
-
-        user = create_user(app_data)
-
-        application = Application.create!(
-          user: user,
-          lead_provider: lead_provider,
-          course_cohort: course_cohort,
-          institution: school.institution,
-          status: Application::PENDING,
-          ecf_id: SecureRandom.uuid,
-          eligible_for_funding: app_data[:funding_eligible],
-          funded_place: nil,
-          teacher_catchment: "england",
-          teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
-          teacher_catchment_iso_country_code: "GBR",
-          funding_choice: :school,
-          works_in_school: true,
-          works_in_childcare: false,
-          ukprn: school.ukprn,
-        )
-
-        @applications[app_data[:label]] = application
-        logger.info "✓ Created #{app_data[:label]}: #{user.email} (#{app_data[:purpose]})"
+      User.find_or_create_by!(email:) do |user|
+        user.full_name = "J Doe #{index} #{status}"
+        user.trn = generate_trn
+        user.date_of_birth = Date.new(1990, 1, 1)
+        user.ecf_id = SecureRandom.uuid
+        user.trn_verified = true
+        user.trn_lookup_status = "Found"
       end
     end
 
@@ -328,41 +207,236 @@ module ValidTestDataGenerators
       end
     end
 
-    def create_statements!
-      # STMT-001: Paid statement for primary cohort
-      @statement_paid = Statement.find_or_create_by!(
-        cohort: @cohort_primary,
+    def generate_trn
+      sprintf("%07d", SecureRandom.random_number(10_000_000))
+    end
+
+    def delivery_partners(number: 5)
+      @delivery_partners ||= (1..number).map do |i|
+        DeliveryPartner.find_by(name: "Delivery partner #{i}") || DeliveryPartner.create!(name: "Delivery partner #{i}", ecf_id: SecureRandom.uuid)
+      end
+    end
+
+    def course_cohort_setup(registration_starts_at:, suffix: "a", training_starts_now: false)
+      cohort_year = registration_starts_at.year
+      current_cohort = Cohort.find_by(start_year: cohort_year, suffix:)
+
+      attrs = {
+        start_year: cohort_year,
+        suffix:,
+        description: "#{cohort_year}#{suffix}",
+        registration_starts_at:,
+        funding_cap: true,
+      }
+      if current_cohort
+        current_cohort.update!(attrs)
+      else
+        current_cohort = Cohort.create!(**attrs)
+      end
+
+      term = registration_starts_at.month < 8 ? "autumn" : "spring"
+      name = "TTE Reception #{term}"
+      identifier = "tte-reception-#{term}"
+      training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
+      attrs = {
+        cohort: current_cohort,
+        name:,
+        course_group: course.course_group,
+        training_starts_at: training_starts_at,
+        training_ends_at: training_starts_at + 2.months,
+        allowed_declaration_types: %w[started completed],
+        policy_descriptor: 1,
+        acceptance_window_start: training_starts_at,
+        acceptance_window_end: training_starts_at + 2.months,
+      }
+
+      current_schedule = Schedule.find_by(identifier:)
+      if current_schedule
+        current_schedule.update!(attrs)
+      else
+        current_schedule = Schedule.create!(identifier:, **attrs)
+      end
+
+      cc = CourseCohort.find_or_create_by!(
+        course:,
+        cohort: current_cohort,
+      )
+      cc.update!(schedule: current_schedule)
+      cc.course_cohort_providers.find_or_create_by!(lead_provider:)
+
+      delivery_partners.each do |dp|
+        dp.delivery_partnerships.find_or_create_by!(lead_provider:, cohort: current_cohort)
+      end
+
+      cc
+    end
+
+    def create_app(course_cohort:, status:, eligible_for_funding:, user:)
+      institution = Institution
+                      .open_school_or_non_school
+                      .order("RANDOM()").first
+      funded_place = status == Application::PENDING ? nil : eligible_for_funding
+      accepted_at = status == Application::PENDING ? nil : course_cohort.cohort.registration_starts_at
+      application = Application.find_or_initialize_by(user:, lead_provider:, course_cohort:)
+      application.update!(
+        user:,
+        lead_provider:,
+        institution:,
+        course_cohort:,
+        status:,
+        funded_place:,
+        eligible_for_funding:,
+        ecf_id: SecureRandom.uuid,
+        teacher_catchment: "england",
+        teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
+        teacher_catchment_iso_country_code: "GBR",
+        funding_choice: :school,
+        works_in_school: true,
+        works_in_childcare: false,
+        accepted_at:,
+      )
+      application
+    end
+
+    def create_started_declaration(application:, declaration_date: nil)
+      date = declaration_date || application.schedule.training_starts_at + 1.day
+      application.declarations.create!(
+        declaration_type: :started,
+        declaration_date: date,
+        delivery_partner: application.lead_provider.delivery_partners.sample,
+        cohort: application.cohort,
+        lead_provider: application.lead_provider,
+      )
+    end
+
+    def create_completed_declaration(application:, declaration_date: nil, has_passed: true)
+      date = declaration_date || application.schedule.training_ends_at + 1.day
+      declaration = application.declarations.create!(
+        declaration_type: :completed,
+        declaration_date: date,
+        delivery_partner: application.lead_provider.delivery_partners.sample,
+        cohort: application.cohort,
+        lead_provider: application.lead_provider,
+      )
+
+      if has_passed
+        state = has_passed ? "passed" : "failed"
+        ParticipantOutcome.new(declaration:, state:, completion_date: date)
+      end
+      declaration
+    end
+
+    def applications_setup(course_cohort:, number: 5)
+      # pending
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::PENDING,
+          eligible_for_funding: index.even?,
+          user: create_random_user(status: :pending, index:),
+        )
+      end
+
+      # accepted
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::ACCEPTED,
+          eligible_for_funding: index.even?,
+          user: create_random_user(status: :accepted, index:),
+        )
+      end
+
+      # started
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::STARTED,
+          eligible_for_funding: index.even?,
+          user: create_random_user(status: :started, index:),
+        ).tap do |application|
+          create_started_declaration(application:)
+        end
+      end
+
+      # completed
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::COMPLETED,
+          eligible_for_funding: index.even?,
+          user: create_random_user(status: :completed, index:),
+        ).tap do |application|
+          create_started_declaration(application:)
+          create_completed_declaration(application:, has_passed: index.even?)
+        end
+      end
+
+      # deferred
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::DEFERRED,
+          eligible_for_funding: index.even?,
+          user: create_random_user(status: :defered, index:),
+        ).tap do |application|
+          declaration = create_started_declaration(application:)
+          declaration.voided_state!
+          create_started_declaration(application:)
+        end
+      end
+
+      # withdrawn
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::WITHDRAWN,
+          eligible_for_funding: index.even?,
+          user: create_random_user(status: :withdrawn, index:),
+        )
+      end
+
+      # PLACEHOLDER FOR SUPERSEDED APPLICAITONS
+      # # # superseded
+      # number.times do |index|
+      #   create_app(
+      #     course_cohort:,
+      #     status: Application::SUPERSEDED,
+      #     eligible_for_funding: index.even?,
+      #     index: create_random_user(status: :superseded, index:),
+      #   )
+      # end
+    end
+
+    def statements_setup(course_cohort:)
+      start_date = course_cohort.schedule.training_starts_at
+      end_date = course_cohort.schedule.training_ends_at
+      Statement.find_or_create_by!(
+        cohort: course_cohort.cohort,
         lead_provider: lead_provider,
-        year: cohort_year,
-        month: 10,
+        year: course_cohort.cohort.start_year,
+        month: start_date.month,
       ) do |statement|
-        statement.deadline_date = Date.new(cohort_year, 10, 15)
-        statement.payment_date = Date.new(cohort_year, 10, 20)
+        statement.deadline_date = start_date
+        statement.payment_date = start_date + 1.month
         statement.output_fee = true
         statement.state = "paid"
-        statement.marked_as_paid_at = Date.new(cohort_year, 10, 20)
+        statement.marked_as_paid_at = start_date + 1.month
         statement.ecf_id = SecureRandom.uuid
       end
 
-      # STMT-002: Payable statement for primary cohort
-      @statement_payable = Statement.find_or_create_by!(
-        cohort: @cohort_primary,
+      Statement.find_or_create_by!(
+        cohort: course_cohort.cohort,
         lead_provider: lead_provider,
-        year: cohort_year,
-        month: 11,
+        year: course_cohort.cohort.start_year,
+        month: end_date.month,
       ) do |statement|
-        statement.deadline_date = Date.new(cohort_year, 11, 15)
-        statement.payment_date = Date.new(cohort_year, 11, 20)
+        statement.deadline_date = end_date
+        statement.payment_date = end_date + 1.month
         statement.output_fee = true
         statement.state = "payable"
         statement.ecf_id = SecureRandom.uuid
       end
-
-      logger.info "✓ Created statements: STMT-001 (paid), STMT-002 (payable)"
-    end
-
-    def generate_trn
-      sprintf("%07d", SecureRandom.random_number(10_000_000))
     end
   end
 end
