@@ -321,7 +321,7 @@ module ValidTestDataGenerators
 
       if has_passed
         state = has_passed ? "passed" : "failed"
-        ParticipantOutcome.new(declaration:, state:, completion_date: date)
+        ParticipantOutcome.create!(declaration:, state:, completion_date: date)
       end
       declaration
     end
