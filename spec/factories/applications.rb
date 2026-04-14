@@ -127,7 +127,7 @@ FactoryBot.define do
 
     trait :with_declaration do
       after(:create) do |application|
-        application.declarations << create(:declaration, :started, application:)
+        application.declarations << create(:declaration, :started, application:, cohort: application.cohort)
       end
     end
 
