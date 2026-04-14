@@ -22,7 +22,7 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
     end
 
     context "when the user has multiple applications" do
-      let!(:completed_application) { create(:application, :completed, user: pending_application.user) }
+      let!(:completed_application) { create(:application, :completed, user: pending_application.user, course_cohort: create(:course_cohort)) }
 
       it do
         get "/applications"

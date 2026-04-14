@@ -4,16 +4,17 @@ module Admin
 
     def index
       applications = Application
-                       .includes(:institution, :user, course_cohort: %i[course cohort])
+                       .includes(:institution, :lead_provider, :user, course_cohort: %i[course cohort])
+                       .including_superceded
                        .merge(filter_scope)
                        .merge(search_scope)
                        .order("applications.created_at ASC")
-
       @pagy, @applications = pagy(applications)
     end
 
     def show
       @application = Application
+                       .including_superceded
                        .includes(:institution, :user, :lead_provider, course_cohort: %i[course cohort schedule])
                        .find(params[:id])
     end
@@ -31,11 +32,13 @@ module Admin
     def filter_scope
       filters = filter_params.except(:cohort_id)
       scope = Application
+                .including_superceded
                 .where(filters.compact_blank)
 
       if filter_params[:cohort_id].present?
         scope.merge!(
           Application
+            .including_superceded
             .joins(:course_cohort)
             .includes(course_cohort: %i[course cohort])
             .where(course_cohorts: { cohort_id: filter_params[:cohort_id] }),

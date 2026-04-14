@@ -4,37 +4,49 @@ module Applications
     include ActiveModel::Validations
     include Validations::ApplicationNotSuperceded
 
+    validate :application_status_is_pending
+
     def initialize(current_application:, new_provider:)
       @current_application = current_application
       @new_provider = new_provider
+      @superceded_application = @current_application.dup
     end
 
     def call
-      new_application.assign_attributes(lead_provider: @new_provider,
-                                        status: Application::PENDING,
-                                        ecf_id: nil)
-      begin
-        save_applications!
-      rescue StandardError => e
-        Rails.logger.info("[#{self.class.name}] Errored saving applications: #{e.message}")
-        e.backtrace.take(10).each { |l| Rails.logger.info("[#{self.class.name}] #{l}") }
-        errors.add(:base, e.message)
+      return unless valid?
+
+      Application.transaction do
+        @current_application.update!(lead_provider: @new_provider)
+
+        @superceded_application.update!(
+          status: Application::SUPERCEDED,
+          ecf_id: @current_application.ecf_id,
+          superceding_application: @current_application,
+        )
+
+        Rails.logger.info "!!!!!!!!!!!!!!!!!! @superceded_application: #{@superceded_application.id}"
+
+        @current_application.application_states.create!(
+          status: Application::SUPERCEDED,
+          reason:,
+        )
       end
     end
 
   private
 
-    def save_applications!
-      Application.transaction do
-        @current_application.update!(status: Application::SUPERCEDED)
-        @current_application.application_states.create!(status: Application::SUPERCEDED)
-        new_application.save!
-        @current_application.update!(superceding_application: new_application)
-      end
+    def application
+      @current_application
     end
 
-    def new_application
-      @new_application ||= @current_application.dup
+    def application_status_is_pending
+      return if @current_application.pending_status?
+
+      errors.add(:application, :application_must_be_pending_status)
+    end
+
+    def reason
+      "Changed lead provider from #{@current_application.lead_provider.name} to #{@new_provider.name}"
     end
   end
 end

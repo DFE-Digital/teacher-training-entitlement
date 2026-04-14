@@ -63,6 +63,6 @@ RSpec.describe Applications::Search do
   context "when query is blank" do
     let(:q) { nil }
 
-    it { is_expected.to eq(Application.all) }
+    it { is_expected.to eq(Application.including_superceded) }
   end
 end

@@ -17,6 +17,8 @@ class Application < ApplicationRecord
   has_one :cohort, through: :course_cohort
   has_one :schedule, through: :course_cohort
 
+  has_many :superceded_applications, inverse_of: :superceding_application, class_name: "Application"
+
   # Convenience methods to access the institutionable through institution
   # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
   delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
@@ -41,15 +43,25 @@ class Application < ApplicationRecord
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
   scope :not_superceded, -> { where.not(status: SUPERCEDED) }
+  scope :including_superceded, -> { unscope(where: :superceding_application_id) }
+
+  default_scope { where(superceding_application_id: nil) }
 
   attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
 
-  validates :ecf_id, uniqueness: { case_sensitive: false }
+  validates :ecf_id, uniqueness: {
+    case_sensitive: false,
+    scope: :lead_provider_id,
+    message: "/ Lead Provider already exists",
+  }
+
   validates :user_id,
             uniqueness: {
               scope: :course_cohort_id,
               conditions: -> { where.not(status: [REJECTED, SUPERCEDED]) },
+              message: "/ Course Cohort already exists for user",
             }, unless: -> { rejected_status? || superceded_status? }
+
   validate :ensure_valid_status_transition, if: -> { status_changed? && not_admin_user? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap

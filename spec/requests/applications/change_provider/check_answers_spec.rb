@@ -65,15 +65,12 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
         it "creates a new application and redirects to user registrations path" do
           post url
           aggregate_failures do
-            new_application = user.applications.max_by(&:id)
-            expect(new_application).not_to be(application)
+            superceded_application = Application.including_superceded.where(superceding_application_id: application.id).last
+            expect(superceded_application).not_to be_nil
 
-            expect(application.reload.superceding_application).to eq(new_application)
-
-            expect(response).to redirect_to(application_path(new_application.ecf_id))
-            # Check the new application has got the new provider and the old one has not changed
-            expect(new_application.lead_provider_id).to eq(new_provider.id)
-            expect(application.reload.lead_provider_id).to eq(provider_before_changed.id)
+            expect(response).to redirect_to(application_path(application.ecf_id))
+            expect(superceded_application.lead_provider_id).to eq(provider_before_changed.id)
+            expect(application.reload.lead_provider_id).to eq(new_provider.id)
 
             expect(flash[:notice][:title]).to eq(I18n.t("applications.change_provider.check_answers.success.title"))
             expect(flash[:notice][:message]).to eq(I18n.t("applications.change_provider.check_answers.success.message"))

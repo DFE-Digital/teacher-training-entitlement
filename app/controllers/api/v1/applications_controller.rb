@@ -63,6 +63,7 @@ module API
       def application
         @application ||= current_lead_provider
                           .applications
+                          .including_superceded
                           .includes(
                             :user,
                             :institution,

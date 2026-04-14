@@ -47,6 +47,6 @@ RSpec.feature "Change provider", type: :feature do
 
     click_button("Submit change")
 
-    expect(page).to have_current_path(application_path(application.reload.superceding_application.ecf_id))
+    expect(page).to have_current_path(application_path(application.ecf_id))
   end
 end

@@ -9,6 +9,7 @@ module Applications
     def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
       @scope = lead_provider
                  .applications
+                 .including_superceded
                  .includes(
                    :user,
                    :course,

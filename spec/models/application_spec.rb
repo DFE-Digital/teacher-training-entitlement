@@ -35,7 +35,12 @@ RSpec.describe Application do
   end
 
   describe "validations" do
-    it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
+    it {
+      expect(subject).to validate_uniqueness_of(:ecf_id)
+        .scoped_to(:lead_provider_id)
+        .case_insensitive
+        .with_message("ECF ID must be unique")
+    }
 
     context "when the cohort has a funding cap" do
       let(:cohort) { create(:cohort, :current, :with_funding_cap) }

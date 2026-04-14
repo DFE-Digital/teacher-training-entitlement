@@ -441,7 +441,7 @@ en:
               <<: *application
         applications/change_lead_provider:
           attributes:
-            lead_provider_id:
+            application_must_be_pending_status: Application status must be pending
         eligibility_lists/update:
           attributes:
             file:

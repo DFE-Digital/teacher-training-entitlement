@@ -13,7 +13,7 @@ module Applications
     end
 
     def search
-      return Application.all if query.blank?
+      return Application.including_superceded if query.blank?
 
       scope.where(ecf_id: query)
         .or(scope.where(declarations: { ecf_id: query }))
@@ -25,7 +25,7 @@ module Applications
   private
 
     def scope
-      Application.left_joins(:user, :declarations).includes(:user, :declarations)
+      Application.including_superceded.left_joins(:user, :declarations).includes(:user, :declarations)
     end
   end
 end

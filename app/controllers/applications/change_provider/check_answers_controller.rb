@@ -32,7 +32,7 @@ module Applications
 
         clear_session_form_data!
 
-        redirect_to application_path(application.superceding_application.ecf_id)
+        redirect_to application_path(application.ecf_id)
       end
 
       helper_method :new_provider
