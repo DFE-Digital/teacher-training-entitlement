@@ -69,6 +69,7 @@ module ValidTestDataGenerators
       logger.error "APITestScenariosSeeder failed: #{e.message}"
       logger.error e.backtrace.join("\n")
 
+      Sentry.capture_exception(e)
       Outcome[success: false, error: e.message]
     end
 
@@ -257,11 +258,16 @@ module ValidTestDataGenerators
         current_schedule = Schedule.create!(identifier:, **attrs)
       end
 
-      cc = CourseCohort.find_or_create_by!(
-        course:,
-        cohort: current_cohort,
-      )
-      cc.update!(schedule: current_schedule)
+      cc = CourseCohort.find_by(course:, cohort: current_cohort)
+      if cc
+        cc.update!(schedule: current_schedule)
+      else
+        cc = CourseCohort.create!(
+          course:,
+          cohort: current_cohort,
+          schedule: current_schedule,
+        )
+      end
       cc.course_cohort_providers.find_or_create_by!(lead_provider:)
 
       delivery_partners.each do |dp|
