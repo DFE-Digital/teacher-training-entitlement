@@ -4,6 +4,7 @@ module API
       include Pagination
       include FilterByDate
       include FilterByParticipantIds
+      include ServiceCallable
 
       def index
         applications = applications_query.applications
@@ -11,116 +12,83 @@ module API
       end
 
       def show
-        render json: to_json(application)
+        render json: to_json(readable_application)
       end
 
       def accept
-        service = Applications::Accept.new(application:, funded_place:)
-
-        if service.accept
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        service = Applications::Accept.new(application: updateable_application, funded_place:)
+        call_and_render(service:)
       end
 
       def reject
         service = Applications::Reject.new(
-          application:,
+          application: updateable_application,
           reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider],
         )
-
-        if service.reject
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        call_and_render(service:)
       end
 
       def defer
-        service = Applications::Defer.new(application:, reason:)
+        service = Applications::Defer.new(application: updateable_application, reason:)
         call_and_render(service:)
       end
 
       def resume
-        service = Applications::Resume.new(application:, course_cohort:)
+        service = Applications::Resume.new(application: updateable_application, course_cohort:)
         call_and_render(service:)
       end
 
       def withdraw
-        service = Applications::Withdraw.new(application:, reason:)
+        service = Applications::Withdraw.new(application: updateable_application, reason:)
         call_and_render(service:)
       end
 
       def change_funded_place
-        service = Applications::ChangeFundedPlace.new(application:, funded_place:)
-
-        if service.change
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        service = Applications::ChangeFundedPlace.new(application: updateable_application, funded_place:)
+        call_and_render(service:)
       end
 
       def change_schedule
-        service = Applications::ChangeSchedule.new(application:, course_cohort:)
+        service = Applications::ChangeSchedule.new(application: updateable_application, course_cohort:)
+        call_and_render(service:)
+      end
 
-        if service.call
-          render json: to_json(service.application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
+    protected
+
+      def readable_application
+        @readable_application ||= begin
+          application = Application
+                          .includes(
+                            :user,
+                            :institution,
+                            course_cohort: %i[course cohort schedule],
+                          ).find_by!(ecf_id: params[:ecf_id])
+          unless application.lead_provider == current_lead_provider || application.readonly_for?(provider: current_lead_provider)
+            raise ActiveRecord::RecordNotFound
+          end
+
+          application
         end
       end
 
-      def started_declaration
-        service = Declarations::Create.new(application:, **declaration_permitted_params(:started))
-
-        if service.call
-          render json: declaration_to_json(service.declaration)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
+      def updateable_application
+        @updateable_application ||= begin
+          application = Application.find_by!(ecf_id: params[:ecf_id])
+          return application if application.lead_provider == current_lead_provider
+          if application.readonly_for?(provider: current_lead_provider)
+            raise ForbiddenError
+          else
+            raise ActiveRecord::RecordNotFound
+          end
         end
-      end
-
-      def completed_declaration
-        service = Declarations::Create.new(application:, **declaration_permitted_params(:completed))
-
-        if service.call
-          render json: declaration_to_json(service.declaration)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
-      end
-
-    private
-
-      def call_and_render(service:)
-        if application.nil?
-          service.errors.add(:base, :application_not_found)
-        else
-          service.call
-        end
-
-        if service.errors.blank?
-          render json: to_json(application)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
-      end
-
-      def application
-        @application ||= current_lead_provider
-                           .applications
-                           .includes(
-                             :user,
-                             :institution,
-                             course_cohort: %i[course cohort schedule],
-                           )
-                           .find_by!(ecf_id: params[:ecf_id])
       end
 
       def filter_params
         params.permit(:sort, filter: %i[cohort updated_since participant_id status course])
+      end
+
+      def to_json(obj)
+        ApplicationSerializer.render(obj, view: :v1, root: "data")
       end
 
       def applications_query
@@ -136,6 +104,14 @@ module API
 
         Applications::Query.new(**conditions.compact)
       end
+
+      def call_and_render(service:)
+        call_application_service_and_render(service:) do
+          to_json(updateable_application)
+        end
+      end
+
+    private
 
       def application_action_params
         @application_action_params ||= params
@@ -159,24 +135,6 @@ module API
           course_cohort_ecf_id = application_action_params[:schedule_id]
           current_lead_provider.course_cohorts.find_by(ecf_id: course_cohort_ecf_id)
         end
-      end
-
-      def to_json(obj)
-        ApplicationSerializer.render(obj, view: :v1, root: "data")
-      end
-
-      def declaration_to_json(obj)
-        DeclarationSerializer.render(obj, view: :v1, root: "data")
-      end
-
-      def declaration_permitted_params(declaration_type)
-        params
-          .fetch(:data)
-          .permit(:type, attributes: %i[declaration_date delivery_partner_id secondary_delivery_partner_id has_passed])
-          .fetch(:attributes, {})
-          .merge(declaration_type:)
-      rescue ActionController::ParameterMissing
-        raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
       end
     end
   end

@@ -1,18 +1,22 @@
 ---
 en:
   # Errors
-  unpermitted_parameters: "Unpermitted parameters"
+  unpermitted_parameters: Unpermitted parameters
   unauthorized: "HTTP Token: Access denied"
-  bad_request: "Bad request"
-  resource_not_found: "Resource not found"
-  not_found: "Not found"
+  bad_request: Bad request
+  forbidden: Resource cannot be updated
+  resource_not_found: Resource not found
+  not_found: Not found
   invalid_date_filter: "The filter '#/%{parameterized_attribute}' must be a valid ISO 8601 date"
   invalid_participant_id_filter: "The filter '#/participant_id' must be a comma-delimited list of valid UUIDs"
   invalid_status: "The filter '#/status' must be %{valid_status}"
   invalid_page_parameters: "The '#/page[page]' and '#/page[per_page]' parameter values must be a valid positive number"
   invalid_data_structure: correct json data structure required. See API docs for reference
-  cannot_create_completed_declaration: Could not create completed declaration. Contact
-    the DfE for support.
+  schedule_invalid_for_course: The selected schedule is not valid for the course
+  cannot_create_completed_declaration: Could not create completed declaration. Contact the DfE for support.
+  application_superceded: Application is no longer updateable
+  application_not_found: Application could not be found
+
   errors:
     email:
       invalid: Enter a valid email address
@@ -53,6 +57,8 @@ en:
     not_deferrable: This application cannot be deferred
     not_resumable: This application cannot be resumed
     not_withdrawable: This application cannot be withdrawn
+    application_is_readonly: This application can no longer be updated
+  
   applications:
     change_provider:
       start:
@@ -418,6 +424,8 @@ en:
             base:
               declaration_exists: There are submitted or billed declarations - these must be voided or clawed back by the provider before you can update funding eligibility
               funded_application: "Eligibility can not be changed because the application is funded"
+            application:
+              <<: *application
         admin/applications/change_funding_eligibility_form:
           <<: *shared_change_funding_eligibility
         applications/change_funding_eligibility:
@@ -432,6 +440,8 @@ en:
               pending_unremoveable_declarations: There are already declarations
                 for this participant on this course, please ask the provider to void
                 any declarations they have made before attempting to revert the application.
+            application:
+              <<: *application
         applications/change_cohort:
           attributes:
             base:
@@ -439,9 +449,14 @@ en:
               schedule_not_found: There is no schedule for the current course in the
                 specified cohort
               declarations_present: Cannot change cohort for an application with declarations
+            application:
+              <<: *application
         applications/change_lead_provider:
+          base:
+            provider_must_be_different: Application has {lead_provider_name} already as provider
+            previously_changed_to_provider: Application has previously had {lead_provider_name} as provider
           attributes:
-            lead_provider_id:
+            application_must_be_pending_status: Application status must be pending
         eligibility_lists/update:
           attributes:
             file:

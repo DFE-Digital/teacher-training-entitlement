@@ -1,4 +1,4 @@
-<% application_count = current_user.applications.count %>
+<% application_count = @applications.count %>
 <% title = "Your TTE #{"registration".pluralize(application_count)}" %>
 
 <% content_for :title, title %>
@@ -9,18 +9,15 @@
   </div>
 <% end %>
 
-<% active_applications = current_user.applications.active_applications.includes(:course, :lead_provider).order(created_at: :desc, id: :desc) %>
-<% expired_applications = current_user.applications.expired_applications.includes(:course, :lead_provider).order(created_at: :desc, id: :desc) %>
-
-<% active_applications.each do |application| %>
-  <%= render "active_application_table", application: application %>
+<% @active_applications.each do |application| %>
+  <%= render "active_application_table", application: %>
 <% end %>
 
-<% if expired_applications.any? %>
+<% if @expired_applications.any? %>
   <h3 class="govuk-heading-l">Expired registrations</h3>
 
-  <% expired_applications.each do |application| %>
-    <%= render "expired_application_table", application: application %>
+  <% @expired_applications.each do |application| %>
+    <%= render "expired_application_table", application: %>
   <% end %>
 <% end %>
 

@@ -13,7 +13,8 @@ module Applications
     end
 
     def show
-      @application = current_user.applications.find_by_ecf_id!(params[:ecf_id])
+      @application = current_user.applications.find_by_ecf_id(params[:ecf_id])
+      redirect_to applications_path if @application.nil?
     end
 
   protected

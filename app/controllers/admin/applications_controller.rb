@@ -4,11 +4,10 @@ module Admin
 
     def index
       applications = Application
-                       .includes(:institution, :user, course_cohort: %i[course cohort])
+                       .includes(:institution, :lead_provider, :user, course_cohort: %i[course cohort])
                        .merge(filter_scope)
                        .merge(search_scope)
                        .order("applications.created_at ASC")
-
       @pagy, @applications = pagy(applications)
     end
 

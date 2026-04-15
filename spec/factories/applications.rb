@@ -145,6 +145,15 @@ FactoryBot.define do
       end
     end
 
+    trait :with_application_lead_provider do
+      transient do
+        old_lead_provider { nil }
+      end
+      after(:create) do |application, eval|
+        application.application_lead_providers.create!(application:, lead_provider: eval.old_lead_provider) if eval.old_lead_provider
+      end
+    end
+
     trait :pending do
       status { Application::PENDING }
     end

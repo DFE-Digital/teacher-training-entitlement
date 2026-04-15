@@ -15,6 +15,24 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API show endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+
+      describe "when viewing as old provider" do
+        it "old provider can still see the application" do
+          api_get(api_v1_application_path(application.ecf_id), lead_provider: old_lead_provider)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      describe "when viewing as new provider" do
+        it "new provider can see the application" do
+          api_get(api_v1_application_path(application.ecf_id), lead_provider: new_lead_provider)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
   end
 
   describe "GET /api/v1/applications" do
@@ -31,15 +49,30 @@ RSpec.describe "Application endpoints", type: :request do
     it_behaves_like "an API index endpoint with filter by updated_since"
     it_behaves_like "an API index endpoint with filter by participant_id"
     it_behaves_like "an API index endpoint with sorting"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { api_v1_applications_path }
+
+      it "the old provider can see the application" do
+        api_get(path, lead_provider: old_lead_provider)
+        expect(response_ids).not_to include(application.ecf_id)
+      end
+
+      it "the new provider can see the application" do
+        api_get(path, lead_provider: new_lead_provider)
+        expect(response_ids).not_to include(application.ecf_id)
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/accept" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Accept }
-    let(:action) { :accept }
+    let(:action) { :call }
     let(:attributes) { { funded_place: true } }
-    let(:service_args) { { application: resource, funded_place: true } }
+    let(:service_args) { attributes.merge(application: resource) }
     let(:service_methods) { { application: resource } }
 
     def path(id = nil)
@@ -47,14 +80,28 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API update endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { accept_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot accept the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/reject" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Reject }
-    let(:action) { :reject }
-    let(:service_args) { { application: resource, reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider] } }
+    let(:action) { :call }
+    let(:attributes) { { reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider] } }
+    let(:service_args) { attributes.merge(application: resource) }
     let(:service_methods) { { application: resource } }
 
     def path(id = nil)
@@ -62,21 +109,47 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API update endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { reject_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot reject the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/change-funded-place" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::ChangeFundedPlace }
-    let(:action) { :change }
+    let(:action) { :call }
     let(:attributes) { { funded_place: false } }
-    let(:service_args) { { application: resource }.merge!(attributes) }
+    let(:service_args) { attributes.merge(application: resource) }
 
     def path(id = nil)
       change_funded_place_api_v1_application_path(ecf_id: id)
     end
 
     it_behaves_like "an API update endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { change_funded_place_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot change the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/defer" do
@@ -107,6 +180,18 @@ RSpec.describe "Application endpoints", type: :request do
 
       it_behaves_like "an unprocessable content api call"
     end
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { defer_api_v1_application_path(ecf_id: application.ecf_id) }
+
+      it "the old provider cannot defer the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/resume" do
@@ -136,6 +221,18 @@ RSpec.describe "Application endpoints", type: :request do
       end
 
       it_behaves_like "an unprocessable content api call"
+    end
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { resume_api_v1_application_path(ecf_id: application.ecf_id) }
+
+      it "the old provider cannot resume the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
     end
   end
 
@@ -174,6 +271,18 @@ RSpec.describe "Application endpoints", type: :request do
 
       it_behaves_like "an unprocessable content api call"
     end
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { withdraw_api_v1_application_path(ecf_id: application.ecf_id) }
+
+      it "the old provider cannot withdraw the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/change-schedule" do
@@ -206,6 +315,19 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API update endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { change_schedule_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot change the application" do
+        expect { api_put(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "POST /api/v1/applications/:ecf_id/declarations/started" do
@@ -249,6 +371,19 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API create endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { started_declaration_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot create the declaration" do
+        expect { api_post(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change(Declaration, :count))
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 
   describe "POST /api/v1/applications/:ecf_id/declarations/completed" do
@@ -295,5 +430,18 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API create endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { completed_declaration_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot create the declaration" do
+        expect { api_post(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change(Declaration, :count))
+
+        expect(response).to be_forbidden
+      end
+    end
   end
 end

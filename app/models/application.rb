@@ -33,6 +33,7 @@ class Application < ApplicationRecord
   has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
   has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
   has_many :declarations
+  has_many :application_lead_providers
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }
@@ -44,18 +45,26 @@ class Application < ApplicationRecord
 
   attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
 
-  validates :ecf_id, uniqueness: { case_sensitive: false }
+  validates :ecf_id, uniqueness: {
+    case_sensitive: false,
+    scope: :lead_provider_id,
+    message: "/ Lead Provider already exists",
+  }
+
   validates :user_id,
             uniqueness: {
               scope: :course_cohort_id,
-              conditions: -> { where.not(status: REJECTED) },
+              conditions: -> { where.not(status: [REJECTED]) },
+              message: "/ Course Cohort already exists for user",
             }, unless: -> { rejected_status? }
+
   validate :ensure_valid_status_transition, if: -> { status_changed? && not_admin_user? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
   after_commit :touch_user_if_changed
+  before_save :create_application_lead_provider
 
   API_STATUSES = [].freeze
 
@@ -242,6 +251,10 @@ class Application < ApplicationRecord
     }&.reason
   end
 
+  def readonly_for?(provider:)
+    application_lead_providers.pluck(:lead_provider_id).include?(provider.id)
+  end
+
 private
 
   def not_admin_user?
@@ -287,5 +300,11 @@ private
     return unless saved_change_to_status?
 
     user.touch(time: updated_at)
+  end
+
+  def create_application_lead_provider
+    return unless persisted? && lead_provider_id_changed? && lead_provider_id_was.present?
+
+    application_lead_providers.create!(application: self, lead_provider_id: lead_provider_id_was)
   end
 end
