@@ -28,8 +28,8 @@ class Application < ApplicationRecord
 
   has_many :participant_id_changes, through: :user
   has_many :application_events
-  has_one :deferred_event, -> { where(event: "StateChange::Application::DEFERRED").order(created_at: :desc) }, class_name: "ApplicationEvent"
-  has_one :withdrawn_event, -> { where(event: "StateChange::Application::WITHDRAWN").order(created_at: :desc) }, class_name: "ApplicationEvent"
+  has_one :deferred_event, -> { where(event: ApplicationEvent::STATE_CHANGE_EVENTS[DEFERRED]).order(created_at: :desc) }, class_name: "ApplicationEvent"
+  has_one :withdrawn_event, -> { where(event: ApplicationEvent::STATE_CHANGE_EVENTS[WITHDRAWN]).order(created_at: :desc) }, class_name: "ApplicationEvent"
   has_many :declarations
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }

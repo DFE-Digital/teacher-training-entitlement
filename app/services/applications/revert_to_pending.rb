@@ -23,7 +23,7 @@ module Applications
       Application.transaction do
         application.update_columns(status: Application::PENDING, funded_place: nil)
         application.application_events.create!(
-          event: "StateChange::Application::PENDING",
+          event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::PENDING],
           lead_provider: application.lead_provider,
           metadata: { reason: "reverted_to_pending" },
         )

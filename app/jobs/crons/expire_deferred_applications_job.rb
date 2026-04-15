@@ -35,7 +35,7 @@ private
           GROUP BY application_id
           HAVING MAX(created_at) < ?
         )",
-        "StateChange::Application::DEFERRED",
+        ApplicationEvent::STATE_CHANGE_EVENTS[Application::DEFERRED],
         DEFERRAL_EXPIRY_MONTHS.months.ago,
       )
   end

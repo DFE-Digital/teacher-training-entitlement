@@ -24,7 +24,7 @@ module Applications
 
       Application.transaction do
         @application.application_events.create!(
-          event: "StateChange::Application::STARTED",
+          event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::STARTED],
           metadata: { reason: @reason }.compact,
         )
         @application.update!(status: Application::STARTED,

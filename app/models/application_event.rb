@@ -2,20 +2,25 @@ class ApplicationEvent < ApplicationRecord
   belongs_to :application
   belongs_to :lead_provider, optional: true
 
-  STATE_CHANGE_PREFIX = "StateChange::".freeze
+  STATE_CHANGE_EVENTS = {
+    Application::PENDING => "StateChange::Application::PENDING",
+    Application::ACCEPTED => "StateChange::Application::ACCEPTED",
+    Application::STARTED => "StateChange::Application::STARTED",
+    Application::COMPLETED => "StateChange::Application::COMPLETED",
+    Application::DEFERRED => "StateChange::Application::DEFERRED",
+    Application::WITHDRAWN => "StateChange::Application::WITHDRAWN",
+    Application::REJECTED => "StateChange::Application::REJECTED",
+  }.freeze
+
   NOTIFICATION_PREFIX = "Notification::".freeze
 
   validates :event, presence: true
   validate :valid_event_format
 
-  scope :state_changes, -> { where("event LIKE ?", "#{STATE_CHANGE_PREFIX}%") }
+  scope :state_changes, -> { where(event: STATE_CHANGE_EVENTS.values) }
 
   def status
-    return unless event&.start_with?(STATE_CHANGE_PREFIX)
-
-    # for a string "StateChange::Application::DEFERRED"
-    # return the constant Application::DEFERRED
-    event.delete_prefix(STATE_CHANGE_PREFIX).constantize
+    STATE_CHANGE_EVENTS.key(event)
   end
 
   def reason
@@ -26,8 +31,8 @@ private
 
   def valid_event_format
     return if event.blank?
-    return if event.start_with?(STATE_CHANGE_PREFIX) || event.start_with?(NOTIFICATION_PREFIX)
+    return if STATE_CHANGE_EVENTS.value?(event) || event.start_with?(NOTIFICATION_PREFIX)
 
-    errors.add(:event, "must start with '#{STATE_CHANGE_PREFIX}' or '#{NOTIFICATION_PREFIX}'")
+    errors.add(:event, :invalid)
   end
 end

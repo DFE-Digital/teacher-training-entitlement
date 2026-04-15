@@ -32,7 +32,7 @@ module Applications
 
       Application.transaction do
         @application.application_events.create!(
-          event: "StateChange::Application::DEFERRED",
+          event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::DEFERRED],
           metadata: { reason: @reason },
         )
         @application.deferred_status!

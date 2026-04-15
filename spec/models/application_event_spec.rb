@@ -16,7 +16,7 @@ RSpec.describe ApplicationEvent do
     it "validates event format" do
       event = build(:application_event, event: "invalid_event")
       expect(event).not_to be_valid
-      expect(event.errors[:event]).to include("must start with 'StateChange::' or 'Notification::'")
+      expect(event.errors[:event]).to include("is invalid")
     end
 
     it "accepts StateChange:: events" do

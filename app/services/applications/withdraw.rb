@@ -47,7 +47,7 @@ module Applications
 
       Application.transaction do
         @application.application_events.create!(
-          event: "StateChange::Application::WITHDRAWN",
+          event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::WITHDRAWN],
           metadata: { reason: @reason },
         )
         @application.withdrawn_status!
