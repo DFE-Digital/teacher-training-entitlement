@@ -99,7 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
     t.string "event", null: false
     t.bigint "lead_provider_id"
     t.jsonb "metadata", default: {}
-    t.string "type", null: false
+    t.string "type"
     t.datetime "updated_at", null: false
     t.index ["application_id"], name: "index_application_events_on_application_id"
     t.index ["created_at"], name: "index_application_events_on_created_at"
