@@ -33,7 +33,7 @@ module Declarations
 
     validate :declaration_valid
 
-    delegate :lead_provider, :schedule, :cohort, to: :application
+    delegate :lead_provider, :schedule, to: :application
 
     attr_reader :raw_declaration_date, :declaration
 
@@ -82,6 +82,19 @@ module Declarations
 
     def started_declaration?
       declaration_type == Declaration::STARTED
+    end
+
+    def cohort
+      if started_declaration?
+        application.cohort
+      else
+        application
+          .declarations
+          .started_declaration_type
+          .billable_or_changeable
+          .first
+          .cohort
+      end
     end
 
   private

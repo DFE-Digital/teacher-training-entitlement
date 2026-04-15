@@ -136,11 +136,9 @@ RSpec.describe Declarations::Create, type: :model do
 
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
-    let(:application) do
+    let!(:application) do
       create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
     end
-
-    before { application } # this is to force declaration creation ahead of the test
 
     describe "happy paths" do
       it { expect { service.call }.to change(Declaration, :count).by(1) }
@@ -161,6 +159,36 @@ RSpec.describe Declarations::Create, type: :model do
         end
 
         it { expect { service.call }.to change(Declaration, :count).by(1) }
+      end
+
+      context "when the application has resumed in a different cohort" do
+        let(:resume_cohort) { create(:cohort, suffix: "b") }
+        let(:course_cohort) { create(:course_cohort, cohort: resume_cohort) }
+        let(:started_declaration) { application.declarations.started_declaration_type.first }
+        let(:started_cohort) { started_declaration.cohort }
+        let(:delivery_partner_id) do
+          create(:delivery_partner,
+                 lead_providers: {
+                   started_cohort => lead_provider,
+                   resume_cohort => lead_provider,
+                 }).ecf_id
+        end
+        let(:secondary_delivery_partner_id) do
+          create(:delivery_partner,
+                 lead_providers: {
+                   started_cohort => lead_provider,
+                   resume_cohort => lead_provider,
+                 }).ecf_id
+        end
+
+        before do
+          application.update!(course_cohort:)
+        end
+
+        it "uses the started declaration cohort" do
+          expect { service.call }.to change(Declaration, :count).by(1)
+          expect(service.declaration.cohort).to eq(started_declaration.cohort)
+        end
       end
     end
 
