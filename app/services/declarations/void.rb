@@ -24,14 +24,14 @@ module Declarations
 
         if @declaration.started_declaration_type?
           @application.update!(status: Application::ACCEPTED)
-          @application.application_events.create!(
-            event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::ACCEPTED],
+          @application.state_changes.create!(
+            event: Application::ACCEPTED,
             metadata: { reason: "started declaration voided" },
           )
         elsif @declaration.completed_declaration_type?
           @application.update!(status: Application::STARTED)
-          @application.application_events.create!(
-            event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::STARTED],
+          @application.state_changes.create!(
+            event: Application::STARTED,
             metadata: { reason: "completed declaration voided" },
           )
         end

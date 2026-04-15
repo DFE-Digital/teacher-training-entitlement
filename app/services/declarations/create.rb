@@ -58,13 +58,13 @@ module Declarations
     end
 
     def application_completed!
-      application.application_events.create!(event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::COMPLETED])
+      application.state_changes.create!(event: Application::COMPLETED)
       application.update!(status: Application::COMPLETED)
     end
 
     def application_started!
       application.update!(status: Application::STARTED)
-      application.application_events.create!(event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::STARTED])
+      application.state_changes.create!(event: Application::STARTED)
     end
 
     def declaration_date=(raw_declaration_date)

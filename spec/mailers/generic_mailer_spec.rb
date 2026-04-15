@@ -131,10 +131,10 @@ RSpec.describe GenericMailer, type: :mailer do
     it "creates an application event when ecf_id matches an application" do
       expect {
         described_class.with(to:, ecf_id: application.ecf_id, full_name: "Test", provider_name: "Test", course_name: "Test").application_submitted.deliver_now
-      }.to change { application.application_events.count }.by(1)
+      }.to change { application.notifications.count }.by(1)
 
-      event = application.application_events.last
-      expect(event.event).to eq("Notification::ApplicationSubmitted")
+      event = application.notifications.last
+      expect(event.event).to eq("application_submitted")
       expect(event.metadata).to eq({ "recipient" => to })
     end
 

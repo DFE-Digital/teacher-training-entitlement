@@ -8,7 +8,7 @@ RSpec.describe Application do
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:institution).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
-    it { is_expected.to have_many(:application_events) }
+    it { is_expected.to have_many(:state_changes) }
     it { is_expected.to have_many(:declarations) }
   end
 
@@ -635,21 +635,22 @@ RSpec.describe Application do
   describe "#lookup_state_change_reason" do
     subject(:lookup_state_change_reason) { application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "deferred") }
 
-    before { freeze_time }
-
-    let!(:application_event) { create(:application_event, :deferred, application:, created_at: application.created_at + 0.5) }
-
-    it "returns the reason for the application event" do
-      expect(lookup_state_change_reason).to eq(application_event.reason)
+    before do
+      freeze_time
+      create(:state_change, :deferred, application:, created_at: application.created_at + 0.5)
     end
 
-    context "when there is more than one application event within the time range" do
+    it "returns the reason for the state change" do
+      expect(lookup_state_change_reason).to eq("other")
+    end
+
+    context "when there is more than one state change within the time range" do
       before do
-        create(:application_event, :deferred, application:, created_at: application.created_at + 0.4, metadata: { reason: "career-break" })
+        create(:state_change, :deferred, application:, created_at: application.created_at + 0.4, metadata: { reason: "career-break" })
       end
 
-      it "returns the most recent application event within the time range" do
-        expect(lookup_state_change_reason).to eq(application_event.reason)
+      it "returns the most recent state change within the time range" do
+        expect(lookup_state_change_reason).to eq("other")
       end
     end
 

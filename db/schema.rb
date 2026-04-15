@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_101621) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -99,11 +99,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_101621) do
     t.string "event", null: false
     t.bigint "lead_provider_id"
     t.jsonb "metadata", default: {}
+    t.string "type", null: false
     t.datetime "updated_at", null: false
     t.index ["application_id"], name: "index_application_events_on_application_id"
     t.index ["created_at"], name: "index_application_events_on_created_at"
     t.index ["event"], name: "index_application_events_on_event"
     t.index ["lead_provider_id"], name: "index_application_events_on_lead_provider_id"
+    t.index ["type"], name: "index_application_events_on_type"
   end
 
   create_table "applications", force: :cascade do |t|

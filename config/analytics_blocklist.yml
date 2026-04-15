@@ -120,6 +120,8 @@
   - created_at
   - email
   - updated_at
+  :application_events:
+  - type
   :api_tokens:
   - id
   - created_at

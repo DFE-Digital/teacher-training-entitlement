@@ -46,8 +46,8 @@ module Applications
       return if invalid?
 
       Application.transaction do
-        @application.application_events.create!(
-          event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::WITHDRAWN],
+        @application.state_changes.create!(
+          event: Application::WITHDRAWN,
           metadata: { reason: @reason },
         )
         @application.withdrawn_status!

@@ -78,14 +78,14 @@ RSpec.describe Declarations::Void, type: :model do
       let(:declaration_trait) { :started }
 
       before do
-        create(:application_event, :accepted, application:)
+        create(:state_change, :accepted, application:)
         subject.call
       end
 
       it do
         expect(application.reload.status).to eq(Application::ACCEPTED)
-        expect(application.application_events.state_changes.count).to eq 2
-        expect(application.application_events.last.status).to eq(Application::ACCEPTED)
+        expect(application.state_changes.count).to eq 2
+        expect(application.state_changes.last.status).to eq(Application::ACCEPTED)
       end
     end
 
@@ -93,15 +93,15 @@ RSpec.describe Declarations::Void, type: :model do
       let(:declaration_trait) { :completed }
 
       before do
-        create(:application_event, :accepted, application:)
-        create(:application_event, :started, application:)
+        create(:state_change, :accepted, application:)
+        create(:state_change, :started, application:)
         subject.call
       end
 
       it do
         expect(application.reload.status).to eq(Application::STARTED)
-        expect(application.application_events.state_changes.count).to eq 3
-        expect(application.application_events.last.status).to eq(Application::STARTED)
+        expect(application.state_changes.count).to eq 3
+        expect(application.state_changes.last.status).to eq(Application::STARTED)
       end
     end
   end

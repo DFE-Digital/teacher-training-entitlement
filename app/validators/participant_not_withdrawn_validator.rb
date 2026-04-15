@@ -20,7 +20,6 @@ private
 
   def latest_participant_application_event(record)
     record.application
-      .application_events
       .state_changes
       .where(lead_provider: record.lead_provider)
       .order(created_at: :desc)

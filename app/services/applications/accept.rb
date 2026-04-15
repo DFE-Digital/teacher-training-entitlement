@@ -70,8 +70,8 @@ module Applications
     end
 
     def create_application_event!
-      application.application_events.create!(
-        event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::ACCEPTED],
+      application.state_changes.create!(
+        event: Application::ACCEPTED,
         lead_provider:,
       )
     end

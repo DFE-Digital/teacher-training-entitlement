@@ -28,8 +28,8 @@ private
   def log_application_event
     return unless application
 
-    application.application_events.create!(
-      event: "#{ApplicationEvent::NOTIFICATION_PREFIX}#{action_name.camelize}",
+    application.notifications.create!(
+      event: action_name,
       metadata: { recipient: params[:to] },
     )
   end

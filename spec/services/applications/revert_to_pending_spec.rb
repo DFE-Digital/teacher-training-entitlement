@@ -4,7 +4,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
   let(:admin_user) { create(:admin) }
   let :application do
     create(:application, :accepted, :without_funded_place) do |application|
-      create(:application_event, application:)
+      create(:state_change, application:)
     end
   end
 
@@ -76,10 +76,10 @@ RSpec.describe Applications::RevertToPending, type: :model do
 
       it "creates a pending state change event" do
         expect { instance.revert }
-          .to change { application.application_events.count }
+          .to change { application.state_changes.count }
                      .from(1)
                      .to(2)
-        expect(application.application_events.last.event).to eq("StateChange::Application::PENDING")
+        expect(application.state_changes.last.event).to eq(Application::PENDING)
       end
     end
 
@@ -87,7 +87,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
       let :application do
         create(:application, :eligible_for_funded_place).tap do |application|
           create(:declaration, :voided, application:)
-          create(:application_event, application:)
+          create(:state_change, application:)
         end
       end
 
@@ -118,7 +118,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
       let :application do
         create(:application, :pending, :with_funded_place).tap do |application|
           create(:declaration, :voided, application:)
-          create(:application_event, application:)
+          create(:state_change, application:)
         end
       end
 

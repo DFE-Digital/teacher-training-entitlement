@@ -99,8 +99,8 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
         before do
           declaration.application.update_columns(status: Application::WITHDRAWN)
 
-          create(:application_event, :withdrawn, application: declaration.application,
-                                                 lead_provider: declaration.lead_provider)
+          create(:state_change, :withdrawn, application: declaration.application,
+                                            lead_provider: declaration.lead_provider)
         end
 
         let(:status)        { Application::WITHDRAWN }
@@ -113,8 +113,8 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
         before do
           declaration.application.update_columns(status: Application::DEFERRED)
 
-          create(:application_event, :deferred, application: declaration.application,
-                                                lead_provider: declaration.lead_provider)
+          create(:state_change, :deferred, application: declaration.application,
+                                           lead_provider: declaration.lead_provider)
         end
 
         let(:status) { Application::DEFERRED }

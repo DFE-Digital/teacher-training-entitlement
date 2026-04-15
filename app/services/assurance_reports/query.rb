@@ -53,7 +53,7 @@ module AssuranceReports
         LEFT OUTER JOIN (
              SELECT DISTINCT ON (lead_provider_id, application_id) lead_provider_id, application_id, event, metadata->>'reason' AS reason
              FROM application_events
-             WHERE event LIKE 'StateChange::%'
+             WHERE type = 'StateChange'
              ORDER BY lead_provider_id, application_id, created_at DESC
         ) AS st ON
           st.application_id = a.id AND

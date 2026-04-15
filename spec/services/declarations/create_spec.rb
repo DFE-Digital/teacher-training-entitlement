@@ -66,7 +66,7 @@ RSpec.describe Declarations::Create, type: :model do
 
         it "sets the application to started" do
           expect(application.reload).to be_started_status
-          expect(application.application_events.last&.event).to eq("StateChange::Application::STARTED")
+          expect(application.state_changes.last&.event).to eq(Application::STARTED)
         end
       end
 
@@ -157,7 +157,7 @@ RSpec.describe Declarations::Create, type: :model do
           service.call
 
           expect(application.reload).to be_completed_status
-          expect(application.application_events.last&.event).to eq("StateChange::Application::COMPLETED")
+          expect(application.state_changes.last&.event).to eq(Application::COMPLETED)
         end
 
         it { expect { service.call }.to change(Declaration, :count).by(1) }

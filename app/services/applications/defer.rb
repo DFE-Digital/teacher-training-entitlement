@@ -31,8 +31,8 @@ module Applications
       return if invalid?
 
       Application.transaction do
-        @application.application_events.create!(
-          event: ApplicationEvent::STATE_CHANGE_EVENTS[Application::DEFERRED],
+        @application.state_changes.create!(
+          event: Application::DEFERRED,
           metadata: { reason: @reason },
         )
         @application.deferred_status!
