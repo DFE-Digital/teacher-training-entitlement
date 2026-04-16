@@ -45,11 +45,7 @@ class Application < ApplicationRecord
 
   attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
 
-  validates :ecf_id, uniqueness: {
-    case_sensitive: false,
-    scope: :lead_provider_id,
-    message: "/ Lead Provider already exists",
-  }
+  validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validates :user_id,
             uniqueness: {
@@ -64,7 +60,7 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
 
   after_commit :touch_user_if_changed
-  before_save :create_application_lead_provider
+  after_save :create_application_lead_provider
 
   API_STATUSES = [].freeze
 
@@ -251,10 +247,6 @@ class Application < ApplicationRecord
     }&.reason
   end
 
-  def readonly_for?(provider:)
-    application_lead_providers.pluck(:lead_provider_id).include?(provider.id)
-  end
-
 private
 
   def not_admin_user?
@@ -303,8 +295,9 @@ private
   end
 
   def create_application_lead_provider
-    return unless persisted? && lead_provider_id_changed? && lead_provider_id_was.present?
+    return unless saved_change_to_lead_provider_id && lead_provider_id.present?
 
-    application_lead_providers.create!(application: self, lead_provider_id: lead_provider_id_was)
+    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
+    application_lead_providers.create!(lead_provider_id:, current: true)
   end
 end

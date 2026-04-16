@@ -55,7 +55,6 @@ RSpec.describe Application do
 
     it {
       expect(subject).to validate_uniqueness_of(:ecf_id)
-        .scoped_to(:lead_provider_id)
         .case_insensitive
         .with_message("ECF ID must be unique")
     }
@@ -694,6 +693,30 @@ RSpec.describe Application do
       it "returns nil" do
         expect(application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "active")).to be_nil
       end
+    end
+  end
+
+  describe "Updating lead_provider / application lead providers" do
+    let(:lead_provider) { create(:lead_provider) }
+    let(:another_lead_provider) { create(:lead_provider) }
+    let(:application) { create(:application, lead_provider:) }
+
+    subject { application.application_lead_providers }
+
+    it do
+      expect(subject.count).to eq(1)
+      expect(subject.last.lead_provider).to eq(lead_provider)
+      expect(subject.last.current).to be(true)
+
+      application.update!(lead_provider: another_lead_provider)
+
+      expect(subject.reload.count).to be(2)
+
+      expect(subject.first.lead_provider).to eq(lead_provider)
+      expect(subject.first.current).to be(false)
+
+      expect(subject.last.lead_provider).to eq(another_lead_provider)
+      expect(subject.last.current).to be(true)
     end
   end
 end

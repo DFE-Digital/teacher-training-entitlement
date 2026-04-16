@@ -55,31 +55,43 @@ module API
 
     protected
 
+      #
+      # Providers can read an application if they were once assigned as provider
+      # If they were never assigned, initiate a 404
+      #
       def readable_application
         @readable_application ||= begin
-          application = Application
-                          .includes(
-                            :user,
-                            :institution,
-                            course_cohort: %i[course cohort schedule],
-                          ).find_by!(ecf_id: params[:ecf_id])
-          unless application.lead_provider == current_lead_provider || application.readonly_for?(provider: current_lead_provider)
+          unless current_lead_provider.readable_applications.exists?(ecf_id:)
             raise ActiveRecord::RecordNotFound
           end
 
-          application
+          Application
+            .includes(
+              :user,
+              :institution,
+              course_cohort: %i[course cohort schedule],
+            ).find_by!(ecf_id:)
         end
       end
 
+      #
+      # Providers can update an application if they are the active provider
+      # If they were never assigned, initiate a 404
+      # If they were once assigned, but are no longer, initiate a 403
+      #
       def updateable_application
         @updateable_application ||= begin
-          application = Application.find_by!(ecf_id: params[:ecf_id])
-          return application if application.lead_provider == current_lead_provider
-          if application.readonly_for?(provider: current_lead_provider)
-            raise ForbiddenError
-          else
+          unless current_lead_provider.readable_applications.exists?(ecf_id:)
+            # Lead provider never was assigned to the application
             raise ActiveRecord::RecordNotFound
           end
+
+          unless current_lead_provider.updateable_applications.exists?(ecf_id:)
+            # Lead provider was once assigned to the application but no longer is
+            raise ForbiddenError
+          end
+
+          Application.find_by!(ecf_id:)
         end
       end
 
@@ -112,6 +124,10 @@ module API
       end
 
     private
+
+      def ecf_id
+        params[:ecf_id]
+      end
 
       def application_action_params
         @application_action_params ||= params

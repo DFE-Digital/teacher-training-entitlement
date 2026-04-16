@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
-=======
-ActiveRecord::Schema[8.1].define(version: 2026_04_15_074815) do
->>>>>>> 915faad3 (Change provider / API behaviour)
+ActiveRecord::Schema[8.1].define(version: 2026_04_16_060402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -100,12 +96,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_074815) do
     create_table "application_lead_providers", force: :cascade do |t|
     t.bigint "application_id"
     t.datetime "created_at", null: false
+    t.boolean "current", default: false
     t.bigint "lead_provider_id"
     t.datetime "updated_at", null: false
     t.index ["application_id"], name: "index_application_lead_providers_on_application_id"
     t.index ["lead_provider_id"], name: "index_application_lead_providers_on_lead_provider_id"
   end
-  
+
   create_table "application_events", force: :cascade do |t|
     t.bigint "application_id", null: false
     t.datetime "created_at", null: false

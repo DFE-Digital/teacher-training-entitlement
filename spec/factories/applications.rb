@@ -150,7 +150,8 @@ FactoryBot.define do
         old_lead_provider { nil }
       end
       after(:create) do |application, eval|
-        application.application_lead_providers.create!(application:, lead_provider: eval.old_lead_provider) if eval.old_lead_provider
+        lead_provider = eval.old_lead_provider || create(:lead_provider)
+        application.application_lead_providers.create!(application:, lead_provider:)
       end
     end
 

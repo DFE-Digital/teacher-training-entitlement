@@ -14,7 +14,7 @@ en:
   invalid_data_structure: correct json data structure required. See API docs for reference
   schedule_invalid_for_course: The selected schedule is not valid for the course
   cannot_create_completed_declaration: Could not create completed declaration. Contact the DfE for support.
-  application_superceded: Application is no longer updateable
+  application_not_updateable: Application is no longer updateable
   application_not_found: Application could not be found
 
   errors:

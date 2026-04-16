@@ -12,7 +12,7 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
   it do
     expect(application.lead_provider).to eq(new_provider)
     expect(application.status).to eq(Application::PENDING)
-    expect(application.application_lead_providers&.last&.lead_provider).to eq(old_provider)
+    expect(application.application_lead_providers.previous&.last&.lead_provider).to eq(old_provider)
     # TODO: check application_events
     # expect(application.application_events.last).to eq(something)
   end

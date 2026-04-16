@@ -125,9 +125,9 @@
   :application_lead_providers:
   - id
   - application_id
-  - lead_provider_id
-  - current
   - created_at
+  - current
+  - lead_provider_id
   - updated_at
   :api_tokens:
   - id
