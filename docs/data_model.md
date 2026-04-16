@@ -27,7 +27,7 @@ This diagram represents our current understanding of the data models:
 1. **Application** - Central to the model, `Application` connects multiple entities:
    - It has a one-to-one relationship with `User`, `LeadProvider` and `Course`.
    - It has optional relationships with `Cohort`, `Schedule`, `School`, `PrivateChildcareProvider`, and `IttProvider`.
-   - It has a one-to-many relationship with `ApplicationStates`, `Declaration` and `ParticipantIdChange` (through `User`).
+   - It has a one-to-many relationship with `ApplicationEvents`, `Declaration` and `ParticipantIdChange` (through `User`).
 
    `Application` captures various attributes related to a user's employment, funding eligibility, and application status.
 
@@ -67,7 +67,7 @@ This diagram represents our current understanding of the data models:
     - `School`, `PrivateChildcareProvider`, and `IttProvider` allow additional relationships with applications.
     - `ApiToken` enables secure API access for lead providers.
     - `ParticipantIdChange` keeps a record of changes in participant IDs for `User`.
-    - `ApplicationState` keeps a record per change in the state of an `Application`.
+    - `ApplicationEvent` keeps a record of state changes and notifications for an `Application`.
 
 ## 4. Data Flow and Key Processes
 

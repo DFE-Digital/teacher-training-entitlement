@@ -19,7 +19,7 @@ RSpec.describe Crons::ExpireDeferredApplicationsJob do
 
     context "when application has been deferred for more than 14 months" do
       before do
-        application.application_states.find_by(status: "deferred").update!(created_at: 15.months.ago)
+        application.state_changes.find_by(event: Application::DEFERRED).update!(created_at: 15.months.ago)
       end
 
       it "calls the withdraw service with the correct arguments" do
@@ -35,7 +35,7 @@ RSpec.describe Crons::ExpireDeferredApplicationsJob do
 
     context "when application has been deferred for less than 14 months" do
       before do
-        application.application_states.find_by(status: "deferred").update!(created_at: 13.months.ago)
+        application.state_changes.find_by(event: Application::DEFERRED).update!(created_at: 13.months.ago)
       end
 
       it "does not call the withdraw service" do
@@ -60,11 +60,11 @@ RSpec.describe Crons::ExpireDeferredApplicationsJob do
 
       before do
         # First deferral 16 months ago
-        application.application_states.create!(status: "deferred", created_at: 16.months.ago)
+        application.state_changes.create!(event: Application::DEFERRED, created_at: 16.months.ago)
         # Resumed
-        application.application_states.create!(status: "started", created_at: 10.months.ago)
+        application.state_changes.create!(event: Application::STARTED, created_at: 10.months.ago)
         # Second deferral 2 months ago
-        application.application_states.create!(status: "deferred", created_at: 2.months.ago)
+        application.state_changes.create!(event: Application::DEFERRED, created_at: 2.months.ago)
         application.update!(status: "deferred")
       end
 

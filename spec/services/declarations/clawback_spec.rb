@@ -77,15 +77,15 @@ RSpec.describe Declarations::Clawback, type: :model do
       let(:declaration_state) { :paid }
 
       before do
-        create(:application_state, :accepted, application:)
+        create(:state_change, :accepted, application:)
         subject.call
       end
 
       it do
         expect(application.reload.status).to eq(Application::ACCEPTED)
-        expect(application.application_states.count).to eq 2
-        expect(application.application_states.last.status).to eq(Application::ACCEPTED)
-        expect(application.application_states.last.reason).to eq("started declaration voided")
+        expect(application.state_changes.count).to eq 2
+        expect(application.state_changes.last.status).to eq(Application::ACCEPTED)
+        expect(application.state_changes.last.reason).to eq("started declaration voided")
       end
     end
 
@@ -94,16 +94,16 @@ RSpec.describe Declarations::Clawback, type: :model do
       let(:declaration_state) { :paid }
 
       before do
-        create(:application_state, :accepted, application:)
-        create(:application_state, :started, application:)
+        create(:state_change, :accepted, application:)
+        create(:state_change, :started, application:)
         subject.call
       end
 
       it do
         expect(application.reload.status).to eq(Application::STARTED)
-        expect(application.application_states.count).to eq 3
-        expect(application.application_states.last.status).to eq(Application::STARTED)
-        expect(application.application_states.last.reason).to eq("completed declaration voided")
+        expect(application.state_changes.count).to eq 3
+        expect(application.state_changes.last.status).to eq(Application::STARTED)
+        expect(application.state_changes.last.reason).to eq("completed declaration voided")
       end
     end
   end

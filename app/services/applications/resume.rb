@@ -23,8 +23,10 @@ module Applications
       return if invalid?
 
       Application.transaction do
-        @application.application_states.create!(status: Application::STARTED,
-                                                reason: @reason)
+        @application.state_changes.create!(
+          event: Application::STARTED,
+          metadata: { reason: @reason }.compact,
+        )
         @application.update!(status: Application::STARTED,
                              course_cohort: @course_cohort)
       end

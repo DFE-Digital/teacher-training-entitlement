@@ -19,24 +19,9 @@ class Crons::ExpireDeferredApplicationsJob < CronJob
 
 private
 
-  # Ordinarily, an application would only be deferred once,
-  # but we need to handle the edge case where an application is:
-  # 1. Deferred 16 months ago
-  # 2. Resumed
-  # 3. Deferred again 2 months ago
   def expired_deferred_applications
     Application
-      .includes(:application_states)
       .deferred_status
-      .where(
-        "id IN (
-          SELECT application_id FROM application_states
-          WHERE status = ?
-          GROUP BY application_id
-          HAVING MAX(created_at) < ?
-        )",
-        Application::DEFERRED,
-        DEFERRAL_EXPIRY_MONTHS.months.ago,
-      )
+      .where(id: StateChange.expired_deferrals(months_ago: DEFERRAL_EXPIRY_MONTHS))
   end
 end

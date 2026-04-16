@@ -74,7 +74,7 @@ module Participants
             institution
             cohort
             lead_provider
-            application_states
+            application_events
             schedule
           ],
         )

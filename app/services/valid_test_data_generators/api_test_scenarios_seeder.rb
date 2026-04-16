@@ -105,9 +105,9 @@ module ValidTestDataGenerators
           end
         end
 
-        # Delete declarations and application states
+        # Delete declarations and application events
         Declaration.where(application: applications_to_delete).delete_all
-        ApplicationState.where(application: applications_to_delete).delete_all
+        ApplicationEvent.where(application: applications_to_delete).delete_all
 
         applications_to_delete.delete_all
       end

@@ -19,7 +19,7 @@ module Applications
 
       ApplicationRecord.transaction do
         accept_application!
-        create_application_state!
+        create_application_event!
       end
 
       application.reload
@@ -69,11 +69,10 @@ module Applications
       errors.blank? && cohort.funding_cap?
     end
 
-    def create_application_state!
-      ApplicationState.create!(
-        application:,
+    def create_application_event!
+      application.state_changes.create!(
+        event: Application::ACCEPTED,
         lead_provider:,
-        status: Application::ACCEPTED,
       )
     end
   end

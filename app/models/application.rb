@@ -27,9 +27,11 @@ class Application < ApplicationRecord
   end
 
   has_many :participant_id_changes, through: :user
-  has_many :application_states
-  has_one :deferred_state, -> { where(status: DEFERRED).order(created_at: :desc) }, class_name: "ApplicationState"
-  has_one :withdrawn_state, -> { where(status: WITHDRAWN).order(created_at: :desc) }, class_name: "ApplicationState"
+  has_many :application_events
+  has_many :state_changes
+  has_many :notifications
+  has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
+  has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
   has_many :declarations
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
@@ -144,13 +146,13 @@ class Application < ApplicationRecord
   def deferred_at
     return nil unless deferred_status?
 
-    deferred_state&.created_at
+    deferred_event&.created_at
   end
 
   def withdrawn_at
     return nil unless withdrawn_status?
 
-    withdrawn_state&.created_at
+    withdrawn_event&.created_at
   end
 
   def previously_funded?
@@ -233,10 +235,10 @@ class Application < ApplicationRecord
 
   def lookup_state_change_reason(changed_at:, changed_status:)
     variance = 0.5
-    application_states.find { |application_state|
-      application_state.created_at >= changed_at - variance &&
-        application_state.created_at <= changed_at + variance &&
-        application_state.status == changed_status
+    state_changes.find { |state_change|
+      state_change.created_at >= changed_at - variance &&
+        state_change.created_at <= changed_at + variance &&
+        state_change.status == changed_status
     }&.reason
   end
 

@@ -51,8 +51,9 @@ module AssuranceReports
         LEFT OUTER JOIN institutions i      ON i.id = a.institution_id
         LEFT OUTER JOIN schools sc          ON sc.id = i.institutionable_id AND i.institutionable_type = 'School'
         LEFT OUTER JOIN (
-             SELECT DISTINCT ON (lead_provider_id, application_id) lead_provider_id, application_id, status, reason
-             FROM application_states
+             SELECT DISTINCT ON (lead_provider_id, application_id) lead_provider_id, application_id, event, metadata->>'reason' AS reason
+             FROM application_events
+             WHERE type = 'StateChange'
              ORDER BY lead_provider_id, application_id, created_at DESC
         ) AS st ON
           st.application_id = a.id AND

@@ -8,7 +8,7 @@ RSpec.describe Application do
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:institution).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
-    it { is_expected.to have_many(:application_states) }
+    it { is_expected.to have_many(:state_changes) }
     it { is_expected.to have_many(:declarations) }
   end
 
@@ -606,9 +606,9 @@ RSpec.describe Application do
     context "when application is deferred" do
       let(:application) { create(:application, :deferred) }
 
-      it "returns the created_at of the deferred application state" do
-        deferred_state = application.application_states.find_by(status: "deferred")
-        expect(subject).to eq(deferred_state.created_at)
+      it "returns the created_at of the deferred application event" do
+        deferred_event = application.application_events.find { |e| e.status == "deferred" }
+        expect(subject).to eq(deferred_event.created_at)
       end
     end
   end
@@ -625,9 +625,9 @@ RSpec.describe Application do
     context "when application is withdrawn" do
       let(:application) { create(:application, :withdrawn) }
 
-      it "returns the created_at of the withdrawn application state" do
-        withdrawn_state = application.application_states.find_by(status: "withdrawn")
-        expect(subject).to eq(withdrawn_state.created_at)
+      it "returns the created_at of the withdrawn application event" do
+        withdrawn_event = application.application_events.find { |e| e.status == "withdrawn" }
+        expect(subject).to eq(withdrawn_event.created_at)
       end
     end
   end
@@ -635,25 +635,26 @@ RSpec.describe Application do
   describe "#lookup_state_change_reason" do
     subject(:lookup_state_change_reason) { application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "deferred") }
 
-    before { freeze_time }
-
-    let!(:application_state) { create(:application_state, :deferred, application:, created_at: application.created_at + 0.5, reason: "other") }
-
-    it "returns the reason for the application state" do
-      expect(lookup_state_change_reason).to eq(application_state.reason)
+    before do
+      freeze_time
+      create(:state_change, :deferred, application:, created_at: application.created_at + 0.5)
     end
 
-    context "when there is more than one application state within the time range" do
+    it "returns the reason for the state change" do
+      expect(lookup_state_change_reason).to eq("other")
+    end
+
+    context "when there is more than one state change within the time range" do
       before do
-        create(:application_state, :deferred, application:, created_at: application.created_at + 0.4, reason: "career-break")
+        create(:state_change, :deferred, application:, created_at: application.created_at + 0.4, metadata: { reason: "career-break" })
       end
 
-      it "returns the most recent application state within the time range" do
-        expect(lookup_state_change_reason).to eq(application_state.reason)
+      it "returns the most recent state change within the time range" do
+        expect(lookup_state_change_reason).to eq("other")
       end
     end
 
-    context "when no application state matches the criteria" do
+    context "when no application event matches the criteria" do
       it "returns nil" do
         expect(application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "active")).to be_nil
       end

@@ -165,15 +165,14 @@ shared:
     - suffix
     - identifier
     - description
-  :application_states:
+  :application_events:
     - id
     - application_id
     - lead_provider_id
-    - status
-    - reason
+    - event
+    - metadata
     - created_at
     - updated_at
-    - ecf_id
   :applications:
     - id
     - user_id
