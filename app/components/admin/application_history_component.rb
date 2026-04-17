@@ -14,14 +14,14 @@ module Admin
         .select { |version| (version.object_changes.keys - %w[updated_at]).any? }
         .pluck(:created_at, :whodunnit, :object_changes)
         .map { |created_at, whodunnit, object_changes|
-          object_changes.except("updated_at", "funding_eligiblity_status_code").map do |key, value|
-            {
-              title: show_object_changes(key, value),
-              by: show_whodunnit(whodunnit),
-              at: created_at,
-              description: description(record, object_changes, created_at, key, value),
-            }
-          end
+        object_changes.except("updated_at", "funding_eligiblity_status_code").map do |key, value|
+          {
+            title: show_object_changes(key, value),
+            by: show_whodunnit(whodunnit),
+            at: created_at,
+            description: description(record, object_changes, created_at, key, value),
+          }
+        end
       }.flatten
     end
 

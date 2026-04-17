@@ -7,6 +7,7 @@ class SessionsController < PublicPagesController
     sign_out_all_scopes
 
     redirect_to("/admin") and return if admin
+
     redirect_to(root_path) and return unless user
 
     redirect_to build_sign_out_uri(id_token), allow_other_host: true
