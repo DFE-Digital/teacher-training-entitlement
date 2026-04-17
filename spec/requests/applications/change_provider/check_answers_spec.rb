@@ -78,7 +78,7 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
 
           aggregate_failures do
             expect(response).to redirect_to(application_path(application.ecf_id))
-            expect(application.reload.lead_provider_id).to eq(new_provider.id)
+            expect(application.reload.lead_provider.id).to eq(new_provider.id)
 
             expect(flash[:notice][:title]).to eq(I18n.t("applications.change_provider.check_answers.success.title"))
             expect(flash[:notice][:message]).to eq(I18n.t("applications.change_provider.check_answers.success.message"))

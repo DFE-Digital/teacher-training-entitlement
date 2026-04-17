@@ -125,17 +125,9 @@ class Application < ApplicationRecord
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
-  def lead_provider_id
-    lead_provider.id
-  end
-
-  def lead_provider_id=(new_provider_id)
-    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
-    application_lead_providers.create!(lead_provider_id: new_provider_id, current: true)
-  end
-
   def lead_provider=(new_provider)
-    self.lead_provider_id = new_provider&.id
+    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
+    application_lead_providers.create!(lead_provider: new_provider, current: true)
   end
 
   def can_change_provider?
