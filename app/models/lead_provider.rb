@@ -1,5 +1,4 @@
 class LeadProvider < ApplicationRecord
-  has_many :applications
   has_many :statements
   has_many :course_cohort_providers
   has_many :course_cohorts, through: :course_cohort_providers
@@ -10,7 +9,7 @@ class LeadProvider < ApplicationRecord
   has_many :updateable_applications,
            -> { where(application_lead_providers: { current: true }) },
            through: :application_lead_providers, source: :application
-  has_many :readable_applications,
+  has_many :applications,
            through: :application_lead_providers, source: :application
 
   validates :name, presence: true

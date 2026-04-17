@@ -51,6 +51,7 @@ RSpec.describe Declarations::Query do
 
         it "only shows declarations made by the provider" do
           query = described_class.new(lead_provider: current_lead_provider)
+
           expect(query.declarations).to contain_exactly(declaration_after_transfer)
 
           query = described_class.new(lead_provider: previous_lead_provider)

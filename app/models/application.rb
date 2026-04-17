@@ -9,7 +9,6 @@ class Application < ApplicationRecord
 
   belongs_to :user
   belongs_to :course_cohort
-  belongs_to :lead_provider
   belongs_to :institution, optional: true
 
   has_one :course, through: :course_cohort
@@ -30,10 +29,14 @@ class Application < ApplicationRecord
   has_many :application_events
   has_many :state_changes
   has_many :notifications
-  has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
-  has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
   has_many :declarations
   has_many :application_lead_providers
+
+  has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
+  has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
+  has_one :current_application_lead_provider,
+          -> { where(current: true) }, class_name: "ApplicationLeadProvider"
+  has_one :lead_provider, through: :current_application_lead_provider
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }
@@ -60,7 +63,6 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
 
   after_commit :touch_user_if_changed
-  after_save :create_application_lead_provider
 
   API_STATUSES = [].freeze
 
@@ -122,6 +124,19 @@ class Application < ApplicationRecord
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
+
+  def lead_provider_id
+    lead_provider.id
+  end
+
+  def lead_provider_id=(new_provider_id)
+    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
+    application_lead_providers.create!(lead_provider_id: new_provider_id, current: true)
+  end
+
+  def lead_provider=(new_provider)
+    self.lead_provider_id = new_provider&.id
+  end
 
   def can_change_provider?
     pending_status?
@@ -292,12 +307,5 @@ private
     return unless saved_change_to_status?
 
     user.touch(time: updated_at)
-  end
-
-  def create_application_lead_provider
-    return unless saved_change_to_lead_provider_id && lead_provider_id.present?
-
-    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
-    application_lead_providers.create!(lead_provider_id:, current: true)
   end
 end

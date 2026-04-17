@@ -3,6 +3,14 @@ require "rails_helper"
 RSpec.describe "admin/applications/show.html.erb", type: :view do
   subject { Capybara.string(render) }
 
+  let(:application_trait) { :accepted }
+  let(:application_attributes) { {} }
+  let :application do
+    application = build_stubbed(:application, application_trait, **application_attributes)
+    allow(application).to receive(:lead_provider).and_return(build_stubbed(:lead_provider))
+    application
+  end
+
   let(:declarations) { [] }
 
   before do
@@ -11,10 +19,6 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
   end
 
   describe "a summary card for a full application" do
-    let(:application) do
-      build_stubbed :application, :accepted
-    end
-
     let :declarations do
       [
         build_stubbed(:declaration, application: application,
@@ -42,9 +46,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
   end
 
   describe "a summary card for a minimal application" do
-    let :application do
-      build_stubbed :application, institution: nil
-    end
+    let(:application_attributes) { { institution: nil } }
 
     it { is_expected.to have_css "h1", text: "Application details" }
     it { is_expected.to have_summary_item "Application ID", application.ecf_id }
@@ -56,10 +58,8 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
   end
 
   describe "Links for actions" do
-    let(:application) { build_stubbed(:application) }
-
     context "when the application is pending" do
-      let(:application) { build_stubbed(:application, :pending) }
+      let(:application_trait) { :pending }
 
       it do
         expect(subject).not_to have_link("Revert to Pending")
@@ -69,7 +69,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     end
 
     context "when the application is accepted" do
-      let(:application) { build_stubbed(:application, :accepted) }
+      let(:application_trait) { :accepted }
 
       it do
         expect(subject).to have_link("Revert to Pending")
@@ -79,7 +79,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     end
 
     context "when the application is withdrawn" do
-      let(:application) { build_stubbed(:application, :withdrawn) }
+      let(:application_trait) { :withdrawn }
 
       it do
         expect(subject).to have_link("Revert to Pending")

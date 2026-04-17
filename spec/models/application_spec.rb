@@ -5,7 +5,6 @@ RSpec.describe Application do
 
   describe "relationships" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:institution).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
     it { is_expected.to have_many(:state_changes) }

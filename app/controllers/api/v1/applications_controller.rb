@@ -61,7 +61,7 @@ module API
       #
       def readable_application
         @readable_application ||= begin
-          unless current_lead_provider.readable_applications.exists?(ecf_id:)
+          unless current_lead_provider.applications.exists?(ecf_id:)
             raise ActiveRecord::RecordNotFound
           end
 
@@ -81,7 +81,7 @@ module API
       #
       def updateable_application
         @updateable_application ||= begin
-          unless current_lead_provider.readable_applications.exists?(ecf_id:)
+          unless current_lead_provider.applications.exists?(ecf_id:)
             # Lead provider never was assigned to the application
             raise ActiveRecord::RecordNotFound
           end

@@ -31,7 +31,7 @@ module Participants
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
 
-      scope.merge!(Application.where(lead_provider:))
+      scope.merge!(Application.joins(:application_lead_providers).merge(ApplicationLeadProvider.current.where(lead_provider:)))
     end
 
     def where_updated_since(updated_since)
@@ -75,6 +75,7 @@ module Participants
             cohort
             lead_provider
             application_events
+            application_lead_providers
             schedule
           ],
         )

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_16_060402) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_16_111837) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -129,7 +129,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_060402) do
     t.string "funding_eligiblity_status_code"
     t.bigint "institution_id"
     t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
-    t.bigint "lead_provider_id", null: false
     t.string "notes"
     t.integer "number_of_pupils", default: 0
     t.string "on_submission_trn"
@@ -154,7 +153,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_060402) do
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
-    t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
     t.index ["status"], name: "index_applications_on_status"
     t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true, where: "(status <> ALL (ARRAY['rejected'::application_statuses]))"
     t.index ["user_id"], name: "index_applications_on_user_id"
@@ -633,7 +631,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_060402) do
   add_foreign_key "application_events", "applications"
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
-  add_foreign_key "applications", "lead_providers"
   add_foreign_key "applications", "users"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"

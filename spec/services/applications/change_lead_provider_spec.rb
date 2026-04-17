@@ -10,7 +10,7 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
   before { subject.call }
 
   it do
-    expect(application.lead_provider).to eq(new_provider)
+    expect(application.reload.lead_provider).to eq(new_provider)
     expect(application.status).to eq(Application::PENDING)
     expect(application.application_lead_providers.previous&.last&.lead_provider).to eq(old_provider)
     # TODO: check application_events

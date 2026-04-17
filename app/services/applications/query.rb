@@ -20,6 +20,7 @@ module Applications
                  .preload(institution: :institutionable)
       @sort = sort
 
+      where_lead_provider_is(lead_provider)
       where_cohort_start_year_in(cohort_start_years)
       where_updated_since(updated_since)
       where_participant_ids_in(participant_ids)
@@ -43,7 +44,7 @@ module Applications
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
 
-      scope.merge!(Application.where(lead_provider:))
+      scope.merge!(Application.joins(:application_lead_providers).merge(ApplicationLeadProvider.current.where(lead_provider:)))
     end
 
     def where_cohort_start_year_in(cohort_start_years)
