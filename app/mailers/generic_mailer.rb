@@ -29,8 +29,6 @@ private
     view_mail(TEMPLATE_ID, to: params[:to], subject: I18n.t(subject))
   end
 
-private
-
   def application
     @application ||= Application.find_by(ecf_id: params[:ecf_id]) if params[:ecf_id].present?
   end
