@@ -52,4 +52,8 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.middleware.use RackSessionAccess::Middleware
+
+  config.service_base_url = "http://test.tte.education.gov.uk"
+  config.sign_in_link = "http://test.sign_in.education.gov.uk"
+  config.feedback_link = "http://test.feedback.education.gov.uk"
 end

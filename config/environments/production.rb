@@ -103,4 +103,7 @@ Rails.application.configure do
                                           end
                                         },
                        }
+  config.service_base_url = config.service_base_url = Rails.env.production? ? "https://national-professional-development.education.gov.uk/" : "http://#{ENV['DOMAIN']}"
+  config.sign_in_link = "#{config.service_base_url}/sign-in"
+  config.feedback_link = "#{config.service_base_url}/feedback"
 end

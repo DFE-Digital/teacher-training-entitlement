@@ -18,7 +18,7 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq("Email Updates Confirmation")
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.email_updates_confirmation"))
 
         body = mail.personalisation[:body]
         expect(body).to include(service_link)
@@ -52,7 +52,7 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq("Application submitted")
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.application_submitted"))
 
         body = mail.personalisation[:body]
         expect(body).to include(full_name)
@@ -80,7 +80,7 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq("Confirmation Code")
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.confirmation_code"))
 
         body = mail.personalisation[:body]
         expect(body).to include(code)
@@ -111,12 +111,55 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq("Eligible for funding")
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.eligible_for_funding"))
 
         body = mail.personalisation[:body]
         expect(body).to include(full_name)
         expect(body).to include(provider_name)
         expect(body).to include(course_name)
+        expect(body).to include(ecf_id)
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
+  end
+
+  describe "#change_provider" do
+    let(:to) { "recipient@example.com" }
+    let(:full_name) { "Example User" }
+    let(:provider_name) { "Example Provider" }
+    let(:course_name) { "Example Course" }
+    let(:cohort_date) { "autumn 2026" }
+    let(:ecf_id) { "ABC123" }
+    let(:sign_in_link) { "sign_in_link" }
+    let(:feedback_link) { "feedback_link" }
+
+    subject(:mail) do
+      described_class.with(
+        to:,
+        full_name:,
+        provider_name:,
+        course_name:,
+        cohort_date:,
+        ecf_id:,
+        sign_in_link:,
+        feedback_link:,
+      ).change_provider
+    end
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.change_provider"))
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(provider_name)
+        expect(body).to include(course_name)
+        expect(body).to include(cohort_date)
+        expect(body).to include(sign_in_link)
+        expect(body).to include(feedback_link)
         expect(body).to include(ecf_id)
       end
     end
