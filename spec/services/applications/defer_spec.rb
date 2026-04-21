@@ -40,7 +40,7 @@ RSpec.describe Applications::Defer, type: :model do
       end
 
       it "enqueues a deferral notification email" do
-        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
+        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued.with("GenericMailer", "deferral_notification", "deliver_now", anything).at_least(:once)
       end
     end
   end
@@ -74,7 +74,7 @@ RSpec.describe Applications::Defer, type: :model do
       end
 
       it "enqueues a deferral notification email" do
-        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
+        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued.with("GenericMailer", "deferral_notification", "deliver_now", anything).at_least(:once)
       end
     end
   end
