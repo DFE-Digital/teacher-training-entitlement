@@ -16,7 +16,7 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
           full_name: application.user.full_name,
           course_name: title_embedded_course_name(application.course),
           next_course_start_date: cohort.registration_starts_at&.to_fs(:govuk_approx),
-          deferral_date: application.deferred_at&.to_fs(:govuk),
+          deferral_date: application.deferred_at&.to_date&.to_fs(:govuk),
           ecf_id: application.ecf_id,
           cohort_id: cohort.id,
         ).registration_open_notification.deliver_later
