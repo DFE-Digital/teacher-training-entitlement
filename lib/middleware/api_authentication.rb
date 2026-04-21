@@ -1,6 +1,9 @@
+require_relative "api_helper"
+
 module Middleware
   class ApiAuthentication
     include ActionController::HttpAuthentication::Token
+    include ApiHelper
 
     def initialize(app)
       @app = app
@@ -8,19 +11,14 @@ module Middleware
 
     def call(env)
       request = ActionDispatch::Request.new(env)
-      if api_path?(request)
+      if api_path?(env)
         authenticate_lead_provider(env, request)
-
-        # return unauthenticated if env["current_lead_provider"].nil?
+        return unauthenticated if env["current_lead_provider"].nil?
       end
       @app.call(env)
     end
 
   private
-
-    def api_path?(request)
-      request.path =~ /^\/api\/v\d+\/.*$/
-    end
 
     def authenticate_lead_provider(env, request)
       token, _options = token_and_options(request)

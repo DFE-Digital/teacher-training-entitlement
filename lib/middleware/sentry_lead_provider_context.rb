@@ -1,11 +1,15 @@
+require_relative "api_helper"
+
 module Middleware
   class SentryLeadProviderContext
+    include ApiHelper
+
     def initialize(app)
       @app = app
     end
 
     def call(env)
-      tag_sentry_with_lead_provider(env) if Rack::Request.new(env).path =~ /^\/api\/v\d+\/.*$/
+      tag_sentry_with_lead_provider(env) if api_path?(env)
       @app.call(env)
     end
 

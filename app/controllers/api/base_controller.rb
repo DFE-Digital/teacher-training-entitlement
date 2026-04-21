@@ -3,7 +3,6 @@ module API
     before_action :set_cache_headers
     before_action :remove_charset
 
-    include API::TokenAuthenticatable
     include ActionController::MimeResponds
     include API::LoggerPayload
 
@@ -19,7 +18,7 @@ module API
 
     def current_lead_provider
       # set with ApiAuthentication middleware
-      request.env["current_lead_provider"] || @current_api_token&.lead_provider
+      request.env["current_lead_provider"]
     end
 
     def remove_charset

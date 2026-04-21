@@ -41,4 +41,31 @@ RSpec.describe Middleware::ApiAuthentication, type: :request do
       expect(captured_env["current_lead_provider"]).to be_nil
     end
   end
+
+  # rubocop:disable Layout/HashAlignment
+  {
+    "/api/v1/applications"        => true,
+    "/api/v2/applications"        => true,
+    "/api/v10/some/nested/path"   => true,
+    "/api/v1"                     => true,
+    "/api/v1/"                    => true,
+    "///api/v1/"                  => true,
+    "/api/v1//applications"       => true,
+    "/"                           => false,
+    "/admin/dashboard"            => false,
+    "/api/applications"           => false,
+    "/not-api/v1/applications"    => false,
+    "/v1/applications"            => false,
+    ""                            => false,
+  }.each do |test_path, expected|
+    describe "#api_path? for #{test_path}" do
+      let(:path) { test_path }
+
+      it "returns #{expected} for '#{test_path}'" do
+        response
+        expect(captured_env.key?("current_lead_provider")).to be expected
+      end
+    end
+    # rubocop:enable Layout/HashAlignment
+  end
 end
