@@ -2,6 +2,7 @@ require_relative "call_api"
 
 class ResumeApplication
   include CallApi
+  include Rails.application.routes.url_helpers
 
   def initialize(application: nil, course_cohort: nil)
     @application = application
@@ -22,7 +23,7 @@ class ResumeApplication
       },
     }.to_json
 
-    url = "http://localhost:3000/api/v1/applications/#{application.ecf_id}/resume"
+    url = resume_api_v1_application_url(application.ecf_id, host: "localhost:3000")
 
     response = call_api(lead_provider: application.lead_provider, url:, body:)
 

@@ -26,9 +26,4 @@ class LeadProvider < ApplicationRecord
   def delivery_partners_for_cohort(cohort)
     delivery_partners.where(delivery_partnerships: { cohort: })
   end
-
-  def generate_token!
-    scope = APIToken.scopes[:lead_provider]
-    APIToken.create_with_random_token!(scope:, lead_provider: self)
-  end
 end
