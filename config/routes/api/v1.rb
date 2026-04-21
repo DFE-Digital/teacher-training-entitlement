@@ -35,10 +35,4 @@ namespace :api do
 
     resources :delivery_partners, path: "delivery-partners", only: %i[index show], param: :ecf_id
   end
-
-  namespace :teacher_record_service, path: "teacher-record-service", defaults: { format: :json } do
-    namespace :v1 do
-      resources :qualifications, only: %i[show], param: :trn
-    end
-  end
 end
