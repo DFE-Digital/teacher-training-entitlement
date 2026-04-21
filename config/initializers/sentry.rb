@@ -4,11 +4,12 @@ Sentry.init do |config|
   config.enabled_environments = %w[production sandbox staging review]
   config.dsn = config.enabled_environments.include?(Rails.env) ? ENV["SENTRY_DSN"] : "disabled"
   config.breadcrumbs_logger = %i[active_support_logger http_logger]
-  config.release = ENV["COMMIT_SHA"]
+  config.release = Rails.env.review? ? ENV["HOSTNAME"].match(/.*-(\d+)-/)[1] : ENV["COMMIT_SHA"]
 
   filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
   config.before_send = lambda do |event, _hint|
-    # use Rails' parameter filter to sanitize the event
+    next nil if event.transaction.match?(/healthcheck|up/i)
+
     if event.request
       event.request.data = filter.filter(event.request.data) if event.request.data
       event.request.headers = filter.filter(event.request.headers) if event.request.headers
@@ -21,25 +22,28 @@ Sentry.init do |config|
     event
   end
 
+  config.enable_logs = true
+  config.before_send_log = lambda do |event, _hint|
+    # skip unimportant transactions
+    next nil if event.transaction.match?(/healthcheck|up/i)
+
+    event
+  end
+
   config.excluded_exceptions += %w[
     SessionWizard::InvalidStep
   ]
 
+  config.traces_sample_rate = Rails.env.production? ? 0.2 : 1.0
   config.traces_sampler = lambda do |sampling_context|
     transaction_context = sampling_context[:transaction_context]
-    op = transaction_context[:op]
-    transaction_name = transaction_context[:name]
+    name = transaction_context[:name]
 
-    case op
-    when /request/
-      case transaction_name
-      when /healthcheck/
-        0.0 # ignore healthcheck requests
-      else
-        0.01
-      end
-    else
-      0.0 # We don't care about performance of other things
-    end
+    # Drop health checks entirely — they pollute your data
+    next 0.0 if name.match?(/healthcheck|up/i)
+    next 0.5 if Rails.env.review?
+
+    # default for everything else
+    0.2
   end
 end

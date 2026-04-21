@@ -17,6 +17,11 @@ module API
 
   private
 
+    def current_lead_provider
+      # set with ApiAuthentication middleware
+      request.env["current_lead_provider"] || @current_api_token&.lead_provider
+    end
+
     def remove_charset
       ActionDispatch::Response.default_charset = nil
     end

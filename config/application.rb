@@ -52,6 +52,14 @@ module Registration
       api_key: ENV["GOVUK_NOTIFY_API_KEY"],
     }
 
+    # api authentication
+    require "middleware/api_authentication"
+    config.middleware.use Middleware::ApiAuthentication
+
+    # Add sentry context info
+    require "middleware/sentry_lead_provider_context"
+    config.middleware.use Middleware::SentryLeadProviderContext
+
     # Used to handle HTTP_X_WITH_SERVER_DATE header for server side datetime overwrite
     require "middleware/time_traveler"
     config.middleware.use Middleware::TimeTraveler
