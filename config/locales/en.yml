@@ -25,6 +25,12 @@ en:
         blank: TRN can't be blank
         not_real: You must enter a valid TRN
         wrong_length: TRN is the wrong length (should be %{count} characters)
+  mailers:
+    eligible_for_funding: Eligible for funding
+    application_submitted: Application submitted
+    confirmation_code:  Confirmation Code
+    email_updates_confirmation: Email Updates Confirmation
+    change_provider: You've registered for %{course_name} - next steps
 
   application: &application
     blank: The entered '#/%{parameterized_attribute}' is missing from your request. Check details and try again.

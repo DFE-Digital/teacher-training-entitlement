@@ -96,4 +96,8 @@ Rails.application.configure do
     Bullet.add_footer                   = true
     Bullet.unused_eager_loading_enable  = false # Disabled due to the way our queries are structured
   end
+
+  config.service_base_url = ENV["DOMAIN"]
+  config.sign_in_link = "#{config.service_base_url}/sign-in"
+  config.feedback_link = "#{config.service_base_url}/feedback"
 end

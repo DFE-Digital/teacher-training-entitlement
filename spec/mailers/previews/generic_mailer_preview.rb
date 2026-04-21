@@ -34,4 +34,17 @@ class GenericMailerPreview < ActionMailer::Preview
       unsubscribe_link: "https://example.service.gov.uk/unsubscribe?token=abc123",
     ).email_updates_confirmation
   end
+
+  def change_provider
+    GenericMailer.with(
+      to: "test@example.com",
+      ecf_id: "abcd-1234-efgh-5678-ijkl",
+      full_name: "Dave Coaches",
+      course_name: "Teaching in Reception",
+      cohort_date: "Autumn 2026",
+      provider_name: "Acme Teaching",
+      sign_in_link: "https://signin.service.gov.uk",
+      feedback_link: "https://feedback.service.gov.uk",
+    ).change_provider
+  end
 end
