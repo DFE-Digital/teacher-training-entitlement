@@ -14,7 +14,7 @@ class EmailUpdatesController < PublicPagesController
     @form = EmailUpdates.new(email_update_params)
     if @form.valid?
       current_user.update_email_updates_status(@form)
-      GenericMailer.with(to: current_user.email, service_link: service_url, unsubscribe_link:).email_updates_confirmation.deliver_now
+      GenericMailer.with(to: current_user.email, service_link: Rails.configuration.service_base_url, unsubscribe_link:).email_updates_confirmation.deliver_now
     else
       render :new
     end
@@ -44,14 +44,6 @@ private
   end
 
   def unsubscribe_link
-    "#{service_url}#{unsubscribe_email_updates_path(unsubscribe_key: current_user.email_updates_unsubscribe_key)}"
-  end
-
-  def service_url
-    if Rails.env.production?
-      "https://register-national-professional-qualifications.education.gov.uk/"
-    else
-      "https://#{ENV['DOMAIN']}"
-    end
+    "#{Rails.configuration.service_base_url}#{unsubscribe_email_updates_path(unsubscribe_key: current_user.email_updates_unsubscribe_key)}"
   end
 end

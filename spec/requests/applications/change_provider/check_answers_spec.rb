@@ -42,7 +42,18 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
     context "with valid provider_id in the session" do
       let(:session_provider_id) { another_provider.id }
 
-      it "updates the application's lead provider and redirects to user registrations path" do
+      it "updates the application's lead provider, sends an email and redirects to user registrations path" do
+        expect(GenericMailer).to receive(:with).with(
+          to: application.user.email,
+          full_name: application.user.full_name,
+          provider_name: another_provider.name,
+          course_name: application.course.name,
+          cohort_date: application.cohort.name,
+          ecf_id: application.ecf_id,
+          sign_in_link: Rails.configuration.sign_in_link,
+          feedback_link: Rails.configuration.feedback_link,
+        ).and_call_original
+
         post url
         expect(response).to redirect_to(application_path(application.ecf_id))
         expect(application.reload.lead_provider_id).to eq(session_provider_id)

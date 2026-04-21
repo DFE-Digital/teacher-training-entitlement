@@ -4,19 +4,23 @@ class GenericMailer < ApplicationMailer
   after_action :log_application_event, if: :application
 
   def eligible_for_funding
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Eligible for funding")
+    generic_mail(subject: "mailers.eligible_for_funding")
   end
 
   def application_submitted
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Application submitted")
+    generic_mail(subject: "mailers.application_submitted")
   end
 
   def confirmation_code
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Confirmation Code")
+    generic_mail(subject: "mailers.confirmation_code")
   end
 
   def email_updates_confirmation
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Email Updates Confirmation")
+    generic_mail(subject: "mailers.email_updates_confirmation")
+  end
+
+  def change_provider
+    generic_mail(subject: "mailers.change_provider")
   end
 
   def deferral_notification
@@ -32,6 +36,10 @@ class GenericMailer < ApplicationMailer
   end
 
 private
+
+  def generic_mail(subject:)
+    view_mail(TEMPLATE_ID, to: params[:to], subject: I18n.t(subject))
+  end
 
   def application
     @application ||= Application.find_by(ecf_id: params[:ecf_id]) if params[:ecf_id].present?
