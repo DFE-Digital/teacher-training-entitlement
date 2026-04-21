@@ -42,8 +42,7 @@ private
 
     application.notifications.create!(
       event: action_name,
-      recipient: params[:to],
-      cohort_id: params[:cohort_id].presence,
+      metadata: params.compact,
     )
   end
 end
