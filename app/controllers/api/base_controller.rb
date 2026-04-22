@@ -2,6 +2,7 @@ module API
   class BaseController < ActionController::API
     before_action :set_cache_headers
     before_action :remove_charset
+    before_action :set_sentry_context
 
     include ActionController::MimeResponds
     include API::LoggerPayload
@@ -19,6 +20,17 @@ module API
     def current_lead_provider
       # set with ApiAuthentication middleware
       request.env["current_lead_provider"]
+    end
+
+    def set_sentry_context
+      return unless current_lead_provider
+
+      Sentry.configure_scope do |scope|
+        scope.set_tag("lead_provider.id", current_lead_provider.id)
+        scope.set_tag("lead_provider.name", current_lead_provider.name)
+        scope.set_user(id: current_lead_provider.id, username: current_lead_provider.name)
+        scope.set_context("lead_provider", { id: current_lead_provider.id, name: current_lead_provider.name })
+      end
     end
 
     def remove_charset

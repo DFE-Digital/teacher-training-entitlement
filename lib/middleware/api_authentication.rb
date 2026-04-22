@@ -1,9 +1,6 @@
-require_relative "api_helper"
-
 module Middleware
   class ApiAuthentication
     include ActionController::HttpAuthentication::Token
-    include ApiHelper
 
     def initialize(app)
       @app = app
@@ -11,9 +8,12 @@ module Middleware
 
     def call(env)
       request = ActionDispatch::Request.new(env)
-      if api_path?(env)
+      if Rack::Request.new(env).path.match?(%r{^/+api/v\d+(/.*)?$})
         authenticate_lead_provider(env, request)
-        return unauthenticated if env["current_lead_provider"].nil?
+        if env["current_lead_provider"].nil?
+          Sentry.capture_message("[API authentication]: bad or missing token")
+          return unauthenticated
+        end
       end
       @app.call(env)
     end
