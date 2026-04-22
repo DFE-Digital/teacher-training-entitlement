@@ -787,6 +787,8 @@ en:
       if_you_do_not_restart: If you do not restart the course within 12 months your registration will expire and you will be withdrawn from the course.
       funded_place: After you have been withdrawn, you will not be eligible for further funding.
   withdrawal_details:
+      submit_new_registration_html: "If you wish to register for a new course, you can %{link}."
+      submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
   course_start_details:
     eligible_for_funding: If your provider does not confirm you’ve started the course
