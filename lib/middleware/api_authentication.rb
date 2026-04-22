@@ -10,10 +10,7 @@ module Middleware
       request = ActionDispatch::Request.new(env)
       if Rack::Request.new(env).path.match?(%r{^/+api/v\d+(/.*)?$})
         authenticate_lead_provider(env, request)
-        if env["current_lead_provider"].nil?
-          Sentry.capture_message("[API authentication]: bad or missing token")
-          return unauthenticated
-        end
+        return unauthenticated if env["current_lead_provider"].nil?
       end
       @app.call(env)
     end
