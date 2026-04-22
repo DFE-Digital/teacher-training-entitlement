@@ -182,16 +182,17 @@ module ValidTestDataGenerators
       @course ||= Course.find_by!(identifier: @course_identifier)
     end
 
-    def create_random_user(status:, index: nil)
-      email = "jdoe-#{status}-#{index}@#{to_dns_name(@lead_provider.name)}.com"
+    def create_random_user(with_trn: true)
+      name = Faker::Name.unique.name
+      email = "#{name.tr(' ', '-').downcase}@#{to_dns_name(@lead_provider.name)}.com"
 
       User.find_or_create_by!(email:) do |user|
-        user.full_name = "J Doe #{index} #{status} [#{@lead_provider.name[..5]}]"
-        user.trn = generate_trn
-        user.date_of_birth = Date.new(1990, 1, 1)
+        user.full_name = name
+        user.trn = generate_trn if with_trn
+        user.date_of_birth = Faker::Date.birthday(min_age: 20)
         user.ecf_id = SecureRandom.uuid
-        user.trn_verified = true
-        user.trn_lookup_status = "Found"
+        user.trn_verified = true if with_trn
+        user.trn_lookup_status = "Found" if with_trn
       end
     end
 
@@ -201,7 +202,7 @@ module ValidTestDataGenerators
       User.find_or_create_by!(email:) do |user|
         user.full_name = app_data[:full_name]
         user.trn = generate_trn
-        user.date_of_birth = Date.new(1990, 1, 1)
+        user.date_of_birth = Faker::Date.birthday(min_age: 20)
         user.ecf_id = SecureRandom.uuid
         user.trn_verified = true
         user.trn_lookup_status = "Found"
