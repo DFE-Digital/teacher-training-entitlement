@@ -19,4 +19,44 @@ RSpec.feature "Applications", type: :feature do
       expect(page).to have_current_path("/")
     end
   end
+
+  describe "withdrawn application" do
+    let(:user) { create(:user) }
+    let!(:application) do
+      create(:application, :accepted, user:).tap do |app|
+        app.update!(status: Application::WITHDRAWN)
+        create(:state_change, :withdrawn, application: app, lead_provider: app.lead_provider)
+      end
+    end
+
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+    end
+
+    scenario "shows withdrawn status and re-registration link" do
+      visit application_path(application.ecf_id)
+
+      expect(page).to have_text("Withdrawn")
+      expect(page).to have_text("Date withdrawn:")
+      expect(page).to have_link("submit a new registration", href: registration_wizard_show_path(step: "course-start-date"))
+    end
+
+    scenario "redirects from index to the withdrawn application" do
+      visit applications_path
+
+      expect(page).to have_current_path(application_path(application.ecf_id))
+      expect(page).to have_text("Withdrawn")
+    end
+
+    context "when user also has a newer active application" do
+      let!(:active_application) { create(:application, :accepted, user:, created_at: 1.day.from_now) }
+
+      scenario "redirects to the most recent application" do
+        visit applications_path
+
+        expect(page).to have_current_path(application_path(active_application.ecf_id))
+        expect(page).not_to have_text("Withdrawn")
+      end
+    end
+  end
 end
