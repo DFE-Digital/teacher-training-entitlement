@@ -23,12 +23,6 @@ Sentry.init do |config|
   end
 
   config.enable_logs = true
-  config.before_send_log = lambda do |event, _hint|
-    # skip unimportant transactions
-    next nil if event.transaction.match?(/healthcheck|up/i)
-
-    event
-  end
 
   config.excluded_exceptions += %w[
     SessionWizard::InvalidStep
