@@ -6,7 +6,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
   let(:school) { application.school }
   let(:participant_id_change) { application.participant_id_changes.last }
   let(:cohort) { application.cohort }
-  let(:application) { create(:application, :accepted, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
+  let(:application) { create(:application, :accepted, :with_state_change, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
   let(:participant) { application.user }
 
   describe "core attributes" do
@@ -104,7 +104,10 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
       end
 
       context "when application has been withdrawn" do
-        let(:application) { create(:application, :withdrawn, :eligible_for_funded_place, lead_provider:) }
+        let(:application) { create(:application, :withdrawn, :with_accepted_event, :eligible_for_funded_place, lead_provider:) }
+
+        let(:withdrawal) { application.state_changes.where(event: Application::WITHDRAWN).first }
+        let(:accepted) { application.state_changes.where(event: Application::ACCEPTED).first }
 
         it "serializes the `enrolments`" do
           expect(attributes["enrolments"]).to eq([
@@ -118,11 +121,11 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               status: application.status,
               school_urn: application.school.urn,
               withdrawal: {
-                reason: application.application_events.last.reason,
-                date: application.application_events.last.created_at.rfc3339,
+                reason: withdrawal.reason,
+                date: withdrawal.created_at.rfc3339,
               },
               deferral: nil,
-              created_at: application.accepted_at.rfc3339,
+              created_at: accepted.created_at.rfc3339,
               funded_place: application.funded_place,
             }.deep_stringify_keys,
           ])
@@ -130,7 +133,9 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
       end
 
       context "when application has been deferred" do
-        let(:application) { create(:application, :with_declaration, :deferred, :eligible_for_funded_place, lead_provider:) }
+        let(:application) { create(:application, :with_declaration, :deferred, :with_accepted_event, :eligible_for_funded_place, lead_provider:) }
+        let(:deferral) { application.state_changes.where(event: Application::DEFERRED).first }
+        let(:accepted) { application.state_changes.where(event: Application::ACCEPTED).first }
 
         it "serializes the `enrolments`" do
           expect(attributes["enrolments"]).to eq([
@@ -145,10 +150,10 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               school_urn: application.school.urn,
               withdrawal: nil,
               deferral: {
-                reason: application.application_events.last.reason,
-                date: application.application_events.last.created_at.rfc3339,
+                reason: deferral.reason,
+                date: deferral.created_at.rfc3339,
               },
-              created_at: application.accepted_at.rfc3339,
+              created_at: accepted.created_at.rfc3339,
               funded_place: application.funded_place,
             }.deep_stringify_keys,
           ])

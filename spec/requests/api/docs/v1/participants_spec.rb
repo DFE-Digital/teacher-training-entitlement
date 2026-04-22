@@ -13,6 +13,7 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
     create(:application,
            application_status_trait,
            :with_declaration,
+           :with_accepted_event,
            :eligible_for_funded_place,
            :with_participant_id_change,
            lead_provider:,
