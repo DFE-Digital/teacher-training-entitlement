@@ -12,6 +12,7 @@ module Applications
     def initialize(application:, new_provider:)
       @application = application
       @new_provider = new_provider
+      @old_provider = application.lead_provider
     end
 
     def call
@@ -19,15 +20,28 @@ module Applications
 
       Application.transaction do
         @application.update!(lead_provider: @new_provider)
-        # TODO: Create an application event
-        # @application.application_events.create!(status: 'changed provider', message:)
+        @application.application_events.create!(
+          event: :changed_provider,
+          metadata: { reason: }.compact,
+        )
+
+        GenericMailer.with(
+          to: @application.user.email,
+          full_name: @application.user.full_name,
+          provider_name: @new_provider.name,
+          course_name: @application.course.name,
+          cohort_date: @application.cohort.name,
+          ecf_id: @application.ecf_id,
+          sign_in_link: Rails.configuration.sign_in_link,
+          feedback_link: Rails.configuration.feedback_link,
+        ).change_provider.deliver_later
       end
     end
 
   private
 
-    def message
-      "Changed lead provider from #{@current_application.lead_provider.name} to #{@new_provider.name}"
+    def reason
+      "Changed lead provider from #{@old_provider.name} to #{@new_provider.name}"
     end
 
     def application_status_is_pending

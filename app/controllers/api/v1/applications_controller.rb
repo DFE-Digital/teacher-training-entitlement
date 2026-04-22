@@ -57,21 +57,11 @@ module API
 
       #
       # Providers can read an application if they were once assigned as provider
-      # If they were never assigned, initiate a 404
+      # If they were never assigned, an ActiceRecord::RecordNotFound is raised
+      # leading to a 404
       #
       def readable_application
-        @readable_application ||= begin
-          unless current_lead_provider.applications.exists?(ecf_id:)
-            raise ActiveRecord::RecordNotFound
-          end
-
-          Application
-            .includes(
-              :user,
-              :institution,
-              course_cohort: %i[course cohort schedule],
-            ).find_by!(ecf_id:)
-        end
+        @readable_application ||= application_lead_provider.application
       end
 
       #
@@ -80,19 +70,24 @@ module API
       # If they were once assigned, but are no longer, initiate a 403
       #
       def updateable_application
-        @updateable_application ||= begin
-          unless current_lead_provider.applications.exists?(ecf_id:)
-            # Lead provider never was assigned to the application
-            raise ActiveRecord::RecordNotFound
-          end
-
-          unless current_lead_provider.updateable_applications.exists?(ecf_id:)
-            # Lead provider was once assigned to the application but no longer is
-            raise ForbiddenError
-          end
-
-          Application.find_by!(ecf_id:)
+        unless application_lead_provider.current?
+          # Lead provider was once assigned to the application
+          # but no longer is and so cannot be updated
+          raise ForbiddenError
         end
+
+        @updateable_application ||= application_lead_provider.application
+      end
+
+      def application_lead_provider
+        @application_lead_provider ||=
+          current_lead_provider
+            .application_lead_providers
+            .includes(
+              application: [:user,
+                            :institution,
+                            { course_cohort: %i[course cohort schedule] }],
+            ).find_by!(application: { ecf_id: })
       end
 
       def filter_params

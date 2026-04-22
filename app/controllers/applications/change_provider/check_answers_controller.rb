@@ -25,17 +25,6 @@ module Applications
           redirect_to application_change_provider_check_answers_path(application.ecf_id) and return
         end
 
-        GenericMailer.with(
-          to: application.user.email,
-          full_name: application.user.full_name,
-          provider_name: application.lead_provider.name,
-          course_name: application.course.name,
-          cohort_date: application.cohort.name,
-          ecf_id: application.ecf_id,
-          sign_in_link: Rails.configuration.sign_in_link,
-          feedback_link: Rails.configuration.feedback_link,
-        ).change_provider.deliver_later
-
         flash[:notice] = {
           title: t("applications.change_provider.check_answers.success.title"),
           message: t("applications.change_provider.check_answers.success.message"),

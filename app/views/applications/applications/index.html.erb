@@ -1,9 +1,8 @@
-<% application_count = @applications.count %>
-<% title = "Your TTE #{"registration".pluralize(application_count)}" %>
+<% title = "Your TTE #{"registration".pluralize(@applications.size)}" %>
 
 <% content_for :title, title %>
 <h1 class="govuk-heading-xl"><%= title %></h1>
-<% if application_count > 0 %>
+<% if @applications.any? %>
   <div class="govuk-inset-text">
     <%= govuk_link_to "Visit your GOV.UK One Login", one_login_home_url %> to check or change your personal details.
   </div>
