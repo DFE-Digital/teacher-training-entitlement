@@ -50,7 +50,7 @@ private
 
     application.notifications.create!(
       event: action_name,
-      metadata: params.compact,
+      metadata: params.compact.except(:to, :full_name),
     )
   end
 end

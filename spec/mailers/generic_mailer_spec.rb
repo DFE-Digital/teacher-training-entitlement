@@ -178,7 +178,8 @@ RSpec.describe GenericMailer, type: :mailer do
 
       event = application.notifications.last
       expect(event.event).to eq("application_submitted")
-      expect(event.metadata).to include("to" => to)
+      expect(event.metadata).to include("ecf_id" => application.ecf_id)
+      expect(event.metadata).not_to include("to", "full_name")
     end
 
     it "does not create an event when ecf_id is missing" do
@@ -199,7 +200,8 @@ RSpec.describe GenericMailer, type: :mailer do
       ).registration_open_notification.deliver_now
 
       event = application.notifications.last
-      expect(event.metadata).to include("to" => to, "cohort_id" => 123)
+      expect(event.metadata).to include("cohort_id" => 123)
+      expect(event.metadata).not_to include("to", "full_name")
     end
   end
 
