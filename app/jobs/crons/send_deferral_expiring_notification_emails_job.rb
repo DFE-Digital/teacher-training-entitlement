@@ -2,6 +2,8 @@ class Crons::SendDeferralExpiringNotificationEmailsJob < CronJob
   include Sentry::Cron::MonitorCheckIns
   include CourseHelper
 
+  DEFERRAL_WARNING_MONTHS = 11
+
   # run at 6:15 AM every day
   self.cron_expression = "15 6 * * *"
 
@@ -24,7 +26,7 @@ private
   def eligible_applications
     Application
       .deferred_status
-      .where(id: StateChange.expiring_deferrals)
+      .where(id: StateChange.deferred(months: DEFERRAL_WARNING_MONTHS))
       .where.not(id: already_notified_application_ids)
   end
 

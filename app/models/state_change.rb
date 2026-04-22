@@ -1,11 +1,7 @@
 class StateChange < ApplicationEvent
-  DEFERRAL_EXPIRY_MONTHS = 14
-  DEFERRAL_WARNING_MONTHS = 11
-
   validates :event, inclusion: { in: Application::STATUSES }
 
-  scope :expired_deferrals, ->(months_ago: DEFERRAL_EXPIRY_MONTHS) { deferrals("<", months_ago) }
-  scope :expiring_deferrals, -> { deferrals("<=", DEFERRAL_WARNING_MONTHS) }
+  scope :deferred, ->(months: 0) { deferrals("<=", months) }
 
   # Most recent deferral date per application
   # Handles edge case: deferred 16mo ago -> resumed -> deferred 2mo ago

@@ -1,6 +1,8 @@
 class Crons::ExpireDeferredApplicationsJob < CronJob
   include Sentry::Cron::MonitorCheckIns
 
+  DEFERRAL_EXPIRY_MONTHS = 14
+
   # run at 4:00 AM every day
   self.cron_expression = "0 4 * * *"
 
@@ -20,6 +22,6 @@ private
   def expired_deferred_applications
     Application
       .deferred_status
-      .where(id: StateChange.expired_deferrals)
+      .where(id: StateChange.deferred(months: DEFERRAL_EXPIRY_MONTHS))
   end
 end
