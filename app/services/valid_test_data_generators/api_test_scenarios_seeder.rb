@@ -149,6 +149,7 @@ module ValidTestDataGenerators
           status: Application::PENDING,
           eligible_for_funding: app_data[:funding_eligible],
           user: create_user(app_data),
+          funding_choice: :school,
         )
       end
 
@@ -285,6 +286,7 @@ module ValidTestDataGenerators
                       .order("RANDOM()").first
       funded_place = status == Application::PENDING ? nil : eligible_for_funding
       accepted_at = status == Application::PENDING ? nil : course_cohort.cohort.registration_starts_at
+      funding_eligiblity_status_code = eligible_for_funding ? nil : :ineligible_setting
       application = Application.find_or_initialize_by(user:, lead_provider:, course_cohort:)
       application.update!(
         user:,
@@ -294,16 +296,21 @@ module ValidTestDataGenerators
         status:,
         funded_place:,
         eligible_for_funding:,
+        funding_eligiblity_status_code:,
         ecf_id: SecureRandom.uuid,
         teacher_catchment: "england",
         teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
         teacher_catchment_iso_country_code: "GBR",
-        funding_choice: :school,
-        works_in_school: true,
-        works_in_childcare: false,
+        funding_choice:,
+        works_in_school: institution.school?,
+        works_in_childcare: institution.private_childcare_provider?,
         accepted_at:,
       )
       application
+    end
+
+    def create_app_events(application:, event:)
+      application.state_changes.create!(event:, lead_provider: application.lead_provider)
     end
 
     def create_started_declaration(application:, declaration_date: nil)
@@ -341,7 +348,8 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::PENDING,
           eligible_for_funding: index.even?,
-          user: create_random_user(status: :pending, index:),
+          user: create_random_user,
+          funding_choice: Application.funding_choices.values.sample,
         )
       end
 
@@ -351,8 +359,11 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::ACCEPTED,
           eligible_for_funding: index.even?,
-          user: create_random_user(status: :accepted, index:),
-        )
+          user: create_random_user,
+          funding_choice: Application.funding_choices.values.sample,
+        ).tap do |application|
+          create_app_event(application:, event: Application::ACCEPTED)
+        end
       end
 
       # started
@@ -361,9 +372,12 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::STARTED,
           eligible_for_funding: index.even?,
-          user: create_random_user(status: :started, index:),
+          user: create_random_user,
+          funding_choice: Application.funding_choices.values.sample,
         ).tap do |application|
+          create_app_event(application:, event: Application::ACCEPTED)
           create_started_declaration(application:)
+          create_app_event(application:, event: Application::STARTED)
         end
       end
 
@@ -373,10 +387,14 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::COMPLETED,
           eligible_for_funding: index.even?,
-          user: create_random_user(status: :completed, index:),
+          user: create_random_user,
+          funding_choice: Application.funding_choices.values.sample,
         ).tap do |application|
+          create_app_event(application:, event: Application::ACCEPTED)
           create_started_declaration(application:)
+          create_app_event(application:, event: Application::STARTED)
           create_completed_declaration(application:, has_passed: index.even?)
+          create_app_event(application:, event: Application::COMPLETED)
         end
       end
 
@@ -386,11 +404,16 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::DEFERRED,
           eligible_for_funding: index.even?,
-          user: create_random_user(status: :defered, index:),
+          user: create_random_user,
+          funding_choice: Application.funding_choices.values.sample,
         ).tap do |application|
+          create_app_event(application:, event: Application::ACCEPTED)
           declaration = create_started_declaration(application:)
+          create_app_event(application:, event: Application::STARTED)
           declaration.voided_state!
           create_started_declaration(application:)
+          create_app_event(application:, event: Application::STARTED)
+          create_app_event(application:, event: Application::DEFERRED)
         end
       end
 
@@ -400,8 +423,10 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::WITHDRAWN,
           eligible_for_funding: index.even?,
-          user: create_random_user(status: :withdrawn, index:),
+          user: create_random_user,
+          funding_choice: Application.funding_choices.values.sample,
         )
+        create_app_event(application:, event: Application::WITHDRAWN)
       end
 
       # PLACEHOLDER FOR SUPERSEDED APPLICAITONS
