@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe SendApplicationSubmissionEmailJob, type: :job do
+RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
   let(:course) { create(:course, :tte_early_years) }
   let(:application) { create(:application, course:, raw_application_data: { "funding_amount" => "123" }) }
 

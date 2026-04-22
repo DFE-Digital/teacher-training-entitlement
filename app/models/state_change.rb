@@ -1,14 +1,21 @@
 class StateChange < ApplicationEvent
   validates :event, inclusion: { in: Application::STATUSES }
 
+  scope :deferred, ->(months: 0) { deferrals("<=", months) }
+
+  # Most recent deferral date per application
   # Handles edge case: deferred 16mo ago -> resumed -> deferred 2mo ago
-  # Uses MAX(created_at) to check most recent deferral only
-  scope :expired_deferrals, lambda { |months_ago:|
+  scope :most_recent_deferrals, lambda {
     where(event: Application::DEFERRED)
       .group(:application_id)
-      .having("MAX(created_at) < ?", months_ago.months.ago)
-      .select(:application_id)
+      .select(:application_id, "MAX(created_at) as last_deferral_at")
   }
+
+  def self.deferrals(comparison, months_ago)
+    most_recent_deferrals
+      .having("MAX(created_at) #{comparison} ?", months_ago.months.ago)
+      .reselect(:application_id)
+  end
 
   def status
     event

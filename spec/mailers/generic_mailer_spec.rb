@@ -178,7 +178,8 @@ RSpec.describe GenericMailer, type: :mailer do
 
       event = application.notifications.last
       expect(event.event).to eq("application_submitted")
-      expect(event.metadata).to eq({ "recipient" => to })
+      expect(event.metadata).to include("ecf_id" => application.ecf_id)
+      expect(event.metadata).not_to include("to", "full_name")
     end
 
     it "does not create an event when ecf_id is missing" do
@@ -186,5 +187,129 @@ RSpec.describe GenericMailer, type: :mailer do
         described_class.with(to:, code: "123").confirmation_code.deliver_now
       }.not_to change(ApplicationEvent, :count)
     end
+
+    it "includes cohort_id in metadata when provided" do
+      described_class.with(
+        to:,
+        ecf_id: application.ecf_id,
+        full_name: "Test",
+        course_name: "Test",
+        next_course_start_date: "February 2027",
+        deferral_date: "1 January 2026",
+        cohort_id: 123,
+      ).registration_open_notification.deliver_now
+
+      event = application.notifications.last
+      expect(event.metadata).to include("cohort_id" => 123)
+      expect(event.metadata).not_to include("to", "full_name")
+    end
+  end
+
+  describe "#deferral_notification" do
+    let(:to) { "recipient@example.com" }
+    let(:full_name) { "Example User" }
+    let(:provider_name) { "Example Provider" }
+    let(:course_name) { "Early Years TTE" }
+    let(:deferral_date) { "10 November 2026" }
+    let(:ecf_id) { "ABC123" }
+
+    subject(:mail) do
+      described_class.with(
+        to:,
+        full_name:,
+        provider_name:,
+        course_name:,
+        deferral_date:,
+        ecf_id:,
+      ).deferral_notification
+    end
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Notification of deferral - #{course_name}")
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(provider_name)
+        expect(body).to include(course_name)
+        expect(body).to include(deferral_date)
+        expect(body).to include(ecf_id)
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
+  end
+
+  describe "#registration_open_notification" do
+    let(:to) { "recipient@example.com" }
+    let(:full_name) { "Example User" }
+    let(:course_name) { "Early Years TTE" }
+    let(:next_course_start_date) { "February 2027" }
+    let(:deferral_date) { "10 November 2026" }
+    let(:ecf_id) { "ABC123" }
+
+    subject(:mail) do
+      described_class.with(
+        to:,
+        full_name:,
+        course_name:,
+        next_course_start_date:,
+        deferral_date:,
+        ecf_id:,
+      ).registration_open_notification
+    end
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Registration open - #{course_name}")
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(course_name)
+        expect(body).to include(next_course_start_date)
+        expect(body).to include(deferral_date)
+        expect(body).to include(ecf_id)
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
+  end
+
+  describe "#deferral_expiring_notification" do
+    let(:to) { "recipient@example.com" }
+    let(:full_name) { "Example User" }
+    let(:course_name) { "Early Years TTE" }
+    let(:deferral_date) { "10 November 2026" }
+    let(:ecf_id) { "ABC123" }
+
+    subject(:mail) do
+      described_class.with(
+        to:,
+        full_name:,
+        course_name:,
+        deferral_date:,
+        ecf_id:,
+      ).deferral_expiring_notification
+    end
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Registration about to expire - #{course_name}")
+
+        body = mail.personalisation[:body]
+        expect(body).to include(full_name)
+        expect(body).to include(course_name)
+        expect(body).to include(deferral_date)
+        expect(body).to include(ecf_id)
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
   end
 end

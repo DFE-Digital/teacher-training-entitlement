@@ -22,6 +22,6 @@ private
   def expired_deferred_applications
     Application
       .deferred_status
-      .where(id: StateChange.expired_deferrals(months_ago: DEFERRAL_EXPIRY_MONTHS))
+      .where(id: StateChange.deferred(months: DEFERRAL_EXPIRY_MONTHS))
   end
 end
