@@ -75,6 +75,7 @@ class Application < ApplicationRecord
       DEFERRED = "deferred".freeze,
       WITHDRAWN = "withdrawn".freeze,
       REJECTED = "rejected".freeze,
+      REASSIGNED = "reassigned".freeze,
     ].freeze
 
   STATUS_TRANSITIONS = {

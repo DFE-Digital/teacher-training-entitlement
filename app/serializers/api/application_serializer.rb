@@ -36,6 +36,12 @@ module API
           ].compact.max
         end
       end
+
+      view :v1_reassigned do
+        include_view :v1
+
+        field(:status) { |_| Application::REASSIGNED }
+      end
     end
 
     association :attributes, blueprint: AttributesSerializer do |application|
@@ -44,6 +50,12 @@ module API
 
     view :v1 do
       association :attributes, blueprint: AttributesSerializer, view: :v1 do |application|
+        application
+      end
+    end
+
+    view :v1_reassigned do
+      association :attributes, blueprint: AttributesSerializer, view: :v1_reassigned do |application|
         application
       end
     end

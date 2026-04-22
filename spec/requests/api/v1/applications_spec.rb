@@ -20,16 +20,18 @@ RSpec.describe "Application endpoints", type: :request do
       include_context "with application which changed provider"
 
       describe "when viewing as old provider" do
-        it "old provider can still see the application" do
+        it "old provider can still see the application, but with a 'reassigned' status" do
           api_get(api_v1_application_path(application.ecf_id), lead_provider: old_lead_provider)
           expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(Application::REASSIGNED)
         end
       end
 
       describe "when viewing as new provider" do
-        it "new provider can see the application" do
+        it "new provider can see the application with the application's status" do
           api_get(api_v1_application_path(application.ecf_id), lead_provider: new_lead_provider)
           expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(application.status)
         end
       end
     end

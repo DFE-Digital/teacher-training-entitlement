@@ -8,7 +8,7 @@ module API
 
       def index
         applications = applications_query.applications
-        render json: to_json(paginate(applications))
+        render json: ApplicationSerializer.render(paginate(applications), view: :v1, root: "data")
       end
 
       def show
@@ -95,7 +95,8 @@ module API
       end
 
       def to_json(obj)
-        ApplicationSerializer.render(obj, view: :v1, root: "data")
+        view = application_lead_provider.current? ? :v1 : :v1_reassigned
+        ApplicationSerializer.render(obj, view:, root: "data")
       end
 
       def applications_query
