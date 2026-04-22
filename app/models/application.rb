@@ -35,7 +35,7 @@ class Application < ApplicationRecord
   has_many :declarations
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
-  scope :active_applications, -> { where.not(id: expired_applications) }
+  scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
   scope :for_manual_review, -> { where.not(review_status: nil) }
@@ -73,7 +73,7 @@ class Application < ApplicationRecord
   STATUS_TRANSITIONS = {
     nil => [PENDING].freeze,
     PENDING => [ACCEPTED, REJECTED].freeze,
-    ACCEPTED => [STARTED, COMPLETED].freeze,
+    ACCEPTED => [STARTED, COMPLETED, WITHDRAWN].freeze,
     STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
     DEFERRED => [STARTED, WITHDRAWN].freeze,
     WITHDRAWN => [STARTED].freeze,
