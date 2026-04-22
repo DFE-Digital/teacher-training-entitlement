@@ -26,6 +26,7 @@ module API
       return unless current_lead_provider
 
       Sentry.configure_scope do |scope|
+        scope.set_tag("api", true)
         scope.set_tag("lead_provider.id", current_lead_provider.id)
         scope.set_tag("lead_provider.name", current_lead_provider.name)
         scope.set_user(id: current_lead_provider.id, username: current_lead_provider.name)
