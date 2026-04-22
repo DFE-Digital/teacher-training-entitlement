@@ -128,20 +128,17 @@ module ValidTestDataGenerators
 
       course_cohort_primary = course_cohort_setup(
         registration_starts_at: date,
-        suffix: "a",
         training_starts_now: true,
       )
 
       # for resume scenario
       course_cohort_setup(
         registration_starts_at: Date.new(date.year, 9, 1),
-        suffix: "b",
         training_starts_now: true,
       )
 
       course_cohort_secondary = course_cohort_setup(
         registration_starts_at: date + 1.year,
-        suffix: "a",
         training_starts_now: true,
       )
 
@@ -221,8 +218,10 @@ module ValidTestDataGenerators
       end
     end
 
-    def course_cohort_setup(registration_starts_at:, suffix: "a", training_starts_now: false)
+    def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       cohort_year = registration_starts_at.year
+      term = registration_starts_at.month < 8 ? "autumn" : "spring"
+      suffix = registration_starts_at.month < 8 ? "a" : "b"
       current_cohort = Cohort.find_by(start_year: cohort_year, suffix:)
 
       attrs = {
@@ -238,7 +237,6 @@ module ValidTestDataGenerators
         current_cohort = Cohort.create!(**attrs)
       end
 
-      term = registration_starts_at.month < 8 ? "autumn" : "spring"
       name = "TTE Reception #{term}"
       identifier = "tte-reception-#{term}"
       training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
@@ -280,7 +278,7 @@ module ValidTestDataGenerators
       cc
     end
 
-    def create_app(course_cohort:, status:, eligible_for_funding:, user:)
+    def create_app(course_cohort:, status:, eligible_for_funding:, user:, funding_choice:)
       institution = Institution
                       .open_school_or_non_school
                       .order("RANDOM()").first
