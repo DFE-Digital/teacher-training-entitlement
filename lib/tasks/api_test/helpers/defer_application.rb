@@ -33,6 +33,10 @@ class DeferApplication
 private
 
   def application
-    @application ||= Application.started_status.last
+    @application ||= Application
+      .started_status
+      .joins(:course)
+      .where(courses: { identifier: Course::IDENTIFIERS })
+      .last
   end
 end

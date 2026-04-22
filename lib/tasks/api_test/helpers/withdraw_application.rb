@@ -33,6 +33,10 @@ class WithdrawApplication
 private
 
   def application
-    @application ||= Application.accepted_status.last
+    @application ||= Application
+      .accepted_status
+      .joins(:course)
+      .where(courses: { identifier: Course::IDENTIFIERS })
+      .last
   end
 end
