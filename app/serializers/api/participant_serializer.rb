@@ -25,7 +25,7 @@ module API
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
               status: application.status,
-              school_urn: application.school&.urn,
+              school_urn: application.institution&.institution_reference_number,
               withdrawal: withdrawal(application:, lead_provider: options[:lead_provider]),
               deferral: deferral(application:, lead_provider: options[:lead_provider]),
               created_at: application.accepted_at.rfc3339,
