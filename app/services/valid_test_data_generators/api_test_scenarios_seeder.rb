@@ -53,11 +53,6 @@ module ValidTestDataGenerators
       ActiveRecord::Base.transaction do
         test_scenarios_drop_data!
         test_scenarios_create_data!
-        2.times do |i|
-          # create data for past cohorts
-          year = cohort_year - i - 2
-          create_data!(registration_starts_at: Date.new(year, 7, 1))
-        end
       end
 
       Outcome[
@@ -71,6 +66,14 @@ module ValidTestDataGenerators
 
       Sentry.capture_exception(e)
       Outcome[success: false, error: e.message]
+    end
+
+    def custom_data(n)
+      n.times do |i|
+        # create data for past cohorts
+        year = cohort_year - i - 2
+        create_data!(registration_starts_at: Date.new(year, 7, 1))
+      end
     end
 
     def test_emails
