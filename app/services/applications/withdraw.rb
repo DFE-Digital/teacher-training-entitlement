@@ -14,7 +14,7 @@ module Applications
       change-in-developmental-or-personal-priorities
       change-in-school-circumstances
       change-in-school-leadership
-      quality-of-programme-structure-not-suitable.
+      quality-of-programme-structure-not-suitable
       quality-of-programme-content-not-suitable
       quality-of-programme-facilitation-not-effective
       quality-of-programme-accessibility
