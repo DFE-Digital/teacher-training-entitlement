@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
   describe "#perform" do
     let(:cohort) { create(:cohort, start_year: Date.yesterday.year, registration_starts_at: Date.yesterday) }
-    let(:application) { create(:application, status: Application::DEFERRED) }
+    let(:application) { create(:application, :deferred) }
 
     it "enqueues email for deferred applications when registration opened yesterday" do
       cohort

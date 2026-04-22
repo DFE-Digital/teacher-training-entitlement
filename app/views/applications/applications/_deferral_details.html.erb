@@ -1,5 +1,5 @@
 <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
-  <%= I18n.t('deferral_details.date_deferred', deferred_at: application.deferred_at&.to_fs(:govuk_short)) %>
+  <%= I18n.t('deferral_details.date_deferred', deferred_at: application.deferred_at.to_fs(:govuk_date_only)) %>
 </p>
 <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
   <%= I18n.t('deferral_details.if_you_restart') %>

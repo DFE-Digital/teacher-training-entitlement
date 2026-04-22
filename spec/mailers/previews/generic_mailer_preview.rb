@@ -35,7 +35,7 @@ class GenericMailerPreview < ActionMailer::Preview
       to: "test@example.com",
       full_name: "Jane Smith",
       course_name: "Early Years TTE",
-      deferral_date: "10 November 2026",
+      deferral_date: 11.months.ago.to_fs(:govuk_date_only),
       ecf_id: "abc-123-def-456",
     ).deferral_expiring_notification
   end
@@ -46,7 +46,7 @@ class GenericMailerPreview < ActionMailer::Preview
       full_name: "Jane Smith",
       provider_name: "Ambition Institute",
       course_name: "Early Years TTE",
-      deferral_date: "10 November 2026",
+      deferral_date: Date.current.to_fs(:govuk),
       ecf_id: "abc-123-def-456",
     ).deferral_notification
   end
@@ -74,8 +74,8 @@ class GenericMailerPreview < ActionMailer::Preview
       to: "test@example.com",
       full_name: "Jane Smith",
       course_name: "Early Years TTE",
-      next_course_start_date: "February 2027",
-      deferral_date: "10 November 2026",
+      next_course_start_date: Date.current.to_fs(:govuk),
+      deferral_date: 3.months.ago.to_fs(:govuk_date_only),
       ecf_id: "abc-123-def-456",
     ).registration_open_notification
   end
