@@ -22,8 +22,9 @@ module Middleware
       return if lead_provider.nil?
 
       Sentry.configure_scope do |scope|
-        scope.set_tag("lead_provider_id",   lead_provider.id)
-        scope.set_tag("lead_provider_name", lead_provider.name)
+        scope.set_tag("lead_provider.id",   lead_provider.id)
+        scope.set_tag("lead_provider.name", lead_provider.name)
+        scope.set_tag("http.path", Rack::Request.new(env).path)
         scope.set_user(id: lead_provider.id, username: lead_provider.name)
         scope.set_context("lead_provider", { id: lead_provider.id, name: lead_provider.name })
       end

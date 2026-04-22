@@ -25,11 +25,15 @@ RSpec.describe Middleware::SentryLeadProviderContext do
       subject(:response) { request.get(path, "current_lead_provider" => lead_provider) }
 
       it "tags sentry with lead_provider_id" do
-        expect(sentry_scope).to have_received(:set_tag).with("lead_provider_id", lead_provider.id)
+        expect(sentry_scope).to have_received(:set_tag).with("lead_provider.id", lead_provider.id)
       end
 
       it "tags sentry with lead_provider_name" do
-        expect(sentry_scope).to have_received(:set_tag).with("lead_provider_name", lead_provider.name)
+        expect(sentry_scope).to have_received(:set_tag).with("lead_provider.name", lead_provider.name)
+      end
+
+      it "tags request path" do
+        expect(sentry_scope).to have_received(:set_tag).with("http.path", api_v1_applications_path)
       end
 
       it "sets sentry user" do
