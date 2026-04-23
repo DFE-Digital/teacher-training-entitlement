@@ -71,8 +71,7 @@ module Registration
     config.x.tracking_pixels_enabled = ENV["TRACKING_PIXELS"].to_s == "true"
     config.x.google_analytics_id = ENV["GOOGLE_ANALYTICS_ID"].presence
 
-    # Teacher Auth OIDC - disabled on review apps as callback URLs cannot be pre-registered
-    config.x.teacher_auth.enabled = !Rails.env.review?
+    config.x.teacher_auth.enabled = true
 
     # Use active record session store in all environments for consistency
     config.session_store :active_record_store, key: "_cpd_tte_session",

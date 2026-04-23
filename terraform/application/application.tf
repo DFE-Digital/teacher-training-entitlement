@@ -17,13 +17,18 @@ module "application_configuration" {
   # Delete for non rails apps
   is_rails_application = true
 
-  config_variables = {
-    ENVIRONMENT_NAME = var.environment
-    PGSSLMODE        = local.postgres_ssl_mode
-    RAILS_ENV        = var.environment
-    AZURE_STORAGE_ACCOUNT_NAME = module.storage_account.name
-    AZURE_STORAGE_CONTAINER    = "uploads"
-  }
+  config_variables = merge(
+    {
+      ENVIRONMENT_NAME           = var.environment
+      PGSSLMODE                  = local.postgres_ssl_mode
+      RAILS_ENV                  = var.environment
+      AZURE_STORAGE_ACCOUNT_NAME = module.storage_account.name
+      AZURE_STORAGE_CONTAINER    = "uploads"
+    },
+    var.environment == "review" ? {
+      HOSTING_DOMAIN = "https://${var.service_name}-${local.environment}.${module.cluster_data.ingress_domain}"
+    } : {}
+  )
   secret_variables = {
     DATABASE_URL = module.postgres.url
     REDIS_CACHE_URL = var.deploy_redis_cache ? module.redis-cache.url : ""
