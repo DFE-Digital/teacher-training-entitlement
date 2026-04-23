@@ -81,7 +81,7 @@ RSpec.describe RegistrationWizardController do
 
     context "when user has a withdrawn application for the course" do
       let(:course) { create(:course) }
-      let!(:application) { create(:application, :accepted, course:, user: current_user, status: Application::WITHDRAWN) }
+      let!(:application) { create(:application, :withdrawn, course:, user: current_user) }
 
       before do
         session["registration_store"] = { "course_identifier" => course.identifier }

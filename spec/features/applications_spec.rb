@@ -36,12 +36,7 @@ RSpec.feature "Applications", type: :feature do
 
   describe "withdrawn application" do
     let(:user) { create(:user) }
-    let!(:application) do
-      create(:application, :accepted, user:).tap do |app|
-        app.update!(status: Application::WITHDRAWN)
-        create(:state_change, :withdrawn, application: app, lead_provider: app.lead_provider)
-      end
-    end
+    let!(:application) { create(:application, :withdrawn, user:) }
 
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
