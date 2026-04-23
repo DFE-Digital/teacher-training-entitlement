@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder, :revisit do
+RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
   let(:seeder) { described_class.new(lead_provider:, cohort_year:) }
   let(:lead_provider) { create(:lead_provider) }
   let(:cohort_year) { 2026 }
@@ -10,6 +10,25 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder, :revisit do
   before do
     create(:school)
     allow(Rails).to receive(:env).and_return(environment.inquiry)
+  end
+
+  describe "#custom_data" do
+    subject(:custom_data) { seeder.custom_data(nb_cohort: 1, nb_app_per_state: 2) }
+
+    let(:environment) { "sandbox" }
+
+    context "with application per status" do
+      before { custom_data }
+
+      let(:applications) { lead_provider.applications.group_by(&:status) }
+
+      Application::STATUSES.each do |status|
+        it "creates application with status #{status}" do
+          expect(applications[status.to_s].size).to eq 2
+          expect(applications[status.to_s].map(&:eligible_for_funding)).to contain_exactly(true, false)
+        end
+      end
+    end
   end
 
   describe "#call" do
@@ -121,11 +140,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder, :revisit do
         it "creates schedules for both cohorts" do
           seeder.call
 
-          primary_cohort = Cohort.find_by(start_year: cohort_year)
-          secondary_cohort = Cohort.find_by(start_year: cohort_year + 1)
-
-          expect(Schedule.find_by(identifier: "tte-reception-autumn", cohort: primary_cohort)).to be_present
-          expect(Schedule.find_by(identifier: "tte-reception-autumn", cohort: secondary_cohort)).to be_present
+          expect(Schedule.find_by(identifier: "tte-reception-spring")).to be_present
+          expect(Schedule.find_by(identifier: "tte-reception-autumn")).to be_present
         end
 
         it "creates users with verified TRNs" do
