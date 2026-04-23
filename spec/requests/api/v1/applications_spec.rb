@@ -57,14 +57,16 @@ RSpec.describe "Application endpoints", type: :request do
       include_context "with application which changed provider"
       let(:path) { api_v1_applications_path }
 
-      it "the old provider can see the application" do
+      it "the old provider can see the application with reassigned status" do
         api_get(path, lead_provider: old_lead_provider)
         expect(response_ids).to include(application.ecf_id)
+        expect(JSON.parse(response.body)["data"].first["attributes"]["status"]).to eq(Application::REASSIGNED)
       end
 
-      it "the new provider can see the application" do
+      it "the new provider can see the application with pending status" do
         api_get(path, lead_provider: new_lead_provider)
         expect(response_ids).to include(application.ecf_id)
+        expect(JSON.parse(response.body)["data"].first["attributes"]["status"]).to eq(Application::PENDING)
       end
 
       it "a provider never assigned cannot see the application" do

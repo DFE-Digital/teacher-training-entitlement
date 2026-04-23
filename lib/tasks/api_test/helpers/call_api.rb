@@ -1,5 +1,5 @@
 module CallApi
-  def call_api(lead_provider:, url:, body:)
+  def call_api(lead_provider:, url:, body: nil, method: :put)
     api_token = generate_token!(lead_provider:)
 
     headers = {
@@ -7,7 +7,7 @@ module CallApi
       "Content-Type" => "application/json",
     }
 
-    response = HTTParty.put(url, body:, headers:)
+    response = HTTParty.send(method, url, body:, headers:)
 
     APIToken.find_by_unhashed_token(api_token, scope: :lead_provider).delete
 
