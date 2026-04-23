@@ -37,7 +37,7 @@ module ValidTestDataGenerators
       @lead_provider = lead_provider
       @course_identifier = course_identifier
       @schedule_identifier = schedule_identifier
-      @cohort_year = cohort_year
+      @cohort_year = cohort_year.to_i
       @logger = logger
     end
 
@@ -69,10 +69,21 @@ module ValidTestDataGenerators
     end
 
     def custom_data(nb_cohort:, nb_app_per_state:)
-      nb_cohort.times do |i|
-        # create data for past cohorts
-        year = cohort_year - i - 2
-        create_data!(registration_starts_at: Date.new(year, 7, 1), number: nb_app_per_state)
+      cohort_start_dates
+        .take(nb_cohort)
+        .each do |registration_starts_at|
+        create_data!(registration_starts_at:, number: nb_app_per_state)
+      end
+    end
+
+    def cohort_start_dates
+      Enumerator.new do |yielder|
+        year = cohort_year
+        loop do
+          yielder << Date.new(year, 7, 1) # autumn schedule
+          yielder << Date.new(year, 9, 1) # spring schedule
+          year += 1
+        end
       end
     end
 
@@ -124,42 +135,32 @@ module ValidTestDataGenerators
     end
 
     def test_scenarios_create_data!
-      date = Date.new(cohort_year, 7, 1)
-
-      course_cohort_primary = course_cohort_setup(
-        registration_starts_at: date,
-        training_starts_now: true,
-      )
-
-      # for resume scenario
-      course_cohort_setup(
-        registration_starts_at: Date.new(date.year, 9, 1),
-        training_starts_now: true,
-      )
-
-      course_cohort_secondary = course_cohort_setup(
-        registration_starts_at: date + 1.year,
-        training_starts_now: true,
-      )
+      course_cohorts = cohort_start_dates
+                         .take(3)
+                         .map do |registration_starts_at|
+        course_cohort_setup(
+          registration_starts_at:,
+          training_starts_now: true,
+        )
+      end
 
       applications_data.each do |app_data|
-        course_cohort = app_data[:cohort_offset].zero? ? course_cohort_primary : course_cohort_secondary
+        course_cohort = app_data[:cohort_offset].zero? ? course_cohorts.first : course_cohorts.last
         create_app(
           course_cohort:,
           status: Application::PENDING,
           eligible_for_funding: app_data[:funding_eligible],
           user: create_user(app_data),
-          funding_choice: :school,
         )
       end
 
-      statements_setup(course_cohort: course_cohort_primary)
+      statements_setup(course_cohort: course_cohorts.first)
     end
 
-    def create_data!(registration_starts_at:, number: 5)
+    def create_data!(registration_starts_at:, number:)
       course_cohort = course_cohort_setup(registration_starts_at:)
-      applications_setup(course_cohort:, number:)
       statements_setup(course_cohort:)
+      applications_setup(course_cohort:, number:)
     end
 
   private
@@ -321,6 +322,7 @@ module ValidTestDataGenerators
       application.declarations.create!(
         declaration_type: :started,
         declaration_date: date,
+        state: :eligible,
         delivery_partner: application.lead_provider.delivery_partners.sample,
         cohort: application.cohort,
         lead_provider: application.lead_provider,
@@ -332,6 +334,7 @@ module ValidTestDataGenerators
       declaration = application.declarations.create!(
         declaration_type: :completed,
         declaration_date: date,
+        state: :eligible,
         delivery_partner: application.lead_provider.delivery_partners.sample,
         cohort: application.cohort,
         lead_provider: application.lead_provider,
@@ -351,7 +354,7 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::PENDING,
           eligible_for_funding: index.even?,
-          user: create_random_user,
+          user: create_random_user(with_trn: [true, false].sample),
         )
       end
 
@@ -361,7 +364,7 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::ACCEPTED,
           eligible_for_funding: index.even?,
-          user: create_random_user,
+          user: create_random_user(with_trn: [true, false].sample),
         ).tap do |application|
           create_app_event(application:, event: Application::ACCEPTED)
         end
@@ -373,72 +376,92 @@ module ValidTestDataGenerators
           course_cohort:,
           status: Application::REJECTED,
           eligible_for_funding: index.even?,
-          user: create_random_user,
+          user: create_random_user(with_trn: [true, false].sample),
         ).tap do |application|
           create_app_event(application:, event: Application::REJECTED)
         end
       end
 
-      # started
-      number.times do |index|
-        create_app(
-          course_cohort:,
-          status: Application::STARTED,
-          eligible_for_funding: index.even?,
-          user: create_random_user,
-        ).tap do |application|
-          create_app_event(application:, event: Application::ACCEPTED)
-          create_started_declaration(application:)
-          create_app_event(application:, event: Application::STARTED)
+      # we cannot create declaration in the future
+      # so only creates these applications for past cohorts
+      if course_cohort.cohort.start_year < Time.zone.now.year
+        # started
+        number.times do |index|
+          create_app(
+            course_cohort:,
+            status: Application::STARTED,
+            eligible_for_funding: index.even?,
+            user: create_random_user,
+          ).tap do |application|
+            create_app_event(application:, event: Application::ACCEPTED)
+            create_started_declaration(application:).tap { create_payable_statement(_1) }
+            create_app_event(application:, event: Application::STARTED)
+          end
+        end
+
+        # completed
+        number.times do |index|
+          create_app(
+            course_cohort:,
+            status: Application::COMPLETED,
+            eligible_for_funding: index.even?,
+            user: create_random_user,
+          ).tap do |application|
+            create_app_event(application:, event: Application::ACCEPTED)
+            create_started_declaration(application:).tap { create_paid_statement(_1) }
+            create_app_event(application:, event: Application::STARTED)
+            create_completed_declaration(application:, has_passed: index.even?).tap { create_payable_statement(_1) }
+            create_app_event(application:, event: Application::COMPLETED)
+          end
+        end
+
+        # deferred
+        number.times do |index|
+          create_app(
+            course_cohort:,
+            status: Application::DEFERRED,
+            eligible_for_funding: index.even?,
+            user: create_random_user(with_trn: [true, false].sample),
+          ).tap do |application|
+            create_app_event(application:, event: Application::ACCEPTED)
+            declaration = create_started_declaration(application:).tap { create_paid_statement(_1) }
+            create_app_event(application:, event: Application::STARTED)
+            create_clawback_statement(declaration)
+            create_started_declaration(application:).tap { create_payable_statement(_1) }
+            create_app_event(application:, event: Application::STARTED)
+            create_app_event(application:, event: Application::DEFERRED)
+          end
+        end
+
+        # withdrawn
+        number.times do |index|
+          create_app(
+            course_cohort:,
+            status: Application::WITHDRAWN,
+            eligible_for_funding: index.even?,
+            user: create_random_user(with_trn: [true, false].sample),
+          ).tap do |application|
+            case index
+            when index % 5
+              # auto withdrawn
+              create_app_event(application:, event: Application::ACCEPTED)
+              create_app_event(application:, event: Application::STARTED)
+              create_app_event(application:, event: Application::DEFERRED)
+
+            when index % 3
+              # withdraw after started acceptance
+              create_app_event(application:, event: Application::ACCEPTED)
+              create_app_event(application:, event: Application::STARTED)
+
+            when index % 2
+              # withdraw after acceptance
+              create_app_event(application:, event: Application::ACCEPTED)
+            end
+
+            create_app_event(application:, event: Application::WITHDRAWN)
+          end
         end
       end
-
-      # completed
-      number.times do |index|
-        create_app(
-          course_cohort:,
-          status: Application::COMPLETED,
-          eligible_for_funding: index.even?,
-          user: create_random_user,
-        ).tap do |application|
-          create_app_event(application:, event: Application::ACCEPTED)
-          create_started_declaration(application:)
-          create_app_event(application:, event: Application::STARTED)
-          create_completed_declaration(application:, has_passed: index.even?)
-          create_app_event(application:, event: Application::COMPLETED)
-        end
-      end
-
-      # deferred
-      number.times do |index|
-        create_app(
-          course_cohort:,
-          status: Application::DEFERRED,
-          eligible_for_funding: index.even?,
-          user: create_random_user,
-        ).tap do |application|
-          create_app_event(application:, event: Application::ACCEPTED)
-          declaration = create_started_declaration(application:)
-          create_app_event(application:, event: Application::STARTED)
-          declaration.voided_state!
-          create_started_declaration(application:)
-          create_app_event(application:, event: Application::STARTED)
-          create_app_event(application:, event: Application::DEFERRED)
-        end
-      end
-
-      # withdrawn
-      number.times do |index|
-        create_app(
-          course_cohort:,
-          status: Application::WITHDRAWN,
-          eligible_for_funding: index.even?,
-          user: create_random_user,
-        ).tap do |application|
-          create_app_event(application:, event: Application::WITHDRAWN)
-        end
-      end
-
       # PLACEHOLDER FOR SUPERSEDED APPLICAITONS
       # # # superseded
       # number.times do |index|
@@ -480,6 +503,34 @@ module ValidTestDataGenerators
         statement.state = "payable"
         statement.ecf_id = SecureRandom.uuid
       end
+    end
+
+    def create_payable_statement(declaration)
+      declaration.mark_payable!
+      statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
+      statement.statement_items.create_or_find_by!(
+        declaration:,
+        state: declaration.state,
+      )
+    end
+
+    def create_paid_statement(declaration)
+      declaration.mark_payable!
+      declaration.mark_paid!
+      statement = lead_provider.statements.where(state: :paid, cohort: declaration.cohort).first
+      statement.statement_items.create_or_find_by!(
+        declaration:,
+        state: declaration.state,
+      )
+    end
+
+    def create_clawback_statement(declaration)
+      declaration.voided_state!
+      statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
+      statement.statement_items.create_or_find_by!(
+        declaration:,
+        state: :awaiting_clawback,
+      )
     end
   end
 end

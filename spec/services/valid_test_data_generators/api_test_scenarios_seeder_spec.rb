@@ -17,16 +17,34 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
     let(:environment) { "sandbox" }
 
-    context "with application per status" do
+    context "when creating historical data" do
       before { custom_data }
 
+      let(:cohort_year) { Time.zone.now.year - 1 }
       let(:applications) { lead_provider.applications.group_by(&:status) }
 
-      Application::STATUSES.each do |status|
-        it "creates application with status #{status}" do
+      it "creates application each application statuses" do
+        Application::STATUSES.each do |status|
           expect(applications[status.to_s].size).to eq 2
           expect(applications[status.to_s].map(&:eligible_for_funding)).to contain_exactly(true, false)
         end
+        expect(applications.keys).to match_array(Application::STATUSES)
+
+      end
+    end
+
+    context "when creating present/future data" do
+      before { custom_data }
+
+      let(:cohort_year) { Time.zone.now.year }
+      let(:applications) { lead_provider.applications.group_by(&:status) }
+
+      it "creates application with status pending, accepted and rejected only" do
+        [Application::PENDING, Application::ACCEPTED, Application::REJECTED].each do |status|
+          expect(applications[status.to_s].size).to eq 2
+          expect(applications[status.to_s].map(&:eligible_for_funding)).to contain_exactly(true, false)
+        end
+        expect(applications.keys).to contain_exactly(Application::PENDING, Application::ACCEPTED, Application::REJECTED)
       end
     end
   end
