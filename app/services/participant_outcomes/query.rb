@@ -48,7 +48,7 @@ module ParticipantOutcomes
       ParticipantOutcome.distinct.includes(
         declaration: {
           lead_provider: {},
-          application: [:user, { course_cohort: :course }],
+          application: [:user, :course, { course_cohort: :course }],
         },
       )
     end

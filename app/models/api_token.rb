@@ -18,7 +18,7 @@ class APIToken < ApplicationRecord
 
   def self.find_by_unhashed_token(unhashed_token, scope:)
     hashed_token = Devise.token_generator.digest(APIToken, :hashed_token, unhashed_token)
-    find_by(hashed_token:, scope:)
+    includes(:lead_provider).find_by(hashed_token:, scope:)
   end
 
   # only used in specs and seeds

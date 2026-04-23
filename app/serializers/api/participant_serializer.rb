@@ -25,10 +25,10 @@ module API
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
               status: application.status,
-              school_urn: application.school&.urn,
+              school_urn: application.institution&.institution_reference_number,
               withdrawal: withdrawal(application:, lead_provider: options[:lead_provider]),
               deferral: deferral(application:, lead_provider: options[:lead_provider]),
-              created_at: application.accepted_at.rfc3339,
+              created_at: acceptance(application:, lead_provider: options[:lead_provider]),
               funded_place: application.funded_place,
             }
           end
@@ -48,13 +48,22 @@ module API
           object.applications.select { |application| application.has_been_accepted? && application.lead_provider_id == options[:lead_provider].id }
         end
 
+        def acceptance(application:, lead_provider:)
+          latest_event = application
+                           .application_events.sort_by(&:created_at)
+                           .reverse!
+                           .find { |e| e.event == Application::ACCEPTED && e.lead_provider_id == lead_provider.id }
+
+          latest_event.created_at.rfc3339 if latest_event
+        end
+
         def withdrawal(application:, lead_provider:)
           if application.withdrawn_status?
             # We are doing this in memory to avoid running those as queries on each request
             latest_event = application
               .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |e| e.status == Application::WITHDRAWN && e.lead_provider_id == lead_provider.id }
+              .find { |e| e.event == Application::WITHDRAWN && e.lead_provider_id == lead_provider.id }
 
             if latest_event.present?
               {
@@ -71,7 +80,7 @@ module API
             latest_event = application
               .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |e| e.status == Application::DEFERRED && e.lead_provider_id == lead_provider.id }
+              .find { |e| e.event == Application::DEFERRED && e.lead_provider_id == lead_provider.id }
 
             if latest_event.present?
               {

@@ -186,7 +186,7 @@ module ValidTestDataGenerators
       email = "jdoe-#{status}-#{index}@#{to_dns_name(@lead_provider.name)}.com"
 
       User.find_or_create_by!(email:) do |user|
-        user.full_name = "J Doe #{index} #{status}"
+        user.full_name = "J Doe #{index} #{status} [#{@lead_provider.name[..5]}]"
         user.trn = generate_trn
         user.date_of_birth = Date.new(1990, 1, 1)
         user.ecf_id = SecureRandom.uuid

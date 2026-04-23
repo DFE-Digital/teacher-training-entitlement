@@ -31,6 +31,20 @@ FactoryBot.define do
     ukprn { rand(10_000_000..99_999_999).to_s }
     funded_place { course_cohort.cohort.funding_cap ? !!eligible_for_funding : nil }
 
+    trait :with_state_change do
+      after(:create) do |application|
+        next if application.pending_status?
+
+        application.state_changes << create(:state_change, application.status.to_sym, application:, lead_provider: application.lead_provider)
+      end
+    end
+
+    trait :with_accepted_event do
+      after(:create) do |application|
+        application.state_changes << create(:state_change, :accepted, application:, lead_provider: application.lead_provider)
+      end
+    end
+
     trait :with_school do
       transient do
         school { nil }

@@ -6,7 +6,7 @@ class Schedule < ApplicationRecord
   IDENTIFIERS = %w[tte-reception-autumn
                    tte-reception-spring].freeze
 
-  belongs_to :cohort # DEPRECATED
+  belongs_to :cohort, deprecated: true # DEPRECATED
 
   has_many :course_cohorts, dependent: :destroy
   has_many :courses, through: :course_cohorts
