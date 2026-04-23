@@ -7,12 +7,12 @@ module API
       include ServiceCallable
 
       def index
-        applications = applications_query.applications
-        render json: ApplicationSerializer.render(paginate(applications), view: :v1, root: "data")
+        application_lead_providers = applications_query.application_lead_providers
+        render json: ApplicationLeadProviderSerializer.render(paginate(application_lead_providers), view: :v1, root: "data")
       end
 
       def show
-        render json: to_json(readable_application)
+        render json: application_json
       end
 
       def accept
@@ -94,9 +94,8 @@ module API
         params.permit(:sort, filter: %i[cohort updated_since participant_id status course])
       end
 
-      def to_json(obj)
-        view = application_lead_provider.current? ? :v1 : :v1_reassigned
-        ApplicationSerializer.render(obj, view:, root: "data")
+      def application_json
+        ApplicationLeadProviderSerializer.render(application_lead_provider.reload, view: :v1, root: "data")
       end
 
       def applications_query
@@ -115,7 +114,7 @@ module API
 
       def call_and_render(service:)
         call_application_service_and_render(service:) do
-          to_json(updateable_application)
+          application_json
         end
       end
 

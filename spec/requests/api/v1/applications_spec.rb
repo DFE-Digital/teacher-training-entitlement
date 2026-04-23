@@ -38,11 +38,12 @@ RSpec.describe "Application endpoints", type: :request do
   end
 
   describe "GET /api/v1/applications" do
+    let(:serializer) { API::ApplicationLeadProviderSerializer }
     let(:path) { api_v1_applications_path }
     let(:resource_id_key) { :ecf_id }
 
     def create_resource(**attrs)
-      create(:application, **attrs)
+      create(:application, **attrs).application_lead_providers.first
     end
 
     it_behaves_like "an API index endpoint"

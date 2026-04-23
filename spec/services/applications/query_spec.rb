@@ -216,9 +216,9 @@ RSpec.describe Applications::Query do
     end
 
     describe "sorting" do
-      let(:application1) { travel_to(1.month.ago) { create(:application, lead_provider:) } }
-      let(:application2) { travel_to(1.week.ago) { create(:application, lead_provider:) } }
-      let(:application3) { create(:application, lead_provider:) }
+      let!(:application1) { travel_to(1.month.ago) { create(:application, lead_provider:) } }
+      let!(:application2) { travel_to(1.week.ago) { create(:application, lead_provider:) } }
+      let!(:application3) { create(:application, lead_provider:) }
       let(:sort) { nil }
 
       subject(:applications) { query.applications }

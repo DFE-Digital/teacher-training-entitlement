@@ -8,19 +8,19 @@ module Applications
 
     def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
       @scope = lead_provider
-                 .applications
+                 .application_lead_providers
+                 .joins(:application)
                  .includes(
-                   :user,
-                   :course,
-                   :cohort,
-                   :schedule,
-                   :institution,
-                   course_cohort: %i[course cohort schedule],
+                   application: [:user,
+                                 :course,
+                                 :cohort,
+                                 :schedule,
+                                 :institution,
+                                 { course_cohort: %i[course cohort schedule] }],
                  )
-                 .preload(institution: :institutionable)
+                 .preload(application: { institution: :institutionable })
       @sort = sort
 
-      where_lead_provider_is(lead_provider)
       where_cohort_start_year_in(cohort_start_years)
       where_updated_since(updated_since)
       where_participant_ids_in(participant_ids)
@@ -29,23 +29,21 @@ module Applications
     end
 
     def applications
-      scope.distinct.order(order_by)
+      application_lead_providers.map(&:application)
+    end
+
+    def application_lead_providers
+      scope.order(order_by)
     end
 
     def application(id: nil, ecf_id: nil)
-      return scope.find_by!(ecf_id:) if ecf_id.present?
-      return scope.find(id) if id.present?
+      return scope.find_by!(application: { ecf_id: })&.application if ecf_id.present?
+      return scope.find_by!(application: { id: })&.application if id.present?
 
       fail(ArgumentError, "id or ecf_id needed")
     end
 
   private
-
-    def where_lead_provider_is(lead_provider)
-      return if ignore?(filter: lead_provider)
-
-      scope.merge!(Application.joins(:application_lead_providers).merge(ApplicationLeadProvider.where(lead_provider:)))
-    end
 
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
