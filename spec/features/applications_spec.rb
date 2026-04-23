@@ -8,6 +8,20 @@ RSpec.feature "Applications", type: :feature do
       visit "/applications"
       expect(page).to have_current_path("/")
     end
+
+    context "when logged in with no applications" do
+      let(:user) { create(:user) }
+
+      before do
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+      end
+
+      scenario "redirects to the registration start page" do
+        visit applications_path
+
+        expect(page).to have_current_path(root_path)
+      end
+    end
   end
 
   describe "application show page" do

@@ -3,8 +3,13 @@ module Applications
     helper_method :application
 
     def index
-      latest_application = current_user.applications.order(created_at: :desc).first
-      redirect_to application_path(latest_application.ecf_id) if latest_application
+      most_recent_application = current_user.applications.order(created_at: :desc).first
+
+      if most_recent_application
+        redirect_to application_path(most_recent_application.ecf_id)
+      else
+        redirect_to root_path
+      end
     end
 
     def show
