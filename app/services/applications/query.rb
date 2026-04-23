@@ -29,7 +29,7 @@ module Applications
     end
 
     def applications
-      scope.order(order_by)
+      scope.distinct.order(order_by)
     end
 
     def application(id: nil, ecf_id: nil)
@@ -44,7 +44,7 @@ module Applications
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
 
-      scope.merge!(Application.joins(:application_lead_providers).merge(ApplicationLeadProvider.current.where(lead_provider:)))
+      scope.merge!(Application.joins(:application_lead_providers).merge(ApplicationLeadProvider.where(lead_provider:)))
     end
 
     def where_cohort_start_year_in(cohort_start_years)

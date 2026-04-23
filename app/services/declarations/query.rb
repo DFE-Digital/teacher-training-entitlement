@@ -38,7 +38,7 @@ module Declarations
       lead_provider_scope = relation.where(lead_provider:)
 
       if include_transferred_applications
-        lead_provider_scope = lead_provider_scope.or(relation.merge(ApplicationLeadProvider.current.where(lead_provider:)))
+        lead_provider_scope = lead_provider_scope.or(relation.merge(ApplicationLeadProvider.where(lead_provider:)))
       end
 
       scope.merge!(lead_provider_scope)

@@ -5,6 +5,8 @@ module Applications
     include ActiveModel::Model
     include ActiveModel::Validations
 
+    attr_reader :application
+
     validate :not_already_started
     validate :not_already_accepted
     validate :incompatible_course

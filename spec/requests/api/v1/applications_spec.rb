@@ -58,12 +58,17 @@ RSpec.describe "Application endpoints", type: :request do
 
       it "the old provider can see the application" do
         api_get(path, lead_provider: old_lead_provider)
-        expect(response_ids).not_to include(application.ecf_id)
+        expect(response_ids).to include(application.ecf_id)
       end
 
       it "the new provider can see the application" do
         api_get(path, lead_provider: new_lead_provider)
-        expect(response_ids).not_to include(application.ecf_id)
+        expect(response_ids).to include(application.ecf_id)
+      end
+
+      it "a provider never assigned cannot see the application" do
+        api_get(path, lead_provider: create(:lead_provider))
+        expect(response_ids).to be_blank
       end
     end
   end

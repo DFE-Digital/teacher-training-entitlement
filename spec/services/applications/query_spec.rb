@@ -179,6 +179,40 @@ RSpec.describe Applications::Query do
           }
         end
       end
+
+      context "when filtering by lead_provider" do
+        include_context "with application which changed provider"
+
+        context "when lead provider is current provider" do
+          let(:lead_provider) { current_lead_provider }
+
+          it "includes the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.applications).to contain_exactly(application)
+          end
+        end
+
+        context "when lead provider is no longer the current provider" do
+          let(:lead_provider) { old_lead_provider }
+
+          it "includes the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.applications).to contain_exactly(application)
+          end
+        end
+
+        context "when lead provider has never been the provider" do
+          let(:lead_provider) { create(:lead_provider) }
+
+          it "does not include the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.applications).to be_blank
+          end
+        end
+      end
     end
 
     describe "sorting" do
