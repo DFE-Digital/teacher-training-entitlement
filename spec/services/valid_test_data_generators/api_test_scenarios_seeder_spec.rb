@@ -29,7 +29,6 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(applications[status.to_s].map(&:eligible_for_funding)).to contain_exactly(true, false)
         end
         expect(applications.keys).to match_array(Application::STATUSES)
-
       end
     end
 
