@@ -201,7 +201,10 @@
 }
 
 .test-scenarios {
-    button {
-        margin-bottom: 0px;
-    }
+  .govuk-button-group {
+    margin-bottom: 0px;
+  }
+  button {
+    margin-bottom: 0px;
+  }
 }

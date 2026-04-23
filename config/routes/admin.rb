@@ -25,7 +25,11 @@ namespace :admin do
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
   resources :glossary, only: %i[index]
-  resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios"
+  resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
+    collection do
+      post "create_custom_data"
+    end
+  end
 
   namespace :registration_closed, path: "registration-closed" do
     resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
