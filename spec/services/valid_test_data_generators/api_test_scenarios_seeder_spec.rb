@@ -8,7 +8,10 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
   let(:cohort_year) { 2026 }
 
   before do
-    create(:school)
+    create_list(:institution, 2, :for_school)
+    create_list(:institution, 2, :for_private_childcare_provider)
+    create_list(:institution, 2, :for_local_authority)
+    create(:school, :ineligible)
     allow(Rails).to receive(:env).and_return(environment.inquiry)
   end
 
@@ -25,8 +28,9 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       it "creates application each application statuses" do
         Application::STATUSES.each do |status|
-          expect(applications[status.to_s].size).to eq 2
-          expect(applications[status.to_s].map(&:eligible_for_funding)).to contain_exactly(true, false)
+          count = status == "pending" ? 6 : 2
+          expect(applications[status.to_s].size).to eq(count)
+          expect(applications[status.to_s].map(&:eligible_for_funding)).to include(true, false)
         end
         expect(applications.keys).to match_array(Application::STATUSES)
       end
@@ -40,8 +44,9 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       it "creates application with status pending, accepted and rejected only" do
         [Application::PENDING, Application::ACCEPTED, Application::REJECTED].each do |status|
-          expect(applications[status.to_s].size).to eq 2
-          expect(applications[status.to_s].map(&:eligible_for_funding)).to contain_exactly(true, false)
+          count = status == "pending" ? 6 : 2
+          expect(applications[status.to_s].size).to eq(count)
+          expect(applications[status.to_s].map(&:eligible_for_funding)).to include(true, false)
         end
         expect(applications.keys).to contain_exactly(Application::PENDING, Application::ACCEPTED, Application::REJECTED)
       end

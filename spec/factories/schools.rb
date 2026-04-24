@@ -41,6 +41,10 @@ FactoryBot.define do
       school.institution.save! if school.institution&.new_record?
     end
 
+    trait :ineligible do
+      establishment_type_code { School::NOT_IN_ENGLAND_CODES[:establishment_type_code].sample }
+    end
+
     trait :non_pp50 do
       urn do
         urn = nil

@@ -282,12 +282,25 @@ module ValidTestDataGenerators
       cc
     end
 
+    def institutions_eligible
+      Institution
+        .open_school_or_non_school
+        .order("RANDOM()")
+        .first
+    end
+
+    def institutions_ineligible
+      Institution
+        .schools
+        .where(institutionable_id: School.not_in_england)
+        .order("RANDOM()")
+        .first
+    end
+
     def create_app(course_cohort:, status:, eligible_for_funding:, user:)
-      institution = Institution
-                      .open_school_or_non_school
-                      .order("RANDOM()").first
       funded_place = status == Application::PENDING ? nil : eligible_for_funding
       accepted_at = status == Application::PENDING ? nil : course_cohort.cohort.registration_starts_at
+      institution = eligible_for_funding ? institutions_eligible : institutions_ineligible
       funding_eligiblity_status_code = eligible_for_funding ? nil : :ineligible_setting
       funding_choice = (eligible_for_funding ? %w[school] : Application.funding_choices.values - %w[school]).sample
 
@@ -350,7 +363,7 @@ module ValidTestDataGenerators
 
     def applications_setup(course_cohort:, number: 5)
       # pending
-      number.times do |index|
+      (number * 3).times do |index|
         create_app(
           course_cohort:,
           status: Application::PENDING,
