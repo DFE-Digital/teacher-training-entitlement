@@ -151,7 +151,7 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.change_provider"))
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.change_provider", course_name:))
 
         body = mail.personalisation[:body]
         expect(body).to include(full_name)

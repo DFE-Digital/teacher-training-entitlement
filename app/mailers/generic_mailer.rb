@@ -24,21 +24,31 @@ class GenericMailer < ApplicationMailer
   end
 
   def deferral_notification
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Notification of deferral - #{params[:course_name]}")
+    generic_mail(subject: "mailers.deferral_notification")
   end
 
   def registration_open_notification
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Registration open - #{params[:course_name]}")
+    generic_mail(subject: "mailers.registration_open_notification")
   end
 
   def deferral_expiring_notification
-    view_mail(TEMPLATE_ID, to: params[:to], subject: "Registration about to expire - #{params[:course_name]}")
+    generic_mail(subject: "mailers.deferral_expiring_notification")
   end
 
 private
 
   def generic_mail(subject:)
-    view_mail(TEMPLATE_ID, to: params[:to], subject: I18n.t(subject))
+    view_mail(TEMPLATE_ID, to: params[:to], subject: build_subject(subject:))
+  end
+
+  def build_subject(subject:)
+    course_name = params[:course_name]
+
+    if course_name.present?
+      I18n.t(subject, course_name:)
+    else
+      I18n.t(subject)
+    end
   end
 
   def application
