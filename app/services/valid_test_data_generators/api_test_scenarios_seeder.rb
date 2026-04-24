@@ -298,6 +298,7 @@ module ValidTestDataGenerators
         institution:,
         course_cohort:,
         status:,
+        reason_for_rejection: (status == Application::REJECTED ? Application.reason_for_rejections[:rejected_by_provider] : nil),
         funded_place:,
         eligible_for_funding:,
         funding_eligiblity_status_code:,
