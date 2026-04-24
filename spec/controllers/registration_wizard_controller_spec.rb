@@ -78,6 +78,20 @@ RSpec.describe RegistrationWizardController do
         end
       end
     end
+
+    context "when user has a withdrawn application for the course" do
+      let(:course) { create(:course) }
+      let!(:application) { create(:application, :withdrawn, course:, user: current_user) }
+
+      before do
+        session["registration_store"] = { "course_identifier" => course.identifier }
+        patch(:update, params: { step: "choose-your-course" })
+      end
+
+      it "does not redirect to the withdrawn application" do
+        expect(response).not_to redirect_to application_path(application.ecf_id)
+      end
+    end
   end
 
   describe "#update" do

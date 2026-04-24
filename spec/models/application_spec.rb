@@ -153,6 +153,19 @@ RSpec.describe Application do
 
       it { is_expected.to contain_exactly(no_status_application, active_application, deferred_application) }
     end
+
+    describe ".active_applications" do
+      subject { described_class.active_applications.to_a }
+
+      let!(:pending_application) { create(:application, :pending) }
+      let!(:accepted_application) { create(:application, :accepted) }
+      let!(:withdrawn_application) { create(:application, :withdrawn) }
+
+      it "excludes withdrawn applications" do
+        expect(subject).to contain_exactly(pending_application, accepted_application)
+        expect(subject).not_to include(withdrawn_application)
+      end
+    end
   end
 
   describe "#inside_catchment?" do

@@ -155,6 +155,13 @@ RSpec.describe "Application endpoints", type: :request do
       it_behaves_like "a successful api call"
     end
 
+    context "when the application is accepted" do
+      let(:application_status_trait) { :accepted }
+      let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course_cohort:) }
+
+      it_behaves_like "a successful api call"
+    end
+
     context "when the application cannot be withdrawn" do
       let(:application_status_trait) { :withdrawn }
       let(:expected_response) do

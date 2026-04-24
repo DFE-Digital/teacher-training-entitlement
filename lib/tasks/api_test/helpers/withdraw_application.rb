@@ -1,6 +1,6 @@
 require_relative "call_api"
 
-class DeferApplication
+class WithdrawApplication
   include CallApi
   include Rails.application.routes.url_helpers
 
@@ -10,7 +10,7 @@ class DeferApplication
 
   def call
     if application.nil?
-      raise "[DeferApplication] Could not find a deferred application"
+      raise "[WithdrawApplication] Could not find a withdrawable application"
     end
 
     body = {
@@ -22,7 +22,7 @@ class DeferApplication
       },
     }.to_json
 
-    url = defer_api_v1_application_url(application.ecf_id, host: "localhost:3000")
+    url = withdraw_api_v1_application_url(application.ecf_id, host: "localhost:3000")
 
     response = call_api(lead_provider: application.lead_provider, url:, body:)
 
@@ -34,7 +34,7 @@ private
 
   def application
     @application ||= Application
-      .started_status
+      .accepted_status
       .joins(:course)
       .where(courses: { identifier: Course::IDENTIFIERS })
       .last
