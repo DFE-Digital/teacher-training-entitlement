@@ -29,6 +29,7 @@ module Applications
     end
 
     def applications
+      #      binding.pry
       application_lead_providers.map(&:application)
     end
 
@@ -68,7 +69,18 @@ module Applications
     def where_status_in(status)
       return if ignore?(filter: status)
 
-      scope.merge!(Application.where(status: extract_conditions(status, allowlist: Application::STATUSES)))
+      if status == Application::REASSIGNED
+        scope.merge!(scope.where(current: false))
+      elsif status.is_a?(Array) && Application::REASSIGNED.in?(status)
+        filtered_status = extract_conditions(status, allowlist: Application::STATUSES) - [Application::REASSIGNED]
+
+        scope.merge!(
+          scope.where(current: false)
+            .or(Application.where(status: filtered_status)),
+        )
+      else
+        scope.merge!(Application.where(status: extract_conditions(status, allowlist: Application::STATUSES)))
+      end
     end
 
     def where_course_identifier_in(course_identifier)

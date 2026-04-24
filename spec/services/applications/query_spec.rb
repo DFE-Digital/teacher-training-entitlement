@@ -140,6 +140,40 @@ RSpec.describe Applications::Query do
         context "when not supplied" do
           it { expect(query.scope.to_sql).to include(%("status")) }
         end
+
+        context "when filtering by reassigned" do
+          let!(:reassigned_application) do
+            create(:application, :with_application_lead_provider,
+                   lead_provider: create(:lead_provider),
+                   old_lead_provider: lead_provider)
+          end
+          let!(:pending_application) { create(:application, :pending, lead_provider:) }
+          let!(:accepted_application) { create(:application, :accepted, lead_provider:) }
+
+          context "when just reassigned" do
+            let(:status) { Application::REASSIGNED }
+
+            it do
+              expect(subject.applications).to contain_exactly(reassigned_application)
+            end
+          end
+
+          context "when reassigned and also another status" do
+            let(:status) { [Application::PENDING, Application::REASSIGNED] }
+
+            it do
+              expect(subject.applications).to contain_exactly(pending_application, reassigned_application)
+            end
+          end
+
+          context "when reassigned and also two other statuses" do
+            let(:status) { [Application::PENDING, Application::REASSIGNED, Application::ACCEPTED] }
+
+            it do
+              expect(subject.applications).to contain_exactly(pending_application, reassigned_application, accepted_application)
+            end
+          end
+        end
       end
 
       context "when filtering by participant_id" do
