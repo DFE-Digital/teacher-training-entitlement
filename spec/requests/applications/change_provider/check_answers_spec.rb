@@ -37,6 +37,15 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
         expect(response).to redirect_to(application_change_provider_start_index_path(application.ecf_id))
       end
     end
+
+    context "when application is not eligible for change provider" do
+      let(:application) { create(:application, :started) }
+
+      it "redirects to the application page" do
+        get url
+        expect(response).to redirect_to(application_path(application.ecf_id))
+      end
+    end
   end
 
   describe "POST /applications/:application_id/change-provider/check-answers" do

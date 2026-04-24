@@ -34,26 +34,6 @@ module ApplicationHelper
     Rails.configuration.x.tracking_pixels_enabled && cookies["consented-to-cookies"] == "accept"
   end
 
-  def accepted?(application)
-    application.accepted_status?
-  end
-
-  def pending?(application)
-    application.pending_status?
-  end
-
-  def rejected?(application)
-    application.rejected_status?
-  end
-
-  def deferred?(application)
-    application.deferred_status?
-  end
-
-  def withdrawn?(application)
-    application.withdrawn_status?
-  end
-
   def application_course_start_date
     "autumn 2025"
   end
