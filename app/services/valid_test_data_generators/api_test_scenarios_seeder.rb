@@ -206,7 +206,7 @@ module ValidTestDataGenerators
         user.full_name = app_data[:full_name]
         user.trn = generate_trn
         user.date_of_birth = Faker::Date.birthday(min_age: 20)
-        user.ecf_id = SecureRandom.uuid
+        user.ecf_id = app_data[:participant_id]
         user.trn_verified = true
         user.trn_lookup_status = "Found"
       end
