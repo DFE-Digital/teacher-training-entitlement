@@ -29,7 +29,6 @@ module Applications
     end
 
     def applications
-      #      binding.pry
       application_lead_providers.map(&:application)
     end
 
