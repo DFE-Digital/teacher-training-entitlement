@@ -1,4 +1,29 @@
-<h1 class="govuk-heading-m">API Endpoint Testing</h1>
+<% content_for :side_navigation do %>
+  <%=
+    render SubNavigationComponent.new(
+      request.path,
+      structure: [
+        NavigationStructure::Node.new(
+          name: "Overview",
+          href: "#overview",
+          prefix: %r{/admin/applications/\d+/overview$},
+          ),
+        NavigationStructure::Node.new(
+          name: "API Endpoints",
+          href: "#endpoints",
+          prefix: %r{/admin/applications/\d+/endpoints$},
+          ),
+        NavigationStructure::Node.new(
+          name: "Application History",
+          href: "#history",
+          prefix: %r{/admin/applications/\d+/history$},
+          ),
+      ],
+    )
+  %>
+<% end %>
+
+<h1 id="overview" class="govuk-heading-m">API Endpoint Testing</h1>
 <%=
   govuk_summary_list(card: { title: "Overview" }) do |sl|
     sl.with_row do |row|
@@ -27,9 +52,16 @@
     end
   end
 %>
-
-<h1 class="govuk-heading-m">API Endpoint List</h1>
-
+<hr/>
+<h1 id="endpoints" class="govuk-heading-m govuk-!-padding-top-5">API Endpoint List</h1>
+<div class="d-flex">
+  <div class="govuk-body"><%= govuk_link_to 'Accept', admin_applications_api_tests_accept_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
+  <div class="govuk-body govuk-!-margin-left-2">- Accept a pending application</div>
+</div>
+<div class="d-flex">
+  <div class="govuk-body"><%= govuk_link_to 'Reject', admin_applications_api_tests_reject_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
+  <div class="govuk-body govuk-!-margin-left-2">- Reject a pending application</div>
+</div>
 <div class="d-flex">
   <div class="govuk-body"><%= govuk_link_to 'Resume', admin_applications_api_tests_resume_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
   <div class="govuk-body govuk-!-margin-left-2">- Resume a deferred application with a cohort</div>
@@ -42,3 +74,14 @@
   <div class="govuk-body"><%= govuk_link_to 'Withdraw', admin_applications_api_tests_withdraw_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
   <div class="govuk-body govuk-!-margin-left-2">- Withdraw an application which has started or defered</div>
 </div>
+<div class="d-flex">
+  <div class="govuk-body"><%= govuk_link_to 'Started Declaration', admin_applications_api_tests_started_declarations_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
+  <div class="govuk-body govuk-!-margin-left-2">- Send a Started Declaration for an application which has been accepted</div>
+</div>
+<div class="d-flex">
+  <div class="govuk-body"><%= govuk_link_to 'Completed Declaration', admin_applications_api_tests_completed_declarations_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
+  <div class="govuk-body govuk-!-margin-left-2">- Send a Completed Declaration for an application which has started</div>
+</div>
+<hr/>
+<h1 id="history" class="govuk-heading-m govuk-!-padding-top-5">Application History</h1>
+<%= render(Admin::ApplicationHistoryComponent.new(record: @application)) %>

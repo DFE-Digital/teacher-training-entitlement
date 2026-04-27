@@ -4,7 +4,7 @@ class LeadProvider < ApplicationRecord
   has_many :course_cohorts, through: :course_cohort_providers
   has_many :courses, through: :course_cohorts
   has_many :delivery_partnerships
-  has_many :delivery_partners, through: :delivery_partnerships
+  has_many :delivery_partners, -> { distinct }, through: :delivery_partnerships
   has_many :application_lead_providers
   has_many :updateable_applications,
            -> { merge(ApplicationLeadProvider.current) },

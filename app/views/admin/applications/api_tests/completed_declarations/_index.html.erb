@@ -1,0 +1,34 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">Completed Declarations API Endpoint</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+
+
+<div class="govuk-body">  
+  <p>The Completed Declarations endpoint creates a 'completed' declaration for a started application.</p>
+  <p class="govuk-heading-s">List of cohorts for <%= @application.lead_provider.name %></p>
+  <p>The Completed Declarations endpoint requires a delivery partner to be chosen for.</p>
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Delivery Partner")
+          row.with_cell(text: "Delivery Partner ECF Id")
+          row.with_cell(text: "Action")
+        end
+      end
+
+      table.with_body do |body|
+        @application.lead_provider.delivery_partners.order(created_at: :desc).each do |dp|
+          body.with_row do |row|
+            row.with_cell(text: dp.name)
+            row.with_cell(text: dp.ecf_id)
+            row.with_cell do
+              render 'form', dp:
+            end
+          end
+        end
+      end
+    end
+  %>
+</div>

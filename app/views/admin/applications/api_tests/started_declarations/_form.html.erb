@@ -1,0 +1,4 @@
+<%= form_for :form, url: admin_applications_api_tests_started_declarations_path(@application) do |f| %>
+  <%= f.hidden_field :delivery_partner_id, value: dp.id %>
+  <%= f.govuk_submit("Call Started Declarations API") %>
+<% end %>

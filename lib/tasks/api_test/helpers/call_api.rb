@@ -1,19 +1,25 @@
 module CallApi
-  def call_api(lead_provider:, url:, body: nil, method: :put)
+  def api_post(lead_provider:, url:, body:)
+    call_api(lead_provider:, url:, body:, method: :post)
+  end
+
+  def api_put(lead_provider:, url:, body:)
+    call_api(lead_provider:, url:, body:, method: :put)
+  end
+
+  def call_api(lead_provider:, url:, body:, method:)
     api_token = generate_token!(lead_provider:)
 
     headers = {
       "Authorization" => "Bearer #{api_token}",
       "Content-Type" => "application/json",
     }
-
-<<<<<<< HEAD
-    response = HTTParty.send(method, url, body:, headers:)
-=======
-    response = HTTParty.put(build_path(url:), body:, headers:)
->>>>>>> 1fdc929f (Add tools for API Testing)
+    response = HTTParty.send(method, build_path(url:), body:, headers:)
 
     APIToken.find_by_unhashed_token(api_token, scope: :lead_provider).delete
+
+    puts "status: #{response.code}" # rubocop:disable Rails/Output
+    puts "response: #{response.parsed_response}" # rubocop:disable Rails/Output
 
     response
   end

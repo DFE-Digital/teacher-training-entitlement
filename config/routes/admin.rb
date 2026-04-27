@@ -72,6 +72,10 @@ namespace :admin do
           resources :defer, only: %i[index create]
           resources :resume, only: %i[index create]
           resources :withdraw, only: %i[index create]
+          resources :reject, only: %i[index create]
+          resources :accept, only: %i[index create]
+          resources :started_declarations, only: %i[index create]
+          resources :completed_declarations, only: %i[index create]
         end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]

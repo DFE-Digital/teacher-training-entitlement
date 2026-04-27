@@ -25,12 +25,7 @@ class ResumeApplication
 
     url = resume_api_v1_application_path(application.ecf_id)
 
-    response = call_api(lead_provider: application.lead_provider, url:, body:)
-
-    puts "status: #{response.code}" # rubocop:disable Rails/Output
-    puts "response: #{response.parsed_response}" # rubocop:disable Rails/Output
-
-    response
+    api_put(lead_provider: application.lead_provider, url:, body:)
   end
 
 private

@@ -1,6 +1,6 @@
 require_relative "call_api"
 
-class DeferApplication
+class RejectApplication
   include CallApi
   include Rails.application.routes.url_helpers
 
@@ -10,7 +10,7 @@ class DeferApplication
 
   def call
     if application.nil?
-      raise "[DeferApplication] Could not find a deferred application"
+      raise "[RejectApplication] Could not find a rejectable application"
     end
 
     body = {
@@ -22,7 +22,7 @@ class DeferApplication
       },
     }.to_json
 
-    url = defer_api_v1_application_path(application.ecf_id)
+    url = reject_api_v1_application_path(application.ecf_id)
 
     api_put(lead_provider: application.lead_provider, url:, body:)
   end
@@ -31,7 +31,7 @@ private
 
   def application
     @application ||= Application
-      .started_status
+      .pending_status
       .joins(:course)
       .where(courses: { identifier: Course::IDENTIFIERS })
       .last
