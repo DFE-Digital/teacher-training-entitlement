@@ -38,6 +38,8 @@ class GenericMailer < ApplicationMailer
 private
 
   def generic_mail(subject:)
+    return if Rails.env.sandbox? && action_name != "confirmation_code"
+
     view_mail(TEMPLATE_ID, to: params[:to], subject: build_subject(subject:))
   end
 

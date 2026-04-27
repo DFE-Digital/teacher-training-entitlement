@@ -312,4 +312,18 @@ RSpec.describe GenericMailer, type: :mailer do
 
     it_behaves_like "a mailer with redacted logs"
   end
+
+  describe "sandbox environment", :sandbox do
+    before { allow(Rails.env).to receive(:sandbox?).and_return(true) }
+
+    it "sends confirmation_code emails" do
+      mail = described_class.with(to: "test@example.com", code: "123").confirmation_code
+      expect(mail.to).to eq(["test@example.com"])
+    end
+
+    it "skips other notification emails" do
+      mail = described_class.with(to: "test@example.com", full_name: "Test", provider_name: "Test", course_name: "Test", ecf_id: "123").application_submitted
+      expect(mail.to).to be_nil
+    end
+  end
 end
