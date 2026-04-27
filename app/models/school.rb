@@ -46,7 +46,22 @@ class School < ApplicationRecord
   # 3 => establishment_status_name: "Open, but proposed to close"
   # 4 => establishment_status_name: "Proposed to open"
 
+  NOT_IN_ENGLAND_CODES = {
+    # Welsh establishment
+    establishment_type_code: %w[30],
+    # 000-"Does not appyl"
+    # 673-"Vale of Glamorgan"
+    # 702-"BFPO Overseas Establishments"
+    # 704-"Fieldwork Overseas Establishments"
+    # 708-"Gibraltar Overseas Establishments"
+    la_code: %w[000 673 702 704 708],
+  }.freeze
+
   scope :open, -> { where(establishment_status_code: %w[1 3 4]) }
+  scope :not_in_england, lambda {
+    where(establishment_type_code: NOT_IN_ENGLAND_CODES[:establishment_type_code])
+      .or(where(la_code: NOT_IN_ENGLAND_CODES[:la_code]))
+  }
 
   ELIGIBLE_ESTABLISHMENT_TYPE_CODES.each do |code, name|
     define_method("#{name.parameterize.underscore}?") do
@@ -59,12 +74,8 @@ class School < ApplicationRecord
   end
 
   def in_england?
-    return if establishment_type_code == "30" # Welsh establishment
-    return if la_code == "673" # "Vale of Glamorgan"
-    return if la_code == "702" # "BFPO Overseas Establishments"
-    return if la_code == "000" # "Does not apply"
-    return if la_code == "704" # "Fieldwork Overseas Establishments"
-    return if la_code == "708" # "Gibraltar Overseas Establishments"
+    return if establishment_type_code.in?(NOT_IN_ENGLAND_CODES[:establishment_type_code])
+    return if la_code.in?(NOT_IN_ENGLAND_CODES[:la_code])
 
     true
   end

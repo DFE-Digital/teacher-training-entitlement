@@ -13,6 +13,12 @@ FactoryBot.define do
       end
     end
 
+    trait :ineligible_school do
+      after(:build) do |institution|
+        institution.institutionable ||= build(:school, :ineligible, institution: institution)
+      end
+    end
+
     trait :for_private_childcare_provider do
       after(:build) do |institution|
         institution.institutionable ||= build(:private_childcare_provider, institution: institution)

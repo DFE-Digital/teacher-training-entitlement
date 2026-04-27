@@ -46,14 +46,24 @@
               <%= provider_data[:applications_count] %>
             </td>
             <td class="govuk-table__cell">
+              <div class="govuk-button-group">
+                <%= button_to(
+                  provider_data[:seeded] ? "Re-seed data" : "Seed data",
+                  admin_api_test_scenarios_path,
+                  method: :post,
+                  params: { lead_provider_id: provider_data[:provider].id },
+                  class: "govuk-button govuk-button--secondary",
+                  data: { confirm: "Are you sure? This will #{provider_data[:seeded] ? 'delete existing and create new' : 'create'} test data for #{provider_data[:provider].name}" }
+                ) %>
               <%= button_to(
-                    provider_data[:seeded] ? "Re-seed data" : "Seed data",
-                    admin_api_test_scenarios_path,
-                    method: :post,
-                    params: { lead_provider_id: provider_data[:provider].id },
-                    class: "govuk-button govuk-button--secondary",
-                    data: { confirm: "Are you sure? This will #{provider_data[:seeded] ? 'delete existing and create new' : 'create'} test data for #{provider_data[:provider].name}" }
-                  ) %>
+                "create extra data",
+                create_custom_data_admin_api_test_scenarios_path,
+                method: :post,
+                params: { lead_provider_id: provider_data[:provider].id },
+                class: "govuk-button govuk-button--secondary",
+                data: { confirm: "Confirm extra seed data creation for #{provider_data[:provider].name}?" }
+              ) %>
+              </div>
             </td>
           </tr>
         <% end %>

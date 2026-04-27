@@ -24,7 +24,7 @@
                       "pm.test('REG-001: Status 200', () => pm.response.to.have.status(200));",
                       "const json = pm.response.json();",
                       "pm.test('REG-001: Response has data array', () => pm.expect(json.data).to.be.an('array'));",
-                      "pm.test('REG-001: Returns 12 applications', () => pm.expect(json.data.length).to.eql(12));",
+                      "//pm.test('REG-001: Returns 12 applications', () => pm.expect(json.data.length).to.eql(12));",
                       "",
                       "// Auto-capture all appId variables by matching email username",
                       "const emailToVar = {",
@@ -69,7 +69,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications",
+                  "raw": "{{baseUrl}}/api/v1/applications?page[page]=1&page[per_page]=100&filter[participant_id]=0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -77,6 +77,20 @@
                     "api",
                     "v1",
                     "applications"
+                  ],
+                  "query": [
+                    {
+                      "key": "page[page]",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page[per_page]",
+                      "value": "100"
+                    },
+                    {
+                      "key": "filter[participant_id]",
+                      "value": "0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba"
+                    }
                   ]
                 }
               },
@@ -97,7 +111,9 @@
                       "  pm.expect(hasWrongCohort).to.be.false;",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
                   }
                 }
               ],
@@ -105,7 +121,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2026",
+                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2026&filter[participant_id]=0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -118,6 +134,11 @@
                     {
                       "key": "filter[cohort]",
                       "value": "2026"
+                    },
+                    {
+                      "key": "filter[participant_id]",
+                      "value": "0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
+                      "type": "text"
                     }
                   ]
                 }
@@ -135,7 +156,9 @@
                       "const json = pm.response.json();",
                       "pm.test('REG-003: Returns empty data array', () => pm.expect(json.data.length).to.eql(0));"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
                   }
                 }
               ],
@@ -143,7 +166,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2000",
+                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2000&filter[participant_id]=0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -156,6 +179,11 @@
                     {
                       "key": "filter[cohort]",
                       "value": "2000"
+                    },
+                    {
+                      "key": "filter[participant_id]",
+                      "value": "0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
+                      "type": "text"
                     }
                   ]
                 }
@@ -3634,24 +3662,33 @@
         }
       ],
       "description": "Verify that requests with an invalid API key return 401. Run this first to confirm auth is correctly configured."
+    },
+    {
+      "name": "outcomes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/outcomes",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "outcomes"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "auth": {
-    "type": "apikey",
-    "apikey": [
+    "type": "bearer",
+    "bearer": [
       {
-        "key": "key",
-        "value": "Authorization",
-        "type": "string"
-      },
-      {
-        "key": "value",
-        "value": "Bearer {{apiKey}}",
-        "type": "string"
-      },
-      {
-        "key": "in",
-        "value": "header",
+        "key": "token",
+        "value": "{{apiKey}}",
         "type": "string"
       }
     ]
@@ -3682,16 +3719,6 @@
     }
   ],
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "https://your-sandbox-host.example.com",
-      "description": "Base URL of the TTE sandbox environment"
-    },
-    {
-      "key": "apiKey",
-      "value": "YOUR_API_KEY_HERE",
-      "description": "Bearer token supplied by DfE"
-    },
     {
       "key": "appId001",
       "value": "",

@@ -8,6 +8,7 @@ applications:
     full_name: Test Accept One
     cohort_offset: 0
     funding_eligible: true
+    participant_id: 0c659721-8708-445c-93a7-aeab218f8da0
     purpose: Accept with funded place. Declaration lifecycle, defer/resume
 
   - label: APP-002
@@ -15,6 +16,7 @@ applications:
     full_name: Test Accept Two
     cohort_offset: 0
     funding_eligible: true
+    participant_id: 3707391b-7d9c-4716-af47-eed641fa9eb5
     purpose: Accept with funded place. Void and error scenarios
 
   - label: APP-003
@@ -22,6 +24,7 @@ applications:
     full_name: Test Reject One
     cohort_offset: 0
     funding_eligible: true
+    participant_id: 78bc6c75-847c-4823-970d-b779e0e286f0
     purpose: Reject scenario
 
   - label: APP-004
@@ -29,6 +32,7 @@ applications:
     full_name: Test Accept Three
     cohort_offset: 0
     funding_eligible: false
+    participant_id: 1a858161-9ad4-4c93-babb-40314814ac8a
     purpose: Accept without funded place. Funding eligibility error cases
 
   - label: APP-005
@@ -36,6 +40,7 @@ applications:
     full_name: Test Withdraw One
     cohort_offset: 0
     funding_eligible: true
+    participant_id: add35f69-d558-4065-a0d9-d27ebccc9d0d
     purpose: Accept with funded place. Withdrawal scenario
 
   - label: APP-006
@@ -43,6 +48,7 @@ applications:
     full_name: Test Edge One
     cohort_offset: 1
     funding_eligible: true
+    participant_id: 71418899-5d92-412f-a241-52545e8c1088
     purpose: Different cohort. Listing/filter edge case. Change provider
 
   - label: APP-007
@@ -50,6 +56,7 @@ applications:
     full_name: Test No Declaration One
     cohort_offset: 0
     funding_eligible: true
+    participant_id: 89dc732b-1e60-4f8a-a8cc-27a46a14e9da
     purpose: Accept with funded place. No declarations submitted
 
   - label: APP-008
@@ -57,6 +64,7 @@ applications:
     full_name: Test Admin Started
     cohort_offset: 0
     funding_eligible: true
+    participant_id: a32a9e54-f711-40ec-bb62-c8670751741d
     purpose: "Admin verification: started declaration"
 
   - label: APP-009
@@ -64,6 +72,7 @@ applications:
     full_name: Test Admin Completed
     cohort_offset: 0
     funding_eligible: true
+    participant_id: 6741f155-a82e-41ae-ac63-e4ce3699dc66
     purpose: "Admin verification: completed declaration, outcome passed"
 
   - label: APP-010
@@ -71,6 +80,7 @@ applications:
     full_name: Test Admin Failed
     cohort_offset: 0
     funding_eligible: true
+    participant_id: 3488708b-6106-48c8-a4be-d202e116d8fc
     purpose: "Admin verification: completed declaration, outcome failed"
 
   - label: APP-011
@@ -78,6 +88,7 @@ applications:
     full_name: Test Admin Voided
     cohort_offset: 0
     funding_eligible: true
+    participant_id: da463c20-0301-4deb-9fd2-6b6fed7e87c0
     purpose: "Admin verification: voided declaration"
 
   - label: APP-012
@@ -85,4 +96,5 @@ applications:
     full_name: Test Admin Deferred
     cohort_offset: 0
     funding_eligible: true
+    participant_id: cce7e5f9-f957-4b4a-896d-553dec1943ba
     purpose: "Admin verification: deferred participant"
