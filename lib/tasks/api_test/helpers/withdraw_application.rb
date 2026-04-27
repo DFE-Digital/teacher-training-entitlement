@@ -22,12 +22,14 @@ class WithdrawApplication
       },
     }.to_json
 
-    url = withdraw_api_v1_application_url(application.ecf_id, host: "localhost:3000")
+    url = withdraw_api_v1_application_path(application.ecf_id)
 
     response = call_api(lead_provider: application.lead_provider, url:, body:)
 
     puts "status: #{response.code}" # rubocop:disable Rails/Output
     puts "response: #{response.parsed_response}" # rubocop:disable Rails/Output
+
+    response
   end
 
 private

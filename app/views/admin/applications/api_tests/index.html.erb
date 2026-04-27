@@ -1,0 +1,40 @@
+<h1 class="govuk-heading-m">API Endpoint Testing</h1>
+<%=
+  govuk_summary_list(card: { title: "Overview" }) do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Name")
+      row.with_value(text: @application.user.full_name)
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Application ID")
+      row.with_value(text: @application.ecf_id)
+    end
+    sl.with_row do |row|
+      row.with_key(text: "User ID")
+      row.with_value(text: @application.user.ecf_id)
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Course")
+      row.with_value(text: @application.course.name)
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Provider")
+      row.with_value(text: @application.lead_provider.name)
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Application status")
+      row.with_value(text: @application.status.try(:humanize))
+    end
+  end
+%>
+
+<h1 class="govuk-heading-m">API Endpoint List</h1>
+
+<div class="d-flex">
+  <div class="govuk-body"><%= govuk_link_to 'Resume', admin_applications_api_tests_resume_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
+  <div class="govuk-body govuk-!-margin-left-2">- Resume a deferred application with a cohort</div>
+</div>
+<div class="d-flex">
+  <div class="govuk-body"><%= govuk_link_to 'Defer', admin_applications_api_tests_defer_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
+  <div class="govuk-body govuk-!-margin-left-2">- Defer an application which has started</div>
+</div>

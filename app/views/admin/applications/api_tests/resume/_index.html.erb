@@ -1,0 +1,43 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">Resume API Endpoint</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+
+
+<div class="govuk-body">  
+  <p class="govuk-heading-s">List of cohorts for <%= @application.lead_provider.name %></p>
+  <p>The Resume endpoint requires a cohort to be chosen for the application to resume with.</p>
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Course")
+          row.with_cell(text: "Cohort")
+          row.with_cell(text: "Cohort Live?")
+          row.with_cell(text: "Action")
+        end
+      end
+
+      table.with_body do |body|
+        @application.lead_provider.course_cohorts.each do |cc|
+          next unless cc.schedule&.training_live?
+          body.with_row do |row|
+            row.with_cell do
+              link_to cc.course.name, admin_course_path(cc.course), target: "_blank"
+            end
+            row.with_cell do
+              link_to cc.cohort.description, admin_cohort_path(cc.cohort), target: "_blank"
+            end
+            row.with_cell(text: boolean_red_green_tag(cc.schedule&.training_live?))
+            row.with_cell do
+              form_for :form, url: admin_applications_api_tests_resume_index_path(@application) do |f|
+                f.hidden_field :course_cohort_id, value: cc.id
+                f.govuk_submit("Call Resume API")
+              end
+            end
+          end
+        end
+      end
+    end
+  %>
+</div>

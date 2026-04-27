@@ -7,7 +7,11 @@ module CallApi
       "Content-Type" => "application/json",
     }
 
+<<<<<<< HEAD
     response = HTTParty.send(method, url, body:, headers:)
+=======
+    response = HTTParty.put(build_path(url:), body:, headers:)
+>>>>>>> 1fdc929f (Add tools for API Testing)
 
     APIToken.find_by_unhashed_token(api_token, scope: :lead_provider).delete
 
@@ -15,6 +19,10 @@ module CallApi
   end
 
 private
+
+  def build_path(url:)
+    "#{ENV['BASE_API_URL'] || 'http://localhost:3000'}#{url}"
+  end
 
   def generate_token!(lead_provider:)
     scope = APIToken.scopes[:lead_provider]

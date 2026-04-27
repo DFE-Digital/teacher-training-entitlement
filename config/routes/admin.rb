@@ -67,6 +67,11 @@ namespace :admin do
     member do
       resources :declarations, controller: "applications/declarations", as: "application_declarations", only: %i[index]
       namespace :applications, path: nil do
+        resources :api_tests, only: %i[index]
+        namespace :api_tests do
+          resources :defer, only: %i[index create]
+          resources :resume, only: %i[index create]
+        end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]
         resource :change_funding_eligibility, only: %i[new create]

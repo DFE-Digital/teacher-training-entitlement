@@ -1,0 +1,13 @@
+<div class="govuk-body">        
+    <strong>Response Code</strong>: <%= @response.code %>
+    <br/>
+    <strong>Response Body: </strong>
+    <br/>
+
+    <pre id="response"></pre>
+
+    <script>
+        document.getElementById("response").textContent =
+        JSON.stringify(<%=raw(@response.parsed_response.to_json)%>, null, 2);
+    </script>    
+</div>

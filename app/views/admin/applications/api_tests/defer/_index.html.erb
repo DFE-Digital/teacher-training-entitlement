@@ -1,0 +1,14 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">Defer API Endpoint</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+
+
+<div class="govuk-body">  
+  <p>The Defer endpoint defers a started application.</p>
+  <%=
+    form_for :form, url: admin_applications_api_tests_defer_index_path(@application) do |f|
+      f.govuk_submit("Call Defer API")
+    end
+  %>
+</div>

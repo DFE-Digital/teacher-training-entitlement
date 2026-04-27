@@ -23,7 +23,12 @@
           href: admin_applications_history_path(@application),
           prefix: %r{/admin/applications/\d+/history$},
           ),
-      ],
+        Rails.env.production? ? nil : NavigationStructure::Node.new(
+          name: "API Testing",
+          href: admin_applications_api_tests_path(@application),
+          prefix: %r{/admin/applications/\d+/api_tests$},
+          )
+      ].compact,
     )
   %>
 <% end %>
