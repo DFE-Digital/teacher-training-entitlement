@@ -364,6 +364,7 @@ en:
           attributes:
             application:
               <<: *application
+              not_withdrawable: The application is not withdrawable
             reason:
               missing_reason: A valid reason for withdrawal must be provided
             base:

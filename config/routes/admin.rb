@@ -71,6 +71,7 @@ namespace :admin do
         namespace :api_tests do
           resources :defer, only: %i[index create]
           resources :resume, only: %i[index create]
+          resources :withdraw, only: %i[index create]
         end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]
