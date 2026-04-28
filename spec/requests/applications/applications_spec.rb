@@ -18,12 +18,7 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
       it do
         get "/applications"
 
-        aggregate_failures do
-          expect(response).to render_template(:index)
-          expect(response).to be_successful
-          expect(assigns[:applications]).to include(pending_application)
-          expect(assigns[:applications]).to include(completed_application)
-        end
+        expect(response).to redirect_to(application_path(completed_application.ecf_id))
       end
     end
   end

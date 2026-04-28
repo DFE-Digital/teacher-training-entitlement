@@ -7,9 +7,9 @@ class LeadProvider < ApplicationRecord
   has_many :delivery_partners, through: :delivery_partnerships
   has_many :application_lead_providers
   has_many :updateable_applications,
-           -> { where(application_lead_providers: { current: true }) },
+           -> { merge(ApplicationLeadProvider.current) },
            through: :application_lead_providers, source: :application
-  has_many :applications,
+  has_many :applications, -> { distinct },
            through: :application_lead_providers, source: :application
 
   validates :name, presence: true

@@ -95,7 +95,7 @@ module ValidTestDataGenerators
       test_users = User.includes(:applications).where(email: test_emails)
 
       # Delete applications for these test users with this lead provider
-      applications_to_delete = Application.where(user: test_users, lead_provider: lead_provider)
+      applications_to_delete = lead_provider.updateable_applications.where(user: test_users)
 
       if applications_to_delete.any?
         declaration_ids = Declaration.where(application: applications_to_delete).pluck(:id)
@@ -304,7 +304,7 @@ module ValidTestDataGenerators
       funding_eligiblity_status_code = eligible_for_funding ? nil : :ineligible_setting
       funding_choice = (eligible_for_funding ? %w[school] : Application.funding_choices.values - %w[school]).sample
 
-      application = Application.find_or_initialize_by(user:, lead_provider:, course_cohort:)
+      application = lead_provider.updateable_applications.find_or_create_by!(user:, course_cohort:)
       application.update!(
         user:,
         lead_provider:,
