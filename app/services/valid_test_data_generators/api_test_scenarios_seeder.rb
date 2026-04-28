@@ -201,15 +201,33 @@ module ValidTestDataGenerators
 
     def create_user(app_data)
       email = user_email(app_data[:email])
+      attrs = {
+        full_name: app_data[:full_name],
+        trn: generate_trn,
+        date_of_birth: Faker::Date.birthday(min_age: 20),
+        trn_verified: true,
+        trn_lookup_status: "Found",
+        ecf_id: user_ecf_id(app_data[:participant_id]),
+      }
 
-      User.find_or_create_by!(email:) do |user|
-        user.full_name = app_data[:full_name]
-        user.trn = generate_trn
-        user.date_of_birth = Faker::Date.birthday(min_age: 20)
-        user.ecf_id = app_data[:participant_id]
-        user.trn_verified = true
-        user.trn_lookup_status = "Found"
+      user = User.find_by(email:)
+      if user
+        user.update!(attrs)
+      else
+        user = User.create!(attrs.merge(email:))
       end
+
+      user
+    end
+
+    def user_ecf_id(id)
+      [
+        "4e87fadb",
+        "f678",
+        "4934",
+        sprintf("%04d", @lead_provider.id),
+        sprintf("%012d", id),
+      ].join("-")
     end
 
     def generate_trn
