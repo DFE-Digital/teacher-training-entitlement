@@ -68,6 +68,14 @@
       <div class="govuk-body"><%= govuk_link_to 'Void Declaration', admin_applications_api_tests_void_declarations_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
       <div class="govuk-body-s govuk-!-margin-left-2">- Void for a previously made declaration</div>
     </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'List Applications', admin_applications_api_tests_applications_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- list applications</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Show Application', admin_applications_api_tests_application_path(@application, @application.ecf_id), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- show the application details</div>
+    </div>
   </div>  
 </div>
 

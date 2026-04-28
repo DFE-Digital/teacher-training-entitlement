@@ -1,0 +1,5 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">Show Application</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+<%= render "admin/applications/api_tests/response" %>

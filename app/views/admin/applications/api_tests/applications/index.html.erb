@@ -1,0 +1,10 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">List Applications</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+<%= form_for :form, url: admin_applications_api_tests_applications_path(@application), method: :get do |f| %>
+  <%= f.govuk_select :status, options_for_select(Application::STATUSES), label: { text: "Declaration", size: "s" } %>
+  <%= f.govuk_submit("Call List Application API") %>
+<% end %>
+
+<%= render "admin/applications/api_tests/response" %>

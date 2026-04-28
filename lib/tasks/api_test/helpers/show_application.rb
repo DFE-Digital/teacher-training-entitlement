@@ -18,11 +18,6 @@ class ShowApplication
       raise "[ShowApplication] Could not find an application"
     end
 
-    url = api_v1_application_url(@application.ecf_id, host: "localhost:3000")
-
-    response = call_api(lead_provider: @lead_provider, url:, method: :get)
-
-    puts "status: #{response.code}" # rubocop:disable Rails/Output
-    puts "response: #{response.parsed_response}" # rubocop:disable Rails/Output
+    api_get(lead_provider: @lead_provider, url: api_v1_application_path(@application.ecf_id))
   end
 end

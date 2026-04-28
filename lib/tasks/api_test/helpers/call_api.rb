@@ -7,6 +7,10 @@ module CallApi
     call_api(lead_provider:, url:, body:, method: :put)
   end
 
+  def api_get(lead_provider:, url:)
+    call_api(lead_provider:, url:, body: nil, method: :get)
+  end
+
   def call_api(lead_provider:, url:, body:, method:)
     api_token = generate_token!(lead_provider:)
 

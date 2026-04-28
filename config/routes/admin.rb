@@ -79,6 +79,8 @@ namespace :admin do
           resources :change_funded_place, only: %i[index create]
           resources :change_delivery_partner, only: %i[index create]
           resources :void_declarations, only: %i[index create]
+          resources :list_applications, only: %i[index]
+          resources :applications, only: %i[index show], param: :ecf_id
         end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]
