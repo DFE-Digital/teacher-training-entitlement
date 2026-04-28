@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Applications::Reject, type: :model do
+  include ActiveJob::TestHelper
+
   subject(:service) { described_class.new(application:, reason_for_rejection:) }
 
   let(:reason_for_rejection) { Application.reason_for_rejections[:rejected_by_provider] }
@@ -47,6 +49,24 @@ RSpec.describe Applications::Reject, type: :model do
 
     it "sets the reason for rejection" do
       expect { service.call }.to change { application.reload.reason_for_rejection }.from(nil).to(reason_for_rejection)
+    end
+
+    context "when reason is rejected_by_provider" do
+      let(:reason_for_rejection) { Application.reason_for_rejections[:rejected_by_provider] }
+
+      it "enqueues a provider rejection email" do
+        service.reject
+        expect(ActionMailer::MailDeliveryJob).to have_been_enqueued.with("GenericMailer", "provider_rejected", "deliver_now", anything)
+      end
+    end
+
+    context "when reason is not rejected_by_provider" do
+      let(:reason_for_rejection) { Application.reason_for_rejections[:registration_expired] }
+
+      it "does not enqueue a provider rejection email" do
+        service.reject
+        expect(ActionMailer::MailDeliveryJob).not_to have_been_enqueued.with("GenericMailer", "provider_rejected", "deliver_now", anything)
+      end
     end
   end
 end

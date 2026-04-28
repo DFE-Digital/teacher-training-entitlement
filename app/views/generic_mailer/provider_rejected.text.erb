@@ -1,0 +1,25 @@
+Department for Education
+
+Application ID: <%= params[:ecf_id] %>
+
+Dear <%= params[:full_name] %>
+
+You registered for <%= params[:course_name] %> with <%= params[:provider_name] %> starting in <%= params[:cohort_date] %>.
+
+# Change to your registration
+
+Your provider has notified us that they were not able to offer you a place on the course. This could be because you were not suitable for the course or they did not have a funded place available.
+
+# Your options
+
+If your provider did not have a funded place available and you would still like to continue your application, you can:
+
+- [register with a different provider](<%= params[:sign_in_link] %>)
+- talk to your provider about changing to a later course start date
+
+# Get help
+
+Email continuing-professional-development@digital.education.gov.uk
+
+Regards,
+The Teacher Continuing Professional Development Team
