@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include SessionTimeout
+
   default_form_builder GOVUKDesignSystemFormBuilder::FormBuilder
 
   before_action :http_basic_authenticate, if: -> { Rails.env.staging? }
