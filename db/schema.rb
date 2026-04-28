@@ -155,7 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["status"], name: "index_applications_on_status"
-    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true, where: "(status <> ALL (ARRAY['rejected'::application_statuses]))"
+    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
 

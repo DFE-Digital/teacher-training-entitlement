@@ -220,13 +220,13 @@ module ValidTestDataGenerators
       user
     end
 
-    def user_ecf_id(id)
+    def user_ecf_id(index)
       [
         "4e87fadb",
         "f678",
         "4934",
         sprintf("%04d", @lead_provider.id),
-        sprintf("%012d", id),
+        sprintf("%012d", index),
       ].join("-")
     end
 
@@ -494,16 +494,24 @@ module ValidTestDataGenerators
           end
         end
       end
-      # PLACEHOLDER FOR SUPERSEDED APPLICAITONS
-      # # # superseded
-      # number.times do |index|
-      #   create_app(
-      #     course_cohort:,
-      #     status: Application::SUPERSEDED,
-      #     eligible_for_funding: index.even?,
-      #     index: create_random_user(status: :superseded, index:),
-      #   )
-      # end
+
+      # reassigned
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::PENDING,
+          eligible_for_funding: index.even?,
+          user: create_random_user(with_trn: [true, false].sample),
+        ).tap do |application|
+          change_provider(application:)
+          create_app_event(application:, event: :changed_provider)
+        end
+      end
+    end
+
+    def change_provider(application:)
+      new_provider = LeadProvider.where.not(id: @lead_provider.id).order("RANDOM()").first
+      application.update!(lead_provider: new_provider)
     end
 
     def statements_setup(course_cohort:)

@@ -76,6 +76,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       describe "successful seeding" do
         it "returns success outcome" do
+          expect(outcome.error).to be_nil
           expect(outcome.success).to be true
           expect(outcome.applications_count).to eq(12)
           expect(outcome.cohort_year).to eq(cohort_year)
@@ -95,6 +96,22 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           created_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
 
           expect(created_emails).to match_array(seeder.test_emails)
+        end
+
+        it "creates users with specific ids" do
+          seeder.call
+
+          created_user_ids = Application.joins(:user).where(lead_provider:).pluck("users.ecf_id")
+          expected_user_ids = Array.new(12) do |index|
+            [
+              "4e87fadb",
+              "f678",
+              "4934",
+              sprintf("%04d", lead_provider.id),
+              sprintf("%012d", index + 1),
+            ].join("-")
+          end
+          expect(created_user_ids).to match_array(expected_user_ids)
         end
 
         it "creates all applications in pending status" do
