@@ -4,14 +4,14 @@
       request.path,
       structure: [
         NavigationStructure::Node.new(
-          name: "Overview",
-          href: "#overview",
-          prefix: %r{/admin/applications/\d+/overview$},
-          ),
-        NavigationStructure::Node.new(
           name: "API Endpoints",
           href: "#endpoints",
           prefix: %r{/admin/applications/\d+/endpoints$},
+          ),
+        NavigationStructure::Node.new(
+          name: "Application Overview",
+          href: "#overview",
+          prefix: %r{/admin/applications/\d+/overview$},
           ),
         NavigationStructure::Node.new(
           name: "Application History",
@@ -23,65 +23,86 @@
   %>
 <% end %>
 
-<h1 id="overview" class="govuk-heading-m">API Endpoint Testing</h1>
-<%=
-  govuk_summary_list(card: { title: "Overview" }) do |sl|
-    sl.with_row do |row|
-      row.with_key(text: "Name")
-      row.with_value(text: @application.user.full_name)
+<div class="govuk-grid-row">
+  <h1 id="endpoints" class="govuk-heading-m">API Endpoint Testing</h1>
+  <div class="govuk-grid-column-one-half">
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Accept', admin_applications_api_tests_accept_index_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Accept a pending application</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Reject', admin_applications_api_tests_reject_index_path(@application), style: "margin: 0", class: "govuk-heading-s"  %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Reject a pending application</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Resume', admin_applications_api_tests_resume_index_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Resume a deferred application with a cohort</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Defer', admin_applications_api_tests_defer_index_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Defer an application which has started</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Withdraw', admin_applications_api_tests_withdraw_index_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Withdraw an application which has started or defered</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Change Funded Place', admin_applications_api_tests_change_funded_place_index_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Change Funded Place for an application which has been accepted</div>
+    </div>
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Started Declaration', admin_applications_api_tests_started_declarations_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Send a Started Declaration for an application which has been accepted</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Completed Declaration', admin_applications_api_tests_completed_declarations_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Send a Completed Declaration for an application which has started</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Change Delivery Partner', admin_applications_api_tests_change_delivery_partner_index_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Change Delivery Partner for a previously made declaration</div>
+    </div>
+    <div class="d-flex">
+      <div class="govuk-body"><%= govuk_link_to 'Void Declaration', admin_applications_api_tests_void_declarations_path(@application), style: "margin: 0", class: "govuk-heading-s" %></div>
+      <div class="govuk-body-s govuk-!-margin-left-2">- Void for a previously made declaration</div>
+    </div>
+  </div>  
+</div>
+
+
+<div id="#overview" class="govuk-grid-row govuk-!-padding-top-5">
+  <%=
+    govuk_summary_list(card: { title: "Application Overview" }) do |sl|
+      sl.with_row do |row|
+        row.with_key(text: "Name")
+        row.with_value(text: @application.user.full_name)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Application ID")
+        row.with_value(text: @application.ecf_id)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "User ID")
+        row.with_value(text: @application.user.ecf_id)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Course")
+        row.with_value(text: @application.course.name)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Provider")
+        row.with_value(text: @application.lead_provider.name)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Application status")
+        row.with_value(text: @application.status.try(:humanize))
+      end
     end
-    sl.with_row do |row|
-      row.with_key(text: "Application ID")
-      row.with_value(text: @application.ecf_id)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "User ID")
-      row.with_value(text: @application.user.ecf_id)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Course")
-      row.with_value(text: @application.course.name)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Provider")
-      row.with_value(text: @application.lead_provider.name)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Application status")
-      row.with_value(text: @application.status.try(:humanize))
-    end
-  end
-%>
-<hr/>
-<h1 id="endpoints" class="govuk-heading-m govuk-!-padding-top-5">API Endpoint List</h1>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Accept', admin_applications_api_tests_accept_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Accept a pending application</div>
+  %>
 </div>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Reject', admin_applications_api_tests_reject_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Reject a pending application</div>
-</div>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Resume', admin_applications_api_tests_resume_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Resume a deferred application with a cohort</div>
-</div>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Defer', admin_applications_api_tests_defer_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Defer an application which has started</div>
-</div>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Withdraw', admin_applications_api_tests_withdraw_index_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Withdraw an application which has started or defered</div>
-</div>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Started Declaration', admin_applications_api_tests_started_declarations_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Send a Started Declaration for an application which has been accepted</div>
-</div>
-<div class="d-flex">
-  <div class="govuk-body"><%= govuk_link_to 'Completed Declaration', admin_applications_api_tests_completed_declarations_path(@application), class: "govuk-heading-s", style: "margin: 0" %></div>
-  <div class="govuk-body govuk-!-margin-left-2">- Send a Completed Declaration for an application which has started</div>
-</div>
-<hr/>
+
+
 <h1 id="history" class="govuk-heading-m govuk-!-padding-top-5">Application History</h1>
 <%= render(Admin::ApplicationHistoryComponent.new(record: @application)) %>

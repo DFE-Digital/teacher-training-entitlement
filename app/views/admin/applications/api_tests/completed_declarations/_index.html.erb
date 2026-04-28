@@ -6,29 +6,10 @@
 
 <div class="govuk-body">  
   <p>The Completed Declarations endpoint creates a 'completed' declaration for a started application.</p>
-  <p class="govuk-heading-s">List of cohorts for <%= @application.lead_provider.name %></p>
-  <p>The Completed Declarations endpoint requires a delivery partner to be chosen for.</p>
-  <%=
-    govuk_table do |table|
-      table.with_head do |head|
-        head.with_row do |row|
-          row.with_cell(text: "Delivery Partner")
-          row.with_cell(text: "Delivery Partner ECF Id")
-          row.with_cell(text: "Action")
-        end
-      end
-
-      table.with_body do |body|
-        @application.lead_provider.delivery_partners.order(created_at: :desc).each do |dp|
-          body.with_row do |row|
-            row.with_cell(text: dp.name)
-            row.with_cell(text: dp.ecf_id)
-            row.with_cell do
-              render 'form', dp:
-            end
-          end
-        end
-      end
-    end
-  %>
+  <p class="govuk-heading-s">List of delivery partners for <%= @application.lead_provider.name %></p>
+  <p>The Completed Declarations endpoint requires a delivery partner to be chosen.</p>
+  <%= form_for :form, url: admin_applications_api_tests_completed_declarations_path(@application) do |f| %>
+    <%= f.govuk_select :delivery_partner_id, options_for_select(@delivery_partners.map{|dp| [ dp.name, dp.id ]}), label: { text: "Delivery partner", size: "s" } %>
+    <%= f.govuk_submit("Call Completed Declarations API") %>
+  <% end %>
 </div>

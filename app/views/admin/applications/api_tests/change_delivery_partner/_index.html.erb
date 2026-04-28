@@ -1,0 +1,21 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">Change Delivery Partner</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+
+
+<div class="govuk-body">  
+  <p>The Change Delivery Partner endpoint changes a declarations delivery and secondary delivery partners.</p>
+  <p class="govuk-heading-s">List of delivery partners for <%= @application.lead_provider.name %></p>
+  <% if @declarations.any? %>
+    <p>The Change Delivery Partner endpoint requires a delivery partner to be chosen.</p>
+    <%= form_for :form, url: admin_applications_api_tests_change_delivery_partner_index_path(@application) do |f| %>
+      <%= f.govuk_select :declaration_id, options_for_select(@declarations.map{|dp| [ "##{dp.id} - #{dp.declaration_type}", dp.id ]}), label: { text: "Declaration", size: "s" } %>
+      <%= f.govuk_select :delivery_partner_id, options_for_select(@delivery_partners.map{|dp| [ dp.name, dp.id ]}), label: { text: "Delivery partner", size: "s" } %>
+      <%= f.govuk_select :secondary_delivery_partner_id, options_for_select(@delivery_partners.map{|dp| [ dp.name, dp.id ]}), options: { include_blank: "- No secondary -" }, label: { text: "Secondary delivery partner", size: "s" } %>
+      <%= f.govuk_submit("Call Change Delivery Partner API") %>
+    <% end %>
+  <% else %>
+    <p>There are no declarations for this application - use the <%= govuk_link_to 'Started Declaration', admin_applications_api_tests_started_declarations_path(@application) %> endpoint</p>
+  <% end %>
+</div>

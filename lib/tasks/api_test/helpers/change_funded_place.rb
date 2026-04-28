@@ -1,6 +1,6 @@
 require_relative "call_api"
 
-class AcceptApplication
+class ChangeFundedPlace
   include CallApi
   include Rails.application.routes.url_helpers
 
@@ -11,7 +11,7 @@ class AcceptApplication
 
   def call
     if application.nil?
-      raise "[AcceptApplication] Could not find a pending application"
+      raise "[ChangeFundedPlace] Could not find an accepted application"
     end
 
     body = {
@@ -23,7 +23,7 @@ class AcceptApplication
       },
     }.to_json
 
-    url = accept_api_v1_application_path(application.ecf_id)
+    url = change_funded_place_api_v1_application_path(application.ecf_id)
 
     api_put(lead_provider: application.lead_provider, url:, body:)
   end
@@ -32,7 +32,7 @@ private
 
   def application
     @application ||= Application
-      .pending_status
+      .accepted_status
       .joins(:course)
       .where(courses: { identifier: Course::IDENTIFIERS })
       .last

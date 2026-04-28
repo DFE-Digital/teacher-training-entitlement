@@ -1,0 +1,14 @@
+<div class="d-flex">
+  <h1 class="govuk-heading-m" style="margin: 0;">Change Funded Place</h1>
+  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
+</div>
+
+
+<div class="govuk-body">  
+  <p>The Change Funded Place endpoint changes the application to indicate if a place is funded or not.</p>
+  
+    <%= form_for :form, url: admin_applications_api_tests_change_funded_place_index_path(@application) do |f| %>
+      <%= f.govuk_select :funded_place, options_for_select([['Yes', true], ['No', false]]), label: { text: "Has funded place?", size: "s" } %>
+      <%= f.govuk_submit("Call Change Funded Place API") %>
+    <% end %>
+</div>

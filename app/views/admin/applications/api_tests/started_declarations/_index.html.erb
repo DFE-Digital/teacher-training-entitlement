@@ -8,27 +8,9 @@
   <p>The Started Declarations endpoint creates a 'started' declaration for an accepted application.</p>
   <p class="govuk-heading-s">List of delivery partners for <%= @application.lead_provider.name %></p>
   <p>The Started Declarations endpoint requires a delivery partner to be chosen for.</p>
-  <%=
-    govuk_table do |table|
-      table.with_head do |head|
-        head.with_row do |row|
-          row.with_cell(text: "Delivery Partner")
-          row.with_cell(text: "Delivery Partner ECF Id")
-          row.with_cell(text: "Action")
-        end
-      end
+  <%= form_for :form, url: admin_applications_api_tests_started_declarations_path(@application) do |f| %>
+    <%= f.govuk_select :delivery_partner_id, options_for_select(@delivery_partners.map{|dp| [ dp.name, dp.id ]}), label: { text: "Delivery partner", size: "s" } %>
+    <%= f.govuk_submit("Call Started Declarations API") %>
+  <% end %>
 
-      table.with_body do |body|
-        @application.lead_provider.delivery_partners.order(created_at: :desc).each do |dp|
-          body.with_row do |row|
-            row.with_cell(text: dp.name)
-            row.with_cell(text: dp.ecf_id)
-            row.with_cell do
-              render 'form', dp:
-            end
-          end
-        end
-      end
-    end
-  %>
 </div>

@@ -76,6 +76,9 @@ namespace :admin do
           resources :accept, only: %i[index create]
           resources :started_declarations, only: %i[index create]
           resources :completed_declarations, only: %i[index create]
+          resources :change_funded_place, only: %i[index create]
+          resources :change_delivery_partner, only: %i[index create]
+          resources :void_declarations, only: %i[index create]
         end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]

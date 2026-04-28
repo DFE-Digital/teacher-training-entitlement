@@ -1,0 +1,47 @@
+require Rails.root.join("lib/tasks/api_test/helpers/change_delivery_partner")
+
+module Admin
+  module Applications
+    module APITests
+      class ChangeDeliveryPartnerController < ::Admin::ApplicationsController
+        before_action :set_delivery_partners, :set_declarations
+
+        def create
+          @response = ChangeDeliveryPartner.new(
+            declaration:,
+            delivery_partner:,
+            secondary_delivery_partner:,
+          ).call
+        end
+
+      private
+
+        def set_declarations
+          @declarations = @application.declarations
+        end
+
+        def set_delivery_partners
+          @delivery_partners = @application.lead_provider.delivery_partners.order(created_at: :desc)
+        end
+
+        def declaration
+          Declaration.find(form_params[:declaration_id])
+        end
+
+        def delivery_partner
+          DeliveryPartner.find(form_params[:delivery_partner_id])
+        end
+
+        def secondary_delivery_partner
+          return nil if form_params[:secondary_delivery_partner_id].blank?
+
+          DeliveryPartner.find(form_params[:secondary_delivery_partner_id])
+        end
+
+        def form_params
+          params.require(:form).permit(:delivery_partner_id, :secondary_delivery_partner_id, :declaration_id)
+        end
+      end
+    end
+  end
+end
