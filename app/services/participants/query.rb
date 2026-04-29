@@ -1,6 +1,7 @@
 module Participants
   class Query
     include API::Concerns::Orderable
+    include Queries::ConditionFormats
     include API::Concerns::FilterIgnorable
 
     attr_reader :scope, :sort
@@ -11,7 +12,7 @@ module Participants
 
       where_lead_provider_is(lead_provider)
       where_updated_since(updated_since)
-      where_status_is(status)
+      where_status_in(status)
       where_from_participant_id_is(from_participant_id)
     end
 
@@ -43,14 +44,10 @@ module Participants
       scope.merge!(users_updated_since.or(applications_updated_since).or(participant_id_changes_updated_since))
     end
 
-    def where_status_is(status)
+    def where_status_in(status)
       return if ignore?(filter: status)
 
-      unless status.to_s.in?(Application::STATUSES)
-        raise API::Errors::FilterValidationError, I18n.t(:invalid_status, valid_status: Application::STATUSES)
-      end
-
-      scope.merge!(User.includes(:applications).where(applications: { status: }))
+      scope.merge!(User.includes(:applications).where(applications: { status: extract_conditions(status, allowlist: Application::STATUSES) }))
     end
 
     def where_from_participant_id_is(from_participant_id)
