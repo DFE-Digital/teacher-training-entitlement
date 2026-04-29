@@ -35,6 +35,22 @@ RSpec.describe Application do
   end
 
   describe "validations" do
+    describe "Status change" do
+      context "when invalid transition" do
+        it do
+          subject.status = Application::COMPLETED
+          expect(subject).to have_error(:status, :invalid_status_transition, I18n.t("activerecord.errors.models.application.invalid_status_transition"))
+        end
+      end
+
+      context "when valid transition" do
+        it do
+          subject.status = Application::PENDING
+          expect(subject).not_to have_error(:status)
+        end
+      end
+    end
+
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
 
     context "when the cohort has a funding cap" do

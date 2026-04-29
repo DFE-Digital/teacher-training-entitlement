@@ -131,6 +131,7 @@ en:
               format: You can only enter numeric values in the adjustment amount
                 field
         application:
+          <<: *application
           attributes:
             funded_place:
               inclusion: Set '#/%{parameterized_attribute}' to true or false.
