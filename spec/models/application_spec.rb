@@ -695,27 +695,35 @@ RSpec.describe Application do
     end
   end
 
-  describe "Updating lead_provider / application lead providers" do
+  describe "#lead_provider=" do
     let(:lead_provider) { create(:lead_provider) }
     let(:another_lead_provider) { create(:lead_provider) }
     let(:application) { create(:application, lead_provider:) }
 
-    subject { application.application_lead_providers }
+    it "marks the current provider as previous and creates a new current provider link" do
+      expect(application.application_lead_providers.count).to eq(1)
+      expect(application.current_application_lead_provider.lead_provider).to eq(lead_provider)
+      expect(application.current_application_lead_provider.current).to be(true)
 
-    it do
-      expect(subject.count).to eq(1)
-      expect(subject.last.lead_provider).to eq(lead_provider)
-      expect(subject.last.current).to be(true)
+      application.lead_provider = another_lead_provider
 
-      application.update!(lead_provider: another_lead_provider)
+      application_lead_providers = application.application_lead_providers.reload
 
-      expect(subject.reload.count).to be(2)
+      expect(application_lead_providers.count).to eq(2)
+      expect(application_lead_providers.first.lead_provider).to eq(lead_provider)
+      expect(application_lead_providers.first.current).to be(false)
+      expect(application_lead_providers.last.lead_provider).to eq(another_lead_provider)
+      expect(application_lead_providers.last.current).to be(true)
+      expect(application.reload.lead_provider).to eq(another_lead_provider)
+    end
 
-      expect(subject.first.lead_provider).to eq(lead_provider)
-      expect(subject.first.current).to be(false)
+    it "does nothing when setting the same lead provider" do
+      expect {
+        application.lead_provider = lead_provider
+      }.not_to change(application.application_lead_providers, :count)
 
-      expect(subject.last.lead_provider).to eq(another_lead_provider)
-      expect(subject.last.current).to be(true)
+      expect(application.reload.current_application_lead_provider.lead_provider).to eq(lead_provider)
+      expect(application.application_lead_providers.current.count).to eq(1)
     end
   end
 end

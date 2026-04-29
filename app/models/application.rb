@@ -126,6 +126,8 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
 
   def lead_provider=(new_provider)
+    return if new_provider == lead_provider
+
     application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
     application_lead_providers.create!(lead_provider: new_provider, current: true)
   end
