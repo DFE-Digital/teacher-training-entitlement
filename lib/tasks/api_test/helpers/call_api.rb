@@ -1,3 +1,5 @@
+require Rails.root.join("db/seeds/base/constants")
+
 module CallApi
   def api_post(lead_provider:, url:, body:)
     call_api(lead_provider:, url:, body:, method: :post)
@@ -12,15 +14,13 @@ module CallApi
   end
 
   def call_api(lead_provider:, url:, body:, method:)
-    api_token = generate_token!(lead_provider:)
+    api_token = token_for(lead_provider:)
 
     headers = {
       "Authorization" => "Bearer #{api_token}",
       "Content-Type" => "application/json",
     }
     response = HTTParty.send(method, build_path(url:), body:, headers:)
-
-    APIToken.find_by_unhashed_token(api_token, scope: :lead_provider).delete
 
     puts "status: #{response.code}" # rubocop:disable Rails/Output
     puts "response: #{response.parsed_response}" # rubocop:disable Rails/Output
@@ -34,8 +34,10 @@ private
     "#{ENV['BASE_API_URL'] || 'http://localhost:3000'}#{url}"
   end
 
-  def generate_token!(lead_provider:)
-    scope = APIToken.scopes[:lead_provider]
-    APIToken.create_with_random_token!(scope:, lead_provider:)
+  def token_for(lead_provider:)
+    token = LEAD_PROVIDER_TOKENS[lead_provider.name]
+    raise "[CallApi] No seeded token found for '#{lead_provider.name}'" if token.nil?
+
+    token
   end
 end
