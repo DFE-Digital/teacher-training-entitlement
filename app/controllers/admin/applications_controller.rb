@@ -4,7 +4,10 @@ module Admin
 
     def index
       applications = Application
-                       .includes(:institution, :user, application_lead_providers: %i[lead_provider], course_cohort: %i[course cohort])
+                       .includes(:current_application_lead_provider,
+                                 :institution, :user, :lead_provider,
+                                 application_lead_providers: %i[lead_provider],
+                                 course_cohort: %i[course cohort])
                        .merge(filter_scope)
                        .merge(search_scope)
                        .order("applications.created_at ASC")
