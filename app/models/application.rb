@@ -27,7 +27,7 @@ class Application < ApplicationRecord
   end
 
   has_many :participant_id_changes, through: :user
-  has_many :application_events
+  has_many :application_events, dependent: :destroy
   has_many :state_changes
   has_many :notifications
   has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"

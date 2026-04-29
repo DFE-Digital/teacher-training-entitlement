@@ -52,3 +52,43 @@ User.find_or_create_by!(email: "ben.keeping@education.gov.uk") do |user|
     trn_verified: true,
   )
 end
+
+User.find_or_create_by!(email: "alice@example.com") do |user|
+  user.assign_attributes(
+    full_name: "Alice",
+    trn: "alice",
+    trn_verified: true,
+  )
+end
+
+User.find_or_create_by!(email: "bob@example.com") do |user|
+  user.assign_attributes(
+    full_name: "Charlie",
+    trn: "bob",
+    trn_verified: true,
+  )
+end
+
+User.find_or_create_by!(email: "charlie@example.com") do |user|
+  user.assign_attributes(
+    full_name: "Charlie",
+    trn: "charlie",
+    trn_verified: true,
+  )
+end
+
+User.find_or_create_by!(email: "dave@example.com") do |user|
+  user.assign_attributes(
+    full_name: "Dave",
+    trn: "dave",
+    trn_verified: true,
+  )
+end
+
+User.find_or_create_by!(email: "eve@example.com") do |user|
+  user.assign_attributes(
+    full_name: "Eve",
+    trn: "eve",
+    trn_verified: true,
+  )
+end
