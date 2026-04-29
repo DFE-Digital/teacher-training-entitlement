@@ -64,8 +64,6 @@ class Application < ApplicationRecord
 
   after_commit :touch_user_if_changed
 
-  API_STATUSES = [].freeze
-
   STATUSES =
     [
       PENDING = "pending".freeze,
@@ -75,8 +73,9 @@ class Application < ApplicationRecord
       DEFERRED = "deferred".freeze,
       WITHDRAWN = "withdrawn".freeze,
       REJECTED = "rejected".freeze,
-      REASSIGNED = "reassigned".freeze,
     ].freeze
+
+  API_STATUSES = STATUSES + [REASSIGNED = "reassigned".freeze].freeze
 
   STATUS_TRANSITIONS = {
     nil => [PENDING].freeze,

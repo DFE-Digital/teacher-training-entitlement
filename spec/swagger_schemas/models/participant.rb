@@ -138,8 +138,8 @@ PARTICIPANT = {
         status: {
           description: "The status of the participant",
           type: :string,
-          enum: Application::STATUSES,
-          example: Application::STATUSES.first,
+          enum: Application::API_STATUSES,
+          example: Application::API_STATUSES.first,
         },
         school_urn: {
           description: "The Unique Reference Number (URN) of the school where this participant is employed",

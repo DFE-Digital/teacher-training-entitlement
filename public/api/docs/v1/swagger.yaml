@@ -1207,7 +1207,6 @@ components:
           - deferred
           - withdrawn
           - rejected
-          - reassigned
           example: pending
         from_participant_id:
           description: Return only records that have this from Participant ID

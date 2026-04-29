@@ -88,8 +88,8 @@ APPLICATION = {
             description: "The current state of the application",
             type: :string,
             nullable: true,
-            example: Application::STATUSES.first,
-            enum: Application::STATUSES,
+            example: Application::API_STATUSES.first,
+            enum: Application::API_STATUSES,
           },
           reason_for_rejection: {
             description: "The reason why the application was rejected by the lead provider",

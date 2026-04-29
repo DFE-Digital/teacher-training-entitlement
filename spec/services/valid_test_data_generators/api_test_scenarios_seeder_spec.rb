@@ -27,13 +27,12 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
       let(:applications) { lead_provider.applications.group_by(&:status) }
 
       it "creates application each application statuses" do
-        statuses = Application::STATUSES.excluding(Application::REASSIGNED)
-        statuses.each do |status|
+        Application::STATUSES.each do |status|
           count = status == Application::PENDING ? 6 : 2
           expect(applications[status.to_s].size).to eq(count)
           expect(applications[status.to_s].map(&:eligible_for_funding)).to include(true, false)
         end
-        expect(applications.keys).to match_array(statuses)
+        expect(applications.keys).to match_array(Application::STATUSES)
       end
     end
 

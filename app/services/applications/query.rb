@@ -71,7 +71,7 @@ module Applications
       if status == Application::REASSIGNED
         scope.merge!(scope.where(current: false))
       elsif status.is_a?(Array) && Application::REASSIGNED.in?(status)
-        filtered_status = extract_conditions(status, allowlist: Application::STATUSES) - [Application::REASSIGNED]
+        filtered_status = extract_conditions(status, allowlist: Application::STATUSES)
 
         scope.merge!(
           scope.where(current: false)
