@@ -36,14 +36,14 @@ RSpec.describe Application do
 
   describe "validations" do
     describe "Status change" do
-      context "when valid transition" do
+      context "when invalid transition" do
         it do
           subject.status = Application::COMPLETED
           expect(subject).to have_error(:status, :invalid_status_transition, I18n.t("activerecord.errors.models.application.invalid_status_transition"))
         end
       end
 
-      context "when invalid transition" do
+      context "when valid transition" do
         it do
           subject.status = Application::PENDING
           expect(subject).not_to have_error(:status)
