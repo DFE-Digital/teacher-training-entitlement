@@ -3,7 +3,7 @@ require Rails.root.join("lib/tasks/api_test/helpers/accept_application")
 module Admin
   module Applications
     module APITests
-      class AcceptController < ::Admin::ApplicationsController
+      class AcceptController < APITestsController
         def create
           @response = AcceptApplication.new(
             application: @application,

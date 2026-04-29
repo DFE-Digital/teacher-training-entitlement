@@ -3,7 +3,7 @@ require Rails.root.join("lib/tasks/api_test/helpers/completed_declaration")
 module Admin
   module Applications
     module APITests
-      class CompletedDeclarationsController < ::Admin::ApplicationsController
+      class CompletedDeclarationsController < APITestsController
         before_action :set_delivery_partners
 
         def create

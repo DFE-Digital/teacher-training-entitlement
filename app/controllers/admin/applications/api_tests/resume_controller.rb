@@ -3,7 +3,7 @@ require Rails.root.join("lib/tasks/api_test/helpers/resume_application")
 module Admin
   module Applications
     module APITests
-      class ResumeController < ::Admin::ApplicationsController
+      class ResumeController < APITestsController
         def create
           course_cohort = CourseCohort.includes([:schedule]).find_by_id(params[:course_cohort_id])
 

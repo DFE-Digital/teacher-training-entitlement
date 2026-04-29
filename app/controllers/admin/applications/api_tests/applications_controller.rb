@@ -4,7 +4,7 @@ require Rails.root.join("lib/tasks/api_test/helpers/list_applications")
 module Admin
   module Applications
     module APITests
-      class ApplicationsController < ::Admin::ApplicationsController
+      class ApplicationsController < APITestsController
         def show
           @response = ShowApplication.new(application: @application).call
         end

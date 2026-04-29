@@ -3,7 +3,7 @@ require Rails.root.join("lib/tasks/api_test/helpers/void_declaration")
 module Admin
   module Applications
     module APITests
-      class VoidDeclarationsController < ::Admin::ApplicationsController
+      class VoidDeclarationsController < APITestsController
         before_action :set_declarations
 
         def create

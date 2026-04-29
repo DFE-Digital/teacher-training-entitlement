@@ -3,7 +3,7 @@ require Rails.root.join("lib/tasks/api_test/helpers/change_funded_place")
 module Admin
   module Applications
     module APITests
-      class ChangeFundedPlaceController < ::Admin::ApplicationsController
+      class ChangeFundedPlaceController < APITestsController
         def create
           @response = ChangeFundedPlace.new(
             application: @application,
