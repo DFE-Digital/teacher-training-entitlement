@@ -1,9 +1,4 @@
 <% content_for :title, "Your registration details" %>
-<% if flash.present? %>
-  <%= render GovukComponent::NotificationBannerComponent.new(success: flash[:notice].present?, title_text: flash[:notice]&.dig(:title) || flash[:alert]&.dig(:title)) do %>
-    <p class="govuk-body"><%=  flash[:notice]&.dig(:message).presence || flash[:alert]&.dig(:message) %></p>
-  <% end %>
-<% end %>
 <% content_for :before_content do %>
   <% if current_user.applications.count > 1 %>
     <%= render GovukComponent::BackLinkComponent.new(

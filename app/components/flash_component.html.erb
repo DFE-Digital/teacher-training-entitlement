@@ -1,0 +1,3 @@
+<%= render GovukComponent::NotificationBannerComponent.new(success: success?, title_text: flash_title) do |banner| %>
+  <% banner.with_heading(text: flash_message) %>
+<% end %>

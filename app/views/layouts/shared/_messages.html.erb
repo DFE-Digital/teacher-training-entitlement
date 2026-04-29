@@ -8,29 +8,6 @@
   %>
 <% end %>
 
-<% if flash[:error].present? %>
-  <%=
-    govuk_notification_banner(title_text: "Error") do |banner|
-      banner.with_heading(text: flash[:error])
-    end
-  %>
-<% end %>
-
-<% if flash[:success] %>
-  <%=
-    govuk_notification_banner(
-      title_text: flash[:success_title] || "Success",
-      success: true,
-    ) do |banner|
-      banner.with_heading(text: flash[:success])
-    end
-  %>
-<% end %>
-
-<% if flash[:notice].present? %>
-  <%=
-    govuk_notification_banner(title_text: "Important") do |banner|
-      banner.with_heading(text: flash[:notice])
-    end
-  %>
-<% end %>
+<% if flash .present? %>
+  <%= render FlashComponent.new(flash:) %>
+<% end%>

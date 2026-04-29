@@ -25,7 +25,7 @@ module Applications
           redirect_to application_change_provider_check_answers_path(application.ecf_id) and return
         end
 
-        flash[:notice] = {
+        flash[:success] = {
           title: t("applications.change_provider.check_answers.success.title"),
           message: t("applications.change_provider.check_answers.success.message"),
         }
