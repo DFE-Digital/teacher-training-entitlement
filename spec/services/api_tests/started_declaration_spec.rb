@@ -22,7 +22,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
   end
 
   let(:expected_url) do
-    "http://localhost:3000#{expected_path}"
+    "#{ENV.fetch("HOSTING_DOMAIN", "http://localhost:3000")}#{expected_path}"
   end
 
   let(:expected_path) do

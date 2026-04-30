@@ -24,9 +24,9 @@ module APITests
         },
       }.to_json
 
-      url = change_delivery_partner_api_v1_declaration_path(declaration.ecf_id)
+      path = change_delivery_partner_api_v1_declaration_path(declaration.ecf_id)
 
-      api_put(lead_provider:, url:, body:)
+      api_put(lead_provider:, path:, body:)
     end
 
   private

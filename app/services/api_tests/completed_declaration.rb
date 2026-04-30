@@ -25,9 +25,9 @@ module APITests
         },
       }.to_json
 
-      url = completed_declaration_api_v1_application_path(application.ecf_id)
+      path = completed_declaration_api_v1_application_path(application.ecf_id)
 
-      api_post(lead_provider: application.lead_provider, url:, body:)
+      api_post(lead_provider: application.lead_provider, path:, body:)
     end
 
   private

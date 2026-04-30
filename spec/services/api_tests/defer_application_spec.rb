@@ -19,7 +19,7 @@ RSpec.describe APITests::DeferApplication, type: :model do
   end
 
   let(:expected_url) do
-    "http://localhost:3000#{Rails.application.routes.url_helpers.defer_api_v1_application_path(application.ecf_id)}"
+    "#{ENV.fetch("HOSTING_DOMAIN", "http://localhost:3000")}#{Rails.application.routes.url_helpers.defer_api_v1_application_path(application.ecf_id)}"
   end
 
   before do

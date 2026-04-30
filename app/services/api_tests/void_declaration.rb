@@ -12,9 +12,9 @@ module APITests
         raise "[VoidDeclaration] Could not find a declaration"
       end
 
-      url = void_api_v1_declaration_path(declaration.ecf_id)
+      path = void_api_v1_declaration_path(declaration.ecf_id)
 
-      api_put(lead_provider:, url:, body: nil)
+      api_put(lead_provider:, path:, body: nil)
     end
 
   private

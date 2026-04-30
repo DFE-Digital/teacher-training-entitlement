@@ -17,7 +17,7 @@ module APITests
         raise "[ShowApplication] Could not find an application"
       end
 
-      api_get(lead_provider: @lead_provider, url: api_v1_application_path(@application.ecf_id))
+      api_get(lead_provider: @lead_provider, path: api_v1_application_path(@application.ecf_id))
     end
   end
 end

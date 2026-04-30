@@ -21,9 +21,9 @@ module APITests
         },
       }.to_json
 
-      url = withdraw_api_v1_application_path(application.ecf_id)
+      path = withdraw_api_v1_application_path(application.ecf_id)
 
-      api_put(lead_provider: application.lead_provider, url:, body:)
+      api_put(lead_provider: application.lead_provider, path:, body:)
     end
 
   private

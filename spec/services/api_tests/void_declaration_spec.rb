@@ -9,7 +9,7 @@ RSpec.describe APITests::VoidDeclaration, type: :model do
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
 
   let(:expected_url) do
-    "http://localhost:3000#{Rails.application.routes.url_helpers.void_api_v1_declaration_path(declaration.ecf_id)}"
+    "#{ENV.fetch("HOSTING_DOMAIN", "http://localhost:3000")}#{Rails.application.routes.url_helpers.void_api_v1_declaration_path(declaration.ecf_id)}"
   end
 
   before do

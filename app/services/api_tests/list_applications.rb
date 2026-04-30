@@ -13,7 +13,7 @@ module APITests
         raise "[ListApplications] Could not find a lead provider"
       end
 
-      api_get(lead_provider: @lead_provider, url: api_v1_applications_path(filter: @filters))
+      api_get(lead_provider: @lead_provider, path: api_v1_applications_path(filter: @filters))
     end
   end
 end

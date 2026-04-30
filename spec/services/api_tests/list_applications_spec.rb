@@ -8,7 +8,7 @@ RSpec.describe APITests::ListApplications, type: :model do
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "data" => [] }) }
 
   let(:expected_url) do
-    "http://localhost:3000#{Rails.application.routes.url_helpers.api_v1_applications_path(filter: filters)}"
+    "#{ENV.fetch("HOSTING_DOMAIN", "http://localhost:3000")}#{Rails.application.routes.url_helpers.api_v1_applications_path(filter: filters)}"
   end
 
   before do
