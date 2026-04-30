@@ -28,7 +28,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       it "creates application each application statuses" do
         Application::STATUSES.each do |status|
-          count = status == "pending" ? 6 : 2
+          count = status == Application::PENDING ? 6 : 2
           expect(applications[status.to_s].size).to eq(count)
           expect(applications[status.to_s].map(&:eligible_for_funding)).to include(true, false)
         end
@@ -92,7 +92,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates applications with correct emails" do
           seeder.call
 
-          created_emails = Application.joins(:user).where(lead_provider:).pluck("users.email")
+          created_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
 
           expect(created_emails).to match_array(seeder.test_emails)
         end
@@ -100,19 +100,19 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates all applications in pending status" do
           seeder.call
 
-          applications = Application.where(lead_provider: lead_provider)
+          applications = lead_provider.updateable_applications
           expect(applications.pluck(:status).uniq).to eq([Application::PENDING])
         end
 
         it "creates applications with correct funding eligibility" do
           seeder.call
 
-          eligible_count = Application.joins(:user)
-                                      .where(lead_provider: lead_provider, eligible_for_funding: true)
+          eligible_count = lead_provider.updateable_applications.joins(:user)
+                                      .where(eligible_for_funding: true)
                                       .count
 
-          not_eligible_count = Application.joins(:user)
-                                          .where(lead_provider: lead_provider, eligible_for_funding: false)
+          not_eligible_count = lead_provider.updateable_applications.joins(:user)
+                                          .where(eligible_for_funding: false)
                                           .count
 
           expect(eligible_count).to eq(11) # All except APP-004
@@ -144,8 +144,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           primary_course_cohort = CourseCohort.find_by(course:, cohort: Cohort.find_by(start_year: cohort_year))
           secondary_course_cohort = CourseCohort.find_by(course:, cohort: Cohort.find_by(start_year: cohort_year + 1))
 
-          expect(Application.where(course_cohort: primary_course_cohort, lead_provider: lead_provider).count).to eq(11)
-          expect(Application.where(course_cohort: secondary_course_cohort, lead_provider: lead_provider).count).to eq(1)
+          expect(lead_provider.updateable_applications.where(course_cohort: primary_course_cohort).count).to eq(11)
+          expect(lead_provider.updateable_applications.where(course_cohort: secondary_course_cohort).count).to eq(1)
         end
 
         it "creates 2 statements" do
@@ -177,7 +177,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates applications with correct lead provider" do
           seeder.call
 
-          applications = Application.where(lead_provider: lead_provider)
+          applications = lead_provider.updateable_applications
           expect(applications.count).to eq(12)
           expect(applications.pluck(:lead_provider_id).uniq).to eq([lead_provider.id])
         end
@@ -197,23 +197,22 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         end
 
         it "maintains the same test emails" do
-          original_emails = Application.joins(:user).where(lead_provider: lead_provider).pluck("users.email")
+          original_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
 
           seeder.call
 
-          new_emails = Application.joins(:user).where(lead_provider: lead_provider).pluck("users.email")
+          new_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
           expect(new_emails).to match_array(original_emails)
         end
 
         it "resets all applications to pending status" do
-          Application.where(lead_provider: lead_provider).limit(3).update_all(
+          lead_provider.updateable_applications.limit(3).update_all(
             status: Application::ACCEPTED,
           )
 
           seeder.call
 
-          applications = Application.where(lead_provider: lead_provider)
-          expect(applications.pluck(:status).uniq).to eq([Application::PENDING])
+          expect(lead_provider.updateable_applications.pluck(:status).uniq).to eq([Application::PENDING])
         end
 
         it "does not delete users with other applications" do

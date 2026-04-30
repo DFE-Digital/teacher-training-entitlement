@@ -101,6 +101,7 @@ RSpec.describe HandleSubmissionForStore do
         expect(stable_as_json(user.reload)).to match(expected_user_attributes)
         expect(user.applications.reload.count).to eq 1
         last_application = user.applications.last
+        expect(last_application.lead_provider).to eq(lead_provider)
         expect(stable_as_json(last_application)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
@@ -111,7 +112,6 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => nil,
           "status" => "pending",
           "participant_outcome_state" => nil,
-          "lead_provider_id" => lead_provider.id,
           "notes" => nil,
           "institution_id" => school.institution.id,
           "targeted_support_funding_eligibility" => false,
@@ -249,7 +249,7 @@ RSpec.describe HandleSubmissionForStore do
 
       it "stores data from store" do
         subject.call
-
+        expect(user.applications.last.lead_provider).to eq(lead_provider)
         expect(stable_as_json(user.applications.last)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => user.applications.last.ecf_id,
@@ -260,7 +260,6 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => "private_nursery",
           "status" => "pending",
           "participant_outcome_state" => nil,
-          "lead_provider_id" => lead_provider.id,
           "notes" => nil,
           "institution_id" => nil,
           "targeted_support_funding_eligibility" => false,
@@ -306,6 +305,7 @@ RSpec.describe HandleSubmissionForStore do
       it "stores data from store" do
         subject.call
 
+        expect(user.applications.last.lead_provider).to eq(lead_provider)
         expect(stable_as_json(user.applications.last)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => user.applications.last.ecf_id,
@@ -316,7 +316,6 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => "private_nursery",
           "status" => "pending",
           "participant_outcome_state" => nil,
-          "lead_provider_id" => lead_provider.id,
           "notes" => nil,
           "institution_id" => nil,
           "targeted_support_funding_eligibility" => false,
@@ -372,6 +371,7 @@ RSpec.describe HandleSubmissionForStore do
       it "stores data from store" do
         subject.call
 
+        expect(user.applications.last.lead_provider).to eq(lead_provider)
         expect(stable_as_json(user.applications.last)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => user.applications.last.ecf_id,
@@ -382,7 +382,6 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => "private_nursery",
           "status" => "pending",
           "participant_outcome_state" => nil,
-          "lead_provider_id" => lead_provider.id,
           "notes" => nil,
           "institution_id" => nil,
           "targeted_support_funding_eligibility" => false,

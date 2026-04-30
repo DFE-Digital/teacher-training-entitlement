@@ -8,16 +8,17 @@ module Applications
 
     def initialize(lead_provider:, cohort_start_years: :ignore, updated_since: :ignore, participant_ids: :ignore, status: :ignore, course_identifier: :ignore, sort: nil)
       @scope = lead_provider
-                 .applications
+                 .application_lead_providers
+                 .joins(:application)
                  .includes(
-                   :user,
-                   :course,
-                   :cohort,
-                   :schedule,
-                   :institution,
-                   course_cohort: %i[course cohort schedule],
+                   application: [:user,
+                                 :course,
+                                 :cohort,
+                                 :schedule,
+                                 :institution,
+                                 { course_cohort: %i[course cohort schedule] }],
                  )
-                 .preload(institution: :institutionable)
+                 .preload(application: { institution: :institutionable })
       @sort = sort
 
       where_cohort_start_year_in(cohort_start_years)
@@ -28,23 +29,21 @@ module Applications
     end
 
     def applications
+      application_lead_providers.map(&:application)
+    end
+
+    def application_lead_providers
       scope.order(order_by)
     end
 
     def application(id: nil, ecf_id: nil)
-      return scope.find_by!(ecf_id:) if ecf_id.present?
-      return scope.find(id) if id.present?
+      return scope.find_by!(application: { ecf_id: })&.application if ecf_id.present?
+      return scope.find_by!(application: { id: })&.application if id.present?
 
       fail(ArgumentError, "id or ecf_id needed")
     end
 
   private
-
-    def where_lead_provider_is(lead_provider)
-      return if ignore?(filter: lead_provider)
-
-      scope.merge!(Application.where(lead_provider:))
-    end
 
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
@@ -69,7 +68,18 @@ module Applications
     def where_status_in(status)
       return if ignore?(filter: status)
 
-      scope.merge!(Application.where(status: extract_conditions(status, allowlist: Application::STATUSES)))
+      if status == Application::REASSIGNED
+        scope.merge!(scope.where(current: false))
+      elsif status.is_a?(Array) && Application::REASSIGNED.in?(status)
+        filtered_status = extract_conditions(status, allowlist: Application::STATUSES)
+
+        scope.merge!(
+          scope.where(current: false)
+            .or(Application.where(status: filtered_status)),
+        )
+      else
+        scope.merge!(Application.where(status: extract_conditions(status, allowlist: Application::STATUSES)))
+      end
     end
 
     def where_course_identifier_in(course_identifier)

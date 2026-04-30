@@ -55,8 +55,10 @@ private
 
   def test_applications_count(lead_provider)
     seeder = ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:)
-    Application.joins(:user)
-      .where(lead_provider:)
+    lead_provider
+      .applications
+      .joins(:user)
+      .merge(ApplicationLeadProvider.current)
       .where(users: { email: seeder.test_emails })
       .count
   end

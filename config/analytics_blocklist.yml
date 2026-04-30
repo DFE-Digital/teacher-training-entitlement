@@ -122,6 +122,13 @@
   - updated_at
   :application_events:
   - type
+  :application_lead_providers:
+  - id
+  - application_id
+  - created_at
+  - current
+  - lead_provider_id
+  - updated_at
   :api_tokens:
   - id
   - created_at

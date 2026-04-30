@@ -133,7 +133,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       "kind_of_nursery" => nil,
       "status" => "pending",
       "participant_outcome_state" => nil,
-      "lead_provider_id" => LeadProvider.find_by(name: LeadProvider.first.name).id,
       "notes" => nil,
       "referred_by_return_to_teaching_adviser" => nil,
       "institution_id" => Institution.find_by(institution_reference_number: "100000").id,

@@ -34,11 +34,11 @@ module Declarations
     def where_lead_provider_is(lead_provider, include_transferred_applications)
       return if ignore?(filter: lead_provider)
 
-      relation = Declaration.joins(:application)
+      relation = Declaration.joins(application: :application_lead_providers)
       lead_provider_scope = relation.where(lead_provider:)
 
       if include_transferred_applications
-        lead_provider_scope = lead_provider_scope.or(relation.where(application: { lead_provider: }))
+        lead_provider_scope = lead_provider_scope.or(relation.merge(ApplicationLeadProvider.where(lead_provider:)))
       end
 
       scope.merge!(lead_provider_scope)
@@ -88,7 +88,7 @@ module Declarations
           :cohort,
           :lead_provider,
           :participant_outcomes,
-          application: [:user, :lead_provider, :course, { course_cohort: [:course] }],
+          application: [:user, { application_lead_providers: [:lead_provider], course_cohort: [:course] }],
           statement_items: %i[
             statement
           ],

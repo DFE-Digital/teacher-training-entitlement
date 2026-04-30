@@ -51,6 +51,7 @@ RSpec.describe Declarations::Query do
 
         it "only shows declarations made by the provider" do
           query = described_class.new(lead_provider: current_lead_provider)
+
           expect(query.declarations).to contain_exactly(declaration_after_transfer)
 
           query = described_class.new(lead_provider: previous_lead_provider)
@@ -208,6 +209,45 @@ RSpec.describe Declarations::Query do
             query = described_class.new(participant_ids: "not-a-uuid")
 
             expect(query.scope.to_sql).not_to include("not-a-uuid")
+          end
+        end
+      end
+
+      context "when filtering by lead_provider" do
+        include_context "with application which changed provider"
+        let(:lead_provider) {}
+        let!(:declaration) { create(:declaration, application:, lead_provider:) }
+
+        subject(:query) { described_class.new(lead_provider:) }
+
+        context "when lead provider is current provider" do
+          let(:lead_provider) { current_lead_provider }
+
+          it "includes the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.declarations).to contain_exactly(declaration)
+          end
+        end
+
+        context "when lead provider is no longer the current provider" do
+          let(:lead_provider) { old_lead_provider }
+
+          it "includes the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.declarations).to contain_exactly(declaration)
+          end
+        end
+
+        context "when lead provider has never been the provider" do
+          let(:lead_provider) { create(:lead_provider) }
+          let!(:declaration) { create(:declaration, application:, lead_provider: create(:lead_provider)) }
+
+          it "does not include the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.declarations).to be_blank
           end
         end
       end

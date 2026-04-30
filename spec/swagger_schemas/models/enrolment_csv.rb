@@ -52,8 +52,8 @@ ENROLMENT_CSV = {
       status: {
         description: "The status of the participant",
         type: :string,
-        example: Application::STATUSES.first,
-        enum: Application::STATUSES,
+        example: Application::API_STATUSES.first,
+        enum: Application::API_STATUSES,
       },
       school_urn: {
         description: "The Unique Reference Number (URN) of the school where this NPQ participant is teaching",

@@ -3,13 +3,12 @@ require "securerandom"
 FactoryBot.define do
   factory :application do
     with_school
-
     user
-    lead_provider { LeadProvider.first || create(:lead_provider) }
     status { :pending }
     ecf_id { SecureRandom.uuid }
 
     transient do
+      lead_provider { nil }
       course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
       cohort do
         existing = user.persisted? &&
@@ -23,13 +22,18 @@ FactoryBot.define do
     end
 
     course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
-
     teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
     funding_choice { Application.funding_choices.keys.first }
     ukprn { rand(10_000_000..99_999_999).to_s }
     funded_place { course_cohort.cohort.funding_cap ? !!eligible_for_funding : nil }
+
+    after(:create) do |application, evaluator|
+      lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
+      create(:application_lead_provider,
+             application:, lead_provider:, current: true)
+    end
 
     trait :with_state_change do
       after(:create) do |application|
@@ -142,6 +146,16 @@ FactoryBot.define do
     trait :with_declaration do
       after(:create) do |application|
         application.declarations << create(:declaration, :started, application:, cohort: application.cohort)
+      end
+    end
+
+    trait :with_application_lead_provider do
+      transient do
+        old_lead_provider { nil }
+      end
+      after(:create) do |application, eval|
+        lead_provider = eval.old_lead_provider || create(:lead_provider)
+        application.application_lead_providers.create!(application:, lead_provider:)
       end
     end
 

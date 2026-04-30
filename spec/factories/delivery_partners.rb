@@ -20,7 +20,9 @@ FactoryBot.define do
 
       partnerships.each do |cohort, lead_providers|
         Array.wrap(lead_providers).each do |lead_provider|
-          delivery_partner.delivery_partnerships.create! lead_provider:, cohort:
+          if LeadProvider.where(id: lead_provider.id).exists?
+            delivery_partner.delivery_partnerships.create! lead_provider:, cohort:
+          end
         end
       end
     end

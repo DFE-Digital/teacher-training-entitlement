@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -108,6 +108,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
     t.index ["type"], name: "index_application_events_on_type"
   end
 
+  create_table "application_lead_providers", force: :cascade do |t|
+    t.bigint "application_id"
+    t.datetime "created_at", null: false
+    t.boolean "current", default: false
+    t.bigint "lead_provider_id"
+    t.datetime "updated_at", null: false
+    t.index ["application_id", "lead_provider_id"], name: "idx_on_application_id_lead_provider_id_f38fa4893f", unique: true
+    t.index ["application_id"], name: "index_application_lead_providers_on_application_id"
+    t.index ["lead_provider_id"], name: "index_application_lead_providers_on_lead_provider_id"
+  end
+
   create_table "applications", force: :cascade do |t|
     t.datetime "accepted_at"
     t.bigint "course_cohort_id"
@@ -119,7 +130,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
     t.string "funding_eligiblity_status_code"
     t.bigint "institution_id"
     t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
-    t.bigint "lead_provider_id", null: false
     t.string "notes"
     t.integer "number_of_pupils", default: 0
     t.string "on_submission_trn"
@@ -144,9 +154,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
-    t.index ["lead_provider_id"], name: "index_applications_on_lead_provider_id"
     t.index ["status"], name: "index_applications_on_status"
-    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
+    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true, where: "(status <> ALL (ARRAY['rejected'::application_statuses]))"
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
 
@@ -623,7 +632,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_141930) do
   add_foreign_key "application_events", "applications"
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
-  add_foreign_key "applications", "lead_providers"
   add_foreign_key "applications", "users"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"

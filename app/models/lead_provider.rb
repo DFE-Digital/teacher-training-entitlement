@@ -1,12 +1,16 @@
 class LeadProvider < ApplicationRecord
-  has_many :applications
   has_many :statements
   has_many :course_cohort_providers
   has_many :course_cohorts, through: :course_cohort_providers
   has_many :courses, through: :course_cohorts
-
   has_many :delivery_partnerships
   has_many :delivery_partners, through: :delivery_partnerships
+  has_many :application_lead_providers
+  has_many :updateable_applications,
+           -> { merge(ApplicationLeadProvider.current) },
+           through: :application_lead_providers, source: :application
+  has_many :applications, -> { distinct },
+           through: :application_lead_providers, source: :application
 
   validates :name, presence: true
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true

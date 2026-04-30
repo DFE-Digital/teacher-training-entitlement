@@ -19,7 +19,11 @@
               row.with_cell(text: application.user.email)
               row.with_cell(text: application.course.name)
               row.with_cell do
+                if application.lead_provider == @lead_provider
                   application_status_badge(application.status)
+                else
+                  application_status_badge(Application::REASSIGNED)
+                end
               end
               row.with_cell do
                 if application.cohort.funding_cap?

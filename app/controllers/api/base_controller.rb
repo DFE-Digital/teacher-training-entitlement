@@ -1,5 +1,7 @@
 module API
   class BaseController < ActionController::API
+    class ForbiddenError < StandardError; end
+
     before_action :set_cache_headers
     before_action :remove_charset
     before_action :set_sentry_context
@@ -12,6 +14,7 @@ module API
     rescue_from ActionController::UnpermittedParameters, with: :unpermitted_parameter_response
     rescue_from ActionController::BadRequest, with: :bad_request_response
     rescue_from ArgumentError, with: :bad_request_response
+    rescue_from ForbiddenError, with: :forbidden_response
     rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
     rescue_from API::Errors::FilterValidationError, with: :filter_validation_error_response
 
@@ -40,6 +43,10 @@ module API
 
     def unpermitted_parameter_response(exception)
       render json: { errors: API::Errors::Response.new(error: I18n.t(:unpermitted_parameters), params: exception.params).call }, status: :unprocessable_content
+    end
+
+    def forbidden_response(exception)
+      render json: { errors: API::Errors::Response.new(error: I18n.t(:forbidden), params: exception.message).call }, status: :forbidden
     end
 
     def bad_request_response(exception)

@@ -12,29 +12,27 @@ module Applications
       def create
         redirect_to application_change_provider_start_index_path(application.ecf_id) and return if new_provider.nil?
 
-        # TODO: - Create new application with new provider and retire old application
-        # Don't leave this in :)
-        application.update!(lead_provider_id: new_provider.id)
+        service = Applications::ChangeLeadProvider.new(application:, new_provider:)
 
-        GenericMailer.with(
-          to: application.user.email,
-          full_name: application.user.full_name,
-          provider_name: application.lead_provider.name,
-          course_name: application.course.name,
-          cohort_date: application.cohort.name,
-          ecf_id: application.ecf_id,
-          sign_in_link: Rails.configuration.sign_in_link,
-          feedback_link: Rails.configuration.feedback_link,
-        ).change_provider.deliver_later
+        service.call
 
-        flash[:notice] = {
+        if service.errors.any?
+          flash[:alert] = {
+            title: t("applications.change_provider.check_answers.fail.title"),
+            message: service.errors.full_messages.join("; "),
+          }
+
+          redirect_to application_change_provider_check_answers_path(application.ecf_id) and return
+        end
+
+        flash[:success] = {
           title: t("applications.change_provider.check_answers.success.title"),
           message: t("applications.change_provider.check_answers.success.message"),
         }
 
-        redirect_to application_path(application.ecf_id)
-
         clear_session_form_data!
+
+        redirect_to application_path(application.ecf_id)
       end
 
       helper_method :new_provider

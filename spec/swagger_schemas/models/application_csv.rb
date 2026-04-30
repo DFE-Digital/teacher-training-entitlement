@@ -97,8 +97,8 @@ APPLICATION_CSV = {
         description: "The current state of the application",
         type: :string,
         nullable: true,
-        example: Application::STATUSES.first,
-        enum: Application::STATUSES,
+        example: Application::API_STATUSES.first,
+        enum: Application::API_STATUSES,
       },
       works_in_school: {
         description: "Indicates whether the participant is currently employed by school",

@@ -11,7 +11,9 @@ module Admin
 
       # Added extra includes :course, :cohort to stop bogus warning issues;
       applications_scope = @lead_provider.applications
-                             .includes(:user, :course, :cohort, course_cohort: %i[course cohort])
+                             .includes(:current_application_lead_provider,
+                                       :lead_provider, :user, :course, :cohort,
+                                       course_cohort: %i[course cohort])
                              .order(created_at: :desc)
 
       if @current_cohort

@@ -38,6 +38,7 @@
     sl.with_row do |row|
       row.with_key(text: "Application status")
       row.with_value(text: @application.status.try(:humanize))
+
       unless @application.pending_status?
         row.with_action(
           text: "Revert to Pending",

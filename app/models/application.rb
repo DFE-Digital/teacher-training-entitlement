@@ -9,7 +9,6 @@ class Application < ApplicationRecord
 
   belongs_to :user
   belongs_to :course_cohort
-  belongs_to :lead_provider
   belongs_to :institution, optional: true
 
   has_one :course, through: :course_cohort
@@ -30,9 +29,14 @@ class Application < ApplicationRecord
   has_many :application_events
   has_many :state_changes
   has_many :notifications
+  has_many :declarations
+  has_many :application_lead_providers
+
   has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
   has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
-  has_many :declarations
+  has_one :current_application_lead_provider,
+          -> { where(current: true) }, class_name: "ApplicationLeadProvider"
+  has_one :lead_provider, through: :current_application_lead_provider
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }
@@ -45,19 +49,20 @@ class Application < ApplicationRecord
   attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
+
   validates :user_id,
             uniqueness: {
               scope: :course_cohort_id,
-              conditions: -> { where.not(status: REJECTED) },
+              conditions: -> { where.not(status: [REJECTED]) },
+              message: "/ Course Cohort already exists for user",
             }, unless: -> { rejected_status? }
+
   validate :ensure_valid_status_transition, if: -> { status_changed? && not_admin_user? }
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
   after_commit :touch_user_if_changed
-
-  API_STATUSES = [].freeze
 
   STATUSES =
     [
@@ -69,6 +74,8 @@ class Application < ApplicationRecord
       WITHDRAWN = "withdrawn".freeze,
       REJECTED = "rejected".freeze,
     ].freeze
+
+  API_STATUSES = STATUSES + [REASSIGNED = "reassigned".freeze].freeze
 
   STATUS_TRANSITIONS = {
     nil => [PENDING].freeze,
@@ -117,6 +124,13 @@ class Application < ApplicationRecord
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
+
+  def lead_provider=(new_provider)
+    return if new_provider == lead_provider
+
+    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
+    application_lead_providers.create!(lead_provider: new_provider, current: true)
+  end
 
   def can_change_provider?
     pending_status?

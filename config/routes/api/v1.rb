@@ -13,8 +13,8 @@ namespace :api do
         put :resume
         put :withdraw
         put :change_schedule, path: "change-schedule"
-        post :started_declaration, path: "declarations/started"
-        post :completed_declaration, path: "declarations/completed"
+        post :started, path: "declarations/started", controller: :application_declarations, as: :started_declaration
+        post :completed, path: "declarations/completed", controller: :application_declarations, as: :completed_declaration
       end
     end
 

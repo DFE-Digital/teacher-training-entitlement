@@ -5,7 +5,6 @@ RSpec.describe Application do
 
   describe "relationships" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:institution).optional }
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
     it { is_expected.to have_many(:state_changes) }
@@ -52,6 +51,12 @@ RSpec.describe Application do
     end
 
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
+
+    it {
+      expect(subject).to validate_uniqueness_of(:ecf_id)
+        .case_insensitive
+        .with_message("ECF ID must be unique")
+    }
 
     context "when the cohort has a funding cap" do
       let(:cohort) { create(:cohort, :current, :with_funding_cap) }
@@ -687,6 +692,38 @@ RSpec.describe Application do
       it "returns nil" do
         expect(application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "active")).to be_nil
       end
+    end
+  end
+
+  describe "#lead_provider=" do
+    let(:lead_provider) { create(:lead_provider) }
+    let(:another_lead_provider) { create(:lead_provider) }
+    let(:application) { create(:application, lead_provider:) }
+
+    it "marks the current provider as previous and creates a new current provider link" do
+      expect(application.application_lead_providers.count).to eq(1)
+      expect(application.current_application_lead_provider.lead_provider).to eq(lead_provider)
+      expect(application.current_application_lead_provider.current).to be(true)
+
+      application.lead_provider = another_lead_provider
+
+      application_lead_providers = application.application_lead_providers.reload
+
+      expect(application_lead_providers.count).to eq(2)
+      expect(application_lead_providers.first.lead_provider).to eq(lead_provider)
+      expect(application_lead_providers.first.current).to be(false)
+      expect(application_lead_providers.last.lead_provider).to eq(another_lead_provider)
+      expect(application_lead_providers.last.current).to be(true)
+      expect(application.reload.lead_provider).to eq(another_lead_provider)
+    end
+
+    it "does nothing when setting the same lead provider" do
+      expect {
+        application.lead_provider = lead_provider
+      }.not_to change(application.application_lead_providers, :count)
+
+      expect(application.reload.current_application_lead_provider.lead_provider).to eq(lead_provider)
+      expect(application.application_lead_providers.current.count).to eq(1)
     end
   end
 end

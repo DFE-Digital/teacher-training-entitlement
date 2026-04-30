@@ -30,8 +30,9 @@ private
 
     course = Course.find_by(identifier: row["course_identifier"])
     application = Application
-                    .joins(:course_cohort)
-                    .where(user: participant, lead_provider:, course_cohorts: { course: })
+                    .joins(:course_cohort, :application_lead_providers)
+                    .where(user: participant, course_cohorts: { course: })
+                    .merge(ApplicationLeadProvider.current.where(lead_provider:))
                     .first
 
     service = Declarations::Create.new(

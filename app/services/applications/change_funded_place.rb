@@ -15,7 +15,7 @@ module Applications
     validate :cohort_has_funding_cap, if: -> { application }
     validate :eligible_for_changing_funded_place, if: -> { application }
 
-    def change
+    def call
       return false unless valid?
 
       application.update!(funded_place:)

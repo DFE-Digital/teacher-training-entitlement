@@ -45,7 +45,7 @@ module API
         def applications(object, options)
           return Application.none unless options[:lead_provider]
 
-          object.applications.select { |application| application.has_been_accepted? && application.lead_provider_id == options[:lead_provider].id }
+          object.applications.select { |application| application.has_been_accepted? && application.lead_provider.id == options[:lead_provider].id }
         end
 
         def acceptance(application:, lead_provider:)
@@ -63,7 +63,7 @@ module API
             latest_event = application
               .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |e| e.event == Application::WITHDRAWN && e.lead_provider_id == lead_provider.id }
+              .find { |e| e.status == Application::WITHDRAWN && e.lead_provider.id == lead_provider.id }
 
             if latest_event.present?
               {
@@ -80,7 +80,7 @@ module API
             latest_event = application
               .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |e| e.event == Application::DEFERRED && e.lead_provider_id == lead_provider.id }
+              .find { |e| e.status == Application::DEFERRED && e.lead_provider.id == lead_provider.id }
 
             if latest_event.present?
               {

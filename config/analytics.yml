@@ -177,7 +177,6 @@ shared:
     - id
     - user_id
     - course_cohort_id
-    - lead_provider_id
     - created_at
     - updated_at
     - ecf_id

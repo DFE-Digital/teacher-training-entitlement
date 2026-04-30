@@ -140,6 +140,40 @@ RSpec.describe Applications::Query do
         context "when not supplied" do
           it { expect(query.scope.to_sql).to include(%("status")) }
         end
+
+        context "when filtering by reassigned" do
+          let!(:reassigned_application) do
+            create(:application, :with_application_lead_provider,
+                   lead_provider: create(:lead_provider),
+                   old_lead_provider: lead_provider)
+          end
+          let!(:pending_application) { create(:application, :pending, lead_provider:) }
+          let!(:accepted_application) { create(:application, :accepted, lead_provider:) }
+
+          context "when just reassigned" do
+            let(:status) { Application::REASSIGNED }
+
+            it do
+              expect(subject.applications).to contain_exactly(reassigned_application)
+            end
+          end
+
+          context "when reassigned and also another status" do
+            let(:status) { [Application::PENDING, Application::REASSIGNED] }
+
+            it do
+              expect(subject.applications).to contain_exactly(pending_application, reassigned_application)
+            end
+          end
+
+          context "when reassigned and also two other statuses" do
+            let(:status) { [Application::PENDING, Application::REASSIGNED, Application::ACCEPTED] }
+
+            it do
+              expect(subject.applications).to contain_exactly(pending_application, reassigned_application, accepted_application)
+            end
+          end
+        end
       end
 
       context "when filtering by participant_id" do
@@ -179,12 +213,46 @@ RSpec.describe Applications::Query do
           }
         end
       end
+
+      context "when filtering by lead_provider" do
+        include_context "with application which changed provider"
+
+        context "when lead provider is current provider" do
+          let(:lead_provider) { current_lead_provider }
+
+          it "includes the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.applications).to contain_exactly(application)
+          end
+        end
+
+        context "when lead provider is no longer the current provider" do
+          let(:lead_provider) { old_lead_provider }
+
+          it "includes the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.applications).to contain_exactly(application)
+          end
+        end
+
+        context "when lead provider has never been the provider" do
+          let(:lead_provider) { create(:lead_provider) }
+
+          it "does not include the application" do
+            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
+              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(query.applications).to be_blank
+          end
+        end
+      end
     end
 
     describe "sorting" do
-      let(:application1) { travel_to(1.month.ago) { create(:application, lead_provider:) } }
-      let(:application2) { travel_to(1.week.ago) { create(:application, lead_provider:) } }
-      let(:application3) { create(:application, lead_provider:) }
+      let!(:application1) { travel_to(1.month.ago) { create(:application, lead_provider:) } }
+      let!(:application2) { travel_to(1.week.ago) { create(:application, lead_provider:) } }
+      let!(:application3) { create(:application, lead_provider:) }
       let(:sort) { nil }
 
       subject(:applications) { query.applications }

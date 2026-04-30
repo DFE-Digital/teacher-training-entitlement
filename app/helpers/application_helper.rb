@@ -78,6 +78,7 @@ module ApplicationHelper
       deferred: "yellow",
       rejected: "red",
       withdrawn: "red",
+      reassigned: "red",
     }.fetch(status.to_sym, "grey")
   end
 

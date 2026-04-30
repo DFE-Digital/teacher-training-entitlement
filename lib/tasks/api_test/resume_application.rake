@@ -11,7 +11,7 @@ namespace :api_test do
   #    rake api_test:resume_application\[279]
   #
   # Usage when using a specific application and specific course cohort
-  #    rake api_test:resume_application\[279 777]
+  #    rake api_test:resume_application\[279,777]
   #
   task :resume_application, %i[application_id course_cohort_id] => :environment do |_t, args|
     application = if args[:application_id].present?

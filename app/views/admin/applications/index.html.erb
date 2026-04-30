@@ -51,6 +51,7 @@
         row.with_cell(text: "Name")
         row.with_cell(text: "Workplace")
         row.with_cell(text: "Status")
+        row.with_cell(text: "Provider")
         row.with_cell(text: "Actions")
       end
     end
@@ -64,6 +65,7 @@
           row.with_cell do
             application_status_badge(application.status)
           end
+          row.with_cell(text: application&.lead_provider&.name)
           row.with_cell(text: govuk_link_to("View", admin_application_path(application.id)))
         end
       end
