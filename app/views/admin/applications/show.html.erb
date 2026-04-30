@@ -36,6 +36,27 @@
       row.with_value(text: @application.lead_provider.name)
     end
     sl.with_row do |row|
+      previous_alp = @application.application_lead_providers.previous
+
+      row.with_key(text: "Previous #{previous_alp.many? ? 'Providers' : 'Provider'}")
+      row.with_value do
+        if previous_alp.any?
+          govuk_table(classes: "govuk-table-no-border govuk-!-margin-bottom-0") do |table|
+            table.with_body do |body|
+              previous_alp.each do |application_lead_provider|
+                body.with_row do |provider_row|
+                  provider_row.with_cell(text: application_lead_provider.lead_provider.name)
+                  provider_row.with_cell(text: "Unassigned on #{application_lead_provider.updated_at.to_date.strftime("%d %b %Y")}")
+                end
+              end
+            end
+          end
+        else
+          "-"
+        end
+      end
+    end
+    sl.with_row do |row|
       row.with_key(text: "Application status")
       row.with_value(text: @application.status.try(:humanize))
 

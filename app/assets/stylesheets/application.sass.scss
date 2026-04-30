@@ -71,3 +71,9 @@ $admin-template-max-width: 1200px;
     margin-bottom: govuk-spacing(1);
   }
 }
+
+.govuk-table-no-border {
+  .govuk-table__cell {
+    border-bottom: 0;
+  }
+}

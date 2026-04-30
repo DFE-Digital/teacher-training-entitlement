@@ -7,10 +7,15 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
   let(:application_attributes) { {} }
   let :application do
     application = build_stubbed(:application, application_trait, **application_attributes)
-    allow(application).to receive(:lead_provider).and_return(build_stubbed(:lead_provider))
+    allow(application).to receive_messages(
+      lead_provider: build_stubbed(:lead_provider),
+      application_lead_providers: application_lead_providers,
+    )
     application
   end
 
+  let(:application_lead_providers) { double(previous: previous_application_lead_providers) }
+  let(:previous_application_lead_providers) { [] }
   let(:declarations) { [] }
 
   before do
@@ -41,7 +46,41 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       it { is_expected.to have_summary_item "Application ID", application.ecf_id }
       it { is_expected.to have_summary_item "User ID", application.user.ecf_id }
       it { is_expected.to have_summary_item "Provider", application.lead_provider.name }
+      it { is_expected.to have_summary_item "Previous Provider", "-" }
       it { is_expected.to have_summary_item "Course", application.course.name }
+
+      context "when the application has previous providers" do
+        let(:previous_application_lead_providers) do
+          [
+            build_stubbed(
+              :application_lead_provider,
+              lead_provider: build_stubbed(:lead_provider, name: "First previous provider"),
+              updated_at: Time.zone.local(2025, 5, 3),
+              current: false,
+            ),
+            build_stubbed(
+              :application_lead_provider,
+              lead_provider: build_stubbed(:lead_provider, name: "Second previous provider"),
+              updated_at: Time.zone.local(2025, 6, 4),
+              current: false,
+            ),
+          ]
+        end
+
+        it "shows each previous provider with the created date" do
+          previous_provider_value = subject
+            .find(".govuk-summary-list__key", text: "Previous Providers", exact_text: true)
+            .sibling(".govuk-summary-list__value")
+
+          expect(previous_provider_value).not_to be_nil
+          rows = previous_provider_value.all(".govuk-table__row")
+
+          expect(rows.first).to have_css(".govuk-table__cell", text: "First previous provider")
+          expect(rows.first).to have_css(".govuk-table__cell", text: "Unassigned on 03 May 2025")
+          expect(rows[1]).to have_css(".govuk-table__cell", text: "Second previous provider")
+          expect(rows[1]).to have_css(".govuk-table__cell", text: "Unassigned on 04 Jun 2025")
+        end
+      end
     end
   end
 
@@ -51,6 +90,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     it { is_expected.to have_css "h1", text: "Application details" }
     it { is_expected.to have_summary_item "Application ID", application.ecf_id }
     it { is_expected.to have_summary_item "Provider", application.lead_provider.name }
+    it { is_expected.to have_summary_item "Previous Provider", "-" }
     it { is_expected.to have_summary_item "Course", application.course.name }
     it { is_expected.to have_summary_item "Unique reference number (URN)", "" }
     it { is_expected.to have_summary_item "UK Provider Reference Number (UKPRN)", "" }
