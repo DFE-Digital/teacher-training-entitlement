@@ -1,5 +1,3 @@
-require_relative "helpers/resume_application"
-
 namespace :api_test do
   desc "Test the Resume endpoint"
   # Call the resume api endpoint using any deferred application
@@ -22,6 +20,6 @@ namespace :api_test do
                       CourseCohort.find_by_id(args[:course_cohort_id])
                     end
 
-    ResumeApplication.new(application:, course_cohort:).call
+    ::APITests::ResumeApplication.new(application:, course_cohort:).call
   end
 end

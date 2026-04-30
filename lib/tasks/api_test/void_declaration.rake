@@ -1,5 +1,3 @@
-require_relative "helpers/void_declaration"
-
 namespace :api_test do
   desc "Test the Void Declaration endpoint"
   # Call the void declaration api endpoint using any declaration
@@ -15,6 +13,6 @@ namespace :api_test do
                     Declaration.find_by_id(args[:declaration_id])
                   end
 
-    VoidDeclaration.new(declaration:).call
+    ::APITests::VoidDeclaration.new(declaration:).call
   end
 end

@@ -1,5 +1,3 @@
-require Rails.root.join("lib/tasks/api_test/helpers/void_declaration")
-
 module Admin
   module Applications
     module APITests
@@ -7,7 +5,7 @@ module Admin
         before_action :set_declarations
 
         def create
-          @response = VoidDeclaration.new(
+          @response = ::APITests::VoidDeclaration.new(
             declaration:,
           ).call
         end

@@ -1,5 +1,3 @@
-require Rails.root.join("lib/tasks/api_test/helpers/started_declaration")
-
 module Admin
   module Applications
     module APITests
@@ -7,7 +5,7 @@ module Admin
         before_action :set_delivery_partners
 
         def create
-          @response = StartedDeclaration.new(
+          @response = ::APITests::StartedDeclaration.new(
             application: @application,
             delivery_partner: DeliveryPartner.find(form_params[:delivery_partner_id]),
           ).call

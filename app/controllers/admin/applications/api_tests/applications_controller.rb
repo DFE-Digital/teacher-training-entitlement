@@ -1,16 +1,13 @@
-require Rails.root.join("lib/tasks/api_test/helpers/show_application")
-require Rails.root.join("lib/tasks/api_test/helpers/list_applications")
-
 module Admin
   module Applications
     module APITests
       class ApplicationsController < APITestsController
         def show
-          @response = ShowApplication.new(application: @application).call
+          @response = ::APITests::ShowApplication.new(application: @application).call
         end
 
         def index
-          @response = ListApplications.new(lead_provider: @application.lead_provider, filters:).call
+          @response = ::APITests::ListApplications.new(lead_provider: @application.lead_provider, filters:).call
         end
 
       private

@@ -1,11 +1,9 @@
-require Rails.root.join("lib/tasks/api_test/helpers/accept_application")
-
 module Admin
   module Applications
     module APITests
       class AcceptController < APITestsController
         def create
-          @response = AcceptApplication.new(
+          @response = ::APITests::AcceptApplication.new(
             application: @application,
             funded_place: form_params[:funded_place],
           ).call

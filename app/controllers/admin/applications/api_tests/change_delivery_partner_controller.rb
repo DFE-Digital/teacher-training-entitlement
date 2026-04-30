@@ -1,5 +1,3 @@
-require Rails.root.join("lib/tasks/api_test/helpers/change_delivery_partner")
-
 module Admin
   module Applications
     module APITests
@@ -7,7 +5,7 @@ module Admin
         before_action :set_delivery_partners, :set_declarations
 
         def create
-          @response = ChangeDeliveryPartner.new(
+          @response = ::APITests::ChangeDeliveryPartner.new(
             declaration:,
             delivery_partner:,
             secondary_delivery_partner:,

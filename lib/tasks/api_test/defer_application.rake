@@ -1,5 +1,3 @@
-require_relative "helpers/defer_application"
-
 namespace :api_test do
   desc "Test the Defer endpoint"
   # Call the defer api endpoint using any deferred application
@@ -15,6 +13,6 @@ namespace :api_test do
                     Application.find_by_id(args[:application_id])
                   end
 
-    DeferApplication.new(application:).call
+    ::APITests::DeferApplication.new(application:).call
   end
 end

@@ -1,11 +1,9 @@
-require Rails.root.join("lib/tasks/api_test/helpers/change_funded_place")
-
 module Admin
   module Applications
     module APITests
       class ChangeFundedPlaceController < APITestsController
         def create
-          @response = ChangeFundedPlace.new(
+          @response = ::APITests::ChangeFundedPlace.new(
             application: @application,
             funded_place: form_params[:funded_place],
           ).call

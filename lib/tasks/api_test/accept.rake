@@ -1,5 +1,3 @@
-require_relative "helpers/accept_application"
-
 namespace :api_test do
   desc "Test the Accept endpoint"
   # Call the accept api endpoint using any pending application
@@ -18,6 +16,6 @@ namespace :api_test do
                     Application.find_by_id(args[:application_id])
                   end
 
-    AcceptApplication.new(application:, funded_place: args[:funded_place]).call
+    ::APITests::AcceptApplication.new(application:, funded_place: args[:funded_place]).call
   end
 end

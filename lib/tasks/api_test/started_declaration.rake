@@ -1,5 +1,3 @@
-require_relative "helpers/started_declaration"
-
 namespace :api_test do
   desc "Test the Started Declaration endpoint"
   # Call the started declaration api endpoint using any accepted application
@@ -22,6 +20,6 @@ namespace :api_test do
                          DeliveryPartner.find_by_id(args[:delivery_partner_id])
                        end
 
-    StartedDeclaration.new(application:, delivery_partner:).call
+    ::APITests::StartedDeclaration.new(application:, delivery_partner:).call
   end
 end

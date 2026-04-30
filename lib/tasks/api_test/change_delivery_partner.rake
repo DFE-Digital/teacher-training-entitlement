@@ -1,5 +1,3 @@
-require_relative "helpers/change_delivery_partner"
-
 namespace :api_test do
   desc "Test the Change Delivery Partner endpoint"
   # Call the change delivery partner api endpoint using any declaration
@@ -26,7 +24,7 @@ namespace :api_test do
                                    DeliveryPartner.find_by_id(args[:secondary_delivery_partner_id])
                                  end
 
-    ChangeDeliveryPartner.new(
+    ::APITests::ChangeDeliveryPartner.new(
       declaration:,
       delivery_partner:,
       secondary_delivery_partner:,

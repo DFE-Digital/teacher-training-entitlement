@@ -1,5 +1,3 @@
-require_relative "helpers/change_funded_place"
-
 namespace :api_test do
   desc "Test the Change Funded Place endpoint"
   # Call the change funded place api endpoint using any accepted application
@@ -18,6 +16,6 @@ namespace :api_test do
                     Application.find_by_id(args[:application_id])
                   end
 
-    ChangeFundedPlace.new(application:, funded_place: args[:funded_place]).call
+    ::APITests::ChangeFundedPlace.new(application:, funded_place: args[:funded_place]).call
   end
 end

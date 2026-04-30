@@ -1,5 +1,3 @@
-require_relative "helpers/reject_application"
-
 namespace :api_test do
   desc "Test the Reject endpoint"
   # Call the reject api endpoint using any pending application
@@ -15,6 +13,6 @@ namespace :api_test do
                     Application.find_by_id(args[:application_id])
                   end
 
-    RejectApplication.new(application:).call
+    ::APITests::RejectApplication.new(application:).call
   end
 end

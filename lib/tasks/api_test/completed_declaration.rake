@@ -1,5 +1,3 @@
-require_relative "helpers/completed_declaration"
-
 namespace :api_test do
   desc "Test the Completed Declaration endpoint"
   # Call the completed declaration api endpoint using any started application
@@ -22,7 +20,7 @@ namespace :api_test do
                          DeliveryPartner.find_by_id(args[:delivery_partner_id])
                        end
 
-    CompletedDeclaration.new(
+    ::APITests::CompletedDeclaration.new(
       application:,
       has_passed: args[:has_passed],
       delivery_partner:,
