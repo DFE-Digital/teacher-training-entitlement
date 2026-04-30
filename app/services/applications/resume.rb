@@ -14,8 +14,6 @@ module Applications
     validate :cohort_exists
     validate :application_resumable
 
-    attr_reader :application
-
     def initialize(application:, course_cohort:, admin_user: nil)
       @application = application
       @application.admin_user = admin_user
