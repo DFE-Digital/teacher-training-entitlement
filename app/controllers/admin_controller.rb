@@ -8,16 +8,15 @@ class AdminController < ApplicationController
 private
 
   def require_admin
-    unless current_admin
-      flash[:negative] = { title: "Unauthorized", text: "Sign in with your administrator account" }
-      redirect_to sign_in_path
-    end
+    flash_notice_and_redirect unless current_admin
   end
 
   def require_super_admin
-    unless current_admin.super_admin?
-      flash[:negative] = { title: "Unauthorized", text: "Sign in with your administrator account" }
-      redirect_to sign_in_path
-    end
+    flash_notice_and_redirect unless current_admin.super_admin?
+  end
+
+  def flash_notice_and_redirect
+    flash[:alert] = { title: "Unauthorized", message: "Sign in with your administrator account" }
+    redirect_to sign_in_path
   end
 end
