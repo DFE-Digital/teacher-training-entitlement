@@ -1,4 +1,6 @@
 class Application < ApplicationRecord
+  include StateChangeable
+
   UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
@@ -245,15 +247,6 @@ class Application < ApplicationRecord
 
   def latest_participant_outcome_state
     declarations.completed.billable_or_voidable.latest_first.first&.participant_outcomes&.latest&.state
-  end
-
-  def lookup_state_change_reason(changed_at:, changed_status:)
-    variance = 0.5
-    state_changes.find { |state_change|
-      state_change.created_at >= changed_at - variance &&
-        state_change.created_at <= changed_at + variance &&
-        state_change.status == changed_status
-    }&.reason
   end
 
 private

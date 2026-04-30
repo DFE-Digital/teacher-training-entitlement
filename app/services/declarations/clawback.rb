@@ -27,17 +27,11 @@ module Declarations
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?
+          @application.state_change_reason = "started declaration voided"
           @application.accepted_status!
-          @application.state_changes.create!(
-            event: Application::ACCEPTED,
-            metadata: { reason: "started declaration voided" },
-          )
         elsif @declaration.completed_declaration_type?
+          @application.state_change_reason = "completed declaration voided"
           @application.started_status!
-          @application.state_changes.create!(
-            event: Application::STARTED,
-            metadata: { reason: "completed declaration voided" },
-          )
         end
       end
     end

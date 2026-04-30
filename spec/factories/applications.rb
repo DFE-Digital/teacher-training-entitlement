@@ -193,10 +193,11 @@ FactoryBot.define do
       accepted_at { Time.zone.now }
 
       after(:create) do |application|
-        create(:state_change,
-               :withdrawn,
-               application:,
-               lead_provider: application.lead_provider)
+        application.state_changes.create!(
+          event: Application::WITHDRAWN,
+          lead_provider: application.lead_provider,
+          metadata: { reason: "other" },
+        )
       end
     end
 
@@ -206,10 +207,11 @@ FactoryBot.define do
       status { Application::DEFERRED }
 
       after(:create) do |application|
-        create(:state_change,
-               :deferred,
-               application:,
-               lead_provider: application.lead_provider)
+        application.state_changes.create!(
+          event: Application::DEFERRED,
+          lead_provider: application.lead_provider,
+          metadata: { reason: "other" },
+        )
       end
     end
 

@@ -31,13 +31,8 @@ module Applications
     def call
       return if invalid?
 
-      Application.transaction do
-        @application.state_changes.create!(
-          event: Application::DEFERRED,
-          metadata: { reason: @reason },
-        )
-        @application.deferred_status!
-      end
+      @application.state_change_reason = @reason
+      @application.deferred_status!
 
       GenericMailer.with(
         to: @application.user.email,

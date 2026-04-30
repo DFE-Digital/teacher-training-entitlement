@@ -16,6 +16,7 @@ module Applications
     def call
       return false unless valid?
 
+      application.state_change_reason = reason_for_rejection
       application.update!(status: Application::REJECTED, reason_for_rejection:)
       application.reload
 

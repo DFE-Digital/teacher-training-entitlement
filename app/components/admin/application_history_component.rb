@@ -10,19 +10,58 @@ module Admin
   private
 
     def build_changes
+      version_changes = build_version_changes
+      event_changes = build_event_changes
+
+      (version_changes + event_changes).sort_by { |change| change[:at] }.reverse
+    end
+
+    def build_version_changes
       record.versions.where(event: "update").where.not(object_changes: nil)
         .select { |version| (version.object_changes.keys - %w[updated_at]).any? }
         .pluck(:created_at, :whodunnit, :object_changes)
         .map { |created_at, whodunnit, object_changes|
-        object_changes.except("updated_at", "funding_eligiblity_status_code").map do |key, value|
+        object_changes.except("updated_at", "funding_eligiblity_status_code", "status").map do |key, value|
           {
             title: show_object_changes(key, value),
             by: show_whodunnit(whodunnit),
             at: created_at,
-            description: description(record, object_changes, created_at, key, value),
+            description: description(object_changes, key, value),
           }
         end
       }.flatten
+    end
+
+    def build_event_changes
+      record.application_events.includes(:lead_provider).map do |event|
+        {
+          title: event_title(event),
+          by: event_by(event),
+          at: event.created_at,
+          description: event_description(event),
+        }
+      end
+    end
+
+    def event_title(event)
+      case event
+      when StateChange
+        "Status changed to #{event.status}"
+      when Notification
+        "Notification sent: #{event.event.humanize}"
+      else
+        event.event.humanize
+      end
+    end
+
+    def event_by(event)
+      event.lead_provider.present? ? event.lead_provider.name : "system"
+    end
+
+    def event_description(event)
+      return if event.reason.blank?
+
+      { inset: "Reason: #{event.reason}" }
     end
 
     def show_object_changes(key, change)
@@ -44,11 +83,8 @@ module Admin
       end
     end
 
-    def description(record, object_changes, created_at, key, value)
+    def description(object_changes, key, value)
       case key
-      when "status"
-        reason = record.lookup_state_change_reason(changed_at: created_at, changed_status: value[1])
-        { inset: "Reason for training status change: #{reason}" } if reason
       when "notes"
         { details_summary: "Review notes", details: simple_format(value[1]) }
       when "eligible_for_funding"

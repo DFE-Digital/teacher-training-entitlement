@@ -124,7 +124,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     it "renders the reason with an inset component" do
-      expect(subject).to have_css("div.govuk-inset-text", text: "Reason for training status change: other")
+      expect(subject).to have_css("div.govuk-inset-text", text: "Reason: other")
     end
   end
 
@@ -142,8 +142,8 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     it "shows who made the change using the whodunnit string and the date of the change" do
-      expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header p.moj-timeline__byline",
-                                  text: "by #{whodunnit}, 1 Jan 2025 4:00pm")
+      expect(subject).to have_text("Notes updated")
+      expect(subject).to have_text("by #{whodunnit}, 1 Jan 2025 4:00pm")
     end
 
     it "renders the note with a details component" do
@@ -181,7 +181,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     it "does not show the version in the history" do
-      expect(subject).not_to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title")
+      expect(subject).not_to have_text("Cohort changed")
     end
   end
 end

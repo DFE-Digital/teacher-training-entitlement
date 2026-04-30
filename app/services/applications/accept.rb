@@ -19,11 +19,7 @@ module Applications
     def call
       return false unless valid?
 
-      ApplicationRecord.transaction do
-        accept_application!
-        create_application_event!
-      end
-
+      accept_application!
       application.reload
 
       true
@@ -79,13 +75,6 @@ module Applications
 
     def validate_funded_place?
       errors.blank? && cohort.funding_cap?
-    end
-
-    def create_application_event!
-      application.state_changes.create!(
-        event: Application::ACCEPTED,
-        lead_provider:,
-      )
     end
   end
 end
