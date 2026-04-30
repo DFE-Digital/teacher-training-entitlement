@@ -214,7 +214,7 @@ PARTICIPANT = {
       },
     },
     created_at: {
-      description: "The date the application was created",
+      description: "The date and time the participant was accepted",
       type: :string,
       nullable: false,
       format: :"date-time",
