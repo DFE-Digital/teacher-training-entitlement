@@ -18,6 +18,12 @@ LIST_APPLICATIONS_FILTER = {
         type: "string",
         example: "7e5bcdbf-c818-4961-8da5-439cab1984e0,c2a7ef98-bbfc-48c5-8f02-d484071d2165",
       },
+      status: {
+        description: "Return only records with specified status or statuses",
+        type: :string,
+        enum: Application::STATUSES,
+        example: Application::STATUSES[0..2].join(","),
+      },
     },
   },
 }.freeze

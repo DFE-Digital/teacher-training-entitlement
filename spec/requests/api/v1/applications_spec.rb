@@ -50,6 +50,7 @@ RSpec.describe "Application endpoints", type: :request do
     it_behaves_like "an API index endpoint with pagination"
     it_behaves_like "an API index endpoint with filter by cohort"
     it_behaves_like "an API index endpoint with filter by updated_since"
+    it_behaves_like "an API index endpoint with filter by status"
     it_behaves_like "an API index endpoint with filter by participant_id"
     it_behaves_like "an API index endpoint with sorting"
 

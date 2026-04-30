@@ -9,10 +9,10 @@ LIST_PARTICIPANTS_FILTER = {
         example: "2021-05-13T11:21:55Z",
       },
       status: {
-        description: "Return only records that have this status",
+        description: "Return only records with specified status or statuses",
         type: :string,
         enum: Application::STATUSES,
-        example: Application::STATUSES.first,
+        example: Application::STATUSES[0..2].join(","),
       },
       from_participant_id: {
         description: "Return only records that have this from Participant ID",
