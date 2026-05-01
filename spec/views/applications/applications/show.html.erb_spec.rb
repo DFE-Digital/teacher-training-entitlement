@@ -2,11 +2,13 @@ require "rails_helper"
 
 RSpec.describe "applications/applications/show.html.erb", type: :view do
   let(:application) { build_stubbed(:application) }
+  let(:lead_provider) { build_stubbed(:lead_provider) }
 
   subject { Capybara.string(render) }
 
   before do
     assign(:application, application)
+    allow(application).to receive(:lead_provider).and_return(lead_provider)
     allow(view).to receive(:current_user).and_return(build_stubbed(:user))
   end
 
