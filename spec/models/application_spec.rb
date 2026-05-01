@@ -50,8 +50,6 @@ RSpec.describe Application do
       end
     end
 
-    it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
-
     it {
       expect(subject).to validate_uniqueness_of(:ecf_id)
         .case_insensitive
