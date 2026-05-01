@@ -89,7 +89,7 @@ Rails.application.configure do
 
   config.after_initialize do
     Bullet.enable                       = true
-    Bullet.alert                        = true
+    Bullet.raise                        = true # Raise an error if n+1 query occurs
     Bullet.bullet_logger                = true
     Bullet.console                      = true
     Bullet.rails_logger                 = true
