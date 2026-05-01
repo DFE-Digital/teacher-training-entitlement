@@ -154,6 +154,36 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
   context "when no TRN is specified" do
     let(:trn) { nil }
 
-    it_behaves_like "logging in using provider and UID"
+    context "when a user exists with the same provider and UID" do
+      let(:existing_user) { create(:user, :with_get_an_identity_id, email: "oldemail@example.com", uid:) }
+
+      before { existing_user }
+
+      it "updates the user but does not mark TRN as verified" do
+        make_request
+        expect(existing_user.reload).to have_attributes(
+          email:,
+          full_name: verified_name.join(" "),
+          trn: nil,
+          trn_verified: false,
+          trn_auto_verified: false,
+        )
+      end
+    end
+
+    context "when no user exists with the same provider and UID" do
+      it "creates a new user without TRN verified" do
+        make_request
+        expect(User.find_by(provider: "teacher_auth", uid:)).to have_attributes(
+          email:,
+          trn: nil,
+          trn_verified: false,
+          trn_auto_verified: false,
+          full_name: verified_name.join(" "),
+          date_of_birth: Date.parse("1990-01-01"),
+          feature_flag_id:,
+        )
+      end
+    end
   end
 end
