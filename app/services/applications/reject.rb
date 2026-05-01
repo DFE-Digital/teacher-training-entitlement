@@ -25,8 +25,6 @@ module Applications
       application.transition_status!(Application::REJECTED, reason:)
       application.reload
 
-      send_rejection_email if reason_for_rejection == Application.reason_for_rejections[:rejected_by_provider]
-
       true
     end
 
