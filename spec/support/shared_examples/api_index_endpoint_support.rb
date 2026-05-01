@@ -271,10 +271,11 @@ end
 RSpec.shared_examples "an API index endpoint with filter by status" do
   context "when filtering by status" do
     context "when valid" do
-      let!(:resource) { create_resource(lead_provider: current_lead_provider) }
       let(:status) { Application::WITHDRAWN }
 
-      before { resource.applications.first.update_columns(status:) }
+      before do
+        create(:application, :withdrawn, lead_provider: current_lead_provider)
+      end
 
       it "returns resources with the given `status`" do
         create_resource(lead_provider: current_lead_provider)
@@ -291,13 +292,18 @@ RSpec.shared_examples "an API index endpoint with filter by status" do
       end
     end
 
-    context "when invalid" do
-      it "returns an error" do
-        api_get(path, params: { filter: { status: "not_valid_status" } })
+    context "with multiple values" do
+      let(:status) { [Application::ACCEPTED, Application::COMPLETED].join(",") }
 
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(response.content_type).to match(/application\/json.*/)
-        expect(parsed_response.dig("errors", 0, "detail")).to include(%(The filter '#/status' must be #{Application::STATUSES}))
+      before do
+        create(:application, :accepted, lead_provider: current_lead_provider)
+        create(:application, :completed, lead_provider: current_lead_provider)
+      end
+
+      it "returns resources with specified values" do
+        api_get(path, params: { filter: { status: } })
+
+        expect(parsed_response["data"].size).to eq(2)
       end
     end
   end

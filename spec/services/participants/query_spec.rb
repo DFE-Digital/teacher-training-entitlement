@@ -208,11 +208,13 @@ RSpec.describe Participants::Query do
           end
         end
 
-        context "when an invalid status is supplied" do
-          let(:params) { { status: "not_valid_status" } }
+        context "with multiple status values" do
+          let!(:participant1) { create(:application, :accepted, lead_provider:).user }
+          let!(:participant2) { create(:application, :started, lead_provider:).user }
+          let(:params) { { status: [Application::ACCEPTED, Application::STARTED].join(",") } }
 
-          it "raises an error" do
-            expect { query.scope.to_sql }.to raise_error(API::Errors::FilterValidationError).with_message(%(The filter '#/status' must be #{Application::STATUSES}))
+          it "returns only participants with applications in status" do
+            expect(query.participants).to contain_exactly(participant1, participant2)
           end
         end
       end

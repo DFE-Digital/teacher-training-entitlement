@@ -201,15 +201,33 @@ module ValidTestDataGenerators
 
     def create_user(app_data)
       email = user_email(app_data[:email])
+      attrs = {
+        full_name: app_data[:full_name],
+        trn: generate_trn,
+        date_of_birth: Faker::Date.birthday(min_age: 20),
+        trn_verified: true,
+        trn_lookup_status: "Found",
+        ecf_id: user_ecf_id(app_data[:participant_id]),
+      }
 
-      User.find_or_create_by!(email:) do |user|
-        user.full_name = app_data[:full_name]
-        user.trn = generate_trn
-        user.date_of_birth = Faker::Date.birthday(min_age: 20)
-        user.ecf_id = app_data[:participant_id]
-        user.trn_verified = true
-        user.trn_lookup_status = "Found"
+      user = User.find_by(email:)
+      if user
+        user.update!(attrs)
+      else
+        user = User.create!(attrs.merge(email:))
       end
+
+      user
+    end
+
+    def user_ecf_id(index)
+      [
+        "4e87fadb",
+        "f678",
+        "4934",
+        sprintf("%04d", @lead_provider.id),
+        sprintf("%012d", index),
+      ].join("-")
     end
 
     def generate_trn
@@ -328,7 +346,7 @@ module ValidTestDataGenerators
     end
 
     def create_app_event(application:, event:)
-      application.state_changes.create!(event:, lead_provider: application.lead_provider)
+      application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
     def create_started_declaration(application:, declaration_date: nil)
@@ -476,16 +494,24 @@ module ValidTestDataGenerators
           end
         end
       end
-      # PLACEHOLDER FOR SUPERSEDED APPLICAITONS
-      # # # superseded
-      # number.times do |index|
-      #   create_app(
-      #     course_cohort:,
-      #     status: Application::SUPERSEDED,
-      #     eligible_for_funding: index.even?,
-      #     index: create_random_user(status: :superseded, index:),
-      #   )
-      # end
+
+      # reassigned
+      number.times do |index|
+        create_app(
+          course_cohort:,
+          status: Application::PENDING,
+          eligible_for_funding: index.even?,
+          user: create_random_user(with_trn: [true, false].sample),
+        ).tap do |application|
+          change_provider(application:)
+          create_app_event(application:, event: :changed_provider)
+        end
+      end
+    end
+
+    def change_provider(application:)
+      new_provider = LeadProvider.where.not(id: @lead_provider.id).order("RANDOM()").first
+      application.update!(lead_provider: new_provider)
     end
 
     def statements_setup(course_cohort:)
