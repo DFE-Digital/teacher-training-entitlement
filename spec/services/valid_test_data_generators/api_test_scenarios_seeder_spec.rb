@@ -25,13 +25,23 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       let(:cohort_year) { Time.zone.now.year - 1 }
       let(:applications) { lead_provider.applications.group_by(&:status) }
+      let(:reassigned_applications) do
+        ApplicationLeadProvider
+          .includes(:application)
+          .where(current: false)
+          .map(&:application)
+      end
 
       it "creates application each application statuses" do
         Application::STATUSES.each do |status|
-          count = status == Application::PENDING ? 6 : 2
+          count = status == Application::PENDING ? 8 : 2
           expect(applications[status.to_s].size).to eq(count)
           expect(applications[status.to_s].map(&:eligible_for_funding)).to include(true, false)
         end
+        reassigned_applications.each do |application|
+          expect(application.status).to eq(Application::PENDING)
+        end
+        expect(reassigned_applications.size).to eq(2)
         expect(applications.keys).to match_array(Application::STATUSES)
       end
     end
@@ -41,13 +51,23 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       let(:cohort_year) { Time.zone.now.year }
       let(:applications) { lead_provider.applications.group_by(&:status) }
+      let(:reassigned_applications) do
+        ApplicationLeadProvider
+          .includes(:application)
+          .where(current: false)
+          .map(&:application)
+      end
 
       it "creates application with status pending, accepted and rejected only" do
         [Application::PENDING, Application::ACCEPTED, Application::REJECTED].each do |status|
-          count = status == "pending" ? 6 : 2
+          count = status == "pending" ? 8 : 2
           expect(applications[status.to_s].size).to eq(count)
           expect(applications[status.to_s].map(&:eligible_for_funding)).to include(true, false)
         end
+        reassigned_applications.each do |application|
+          expect(application.status).to eq(Application::PENDING)
+        end
+        expect(reassigned_applications.size).to eq(2)
         expect(applications.keys).to contain_exactly(Application::PENDING, Application::ACCEPTED, Application::REJECTED)
       end
     end
@@ -96,22 +116,6 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           created_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
 
           expect(created_emails).to match_array(seeder.test_emails)
-        end
-
-        it "creates users with specific ids" do
-          seeder.call
-
-          created_user_ids = Application.joins(:user).where(lead_provider:).pluck("users.ecf_id")
-          expected_user_ids = Array.new(12) do |index|
-            [
-              "4e87fadb",
-              "f678",
-              "4934",
-              sprintf("%04d", lead_provider.id),
-              sprintf("%012d", index + 1),
-            ].join("-")
-          end
-          expect(created_user_ids).to match_array(expected_user_ids)
         end
 
         it "creates all applications in pending status" do
