@@ -45,9 +45,9 @@ private
 
   def check_environment
     unless Rails.env.in?(%w[development review sandbox])
-      flash[:negative] = {
+      flash[:alert] = {
         title: "Unauthorized",
-        text: "API test scenarios seeding is only available in development, review, and sandbox environments",
+        message: "API test scenarios seeding is only available in development, review, and sandbox environments",
       }
       redirect_to admin_path
     end
