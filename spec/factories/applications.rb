@@ -170,13 +170,11 @@ FactoryBot.define do
     trait :accepted do
       status { Application::ACCEPTED }
       funded_place { cohort.funding_cap ? !!eligible_for_funding : nil }
-      accepted_at { Time.zone.now }
     end
 
     trait :started do
       with_declaration
       status { Application::STARTED }
-      accepted_at { 2.days.ago }
     end
 
     trait :completed do
@@ -190,7 +188,6 @@ FactoryBot.define do
     trait :withdrawn do
       with_declaration
       status { Application::WITHDRAWN }
-      accepted_at { Time.zone.now }
 
       after(:create) do |application|
         application.state_changes.create!(
@@ -203,7 +200,6 @@ FactoryBot.define do
 
     trait :deferred do
       with_declaration
-      accepted_at { Time.zone.now }
       status { Application::DEFERRED }
 
       after(:create) do |application|

@@ -15,7 +15,7 @@ RSpec.describe Participants::Query do
       expect(query.participants).to contain_exactly(participant1, participant2)
     end
 
-    it "orders participants by accepted_at in ascending order" do
+    it "orders participants by created_at in ascending order" do
       participant3 = travel_to(1.minute.ago) { create(:user, :with_application, lead_provider:) }
 
       expect(query.participants).to eq([participant3, participant1, participant2])

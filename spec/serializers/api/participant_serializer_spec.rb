@@ -97,7 +97,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             school_urn: application.school.urn,
             withdrawal: nil,
             deferral: nil,
-            created_at: application.accepted_at.rfc3339,
+            created_at: accepted_event.created_at.rfc3339,
             funded_place: application.funded_place,
           }.stringify_keys,
         ])

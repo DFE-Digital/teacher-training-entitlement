@@ -123,7 +123,6 @@ erDiagram
         string teacher_catchment_iso_country_code
         string teacher_catchment_country
         boolean lead_mentor
-        datetime accepted_at
         datetime updated_at
     }
 

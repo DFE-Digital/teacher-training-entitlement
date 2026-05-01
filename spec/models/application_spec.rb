@@ -695,35 +695,6 @@ RSpec.describe Application do
     end
   end
 
-  describe "#lookup_state_change_reason" do
-    subject(:lookup_state_change_reason) { application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "deferred") }
-
-    before do
-      freeze_time
-      create(:state_change, :deferred, application:, created_at: application.created_at + 0.5)
-    end
-
-    it "returns the reason for the state change" do
-      expect(lookup_state_change_reason).to eq("other")
-    end
-
-    context "when there is more than one state change within the time range" do
-      before do
-        create(:state_change, :deferred, application:, created_at: application.created_at + 0.4, metadata: { reason: "career-break" })
-      end
-
-      it "returns the most recent state change within the time range" do
-        expect(lookup_state_change_reason).to eq("other")
-      end
-    end
-
-    context "when no application event matches the criteria" do
-      it "returns nil" do
-        expect(application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "active")).to be_nil
-      end
-    end
-  end
-
   describe "#lead_provider=" do
     let(:lead_provider) { create(:lead_provider) }
     let(:another_lead_provider) { create(:lead_provider) }

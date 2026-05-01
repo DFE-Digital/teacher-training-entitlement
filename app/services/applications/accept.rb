@@ -42,14 +42,8 @@ module Applications
     end
 
     def accept_application!
-      opts = {
-        status: Application::ACCEPTED,
-        accepted_at: Time.zone.now,
-      }
-
-      if cohort.funding_cap?
-        opts[:funded_place] = funded_place
-      end
+      opts = { status: Application::ACCEPTED }
+      opts[:funded_place] = funded_place if cohort.funding_cap?
 
       application.update!(opts)
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_01_092700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -120,7 +120,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.datetime "accepted_at"
     t.bigint "course_cohort_id"
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
