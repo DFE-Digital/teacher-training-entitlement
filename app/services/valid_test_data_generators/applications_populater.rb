@@ -113,7 +113,7 @@ module ValidTestDataGenerators
     end
 
     def reject_application(application)
-      Applications::Reject.new(application:, reason_for_rejection: Application.reason_for_rejections.keys.first).reject
+      Applications::Reject.new(application:, reason: "rejected-by-provider").call
       application.reload
     end
 

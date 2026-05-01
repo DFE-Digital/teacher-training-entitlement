@@ -95,7 +95,7 @@ APPLICATION = {
             description: "The reason why the application was rejected by the lead provider",
             type: :string,
             nullable: true,
-            example: "Application does not meet eligibility criteria",
+            example: "rejected-by-provider",
           },
           works_in_school: {
             description: "Indicates whether the participant is currently employed by school",

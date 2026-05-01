@@ -695,6 +695,22 @@ RSpec.describe Application do
     end
   end
 
+  describe "#reason_for_rejection" do
+    subject { application.reason_for_rejection }
+
+    context "when application is not rejected" do
+      let(:application) { create(:application, :accepted) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when application is rejected" do
+      let(:application) { create(:application, :rejected, :with_state_change) }
+
+      it { is_expected.to eq("rejected-by-provider") }
+    end
+  end
+
   describe "#lead_provider=" do
     let(:lead_provider) { create(:lead_provider) }
     let(:another_lead_provider) { create(:lead_provider) }

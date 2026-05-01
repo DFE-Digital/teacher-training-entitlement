@@ -130,7 +130,6 @@ RSpec.describe HandleSubmissionForStore do
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => "1234321",
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -192,7 +191,6 @@ RSpec.describe HandleSubmissionForStore do
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -276,7 +274,6 @@ RSpec.describe HandleSubmissionForStore do
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -331,7 +328,6 @@ RSpec.describe HandleSubmissionForStore do
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -396,7 +392,6 @@ RSpec.describe HandleSubmissionForStore do
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end

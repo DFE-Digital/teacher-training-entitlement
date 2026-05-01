@@ -702,8 +702,9 @@ en:
           attributes:
             application:
               <<: *application
-            reason_for_rejection:
-              blank: The reason_for_rejection cannot be blank.
+            reason:
+              blank: The reason cannot be blank.
+              inclusion: The reason is not valid.
         applications/change_funded_place:
           attributes:
             application:

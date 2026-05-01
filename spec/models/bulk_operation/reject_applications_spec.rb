@@ -11,10 +11,9 @@ RSpec.describe BulkOperation::RejectApplications do
     subject(:run) { bulk_operation.run! }
 
     context "when the application is already status: rejected" do
-      let(:application) { create(:application, :rejected, reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider]) }
+      let(:application) { create(:application, :rejected, :with_state_change) }
 
       it { expect { run }.not_to(change { application.reload.status }) }
-      it { expect { run }.not_to(change { application.reload.reason_for_rejection }) }
 
       it "saves the result" do
         run
@@ -26,8 +25,12 @@ RSpec.describe BulkOperation::RejectApplications do
       let(:application) { create(:application, :pending) }
 
       it { expect { run }.to(change { application.reload.status }.from(Application::PENDING).to(Application::REJECTED)) }
-      it { expect { run }.to(change { application.reload.reason_for_rejection }.from(nil).to(Application.reason_for_rejections[:registration_expired])) }
       it { expect(run[application.ecf_id]).to eq("Changed to rejected") }
+
+      it "stores the reason in state_change" do
+        run
+        expect(application.reload.reason_for_rejection).to eq("registration-expired")
+      end
 
       it "sets finished_at" do
         subject

@@ -20,6 +20,11 @@ FactoryBot.define do
       event { Application::DEFERRED }
       metadata { { "reason" => "other" } }
     end
+
+    trait :rejected do
+      event { Application::REJECTED }
+      metadata { { "reason" => "rejected-by-provider" } }
+    end
   end
 
   factory :notification do

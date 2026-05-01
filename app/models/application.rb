@@ -35,6 +35,7 @@ class Application < ApplicationRecord
   has_many :application_lead_providers
 
   has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
+  has_one :rejected_event, -> { where(event: REJECTED).order(created_at: :desc) }, class_name: "StateChange"
   has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
   has_one :current_application_lead_provider,
           -> { where(current: true) }, class_name: "ApplicationLeadProvider"
@@ -110,12 +111,6 @@ class Application < ApplicationRecord
     employer: "employer",
   }, suffix: true
 
-  enum :reason_for_rejection, {
-    registration_expired: "registration_expired",
-    rejected_by_provider: "rejected_by_provider",
-    other_application_in_this_cohort_accepted: "other_application_in_this_cohort_accepted",
-  }, suffix: true
-
   enum :review_status, {
     "Needs review" => "needs_review",
     "Awaiting information" => "awaiting_information",
@@ -169,6 +164,12 @@ class Application < ApplicationRecord
     return nil unless withdrawn_status?
 
     withdrawn_event&.created_at
+  end
+
+  def reason_for_rejection
+    return nil unless rejected_status?
+
+    rejected_event&.reason
   end
 
   def previously_funded?

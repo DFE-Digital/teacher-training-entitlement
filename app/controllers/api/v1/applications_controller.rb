@@ -21,10 +21,7 @@ module API
       end
 
       def reject
-        service = Applications::Reject.new(
-          application: updateable_application,
-          reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider],
-        )
+        service = Applications::Reject.new(application: updateable_application, reason: "rejected-by-provider")
         call_and_render(service:)
       end
 

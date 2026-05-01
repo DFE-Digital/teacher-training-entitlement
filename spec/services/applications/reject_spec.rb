@@ -1,17 +1,15 @@
 require "rails_helper"
 
 RSpec.describe Applications::Reject, type: :model do
-  include ActiveJob::TestHelper
+  subject(:service) { described_class.new(application:, reason:) }
 
-  subject(:service) { described_class.new(application:, reason_for_rejection:) }
-
-  let(:reason_for_rejection) { Application.reason_for_rejections[:rejected_by_provider] }
+  let(:reason) { "rejected-by-provider" }
 
   describe "validations" do
     let(:application) { build(:application, :pending) }
 
     it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
-    it { is_expected.to validate_presence_of(:reason_for_rejection).with_message("The reason_for_rejection cannot be blank.") }
+    it { is_expected.to validate_presence_of(:reason) }
 
     context "when application is rejected" do
       let(:application) { build(:application, :rejected) }
@@ -34,7 +32,7 @@ RSpec.describe Applications::Reject, type: :model do
     end
   end
 
-  describe ".reject" do
+  describe "#call" do
     let(:application) { create(:application, :pending) }
 
     it "marks the status as rejected" do
@@ -47,8 +45,9 @@ RSpec.describe Applications::Reject, type: :model do
       expect(service.application).to have_received(:reload)
     end
 
-    it "sets the reason for rejection" do
-      expect { service.call }.to change { application.reload.reason_for_rejection }.from(nil).to(reason_for_rejection)
+    it "stores the reason in state_change" do
+      service.call
+      expect(application.reload.reason_for_rejection).to eq(reason)
     end
 
     context "when reason is rejected_by_provider" do
