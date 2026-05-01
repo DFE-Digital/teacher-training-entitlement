@@ -5,7 +5,7 @@ private
 
   def require_super_admin
     unless current_admin.super_admin?
-      flash[:alert] = { title: "Unauthorized", message: "Sign in with your admininstrator account" }
+      flash[:alert] = { title: "Unauthorized", message: "Sign in with your adminstrator account" }
       redirect_to sign_in_path
     end
   end
