@@ -114,8 +114,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: accepted
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -196,8 +195,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: rejected
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -260,8 +258,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: accepted
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -342,8 +339,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: deferred
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -424,8 +420,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: started
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -506,8 +501,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: withdrawn
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -588,8 +582,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: accepted
-                        reason_for_rejection: Application does not meet eligibility
-                          criteria
+                        reason_for_rejection:
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -1451,7 +1444,7 @@ components:
                 provider
               type: string
               nullable: true
-              example: Application does not meet eligibility criteria
+              example: rejected-by-provider
             works_in_school:
               description: Indicates whether the participant is currently employed
                 by school
