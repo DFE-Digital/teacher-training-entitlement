@@ -1,6 +1,4 @@
 class Application < ApplicationRecord
-  include StateChangeable
-
   UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
@@ -248,6 +246,13 @@ class Application < ApplicationRecord
 
   def latest_participant_outcome_state
     declarations.completed.billable_or_voidable.latest_first.first&.participant_outcomes&.latest&.state
+  end
+
+  def transition_status!(status, reason: nil, metadata: {}, **attributes)
+    self.class.transaction do
+      state_changes.create!(event: status, lead_provider:, metadata: metadata.merge(reason:))
+      update!(attributes.merge(status:))
+    end
   end
 
 private

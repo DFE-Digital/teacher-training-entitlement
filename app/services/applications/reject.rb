@@ -22,8 +22,7 @@ module Applications
     def call
       return false unless valid?
 
-      application.state_change_reason = reason
-      application.update!(status: Application::REJECTED)
+      application.transition_status!(Application::REJECTED, reason:)
       application.reload
 
       send_rejection_email if reason_for_rejection == Application.reason_for_rejections[:rejected_by_provider]

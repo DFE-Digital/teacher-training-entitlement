@@ -11,6 +11,30 @@ RSpec.describe Application do
     it { is_expected.to have_many(:declarations) }
   end
 
+  describe "#transition_status!" do
+    subject(:application) { create(:application, :started) }
+
+    it "updates the status and records a state change with the reason" do
+      expect {
+        application.transition_status!(Application::DEFERRED, reason: "other")
+      }.to change { application.state_changes.count }.by(1)
+
+      expect(application).to be_deferred_status
+      expect(application.state_changes.last.status).to eq(Application::DEFERRED)
+      expect(application.state_changes.last.reason).to eq("other")
+    end
+
+    it "does not leak the reason into later state changes" do
+      application.transition_status!(Application::DEFERRED, reason: "other")
+
+      expect {
+        application.transition_status!(Application::STARTED)
+      }.to change { application.state_changes.count }.by(1)
+
+      expect(application.state_changes.last.reason).to be_nil
+    end
+  end
+
   describe "paper_trail" do
     subject { create(:application, status: Application::PENDING) }
 

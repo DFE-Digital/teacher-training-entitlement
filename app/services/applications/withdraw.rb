@@ -46,8 +46,7 @@ module Applications
     def call
       return if invalid?
 
-      @application.state_change_reason = @reason
-      @application.withdrawn_status!
+      @application.transition_status!(Application::WITHDRAWN, reason: @reason)
     end
 
   private

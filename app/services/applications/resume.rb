@@ -25,7 +25,7 @@ module Applications
     def call
       return if invalid?
 
-      @application.update!(status: Application::STARTED, course_cohort: @course_cohort)
+      @application.transition_status!(Application::STARTED, course_cohort: @course_cohort)
     end
 
   private

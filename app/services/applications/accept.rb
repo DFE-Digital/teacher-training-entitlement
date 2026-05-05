@@ -45,7 +45,7 @@ module Applications
       opts = { status: Application::ACCEPTED }
       opts[:funded_place] = funded_place if cohort.funding_cap?
 
-      application.update!(opts)
+      application.transition_status!(Application::ACCEPTED, **opts)
     end
 
     def eligible_for_funded_place

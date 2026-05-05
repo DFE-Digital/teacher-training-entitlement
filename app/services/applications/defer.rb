@@ -31,8 +31,7 @@ module Applications
     def call
       return if invalid?
 
-      @application.state_change_reason = @reason
-      @application.deferred_status!
+      @application.transition_status!(Application::DEFERRED, reason: @reason)
 
       GenericMailer.with(
         to: @application.user.email,

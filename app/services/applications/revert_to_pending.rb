@@ -21,8 +21,7 @@ module Applications
       return false if invalid?
 
       application.admin_user = admin_user
-      application.state_change_reason = "reverted_to_pending"
-      application.update!(status: Application::PENDING, funded_place: nil)
+      application.transition_status!(Application::PENDING, reason: "reverted_to_pending", funded_place: nil)
 
       true
     end
