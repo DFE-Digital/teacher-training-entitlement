@@ -1,14 +1,11 @@
-<div class="d-flex">
-  <h1 class="govuk-heading-m" style="margin: 0;">Accept API Endpoint</h1>
-  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
-</div>
+<h1 class="govuk-heading-m">Accept API Endpoint</h1>
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %>
 
-
-<div class="govuk-body">  
+<div class="govuk-body">
   <p>The Accept endpoint accepts a pending application indicating if the place is funded or not.</p>
-  
-    <%= form_for :form, url: admin_applications_api_tests_accept_index_path(@application) do |f| %>
-      <%= f.govuk_select :funded_place, options_for_select([['Yes', true], ['No', false]]), label: { text: "Has funded place?", size: "s" } %>
-      <%= f.govuk_submit("Call Accept API") %>
-    <% end %>
+
+  <%= form_for :form, url: admin_applications_api_tests_accept_index_path(@application) do |f| %>
+    <%= f.govuk_select :funded_place, options_for_select([['Yes', true], ['No', false]]), label: { text: "Has funded place?", size: "s" } %>
+    <%= f.govuk_submit("Call Accept API") %>
+  <% end %>
 </div>

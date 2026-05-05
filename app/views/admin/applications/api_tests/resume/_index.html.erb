@@ -1,10 +1,7 @@
-<div class="d-flex">
-  <h1 class="govuk-heading-m" style="margin: 0;">Resume API Endpoint</h1>
-  <div style="margin-left: 20px;">| <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %></div>
-</div>
+<h1 class="govuk-heading-m">Resume API Endpoint</h1>
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %>
 
-
-<div class="govuk-body">  
+<div class="govuk-body">
   <p class="govuk-heading-s">List of cohorts for <%= @application.lead_provider.name %></p>
   <p>The Resume endpoint requires a cohort to be chosen for the application to resume with.</p>
   <%=
