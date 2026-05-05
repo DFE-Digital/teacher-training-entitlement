@@ -55,7 +55,7 @@ RSpec.describe Applications::Reject, type: :model do
       let(:reason_for_rejection) { Application.reason_for_rejections[:rejected_by_provider] }
 
       it "enqueues a provider rejection email" do
-        service.reject
+        service.call
         expect(ActionMailer::MailDeliveryJob).to have_been_enqueued.with("GenericMailer", "provider_rejected", "deliver_now", anything)
       end
     end
@@ -64,7 +64,7 @@ RSpec.describe Applications::Reject, type: :model do
       let(:reason_for_rejection) { Application.reason_for_rejections[:registration_expired] }
 
       it "does not enqueue a provider rejection email" do
-        service.reject
+        service.call
         expect(ActionMailer::MailDeliveryJob).not_to have_been_enqueued.with("GenericMailer", "provider_rejected", "deliver_now", anything)
       end
     end
