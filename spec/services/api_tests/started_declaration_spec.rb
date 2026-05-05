@@ -8,7 +8,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
   let(:default_delivery_partner) { create(:delivery_partner) }
   let(:delivery_partner) { create(:delivery_partner) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
-  let(:declaration_date) { Time.zone.local(2026, 4, 29, 12, 30, 45) }
+  let(:declaration_date) { application.schedule.training_starts_at.in_time_zone("UTC") }
 
   let(:expected_body) do
     {

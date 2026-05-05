@@ -18,7 +18,7 @@ module APITests
         {
           attributes: {
             delivery_partner_id:,
-            declaration_date: Time.current.utc.iso8601,
+            declaration_date:,
           },
         },
       }.to_json
@@ -29,6 +29,10 @@ module APITests
     end
 
   private
+
+    def declaration_date
+      application.schedule.training_starts_at.in_time_zone("UTC").iso8601
+    end
 
     def delivery_partner_id
       @delivery_partner&.ecf_id || application.lead_provider.delivery_partners.first.ecf_id

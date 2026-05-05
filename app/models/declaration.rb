@@ -40,6 +40,7 @@ class Declaration < ApplicationRecord
   scope :completed, -> { where(declaration_type: "completed") }
   scope :with_course_identifier, ->(course_identifier) { joins(application: { course_cohort: :course }).where(courses: { identifier: course_identifier }) }
   scope :latest_first, -> { order(created_at: :desc, id: :desc) }
+  scope :started, -> { where(declaration_type: STARTED) }
 
   scope :eligible_for_outcomes, lambda { |lead_provider, course_identifier|
     completed

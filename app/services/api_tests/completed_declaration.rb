@@ -18,7 +18,7 @@ module APITests
         data:
         {
           attributes: {
-            declaration_date: Time.current.utc.iso8601,
+            declaration_date:,
             delivery_partner_id:,
             has_passed: @has_passed.to_s.downcase.in?(%w[1 true yes]),
           },
@@ -31,6 +31,14 @@ module APITests
     end
 
   private
+
+    def declaration_date
+      if application.schedule.training_ends_at < Time.zone.now
+        application.schedule.training_ends_at.in_time_zone("UTC").iso8601
+      else
+        (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC").iso8601
+      end
+    end
 
     def delivery_partner_id
       @delivery_partner&.ecf_id || application.lead_provider.delivery_partners.first.ecf_id
