@@ -114,7 +114,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: accepted
-                        reason_for_rejection:
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -258,7 +258,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: accepted
-                        reason_for_rejection:
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -339,7 +339,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: deferred
-                        reason_for_rejection:
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -420,7 +420,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: started
-                        reason_for_rejection:
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -501,7 +501,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: withdrawn
-                        reason_for_rejection:
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
@@ -582,7 +582,7 @@ paths:
                         institution_type: School
                         ukprn: '10079319'
                         status: accepted
-                        reason_for_rejection:
+                        reason_for_rejection: rejected-by-provider
                         works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
