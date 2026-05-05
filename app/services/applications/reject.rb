@@ -23,12 +23,17 @@ module Applications
       return false unless valid?
 
       application.transition_status!(Application::REJECTED, reason:)
-      application.reload
+
+      send_provider_rejected_email if reason == "rejected-by-provider"
 
       true
     end
 
+<<<<<<< HEAD
     def send_rejection_email
+=======
+    def send_provider_rejected_email
+>>>>>>> 2b035f4a (fix merge)
       GenericMailer.with(
         to: application.user.email,
         full_name: application.user.full_name,
