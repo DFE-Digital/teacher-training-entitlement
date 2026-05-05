@@ -1,6 +1,5 @@
 class Crons::SendDeferralExpiringNotificationEmailsJob < CronJob
   include Sentry::Cron::MonitorCheckIns
-  include CourseHelper
 
   DEFERRAL_WARNING_MONTHS = 11
 
@@ -14,7 +13,7 @@ class Crons::SendDeferralExpiringNotificationEmailsJob < CronJob
       GenericMailer.with(
         to: application.user.email,
         full_name: application.user.full_name,
-        course_name: title_embedded_course_name(application.course),
+        course_name: application.course.title_embedded_course_name,
         deferral_date: application.deferred_at.to_fs(:govuk_date_only),
         ecf_id: application.ecf_id,
       ).deferral_expiring_notification.deliver_later

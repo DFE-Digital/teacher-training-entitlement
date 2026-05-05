@@ -1,8 +1,6 @@
 class FundingEligibility
   class MissingMandatoryInstitution < StandardError; end
 
-  include CourseHelper
-
   FUNDED_ELIGIBILITY_RESULT = :funded
   NOT_IN_ENGLAND = :not_in_england
   PREVIOUSLY_FUNDED = :previously_funded
@@ -68,7 +66,7 @@ class FundingEligibility
 
   def get_description_for_funding_status
     key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligiblity_status_code)
-    course_name = localise_sentence_embedded_course_name(course)
+    course_name = course.localise_sentence_embedded_course_name
 
     I18n.t(key, course_name:).html_safe if key
   end
