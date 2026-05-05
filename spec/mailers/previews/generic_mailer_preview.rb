@@ -79,4 +79,16 @@ class GenericMailerPreview < ActionMailer::Preview
       ecf_id: "abc-123-def-456",
     ).registration_open_notification
   end
+
+  def provider_rejected
+    GenericMailer.with(
+      to: "test@example.com",
+      full_name: "Jane Smith",
+      course_name: "Early Years TTE",
+      provider_name: "Ambition Institute",
+      cohort_date: "Autumn 2026",
+      sign_in_link: "https://signin.service.gov.uk",
+      ecf_id: "abc-123-def-456",
+    ).provider_rejected
+  end
 end

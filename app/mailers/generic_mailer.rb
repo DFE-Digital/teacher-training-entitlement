@@ -35,6 +35,10 @@ class GenericMailer < ApplicationMailer
     generic_mail(subject: "mailers.deferral_expiring_notification")
   end
 
+  def provider_rejected
+    generic_mail(subject: "mailers.provider_rejected")
+  end
+
 private
 
   def generic_mail(subject:)

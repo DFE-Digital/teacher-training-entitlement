@@ -38,6 +38,7 @@ en:
     deferral_notification: Notification of deferral - %{course_name}
     registration_open_notification: Registration open - %{course_name}
     deferral_expiring_notification: Registration about to expire - %{course_name}
+    provider_rejected: Registration status updated for %{course_name} – next steps
 
   application: &application
     blank: The entered '#/%{parameterized_attribute}' is missing from your request. Check details and try again.
