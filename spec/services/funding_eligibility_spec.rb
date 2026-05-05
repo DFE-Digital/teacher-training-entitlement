@@ -201,10 +201,8 @@ RSpec.describe FundingEligibility do
 
     before do
       allow(institution).to receive(:eligible_establishment?).and_return(true)
-      allow_any_instance_of(CourseHelper).to receive(:localise_sentence_embedded_course_name).with(course).and_return("Localised Course Name")
-      allow(I18n).to receive(:t).with("funding_details.scholarship_eligibility", course_name: "Localised Course Name").and_return("message")
     end
 
-    it { is_expected.to eq "message" }
+    it { is_expected.to eq "You’re not eligible for scholarship funding." }
   end
 end

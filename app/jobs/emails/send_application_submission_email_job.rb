@@ -1,7 +1,5 @@
 module Emails
   class SendApplicationSubmissionEmailJob < ApplicationJob
-    include CourseHelper
-
     queue_as :default
 
     def perform(application:)
@@ -9,7 +7,7 @@ module Emails
         to: application.user.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
-        course_name: localise_sentence_embedded_course_name(application.course),
+        course_name: application.course.localise_sentence_embedded_course_name,
         amount: application.raw_application_data["funding_amount"],
         ecf_id: application.ecf_id,
       ).application_submitted.deliver_now

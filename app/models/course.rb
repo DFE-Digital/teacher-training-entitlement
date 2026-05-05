@@ -14,6 +14,23 @@ class Course < ApplicationRecord
 
   IDENTIFIERS = %w[tte-early-years].freeze
 
+  def course_short_code
+    I18n.t(identifier, scope: "course.short_code")
+  end
+
+  def localise_course_name
+    I18n.t(identifier, scope: "course.name")
+  end
+
+  # Returns either "the #{course_name} TTE"
+  def localise_sentence_embedded_course_name
+    I18n.t("course.embedded_sentence.default", course_name: localise_course_name)
+  end
+
+  def rebranded_alternative_courses
+    [self]
+  end
+
   def short_code
     super.tap do |sc|
       if sc.nil?
@@ -24,7 +41,7 @@ class Course < ApplicationRecord
     end
   end
 
-  def rebranded_alternative_courses
-    [self]
+  def title_embedded_course_name
+    I18n.t("course.embedded_sentence.title", course_name: localise_course_name)
   end
 end
