@@ -37,6 +37,7 @@
             <%= render 'provider_pending_status' %>
           <% elsif accepted?(application) %>
             <%= govuk_tag(text: "Successful", colour: application_status_colour(application.status)) %>
+            <%= application_status_badge(application.status) %>
           <% elsif rejected?(application) %>
             <%= govuk_tag(text: "Unsuccessful", colour: application_status_colour(application.status)) %>
           <% elsif deferred?(application) %>
@@ -45,6 +46,8 @@
           <% elsif withdrawn?(application) %>
             <%= application_status_badge(application.status) %>
             <%= render "withdrawal_details", application: application %>
+          <% else %>
+            <%= application_status_badge(application.status) %>
           <% end %>
         </dd>
       </div>
