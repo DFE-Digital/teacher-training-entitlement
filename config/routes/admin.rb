@@ -67,6 +67,21 @@ namespace :admin do
     member do
       resources :declarations, controller: "applications/declarations", as: "application_declarations", only: %i[index]
       namespace :applications, path: nil do
+        resources :api_tests, only: %i[index]
+        namespace :api_tests do
+          resources :defer, only: %i[index create]
+          resources :resume, only: %i[index create]
+          resources :withdraw, only: %i[index create]
+          resources :reject, only: %i[index create]
+          resources :accept, only: %i[index create]
+          resources :started_declarations, only: %i[index create]
+          resources :completed_declarations, only: %i[index create]
+          resources :change_funded_place, only: %i[index create]
+          resources :change_delivery_partner, only: %i[index create]
+          resources :void_declarations, only: %i[index create]
+          resources :list_applications, only: %i[index]
+          resources :applications, only: %i[index show], param: :ecf_id
+        end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]
         resource :change_funding_eligibility, only: %i[new create]

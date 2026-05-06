@@ -1,5 +1,3 @@
-require_relative "helpers/withdraw_application"
-
 namespace :api_test do
   desc "Test the Withdraw endpoint"
   # Call the withdraw api endpoint using any accepted application
@@ -15,6 +13,6 @@ namespace :api_test do
                     Application.find_by_id(args[:application_id])
                   end
 
-    WithdrawApplication.new(application:).call
+    ::APITests::WithdrawApplication.new(application:).call
   end
 end

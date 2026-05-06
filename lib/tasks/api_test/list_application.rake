@@ -1,5 +1,3 @@
-require_relative "helpers/list_applications"
-
 namespace :api_test do
   desc "Test the Applications#index endpoint"
   # Call the applications#index api endpoint with an optional lead_provider_id
@@ -15,6 +13,6 @@ namespace :api_test do
                       LeadProvider.find_by_id(args[:lead_provider_id])
                     end
 
-    ListApplications.new(lead_provider:).call
+    ::APITests::ListApplications.new(lead_provider:).call
   end
 end

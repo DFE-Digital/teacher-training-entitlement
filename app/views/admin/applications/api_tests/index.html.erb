@@ -1,0 +1,150 @@
+<% content_for :side_navigation do %>
+  <%=
+    render SubNavigationComponent.new(
+      request.path,
+      structure: [
+        NavigationStructure::Node.new(
+          name: "API Endpoints",
+          href: "#endpoints",
+          prefix: %r{/admin/applications/\d+/endpoints$},
+          ),
+        NavigationStructure::Node.new(
+          name: "Application Overview",
+          href: "#overview",
+          prefix: %r{/admin/applications/\d+/overview$},
+          ),
+        NavigationStructure::Node.new(
+          name: "Application History",
+          href: "#history",
+          prefix: %r{/admin/applications/\d+/history$},
+          ),
+      ],
+    )
+  %>
+<% end %>
+
+<div id="endpoints-list" class="govuk-grid-row">
+  <h1 id="endpoints" class="govuk-heading-m">API Endpoint Testing</h1>
+
+  <%=
+    govuk_summary_list(classes: "govuk-summary-list-no-border") do |sl|
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Accept", admin_applications_api_tests_accept_index_path(@application)
+        end
+        row.with_value(text: "- Accept a pending application")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Reject", admin_applications_api_tests_reject_index_path(@application)
+        end
+        row.with_value(text: "- Reject a pending application")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Resume", admin_applications_api_tests_resume_index_path(@application)
+        end
+        row.with_value(text: "- Resume a deferred application with a cohort")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Defer", admin_applications_api_tests_defer_index_path(@application)
+        end
+        row.with_value(text: "- Defer an application which has started")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Withdraw", admin_applications_api_tests_withdraw_index_path(@application)
+        end
+        row.with_value(text: "- Withdraw an application which has started or defered")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Change Funded Place", admin_applications_api_tests_change_funded_place_index_path(@application)
+        end
+        row.with_value(text: "- Change Funded Place for an application which has been accepted")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Started Declaration", admin_applications_api_tests_started_declarations_path(@application)
+        end
+        row.with_value(text: "- Send a Started Declaration for an application which has been accepted")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Completed Declaration", admin_applications_api_tests_completed_declarations_path(@application)
+        end
+        row.with_value(text: "- Send a Completed Declaration for an application which has started")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Change Delivery Partner", admin_applications_api_tests_change_delivery_partner_index_path(@application)
+        end
+        row.with_value(text: "- Change Delivery Partner for a previously made declaration")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Void Declaration", admin_applications_api_tests_void_declarations_path(@application)
+        end
+        row.with_value(text: "- Void for a previously made declaration")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "List Applications", admin_applications_api_tests_applications_path(@application)
+        end
+        row.with_value(text: "- List applications")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Show Application", admin_applications_api_tests_application_path(@application, @application.ecf_id)
+        end
+        row.with_value(text: "- Show the application details")
+      end
+    end
+  %>
+</div>
+
+<div id="#overview" class="govuk-grid-row govuk-!-padding-top-5">
+  <%=
+    govuk_summary_list(card: { title: "Application Overview" }) do |sl|
+      sl.with_row do |row|
+        row.with_key(text: "Name")
+        row.with_value(text: @application.user.full_name)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Application ID")
+        row.with_value(text: @application.ecf_id)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "User ID")
+        row.with_value(text: @application.user.ecf_id)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Course")
+        row.with_value(text: @application.course.name)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Provider")
+        row.with_value(text: @application.lead_provider.name)
+      end
+      sl.with_row do |row|
+        row.with_key(text: "Application status")
+        row.with_value(text: @application.status.try(:humanize))
+      end
+    end
+  %>
+</div>
+
+<h1 id="history" class="govuk-heading-m govuk-!-padding-top-5">Application History</h1>
+<%= render(Admin::ApplicationHistoryComponent.new(record: @application)) %>

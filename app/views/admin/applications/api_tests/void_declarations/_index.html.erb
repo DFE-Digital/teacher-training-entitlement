@@ -1,0 +1,14 @@
+<h1 class="govuk-heading-m">Void Declaration</h1>
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %>
+
+<div class="govuk-body">
+  <p>The Void Declaration endpoint voids a declaration previously made.</p>
+  <% if @declarations.any? %>
+    <%= form_for :form, url: admin_applications_api_tests_void_declarations_path(@application) do |f| %>
+      <%= f.govuk_select :declaration_id, options_for_select(@declarations.map{|dp| [ "##{dp.id} - #{dp.declaration_type}", dp.id ]}), label: { text: "Declaration", size: "s" } %>
+      <%= f.govuk_submit("Call Void Declaration API") %>
+    <% end %>
+  <% else %>
+    <p>There are no declarations for this application - use the <%= govuk_link_to 'Started Declaration', admin_applications_api_tests_started_declarations_path(@application) %> endpoint</p>
+  <% end %>
+</div>

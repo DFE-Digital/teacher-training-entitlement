@@ -2,6 +2,8 @@ module Admin
   class ApplicationsController < AdminController
     include Cohortable
 
+    before_action :set_application
+
     def index
       applications = Application
                        .includes(:current_application_lead_provider,
@@ -14,13 +16,19 @@ module Admin
       @pagy, @applications = pagy(applications)
     end
 
-    def show
-      @application = Application
-                       .includes(:institution, :user, application_lead_providers: %i[lead_provider], course_cohort: %i[course cohort schedule])
-                       .find(params[:id])
-    end
+    def show; end
 
   private
+
+    def set_application
+      return if params[:id].nil?
+
+      @application = Application
+                   .includes(:institution, :user,
+                             application_lead_providers: { lead_provider: { course_cohorts: [:schedule] } },
+                             course_cohort: %i[course cohort schedule])
+                   .find(params[:id])
+    end
 
     def filter_params
       params.permit %i[

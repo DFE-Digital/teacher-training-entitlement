@@ -77,3 +77,9 @@ $admin-template-max-width: 1200px;
     border-bottom: 0;
   }
 }
+
+.govuk-summary-list-no-border {
+  .govuk-summary-list__row {
+    border-bottom: 0;
+  }
+}

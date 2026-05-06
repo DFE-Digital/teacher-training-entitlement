@@ -1,0 +1,11 @@
+<h1 class="govuk-heading-m">Reject API Endpoint</h1>
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %>
+
+<div class="govuk-body">
+  <p>The Reject endpoint withdraws a pending application.</p>
+  <%=
+    form_for :form, url: admin_applications_api_tests_reject_index_path(@application) do |f|
+      f.govuk_submit("Call Reject API")
+    end
+  %>
+</div>
