@@ -130,6 +130,14 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             }.deep_stringify_keys,
           ])
         end
+
+        context "when withdrawn state change is missing lead provider" do
+          before { withdrawal.update_columns(lead_provider_id: nil) }
+
+          it do
+            expect(attributes["enrolments"]).not_to be_nil
+          end
+        end
       end
 
       context "when application has been deferred" do
