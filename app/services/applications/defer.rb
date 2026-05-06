@@ -4,6 +4,7 @@ module Applications
   class Defer
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include StatusTransitionValidation
 
     DEFERRAL_REASONS = %w[
       bereavement
@@ -55,10 +56,11 @@ module Applications
     end
 
     def application_deferrable
-      old_status = @application.status
-      @application.status = Application::DEFERRED
-      errors.add(:application, :not_deferrable) if @application.invalid?
-      @application.status = old_status
+      validate_status_transition(
+        application: @application,
+        to: Application::DEFERRED,
+        error: :not_deferrable,
+      )
     end
   end
 end

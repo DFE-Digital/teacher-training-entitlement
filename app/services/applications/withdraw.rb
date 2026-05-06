@@ -4,6 +4,7 @@ module Applications
   class Withdraw
     include ActiveModel::Model
     include ActiveModel::Validations
+    include StatusTransitionValidation
 
     WITHDRAWAL_REASONS = %w[
       insufficient-capacity-to-undertake-programme
@@ -67,10 +68,11 @@ module Applications
     end
 
     def application_withdrawable
-      old_status = @application.status
-      @application.status = Application::WITHDRAWN
-      errors.add(:application, :not_withdrawable) if @application.invalid?
-      @application.status = old_status
+      validate_status_transition(
+        application: @application,
+        to: Application::WITHDRAWN,
+        error: :not_withdrawable,
+      )
     end
 
     def add_error(group, key)

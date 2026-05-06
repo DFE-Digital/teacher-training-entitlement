@@ -114,5 +114,13 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
       it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::REJECTED) }
     end
+
+    context "when application cannot transition to accepted" do
+      let(:application) { create(:application, :completed, :eligible_for_funding, lead_provider:, course_cohort:) }
+
+      it { expect(service.call).to be false }
+      it { is_expected.to have_error(:application, :invalid_status_transition) }
+      it { expect { service.call }.not_to change(application.reload, :status) }
+    end
   end
 end
