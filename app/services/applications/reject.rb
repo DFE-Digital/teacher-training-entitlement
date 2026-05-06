@@ -29,11 +29,7 @@ module Applications
       true
     end
 
-<<<<<<< HEAD
-    def send_rejection_email
-=======
     def send_provider_rejected_email
->>>>>>> 2b035f4a (fix merge)
       GenericMailer.with(
         to: application.user.email,
         full_name: application.user.full_name,
