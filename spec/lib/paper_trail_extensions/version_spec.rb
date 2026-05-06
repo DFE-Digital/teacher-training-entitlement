@@ -74,7 +74,7 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
           "whodunnit" => user_name,
           "created_at" => Time.zone.now,
           "note" => nil,
-          "object_changes" => user.attributes.keys.excluding(%w[updated_at raw_tra_provider_data feature_flag_id]),
+          "object_changes" => user.attributes.keys.excluding(%w[updated_at raw_tra_provider_data feature_flag_id refresh_token refresh_token_updated_at]),
         }
       end
 

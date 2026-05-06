@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_06_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -595,6 +595,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
     t.string "preferred_name"
     t.string "provider"
     t.jsonb "raw_tra_provider_data"
+    t.text "refresh_token"
+    t.datetime "refresh_token_updated_at"
     t.datetime "significantly_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "trn"
     t.boolean "trn_auto_verified", default: false
@@ -607,6 +609,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_144010) do
     t.index ["ecf_id"], name: "index_users_on_ecf_id", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider"], name: "index_users_on_provider"
+    t.index ["refresh_token_updated_at"], name: "index_users_on_refresh_token_updated_at"
     t.index ["significantly_updated_at"], name: "index_users_on_significantly_updated_at"
     t.index ["trn"], name: "index_users_on_trn"
     t.index ["uid"], name: "index_users_on_uid", unique: true
