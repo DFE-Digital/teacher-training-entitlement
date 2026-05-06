@@ -122,7 +122,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       let(:application_trait) { :withdrawn }
 
       it do
-        expect(subject).to have_link("Revert to Pending")
+        expect(subject).not_to have_link("Revert to Pending")
         expect(subject).to have_link("Accept")
         expect(subject).not_to have_link("Defer/Withdraw")
       end
