@@ -63,7 +63,7 @@ module API
             latest_event = application
               .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |e| e.status == Application::WITHDRAWN && e.lead_provider.id == lead_provider.id }
+              .find { |e| e.status == Application::WITHDRAWN && e.lead_provider_id == lead_provider.id }
 
             if latest_event.present?
               {
@@ -80,7 +80,7 @@ module API
             latest_event = application
               .application_events.sort_by(&:created_at)
               .reverse!
-              .find { |e| e.status == Application::DEFERRED && e.lead_provider.id == lead_provider.id }
+              .find { |e| e.status == Application::DEFERRED && e.lead_provider_id == lead_provider.id }
 
             if latest_event.present?
               {

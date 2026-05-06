@@ -130,6 +130,14 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             }.deep_stringify_keys,
           ])
         end
+
+        context "when withdrawn state change is missing lead provider" do
+          before { withdrawal.update_columns(lead_provider_id: nil) }
+
+          it do
+            expect(attributes["enrolments"]).not_to be_nil
+          end
+        end
       end
 
       context "when application has been deferred" do
@@ -157,6 +165,27 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               funded_place: application.funded_place,
             }.deep_stringify_keys,
           ])
+        end
+
+        context "when withdrawn state change is missing lead provider" do
+          before { deferral.update_columns(lead_provider_id: nil) }
+
+          it do
+            expect(attributes["enrolments"]).not_to be_nil
+          end
+        end
+      end
+
+      context "when application has been accepted" do
+        let(:application) { create(:application, :with_declaration, :accepted, :with_accepted_event, :eligible_for_funded_place, lead_provider:) }
+        let(:accepted) { application.state_changes.where(event: Application::ACCEPTED).first }
+
+        context "when accepted state change is missing lead provider" do
+          before { accepted.update_columns(lead_provider_id: nil) }
+
+          it do
+            expect(attributes["enrolments"]).not_to be_nil
+          end
         end
       end
 
