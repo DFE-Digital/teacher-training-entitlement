@@ -35,4 +35,6 @@ namespace :api do
 
     resources :delivery_partners, path: "delivery-partners", only: %i[index show], param: :ecf_id
   end
+
+  match "*", to: "errors#not_found", via: :all
 end

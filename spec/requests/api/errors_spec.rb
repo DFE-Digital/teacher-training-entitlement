@@ -7,7 +7,7 @@ RSpec.describe "Error responses", type: :request do
     it "returns a JSON error response" do
       api_get "/api/v1/thisdoesnotexist"
       expect(response).to have_http_status(:not_found)
-      expect(response.body).to eq %({"error":"Resource not found"})
+      expect(response.body).to include("The requested endpoint does not exist")
       expect(response.content_type).to match(/application\/json.*/)
     end
 
