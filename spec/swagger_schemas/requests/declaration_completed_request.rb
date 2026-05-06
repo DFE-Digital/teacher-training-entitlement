@@ -41,8 +41,15 @@ DECLARATION_COMPLETED_REQUEST = {
     },
   },
   example: {
-    declaration_date: "2021-05-31T02:21:32Z",
-    has_passed: true,
-    delivery_partner_id: "524df095-f9bf-4f9d-ba4c-772545a99e60",
+    data: {
+      type: "declaration",
+      attributes: {
+        declaration_date: "2021-05-31T02:21:32Z",
+        delivery_partner_id: "524df095-f9bf-4f9d-ba4c-772545a99e60",
+        has_passed: true,
+        secondary_delivery_partner_id: "524df095-f9bf-4f9d-ba4c-0a12bc243542n",
+      },
+    },
   },
+
 }.freeze

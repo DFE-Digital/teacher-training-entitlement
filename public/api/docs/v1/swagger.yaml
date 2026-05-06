@@ -2473,8 +2473,12 @@ components:
       - declaration_date
       - delivery_partner_id
       example:
-        declaration_date: '2021-05-31T02:21:32Z'
-        delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
+        data:
+          type: declaration
+          attributes:
+            declaration_date: '2021-05-31T02:21:32Z'
+            delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
+            secondary_delivery_partner_id: 524df095-f9bf-4f9d-ba4c-0a12bc243542n
     DeclarationCompletedRequest:
       description: An completed declaration
       type: object
@@ -2512,9 +2516,13 @@ components:
           nullable: false
           example: f0de7abf-399b-4e68-83de-2c33b503810c
       example:
-        declaration_date: '2021-05-31T02:21:32Z'
-        has_passed: true
-        delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
+        data:
+          type: declaration
+          attributes:
+            declaration_date: '2021-05-31T02:21:32Z'
+            delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
+            has_passed: true
+            secondary_delivery_partner_id: 524df095-f9bf-4f9d-ba4c-0a12bc243542n
     DeclarationChangeDeliveryPartnerRequest:
       description: A declaration change delivery partner request
       type: object

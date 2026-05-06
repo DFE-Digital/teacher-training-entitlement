@@ -33,7 +33,13 @@ DECLARATION_STARTED_REQUEST = {
     delivery_partner_id
   ],
   example: {
-    declaration_date: "2021-05-31T02:21:32Z",
-    delivery_partner_id: "524df095-f9bf-4f9d-ba4c-772545a99e60",
+    data: {
+      type: "declaration",
+      attributes: {
+        declaration_date: "2021-05-31T02:21:32Z",
+        delivery_partner_id: "524df095-f9bf-4f9d-ba4c-772545a99e60",
+        secondary_delivery_partner_id: "524df095-f9bf-4f9d-ba4c-0a12bc243542n",
+      },
+    },
   },
 }.freeze
