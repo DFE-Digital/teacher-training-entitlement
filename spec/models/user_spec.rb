@@ -529,4 +529,26 @@ RSpec.describe User do
       end
     end
   end
+
+  describe ".needing_token_refresh" do
+    it "returns users without TRN, with refresh_token, updated over 7 days ago" do
+      user = create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 8.days.ago)
+      expect(User.needing_token_refresh).to include(user)
+    end
+
+    it "excludes users with TRN" do
+      user = create(:user, trn: "1234567", refresh_token: "token", refresh_token_updated_at: 8.days.ago)
+      expect(User.needing_token_refresh).not_to include(user)
+    end
+
+    it "excludes users without refresh_token" do
+      user = create(:user, trn: nil, refresh_token: nil)
+      expect(User.needing_token_refresh).not_to include(user)
+    end
+
+    it "excludes users with recent refresh_token_updated_at" do
+      user = create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 1.day.ago)
+      expect(User.needing_token_refresh).not_to include(user)
+    end
+  end
 end
