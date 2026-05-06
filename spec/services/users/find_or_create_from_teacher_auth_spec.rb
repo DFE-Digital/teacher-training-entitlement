@@ -11,11 +11,16 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
   let(:trn) { "1234567" }
   let(:verified_name) { %w[Test User] }
 
+  let(:refresh_token) { "test-refresh-token" }
+
   let(:provider_data) do
     OpenStruct.new({
       uid:,
       info: OpenStruct.new({
         email:,
+      }),
+      credentials: OpenStruct.new({
+        refresh_token:,
       }),
       extra: OpenStruct.new({
         raw_info: OpenStruct.new({
@@ -169,6 +174,14 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           trn_auto_verified: false,
         )
       end
+
+      it "stores the refresh_token" do
+        make_request
+        expect(existing_user.reload).to have_attributes(
+          refresh_token:,
+        )
+        expect(existing_user.refresh_token_updated_at).to be_present
+      end
     end
 
     context "when no user exists with the same provider and UID" do
@@ -184,6 +197,21 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           feature_flag_id:,
         )
       end
+
+      it "stores the refresh_token" do
+        make_request
+        user = User.find_by(provider: "teacher_auth", uid:)
+        expect(user.refresh_token).to eq(refresh_token)
+        expect(user.refresh_token_updated_at).to be_present
+      end
+    end
+  end
+
+  context "when TRN is present" do
+    it "does not store refresh_token" do
+      make_request
+      user = User.find_by(provider: "teacher_auth", uid:)
+      expect(user.refresh_token).to be_nil
     end
   end
 end

@@ -9,15 +9,17 @@ module Users
       @feature_flag_id = feature_flag_id
       @full_name = provider_data.extra.raw_info.verified_name.join(" ")
       @date_of_birth = Date.parse(provider_data.extra.raw_info.verified_date_of_birth, "%Y-%m-%d")
+      @refresh_token = provider_data.credentials.refresh_token
     end
 
-    attr_reader :uid, :trn, :email, :full_name, :date_of_birth, :feature_flag_id
+    attr_reader :uid, :trn, :email, :full_name, :date_of_birth, :feature_flag_id, :refresh_token
 
     def call
       if trn.present?
         user_matched_using_trn = matching_users.first
 
         if user_matched_using_trn
+          assign_refresh_token(user_matched_using_trn)
           user_matched_using_trn.update!(uid:, provider: Omniauth::Strategies::TeacherAuth::NAME, email:, full_name:, feature_flag_id:)
           merge_and_archive_other_users(user_matched_using_trn, matching_users[1..])
           return user_matched_using_trn
@@ -27,6 +29,7 @@ module Users
       user_matched_using_uid = User.find_by(provider: Omniauth::Strategies::TeacherAuth::NAME, uid:)
 
       if user_matched_using_uid
+        assign_refresh_token(user_matched_using_uid)
         user_matched_using_uid.update!(email:, trn:, trn_verified: trn.present?, trn_auto_verified: trn.present?, full_name:, feature_flag_id:)
         return user_matched_using_uid
       end
@@ -46,6 +49,16 @@ module Users
       end
     end
 
+    def assign_refresh_token(user)
+      if trn.blank? && refresh_token.present?
+        user.refresh_token = refresh_token
+        user.refresh_token_updated_at = Time.current
+      elsif trn.present?
+        user.refresh_token = nil
+        user.refresh_token_updated_at = nil
+      end
+    end
+
     def create_user_with_provider_data
       User.create!(
         uid:,
@@ -57,6 +70,8 @@ module Users
         full_name:,
         date_of_birth:,
         feature_flag_id:,
+        refresh_token: trn.blank? ? refresh_token : nil,
+        refresh_token_updated_at: trn.blank? && refresh_token.present? ? Time.current : nil,
       )
     end
   end
