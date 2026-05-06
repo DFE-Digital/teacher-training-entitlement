@@ -19,8 +19,10 @@ module Users
         user_matched_using_trn = matching_users.first
 
         if user_matched_using_trn
-          assign_refresh_token(user_matched_using_trn)
-          user_matched_using_trn.update!(uid:, provider: Omniauth::Strategies::TeacherAuth::NAME, email:, full_name:, feature_flag_id:)
+          user_matched_using_trn.update!(
+            uid:, provider: Omniauth::Strategies::TeacherAuth::NAME, email:, full_name:, feature_flag_id:,
+            **refresh_token_attributes
+          )
           merge_and_archive_other_users(user_matched_using_trn, matching_users[1..])
           return user_matched_using_trn
         end
@@ -29,8 +31,10 @@ module Users
       user_matched_using_uid = User.find_by(provider: Omniauth::Strategies::TeacherAuth::NAME, uid:)
 
       if user_matched_using_uid
-        assign_refresh_token(user_matched_using_uid)
-        user_matched_using_uid.update!(email:, trn:, trn_verified: trn.present?, trn_auto_verified: trn.present?, full_name:, feature_flag_id:)
+        user_matched_using_uid.update!(
+          email:, trn:, trn_verified: trn.present?, trn_auto_verified: trn.present?, full_name:, feature_flag_id:,
+          **refresh_token_attributes
+        )
         return user_matched_using_uid
       end
 
@@ -49,13 +53,13 @@ module Users
       end
     end
 
-    def assign_refresh_token(user)
+    def refresh_token_attributes
       if trn.blank? && refresh_token.present?
-        user.refresh_token = refresh_token
-        user.refresh_token_updated_at = Time.current
+        { refresh_token:, refresh_token_updated_at: Time.current }
       elsif trn.present?
-        user.refresh_token = nil
-        user.refresh_token_updated_at = nil
+        { refresh_token: nil, refresh_token_updated_at: nil }
+      else
+        {}
       end
     end
 
