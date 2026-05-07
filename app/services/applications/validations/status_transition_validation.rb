@@ -1,5 +1,5 @@
 module Applications
-  module Concerns
+  module Validations
     module StatusTransitionValidation
     private
 

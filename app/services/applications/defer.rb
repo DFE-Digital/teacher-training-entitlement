@@ -4,7 +4,7 @@ module Applications
   class Defer
     include ActiveModel::Model
     include ActiveModel::Attributes
-    include Concerns::StatusTransitionValidation
+    include Validations::StatusTransitionValidation
 
     DEFERRAL_REASONS = %w[
       bereavement

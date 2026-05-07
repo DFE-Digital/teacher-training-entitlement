@@ -4,7 +4,7 @@ module Applications
   class Resume
     include ActiveModel::Model
     include ActiveModel::Validations
-    include Concerns::StatusTransitionValidation
+    include Validations::StatusTransitionValidation
 
     attr_reader :application
 

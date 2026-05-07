@@ -4,7 +4,7 @@ module Applications
   class Withdraw
     include ActiveModel::Model
     include ActiveModel::Validations
-    include Concerns::StatusTransitionValidation
+    include Validations::StatusTransitionValidation
 
     WITHDRAWAL_REASONS = %w[
       insufficient-capacity-to-undertake-programme
