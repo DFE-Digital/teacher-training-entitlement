@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  encrypts :refresh_token
+
   INSIGNIFICANT_ATTRIBUTES = %w[
     raw_tra_provider_data
     feature_flag_id

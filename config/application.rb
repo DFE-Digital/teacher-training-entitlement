@@ -23,6 +23,17 @@ module Registration
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 
+    # Use per-environment credentials, with staging shared across staging/sandbox/review
+    credentials_env = case Rails.env
+                      when "sandbox", "review"
+                        "staging"
+                      else
+                        Rails.env
+                      end
+
+    config.credentials.content_path = Rails.root.join("config/credentials/#{credentials_env}.yml.enc")
+    config.credentials.key_path = Rails.root.join("config/credentials/#{credentials_env}.key")
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.

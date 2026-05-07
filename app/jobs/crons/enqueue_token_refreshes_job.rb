@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Crons::EnqueueTokenRefreshesJob < CronJob
   include Sentry::Cron::MonitorCheckIns
 

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class RefreshUserTokenJob < ApplicationJob
   def perform(user)
     return if user.trn.present?

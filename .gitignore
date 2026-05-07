@@ -58,3 +58,7 @@ bin/konduit.sh
 # Maintenance page manifests
 maintenance_page/manifests/maintenance/deployment_maintenance.yml
 
+
+# Ignore key files for decrypting credentials and more.
+/config/credentials/*.key
+
