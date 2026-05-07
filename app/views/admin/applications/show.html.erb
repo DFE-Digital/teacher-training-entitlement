@@ -9,142 +9,134 @@
 <h1 class="govuk-heading-l">Application details</h1>
 
 <%=
-  govuk_summary_list(card: { title: "Overview" }) do |sl|
-    sl.with_row do |row|
-      row.with_key(text: "Name")
-      row.with_value(text: @application.user.full_name)
-      row.with_action(text: "View user", href: admin_user_path(@application.user))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Application ID")
-      row.with_value(text: @application.ecf_id)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "User ID")
-      row.with_value(text: @application.user.ecf_id)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Course")
-      row.with_value(text: @application.course.name)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Course identifier")
-      row.with_value(text: @application.course.identifier)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Provider")
-      row.with_value(text: @application.lead_provider.name)
-    end
-    sl.with_row do |row|
-      previous_alp = @application.application_lead_providers.previous
+govuk_summary_list(card: { title: "Overview" }) do |sl|
+  sl.with_row do |row|
+    row.with_key(text: "Name")
+    row.with_value(text: @application.user.full_name)
+    row.with_action(text: "View user", href: admin_user_path(@application.user))
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Application ID")
+    row.with_value(text: @application.ecf_id)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "User ID")
+    row.with_value(text: @application.user.ecf_id)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Course")
+    row.with_value(text: @application.course.name)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Course identifier")
+    row.with_value(text: @application.course.identifier)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Provider")
+    row.with_value(text: @application.lead_provider.name)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Application status")
+    row.with_value(text: @application.status.try(:humanize))
 
-      row.with_key(text: "Previous #{previous_alp.many? ? 'Providers' : 'Provider'}")
-      row.with_value do
-        if previous_alp.any?
-          govuk_table(classes: "govuk-table-no-border govuk-!-margin-bottom-0") do |table|
-            table.with_body do |body|
-              previous_alp.each do |application_lead_provider|
-                body.with_row do |provider_row|
-                  provider_row.with_cell(text: application_lead_provider.lead_provider.name)
-                  provider_row.with_cell(text: "Unassigned on #{application_lead_provider.updated_at.to_date.strftime("%d %b %Y")}")
-                end
-              end
-            end
-          end
-        else
-          "-"
-        end
+    if @application.accepted_status? || @application.rejected_status?
+      row.with_action(
+        text: "Revert to Pending",
+        href: new_admin_applications_revert_to_pending_path(@application))
       end
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Application status")
-      row.with_value(text: @application.status.try(:humanize))
 
-      if @application.accepted_status? || @application.rejected_status?
-        row.with_action(
-          text: "Revert to Pending",
-          href: new_admin_applications_revert_to_pending_path(@application))
-      end
-      
       if @application.accepted_status?
         row.with_action(
           text: "Defer/Withdraw",
           href: new_admin_applications_change_status_path(@application))
-      elsif @application.deferred_status? || @application.withdrawn_status?
-        row.with_action(
-          text: "Accept",
-          href: new_admin_applications_change_status_path(@application))
+        elsif @application.deferred_status? || @application.withdrawn_status?
+          row.with_action(
+            text: "Accept",
+            href: new_admin_applications_change_status_path(@application))
+          end
+        end
+        sl.with_row do |row|
+          row.with_key(text: "Created")
+          row.with_value(text: @application.created_at.to_fs(:govuk_short))
+        end
+        sl.with_row do |row|
+          row.with_key(text: "Updated")
+          row.with_value(text: @application.updated_at.to_fs(:govuk_short))
+        end
       end
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Created")
-      row.with_value(text: @application.created_at.to_fs(:govuk_short))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Updated")
-      row.with_value(text: @application.updated_at.to_fs(:govuk_short))
-    end
-  end
 %>
 
 <%=
-  govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
-    sl.with_row do |row|
-      row.with_key(text: "Eligible for funding")
-      row.with_value(text: @application.eligible_for_funding ? "Yes" : "No")
-      row.with_action(text: "Change", href: new_admin_applications_change_funding_eligibility_path(@application))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Funded place")
-      row.with_value(text: @application.funded_place ? "Yes" : "No")
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Status code")
-      row.with_value(text: @application.funding_eligiblity_status_code.presence || "-")
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Schedule cohort")
-      row.with_value(text: @application.cohort&.name)
-      row.with_action(text: "Change", href: admin_applications_change_cohort_path(@application))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Schedule identifier")
-      row.with_value(text: @application.schedule&.identifier || "-" )
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Funding choice")
-      row.with_value(text: @application.funding_choice.try(:humanize))
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Notes")
-      row.with_value(text: @application.notes.presence || "No notes")
-      link_text = @application.notes.present? ? "Edit note" : "Add note"
-      row.with_action(text: link_text, href: edit_admin_applications_notes_path(@application))
-    end
+govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
+  sl.with_row do |row|
+    row.with_key(text: "Eligible for funding")
+    row.with_value(text: @application.eligible_for_funding ? "Yes" : "No")
+    row.with_action(text: "Change", href: new_admin_applications_change_funding_eligibility_path(@application))
   end
+  sl.with_row do |row|
+    row.with_key(text: "Funded place")
+    row.with_value(text: @application.funded_place ? "Yes" : "No")
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Status code")
+    row.with_value(text: @application.funding_eligiblity_status_code.presence || "-")
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Schedule cohort")
+    row.with_value(text: @application.cohort&.name)
+    row.with_action(text: "Change", href: admin_applications_change_cohort_path(@application))
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Schedule identifier")
+    row.with_value(text: @application.schedule&.identifier || "-" )
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Funding choice")
+    row.with_value(text: @application.funding_choice.try(:humanize))
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Notes")
+    row.with_value(text: @application.notes.presence || "No notes")
+    link_text = @application.notes.present? ? "Edit note" : "Add note"
+    row.with_action(text: link_text, href: edit_admin_applications_notes_path(@application))
+  end
+end
 %>
 
 <%=
-  govuk_summary_list(card: { title: "Workplace" }) do |sl|
-    sl.with_row do |row|
-      row.with_key(text: "Name")
-      if @application.employer_urn.present?
-        row.with_value(text: govuk_link_to(@application.employer_name_to_display, admin_schools_path(q: @application.employer_urn)))
-      else
-        row.with_value(text: @application.employer_name_to_display)
-      end
-    end
-    sl.with_row do |row|
-      row.with_key(text: "UK Provider Reference Number (UKPRN)")
-      row.with_value(text: @application.ukprn)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Unique reference number (URN)")
-      row.with_value(text: @application.employer_urn)
-    end
-    sl.with_row do |row|
-      row.with_key(text: "Country")
-      row.with_value(text: @application.teacher_catchment_country.presence || "-")
+govuk_summary_list(card: { title: "Workplace" }) do |sl|
+  sl.with_row do |row|
+    row.with_key(text: "Name")
+    if @application.employer_urn.present?
+      row.with_value(text: govuk_link_to(@application.employer_name_to_display, admin_schools_path(q: @application.employer_urn)))
+    else
+      row.with_value(text: @application.employer_name_to_display)
     end
   end
+  sl.with_row do |row|
+    row.with_key(text: "UK Provider Reference Number (UKPRN)")
+    row.with_value(text: @application.ukprn)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Unique reference number (URN)")
+    row.with_value(text: @application.employer_urn)
+  end
+  sl.with_row do |row|
+    row.with_key(text: "Country")
+    row.with_value(text: @application.teacher_catchment_country.presence || "-")
+  end
+end
+%>
+
+<%=
+if @application.application_lead_providers.previous.any?
+  govuk_summary_list(card: { title: "Previous providers" }) do |sl|
+    @application.application_lead_providers.previous.each do |alp|
+      sl.with_row do |row|
+        row.with_key(text: alp.lead_provider.name)
+        row.with_value(text: "unassigned on#{alp.updated_at.to_fs(:govuk_date_only)}")
+      end
+    end
+  end
+end
 %>
