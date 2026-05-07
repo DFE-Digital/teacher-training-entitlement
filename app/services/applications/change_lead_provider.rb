@@ -3,7 +3,7 @@ module Applications
     include ActiveModel::Model
     include ActiveModel::Validations
 
-    validate :application_status_is_pending
+    validate :application_can_change_provider
     validate :not_previously_changed_to_provider
     validate :new_provider_is_different
 
@@ -44,10 +44,10 @@ module Applications
       "Changed lead provider from #{@old_provider.name} to #{@new_provider.name}"
     end
 
-    def application_status_is_pending
-      return if @application.pending_status?
+    def application_can_change_provider
+      return if @application.can_change_provider?
 
-      errors.add(:application, :application_must_be_pending_status)
+      errors.add(:application, :application_cannot_change_provider)
     end
 
     def not_previously_changed_to_provider

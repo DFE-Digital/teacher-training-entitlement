@@ -6,7 +6,9 @@ module Applications
       before_action :set_form
       storing_form_session_as :change_provider
 
-      def index; end
+      def index
+        redirect_to application_path(application.ecf_id) unless application.can_change_provider?
+      end
 
       def create
         render :index, status: :unprocessable_content and return unless @form.valid?

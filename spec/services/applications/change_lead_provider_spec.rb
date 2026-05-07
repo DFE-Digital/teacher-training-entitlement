@@ -13,15 +13,15 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
     expect(application.reload.lead_provider).to eq(new_provider)
     expect(application.status).to eq(Application::PENDING)
     expect(application.application_lead_providers.previous&.last&.lead_provider).to eq(old_provider)
-    # TODO: check application_events
-    # expect(application.application_events.last).to eq(something)
+
+    expect(application.application_events.last&.reason).to eq("Changed lead provider from #{old_provider.name} to #{new_provider.name}")
   end
 
-  context "when application not pending" do
-    let(:application) { create(:application, :accepted, lead_provider: old_provider) }
+  context "when application not pending or accepted" do
+    let(:application) { create(:application, :started, lead_provider: old_provider) }
 
     it do
-      expect(subject).to have_error(:application, :application_must_be_pending_status)
+      expect(subject).to have_error(:application, :application_cannot_change_provider)
     end
   end
 

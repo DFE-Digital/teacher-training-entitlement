@@ -16,6 +16,15 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
       get url
       expect(response).to render_template(:index)
     end
+
+    context "when application is not eligible for change provider" do
+      let(:application) { create(:application, :started) }
+
+      it "redirects to the application page" do
+        get url
+        expect(response).to redirect_to(application_path(application.ecf_id))
+      end
+    end
   end
 
   describe "POST /applications/:application_id/change-provider/start" do
@@ -44,9 +53,9 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
     end
 
     context "when application is not eligible for change provider" do
-      let(:application) { create(:application, :accepted) }
+      let(:application) { create(:application, :started) }
 
-      it "redirects to accounts page with alert" do
+      it "redirects to the application page" do
         post url, params: { form: { confirmation: "1" } }
         expect(response).to have_http_status(:unprocessable_content)
         expect(response).to render_template(:index)

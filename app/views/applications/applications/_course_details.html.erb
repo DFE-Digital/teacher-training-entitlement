@@ -20,7 +20,7 @@
         <dd class="govuk-summary-list__value">
           <%= application.lead_provider.name %>
         </dd>
-        <% if pending?(application) %>
+        <% if application.can_change_provider? %>
           <dd class="govuk-summary-list__actions">
             <a class="govuk-link" href="<%= application_change_provider_start_index_path(application.ecf_id) %>">Register with a different provider</a>
           </dd>
@@ -32,18 +32,17 @@
           Provider application
         </dt>
         <dd class="govuk-summary-list__value">
-          <% if application.status.blank? || pending?(application) %>
+          <% if application.pending_status? %>
             <%= govuk_tag(text: "Apply with provider", colour: application_status_colour(application.status)) %>
             <%= render 'provider_pending_status' %>
-          <% elsif accepted?(application) %>
+          <% elsif application.accepted_status? %>
             <%= govuk_tag(text: "Successful", colour: application_status_colour(application.status)) %>
-            <%= application_status_badge(application.status) %>
-          <% elsif rejected?(application) %>
+          <% elsif application.rejected_status? %>
             <%= govuk_tag(text: "Unsuccessful", colour: application_status_colour(application.status)) %>
-          <% elsif deferred?(application) %>
+          <% elsif application.deferred_status? %>
             <%= application_status_badge(application.status) %>
             <%= render "deferral_details", application: application %>
-          <% elsif withdrawn?(application) %>
+          <% elsif application.withdrawn_status? %>
             <%= application_status_badge(application.status) %>
             <%= render "withdrawal_details", application: application %>
           <% else %>
@@ -52,7 +51,7 @@
         </dd>
       </div>
 
-      <% if application.status.blank? || pending?(application) %>
+      <% if application.pending_status? %>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Course start
@@ -68,7 +67,7 @@
         </div>
       <% end %>
 
-      <% if application.latest_participant_outcome_state.present? && accepted?(application) %>
+      <% if application.latest_participant_outcome_state.present? && application.accepted_status? %>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             Course outcome

@@ -8,7 +8,7 @@
   <% else %>
     <%= render GovukComponent::BackLinkComponent.new(
       text: "Back",
-      href: request.referrer
+      href: request.referrer.presence || root_path
     ) %>
   <% end %>
 <% end %>
