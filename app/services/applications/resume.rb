@@ -4,7 +4,7 @@ module Applications
   class Resume
     include ActiveModel::Model
     include ActiveModel::Validations
-    include StatusTransitionValidation
+    include Concerns::StatusTransitionValidation
 
     attr_reader :application
 
@@ -58,6 +58,8 @@ module Applications
     end
 
     def application_resumable
+      return if errors.any?
+
       validate_status_transition(
         application: @application,
         to: Application::STARTED,

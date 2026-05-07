@@ -2,7 +2,7 @@ module Applications
   class Reject
     include ActiveModel::Model
     include ActiveModel::Attributes
-    include StatusTransitionValidation
+    include Concerns::StatusTransitionValidation
 
     attribute :application
     attribute :reason_for_rejection

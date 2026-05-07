@@ -444,6 +444,7 @@ en:
                 any declarations they have made before attempting to revert the application.
             application:
               <<: *application
+              cannot_be_reverted: The application cannot be reverted to pending
         applications/change_cohort:
           attributes:
             base:

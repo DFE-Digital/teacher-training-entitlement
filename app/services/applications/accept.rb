@@ -4,7 +4,7 @@ module Applications
   class Accept
     include ActiveModel::Model
     include ActiveModel::Attributes
-    include StatusTransitionValidation
+    include Concerns::StatusTransitionValidation
 
     attribute :application
     attribute :funded_place
