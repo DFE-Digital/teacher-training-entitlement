@@ -9,6 +9,9 @@ LeadProvider.find_each do |lead_provider|
           statement:,
           course:,
         )
+
+        next if contract.contract_template.present? || statement.paid? || statement.payable?
+
         contract.update!(contract_template:)
       end
     end
