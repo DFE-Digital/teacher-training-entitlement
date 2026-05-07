@@ -46,7 +46,7 @@ applications:
   - label: APP-006
     email: test-edge-01@example.com
     full_name: Test Edge One
-    cohort_offset: 1
+    cohort_offset: 2
     funding_eligible: true
     participant_id: 6
     purpose: Different cohort. Listing/filter edge case. Change provider
@@ -98,3 +98,11 @@ applications:
     funding_eligible: true
     participant_id: 12
     purpose: "Admin verification: deferred participant"
+
+  - label: APP-013
+    email: test-provider@example.com
+    full_name: Test change provider
+    cohort_offset: 0
+    funding_eligible: true
+    participant_id: 13
+    purpose: "Provider read-only application"

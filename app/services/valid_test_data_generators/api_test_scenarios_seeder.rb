@@ -95,7 +95,7 @@ module ValidTestDataGenerators
       test_users = User.includes(:applications).where(email: test_emails)
 
       # Delete applications for these test users with this lead provider
-      applications_to_delete = lead_provider.updateable_applications.where(user: test_users)
+      applications_to_delete = lead_provider.applications.where(user: test_users)
 
       if applications_to_delete.any?
         declaration_ids = Declaration.where(application: applications_to_delete).pluck(:id)
@@ -123,7 +123,7 @@ module ValidTestDataGenerators
         Declaration.where(application: applications_to_delete).delete_all
         ApplicationEvent.where(application: applications_to_delete).delete_all
 
-        applications_to_delete.delete_all
+        Application.where(id: applications_to_delete.pluck(:id)).delete_all
       end
 
       # Delete test users if they have no other applications
@@ -136,22 +136,26 @@ module ValidTestDataGenerators
 
     def test_scenarios_create_data!
       course_cohorts = cohort_start_dates
-                         .take(3)
+                         .take(4)
                          .map do |registration_starts_at|
         course_cohort_setup(
           registration_starts_at:,
-          training_starts_now: true,
+          training_starts_now: registration_starts_at.year == cohort_year, # for the cohort_year make training start now to simplify testing
         )
       end
 
       applications_data.each do |app_data|
-        course_cohort = app_data[:cohort_offset].zero? ? course_cohorts.first : course_cohorts.last
         create_app(
-          course_cohort:,
+          course_cohort: course_cohorts[app_data[:cohort_offset]],
           status: Application::PENDING,
           eligible_for_funding: app_data[:funding_eligible],
           user: create_user(app_data),
-        )
+        ).tap do |application|
+          if app_data[:label] == "APP-013"
+            change_provider(application:)
+            create_app_event(application:, event: :changed_provider)
+          end
+        end
       end
 
       statements_setup(course_cohort: course_cohorts.first)
@@ -267,14 +271,14 @@ module ValidTestDataGenerators
         name:,
         course_group: course.course_group,
         training_starts_at: training_starts_at,
-        training_ends_at: training_starts_at + 2.months,
+        training_ends_at: training_starts_at + 6.months,
         allowed_declaration_types: %w[started completed],
         policy_descriptor: 1,
         acceptance_window_start: training_starts_at,
         acceptance_window_end: training_starts_at + 2.months,
       }
 
-      current_schedule = Schedule.find_by(identifier:)
+      current_schedule = Schedule.find_by(identifier:, training_starts_at:, cohort: current_cohort)
       if current_schedule
         current_schedule.update!(attrs)
       else

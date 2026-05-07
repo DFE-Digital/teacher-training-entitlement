@@ -98,22 +98,22 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "returns success outcome" do
           expect(outcome.error).to be_nil
           expect(outcome.success).to be true
-          expect(outcome.applications_count).to eq(12)
+          expect(outcome.applications_count).to eq(13)
           expect(outcome.cohort_year).to eq(cohort_year)
         end
 
         it "creates 12 applications" do
-          expect { outcome }.to change(Application, :count).by(12)
+          expect { outcome }.to change(Application, :count).by(13)
         end
 
         it "creates 12 users" do
-          expect { outcome }.to change(User, :count).by(12)
+          expect { outcome }.to change(User, :count).by(13)
         end
 
         it "creates applications with correct emails" do
           seeder.call
 
-          created_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
+          created_emails = lead_provider.applications.joins(:user).pluck("users.email")
 
           expect(created_emails).to match_array(seeder.test_emails)
         end
