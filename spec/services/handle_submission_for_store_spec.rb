@@ -46,6 +46,8 @@ RSpec.describe HandleSubmissionForStore do
       "trn_lookup_status" => nil,
       "trn_verified" => false,
       "feature_flag_id" => user.feature_flag_id,
+      "refresh_token" => nil,
+      "refresh_token_updated_at" => nil,
     }
   end
 
