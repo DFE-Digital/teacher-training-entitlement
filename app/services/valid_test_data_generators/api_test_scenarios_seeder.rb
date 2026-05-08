@@ -278,7 +278,7 @@ module ValidTestDataGenerators
         acceptance_window_end: training_starts_at + 2.months,
       }
 
-      current_schedule = Schedule.find_by(identifier:, training_starts_at:, cohort: current_cohort)
+      current_schedule = Schedule.find_by(identifier:, cohort: current_cohort)
       if current_schedule
         current_schedule.update!(attrs)
       else
