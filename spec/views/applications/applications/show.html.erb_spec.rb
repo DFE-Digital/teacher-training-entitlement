@@ -7,7 +7,8 @@ RSpec.describe "applications/applications/show.html.erb", type: :view do
   subject { Capybara.string(render) }
 
   before do
-    assign(:application, application)
+    current_application = application
+    view.define_singleton_method(:application) { current_application }
     allow(application).to receive(:lead_provider).and_return(lead_provider)
     allow(view).to receive(:current_user).and_return(build_stubbed(:user))
   end
@@ -21,7 +22,7 @@ RSpec.describe "applications/applications/show.html.erb", type: :view do
   context "when application is accepted" do
     let(:application) { build_stubbed(:application, :accepted) }
 
-    it { is_expected.to have_link "Register with a different provider", href: application_change_provider_start_index_path(application.ecf_id) }
+    it { is_expected.to have_link "Register with a different provider", href: application_change_provider_contact_us_path(application.ecf_id) }
   end
 
   context "when application is started" do

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "Change provider", type: :feature do
-  let(:application) { create(:application, :pending) }
+  let(:application) { nil }
   let(:another_provider) { create(:lead_provider) }
 
   before do
@@ -20,7 +20,7 @@ RSpec.feature "Change provider", type: :feature do
 
       expect(page).to have_text("Register with a different provider for the #{application.course.name}")
 
-      choose(I18n.t("applications.change_provider.start.form.yes_option"), visible: :all)
+      choose(I18n.t("applications.change_provider.start.application_#{application.status}.form.yes_option"), visible: :all)
 
       click_button("Continue")
 
@@ -58,10 +58,20 @@ RSpec.feature "Change provider", type: :feature do
     it_behaves_like "changing provider successfully"
   end
 
+  context "when application is rejected" do
+    let(:application) { create(:application, :rejected) }
+
+    it_behaves_like "changing provider successfully"
+  end
+
   context "when application is accepted" do
     let(:application) { create(:application, :accepted) }
 
-    it_behaves_like "changing provider successfully"
+    it do
+      visit application_change_provider_start_index_path(application.ecf_id)
+
+      expect(page).to have_current_path(application_path(application.ecf_id))
+    end
   end
 
   context "when application is started" do

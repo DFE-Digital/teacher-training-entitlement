@@ -30,6 +30,7 @@ class RegistrationWizard
     funding_your_course
     share_provider
     check_answers
+    have_ofsted_urn
   ].freeze
 
   REMOVED_REGISTRATION_STEPS = %i[].freeze

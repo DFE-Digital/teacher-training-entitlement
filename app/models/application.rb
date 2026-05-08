@@ -133,7 +133,7 @@ class Application < ApplicationRecord
   end
 
   def can_change_provider?
-    pending_status? || accepted_status?
+    pending_status? || rejected_status?
   end
 
   def can_transition_to?(new_status)

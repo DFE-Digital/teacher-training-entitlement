@@ -121,6 +121,37 @@ RSpec.describe Application do
     end
   end
 
+  describe "#can_change_provider?" do
+    subject { application.can_change_provider? }
+
+    let(:application) { build(:application, status:) }
+
+    [
+      Application::PENDING,
+      Application::REJECTED,
+    ].each do |application_status|
+      context "when the application has #{application_status} status" do
+        let(:status) { application_status }
+
+        it { is_expected.to be true }
+      end
+    end
+
+    [
+      Application::ACCEPTED,
+      Application::STARTED,
+      Application::COMPLETED,
+      Application::DEFERRED,
+      Application::WITHDRAWN,
+    ].each do |application_status|
+      context "when the application has #{application_status} status" do
+        let(:status) { application_status }
+
+        it { is_expected.to be false }
+      end
+    end
+  end
+
   describe "scopes" do
     describe ".accepted" do
       it "returns accepted applications" do

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Applications::ChangeProvider::Start", type: :request do
-  let(:application) { create(:application) }
+  let(:application) { create(:application, :pending) }
   let(:user) { application.user }
   let(:url) { "/applications/#{application.ecf_id}/change-provider/start" }
 
@@ -48,7 +48,7 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
         expect(response).to render_template(:index)
         expect(assigns[:form]).not_to be_nil
-        expect(assigns[:form].errors[:confirmation]).to eq([I18n.t("applications.change_provider.start.form.blank")])
+        expect(assigns[:form].errors[:confirmation]).to eq([I18n.t("applications.change_provider.start.application_pending.form.blank")])
       end
     end
 
