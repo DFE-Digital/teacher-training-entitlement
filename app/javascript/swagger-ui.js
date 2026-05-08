@@ -4,7 +4,7 @@ const version = document.getElementById('swagger-ui').dataset.version
 
 document.addEventListener('DOMContentLoaded', () => {
   SwaggerUIBundle({
-    url: `/api/docs/${version}/swagger.yaml`,
+    url: `/api/docs/${version}/swagger.yaml?v=${new Date().getTime()}`,
     dom_id: '#swagger-ui',
     deepLinking: true,
     presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],

@@ -28,6 +28,17 @@ module API
     def set_sentry_context
       return unless current_lead_provider
 
+      Sentry::Metrics.count(
+        "api.request",
+        value: 1,
+        attributes: {
+          id: current_lead_provider.id,
+          name: current_lead_provider.name,
+          path: [params[:controller], params[:action]].join("#"),
+          method: request.method,
+        },
+      )
+
       Sentry.configure_scope do |scope|
         scope.set_tag("api", true)
         scope.set_tag("lead_provider.id", current_lead_provider.id)
