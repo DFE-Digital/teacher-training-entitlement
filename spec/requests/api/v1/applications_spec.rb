@@ -95,6 +95,8 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "PUT /api/v1/applications/:ecf_id/accept" do
     let(:resource) { create(:application, lead_provider: current_lead_provider) }
+    let(:application) { resource }
+    let(:expected_data_id) { application.ecf_id }
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Accept }
     let(:action) { :call }
@@ -107,6 +109,21 @@ RSpec.describe "Application endpoints", type: :request do
     end
 
     it_behaves_like "an API update endpoint"
+
+    context "when the application can be deferred" do
+      before do
+        api_put(accept_api_v1_application_path(ecf_id: application.ecf_id), params: { data: { attributes: { funded_place: false } } })
+      end
+
+      it_behaves_like "a successful api call"
+
+      it "creates a accepted event" do
+        accepted_event = application.application_events.find { |e| e.event == Application::ACCEPTED }
+        expect(accepted_event).not_to be_nil
+        expect(accepted_event.metadata&.symbolize_keys).to be_blank
+        expect(accepted_event.lead_provider).to eq(current_lead_provider)
+      end
+    end
 
     context "when an application changed provider" do
       include_context "with application which changed provider"
@@ -193,6 +210,13 @@ RSpec.describe "Application endpoints", type: :request do
 
     context "when the application can be deferred" do
       it_behaves_like "a successful api call"
+
+      it "creates a deferred event" do
+        deferred_event = application.application_events.find { |e| e.event == Application::DEFERRED }
+        expect(deferred_event).not_to be_nil
+        expect(deferred_event.metadata&.symbolize_keys).to eq(reason: "career-break")
+        expect(deferred_event.lead_provider).to eq(current_lead_provider)
+      end
     end
 
     context "when the application cannot be deferred" do
@@ -277,6 +301,13 @@ RSpec.describe "Application endpoints", type: :request do
 
     context "when the application can be withdrawn" do
       it_behaves_like "a successful api call"
+
+      it "creates a withdrawn event" do
+        withdrawn_event = application.application_events.find { |e| e.event == Application::WITHDRAWN }
+        expect(withdrawn_event).not_to be_nil
+        expect(withdrawn_event.metadata&.symbolize_keys).to eq(reason: "insufficient-capacity")
+        expect(withdrawn_event.lead_provider).to eq(current_lead_provider)
+      end
     end
 
     context "when the application is accepted" do
