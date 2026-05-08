@@ -2,6 +2,8 @@
 
 ## Data Recovery
 
+This is a summary of steps from this [documentation](https://github.com/DFE-Digital/teacher-services-cloud/blob/main/documentation/disaster-recovery.md)
+
 This section describes how to restore the production or sandbox database from a backup. Follow each step in order.
 
 > ⚠️ **Before you begin:** Ensure you have the appropriate Azure and GitHub permissions for the target environment.
