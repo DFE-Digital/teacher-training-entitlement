@@ -4,6 +4,7 @@ module Declarations
   class Create
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Applications::Validations::StatusTransitionValidation
 
     attribute :application
     attribute :declaration_type, :string
@@ -13,24 +14,19 @@ module Declarations
     attribute :secondary_delivery_partner_id
 
     validates :application, presence: true
-    validate :application_is_declarable, if: -> { application }
-
     validates :declaration_type, presence: true
     validates :declaration_type, inclusion: { in: ->(service) { service.schedule.allowed_declaration_types } }, if: -> { application && declaration_type }
-    validate :declaration_type_out_of_order
-
     validates :declaration_date, presence: true
     validates :declaration_date, declaration_date: true
-
-    # validate :output_fee_statement_available
+    validates :delivery_partner_id, presence: true
+    validate :application_is_declarable, if: -> { application }
+    validate :declaration_type_out_of_order
     validate :validate_has_passed_field, if: :completed_declaration?
     validate :no_duplicate_billable_declaration
-
-    validates :delivery_partner_id, presence: true
     validate :delivery_partner_exists, if: :delivery_partner_id
     validate :secondary_delivery_partner_exists, if: :secondary_delivery_partner_id
-
     validate :declaration_valid
+    validate :application_updateable
 
     delegate :lead_provider, :schedule, to: :application
 
@@ -97,6 +93,22 @@ module Declarations
     end
 
   private
+
+    def application_updateable
+      if completed_declaration?
+        validate_status_transition(
+          application: @application,
+          to: Application::COMPLETED,
+          error: :not_completable,
+        )
+      else
+        validate_status_transition(
+          application: @application,
+          to: Application::STARTED,
+          error: :not_startable,
+        )
+      end
+    end
 
     attr_writer :raw_declaration_date
 

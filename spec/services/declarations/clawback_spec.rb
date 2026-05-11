@@ -17,7 +17,23 @@ RSpec.describe Declarations::Clawback, type: :model do
         let(:declaration_type) { :started }
         let(:application) { create(:application, :completed) }
 
-        it { expect(service).to have_error(:base, :application_status_completed, I18n.t("activemodel.errors.models.declarations/clawback.attributes.base.application_status_completed")) }
+        it do
+          expect(service).to have_error(:base, :application_status_completed,
+                                        I18n.t("activemodel.errors.models.declarations/void.attributes.base.application_status_completed"))
+
+          expect(service).to have_error(:base, :not_voidable_to_accepted_status,
+                                        I18n.t("activemodel.errors.models.declarations/void.attributes.base.not_voidable_to_accepted_status"))
+        end
+      end
+
+      context "when the application has been completed and the declaration is also completed" do
+        let(:declaration_type) { :completed }
+        let(:application) { create(:application, :started) }
+
+        it do
+          expect(service).to have_error(:base, :not_voidable_to_started_status,
+                                        I18n.t("activemodel.errors.models.declarations/void.attributes.base.not_voidable_to_started_status"))
+        end
       end
 
       context "when the application has been completed and the declaration is completed" do
@@ -90,6 +106,7 @@ RSpec.describe Declarations::Clawback, type: :model do
     end
 
     context "when processing a completed declaration" do
+      let(:application) { create(:application, :completed) }
       let(:declaration_type) { :completed }
       let(:declaration_state) { :paid }
 

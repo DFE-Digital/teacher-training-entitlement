@@ -4,6 +4,7 @@ module Declarations
   class Void
     include ActiveModel::Model
     include ActiveModel::Validations
+    include Applications::Validations::StatusTransitionValidation
 
     def initialize(declaration:)
       @declaration = declaration
@@ -12,6 +13,7 @@ module Declarations
 
     validate :declaration_not_already_voided
     validate :application_status_not_completed
+    validate :application_updateable
 
     def call
       return unless valid?
@@ -49,6 +51,24 @@ module Declarations
 
     def declaration_not_already_voided
       errors.add(:base, :already_voided) if @declaration.voided_state?
+    end
+
+    def application_updateable
+      if @declaration.started_declaration_type?
+        validate_status_transition(
+          application: @application,
+          to: Application::ACCEPTED,
+          attribute: :base,
+          error: :not_voidable_to_accepted_status,
+        )
+      else
+        validate_status_transition(
+          application: @application,
+          to: Application::STARTED,
+          attribute: :base,
+          error: :not_voidable_to_started_status,
+        )
+      end
     end
   end
 end

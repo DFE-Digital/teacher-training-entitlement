@@ -56,7 +56,9 @@ en:
     invalid_status_transition: This application status does not allow this request
     not_rejectable: This application cannot be rejected
     not_deferrable: This application cannot be deferred
+    not_startable: This application cannot be started
     not_resumable: This application cannot be resumed
+    not_completable: This application cannot be completed
     not_withdrawable: This application cannot be withdrawn
     application_is_readonly: This application can no longer be updated
   
@@ -577,6 +579,8 @@ en:
         declarations/clawback:
           attributes:
             base:
+              not_voidable_to_accepted_status: This application cannot be voided because the application cannot be set to accepted
+              not_voidable_to_started_status: This application cannot be voided because the application cannot be set to started
               no_output_fee_statement: You cannot submit or void declarations
                 for the %{cohort} cohort. The funding contract for this cohort has
                 ended. Get in touch if you need to discuss this with us.
@@ -592,6 +596,8 @@ en:
         declarations/void:
           attributes:
             base:
+              not_voidable_to_accepted_status: This application cannot be voided because the application cannot be set to accepted
+              not_voidable_to_started_status: This application cannot be voided because the application cannot be set to started
               no_output_fee_statement: You cannot submit or void declarations
                 for the %{cohort} cohort. The funding contract for this cohort has
                 ended. Get in touch if you need to discuss this with us.
