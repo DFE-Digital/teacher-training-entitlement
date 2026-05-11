@@ -1,6 +1,6 @@
 ### Context
 
-Ticket: https://github.com/DFE-Digital/teacher-training-entitlement-board/issues/XXX
+Fixes DFE-Digital/teacher-training-entitlement-board#XXX
 
 [Why are we making this change?]
 
