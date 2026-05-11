@@ -14,7 +14,7 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :
   describe "single declarations" do
     let(:lead_provider) { create(:lead_provider) }
     let(:type) { "declaration" }
-    let(:application) { create(:application, :accepted, :with_declaration, lead_provider:) }
+    let(:application) { create(:application, :started, :with_declaration, lead_provider:) }
     let(:resource) { application.declarations.first }
     let(:base_response_example) do
       extract_swagger_example(schema: "#/components/schemas/DeclarationResponse", version: :v1)

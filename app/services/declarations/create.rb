@@ -97,13 +97,13 @@ module Declarations
     def application_updateable
       if completed_declaration?
         validate_status_transition(
-          application: @application,
+          application:,
           to: Application::COMPLETED,
           error: :not_completable,
         )
       else
         validate_status_transition(
-          application: @application,
+          application:,
           to: Application::STARTED,
           error: :not_startable,
         )

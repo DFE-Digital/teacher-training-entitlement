@@ -5,7 +5,8 @@ RSpec.describe "update_declaration" do
     subject(:run_task) { Rake::Task["update_declaration:clawback"].invoke(declaration.ecf_id) }
 
     let(:statement) { create(:statement, :next_output_fee) }
-    let(:declaration) { create(:declaration, :paid, lead_provider: statement.lead_provider, cohort: statement.cohort) }
+    let(:application) { create(:application, :started, cohort: statement.cohort, lead_provider: statement.lead_provider) }
+    let(:declaration) { create(:declaration, :paid, application:, lead_provider: statement.lead_provider, cohort: statement.cohort) }
 
     after { Rake::Task["update_declaration:clawback"].reenable }
 
@@ -19,7 +20,8 @@ RSpec.describe "update_declaration" do
     subject(:run_task) { Rake::Task["update_declaration:void"].invoke(declaration.ecf_id) }
 
     let(:statement) { create(:statement, :next_output_fee) }
-    let(:declaration) { create(:declaration, lead_provider: statement.lead_provider, cohort: statement.cohort) }
+    let(:application) { create(:application, :started, cohort: statement.cohort, lead_provider: statement.lead_provider) }
+    let(:declaration) { create(:declaration, application:, lead_provider: statement.lead_provider, cohort: statement.cohort) }
 
     after { Rake::Task["update_declaration:void"].reenable }
 

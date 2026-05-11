@@ -199,7 +199,7 @@ RSpec.describe Declarations::Create, type: :model do
     end
 
     describe "error scenarios" do
-      context "when application already started" do
+      context "when application already completed" do
         before { application.update_column(:status, :completed) }
 
         it { is_expected.to have_error(:application, :not_completable) }
