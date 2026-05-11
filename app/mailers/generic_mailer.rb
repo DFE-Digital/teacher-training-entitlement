@@ -39,6 +39,10 @@ class GenericMailer < ApplicationMailer
     generic_mail(subject: "mailers.provider_rejected")
   end
 
+  def previous_provider
+    generic_mail(subject: "mailers.previous_provider")
+  end
+
 private
 
   def generic_mail(subject:)

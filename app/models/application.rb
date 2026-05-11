@@ -38,6 +38,8 @@ class Application < ApplicationRecord
   has_one :current_application_lead_provider,
           -> { where(current: true) }, class_name: "ApplicationLeadProvider"
   has_one :lead_provider, through: :current_application_lead_provider
+  has_one :previous_application_lead_provider, -> { where(current: false).order(created_at: :desc) }, class_name: "ApplicationLeadProvider"
+  has_one :previous_provider, through: :previous_application_lead_provider, source: :lead_provider
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }

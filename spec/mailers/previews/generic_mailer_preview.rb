@@ -91,4 +91,13 @@ class GenericMailerPreview < ActionMailer::Preview
       ecf_id: "abc-123-def-456",
     ).provider_rejected
   end
+
+  def previous_provider
+    GenericMailer.with(
+      to: "test@example.com",
+      ecf_id: "abcd-1234-efgh-5678-ijkl",
+      course_name: "Teaching in Reception",
+      cohort_date: "Autumn 2026",
+    ).previous_provider
+  end
 end
