@@ -23,6 +23,7 @@
 1. [Data Model](docs/data_model.md)
 1. [Swagger API documentation](docs/swagger.md)
 1. [Qualifications API](docs/qualifications_api.md)
+1. [Disaster Recovery](docs/disaster_recovery.md)
 
 ## Content Editors
 
