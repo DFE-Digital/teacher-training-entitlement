@@ -4,6 +4,7 @@ module Applications
   class Resume
     include ActiveModel::Model
     include ActiveModel::Validations
+    include Validations::StatusTransitionValidation
 
     attr_reader :application
 
@@ -57,10 +58,13 @@ module Applications
     end
 
     def application_resumable
-      old_status = @application.status
-      @application.status = Application::STARTED
-      errors.add(:application, :not_resumable) if @application.invalid?
-      @application.status = old_status
+      return if errors.any?
+
+      validate_status_transition(
+        application: @application,
+        to: Application::STARTED,
+        error: :not_resumable,
+      )
     end
 
     def cohort_exists

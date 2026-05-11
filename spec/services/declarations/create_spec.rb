@@ -96,6 +96,12 @@ RSpec.describe Declarations::Create, type: :model do
     end
 
     describe "error scenarios" do
+      context "when application already started" do
+        before { application.update_column(:status, :started) }
+
+        it { is_expected.to have_error(:application, :not_startable) }
+      end
+
       context "when delivery_partner_id is omitted" do
         let(:delivery_partner_id) { nil }
 
@@ -193,6 +199,12 @@ RSpec.describe Declarations::Create, type: :model do
     end
 
     describe "error scenarios" do
+      context "when application already completed" do
+        before { application.update_column(:status, :completed) }
+
+        it { is_expected.to have_error(:application, :not_completable) }
+      end
+
       context "when application already have a completed declaration" do
         before do
           application.declarations << create(:declaration, :eligible, declaration_type:, application:)

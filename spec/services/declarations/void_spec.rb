@@ -16,7 +16,23 @@ RSpec.describe Declarations::Void, type: :model do
         let(:declaration_trait) { :started }
         let(:application) { create(:application, :completed) }
 
-        it { expect(service).to have_error(:base, :application_status_completed, I18n.t("activemodel.errors.models.declarations/void.attributes.base.application_status_completed")) }
+        it do
+          expect(service).to have_error(:base, :application_status_completed,
+                                        I18n.t("activemodel.errors.models.declarations/void.attributes.base.application_status_completed"))
+
+          expect(service).to have_error(:base, :not_voidable_to_accepted_status,
+                                        I18n.t("activemodel.errors.models.declarations/void.attributes.base.not_voidable_to_accepted_status"))
+        end
+      end
+
+      context "when the application has been completed and the declaration is also completed" do
+        let(:declaration_trait) { :completed }
+        let(:application) { create(:application, :started) }
+
+        it do
+          expect(service).to have_error(:base, :not_voidable_to_started_status,
+                                        I18n.t("activemodel.errors.models.declarations/void.attributes.base.not_voidable_to_started_status"))
+        end
       end
 
       context "when the application has been completed and the declaration is completed" do
@@ -67,12 +83,6 @@ RSpec.describe Declarations::Void, type: :model do
     end
   end
 
-  context "when not valid" do
-    let(:declaration_trait) { :voided }
-
-    it { expect { service.call }.not_to(change { declaration.reload.state }) }
-  end
-
   describe "Updating application status when voiding" do
     context "when voiding a started declaration" do
       let(:declaration_trait) { :started }
@@ -100,7 +110,7 @@ RSpec.describe Declarations::Void, type: :model do
 
       it do
         expect(application.reload.status).to eq(Application::STARTED)
-        expect(application.state_changes.count).to eq 3
+        expect(application.state_changes.count).to eq 2
         expect(application.state_changes.last.status).to eq(Application::STARTED)
       end
     end

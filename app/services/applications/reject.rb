@@ -2,6 +2,7 @@ module Applications
   class Reject
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::StatusTransitionValidation
 
     attribute :application
     attribute :reason_for_rejection
@@ -46,10 +47,14 @@ module Applications
     end
 
     def application_rejectable
-      old_status = application.status
-      application.status = Application::REJECTED
-      errors.add(:application, :not_rejectable) if application.invalid?
-      application.status = old_status
+      return if errors.any?
+
+      validate_status_transition(
+        application:,
+        to: Application::REJECTED,
+        error: :not_rejectable,
+      )
+      errors.add(:application, :not_rejectable) if errors.blank? && application.invalid?
     end
   end
 end

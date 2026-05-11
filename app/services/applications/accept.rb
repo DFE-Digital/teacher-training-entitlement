@@ -4,6 +4,7 @@ module Applications
   class Accept
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include Validations::StatusTransitionValidation
 
     attribute :application
     attribute :funded_place
@@ -13,6 +14,7 @@ module Applications
     validate :not_already_accepted
     validate :cannot_change_from_rejected
     validate :eligible_for_funded_place
+    validate :application_can_be_accepted
 
     def call
       return false unless valid?
@@ -63,6 +65,16 @@ module Applications
       if funded_place && !application.eligible_for_funding
         errors.add(:application, :not_eligible_for_funded_place)
       end
+    end
+
+    def application_can_be_accepted
+      return if errors.any?
+
+      validate_status_transition(
+        application:,
+        to: Application::ACCEPTED,
+        error: :invalid_status_transition,
+      )
     end
 
     def validate_funded_place?

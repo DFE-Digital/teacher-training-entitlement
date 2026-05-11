@@ -4,6 +4,7 @@ module Declarations
   class Clawback
     include ActiveModel::Model
     include ActiveModel::Validations
+    include Applications::Validations::StatusTransitionValidation
 
     def initialize(declaration:)
       @declaration = declaration
@@ -14,6 +15,7 @@ module Declarations
     validate :output_fee_statement_available
     validate :declaration_is_paid
     validate :application_status_not_completed
+    validate :application_updateable
 
     def call
       return unless valid?
@@ -71,6 +73,24 @@ module Declarations
       return if errors.any? || @declaration.paid_state?
 
       errors.add(:base, :must_be_paid)
+    end
+
+    def application_updateable
+      if @declaration.started_declaration_type?
+        validate_status_transition(
+          application: @application,
+          to: Application::ACCEPTED,
+          attribute: :base,
+          error: :not_voidable_to_accepted_status,
+        )
+      else
+        validate_status_transition(
+          application: @application,
+          to: Application::STARTED,
+          attribute: :base,
+          error: :not_voidable_to_started_status,
+        )
+      end
     end
   end
 end

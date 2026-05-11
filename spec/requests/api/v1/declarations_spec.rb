@@ -62,7 +62,8 @@ RSpec.describe "Declaration endpoints", type: :request do
     let(:declaration) { nil }
 
     context "when declaration should be clawback" do
-      let(:declaration) { create(:declaration, :submitted, lead_provider: current_lead_provider) }
+      let(:application) { create(:application, :started, lead_provider: current_lead_provider) }
+      let(:declaration) { create(:declaration, :submitted, application:, lead_provider: current_lead_provider) }
 
       before do
         api_put(void_api_v1_declaration_path(ecf_id: declaration.ecf_id), params:)
@@ -73,7 +74,8 @@ RSpec.describe "Declaration endpoints", type: :request do
 
     context "when declaration should be voided" do
       let(:statement) { create(:statement, :next_output_fee, lead_provider: current_lead_provider) }
-      let(:declaration) { create(:declaration, :paid, cohort: statement.cohort, lead_provider: current_lead_provider) }
+      let(:application) { create(:application, :started, cohort: statement.cohort, lead_provider: current_lead_provider) }
+      let(:declaration) { create(:declaration, :paid, application:, cohort: statement.cohort, lead_provider: current_lead_provider) }
 
       before do
         api_put(void_api_v1_declaration_path(ecf_id: declaration.ecf_id), params:)
