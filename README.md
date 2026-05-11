@@ -15,7 +15,6 @@
 1. [Importing Data](docs/importing_data.md)
     1. [Acquiring New Private Childcare Provider data](docs/acquiring_new_private_childcare_provider_data.md)
     1. [Eligibility Lists](docs/eligibility_lists.md)
-1. [Get an Identity](docs/get_an_identity.md)
 1. [DfE Analytics](docs/dfe_analytics.md)
 1. [Sending emails](docs/sending_emails.md)
 1. [TTE Contracts](docs/TTE_contracts.md)

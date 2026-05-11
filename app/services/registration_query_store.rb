@@ -9,8 +9,8 @@ class RegistrationQueryStore
     store["current_user"] || User.find_by(id: store["current_user_id"])
   end
 
-  def get_an_identity_id
-    current_user.get_an_identity_id
+  def teacher_auth_uid
+    current_user.teacher_auth_uid
   end
 
   def trn_set_via_fallback_verification_question?

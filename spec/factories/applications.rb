@@ -127,11 +127,11 @@ FactoryBot.define do
       user { build(:user, :with_random_name) }
     end
 
-    trait :with_get_an_identity_user do
-      user { create(:user, :with_get_an_identity_id) }
+    trait :with_teacher_auth_user do
+      user { create(:user, :with_teacher_auth_uid) }
     end
 
-    trait :without_get_an_identity_user do
+    trait :without_teacher_auth_user do
       user { create(:user, provider: nil) }
     end
 

@@ -55,7 +55,7 @@ class RegistrationWizardController < PublicPagesController
     session["user_id"] = user.id
     sign_in user
     wizard = RegistrationWizard.new(
-      current_step: :get_an_identity_callback,
+      current_step: :auth_callback,
       store: session["registration_store"],
       params: {},
       request:,

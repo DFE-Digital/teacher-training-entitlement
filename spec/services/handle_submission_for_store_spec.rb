@@ -31,7 +31,6 @@ RSpec.describe HandleSubmissionForStore do
       "ecf_id" => user.ecf_id,
       "trn" => "0012345",
       "full_name" => user.full_name,
-      "get_an_identity_id_synced_to_ecf" => false,
       "provider" => nil,
       "raw_tra_provider_data" => nil,
       "date_of_birth" => 30.years.ago.to_date.to_s,

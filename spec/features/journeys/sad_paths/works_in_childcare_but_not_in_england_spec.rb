@@ -94,7 +94,6 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
                                                              "archived_email" => nil,
                                                              "archived_at" => nil,
                                                              "ecf_id" => latest_application_user.ecf_id,
-                                                             "get_an_identity_id_synced_to_ecf" => false,
                                                              "national_insurance_number" => nil,
                                                              "notify_user_for_future_reg" => false,
                                                              "trn_auto_verified" => false,

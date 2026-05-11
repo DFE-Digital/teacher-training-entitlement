@@ -7,7 +7,7 @@ RSpec.describe FundingEligibility do
       course:,
       inside_catchment:,
       trn: "1234567",
-      get_an_identity_id: SecureRandom.uuid,
+      teacher_auth_uid: SecureRandom.uuid,
       query_store:,
     )
   end
@@ -37,7 +37,7 @@ RSpec.describe FundingEligibility do
 
     context "when previously funded" do
       before do
-        user = build(:user, :with_get_an_identity_id, uid: funding_eligibility.get_an_identity_id)
+        user = build(:user, :with_teacher_auth_uid, uid: funding_eligibility.teacher_auth_uid)
         create(:application, :with_funded_place, :accepted, user:, course:)
       end
 
@@ -185,7 +185,7 @@ RSpec.describe FundingEligibility do
 
     context "when user has an accepted application with funding" do
       before do
-        user = build(:user, :with_get_an_identity_id, uid: funding_eligibility.get_an_identity_id)
+        user = build(:user, :with_teacher_auth_uid, uid: funding_eligibility.teacher_auth_uid)
         create(:application, :with_funded_place, :accepted, user:, course:)
       end
 

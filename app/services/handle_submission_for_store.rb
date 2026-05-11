@@ -95,7 +95,7 @@ private
       institution: institution_from_store,
       inside_catchment: inside_catchment?,
       trn: query_store.trn,
-      get_an_identity_id: query_store.get_an_identity_id,
+      teacher_auth_uid: query_store.teacher_auth_uid,
       query_store:,
     )
   end

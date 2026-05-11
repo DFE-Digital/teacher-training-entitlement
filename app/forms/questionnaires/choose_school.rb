@@ -84,7 +84,7 @@ module Questionnaires
         institution: selected_institution,
         inside_catchment: wizard.query_store.inside_catchment?,
         trn: wizard.query_store.trn,
-        get_an_identity_id: wizard.query_store.get_an_identity_id,
+        teacher_auth_uid: wizard.query_store.teacher_auth_uid,
         query_store: wizard.query_store,
       )
     end

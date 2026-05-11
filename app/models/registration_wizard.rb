@@ -9,11 +9,8 @@ class RegistrationWizard
 
   Answer = Struct.new(:key, :value, :change_step)
 
-  # INFO:
-  # get_an_identity_callback is only there to support the fake development_login mechanism
-  # remove once we migrate to Teacher Auth/OneLogin
   VALID_REGISTRATION_STEPS = %i[
-    get_an_identity_callback
+    auth_callback
     start
     closed
     course_start_date
@@ -122,7 +119,7 @@ private
 
   delegate :course,
            :formatted_date_of_birth,
-           :get_an_identity_id,
+           :teacher_auth_uid,
            :has_ofsted_urn?,
            :inside_catchment?,
            :kind_of_nursery_private?,
@@ -161,7 +158,7 @@ private
       institution: institution_from_store,
       inside_catchment: inside_catchment?,
       trn:,
-      get_an_identity_id:,
+      teacher_auth_uid:,
       query_store:,
     )
   end

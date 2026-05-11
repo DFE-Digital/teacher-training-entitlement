@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.feature "Ineligible setting", :with_default_lead_provider, :with_default_schedules, type: :feature do
   include ApplicationHelper
 
-  let(:user) { create(:user, :with_get_an_identity_id) }
+  let(:user) { create(:user, :with_teacher_auth_uid) }
   let(:lead_provider) { LeadProvider.first }
   let(:course) { Course.find_by(identifier: "tte-early-years") }
 

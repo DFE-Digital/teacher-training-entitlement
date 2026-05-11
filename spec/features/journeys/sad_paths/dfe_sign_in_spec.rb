@@ -6,7 +6,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
   let(:user) { User.find_by(email: "user@example.com") }
 
   context "when there is an existing user with the provided DfE Identity UID" do
-    let(:existing_user_with_dfe_id) { create(:user, :with_get_an_identity_id, email: "old@example.com", full_name: "old name") }
+    let(:existing_user_with_dfe_id) { create(:user, :with_teacher_auth_uid, email: "old@example.com", full_name: "old name") }
     let!(:application_for_user_with_dfe_id) { create(:application, :accepted, user: existing_user_with_dfe_id, course: create(:course, :leading_teaching)) }
 
     context "and the email in DfE Identity has changed" do
@@ -77,10 +77,10 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       end
 
       let(:user_with_same_email_different_dfe_uid) do
-        create(:user, :with_get_an_identity_id, email: "user@example.com", full_name: "old name")
+        create(:user, :with_teacher_auth_uid, email: "user@example.com", full_name: "old name")
       end
       let!(:application_for_user_with_same_email_different_dfe_uid) { create(:application, :accepted, user: user_with_same_email_different_dfe_uid, course: create(:course, :leading_teaching)) }
-      let!(:existing_user_with_dfe_id) { create(:user, :with_get_an_identity_id, full_name: "old name", email: "old@example.com", provider: "teacher_auth") }
+      let!(:existing_user_with_dfe_id) { create(:user, :with_teacher_auth_uid, full_name: "old name", email: "old@example.com", provider: "teacher_auth") }
 
       scenario "the clashing user account should be archived" do
         navigate_to_page(path: "/", submit_form: false) do
@@ -102,7 +102,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
     end
 
     context "and the account is archived and there is a non-archived account with the same email" do
-      let!(:existing_user_with_dfe_id) { create(:user, :archived, :with_get_an_identity_id, email: "archived-user@example.com") }
+      let!(:existing_user_with_dfe_id) { create(:user, :archived, :with_teacher_auth_uid, email: "archived-user@example.com") }
       let!(:application_for_user) { create(:application, :accepted, user: user, course: create(:course, :leading_teaching)) }
       let(:user) { create(:user, email: "user@example.com") }
 
@@ -148,7 +148,7 @@ RSpec.feature "DfE sign in", :npq, type: :feature do
       end
 
       context "and the clashing user has a different DfE Identity UID" do # TODO: implement this
-        let(:clashing_user) { create(:user, :with_get_an_identity_id, email: "user@example.com") }
+        let(:clashing_user) { create(:user, :with_teacher_auth_uid, email: "user@example.com") }
         let!(:application_for_clashing_user) { create(:application, :accepted, user: clashing_user, course: create(:course, :leading_teaching)) }
         let(:uid) { SecureRandom.uuid }
 

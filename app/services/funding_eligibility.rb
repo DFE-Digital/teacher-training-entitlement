@@ -21,24 +21,23 @@ class FundingEligibility
   attr_reader :institution,
               :course,
               :trn,
-              :get_an_identity_id,
+              :teacher_auth_uid,
               :query_store
 
   delegate :work_setting,
            to: :query_store
 
-  # NOTE: get_an_identity_id is a temporary parameter while we migrate to Teacher Auth/OneLogin
   def initialize(institution:,
                  course:,
                  inside_catchment:,
                  trn:,
-                 get_an_identity_id:,
+                 teacher_auth_uid:,
                  query_store:,
                  **)
     @institution = institution
     @course = course
     @inside_catchment = inside_catchment
-    @get_an_identity_id = get_an_identity_id
+    @teacher_auth_uid = teacher_auth_uid
     @trn = trn
     @query_store = query_store
   end
@@ -89,13 +88,13 @@ private
   end
 
   def users
-    get_an_identity_id_users.or(trn_users).distinct
+    teacher_auth_uid_users.or(trn_users).distinct
   end
 
-  def get_an_identity_id_users
-    return User.none if get_an_identity_id.blank?
+  def teacher_auth_uid_users
+    return User.none if teacher_auth_uid.blank?
 
-    User.with_get_an_identity_id.where(uid: get_an_identity_id)
+    User.with_teacher_auth_uid.where(uid: teacher_auth_uid)
   end
 
   def trn_users

@@ -217,7 +217,6 @@ shared:
     - feature_flag_id
     - provider
     - uid
-    - get_an_identity_id_synced_to_ecf
     - updated_from_tra_at
     - trn_lookup_status
     - notify_user_for_future_reg
