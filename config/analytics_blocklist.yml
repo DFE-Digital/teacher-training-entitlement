@@ -122,6 +122,8 @@
   - updated_at
   :application_events:
   - type
+  :lead_providers:
+  - email
   :application_lead_providers:
   - id
   - application_id
