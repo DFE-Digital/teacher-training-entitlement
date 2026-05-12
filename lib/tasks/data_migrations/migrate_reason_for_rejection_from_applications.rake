@@ -1,6 +1,6 @@
 namespace :data_migrations do
   desc "Copy application reason_for_rejection values into rejected state change metadata"
-  task remove_reason_for_rejection_from_applications: :environment do
+  task migrate_reason_for_rejection_from_applications: :environment do
     unless Application.column_names.include?("reason_for_rejection")
       puts "Skipping: applications.reason_for_rejection does not exist"
       next
