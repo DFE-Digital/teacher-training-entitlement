@@ -53,6 +53,11 @@ Rails.application.configure do
 
   config.middleware.use RackSessionAccess::Middleware
 
+  # ActiveRecord encryption keys for testing
+  config.active_record.encryption.primary_key = "test-primary-key-32-bytes-long!"
+  config.active_record.encryption.deterministic_key = "test-deterministic-key-32-bytes!"
+  config.active_record.encryption.key_derivation_salt = "test-key-derivation-salt-value!"
+
   config.service_base_url = "http://test.tte.education.gov.uk"
   config.sign_in_link = "http://test.sign_in.education.gov.uk"
   config.feedback_link = "http://test.feedback.education.gov.uk"

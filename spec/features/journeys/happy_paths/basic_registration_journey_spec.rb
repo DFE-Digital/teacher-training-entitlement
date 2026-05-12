@@ -114,6 +114,8 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
                                                              "notify_user_for_future_reg" => false,
                                                              "preferred_name" => nil,
                                                              "raw_tra_provider_data" => nil,
+                                                             "refresh_token" => nil,
+                                                             "refresh_token_updated_at" => nil,
                                                              "trn_auto_verified" => true,
                                                              "trn_lookup_status" => nil,
                                                              "trn_verified" => true,

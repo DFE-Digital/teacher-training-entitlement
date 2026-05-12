@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  encrypts :refresh_token
+
   # TO DO: remove after succesful deploy
   self.ignored_columns += %w[get_an_identity_id_synced_to_ecf]
 
@@ -10,11 +12,13 @@ class User < ApplicationRecord
     notify_user_for_future_reg
     email_updates_status
     email_updates_unsubscribe_key
+    refresh_token
+    refresh_token_updated_at
   ].freeze
 
   devise :omniauthable, omniauth_providers: [Omniauth::Strategies::TeacherAuth::NAME]
 
-  has_paper_trail meta: { note: :version_note }, ignore: %i[raw_tra_provider_data updated_at feature_flag_id]
+  has_paper_trail meta: { note: :version_note }, ignore: %i[raw_tra_provider_data updated_at feature_flag_id refresh_token refresh_token_updated_at]
 
   has_many :applications, dependent: :destroy
   has_many :declarations, through: :applications

@@ -580,6 +580,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.string "preferred_name"
     t.string "provider"
     t.jsonb "raw_tra_provider_data"
+    t.text "refresh_token"
+    t.datetime "refresh_token_updated_at"
     t.datetime "significantly_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "trn"
     t.boolean "trn_auto_verified", default: false
@@ -592,6 +594,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["one_login_id"], name: "index_users_on_one_login_id", unique: true
     t.index ["provider"], name: "index_users_on_provider"
+    t.index ["refresh_token_updated_at"], name: "index_users_on_refresh_token_updated_at"
     t.index ["significantly_updated_at"], name: "index_users_on_significantly_updated_at"
     t.index ["trn"], name: "index_users_on_trn"
   end
