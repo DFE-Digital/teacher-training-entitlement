@@ -144,7 +144,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::Reject }
     let(:action) { :call }
-    let(:attributes) { { reason_for_rejection: Application.reason_for_rejections[:rejected_by_provider] } }
+    let(:attributes) { { reason: "rejected-by-provider" } }
     let(:service_args) { attributes.merge(application: resource) }
     let(:service_methods) { { application: resource } }
 

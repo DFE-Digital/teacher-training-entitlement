@@ -128,10 +128,8 @@ RSpec.describe HandleSubmissionForStore do
           "work_setting" => "a_school",
           "raw_application_data" => store.except("current_user_id"),
           "referred_by_return_to_teaching_adviser" => "no",
-          "accepted_at" => nil,
           "on_submission_trn" => "1234321",
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -191,10 +189,8 @@ RSpec.describe HandleSubmissionForStore do
           "work_setting" => "early_years_or_childcare",
           "raw_application_data" => store.except("current_user_id"),
           "referred_by_return_to_teaching_adviser" => "no",
-          "accepted_at" => nil,
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -276,10 +272,8 @@ RSpec.describe HandleSubmissionForStore do
           "work_setting" => "early_years_or_childcare",
           "raw_application_data" => store.except("current_user_id"),
           "referred_by_return_to_teaching_adviser" => "no",
-          "accepted_at" => nil,
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -332,10 +326,8 @@ RSpec.describe HandleSubmissionForStore do
           "work_setting" => "early_years_or_childcare",
           "raw_application_data" => store.except("current_user_id"),
           "referred_by_return_to_teaching_adviser" => "no",
-          "accepted_at" => nil,
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end
@@ -398,10 +390,8 @@ RSpec.describe HandleSubmissionForStore do
           "work_setting" => "early_years_or_childcare",
           "raw_application_data" => store.except("current_user_id"),
           "referred_by_return_to_teaching_adviser" => "no",
-          "accepted_at" => nil,
           "on_submission_trn" => nil,
           "review_status" => nil,
-          "reason_for_rejection" => nil,
         })
       end
     end

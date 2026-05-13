@@ -321,7 +321,6 @@ module ValidTestDataGenerators
 
     def create_app(course_cohort:, status:, eligible_for_funding:, user:)
       funded_place = status == Application::PENDING ? nil : eligible_for_funding
-      accepted_at = status == Application::PENDING ? nil : course_cohort.cohort.registration_starts_at
       institution = eligible_for_funding ? institutions_eligible : institutions_ineligible
       funding_eligiblity_status_code = eligible_for_funding ? nil : :ineligible_setting
       funding_choice = (eligible_for_funding ? %w[school] : Application.funding_choices.values - %w[school]).sample
@@ -333,7 +332,6 @@ module ValidTestDataGenerators
         institution:,
         course_cohort:,
         status:,
-        reason_for_rejection: (status == Application::REJECTED ? Application.reason_for_rejections[:rejected_by_provider] : nil),
         funded_place:,
         eligible_for_funding:,
         funding_eligiblity_status_code:,
@@ -344,7 +342,6 @@ module ValidTestDataGenerators
         funding_choice:,
         works_in_school: institution.school?,
         works_in_childcare: institution.private_childcare_provider?,
-        accepted_at:,
       )
       application
     end

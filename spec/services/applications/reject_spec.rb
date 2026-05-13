@@ -1,17 +1,15 @@
 require "rails_helper"
 
 RSpec.describe Applications::Reject, type: :model do
-  include ActiveJob::TestHelper
+  subject(:service) { described_class.new(application:, reason:) }
 
-  subject(:service) { described_class.new(application:, reason_for_rejection:) }
-
-  let(:reason_for_rejection) { Application.reason_for_rejections[:rejected_by_provider] }
+  let(:reason) { Applications::Reject::REJECTION_REASONS.last }
 
   describe "validations" do
     let(:application) { build(:application, :pending) }
 
     it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
-    it { is_expected.to validate_presence_of(:reason_for_rejection).with_message("The reason_for_rejection cannot be blank.") }
+    it { is_expected.to validate_presence_of(:reason) }
 
     context "when application is rejected" do
       let(:application) { build(:application, :rejected) }
@@ -34,25 +32,20 @@ RSpec.describe Applications::Reject, type: :model do
     end
   end
 
-  describe ".reject" do
+  describe "#call" do
     let(:application) { create(:application, :pending) }
 
     it "marks the status as rejected" do
       expect { service.call }.to change { application.reload.status }.from(Application::PENDING).to(Application::REJECTED)
     end
 
-    it "reloads application after action" do
-      allow(service.application).to receive(:reload)
+    it "stores the reason in state_change" do
       service.call
-      expect(service.application).to have_received(:reload)
-    end
-
-    it "sets the reason for rejection" do
-      expect { service.call }.to change { application.reload.reason_for_rejection }.from(nil).to(reason_for_rejection)
+      expect(application.reload.reason_for_rejection).to eq(reason)
     end
 
     context "when reason is rejected_by_provider" do
-      let(:reason_for_rejection) { Application.reason_for_rejections[:rejected_by_provider] }
+      let(:reason) { "rejected-by-provider" }
 
       it "enqueues a provider rejection email" do
         service.call
@@ -61,11 +54,11 @@ RSpec.describe Applications::Reject, type: :model do
     end
 
     context "when reason is not rejected_by_provider" do
-      let(:reason_for_rejection) { Application.reason_for_rejections[:registration_expired] }
+      let(:reason) { "registration-expired" }
 
       it "does not enqueue a provider rejection email" do
         service.call
-        expect(ActionMailer::MailDeliveryJob).not_to have_been_enqueued.with("GenericMailer", "provider_rejected", "deliver_now", anything)
+        expect(ActionMailer::MailDeliveryJob).not_to have_been_enqueued.with("GenericMailer", "registration-expired", "deliver_now", anything)
       end
     end
   end

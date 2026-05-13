@@ -33,6 +33,7 @@ class Application < ApplicationRecord
   has_many :application_lead_providers
 
   has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
+  has_one :rejected_event, -> { where(event: REJECTED).order(created_at: :desc) }, class_name: "StateChange"
   has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"
   has_one :current_application_lead_provider,
           -> { where(current: true) }, class_name: "ApplicationLeadProvider"
@@ -108,12 +109,6 @@ class Application < ApplicationRecord
     employer: "employer",
   }, suffix: true
 
-  enum :reason_for_rejection, {
-    registration_expired: "registration_expired",
-    rejected_by_provider: "rejected_by_provider",
-    other_application_in_this_cohort_accepted: "other_application_in_this_cohort_accepted",
-  }, suffix: true
-
   enum :review_status, {
     "Needs review" => "needs_review",
     "Awaiting information" => "awaiting_information",
@@ -167,6 +162,12 @@ class Application < ApplicationRecord
     return nil unless withdrawn_status?
 
     withdrawn_event&.created_at
+  end
+
+  def reason_for_rejection
+    return nil unless rejected_status?
+
+    rejected_event&.reason
   end
 
   def previously_funded?
@@ -247,13 +248,12 @@ class Application < ApplicationRecord
     declarations.completed.billable_or_voidable.latest_first.first&.participant_outcomes&.latest&.state
   end
 
-  def lookup_state_change_reason(changed_at:, changed_status:)
-    variance = 0.5
-    state_changes.find { |state_change|
-      state_change.created_at >= changed_at - variance &&
-        state_change.created_at <= changed_at + variance &&
-        state_change.status == changed_status
-    }&.reason
+  def transition_status!(status, reason: nil, metadata: {}, **attributes)
+    metadata.merge!(reason:) if reason.present?
+    self.class.transaction do
+      state_changes.create!(event: status, lead_provider:, metadata:)
+      update!(attributes.merge(status:))
+    end
   end
 
 private

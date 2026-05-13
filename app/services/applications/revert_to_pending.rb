@@ -20,14 +20,8 @@ module Applications
       return true if change_status_to_pending == "no"
       return false if invalid?
 
-      Application.transaction do
-        application.update_columns(status: Application::PENDING, funded_place: nil)
-        application.state_changes.create!(
-          event: Application::PENDING,
-          lead_provider: application.lead_provider,
-          metadata: { reason: "reverted_to_pending" },
-        )
-      end
+      application.admin_user = admin_user
+      application.transition_status!(Application::PENDING, reason: "reverted_to_pending", funded_place: nil)
 
       true
     end

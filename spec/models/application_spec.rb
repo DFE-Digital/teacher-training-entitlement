@@ -11,6 +11,30 @@ RSpec.describe Application do
     it { is_expected.to have_many(:declarations) }
   end
 
+  describe "#transition_status!" do
+    subject(:application) { create(:application, :started) }
+
+    it "updates the status and records a state change with the reason" do
+      expect {
+        application.transition_status!(Application::DEFERRED, reason: "other")
+      }.to change { application.state_changes.count }.by(1)
+
+      expect(application).to be_deferred_status
+      expect(application.state_changes.last.status).to eq(Application::DEFERRED)
+      expect(application.state_changes.last.reason).to eq("other")
+    end
+
+    it "does not leak the reason into later state changes" do
+      application.transition_status!(Application::DEFERRED, reason: "other")
+
+      expect {
+        application.transition_status!(Application::STARTED)
+      }.to change { application.state_changes.count }.by(1)
+
+      expect(application.state_changes.last.reason).to be_nil
+    end
+  end
+
   describe "paper_trail" do
     subject { create(:application, status: Application::PENDING) }
 
@@ -695,32 +719,19 @@ RSpec.describe Application do
     end
   end
 
-  describe "#lookup_state_change_reason" do
-    subject(:lookup_state_change_reason) { application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "deferred") }
+  describe "#reason_for_rejection" do
+    subject { application.reason_for_rejection }
 
-    before do
-      freeze_time
-      create(:state_change, :deferred, application:, created_at: application.created_at + 0.5)
+    context "when application is not rejected" do
+      let(:application) { create(:application, :accepted) }
+
+      it { is_expected.to be_nil }
     end
 
-    it "returns the reason for the state change" do
-      expect(lookup_state_change_reason).to eq("other")
-    end
+    context "when application is rejected" do
+      let(:application) { create(:application, :rejected, :with_state_change) }
 
-    context "when there is more than one state change within the time range" do
-      before do
-        create(:state_change, :deferred, application:, created_at: application.created_at + 0.4, metadata: { reason: "career-break" })
-      end
-
-      it "returns the most recent state change within the time range" do
-        expect(lookup_state_change_reason).to eq("other")
-      end
-    end
-
-    context "when no application event matches the criteria" do
-      it "returns nil" do
-        expect(application.lookup_state_change_reason(changed_at: Time.zone.now, changed_status: "active")).to be_nil
-      end
+      it { is_expected.to eq("rejected-by-provider") }
     end
   end
 

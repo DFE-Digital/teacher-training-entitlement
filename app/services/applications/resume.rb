@@ -25,14 +25,7 @@ module Applications
     def call
       return if invalid?
 
-      Application.transaction do
-        @application.state_changes.create!(
-          event: Application::STARTED,
-          metadata: { reason: @reason }.compact,
-        )
-        @application.update!(status: Application::STARTED,
-                             course_cohort: @course_cohort)
-      end
+      @application.transition_status!(Application::STARTED, course_cohort: @course_cohort)
     end
 
   private

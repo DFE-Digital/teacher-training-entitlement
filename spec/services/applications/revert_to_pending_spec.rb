@@ -2,11 +2,7 @@ require "rails_helper"
 
 RSpec.describe Applications::RevertToPending, type: :model do
   let(:admin_user) { create(:admin) }
-  let :application do
-    create(:application, :accepted, :without_funded_place) do |application|
-      create(:state_change, application:)
-    end
-  end
+  let(:application) { create(:application, :accepted, :without_funded_place) }
 
   subject(:instance) { described_class.new(application:, admin_user:) }
 
@@ -76,9 +72,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
 
       it "creates a pending state change event" do
         expect { instance.revert }
-          .to change { application.state_changes.count }
-                     .from(1)
-                     .to(2)
+          .to change { application.state_changes.count }.by(1)
         expect(application.state_changes.last.event).to eq(Application::PENDING)
       end
     end
@@ -87,7 +81,6 @@ RSpec.describe Applications::RevertToPending, type: :model do
       let :application do
         create(:application, :eligible_for_funded_place).tap do |application|
           create(:declaration, :voided, application:)
-          create(:state_change, application:)
         end
       end
 
@@ -118,7 +111,6 @@ RSpec.describe Applications::RevertToPending, type: :model do
       let :application do
         create(:application, :pending, :with_funded_place).tap do |application|
           create(:declaration, :voided, application:)
-          create(:state_change, application:)
         end
       end
 

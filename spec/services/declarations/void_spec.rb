@@ -87,31 +87,25 @@ RSpec.describe Declarations::Void, type: :model do
     context "when voiding a started declaration" do
       let(:declaration_trait) { :started }
 
-      before do
-        create(:state_change, :accepted, application:)
-        subject.call
-      end
+      it "creates exactly one state change" do
+        expect { subject.call }.to change { application.state_changes.count }.by(1)
 
-      it do
         expect(application.reload.status).to eq(Application::ACCEPTED)
-        expect(application.state_changes.count).to eq 2
         expect(application.state_changes.last.status).to eq(Application::ACCEPTED)
+        expect(application.state_changes.last.reason).to eq("started declaration voided")
       end
     end
 
     context "when voiding a completed declaration" do
       let(:declaration_trait) { :completed }
+      let(:application) { create(:application, :completed) }
 
-      before do
-        create(:state_change, :accepted, application:)
-        create(:state_change, :started, application:)
-        subject.call
-      end
+      it "creates exactly one state change" do
+        expect { subject.call }.to change { application.state_changes.count }.by(1)
 
-      it do
         expect(application.reload.status).to eq(Application::STARTED)
-        expect(application.state_changes.count).to eq 2
         expect(application.state_changes.last.status).to eq(Application::STARTED)
+        expect(application.state_changes.last.reason).to eq("completed declaration voided")
       end
     end
   end

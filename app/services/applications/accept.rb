@@ -19,11 +19,7 @@ module Applications
     def call
       return false unless valid?
 
-      ApplicationRecord.transaction do
-        accept_application!
-        create_application_event!
-      end
-
+      accept_application!
       application.reload
 
       true
@@ -46,16 +42,10 @@ module Applications
     end
 
     def accept_application!
-      opts = {
-        status: Application::ACCEPTED,
-        accepted_at: Time.zone.now,
-      }
+      opts = { status: Application::ACCEPTED }
+      opts[:funded_place] = funded_place if cohort.funding_cap?
 
-      if cohort.funding_cap?
-        opts[:funded_place] = funded_place
-      end
-
-      application.update!(opts)
+      application.transition_status!(Application::ACCEPTED, **opts)
     end
 
     def eligible_for_funded_place
@@ -79,13 +69,6 @@ module Applications
 
     def validate_funded_place?
       errors.blank? && cohort.funding_cap?
-    end
-
-    def create_application_event!
-      application.state_changes.create!(
-        event: Application::ACCEPTED,
-        lead_provider:,
-      )
     end
   end
 end

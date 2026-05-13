@@ -153,11 +153,10 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       end
 
       describe "reason_for_rejection serialization" do
-        let(:reason_for_rejection) { Application.reason_for_rejections[:registration_expired] }
-        let(:application) { build(:application, :rejected, reason_for_rejection:) }
+        let(:application) { create(:application, :rejected, :with_state_change) }
 
         it "serializes the `reason_for_rejection`" do
-          expect(attributes["reason_for_rejection"]).to eq(reason_for_rejection)
+          expect(attributes["reason_for_rejection"]).to eq("rejected-by-provider")
         end
       end
     end

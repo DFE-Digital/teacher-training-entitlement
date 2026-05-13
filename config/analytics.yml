@@ -201,10 +201,8 @@ shared:
     - notes
     - funded_place
     - referred_by_return_to_teaching_adviser
-    - accepted_at
     - on_submission_trn
     - review_status
-    - reason_for_rejection
   :users:
     - id
     - created_at

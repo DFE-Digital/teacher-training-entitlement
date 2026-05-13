@@ -4,11 +4,17 @@ module Applications
     include ActiveModel::Attributes
     include Validations::StatusTransitionValidation
 
+    REJECTION_REASONS = %w[
+      registration-expired
+      rejected-by-provider
+      other-application-in-this-cohort-accepted
+    ].freeze
+
     attribute :application
-    attribute :reason_for_rejection
+    attribute :reason
 
     validates :application, presence: true
-    validates :reason_for_rejection, presence: true
+    validates :reason, presence: true, inclusion: { in: REJECTION_REASONS }
     validate :application_already_accepted, if: -> { application }
     validate :application_already_rejected, if: -> { application }
     validate :application_rejectable, if: -> { application }
@@ -16,15 +22,14 @@ module Applications
     def call
       return false unless valid?
 
-      application.update!(status: Application::REJECTED, reason_for_rejection:)
-      application.reload
+      application.transition_status!(Application::REJECTED, reason:)
 
-      send_rejection_email if reason_for_rejection == Application.reason_for_rejections[:rejected_by_provider]
+      send_provider_rejected_email if reason == "rejected-by-provider"
 
       true
     end
 
-    def send_rejection_email
+    def send_provider_rejected_email
       GenericMailer.with(
         to: application.user.email,
         full_name: application.user.full_name,

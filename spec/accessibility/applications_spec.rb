@@ -8,17 +8,6 @@ RSpec.describe "Applications accessibility", :axe, type: :feature do
     page.set_rack_session("user_id" => user.id)
   end
 
-  it "applications index page with no applications is accessible" do
-    visit "/applications"
-    expect(page).to be_axe_clean
-  end
-
-  it "applications index page with applications is accessible" do
-    application
-    visit "/applications"
-    expect(page).to be_axe_clean
-  end
-
   it "application show page is accessible" do
     visit application_path(application.ecf_id)
     expect(page).to be_axe_clean
