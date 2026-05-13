@@ -1,9 +1,23 @@
+^ Department for Education
+
 Application ID: <%= params[:ecf_id] %>
 
-For <%= params[:course_name] %> starting in <%= params[:cohort_date] %> as a new provider.
+# Participant is no longer registered with you
 
-# Get more information
-Email continuing-professional-development@education.gov.uk
+Dear <%= params[:provider_name] %>
+
+A participant has changed their registration to a different provider and is no longer registered with you:
+
+^ ## Participant details
+^ *Course name: <%= params[:course_name] %>
+^ *TRN: <%= params[:participant_trn] %>
+^ *Participant name: <%= params[:participant_full_name] %>
+^ *Date registration changed: <%= params[:change_date] %>
+
+# What happens next
+
+You need to stop processing their original registration. Whe have updated the participant's details.
 
 Regards,
+
 The Teacher Continuing Professional Development Team

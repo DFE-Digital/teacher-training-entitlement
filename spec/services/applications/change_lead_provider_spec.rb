@@ -85,8 +85,11 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
       let(:email_attrs) do
         {
           to: old_provider.email,
+          provider_name: old_provider.name,
           course_name: application.course.name,
-          cohort_date: application.cohort.name,
+          participant_trn: application.user.trn,
+          particitpant_name: application.user.full_name,
+          change_date: application.previous_application_lead_provider&.updated_at&.to_fs(:govuk_short),
           ecf_id: application.ecf_id,
         }
       end
