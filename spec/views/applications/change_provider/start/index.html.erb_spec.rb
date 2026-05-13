@@ -12,7 +12,7 @@ RSpec.describe "applications/change_provider/start/index.html.erb", type: :view 
     view.define_singleton_method(:application) { current_application }
   end
 
-  context "when the application has not been pending" do
+  context "when the application is pending" do
     let(:application_status) { :pending }
 
     it "renders the change provider form" do
@@ -23,7 +23,7 @@ RSpec.describe "applications/change_provider/start/index.html.erb", type: :view 
     end
   end
 
-  context "when the application has not been rejected" do
+  context "when the application is rejected" do
     let(:application_status) { :rejected }
 
     it "renders the change provider form" do
