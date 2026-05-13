@@ -85,6 +85,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
       end
 
       it "serializes the `enrolments`", :freeze_time do
+        accepted_event = application.state_changes.find_by(event: Application::ACCEPTED)
         expect(attributes["enrolments"]).to eq([
           {
             email: participant.email,

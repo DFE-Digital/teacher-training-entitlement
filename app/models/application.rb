@@ -249,8 +249,9 @@ class Application < ApplicationRecord
   end
 
   def transition_status!(status, reason: nil, metadata: {}, **attributes)
+    metadata.merge!(reason:) if reason.present?
     self.class.transaction do
-      state_changes.create!(event: status, lead_provider:, metadata: metadata.merge(reason:))
+      state_changes.create!(event: status, lead_provider:, metadata:)
       update!(attributes.merge(status:))
     end
   end
