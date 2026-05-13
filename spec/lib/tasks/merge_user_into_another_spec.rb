@@ -2,11 +2,11 @@ require "rails_helper"
 
 RSpec.describe "merge_user_into_another" do
   let(:merge_and_archive_service) { service_double }
-  let(:user_to_merge) { create(:user, :with_teacher_auth_uid) }
+  let(:user_to_merge) { create(:user, :with_one_login_id) }
   let(:user_to_keep) { create(:user) }
   let(:service_double) { instance_double(Users::MergeAndArchive) }
 
-  before { allow(Users::MergeAndArchive).to receive(:new).with(user_to_merge:, user_to_keep:, set_uid: true, logger: Rails.logger) { merge_and_archive_service } }
+  before { allow(Users::MergeAndArchive).to receive(:new).with(user_to_merge:, user_to_keep:, set_one_login_id: true, logger: Rails.logger) { merge_and_archive_service } }
   after { Rake::Task["merge_user_into_another"].reenable }
 
   subject(:run_task) { Rake::Task["merge_user_into_another"].invoke(user_to_merge.ecf_id, user_to_keep.ecf_id, dry_run) }

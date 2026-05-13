@@ -138,7 +138,7 @@ RSpec.feature "Applications in review", :npq, type: :feature do
   scenario "viewing an application" do
     allow(API::ApplicationSerializer).to receive(:render_as_hash).and_return(serialized_application)
     application = application_with_funding_decision.reload
-    application.user.update! uid: SecureRandom.uuid
+    application.user.update! one_login_id: SecureRandom.uuid
 
     within("tr", text: application.user.full_name) do
       click_link("View")

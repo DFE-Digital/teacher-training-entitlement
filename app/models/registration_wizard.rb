@@ -119,14 +119,12 @@ private
 
   delegate :course,
            :formatted_date_of_birth,
-           :teacher_auth_uid,
            :has_ofsted_urn?,
            :inside_catchment?,
            :kind_of_nursery_private?,
            :kind_of_nursery_public?,
            :lead_provider,
            :teacher_catchment_humanized,
-           :trn,
            :trn_set_via_fallback_verification_question?,
            :works_in_another_setting?,
            :works_in_childcare?,
@@ -157,8 +155,6 @@ private
       course:,
       institution: institution_from_store,
       inside_catchment: inside_catchment?,
-      trn:,
-      teacher_auth_uid:,
       query_store:,
     )
   end

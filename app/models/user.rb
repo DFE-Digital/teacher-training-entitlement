@@ -28,17 +28,12 @@ class User < ApplicationRecord
             uniqueness: true,
             notify_email: true
 
-  validates :uid, uniqueness: { allow_blank: true }
+  validates :one_login_id, uniqueness: { allow_blank: true }
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   after_commit :touch_significantly_updated_at
 
   scope :admins, -> { where(admin: true) }
-
-  scope :with_teacher_auth_uid, lambda {
-    where.not(uid: nil)
-         .where(provider: Omniauth::Strategies::TeacherAuth::NAME.to_s)
-  }
 
   EMAIL_UPDATES_STATES = %i[senco other_npq].freeze
   EMAIL_UPDATES_ALL_STATES = [:empty] + EMAIL_UPDATES_STATES
@@ -52,18 +47,6 @@ class User < ApplicationRecord
       .first
       &.participant_outcomes
       &.latest
-  end
-
-  def self.find_by_teacher_auth_uid(teacher_auth_uid)
-    with_teacher_auth_uid.find_by(uid: teacher_auth_uid)
-  end
-
-  def teacher_auth_provider?
-    provider == Omniauth::Strategies::TeacherAuth::NAME.to_s
-  end
-
-  def teacher_auth_uid
-    uid if teacher_auth_provider?
   end
 
   def flipper_id

@@ -576,6 +576,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.text "full_name"
     t.text "national_insurance_number"
     t.boolean "notify_user_for_future_reg", default: false
+    t.string "one_login_id"
     t.string "preferred_name"
     t.string "provider"
     t.jsonb "raw_tra_provider_data"
@@ -590,10 +591,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.index ["created_at"], name: "index_users_on_created_at"
     t.index ["ecf_id"], name: "index_users_on_ecf_id", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["one_login_id"], name: "index_users_on_one_login_id", unique: true
     t.index ["provider"], name: "index_users_on_provider"
     t.index ["significantly_updated_at"], name: "index_users_on_significantly_updated_at"
     t.index ["trn"], name: "index_users_on_trn"
-    t.index ["one_login_id"], name: "index_users_on_one_login_id", unique: true
   end
 
   create_table "versions", force: :cascade do |t|

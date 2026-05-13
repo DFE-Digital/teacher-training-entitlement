@@ -79,7 +79,7 @@ module ValidTestDataGenerators
 
     def create_user
       FactoryBot.create(:user,
-                        :with_teacher_auth_uid,
+                        :with_one_login_id,
                         :with_random_name,
                         date_of_birth: Date.new(1990, 1, 1),
                         trn: Faker::Number.unique.number(digits: 7),

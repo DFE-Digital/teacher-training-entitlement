@@ -34,7 +34,7 @@ RSpec.describe HandleSubmissionForStore do
       "provider" => nil,
       "raw_tra_provider_data" => nil,
       "date_of_birth" => 30.years.ago.to_date.to_s,
-      "uid" => nil,
+      "one_login_id" => nil,
       "active_alert" => false,
       "archived_email" => nil,
       "archived_at" => nil,

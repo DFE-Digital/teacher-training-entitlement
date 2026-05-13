@@ -27,16 +27,16 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     })
   end
 
-  before { create(:user, trn:, trn_verified: true, archived_at: 1.day.ago) }
+  before { create(:user, trn:, trn_verified: true, archived_at: 1.day.ago) if trn.present? }
 
   context "when the TRN matches a verified TRN on one user" do
     let(:user) { create(:user, trn:, trn_verified: true) }
 
     before { user }
 
-    it "sets the uid and provider on the user" do
+    it "sets the one_login_id and provider on the user" do
       make_request
-      expect(user.reload).to have_attributes(uid:, provider: "teacher_auth")
+      expect(user.reload).to have_attributes(one_login_id: uid, provider: "teacher_auth")
     end
 
     it "returns the user" do
@@ -61,9 +61,9 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
       travel_to(2.days.ago) { application }
     end
 
-    it "sets the uid and provider on the most recently updated user" do
+    it "sets the one_login_id and provider on the most recently updated user" do
       make_request
-      expect(most_recently_updated_user.reload).to have_attributes(uid:, provider: "teacher_auth")
+      expect(most_recently_updated_user.reload).to have_attributes(one_login_id: uid, provider: "teacher_auth")
     end
 
     it "moves applications to the most recently updated user" do
@@ -101,9 +101,9 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     end
   end
 
-  shared_examples "logging in using provider and UID" do
-    context "when a user exists with the same provider and UID" do
-      let(:existing_user) { create(:user, :with_teacher_auth_uid, email: "oldemail@example.com", uid:) }
+  shared_examples "logging in using provider and One Login ID" do
+    context "when a user exists with the same provider and One Login ID" do
+      let(:existing_user) { create(:user, :with_one_login_id, email: "oldemail@example.com", one_login_id: uid) }
 
       before { existing_user }
 
@@ -118,7 +118,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
       end
 
       context "when the TRN is different" do
-        let(:existing_user) { create(:user, :with_teacher_auth_uid, email:, uid:, trn: "2345678") }
+        let(:existing_user) { create(:user, :with_one_login_id, email:, one_login_id: uid, trn: "2345678") }
 
         it "updates the verified TRN on the user" do
           make_request
@@ -131,10 +131,10 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
       end
     end
 
-    context "when no user exists with the same provider and UID" do
+    context "when no user exists with the same provider and One Login ID" do
       it "creates a new user" do
         make_request
-        expect(User.find_by(provider: "teacher_auth", uid:)).to have_attributes(
+        expect(User.find_by(provider: "teacher_auth", one_login_id: uid)).to have_attributes(
           email:,
           trn:,
           trn_verified: true,
@@ -148,12 +148,12 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
   end
 
   context "when the TRN doesn't match a user" do
-    it_behaves_like "logging in using provider and UID"
+    it_behaves_like "logging in using provider and One Login ID"
   end
 
   context "when no TRN is specified" do
     let(:trn) { nil }
 
-    it_behaves_like "logging in using provider and UID"
+    it_behaves_like "logging in using provider and One Login ID"
   end
 end

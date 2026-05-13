@@ -98,7 +98,7 @@ RSpec.describe User do
     it { is_expected.to validate_presence_of(:email).with_message("Enter an email address") }
     it { is_expected.to validate_uniqueness_of(:email).case_insensitive.with_message("Email address must be unique") }
     it { is_expected.not_to allow_value("invalid-email").for(:email) }
-    it { is_expected.to validate_uniqueness_of(:uid).allow_blank }
+    it { is_expected.to validate_uniqueness_of(:one_login_id).allow_blank }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
   end
 
@@ -285,56 +285,6 @@ RSpec.describe User do
     context "when user is not on the ClosedRegistrationUser list" do
       it "can not be added" do
         expect { user.set_closed_registration_feature_flag }.not_to change { Feature.registration_closed?(user) }.from(true)
-      end
-    end
-  end
-
-  describe ".find_by_teacher_auth_uid" do
-    let(:uid) { SecureRandom.uuid }
-    let!(:user) { create(:user, :with_teacher_auth_uid, uid:) }
-
-    it "returns the user with matching uid from the with_teacher_auth_uid scope" do
-      expect(User.find_by_teacher_auth_uid(uid)).to eq(user)
-    end
-
-    it "returns nil if no user matches the uid" do
-      expect(User.find_by_teacher_auth_uid("nonexistent-uid")).to be_nil
-    end
-  end
-
-  describe "#teacher_auth_provider?" do
-    context "when the user is using Teacher Auth" do
-      let(:user) { create(:user, :with_teacher_auth_uid) }
-
-      it "returns true" do
-        expect(user).to be_teacher_auth_provider
-      end
-    end
-
-    context "when the user provider is empty" do
-      let(:user) { create(:user) }
-
-      it "returns false" do
-        expect(user).not_to be_teacher_auth_provider
-      end
-    end
-  end
-
-  describe "#teacher_auth_uid" do
-    context "when the user is using Teacher Auth" do
-      let(:uid) { SecureRandom.uuid }
-      let(:user) { create(:user, :with_teacher_auth_uid, uid:) }
-
-      it "returns the uid" do
-        expect(user.teacher_auth_uid).to eq(uid)
-      end
-    end
-
-    context "when the user provider is empty" do
-      let(:user) { create(:user) }
-
-      it "returns nil" do
-        expect(user.teacher_auth_uid).to be_nil
       end
     end
   end

@@ -94,8 +94,6 @@ private
       course:,
       institution: institution_from_store,
       inside_catchment: inside_catchment?,
-      trn: query_store.trn,
-      teacher_auth_uid: query_store.teacher_auth_uid,
       query_store:,
     )
   end

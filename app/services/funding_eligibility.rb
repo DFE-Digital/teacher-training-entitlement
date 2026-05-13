@@ -20,8 +20,6 @@ class FundingEligibility
 
   attr_reader :institution,
               :course,
-              :trn,
-              :teacher_auth_uid,
               :query_store
 
   delegate :work_setting,
@@ -30,15 +28,11 @@ class FundingEligibility
   def initialize(institution:,
                  course:,
                  inside_catchment:,
-                 trn:,
-                 teacher_auth_uid:,
                  query_store:,
                  **)
     @institution = institution
     @course = course
     @inside_catchment = inside_catchment
-    @teacher_auth_uid = teacher_auth_uid
-    @trn = trn
     @query_store = query_store
   end
 
@@ -88,19 +82,17 @@ private
   end
 
   def users
-    teacher_auth_uid_users.or(trn_users).distinct
+    return User.where(trn:) if trn.present?
+
+    User.where(one_login_id:)
   end
 
-  def teacher_auth_uid_users
-    return User.none if teacher_auth_uid.blank?
-
-    User.with_teacher_auth_uid.where(uid: teacher_auth_uid)
+  def trn
+    query_store.current_user&.trn
   end
 
-  def trn_users
-    return User.none if trn.blank?
-
-    User.where(trn:)
+  def one_login_id
+    query_store.current_user&.one_login_id
   end
 
   def accepted_applications

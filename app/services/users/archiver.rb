@@ -13,13 +13,13 @@ module Users
       user.archived_email = user.email
       user.archived_at = Time.zone.now
       user.email = "archived-#{user.email}"
-      user.uid = nil
+      user.one_login_id = nil
       user.provider = nil
       user.save!
     end
 
-    def set_uid_to_nil!
-      user.update!(uid: nil)
+    def set_one_login_id_to_nil!
+      user.update!(one_login_id: nil)
     end
   end
 end

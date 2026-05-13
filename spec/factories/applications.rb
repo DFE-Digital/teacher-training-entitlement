@@ -128,7 +128,7 @@ FactoryBot.define do
     end
 
     trait :with_teacher_auth_user do
-      user { create(:user, :with_teacher_auth_uid) }
+      user { create(:user, :with_one_login_id) }
     end
 
     trait :without_teacher_auth_user do

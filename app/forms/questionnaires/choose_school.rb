@@ -83,8 +83,6 @@ module Questionnaires
         course: wizard.query_store.course,
         institution: selected_institution,
         inside_catchment: wizard.query_store.inside_catchment?,
-        trn: wizard.query_store.trn,
-        teacher_auth_uid: wizard.query_store.teacher_auth_uid,
         query_store: wizard.query_store,
       )
     end

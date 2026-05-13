@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Users::Archiver do
-  let(:user) { create(:user, :with_teacher_auth_uid, email: "test1@example.com") }
+  let(:user) { create(:user, :with_one_login_id, email: "test1@example.com") }
   let(:archive_time) { 2.days.ago }
 
   subject { described_class.new(user:) }
@@ -16,7 +16,7 @@ RSpec.describe Users::Archiver do
 
       expect(user.archived_email).to eq("test1@example.com")
       expect(user.email).to eq("archived-test1@example.com")
-      expect(user.uid).to be_nil
+      expect(user.one_login_id).to be_nil
       expect(user.provider).to be_nil
       expect(user.archived_at.to_s).to eq(archive_time.to_s)
       expect(user).to be_archived
@@ -35,13 +35,13 @@ RSpec.describe Users::Archiver do
     end
   end
 
-  describe ".set_uid_to_nil!" do
-    let(:user) { create(:user, :archived, :with_teacher_auth_uid) }
+  describe ".set_one_login_id_to_nil!" do
+    let(:user) { create(:user, :archived, :with_one_login_id) }
 
-    it "sets uid to nil" do
-      subject.set_uid_to_nil!
+    it "sets one_login_id to nil" do
+      subject.set_one_login_id_to_nil!
 
-      expect(user.uid).to be_nil
+      expect(user.one_login_id).to be_nil
     end
   end
 end
