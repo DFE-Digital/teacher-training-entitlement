@@ -585,7 +585,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.boolean "trn_auto_verified", default: false
     t.string "trn_lookup_status"
     t.boolean "trn_verified", default: false, null: false
-    t.string "one_login_id"
     t.datetime "updated_at", null: false
     t.datetime "updated_from_tra_at", precision: nil
     t.index ["created_at"], name: "index_users_on_created_at"
