@@ -64,22 +64,42 @@ en:
   
   applications:
     change_provider:
+      contact_us:
+        text: You already have a place on the course with a training provider. You can change provider before the course starts but you will no longer have a guaranteed place on the course.
+        instructions:
+          title: "To change training provider, you need to:"
+          text:
+            - email our support team continuing-professional-development@digital.education.gov.uk
+            - request they change the status of your application so that you can register with a different provider
+            - they will email you to confirm when this is complete
+            - come back to this service and you will be able to 'register with a different provider'
+
       start:
         title: Register with a different provider for the %{course_name} course
-        text: You can only register with a different provider if you haven't started the course yet.
+        text: 
+          application_pending: You can only register with a different provider if you haven't started the course yet.
+          application_rejected: ""
         what_happens:
           title: What happens when you change provider
           text:
             - We will notify your current provider that you are no longer registered with them
             - Your new provider will contact you to complete their application form
         form:
-          title: Confirm you have not started the course and want to register with a different provider
-          yes_option: Yes, I have not started the course and want to change provider
-          no_option: No, I don't want to change provider
-          blank: Please confirm you have not started the course and want to change
-            provider
           cannot_change_provider: You cannot change provider for this application.
             Contact the DfE for assistance.
+        application_rejected:
+          form:
+            title: Confirm you want to register with a different provider
+            yes_option: Yes, I want to change provider
+            no_option: No, I don't want to change provider
+            blank: Please confirm you want to change provider
+        application_pending:
+          form:
+            title: Confirm you have not started the course and want to register with a different provider
+            yes_option: Yes, I have not started the course and want to change provider
+            no_option: No, I don't want to change provider
+            blank: Please confirm you have not started the course and want to change
+              provider
       providers:
         current_provider: 
           - You are currently registered with %{current_provider}.

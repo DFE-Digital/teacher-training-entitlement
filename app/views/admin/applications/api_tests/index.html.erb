@@ -4,6 +4,10 @@
       request.path,
       structure: [
         NavigationStructure::Node.new(
+          name: "Back to Application",
+          href: admin_application_path(@application.id)
+          ),
+        NavigationStructure::Node.new(
           name: "API Endpoints",
           href: "#endpoints",
           prefix: %r{/admin/applications/\d+/endpoints$},

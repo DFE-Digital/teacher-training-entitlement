@@ -24,6 +24,16 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
   end
 
   describe "GET /applications/:ecf_id" do
+    context "when the user does not own the application" do
+      let(:user) { create(:user) }
+
+      it "redirects to the root path" do
+        get application_path(pending_application.ecf_id)
+
+        expect(response).to redirect_to(applications_path)
+      end
+    end
+
     context "when the user visits a pending application" do
       it do
         get "/applications/#{pending_application.ecf_id}"

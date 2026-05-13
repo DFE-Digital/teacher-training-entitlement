@@ -1,0 +1,15 @@
+<h1 class="govuk-heading-l">
+  <%= t("applications.change_provider.start.title", course_name: application.course.name) %>
+</h1>
+<p class="govuk-body"><%= t("applications.change_provider.contact_us.text") %></p>
+
+<h2 class="govuk-heading-m">
+  <%= t("applications.change_provider.contact_us.instructions.title") %>
+</h2>
+<div class="govuk-body">
+  <ol class="govuk-list govuk-list--number">
+    <% t("applications.change_provider.contact_us.instructions.text").each do |line| %>
+      <li><%= line %></li>
+    <% end %>
+  </ol>
+</div>
