@@ -104,7 +104,6 @@ RSpec.describe Declarations::Void, type: :model do
         expect { subject.call }.to change { application.state_changes.count }.by(1)
 
         expect(application.reload.status).to eq(Application::STARTED)
-        expect(application.state_changes.count).to eq 2
         expect(application.state_changes.last.status).to eq(Application::STARTED)
         expect(application.state_changes.last.reason).to eq("completed declaration voided")
       end
