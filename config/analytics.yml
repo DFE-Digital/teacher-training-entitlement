@@ -216,7 +216,6 @@ shared:
     - trn_auto_verified
     - feature_flag_id
     - provider
-    - uid
     - updated_from_tra_at
     - trn_lookup_status
     - notify_user_for_future_reg

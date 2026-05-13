@@ -154,6 +154,7 @@
   - raw_tra_provider_data
   - refresh_token
   - refresh_token_updated_at
+  - one_login_id
   :bulk_operations:
   - id
   - admin_id
