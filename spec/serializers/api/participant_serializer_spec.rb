@@ -84,10 +84,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
         end
       end
 
-      it "serializes the `enrolments`" do
-        # Capture accepted_at after application is created but before serialization
-        expected_created_at = application.accepted_at.rfc3339
-
+      it "serializes the `enrolments`", :freeze_time do
         expect(attributes["enrolments"]).to eq([
           {
             email: participant.email,
@@ -100,7 +97,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             school_urn: application.school.urn,
             withdrawal: nil,
             deferral: nil,
-            created_at: expected_created_at,
+            created_at: application.accepted_at.rfc3339,
             funded_place: application.funded_place,
           }.stringify_keys,
         ])
