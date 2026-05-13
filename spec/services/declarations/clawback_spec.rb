@@ -105,7 +105,6 @@ RSpec.describe Declarations::Clawback, type: :model do
       let(:application) { create(:application, :completed) }
       let(:declaration_type) { :completed }
       let(:declaration_state) { :paid }
-      let(:application) { create(:application, :completed) }
 
       it "creates exactly one state change" do
         expect { subject.call }.to change { application.state_changes.count }.by(1)
