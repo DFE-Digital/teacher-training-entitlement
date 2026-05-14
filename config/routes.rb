@@ -57,12 +57,14 @@ Rails.application.routes.draw do
   end
 
   resources :applications, only: %i[index show], param: :ecf_id, module: :applications do
-    namespace :change_provider, path: "change-provider" do
-      dashed_resources :contact_us, only: %i[index]
-      dashed_resources :start, only: %i[index create]
-      dashed_resources :providers, only: %i[index create]
-      dashed_resources :check_answers, only: %i[index create]
-    end
+    # namespace :change_provider, path: "change-provider" do
+    #   dashed_resources :contact_us, only: %i[index]
+    #   dashed_resources :start, only: %i[index create]
+    #   dashed_resources :providers, only: %i[index create]
+    #   dashed_resources :check_answers, only: %i[index create]
+    # end
+
+    resources :change_provider, path: "change-provider", param: :step, only: %w[show update]
   end
 
   draw("/api/v1")

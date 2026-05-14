@@ -109,9 +109,12 @@ en:
           title: Select a training provider
           blank: Please select a provider
           different_provider: Please choose a different provider to your current provider
+          invalid: Please select an available provider
       check_answers:
         title: Check your answer and submit
         new_provider: Provider
+        fail:
+          title: Registration could not be updated
         success:
           title: Registration successfully updated - you have registered with a new
             provider

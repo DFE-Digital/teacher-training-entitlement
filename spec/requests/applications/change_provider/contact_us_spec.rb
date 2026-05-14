@@ -14,7 +14,10 @@ RSpec.describe "Applications::ChangeProvider::ContactUs", type: :request do
   describe "GET /applications/:application_id/change-provider/contact-us" do
     it "renders the index template" do
       get url
-      expect(response).to render_template(:index)
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:show)
+      expect(response).to render_template(:_contact_us)
     end
   end
 end

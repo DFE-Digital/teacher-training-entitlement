@@ -1,8 +1,7 @@
-module Applications
-  module ChangeProvider
+module ChangeProvider
+  module Forms
     class StartForm
-      include ActiveModel::Model
-      include ActiveModel::Attributes
+      include DfE::Wizard::Step
 
       attribute :application
       attribute :confirmation, :boolean
@@ -12,6 +11,12 @@ module Applications
                              message: ->(form, _data) { form.send(:confirmation_blank_message) } }
 
       validate :change_provider_allowed
+
+      delegate :application, to: :wizard
+
+      def self.permitted_params
+        %i[confirmation]
+      end
 
     private
 
@@ -24,7 +29,6 @@ module Applications
       def confirmation_blank_message
         I18n.t(
           "applications.change_provider.start.application_#{application.status}.form.blank",
-          default: I18n.t("applications.change_provider.start.form.blank"),
         )
       end
     end

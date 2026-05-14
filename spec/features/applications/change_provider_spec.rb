@@ -16,7 +16,7 @@ RSpec.feature "Change provider", type: :feature do
       #
       # Start page
       #
-      visit application_change_provider_start_index_path(application.ecf_id)
+      visit application_change_provider_path(application.ecf_id, :start)
 
       expect(page).to have_text("Register with a different provider for the #{application.course.name}")
 
@@ -24,18 +24,16 @@ RSpec.feature "Change provider", type: :feature do
 
       click_button("Continue")
 
-      expect(page).to have_current_path(application_change_provider_providers_path(application.ecf_id))
+      expect(page).to have_current_path(application_change_provider_path(application.ecf_id, :"choose-provider"))
 
       #
       # Providers page
       #
-      visit application_change_provider_providers_path(application.ecf_id)
-
       choose(another_provider.name, visible: :all)
 
       click_button("Continue")
 
-      expect(page).to have_current_path(application_change_provider_check_answers_path(application.ecf_id))
+      expect(page).to have_current_path(application_change_provider_path(application.ecf_id, :"check-answers"))
 
       expect(page).to have_text(another_provider.name)
 
@@ -68,7 +66,7 @@ RSpec.feature "Change provider", type: :feature do
     let(:application) { create(:application, :accepted) }
 
     it do
-      visit application_change_provider_start_index_path(application.ecf_id)
+      visit application_change_provider_path(application.ecf_id, :start)
 
       expect(page).to have_current_path(application_path(application.ecf_id))
     end
@@ -78,7 +76,7 @@ RSpec.feature "Change provider", type: :feature do
     let(:application) { create(:application, :started) }
 
     it "redirects you back to application#show" do
-      visit application_change_provider_start_index_path(application.ecf_id)
+      visit application_change_provider_path(application.ecf_id, :start)
 
       expect(page).to have_current_path(application_path(application.ecf_id))
     end

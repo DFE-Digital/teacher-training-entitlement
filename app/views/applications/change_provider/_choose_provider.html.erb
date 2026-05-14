@@ -1,0 +1,30 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: @wizard.previous_step_path) %>
+    <h1 class="govuk-heading-l"><%= t("applications.change_provider.providers.form.title") %></h1>
+
+    <%= form_with model: current_step,
+          url: @wizard.current_step_path,
+          scope: current_step_name,
+          method: :patch do |f| %>
+
+      <%= f.govuk_error_summary %>
+      <%= f.govuk_radio_buttons_fieldset :provider_id, legend: { class: "govuk-visually-hidden", text: t("applications.change_provider.providers.form.title") } do %>
+        <p class="govuk-body govuk-!-padding-bottom-4">
+          <% t("applications.change_provider.providers.current_provider", current_provider: application.lead_provider.name).each do |l| %>
+            <%= l %>
+            <br/>
+          <% end %>
+        </p>
+        <% current_step.providers.each do |provider| %>
+          <%= f.govuk_radio_button :provider_id, provider.id, label: { text: provider.name }, link_errors: true %>
+        <% end %>
+      <% end %>
+
+      <div class="govuk-button-group">
+        <%= f.govuk_submit t("shared.continue") %>
+        <%= govuk_link_to t("shared.cancel"), application_path(application.ecf_id) %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,3 +1,5 @@
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: application_path(application.ecf_id)) %>
+
 <h1 class="govuk-heading-l">
   <%= t("applications.change_provider.start.title", course_name: application.course.name) %>
 </h1>

@@ -1,5 +1,6 @@
 module Applications
   class ApplicationsController < LoggedInController
+    before_action :application
     helper_method :application
 
     def index

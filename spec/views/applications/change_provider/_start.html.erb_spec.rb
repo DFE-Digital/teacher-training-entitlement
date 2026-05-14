@@ -1,15 +1,27 @@
 require "rails_helper"
 
-RSpec.describe "applications/change_provider/start/index.html.erb", type: :view do
-  subject(:rendered_page) { Capybara.string(render) }
+RSpec.describe "app/views/applications/change_provider/_start.html.erb", type: :view do
+  subject(:rendered_page) do
+    render partial: "applications/change_provider/start"
+    Capybara.string(rendered)
+  end
 
   let(:application) { build_stubbed(:application, application_status) }
   let(:application_status) { :pending }
+  let(:current_step_name) { :start }
+  let(:current_step_path) { "/the/path" }
+  let(:current_step) { ChangeProvider::Forms::StartForm.new }
+  let(:wizard) { instance_double(ChangeProvider::FormWizard, current_step:, current_step_path:) }
 
   before do
-    assign(:form, Applications::ChangeProvider::StartForm.new(application:))
+    assign(:wizard, wizard)
     current_application = application
+    current_step_for_view = current_step
+    current_step_name_for_view = current_step_name
+
     view.define_singleton_method(:application) { current_application }
+    view.define_singleton_method(:current_step) { current_step_for_view }
+    view.define_singleton_method(:current_step_name) { current_step_name_for_view }
   end
 
   context "when the application is pending" do

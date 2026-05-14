@@ -16,13 +16,13 @@ RSpec.describe "applications/applications/show.html.erb", type: :view do
   context "when application is pending" do
     let(:application) { build_stubbed(:application, :pending) }
 
-    it { is_expected.to have_link "Register with a different provider", href: application_change_provider_start_index_path(application.ecf_id) }
+    it { is_expected.to have_link "Register with a different provider", href: application_change_provider_path(application.ecf_id, :start) }
   end
 
   context "when application is accepted" do
     let(:application) { build_stubbed(:application, :accepted) }
 
-    it { is_expected.to have_link "Register with a different provider", href: application_change_provider_contact_us_path(application.ecf_id) }
+    it { is_expected.to have_link "Register with a different provider", href: application_change_provider_path(application.ecf_id, "contact-us") }
   end
 
   context "when application is started" do

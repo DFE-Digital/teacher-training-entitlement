@@ -22,12 +22,12 @@
         </dd>
         <% if application.can_change_provider? %>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="<%= application_change_provider_start_index_path(application.ecf_id) %>">Register with a different provider</a>
+            <a class="govuk-link" href="<%= application_change_provider_path(application.ecf_id, :start) %>">Register with a different provider</a>
           </dd>
         <% end %>
         <% if application.accepted_status? %>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="<%= application_change_provider_contact_us_path(application.ecf_id) %>">Register with a different provider</a>
+            <a class="govuk-link" href="<%= application_change_provider_path(application.ecf_id, "contact-us") %>">Register with a different provider</a>
           </dd>
         <% end %>
 
