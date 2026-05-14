@@ -103,7 +103,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
 
   shared_examples "logging in using provider and UID" do
     context "when a user exists with the same provider and UID" do
-      let(:existing_user) { create(:user, :with_get_an_identity_id, email: "oldemail@example.com", uid:) }
+      let(:existing_user) { create(:user, :with_teacher_auth_uid, email: "oldemail@example.com", uid:) }
 
       before { existing_user }
 
@@ -118,7 +118,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
       end
 
       context "when the TRN is different" do
-        let(:existing_user) { create(:user, :with_get_an_identity_id, email:, uid:, trn: "2345678") }
+        let(:existing_user) { create(:user, :with_teacher_auth_uid, email:, uid:, trn: "2345678") }
 
         it "updates the verified TRN on the user" do
           make_request

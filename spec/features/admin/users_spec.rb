@@ -7,7 +7,7 @@ RSpec.feature "User administration", type: :feature do
   let(:user) { User.first }
 
   before do
-    create_list(:user, users_per_page, :with_get_an_identity_id)
+    create_list(:user, users_per_page, :with_teacher_auth_uid)
     user.update!(national_insurance_number: "QQ123456C", preferred_name: "Jonny D")
     sign_in_as(create(:admin))
   end
@@ -26,7 +26,7 @@ RSpec.feature "User administration", type: :feature do
     end
 
     scenario "navigating to the second page of users" do
-      create :user, :with_get_an_identity_id # exceed pagination threshold
+      create :user, :with_teacher_auth_uid # exceed pagination threshold
 
       visit(admin_users_path)
 

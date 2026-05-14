@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "merge_user_into_another" do
   let(:merge_and_archive_service) { service_double }
-  let(:user_to_merge) { create(:user, :with_get_an_identity_id) }
+  let(:user_to_merge) { create(:user, :with_teacher_auth_uid) }
   let(:user_to_keep) { create(:user) }
   let(:service_double) { instance_double(Users::MergeAndArchive) }
 

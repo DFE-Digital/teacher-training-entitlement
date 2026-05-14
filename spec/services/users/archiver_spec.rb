@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Users::Archiver do
-  let(:user) { create(:user, :with_get_an_identity_id, email: "test1@example.com") }
+  let(:user) { create(:user, :with_teacher_auth_uid, email: "test1@example.com") }
   let(:archive_time) { 2.days.ago }
 
   subject { described_class.new(user:) }
@@ -36,7 +36,7 @@ RSpec.describe Users::Archiver do
   end
 
   describe ".set_uid_to_nil!" do
-    let(:user) { create(:user, :archived, :with_get_an_identity_id) }
+    let(:user) { create(:user, :archived, :with_teacher_auth_uid) }
 
     it "sets uid to nil" do
       subject.set_uid_to_nil!

@@ -289,25 +289,25 @@ RSpec.describe User do
     end
   end
 
-  describe ".find_by_get_an_identity_id" do
+  describe ".find_by_teacher_auth_uid" do
     let(:uid) { SecureRandom.uuid }
-    let!(:user) { create(:user, :with_get_an_identity_id, uid:) }
+    let!(:user) { create(:user, :with_teacher_auth_uid, uid:) }
 
-    it "returns the user with matching uid from the with_get_an_identity_id scope" do
-      expect(User.find_by_get_an_identity_id(uid)).to eq(user)
+    it "returns the user with matching uid from the with_teacher_auth_uid scope" do
+      expect(User.find_by_teacher_auth_uid(uid)).to eq(user)
     end
 
     it "returns nil if no user matches the uid" do
-      expect(User.find_by_get_an_identity_id("nonexistent-uid")).to be_nil
+      expect(User.find_by_teacher_auth_uid("nonexistent-uid")).to be_nil
     end
   end
 
-  describe "#get_an_identity_provider?" do
-    context "when the user is using GAI" do
-      let(:user) { create(:user, :with_get_an_identity_id) }
+  describe "#teacher_auth_provider?" do
+    context "when the user is using Teacher Auth" do
+      let(:user) { create(:user, :with_teacher_auth_uid) }
 
       it "returns true" do
-        expect(user).to be_get_an_identity_provider
+        expect(user).to be_teacher_auth_provider
       end
     end
 
@@ -315,26 +315,26 @@ RSpec.describe User do
       let(:user) { create(:user) }
 
       it "returns false" do
-        expect(user).not_to be_get_an_identity_provider
+        expect(user).not_to be_teacher_auth_provider
       end
     end
   end
 
-  describe "#get_an_identity_id" do
-    context "when the user is using GAI" do
+  describe "#teacher_auth_uid" do
+    context "when the user is using Teacher Auth" do
       let(:uid) { SecureRandom.uuid }
-      let(:user) { create(:user, :with_get_an_identity_id, uid:) }
+      let(:user) { create(:user, :with_teacher_auth_uid, uid:) }
 
-      it "returns true" do
-        expect(user.get_an_identity_id).to eq(uid)
+      it "returns the uid" do
+        expect(user.teacher_auth_uid).to eq(uid)
       end
     end
 
     context "when the user provider is empty" do
       let(:user) { create(:user) }
 
-      it "returns false" do
-        expect(user.get_an_identity_id).to be_nil
+      it "returns nil" do
+        expect(user.teacher_auth_uid).to be_nil
       end
     end
   end

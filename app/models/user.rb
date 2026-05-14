@@ -1,8 +1,10 @@
 class User < ApplicationRecord
+  # TO DO: remove after succesful deploy
+  self.ignored_columns += %w[get_an_identity_id_synced_to_ecf]
+
   INSIGNIFICANT_ATTRIBUTES = %w[
     raw_tra_provider_data
     feature_flag_id
-    get_an_identity_id_synced_to_ecf
     updated_from_tra_at
     trn_lookup_status
     notify_user_for_future_reg
@@ -33,7 +35,7 @@ class User < ApplicationRecord
 
   scope :admins, -> { where(admin: true) }
 
-  scope :with_get_an_identity_id, lambda {
+  scope :with_teacher_auth_uid, lambda {
     where.not(uid: nil)
          .where(provider: Omniauth::Strategies::TeacherAuth::NAME.to_s)
   }
@@ -52,16 +54,16 @@ class User < ApplicationRecord
       &.latest
   end
 
-  def self.find_by_get_an_identity_id(get_an_identity_id)
-    with_get_an_identity_id.find_by(uid: get_an_identity_id)
+  def self.find_by_teacher_auth_uid(teacher_auth_uid)
+    with_teacher_auth_uid.find_by(uid: teacher_auth_uid)
   end
 
-  def get_an_identity_provider?
+  def teacher_auth_provider?
     provider == Omniauth::Strategies::TeacherAuth::NAME.to_s
   end
 
-  def get_an_identity_id
-    uid if get_an_identity_provider?
+  def teacher_auth_uid
+    uid if teacher_auth_provider?
   end
 
   def flipper_id

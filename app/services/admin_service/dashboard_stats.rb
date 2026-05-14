@@ -10,14 +10,14 @@ module AdminService
       @applications_created ||= applications_since_start_time.count
     end
 
-    def get_an_identity_applications_created
-      @get_an_identity_applications_created ||= applications_since_start_time.joins(:user)
+    def teacher_auth_applications_created
+      @teacher_auth_applications_created ||= applications_since_start_time.joins(:user)
                   .where(users: { provider: Omniauth::Strategies::TeacherAuth::NAME.to_s })
                   .count
     end
 
-    def non_get_an_identity_applications_created
-      @non_get_an_identity_applications_created ||= applications_since_start_time.joins(:user)
+    def non_teacher_auth_applications_created
+      @non_teacher_auth_applications_created ||= applications_since_start_time.joins(:user)
                   .where(users: { provider: nil })
                   .count
     end
@@ -26,20 +26,20 @@ module AdminService
       @users_count ||= users_since_start_time.count
     end
 
-    def get_an_identity_users_count
-      @get_an_identity_users_count ||= users_since_start_time.where(provider: Omniauth::Strategies::TeacherAuth::NAME.to_s).count
+    def teacher_auth_users_count
+      @teacher_auth_users_count ||= users_since_start_time.where(provider: Omniauth::Strategies::TeacherAuth::NAME.to_s).count
     end
 
-    def get_an_identity_applications_created_percentage
+    def teacher_auth_applications_created_percentage
       return nil if applications_created.zero?
 
-      (get_an_identity_applications_created / applications_created.to_f * 100).to_i
+      (teacher_auth_applications_created / applications_created.to_f * 100).to_i
     end
 
-    def non_get_an_identity_applications_created_percentage
+    def non_teacher_auth_applications_created_percentage
       return nil if applications_created.zero?
 
-      (non_get_an_identity_applications_created / applications_created.to_f * 100).to_i
+      (non_teacher_auth_applications_created / applications_created.to_f * 100).to_i
     end
 
   private

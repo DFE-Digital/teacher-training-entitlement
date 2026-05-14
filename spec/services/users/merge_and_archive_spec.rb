@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Users::MergeAndArchive do
-  let(:user_to_merge) { create(:user, :with_get_an_identity_id) }
+  let(:user_to_merge) { create(:user, :with_teacher_auth_uid) }
   let(:user_to_keep) { create(:user) }
 
   let!(:user_to_keep_rejected_application) { create(:application, :rejected, user: user_to_keep, cohort: create(:cohort, :unique)) }

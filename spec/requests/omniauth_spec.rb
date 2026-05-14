@@ -37,7 +37,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
       end
 
       context "when omniauth callback is successful" do
-        let(:user) { create(:user, :with_get_an_identity_id) }
+        let(:user) { create(:user, :with_teacher_auth_uid) }
         let(:service) { instance_double(Users::FindOrCreateFromTeacherAuth, call: user) }
 
         before do

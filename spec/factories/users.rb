@@ -11,12 +11,12 @@ FactoryBot.define do
       significantly_updated_at { nil }
     end
 
-    trait :with_get_an_identity_id do
+    trait :with_teacher_auth_uid do
       transient do
-        get_an_identity_id { SecureRandom.uuid }
+        teacher_auth_uid { SecureRandom.uuid }
       end
 
-      uid { get_an_identity_id }
+      uid { teacher_auth_uid }
       provider { Omniauth::Strategies::TeacherAuth::NAME.to_s }
     end
 

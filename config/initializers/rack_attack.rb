@@ -27,10 +27,6 @@ class Rack::Attack
     PROTECTED_ROUTES.any? { |route| request.path.starts_with?(route) }
   end
 
-  def self.get_an_identity_webhook_path?(request)
-    request.path.starts_with?("/api/v1/get_an_identity/webhook_messages")
-  end
-
   def self.auth_token(request)
     request.get_header("HTTP_AUTHORIZATION")
   end
@@ -38,11 +34,6 @@ class Rack::Attack
   # Throttle protected routes by IP (5rpm)
   throttle("protected routes (hitting external services)", limit: 10, period: 2.minutes) do |request|
     request.ip if protected_path?(request)
-  end
-
-  # Throttle /api/v1/get_an_identity/webhook_messages requests by IP (1000 requests per 5 minutes)
-  throttle("API get an identity webhook message requests by ip", limit: 1000, period: 5.minutes) do |request|
-    request.ip if get_an_identity_webhook_path?(request)
   end
 
   # Throttle private /api requests by auth token (1000 requests per 5 minutes)
