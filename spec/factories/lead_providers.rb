@@ -8,6 +8,7 @@ FactoryBot.define do
     name { Faker::Company.unique.name.gsub(",", "") }
     ecf_id { SecureRandom.uuid }
     hint { Faker::Lorem.sentence }
+    email { Faker::Internet.email }
 
     after :create do |lead_provider, evaluator|
       partnerships = if evaluator.delivery_partners.is_a?(Hash)

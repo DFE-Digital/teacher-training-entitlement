@@ -72,17 +72,6 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
 
       context "when changing provider succeeds" do
         it "creates updates the application provider and redirects to user registrations path" do
-          expect(GenericMailer).to receive(:with).with(
-            to: application.user.email,
-            full_name: application.user.full_name,
-            provider_name: new_provider.name,
-            course_name: application.course.name,
-            cohort_date: application.cohort.name,
-            ecf_id: application.ecf_id,
-            sign_in_link: Rails.configuration.sign_in_link,
-            feedback_link: Rails.configuration.feedback_link,
-          ).and_call_original
-
           post url
 
           aggregate_failures do

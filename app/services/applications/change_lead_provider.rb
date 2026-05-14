@@ -35,6 +35,18 @@ module Applications
           sign_in_link: Rails.configuration.sign_in_link,
           feedback_link: Rails.configuration.feedback_link,
         ).change_provider.deliver_later
+
+        if @application.previous_provider.email
+          GenericMailer.with(
+            to: @application.previous_provider.email,
+            provider_name: @application.previous_provider.name,
+            course_name: @application.course.name,
+            participant_trn: @application.user.trn,
+            particitpant_name: @application.user.full_name,
+            change_date: @application.previous_application_lead_provider&.updated_at&.to_fs(:govuk_short),
+            ecf_id: @application.ecf_id,
+          ).previous_provider.deliver_later
+        end
       end
     end
 
