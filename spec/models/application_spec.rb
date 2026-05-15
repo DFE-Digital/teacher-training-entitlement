@@ -747,7 +747,7 @@ RSpec.describe Application do
 
       application.lead_provider = another_lead_provider
 
-      application_lead_providers = application.application_lead_providers.reload
+      application_lead_providers = application.application_lead_providers.reload.order(:created_at)
 
       expect(application_lead_providers.count).to eq(2)
       expect(application_lead_providers.first.lead_provider).to eq(lead_provider)
