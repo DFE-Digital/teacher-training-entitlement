@@ -9,9 +9,10 @@ module Users
       @feature_flag_id = feature_flag_id
       @full_name = provider_data.extra.raw_info.verified_name.join(" ")
       @date_of_birth = Date.parse(provider_data.extra.raw_info.verified_date_of_birth, "%Y-%m-%d")
+      @refresh_token = provider_data.credentials&.refresh_token
     end
 
-    attr_reader :one_login_id, :trn, :email, :full_name, :date_of_birth, :feature_flag_id
+    attr_reader :one_login_id, :trn, :email, :full_name, :date_of_birth, :feature_flag_id, :refresh_token
 
     def call
       user_matched_using_trn = matching_users.first
@@ -25,7 +26,7 @@ module Users
       user_matched_using_one_login_id = User.find_by(provider: Omniauth::Strategies::TeacherAuth::NAME, one_login_id:)
 
       if user_matched_using_one_login_id
-        user_matched_using_one_login_id.update!(email:, trn:, trn_verified: true, trn_auto_verified: true, full_name:, feature_flag_id:)
+        user_matched_using_one_login_id.update!(user_attributes)
         return user_matched_using_one_login_id
       end
 
@@ -50,14 +51,31 @@ module Users
       User.create!(
         one_login_id:,
         provider: Omniauth::Strategies::TeacherAuth::NAME,
-        email:,
-        trn:,
-        trn_verified: true,
-        trn_auto_verified: true,
-        full_name:,
         date_of_birth:,
-        feature_flag_id:,
+        **user_attributes,
       )
+    end
+
+    def user_attributes
+      attrs = { email:, trn:, full_name:, feature_flag_id: }
+
+      if trn.present?
+        attrs.merge!(
+          trn_verified: true,
+          trn_auto_verified: true,
+          refresh_token: nil,
+          refresh_token_updated_at: nil,
+        )
+      else
+        attrs.merge!(
+          trn_verified: false,
+          trn_auto_verified: false,
+          refresh_token:,
+          refresh_token_updated_at: Time.current,
+        )
+      end
+
+      attrs
     end
   end
 end
