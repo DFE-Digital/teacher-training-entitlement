@@ -880,16 +880,12 @@ en:
     total_completed: Total completed
     total_voids: Total voids
   helpers:
+    warnings:
+      registration_wizard:
+        check_provider_is_open: "Before selecting your provider, you must check that they are currently open to accepting NPQ applications."
     title:
       registration_wizard:
         service_title: "Register for a National Professional Development (NPD) course"
-        get_an_identity: Get an identity
-        about_ehco: Early Headship Coaching Offer
-        ehco_funding_not_available: DfE scholarship funding not available
-        ehco_possible_funding: You may qualify for DfE scholarship funding
-        ehco_previously_funded: DfE scholarship funding not available
-        ehco_unavailable: You cannot register for the Early Headship Coaching Offer
-        choose_your_npq: Choose an NPQ
         choose_your_course: Choose a TTE course
         course_start_date: Choose your course start date
         course_start_date_sub: Registrations are currently open for courses starting in %{date}
@@ -959,21 +955,12 @@ en:
         course_start_date_three: Early headship coaching offer start dates vary by
           provider and are throughout the year.
         work_setting_options:
-            form colleges</li><li>further education colleges</li><li>schools that
-            also teach ages 16 to 19</li></ul>
-            authority maintained schools (some may provide hospital education, for
-            example pupil referral units, alternative provision or special schools)</li><li>secure
-            children’s homes and secure training centres</li></ul>
-            may provide hospital education (for example, alternative provision or
-            academy special schools)</p>
-            authority (for staff in a direct teaching role, virtual school headteachers
-            and staff in defined deputy headteacher roles)</li><li>initial teacher
-            training (ITT) providers (for ITT lead mentors)</li><li>independent hospital
-            education organisations</li><li>young offender institutions</li></ul>'
-            Teaching Advisory (RTTA) service, or if none of the above options apply
-            to you, for example you’re:<ul class="question-hint-list"><li>self-employed</li><li>not
-            working in an educational setting</li><li>an agency supply teacher</li><li>working
-            in any other independent setting</li></ul>
+          early_years_or_childcare_html: ""
+          a_16_to_19_educational_setting_html: "Includes:<ul class=\"question-hint-list\"><li>sixth form colleges</li><li>further education colleges</li><li>schools that also teach ages 16 to 19</li></ul>"
+          a_school_html: "Includes:<ul class=\"question-hint-list\"><li>local authority maintained schools (some may provide hospital education, for example pupil referral units, alternative provision or special schools)</li><li>secure children’s homes and secure training centres</li></ul>"
+          an_academy_trust_html: "<div class=\"govuk-!-margin-bottom-1\">Some may provide hospital education (for example, alternative provision or academy special schools)</p>"
+          another_setting_html: "For example: <ul class=\"question-hint-list\"><li>local authority (for staff in a direct teaching role, virtual school headteachers and staff in defined deputy headteacher roles)</li><li>initial teacher training (ITT) providers (for ITT lead mentors)</li><li>independent hospital education organisations</li><li>young offender institutions</li></ul>"
+          other_html: "Select ‘Other’ if you were referred by the Return to Teaching Advisory (RTTA) service, or if none of the above options apply to you, for example you’re:<ul class=\"question-hint-list\"><li>self-employed</li><li>not working in an educational setting</li><li>an agency supply teacher</li><li>working in any other independent setting</li></ul>"
         course_identifier_options:
             opportunities if you’re a headteacher in your first 5 years of headship.
         npqh_status_title_hint: To be eligible for the Early headship coaching offer

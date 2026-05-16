@@ -32,6 +32,13 @@ class FundingEligibility
     @work_setting = work_setting
   end
 
+  def eligible_for_funding?
+    @institution.in_england? &&
+      @institution.eligible_establishment? &&
+      !previously_funded? &&
+      funded?
+  end
+
   def funded?
     funding_eligiblity_status_code == FUNDED_ELIGIBILITY_RESULT
   end

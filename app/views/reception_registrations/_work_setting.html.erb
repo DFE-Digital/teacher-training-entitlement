@@ -1,0 +1,22 @@
+<%= render "reception_registrations/backlink", step: @step %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: current_step,
+          url: @wizard.current_step_path,
+          scope: current_step_name,
+          method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+      <% legend = { text: I18n.t("helpers.legend.registration_wizard.work_setting"), tag: "h1", size: "xl" } %>
+      <%= f.govuk_radio_buttons_fieldset(:work_setting, **{ legend:, hint: { text: I18n.t("helpers.hint.registration_wizard.work_setting")} }) do %>
+        <% current_step.work_settings_options.each do |work_setting| %>
+          <% hint = { text: I18n.t("helpers.hint.registration_wizard.work_setting_options.#{work_setting}_html").html_safe } %>
+          <% label = { size: "s", text: I18n.t("helpers.label.registration_wizard.work_setting_options.#{work_setting}") } %>
+          <%= f.govuk_radio_button(:work_setting, work_setting, hint:, label:) %>
+        <% end %>
+      <% end %>
+
+      <%= f.govuk_submit %>
+    <% end  %>
+  </div>
+</div>

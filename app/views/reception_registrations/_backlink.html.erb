@@ -1,0 +1,5 @@
+<% if previous_step %>
+  <% content_for :before_content do %>
+    <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: reception_registration_path(previous_step)) %>
+  <% end %>
+<% end %>

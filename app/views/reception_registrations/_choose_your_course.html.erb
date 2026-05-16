@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl"><%= t("helpers.title.registration_wizard.choose_your_course") %></h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h3 class="govuk-heading-m"><%= current_step.course.name %></h3>
+    <h4 class="govuk-heading-s"><%= current_step.course.description %></h4>
+
+    <% t("helpers.hint.registration_wizard.choose_your_course", link: "<a href=''>learn more about the DfE CPD offering</a>").each do |t| %>
+      <p class="govuk-body govuk-!-margin-bottom-7"> <%= t.html_safe %> </p>
+    <% end %>
+  </div>
+</div>
+
+<%= render "reception_registrations/backlink", step: @step %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: current_step,
+          url: @wizard.current_step_path,
+          scope: current_step_name,
+          method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+      <%= f.hidden_field :course_identifier, value: current_step.course.identifier %>
+      <%= f.govuk_submit %>
+    <% end  %>
+  </div>
+</div>

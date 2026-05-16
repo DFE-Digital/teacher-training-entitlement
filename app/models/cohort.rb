@@ -38,6 +38,14 @@ class Cohort < ApplicationRecord
           year: cohort.start_year, suffix: cohort.suffix)
   }
 
+  def self.application_course_start_date
+    "Autumn #{current.start_year + 1}"
+  end
+
+  def self.application_next_course_start_date
+    "Autumn #{current.start_year + 2}"
+  end
+
   def self.current(timestamp = Time.zone.today)
     scope = order_by_latest.where(registration_starts_at: ..timestamp)
 

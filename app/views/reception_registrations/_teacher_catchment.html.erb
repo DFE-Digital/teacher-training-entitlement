@@ -1,0 +1,19 @@
+<%= render "reception_registrations/backlink", step: @step %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: current_step,
+          url: @wizard.current_step_path,
+          scope: current_step_name,
+          method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+      <% legend = { text: I18n.t("helpers.legend.registration_wizard.teacher_catchment"), tag: "h1", size: "xl" } %>
+      <%= f.govuk_radio_buttons_fieldset(:teacher_catchment, **{ legend: }) do %>
+        <%= f.govuk_radio_button(:teacher_catchment, 'england', label: { text: 'Yes' }) %>
+        <%= f.govuk_radio_button(:teacher_catchment, 'another', label: { text: 'No' }) %>
+      <% end %>
+
+      <%= f.govuk_submit %>
+    <% end  %>
+  </div>
+</div>

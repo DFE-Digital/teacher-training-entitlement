@@ -1,0 +1,29 @@
+<% content_for :title do %>
+  <%= t("helpers.title.registration_wizard.cannot_register_yet") %>
+<% end %>
+
+<%= render "reception_registrations/backlink", step: @step %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">You cannot register yet</h1>
+
+    <p class="govuk-body">Registrations are currently only open for courses starting in <%= application_course_start_date %>.</p>
+
+    <p class="govuk-body">The next cohort will begin their course in <%= application_next_course_start_date %>.</p>
+
+    <h2 class="govuk-heading-m">Stay informed</h2>
+
+    <p class="govuk-body">You can sign up for email updates to:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>find out when TTE registration opens</li>
+        <li>tell us if you’re interested in the special educational needs co-ordinator (SENCO) TTE</li>
+    </ul>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <%= govuk_link_to "Sign up for updates", new_email_update_path %>
+    </ul>
+
+  </div>
+</div>
