@@ -7,7 +7,7 @@
           scope: current_step_name,
           method: :patch do |f| %>
       <%= f.govuk_error_summary %>
-      <%= render 'registration_wizard/shared/questions/auto_complete_institution', form: f, question: current_step.question %>
+      <%= render "reception_registrations/shared/questions/auto_complete_institution", form: f, question: current_step.question %>
 
       <%= f.govuk_submit %>
     <% end  %>

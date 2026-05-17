@@ -29,7 +29,7 @@
               Your registration has expired but you can register again for future courses when registrations open.
             </p>
           <% else %>
-            <p> <%= link_to "Submit a new registration", registration_wizard_show_path(:course_start_date) %> if you still want to take this course. </p>
+            <p> <%= link_to "Submit a new registration", reception_registration_path("course-start-date") %> if you still want to take this course. </p>
           <% end %>
         </dd>
       </div>

@@ -21,8 +21,8 @@ RSpec.feature "Previously funded participant", :with_default_schedules, type: :f
 
     page.set_rack_session(
       "user_id" => user.id,
-      "registration_store" => {
-        "course_start_date" => "yes",
+      "registrations_#{user.id}" => {
+        "confirmation" => "yes",
         "course_identifier" => course.identifier,
         "lead_provider_id" => lead_provider.id,
         "teacher_catchment" => "england",
@@ -33,18 +33,18 @@ RSpec.feature "Previously funded participant", :with_default_schedules, type: :f
   end
 
   scenario "displays funding page with previously funded message (AC1)" do
-    visit "/registration/ineligible-for-funding"
+    visit "/reception-registration/ineligible-for-funding"
 
     expect(page).to have_text("Funding")
     expect(page).to have_text("You've already been allocated scholarship funding")
   end
 
   scenario "continue button navigates to funding your course page (AC2)" do
-    visit "/registration/ineligible-for-funding"
+    visit "/reception-registration/ineligible-for-funding"
 
     click_link "Continue"
 
-    expect(page).to have_current_path("/registration/funding-your-course")
-    expect(page).to have_text("How are you funding your course?")
+    expect(page).to have_current_path("/reception-registration/funding-your-course")
+    expect(page).to have_text("I am paying")
   end
 end

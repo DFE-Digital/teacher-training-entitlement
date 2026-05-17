@@ -54,7 +54,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
 
         it "signs in the user and redirects" do
           subject
-          expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
+          expect(response).to redirect_to(reception_registration_path("course-start-date"))
         end
 
         context "when user has applications" do
@@ -80,7 +80,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
 
         it "redirects to the failed sign in path" do
           subject
-          expect(response).to redirect_to(registration_wizard_show_path(:start))
+          expect(response).to redirect_to(root_path)
         end
 
         it "sets an error flash message" do

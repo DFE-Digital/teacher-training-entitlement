@@ -6,7 +6,7 @@
 <% if question.display_no_javascript_fallback_form? %>
   <%=
     render(
-      "registration_wizard/shared/questions/auto_complete_institution/no_js",
+      "reception_registrations/shared/questions/auto_complete_institution/no_js",
       form: form,
       question: question,
       question_text: question_text,
@@ -16,7 +16,7 @@
 <% else %>
   <%=
     render(
-      "registration_wizard/shared/questions/auto_complete_institution/js",
+      "reception_registrations/shared/questions/auto_complete_institution/js",
       form: form,
       question: question,
       question_text: question_text,

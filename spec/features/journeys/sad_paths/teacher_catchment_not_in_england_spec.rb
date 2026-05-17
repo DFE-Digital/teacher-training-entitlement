@@ -22,22 +22,22 @@ RSpec.feature "Sad journey", :with_default_lead_provider, :with_default_schedule
       page.click_button("Start now")
     end
 
-    expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/course-start-date", submit_form: true) do
       page.choose("October 2026", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/choose-your-provider", submit_form: true) do
       page.choose(LeadProvider.first.name, visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/teacher-catchment", submit_form: true) do
       page.choose("No", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/work-setting", submit_form: true) do
       page.choose("Other", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/ineligible-for-funding")
+    expect_page_to_have(path: "/reception-registration/ineligible-for-funding")
   end
 end

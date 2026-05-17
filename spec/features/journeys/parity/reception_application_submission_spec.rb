@@ -1,23 +1,27 @@
 require "rails_helper"
 
-RSpec.feature "Reception registration application parity", :with_default_lead_provider, :with_default_schedules, type: :feature do
-  let(:old_user) { create(:user, :with_verified_trn) }
-  let(:new_user) { create(:user, :with_verified_trn) }
+RSpec.feature "Reception registration application submission", :with_default_lead_provider, :with_default_schedules, type: :feature do
+  let(:user) { create(:user, :with_verified_trn) }
 
-  scenario "old and new wizards create equivalent applications for the same path" do
-    old_application = complete_ineligible_other_setting_journey(
-      user: old_user,
-      base_path: "/registration",
-      session_key: "registration_store",
-    )
-
-    new_application = complete_ineligible_other_setting_journey(
-      user: new_user,
+  scenario "creates an application for an ineligible other-setting path" do
+    application = complete_ineligible_other_setting_journey(
+      user:,
       base_path: "/reception-registration",
-      session_key: "registrations_#{new_user.id}",
+      session_key: "registrations_#{user.id}",
     )
 
-    expect(normalized_application(new_application)).to eq(normalized_application(old_application))
+    expect(application).to have_attributes(
+      user:,
+      eligible_for_funding: false,
+      funding_eligiblity_status_code: "ineligible_setting",
+      funding_choice: "self",
+      institution: nil,
+      teacher_catchment: "england",
+      work_setting: "other",
+      works_in_school: false,
+      works_in_childcare: false,
+      status: Application::PENDING,
+    )
   end
 
   def complete_ineligible_other_setting_journey(user:, base_path:, session_key:)
@@ -60,17 +64,6 @@ RSpec.feature "Reception registration application parity", :with_default_lead_pr
     user.applications.order(:created_at).last.tap do |application|
       expect(application).to be_present
     end
-  end
-
-  def normalized_application(application)
-    application.attributes.except(
-      "id",
-      "created_at",
-      "updated_at",
-      "ecf_id",
-      "user_id",
-      "raw_application_data",
-    )
   end
 
 end

@@ -18,13 +18,11 @@ class FundingEligibility
     INELIGIBLE_SETTING => "funding_details.ineligible_setting",
   }.freeze
 
-  # NOTE: get_an_identity_id is a temporary parameter while we migrate to Teacher Auth/OneLogin
   def initialize(institution:,
                  course:,
                  inside_catchment:,
                  user:,
-                 work_setting:,
-                 **)
+                 work_setting:)
     @institution = institution
     @course = course
     @inside_catchment = inside_catchment

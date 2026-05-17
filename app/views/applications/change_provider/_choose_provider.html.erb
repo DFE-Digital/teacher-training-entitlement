@@ -17,7 +17,7 @@
           <% end %>
         </p>
         <% current_step.providers.each do |provider| %>
-          <%= f.govuk_radio_button :provider_id, provider.id, label: { text: provider.name }, link_errors: true %>
+          <%= f.govuk_radio_button :provider_id, provider.id, hint: { text: provider.hint }, label: { text: provider.name }, link_errors: true %>
         <% end %>
       <% end %>
 

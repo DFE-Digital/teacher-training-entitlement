@@ -2,15 +2,15 @@ module Helpers
   module JourneyStepHelper
     def choose_a_school(js:, name:)
       if js
-        navigate_to_page(path: "/registration/choose-school", submit_form: true) do
+        navigate_to_page(path: "/reception-registration/choose-school", submit_form: true) do
           within ".npq-js-reveal" do
             page.fill_in "What is the name of your workplace?", with: name
           end
 
-          page.find("#registration-wizard-institution-id-field__option--0").click
+          page.find("#choose-school-institution-id-field__option--0").click
         end
       else
-        navigate_to_page(path: "/registration/choose-school", submit_form: true) do
+        navigate_to_page(path: "/reception-registration/choose-school", submit_form: true) do
           within ".npq-js-hidden" do
             page.fill_in "What is the name of your workplace?", with: name
           end
@@ -23,7 +23,7 @@ module Helpers
 
     def choose_a_childcare_provider(js:, name:)
       if js
-        navigate_to_page(path: "/registration/choose-childcare-provider", submit_form: true) do
+        navigate_to_page(path: "/reception-registration/choose-childcare-provider", submit_form: true) do
           within ".npq-js-reveal" do
             page.fill_in "What is the name of your workplace?", with: "open"
           end
@@ -31,7 +31,7 @@ module Helpers
           page.find("#nursery-picker__option--0").click
         end
       else
-        navigate_to_page(path: "/registration/choose-childcare-provider", submit_form: true) do
+        navigate_to_page(path: "/reception-registration/choose-childcare-provider", submit_form: true) do
           within ".npq-js-hidden" do
             page.fill_in "What is the name of your workplace?", with: name
           end
@@ -52,7 +52,7 @@ module Helpers
       )
 
       if js
-        expect_page_to_have(path: "/registration/choose-private-childcare-provider", submit_form: true) do
+        expect_page_to_have(path: "/reception-registration/choose-private-childcare-provider", submit_form: true) do
           expect(page).to have_text("Enter your or your employer’s unique reference number (URN)")
 
           within ".npq-js-reveal" do
@@ -64,13 +64,13 @@ module Helpers
           page.find("#private-childcare-provider-picker__option--0").click
         end
       else
-        expect_page_to_have(path: "/registration/choose-private-childcare-provider", submit_form: true) do
+        expect_page_to_have(path: "/reception-registration/choose-private-childcare-provider", submit_form: true) do
           within(".npq-js-hidden") do
             page.fill_in("Enter your or your employer’s unique reference number (URN)", with: provider.urn)
           end
         end
 
-        expect_page_to_have(path: "/registration/choose-private-childcare-provider", submit_form: true) do
+        expect_page_to_have(path: "/reception-registration/choose-private-childcare-provider", submit_form: true) do
           page.choose([provider.urn, provider.name].compact.join(" - "))
         end
       end
@@ -78,7 +78,7 @@ module Helpers
 
     def choose_teacher_catchment(js:, region:)
       if js
-        expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+        expect_page_to_have(path: "/reception-registration/teacher-catchment", submit_form: true) do
           page.choose(region, visible: :all)
         end
       else
@@ -89,7 +89,7 @@ module Helpers
         # select(country_name, from: "Which country do you teach in?")
         #
         # instead we need to find all matches and select the first
-        expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+        expect_page_to_have(path: "/reception-registration/teacher-catchment", submit_form: true) do
           page.choose(region)
         end
       end

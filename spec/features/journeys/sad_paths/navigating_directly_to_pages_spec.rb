@@ -19,14 +19,14 @@ RSpec.feature "Sad journeys", :no_js, :npq, :with_default_schedules, type: :feat
     possible-funding
   ]
 
-  RegistrationWizard::VALID_REGISTRATION_STEPS
-    .map { |step| step.to_s.dasherize }.each do |step|
+  ReceptionRegistrations::FormWizard::STEP_NAMES
+    .map(&:to_s).each do |step|
     scenario "Navigating directly to the #{step} page does not raise an error" do
-      visit "/registration/#{step}"
+      visit "/reception-registration/#{step}"
       if steps_that_require_course.include?(step)
-        expect(page).to have_current_path("/registration/course-start-date")
+        expect(page).to have_current_path("/reception-registration/course-start-date")
       else
-        expect(page).to have_current_path("/registration/#{step}")
+        expect(page).to have_current_path("/reception-registration/#{step}")
       end
     end
   end

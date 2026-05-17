@@ -53,7 +53,7 @@ module ReceptionRegistrations
         graph.before_next_step do
           # TODO: Implement a after_step to decorate the state store
           # so this is a bit nicer
-          if current_step_name == :'choose-school' && @action_type == :update
+          if current_step_name == :'choose-school' && @action_type == :update && !state_store.no_institution_selected?
             write_state(
               funding_eligibility_status_code: funding_eligibility_service.funding_eligiblity_status_code,
               eligible_for_funding: funding_eligibility_service.eligible_for_funding?,
@@ -87,6 +87,15 @@ module ReceptionRegistrations
       step_strategy.resolve.presence
     end
 
+    def ensure_funding_eligibility!
+      status = funding_eligibility_service.funding_eligiblity_status_code
+
+      write_state(
+        funding_eligibility_status_code: status,
+        eligible_for_funding: status == FundingEligibility::FUNDED_ELIGIBILITY_RESULT,
+      )
+    end
+
   private
 
     def funding_eligibility_service
@@ -98,7 +107,6 @@ module ReceptionRegistrations
         get_an_identity_id: @user.get_an_identity_id,
         work_setting: state_store.work_setting,
         kind_of_nursery: state_store.kind_of_nursery,
-        query_store: state_store,
       )
     end
 

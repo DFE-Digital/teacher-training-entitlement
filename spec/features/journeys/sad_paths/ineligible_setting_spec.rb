@@ -11,8 +11,8 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, :with_default_s
     before do
       page.set_rack_session(
         "user_id" => user.id,
-        "registration_store" => {
-          "course_start_date" => "yes",
+        "registrations_#{user.id}" => {
+          "confirmation" => "yes",
           "course_identifier" => course.identifier,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "england",
@@ -22,15 +22,15 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, :with_default_s
     end
 
     scenario "displays funding page then continues to funding your course" do
-      visit "/registration/ineligible-for-funding"
+      visit "/reception-registration/ineligible-for-funding"
 
       expect(page).to have_text("Funding")
       expect(page).to have_text("you do not work in one of the eligible settings")
 
       click_link "Continue"
 
-      expect(page).to have_current_path("/registration/funding-your-course")
-      expect(page).to have_text("How are you funding your course?")
+      expect(page).to have_current_path("/reception-registration/funding-your-course")
+      expect(page).to have_text("I am paying")
     end
   end
 
@@ -40,8 +40,8 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, :with_default_s
     before do
       page.set_rack_session(
         "user_id" => user.id,
-        "registration_store" => {
-          "course_start_date" => "yes",
+        "registrations_#{user.id}" => {
+          "confirmation" => "yes",
           "course_identifier" => course.identifier,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "england",
@@ -52,15 +52,15 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, :with_default_s
     end
 
     scenario "displays funding page then continues to funding your course" do
-      visit "/registration/ineligible-for-funding"
+      visit "/reception-registration/ineligible-for-funding"
 
       expect(page).to have_text("Funding")
       expect(page).to have_text("you do not work in one of the eligible settings")
 
       click_link "Continue"
 
-      expect(page).to have_current_path("/registration/funding-your-course")
-      expect(page).to have_text("How are you funding your course?")
+      expect(page).to have_current_path("/reception-registration/funding-your-course")
+      expect(page).to have_text("I am paying")
     end
   end
 end

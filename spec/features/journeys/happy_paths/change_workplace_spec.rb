@@ -14,7 +14,7 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
       "user_id" => user.id,
       "registration_store" => {
         "institution_id" => school.institution.id.to_s,
-        "course_start_date" => "yes",
+        "confirmation" => "yes",
         "teacher_catchment" => "england",
         "work_setting" => "a_school",
       },
@@ -22,7 +22,7 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
   end
 
   scenario "displays previously selected school when returning to choose-school page" do
-    visit "/registration/choose-school/change"
+    visit "/reception-registration/choose-school/change"
 
     within(".npq-js-reveal") do
       input = find("input[type='text']", visible: true)

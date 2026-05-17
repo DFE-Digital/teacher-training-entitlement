@@ -47,7 +47,7 @@ RSpec.feature "Applications", type: :feature do
 
       expect(page).to have_text("Withdrawn")
       expect(page).to have_text("Date withdrawn:")
-      expect(page).to have_link("submit a new registration", href: registration_wizard_show_path(step: "course-start-date"))
+      expect(page).to have_link("submit a new registration", href: reception_registration_path("course-start-date"))
     end
 
     scenario "redirects from index to the withdrawn application" do

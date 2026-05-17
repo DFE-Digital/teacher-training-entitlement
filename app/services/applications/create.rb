@@ -44,7 +44,7 @@ module Applications
         kind_of_nursery:,
         work_setting:,
         raw_application_data: state_store.read,
-        on_submission_trn: trn,
+        on_submission_trn: trn || @user.trn,
         teacher_catchment_country:,
         teacher_catchment_iso_country_code:,
         status: Application::PENDING,
@@ -52,6 +52,8 @@ module Applications
       )
 
       Emails::SendApplicationSubmissionEmailJob.perform_later(application:)
+
+      application
     end
   end
 end

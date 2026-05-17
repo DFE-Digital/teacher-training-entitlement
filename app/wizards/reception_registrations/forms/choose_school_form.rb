@@ -59,13 +59,7 @@ module ReceptionRegistrations
       end
 
       def search_term_entered_in_no_js_fallback_form?
-        false # TODO: !
-        # This combination of fields is only used in the no-js fallback form
-        # institution_name will be set from the search term being entered into the search
-        # field that is only visible when JS is disabled.
-        #
-        # TODO ....
-        # wizard.store["institution_name"].present?
+        state_store["institution_name"].present? && no_institution_selected?
       end
 
       def validate_school_name_returns_results

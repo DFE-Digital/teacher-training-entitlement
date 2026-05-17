@@ -95,6 +95,8 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
 
       context "when changing provider succeeds" do
         it "creates updates the application provider and redirects to user registrations path" do
+          allow(GenericMailer).to receive(:with).and_call_original
+
           expect(GenericMailer).to receive(:with).with(
             to: application.user.email,
             full_name: application.user.full_name,

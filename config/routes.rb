@@ -27,12 +27,7 @@ Rails.application.routes.draw do
     end
   end
 
-  root "registration_wizard#show", step: "start"
-
-  get "/registration/:step", to: "registration_wizard#show", as: "registration_wizard_show"
-  get "/registration/:step/change", to: "registration_wizard#show", as: "registration_wizard_show_change", changing_answer: "1"
-  patch "/registration/:step", to: "registration_wizard#update", as: "registration_wizard_update"
-  patch "/registration/:step/change", to: "registration_wizard#update", as: "registration_wizard_update_change", changing_answer: "1"
+  root "reception_registrations#show", step: "start"
 
   get "/registration-interest/sign-up", to: "interest_notification_sign_up#new"
   post "/registration-interest/sign-up", to: "interest_notification_sign_up#create"
@@ -60,6 +55,8 @@ Rails.application.routes.draw do
     resources :change_provider, path: "change-provider", param: :step, only: %w[show update]
   end
 
+  get "/reception-registration/:step/change", to: "reception_registrations#show", as: "reception_registration_change", changing_answer: "1"
+  patch "/reception-registration/:step/change", to: "reception_registrations#update", changing_answer: "1"
   resources :reception_registrations, path: "reception-registration", param: :step, only: %w[show update]
 
   draw("/api/v1")
@@ -72,5 +69,5 @@ Rails.application.routes.draw do
   get "/422", to: "errors#unprocessable_content", via: :all
   get "/500", to: "errors#internal_server_error", via: :all
 
-  get "/development_login", to: "registration_wizard#development_login"
+  get "/development_login", to: "reception_registrations#development_login"
 end

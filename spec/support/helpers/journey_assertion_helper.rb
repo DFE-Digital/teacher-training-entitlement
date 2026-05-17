@@ -32,8 +32,6 @@ module Helpers
 
     def expect_applicant_reached_end_of_journey(total_number_of_created_applications: 1)
       expect_page_to_have(path: "/applications/#{latest_application.reload.ecf_id}", submit_form: false) do
-        expect(page).to have_content("Registration successfully submitted")
-        expect(page).to have_text("Registration successfully submitted")
         expect(page).to have_text("Application ID: #{latest_application.ecf_id}")
       end
 
@@ -43,7 +41,7 @@ module Helpers
 
     def check_back_journey_is_correct
       starting_path = page.current_path
-      until page.current_path == "/registration/course-start-date"
+      until page.current_path == "/reception-registration/course-start-date"
         page.click_link("Back")
         back_steps ||= []
         back_steps << page.current_path

@@ -2,7 +2,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <%= render "registration_wizard/possible_funding/eligible_for_scholarship_funding", course: @wizard.state_store.course, funding_amount: nil %>
+    <%= render "reception_registrations/possible_funding/eligible_for_scholarship_funding", course: @wizard.state_store.course, funding_amount: nil %>
     <%= form_with model: current_step,
           url: @wizard.current_step_path,
           scope: current_step_name,

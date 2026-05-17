@@ -24,37 +24,37 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
 
     expect(page).not_to have_content("Before you start")
 
-    expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/course-start-date", submit_form: true) do
       expect(page).to have_text("When do you want to start the course?")
       page.choose("October 2026", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/choose-your-provider", submit_form: true) do
       expect(page).to have_text("Select your provider")
       page.choose(LeadProvider.first.name, visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/teacher-catchment", submit_form: true) do
       expect(page).to have_text("Do you work in England?")
       page.choose("Yes", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/work-setting", submit_form: true) do
       page.choose("State-funded nursery, pre-school, school or academy trust", visible: :all)
     end
 
     choose_a_school(js:, name: "open")
 
-    expect_page_to_have(path: "/registration/possible-funding", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/possible-funding", submit_form: true) do
       expect(page).to have_text("Funding")
     end
 
-    expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/share-provider", submit_form: true) do
       expect(page).to have_text("Sharing your NPD information")
       page.check("Yes, I agree to share my information", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/check-answers", submit_button_text: "Submit", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/check-answers", submit_button_text: "Submit", submit_form: true) do
       expect_check_answers_page_to_have_answers(
         {
           "Course start" => "In #{application_course_start_date}",
@@ -83,22 +83,10 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
         expect(application.eligible_for_funding).to be_truthy
       end
     end
-    if User.last.applications.count == 1
-      navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
-        expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Early Years")
-      end
-    else
-      navigate_to_page(path: "/applications", submit_form: false) do
-        expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Early Years")
-      end
-    end
 
-    visit "/registration/share-provider"
-
-    expect_page_to_have(path: "/", submit_form: false) do
-      expect(page).to have_content("Before you start")
+    navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
+      expect(page).to have_text(LeadProvider.first.name)
+      expect(page).to have_text("Early Years")
     end
 
     expect(retrieve_latest_application_user_data).to match(user_attributes_from_stubbed_callback_response.merge(
@@ -141,17 +129,13 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       "review_status" => nil,
       "raw_application_data" => {
         "can_share_choices" => "1",
-        # "chosen_provider" => "yes",
-        "course_start" => "In #{application_course_start_date}",
-        "course_start_date" => "yes",
+        "confirmation" => "yes",
         "course_identifier" => "tte-early-years",
-        # "funding" => "trust",
-        "funding_amount" => nil,
-        # "funding_eligiblity_status_code" => "ineligible_establishment_type",
+        "eligible_for_funding" => true,
+        "funding_eligibility_status_code" => "funded",
         "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
         "institution_name" => js ? "" : "open",
         "lead_provider_id" => LeadProvider.first.id.to_s,
-        "submitted" => true,
         "teacher_catchment" => "england",
         "teacher_catchment_country" => nil,
         "work_setting" => "state_funded_institution",

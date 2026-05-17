@@ -88,15 +88,15 @@ module ReceptionRegistrations
     end
 
     def primary_establishment
-      selected_institution.primary_education_phase? if selected_institution.is_a?(School)
+      selected_institution.school.primary_education_phase? if selected_institution&.school?
     end
 
     def number_of_pupils
-      selected_institution.number_of_pupils if selected_institution.is_a?(School)
+      selected_institution.school.number_of_pupils if selected_institution&.school?
     end
 
     def ukprn
-      if inside_catchment? && (selected_institution.is_a?(LocalAuthority) || selected_institution.is_a?(School))
+      if inside_catchment? && (selected_institution&.local_authority? || selected_institution&.school?)
         selected_institution.ukprn
       end
     end

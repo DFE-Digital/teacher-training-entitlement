@@ -9,6 +9,10 @@ module ApplicationHelper
     end
   end
 
+  def application_next_course_start_date
+    Cohort.application_next_course_start_date
+  end
+
   def boolean_red_green_tag(bool, text = nil)
     text ||= bool ? "Yes" : "No"
     colour = bool ? "green" : "red"

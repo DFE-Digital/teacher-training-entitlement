@@ -94,7 +94,7 @@ private
   end
 
   def failed_sign_in_path
-    registration_wizard_show_path(:start)
+    root_path
   end
 
   def after_sign_in_path_for(user)
@@ -109,15 +109,7 @@ private
   end
 
   def start_questionnaire_path(user)
-    wizard = RegistrationWizard.new(
-      current_step: :auth_callback,
-      store: session["registration_store"],
-      params: {},
-      request:,
-      current_user: user,
-    )
-
-    registration_wizard_show_path(wizard.next_step_path)
+    reception_registration_path("course-start-date")
   end
 
   def try_to_extract_user_uid

@@ -64,7 +64,7 @@ RSpec.describe "Reception Registrations / Check Answers", type: :request do
         "funding" => "self",
       )
       expect(Emails::SendApplicationSubmissionEmailJob).to have_received(:perform_later).with(application: created_application)
-      expect(response).to redirect_to(reception_registration_path(:exit))
+      expect(response).to redirect_to(application_path(created_application.ecf_id))
     end
   end
 end

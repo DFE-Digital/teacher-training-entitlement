@@ -1,5 +1,5 @@
 <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
-  <%= t('withdrawal_details.submit_new_registration_html', link: link_to(t('withdrawal_details.submit_new_registration_link'), registration_wizard_show_path(step: "course-start-date"))) %>
+  <%= t("withdrawal_details.submit_new_registration_html", link: link_to(t("withdrawal_details.submit_new_registration_link"), reception_registration_path("course-start-date"))) %>
 </p>
 <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">
   <%= t('withdrawal_details.date_withdrawn', withdrawn_at: application.withdrawn_at&.to_fs(:govuk_short)) %>

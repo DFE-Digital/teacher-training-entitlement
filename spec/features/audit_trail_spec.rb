@@ -73,18 +73,39 @@ RSpec.feature "Recording audit trail via papertrail", :revisit, :versioning, typ
 
     before do
       create(:cohort, :current)
+      school
 
-      allow_any_instance_of(RegistrationWizardController)
+      allow(Emails::SendApplicationSubmissionEmailJob).to receive(:perform_later)
+      allow_any_instance_of(ApplicationController)
         .to receive(:session).and_return({
-          "registration_store" => wizard_store,
+          "registrations_#{current_user.id}" => registration_state,
           :user_id => current_user.id,
         })
 
-      patch registration_wizard_update_path(:check_answers)
+      patch reception_registration_path("check-answers")
     end
 
     let(:current_user) { create(:user) }
-    let(:wizard_store) { build(:registration_wizard_store, current_user:) }
+    let(:lead_provider) { create(:lead_provider) }
+    let(:course) { create(:course, :tte_early_years, lead_provider:, display: true) }
+    let(:school) { create(:school) }
+    let(:registration_state) do
+      {
+        confirmation: "yes",
+        course_identifier: course.identifier,
+        lead_provider_id: lead_provider.id.to_s,
+        teacher_catchment: "england",
+        work_setting: "other",
+        works_in_school: false,
+        works_in_childcare: false,
+        institution_id: school.institution.id.to_s,
+        funding: "self",
+        can_share_choices: "1",
+        eligible_for_funding: false,
+        funding_eligibility_status_code: "ineligible_setting",
+        trn: current_user.trn,
+      }
+    end
 
     it "records the lead providers details" do
       expect(change_author).to eq "Public User #{current_user.id}"

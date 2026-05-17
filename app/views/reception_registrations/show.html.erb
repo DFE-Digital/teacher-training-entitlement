@@ -1,1 +1,1 @@
-<%= render "reception_registrations/#{@wizard.current_step_name.to_s.underscore}" %>
+<%= render "reception_registrations/#{(@step_name || @wizard.current_step_name).to_s.underscore}" %>

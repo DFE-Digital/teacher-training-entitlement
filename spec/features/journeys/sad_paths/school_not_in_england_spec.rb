@@ -25,34 +25,34 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
 
     expect(page).not_to have_content("Before you start")
 
-    expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/course-start-date", submit_form: true) do
       expect(page).to have_text("When do you want to start the course?")
       page.choose("October 2026", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/provider-check", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/provider-check", submit_form: true) do
       expect(page).to have_text("Have you chosen an NPQ and provider?")
       page.choose("Yes", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/teacher-catchment", submit_form: true) do
       page.choose("Yes", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
+    expect_page_to_have(path: "/reception-registration/work-setting", submit_form: true) do
       page.choose("A school", visible: :all)
     end
 
     School.create!(urn: 100_099, name: "open wrexham school", address_1: "street 4", town: "wrexham", establishment_status_code: "1", establishment_type_code: "30")
     choose_a_school(js:, name: "open wrexham school")
 
-    expect_page_to_have(path: "/registration/school-not-in-england", submit_form: false) do
+    expect_page_to_have(path: "/reception-registration/school-not-in-england", submit_form: false) do
       expect(page).to have_text("School or college must be in England")
 
       page.click_link("Back")
     end
 
-    expect_page_to_have(path: "/registration/choose-school", submit_form: false) do
+    expect_page_to_have(path: "/reception-registration/choose-school", submit_form: false) do
       expected_text = js ? "What is the name of your workplace?" : "Select your workplace"
       expect(page).to have_text(expected_text)
     end
