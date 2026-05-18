@@ -29,14 +29,6 @@ User.find_or_create_by!(email: "jerome.riga@education.gov.uk") do |user|
   )
 end
 
-User.find_or_create_by!(email: "gurmukh.bhurjee@education.gov.uk") do |user|
-  user.assign_attributes(
-    full_name: "Gurmukh BHURJEE",
-    trn: "3013407",
-    trn_verified: true,
-  )
-end
-
 User.find_or_create_by!(email: "ben.keeping@education.gov.uk") do |user|
   user.assign_attributes(
     full_name: "Ben Keeping",
