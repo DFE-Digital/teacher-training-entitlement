@@ -27,15 +27,15 @@ Rails encrypted credentials are used to store sensitive configuration (e.g. Acti
 
 | Environment | Encrypted file | Key |
 |-------------|----------------|-----|
-| Development | `config/credentials/development.yml.enc` | `config/credentials/development.key` or `RAILS_MASTER_KEY_DEVELOPMENT` |
+| Development | `config/credentials/development.yml.enc` | `config/credentials/development.key` or `RAILS_MASTER_KEY` |
 | Test | Hardcoded in `config/environments/test.rb` | N/A |
-| Staging/Review | `config/credentials/staging.yml.enc` | `RAILS_MASTER_KEY_STAGING` |
-| Sandbox | `config/credentials/sandbox.yml.enc` | `RAILS_MASTER_KEY_SANDBOX` |
-| Production | `config/credentials/production.yml.enc` | `RAILS_MASTER_KEY_PRODUCTION` |
+| Staging/Review | `config/credentials/staging.yml.enc` | `RAILS_MASTER_KEY` |
+| Sandbox | `config/credentials/sandbox.yml.enc` | `RAILS_MASTER_KEY` |
+| Production | `config/credentials/production.yml.enc` | `RAILS_MASTER_KEY` |
 
 **For local development**, either:
 - Get `config/credentials/development.key` from a team member, or
-- Set `RAILS_MASTER_KEY_DEVELOPMENT` in your `.env` file
+- Set `RAILS_MASTER_KEY` in your `.env` file
 
 **To view credentials:**
 ```bash
