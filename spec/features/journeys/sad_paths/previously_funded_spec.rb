@@ -4,7 +4,7 @@ RSpec.feature "Previously funded participant", :with_default_schedules, type: :f
   include Helpers::JourneyAssertionHelper
   include ApplicationHelper
 
-  let(:user) { create(:user, :with_get_an_identity_id) }
+  let(:user) { create(:user, :with_one_login_id) }
   let(:school) { create(:school, :with_address) }
   let(:lead_provider) { create(:lead_provider, :with_courses) }
   let(:course) { lead_provider.courses.last }

@@ -14,17 +14,9 @@ RSpec.describe Questionnaires::Start do
     let(:store) { {} }
 
     context "when logged in" do
-      context "with TRN" do
-        let(:current_user) { create :user }
+      let(:current_user) { create :user }
 
-        it { is_expected.to eq :course_start_date }
-      end
-
-      context "without TRN" do
-        let(:current_user) { create :user, trn: nil }
-
-        it { is_expected.to eq :teacher_reference_number }
-      end
+      it { is_expected.to eq :course_start_date }
     end
 
     context "when not logged in" do

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Applications accessibility", :axe, type: :feature do
-  let(:user) { create(:user, :with_get_an_identity_id) }
+  let(:user) { create(:user, :with_one_login_id) }
   let(:application) { create(:application, user:) }
 
   before do

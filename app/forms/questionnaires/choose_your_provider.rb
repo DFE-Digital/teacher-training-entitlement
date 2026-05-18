@@ -71,8 +71,6 @@ module Questionnaires
 
     delegate :course,
              :inside_catchment?,
-             :trn,
-             :get_an_identity_id,
              to: :query_store
 
     def validate_lead_provider_exists

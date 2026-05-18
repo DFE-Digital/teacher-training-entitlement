@@ -8,8 +8,6 @@ RSpec.feature "Happy journeys", type: :feature do
   include_context "Stub Teacher Auth Responses"
 
   scenario "course start date" do
-    stub_participant_validation_request
-
     navigate_to_page(path: "/", submit_form: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")

@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Users::Query do
-  let(:user) { create(:user, :with_get_an_identity_id, email: "user@example.com") }
-  let!(:matching_user) { create(:user, :with_get_an_identity_id, email: "match@example.com") }
+  let(:user) { create(:user, :with_one_login_id, email: "user@example.com") }
+  let!(:matching_user) { create(:user, :with_one_login_id, email: "match@example.com") }
 
   describe "#user_with_matching_email" do
     subject { described_class.new(user:).user_with_matching_email }

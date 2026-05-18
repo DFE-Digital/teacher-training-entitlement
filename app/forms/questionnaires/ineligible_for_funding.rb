@@ -46,8 +46,6 @@ module Questionnaires
         course:,
         institution:,
         inside_catchment: inside_catchment?,
-        trn: wizard.query_store.trn,
-        get_an_identity_id: wizard.query_store.get_an_identity_id,
         query_store: wizard.query_store,
       )
     end

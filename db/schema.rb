@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_11_130012) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -353,19 +353,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_130012) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
-  create_table "get_an_identity_webhook_messages", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.jsonb "message"
-    t.string "message_id"
-    t.string "message_type"
-    t.datetime "processed_at", precision: nil
-    t.jsonb "raw"
-    t.datetime "sent_at", precision: nil
-    t.string "status", default: "pending"
-    t.string "status_comment"
-    t.datetime "updated_at", null: false
-  end
-
   create_table "institutions", force: :cascade do |t|
     t.string "address_1"
     t.string "address_2"
@@ -587,9 +574,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_130012) do
     t.string "email_updates_unsubscribe_key"
     t.string "feature_flag_id"
     t.text "full_name"
-    t.boolean "get_an_identity_id_synced_to_ecf", default: false
     t.text "national_insurance_number"
     t.boolean "notify_user_for_future_reg", default: false
+    t.string "one_login_id"
     t.string "preferred_name"
     t.string "provider"
     t.jsonb "raw_tra_provider_data"
@@ -598,16 +585,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_130012) do
     t.boolean "trn_auto_verified", default: false
     t.string "trn_lookup_status"
     t.boolean "trn_verified", default: false, null: false
-    t.string "uid"
     t.datetime "updated_at", null: false
     t.datetime "updated_from_tra_at", precision: nil
     t.index ["created_at"], name: "index_users_on_created_at"
     t.index ["ecf_id"], name: "index_users_on_ecf_id", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["one_login_id"], name: "index_users_on_one_login_id", unique: true
     t.index ["provider"], name: "index_users_on_provider"
     t.index ["significantly_updated_at"], name: "index_users_on_significantly_updated_at"
     t.index ["trn"], name: "index_users_on_trn"
-    t.index ["uid"], name: "index_users_on_uid", unique: true
   end
 
   create_table "versions", force: :cascade do |t|

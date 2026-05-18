@@ -25,8 +25,6 @@ private
       course: application.course,
       institution: application.institution,
       inside_catchment: application.teacher_catchment == "england",
-      trn: application.user.trn,
-      get_an_identity_id: application.user.get_an_identity_id,
       query_store: query_store(application),
     )
   end

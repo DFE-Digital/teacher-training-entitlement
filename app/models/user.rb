@@ -1,8 +1,10 @@
 class User < ApplicationRecord
+  # TO DO: remove after succesful deploy
+  self.ignored_columns += %w[get_an_identity_id_synced_to_ecf]
+
   INSIGNIFICANT_ATTRIBUTES = %w[
     raw_tra_provider_data
     feature_flag_id
-    get_an_identity_id_synced_to_ecf
     updated_from_tra_at
     trn_lookup_status
     notify_user_for_future_reg
@@ -26,17 +28,12 @@ class User < ApplicationRecord
             uniqueness: true,
             notify_email: true
 
-  validates :uid, uniqueness: { allow_blank: true }
+  validates :one_login_id, uniqueness: { allow_blank: true }
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   after_commit :touch_significantly_updated_at
 
   scope :admins, -> { where(admin: true) }
-
-  scope :with_get_an_identity_id, lambda {
-    where.not(uid: nil)
-         .where(provider: Omniauth::Strategies::TeacherAuth::NAME.to_s)
-  }
 
   EMAIL_UPDATES_STATES = %i[senco other_npq].freeze
   EMAIL_UPDATES_ALL_STATES = [:empty] + EMAIL_UPDATES_STATES
@@ -50,18 +47,6 @@ class User < ApplicationRecord
       .first
       &.participant_outcomes
       &.latest
-  end
-
-  def self.find_by_get_an_identity_id(get_an_identity_id)
-    with_get_an_identity_id.find_by(uid: get_an_identity_id)
-  end
-
-  def get_an_identity_provider?
-    provider == Omniauth::Strategies::TeacherAuth::NAME.to_s
-  end
-
-  def get_an_identity_id
-    uid if get_an_identity_provider?
   end
 
   def flipper_id

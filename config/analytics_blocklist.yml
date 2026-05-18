@@ -51,18 +51,6 @@
   - name
   - record_id
   - record_type
-  :get_an_identity_webhook_messages:
-  - id
-  - created_at
-  - message
-  - message_id
-  - message_type
-  - processed_at
-  - raw
-  - sent_at
-  - status
-  - status_comment
-  - updated_at
   :statements:
   - reconcile_amount
   :legacy_passed_participant_outcomes:
@@ -131,6 +119,8 @@
   - current
   - lead_provider_id
   - updated_at
+  :application_events:
+  - type
   :api_tokens:
   - id
   - created_at
@@ -162,6 +152,9 @@
   - date_of_birth
   - national_insurance_number
   - raw_tra_provider_data
+  - refresh_token
+  - refresh_token_updated_at
+  - one_login_id
   :bulk_operations:
   - id
   - admin_id

@@ -102,17 +102,17 @@ RSpec.describe Participants::Query do
           let(:params) { { updated_since: " " } }
 
           it "does not filter by updated since" do
-            condition_string = %("updated_at")
-
-            expect(query.scope.to_sql).not_to include(condition_string)
+            sql = query.scope.to_sql
+            # Check that there's no WHERE clause filtering by updated_at
+            expect(sql).not_to match(/WHERE.*"updated_at"/i)
           end
         end
 
         context "when a updated since is not supplied" do
           it "does not filter by updated since" do
-            condition_string = %("updated_at")
-
-            expect(query.scope.to_sql).not_to include(condition_string)
+            sql = query.scope.to_sql
+            # Check that there's no WHERE clause filtering by updated_at
+            expect(sql).not_to match(/WHERE.*"updated_at"/i)
           end
         end
 

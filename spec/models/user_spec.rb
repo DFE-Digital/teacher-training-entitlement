@@ -98,7 +98,7 @@ RSpec.describe User do
     it { is_expected.to validate_presence_of(:email).with_message("Enter an email address") }
     it { is_expected.to validate_uniqueness_of(:email).case_insensitive.with_message("Email address must be unique") }
     it { is_expected.not_to allow_value("invalid-email").for(:email) }
-    it { is_expected.to validate_uniqueness_of(:uid).allow_blank }
+    it { is_expected.to validate_uniqueness_of(:one_login_id).allow_blank }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
   end
 
@@ -285,56 +285,6 @@ RSpec.describe User do
     context "when user is not on the ClosedRegistrationUser list" do
       it "can not be added" do
         expect { user.set_closed_registration_feature_flag }.not_to change { Feature.registration_closed?(user) }.from(true)
-      end
-    end
-  end
-
-  describe ".find_by_get_an_identity_id" do
-    let(:uid) { SecureRandom.uuid }
-    let!(:user) { create(:user, :with_get_an_identity_id, uid:) }
-
-    it "returns the user with matching uid from the with_get_an_identity_id scope" do
-      expect(User.find_by_get_an_identity_id(uid)).to eq(user)
-    end
-
-    it "returns nil if no user matches the uid" do
-      expect(User.find_by_get_an_identity_id("nonexistent-uid")).to be_nil
-    end
-  end
-
-  describe "#get_an_identity_provider?" do
-    context "when the user is using GAI" do
-      let(:user) { create(:user, :with_get_an_identity_id) }
-
-      it "returns true" do
-        expect(user).to be_get_an_identity_provider
-      end
-    end
-
-    context "when the user provider is empty" do
-      let(:user) { create(:user) }
-
-      it "returns false" do
-        expect(user).not_to be_get_an_identity_provider
-      end
-    end
-  end
-
-  describe "#get_an_identity_id" do
-    context "when the user is using GAI" do
-      let(:uid) { SecureRandom.uuid }
-      let(:user) { create(:user, :with_get_an_identity_id, uid:) }
-
-      it "returns true" do
-        expect(user.get_an_identity_id).to eq(uid)
-      end
-    end
-
-    context "when the user provider is empty" do
-      let(:user) { create(:user) }
-
-      it "returns false" do
-        expect(user.get_an_identity_id).to be_nil
       end
     end
   end

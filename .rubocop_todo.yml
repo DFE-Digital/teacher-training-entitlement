@@ -13,7 +13,6 @@ RSpec/ContextWording:
   Exclude:
     - 'spec/forms/questionnaires/choose_your_npq_spec.rb'
     - 'spec/forms/questionnaires/choose_your_provider_spec.rb'
-    - 'spec/forms/questionnaires/qualified_teacher_check_spec.rb'
     - 'spec/forms/questionnaires/registration_interest_notification_spec.rb'
     - 'spec/services/admin_service/dashboard_stats_spec.rb'
     - 'spec/services/funding_eligibility_spec.rb'

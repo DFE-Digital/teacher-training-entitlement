@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Users::MergeAndArchive do
-  let(:user_to_merge) { create(:user, :with_get_an_identity_id) }
+  let(:user_to_merge) { create(:user, :with_one_login_id) }
   let(:user_to_keep) { create(:user) }
 
   let!(:user_to_keep_rejected_application) { create(:application, :rejected, user: user_to_keep, cohort: create(:cohort, :unique)) }
@@ -67,18 +67,18 @@ RSpec.describe Users::MergeAndArchive do
         end
       end
 
-      context "when only the user to merge has a uid" do
-        context "when set_uid is false" do
-          it "does not update the user to keep uid" do
-            expect { subject }.not_to(change { user_to_keep.reload.uid })
+      context "when only the user to merge has a one_login_id" do
+        context "when set_one_login_id is false" do
+          it "does not update the user to keep one_login_id" do
+            expect { subject }.not_to(change { user_to_keep.reload.one_login_id })
           end
         end
 
-        context "when set_uid is true" do
-          subject { described_class.new(user_to_merge:, user_to_keep:, set_uid: true).call(dry_run:) }
+        context "when set_one_login_id is true" do
+          subject { described_class.new(user_to_merge:, user_to_keep:, set_one_login_id: true).call(dry_run:) }
 
-          it "sets the user to keep uid to the one from the user to merge" do
-            expect { subject }.to change { user_to_keep.reload.uid }.to(user_to_merge.uid)
+          it "sets the user to keep one_login_id to the one from the user to merge" do
+            expect { subject }.to change { user_to_keep.reload.one_login_id }.to(user_to_merge.one_login_id)
           end
         end
       end

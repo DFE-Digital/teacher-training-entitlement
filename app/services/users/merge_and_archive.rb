@@ -7,9 +7,9 @@ module Users
 
     attribute :user_to_merge
     attribute :user_to_keep
-    attribute :set_uid, :boolean, default: false
+    attribute :set_one_login_id, :boolean, default: false
     attribute :logger, default: -> { Rails.logger }
-    private :user_to_merge, :user_to_keep, :set_uid
+    private :user_to_merge, :user_to_keep, :set_one_login_id
 
     def call(dry_run: true)
       logger.info "Dry Run" if dry_run
@@ -18,14 +18,14 @@ module Users
         move_applications(from_user: user_to_merge, to_user: user_to_keep)
         move_participant_id_changes(from_user: user_to_merge, to_user: user_to_keep)
         user_to_keep.participant_id_changes.find_or_create_by!(from_participant_id: user_to_merge.ecf_id, to_participant_id: user_to_keep.ecf_id)
-        uid_to_keep = user_to_merge.uid if user_to_merge.uid.present? && user_to_keep.uid.blank?
+        one_login_id_to_keep = user_to_merge.one_login_id if user_to_merge.one_login_id.present? && user_to_keep.one_login_id.blank?
 
         logger.info("Archiving user ID=#{user_to_merge.id}")
         Users::Archiver.new(user: user_to_merge.reload).archive!
 
-        if uid_to_keep && set_uid
-          logger.info("Setting UID=#{uid_to_keep} on user ID=#{user_to_keep.id}")
-          user_to_keep.update!(uid: uid_to_keep)
+        if one_login_id_to_keep && set_one_login_id
+          logger.info("Setting one_login_id=#{one_login_id_to_keep} on user ID=#{user_to_keep.id}")
+          user_to_keep.update!(one_login_id: one_login_id_to_keep)
         end
 
         raise ActiveRecord::Rollback if dry_run

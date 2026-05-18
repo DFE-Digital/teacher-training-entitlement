@@ -1,5 +1,5 @@
 # Moves all applications and declarations from one user to another user, then archives the first user
-# If both users have a uid, then the uid of the user being kept is used
+# If both users have a one_login_id, then the one_login_id of the user being kept is used
 # usage:
 # rake 'merge_user_into_another[<user_to_merge_and_archive>,<user_to_keep>,<dry_run>]'
 # e.g.
@@ -22,5 +22,5 @@ task :merge_user_into_another, %i[user_ecf_id_to_merge user_ecf_id_to_keep dry_r
     exit 1
   end
 
-  Users::MergeAndArchive.new(user_to_merge:, user_to_keep:, set_uid: true, logger:).call(dry_run:)
+  Users::MergeAndArchive.new(user_to_merge:, user_to_keep:, set_one_login_id: true, logger:).call(dry_run:)
 end

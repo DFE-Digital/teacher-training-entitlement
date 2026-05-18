@@ -7,7 +7,7 @@ RSpec.feature "User administration", type: :feature do
   let(:user) { User.first }
 
   before do
-    create_list(:user, users_per_page, :with_get_an_identity_id)
+    create_list(:user, users_per_page, :with_one_login_id)
     user.update!(national_insurance_number: "QQ123456C", preferred_name: "Jonny D")
     sign_in_as(create(:admin))
   end
@@ -26,7 +26,7 @@ RSpec.feature "User administration", type: :feature do
     end
 
     scenario "navigating to the second page of users" do
-      create :user, :with_get_an_identity_id # exceed pagination threshold
+      create :user, :with_one_login_id # exceed pagination threshold
 
       visit(admin_users_path)
 
@@ -60,7 +60,7 @@ RSpec.feature "User administration", type: :feature do
         expect(summary_card).to have_summary_item("Date of birth", user.date_of_birth.to_fs(:govuk_short))
         expect(summary_card).to have_summary_item("National Insurance number", user.national_insurance_number)
         expect(summary_card).to have_summary_item("TRN", user.trn, "Not verified")
-        expect(summary_card).to have_summary_item("Get an Identity ID", user.uid)
+        expect(summary_card).to have_summary_item("One Login ID", user.one_login_id)
       end
     end
 

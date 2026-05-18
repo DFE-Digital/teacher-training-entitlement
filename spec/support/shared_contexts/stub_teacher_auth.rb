@@ -65,7 +65,7 @@ RSpec.shared_context("Stub Teacher Auth Responses") do
       "raw_tra_provider_data" => stubbed_callback_response_as_json,
       "trn" => user_trn,
       "trn_lookup_status" => user_trn_lookup_status,
-      "uid" => user_uid,
+      "one_login_id" => user_uid,
     }
   end
 
