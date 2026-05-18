@@ -5,13 +5,15 @@ RSpec.describe "Reception Registrations / Choose Your Course", type: :request do
   let(:user) { application.user }
   let(:course) { create(:course, :tte_early_years, display: true) }
   let(:url) { "/reception-registration/choose-your-course" }
+  let(:registration_session) { { confirmation: "yes" } }
+  let(:session) { { user_id: user.id, "registrations_#{user.id}" => registration_session }.with_indifferent_access }
 
   before do
     course
 
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
-      .and_return({ user_id: user.id })
+      .and_return(session)
   end
 
   describe "GET /reception-registration/choose-your-course" do

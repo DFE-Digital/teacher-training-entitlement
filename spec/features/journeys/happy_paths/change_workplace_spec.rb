@@ -7,6 +7,8 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
   include_context "Stub Teacher Auth Responses"
 
   let(:user) { create(:user) }
+  let(:lead_provider) { create(:lead_provider) }
+  let(:course) { create(:course, :tte_early_years, display: true, lead_provider:) }
   let(:school) { create(:school, :with_address) }
 
   before do
@@ -15,6 +17,8 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
       "registration_store" => {
         "institution_id" => school.institution.id.to_s,
         "confirmation" => "yes",
+        "course_identifier" => course.identifier,
+        "lead_provider_id" => lead_provider.id.to_s,
         "teacher_catchment" => "england",
         "work_setting" => "a_school",
       },

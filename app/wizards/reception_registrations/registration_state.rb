@@ -35,6 +35,10 @@ module ReceptionRegistrations
       @lead_provider ||= LeadProvider.find_by(id: lead_provider_id)
     end
 
+    def lead_provider_not_chosen?
+      lead_provider_id == "not_chosen"
+    end
+
     def funding_eligibility_status_code
       return FundingEligibility::INELIGIBLE_SETTING if kind_of_nursery_private? || works_in_other?
 

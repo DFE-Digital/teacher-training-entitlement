@@ -8,10 +8,6 @@ module ReceptionRegistrations
 
       delegate :state_store, to: :wizard
 
-      def not_chosen?
-        lead_provider_id == not_chosen_option
-      end
-
       def not_chosen_option
         @not_chosen_option ||= "not_chosen".freeze
       end
