@@ -16,11 +16,8 @@ class HandleSubmissionForStore
         funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
         funding_choice:,
         teacher_catchment:,
-        works_in_school: store["works_in_school"] == "yes",
         primary_establishment:,
         number_of_pupils:,
-        works_in_childcare: store["works_in_childcare"] == "yes",
-        kind_of_nursery: store["kind_of_nursery"],
         work_setting: store["work_setting"],
         referred_by_return_to_teaching_adviser: store["referred_by_return_to_teaching_adviser"],
         raw_application_data: raw_application_data.except("current_user", "current_user_id"),
@@ -40,7 +37,7 @@ private
     # Cutting out confirmation keys since that is not application related data
     # Though I recognise that this means that even though this is meant to be raw
     # it still has a small layer of processing
-    store.except("generated_confirmation_code")
+    store.except("generated_confirmation_code").merge("course_identifier" => course.identifier)
   end
 
   def query_store
@@ -94,12 +91,13 @@ private
       course:,
       institution: institution_from_store,
       inside_catchment: inside_catchment?,
-      query_store:,
+      user:,
+      work_setting: store["work_setting"],
     )
   end
 
   def course
-    @course ||= query_store.course
+    @course ||= Course.reception
   end
 
   def user

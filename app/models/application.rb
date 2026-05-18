@@ -95,14 +95,6 @@ class Application < ApplicationRecord
        STATUSES.index_with(&:itself),
        suffix: true
 
-  enum :kind_of_nursery, {
-    local_authority_maintained_nursery: "local_authority_maintained_nursery",
-    preschool_class_as_part_of_school: "preschool_class_as_part_of_school",
-    private_nursery: "private_nursery",
-    another_early_years_setting: "another_early_years_setting",
-    childminder: "childminder",
-  }, suffix: true
-
   enum :funding_choice, {
     school: "school",
     trust: "trust",
@@ -189,14 +181,6 @@ class Application < ApplicationRecord
     return "previously-funded" if previously_funded?
 
     "establishment-ineligible" unless eligible_for_funding
-  end
-
-  def private_nursery?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.include?(kind_of_nursery)
-  end
-
-  def public_nursery?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(kind_of_nursery)
   end
 
   def inside_uk_catchment?

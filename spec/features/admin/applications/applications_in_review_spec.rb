@@ -4,7 +4,7 @@ RSpec.feature "Applications in review", :npq, type: :feature do
   include Helpers::AdminLogin
 
   let!(:normal_application)                         { create(:application, :with_random_user) }
-  let!(:application_for_rtta_yes)                   { create(:application, :with_random_user, :manual_review, created_at: 4.days.ago, referred_by_return_to_teaching_adviser: "yes", school: nil, works_in_school: false) }
+  let!(:application_for_rtta_yes)                   { create(:application, :with_random_user, :manual_review, created_at: 4.days.ago, referred_by_return_to_teaching_adviser: "yes", school: nil) }
   let!(:application_for_rtta_no)                    { create(:application, :with_random_user, created_at: 3.days.ago, referred_by_return_to_teaching_adviser: "no") }
   let!(:application_eligible_for_funding)           { create(:application, :with_random_user, :manual_review, :eligible_for_funding, created_at: 11.days.ago) }
   let!(:application_eligible_for_funding_2)         { create(:application, :with_random_user, :manual_review, :eligible_for_funding, created_at: 11.days.ago) }

@@ -340,8 +340,6 @@ module ValidTestDataGenerators
         teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
         teacher_catchment_iso_country_code: "GBR",
         funding_choice:,
-        works_in_school: institution.school?,
-        works_in_childcare: institution.private_childcare_provider?,
       )
       application
     end

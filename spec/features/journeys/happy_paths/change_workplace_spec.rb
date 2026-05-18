@@ -13,7 +13,6 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
     page.set_rack_session(
       "user_id" => user.id,
       "registration_store" => {
-        "works_in_school" => "yes",
         "institution_id" => school.institution.id.to_s,
         "course_start_date" => "yes",
         "teacher_catchment" => "england",

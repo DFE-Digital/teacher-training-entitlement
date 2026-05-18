@@ -15,13 +15,11 @@ class RegistrationWizard
     closed
     course_start_date
     cannot_register_yet
-    choose_your_course
     choose_your_provider
     choose_a_tte_and_provider
     teacher_catchment
     work_setting
     choose_school
-    kind_of_nursery
     possible_funding
     ineligible_for_funding
     funding_your_course
@@ -96,14 +94,13 @@ class RegistrationWizard
     array = []
 
     array << Answer.new("Course start", store["course_start"], :course_start_date)
-    array << Answer.new("Course", I18n.t(course.identifier, scope: "course.name"), :choose_your_course)
+    array << Answer.new("Course", course.name)
     array << Answer.new("Provider", lead_provider&.name, :choose_your_provider)
     array << Answer.new("Workplace in England", teacher_catchment_humanized, :teacher_catchment)
     array << Answer.new("Work setting", t("work_setting"), :work_setting)
-    if kind_of_nursery_public?
-      array << Answer.new("Nursery", t("kind_of_nursery"), :kind_of_nursery)
+    if institution_from_store
+      array << Answer.new("Workplace", institution_from_store&.name_with_address, :choose_school)
     end
-    array << Answer.new("Workplace", institution_from_store.try(:name_with_address), :choose_school)
     if store["funding"].present?
       array << Answer.new("Course funding", I18n.t(store["funding"], scope: "helpers.label.registration_wizard.funding_options"), :funding_your_course)
     end
@@ -121,17 +118,10 @@ private
            :formatted_date_of_birth,
            :has_ofsted_urn?,
            :inside_catchment?,
-           :kind_of_nursery_private?,
-           :kind_of_nursery_public?,
            :lead_provider,
            :teacher_catchment_humanized,
-           :trn_set_via_fallback_verification_question?,
-           :works_in_another_setting?,
-           :works_in_childcare?,
            :works_in_other?,
-           :works_in_school?,
            :work_setting,
-           :young_offender_institution?,
            to: :query_store
 
   def form_for_step(step)

@@ -18,29 +18,10 @@ RSpec.describe RegistrationWizardController do
   RSpec.shared_examples "it redirects on missing mandatory institution" do
     before do
       allow(RegistrationWizard).to receive(:new).and_return(missing_institution_wizard.new)
-      session["registration_store"] = registration_store
       make_request
     end
 
-    context "when working in a school" do
-      let(:registration_store) { { "works_in_school" => "yes" } }
-
-      it { is_expected.to redirect_to registration_wizard_show_path("choose-school") }
-    end
-
-    context "when working in a private nursery" do
-      let(:registration_store) do
-        { "works_in_childcare" => "yes", "kind_of_nursery" => "private_nursery" }
-      end
-
-      it { is_expected.to redirect_to registration_wizard_show_path("have-ofsted-urn") }
-    end
-
-    context "when working in an early years setting" do
-      let(:registration_store) { { "works_in_childcare" => "yes" } }
-
-      it { is_expected.to redirect_to registration_wizard_show_path("choose-childcare-provider") }
-    end
+    it { is_expected.to redirect_to registration_wizard_show_path("work-setting") }
   end
 
   describe "#show" do
@@ -52,40 +33,27 @@ RSpec.describe RegistrationWizardController do
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
 
     context "when application already submitted for course" do
-      let(:course) { create(:course) }
+      let(:lead_provider) { create(:lead_provider) }
+      let(:course) { create(:course, :tte_early_years, lead_provider:) }
       let!(:application) { create(:application, :accepted, course:, user: current_user) }
-      let(:step) { nil }
 
       before do
-        session["registration_store"] = { "course_identifier" => course.identifier }
-        patch(:update, params: { step: })
+        patch(:update, params: { step: "choose-your-provider", registration_wizard: { lead_provider_id: lead_provider.id } })
       end
 
-      context "when step is chose your course" do
-        let(:step) { "choose-your-course" }
-
-        it "redirects to account/registration page with alert" do
-          expect(response).to redirect_to application_path(application.ecf_id)
-          expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
-        end
-      end
-
-      context "when step is chose your provider" do
-        let(:step) { "choose-your-provider" }
-
-        it "does not redirect, just renders the step" do
-          expect(response).to be_successful
-        end
+      it "redirects to account/registration page with alert" do
+        expect(response).to redirect_to application_path(application.ecf_id)
+        expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
       end
     end
 
     context "when user has a withdrawn application for the course" do
-      let(:course) { create(:course) }
+      let(:lead_provider) { create(:lead_provider) }
+      let(:course) { create(:course, :tte_early_years, lead_provider:) }
       let!(:application) { create(:application, :withdrawn, course:, user: current_user) }
 
       before do
-        session["registration_store"] = { "course_identifier" => course.identifier }
-        patch(:update, params: { step: "choose-your-course" })
+        patch(:update, params: { step: "choose-your-provider", registration_wizard: { lead_provider_id: lead_provider.id } })
       end
 
       it "does not redirect to the withdrawn application" do
@@ -124,7 +92,7 @@ RSpec.describe RegistrationWizardController do
       end
 
       it "redirects to course-start-date page" do
-        expect(response).to redirect_to registration_wizard_show_path("choose-your-course")
+        expect(response).to redirect_to registration_wizard_show_path("choose-your-provider")
         expect(wizard).not_to have_received(:save!)
       end
     end

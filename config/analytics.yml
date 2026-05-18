@@ -114,6 +114,7 @@ shared:
     - updated_at
     - ecf_id
     - hint
+    - url
   :delivery_partners:
     - id
     - ecf_id
@@ -185,10 +186,6 @@ shared:
     - ukprn
     - teacher_catchment
     - teacher_catchment_country
-    - works_in_school
-    - works_in_nursery
-    - works_in_childcare
-    - kind_of_nursery
     - funding_eligiblity_status_code
     - work_setting
     - primary_establishment

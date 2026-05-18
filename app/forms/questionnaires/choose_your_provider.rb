@@ -31,7 +31,7 @@ module Questionnaires
     end
 
     def previous_step
-      :choose_your_course
+      :course_start_date
     end
 
     def options

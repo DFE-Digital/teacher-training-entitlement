@@ -25,11 +25,8 @@ private
       course: application.course,
       institution: application.institution,
       inside_catchment: application.teacher_catchment == "england",
-      query_store: query_store(application),
+      user: application.user,
+      work_setting: application.raw_application_data["work_setting"],
     )
-  end
-
-  def query_store(application)
-    RegistrationQueryStore.new(store: application.raw_application_data)
   end
 end

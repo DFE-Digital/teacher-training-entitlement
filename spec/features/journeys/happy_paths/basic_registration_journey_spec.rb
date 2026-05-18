@@ -25,12 +25,8 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     expect(page).not_to have_content("Before you start")
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      expect(page).to have_text(I18n.t("helpers.hint.registration_wizard.course_start_date_one"))
-      page.choose("Yes", visible: :all)
-    end
-
-    expect_page_to_have(path: "/registration/choose-your-course", submit_form: true) do
-      expect(page).to have_text("Choose a TTE course")
+      expect(page).to have_text("When do you want to start the course?")
+      page.choose("October 2026", visible: :all)
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
@@ -44,7 +40,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     end
 
     expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
-      page.choose("A school", visible: :all)
+      page.choose("State-funded nursery, pre-school, school or academy trust", visible: :all)
     end
 
     choose_a_school(js:, name: "open")
@@ -54,7 +50,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     end
 
     expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
-      expect(page).to have_text("Sharing your TTE information")
+      expect(page).to have_text("Sharing your NPD information")
       page.check("Yes, I agree to share my information", visible: :all)
     end
 
@@ -62,10 +58,10 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       expect_check_answers_page_to_have_answers(
         {
           "Course start" => "In #{application_course_start_date}",
-          "Course" => "Early Years",
+          "Course" => "TTE Early Years Course 1",
           "Provider" => LeadProvider.first.name,
           "Workplace" => "open manchester school – street 1, manchester",
-          "Work setting" => "A school",
+          "Work setting" => "State-funded nursery, pre-school, school or academy trust",
           "Workplace in England" => "Yes",
         },
       )
@@ -128,7 +124,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       "funded_place" => nil,
       "funding_choice" => nil,
       "funding_eligiblity_status_code" => "funded",
-      "kind_of_nursery" => nil,
       "status" => "pending",
       "participant_outcome_state" => nil,
       "notes" => nil,
@@ -141,10 +136,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       "ukprn" => Institution.find_by(institution_reference_number: "100000").ukprn,
       "primary_establishment" => false,
       "number_of_pupils" => nil,
-      "works_in_childcare" => false,
-      "works_in_nursery" => nil,
-      "works_in_school" => true,
-      "work_setting" => "a_school",
+      "work_setting" => "state_funded_institution",
       "on_submission_trn" => nil,
       "review_status" => nil,
       "raw_application_data" => {
@@ -162,9 +154,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
         "submitted" => true,
         "teacher_catchment" => "england",
         "teacher_catchment_country" => nil,
-        "work_setting" => "a_school",
-        "works_in_childcare" => "no",
-        "works_in_school" => "yes",
+        "work_setting" => "state_funded_institution",
       },
     )
   end

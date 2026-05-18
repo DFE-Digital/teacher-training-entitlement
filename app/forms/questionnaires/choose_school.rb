@@ -23,8 +23,6 @@ module Questionnaires
     end
 
     def previous_step
-      return :kind_of_nursery if query_store.works_in_childcare?
-
       :work_setting
     end
 
@@ -83,7 +81,8 @@ module Questionnaires
         course: wizard.query_store.course,
         institution: selected_institution,
         inside_catchment: wizard.query_store.inside_catchment?,
-        query_store: wizard.query_store,
+        user: wizard.query_store.current_user,
+        work_setting: wizard.query_store.work_setting,
       )
     end
 

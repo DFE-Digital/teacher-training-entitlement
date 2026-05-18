@@ -879,6 +879,8 @@ en:
   helpers:
     title:
       registration_wizard:
+        service_title: "Register for a National Professional Development (NPD) course"
+        get_an_identity: Get an identity
         about_ehco: Early Headship Coaching Offer
         ehco_funding_not_available: DfE scholarship funding not available
         ehco_possible_funding: You may qualify for DfE scholarship funding
@@ -886,7 +888,8 @@ en:
         ehco_unavailable: You cannot register for the Early Headship Coaching Offer
         choose_your_npq: Choose an NPQ
         choose_your_course: Choose a TTE course
-        course_start_date: Course start
+        course_start_date: Choose your course start date
+        course_start_date_sub: Registrations are currently open for courses starting in %{date}
         childcare_provider_not_in_england: Nursery must be in England, Guernsey, Jersey
           or the Isle of Man
         cannot_register_yet: You cannot register yet
@@ -897,8 +900,12 @@ en:
         school_not_in_england: School or college must be in England, Guernsey, Jersey
           or the Isle of Man
         ineligible_for_funding: DfE scholarship funding is not available
+        dqt_mismatch: We cannot find your details
+        dont_have_teacher_reference_number: Get a Teacher Reference Number (TRN) to
+          register for an NPQ
         employment_role: What is your role?
         employer_name: What organisation are you employed by?
+        teacher_reference_number: Teacher reference number (TRN)
         trn: Teacher reference number (TRN)
         full_name: Full name
         national_insurance_number: National Insurance number
@@ -914,7 +921,7 @@ en:
       form:
         course_cohort_id: Choose a cohort
       registration_wizard:
-        can_share_choices: Sharing your TTE information
+        can_share_choices: Sharing your NPD information
         employment_type: How are you employed?
         work_setting: What setting do you work in?
         funding: How are you funding your course?
@@ -926,10 +933,12 @@ en:
           course
         course_start_date: Do you want to start a course before April 2024?
         itt_provider: Enter the name of the ITT provider you are working with
+        trn_knowledge: Do you have a TRN?
         lead_provider_id: Select your provider
         chosen_provider: Have you chosen an NPQ and provider?
         has_ofsted_urn: Do you or your employer have an Ofsted unique reference number
           (URN)?
+        qualified_teacher_check: Check your details
         date_of_birth: Date of birth
         email_updates_status: Are you interested in the special educational needs
           co-ordinator (SENCO) NPQ?
@@ -966,15 +975,15 @@ en:
             opportunities if you’re a headteacher in your first 5 years of headship.
         npqh_status_title_hint: To be eligible for the Early headship coaching offer
           you need to do the Headship NPQ.
+        funding_options:
+          another: For example, I am sharing the costs with my workplace
         can_share_choices:
-        - All the information you enter for your NPQ registration will be shared with
-          external organisations including auditors, evaluators, relevant bodies and
-          training providers – this allows your provider to register you onto their
-          course.
+        - All the information you enter for your NPD registration will be shared with external organisations 
+          including auditors, evaluators, relevant bodies and training providers - this allows your provider 
+          to register you onto their course.
         - For more information about who we share your data with read our <a href="https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers#NPQ"
           class="govuk-link">privacy notice</a>.
-        - If you do not agree to share your information you will not be able to progress
-          with your NPQ.
+        - If you do not agree to share your information you will not be able to progress with your NPD course.
         choose_childcare_provider_html: Search by postcode, unique reference number
           (URN) or name. If you work for a trust, use the details of one of its schools.
         choose_childcare_provider_search: Search for your workplace
@@ -988,8 +997,7 @@ en:
         institution_location_html: Enter <strong>just the first part of your workplace
           postcode</strong>, for example SW19. If you work for a trust, use the postcode
           of one of its schools.
-        course_start_date_hint: You can also select this option if you have already
-          started
+        course_start_date_hint: You can also select this option if you've already started
         lead_provider_id: These are the training providers who provide <b>%{course_name}</b>.
           Providers may have different entry requirements.
         trn: TRNs are 7 digits long. Teachers can find it on their payslip, teaching
@@ -1012,11 +1020,8 @@ en:
           1: Yes, I'm ready to authorise this for payment
       registration_wizard:
         work_setting_options:
-          early_years_or_childcare: Early years or childcare
-          a_school: A school
-          an_academy_trust: An academy trust
-          a_16_to_19_educational_setting: A 16 to 19 educational setting
-          another_setting: Another setting
+          private_institution: Private nursery, pre-school or school
+          state_funded_institution: State-funded nursery, pre-school, school or academy trust
           other: Other
         course_start_date_options:
           "yes": 'Yes'
@@ -1036,7 +1041,7 @@ en:
           school: My workplace is covering the cost
           trust: My trust is paying
           self: I am paying
-          another: My TTE course is being paid for in another way
+          another: My course is being paid for in another way
         teacher_catchment_country: Which country do you teach in?
         lead_provider_id_options:
           not_chosen: I have not chosen a provider yet

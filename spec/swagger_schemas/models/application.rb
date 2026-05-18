@@ -97,11 +97,6 @@ APPLICATION = {
             nullable: true,
             example: "rejected-by-provider",
           },
-          works_in_school: {
-            description: "Indicates whether the participant is currently employed by school",
-            type: :boolean,
-            example: true,
-          },
           cohort: {
             description: "Indicates which call-off contract would fund this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Once a provider accepts an application, they may change a participant's cohort up until the point of submitting a started declaration.",
             type: :string,

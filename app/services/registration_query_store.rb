@@ -9,10 +9,6 @@ class RegistrationQueryStore
     store["current_user"] || User.find_by(id: store["current_user_id"])
   end
 
-  def trn_set_via_fallback_verification_question?
-    store["trn_set_via_fallback_verification_question"]
-  end
-
   def funding
     store["funding"]
   end
@@ -46,18 +42,6 @@ class RegistrationQueryStore
     teacher_catchment_england?
   end
 
-  def works_in_school?
-    store["works_in_school"] == "yes"
-  end
-
-  def works_in_childcare?
-    store["works_in_childcare"] == "yes"
-  end
-
-  def works_in_another_setting?
-    store["work_setting"] == "another_setting"
-  end
-
   def works_in_other?
     store["work_setting"] == "other"
   end
@@ -66,20 +50,8 @@ class RegistrationQueryStore
     store["has_ofsted_urn"] == "yes"
   end
 
-  def referred_by_return_to_teaching_adviser?
-    store["referred_by_return_to_teaching_adviser"] == "yes"
-  end
-
-  def kind_of_nursery_public?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(store["kind_of_nursery"])
-  end
-
-  def kind_of_nursery_private?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.include?(store["kind_of_nursery"])
-  end
-
   def course
-    @course ||= Course.find_by(identifier: store["course_identifier"])
+    @course ||= Course.reception
   end
 
   def lead_provider
@@ -96,10 +68,6 @@ class RegistrationQueryStore
 
   def maths_understanding?
     store["maths_understanding"]
-  end
-
-  def childminder?
-    store["kind_of_nursery"] == "childminder"
   end
 
   def work_setting

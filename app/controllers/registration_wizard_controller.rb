@@ -4,10 +4,11 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_form
   before_action :check_end_of_journey, only: %i[update]
   before_action :check_duplicate_applications, only: %i[update]
-  before_action :check_course_defined, only: %i[show]
 
-  rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
+  rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_work_setting
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
+
+  helper_method :course
 
   def show
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
@@ -20,12 +21,6 @@ class RegistrationWizardController < PublicPagesController
     render @wizard.current_step
 
     @wizard.after_render
-  rescue ActionView::Template::Error => e
-    if e.cause.instance_of?(Questionnaires::IneligibleForFunding::UnexpectedEligibilityStatusCode)
-      redirect_to_course_start_date
-    else
-      raise e
-    end
   end
 
   def update
@@ -71,21 +66,8 @@ private
     redirect_to registration_wizard_show_path("course-start-date")
   end
 
-  def redirect_to_institution_picker
-    query_store = RegistrationQueryStore.new(store:)
-
-    if query_store.works_in_school?
-      flash[:error] = "Your application requires details of your school."
-      redirect_to registration_wizard_show_path("choose-school")
-    elsif query_store.kind_of_nursery_private?
-      flash[:error] = "Your application requires details of your nursery."
-      redirect_to registration_wizard_show_path("have-ofsted-urn")
-    elsif query_store.works_in_childcare?
-      flash[:error] = "Your application requires details of your early years setting."
-      redirect_to registration_wizard_show_path("choose-childcare-provider")
-    else
-      raise "Could not resolve institution picker"
-    end
+  def redirect_to_work_setting
+    redirect_to registration_wizard_show_path("work-setting")
   end
 
   def set_wizard
@@ -97,17 +79,21 @@ private
   end
 
   def check_duplicate_applications
-    return unless @wizard.current_step.to_s == "choose_your_course" && @form.course_identifier.present?
+    return unless @wizard.current_step.to_s == "choose_your_provider" && @form.lead_provider_id.present?
 
-    active_applications = current_user.active_applications_for(course: @form.course, cohort: Cohort.current)
+    active_applications = current_user.active_applications_for(course:, cohort: Cohort.current)
     return if active_applications.empty?
 
     flash[:alert] = {
       title: "Application already registered",
-      message: "You have already made an application for #{@form.course.name}",
+      message: "You have already made an application for #{course.name}",
     }
 
     redirect_to application_path(active_applications.last.ecf_id)
+  end
+
+  def course
+    @course ||= Course.reception
   end
 
   def check_end_of_journey
@@ -119,11 +105,6 @@ private
       message: "Check the details of your registration and find out more about applying with your provider",
     }
     redirect_to application_path(current_user.applications.last.ecf_id)
-  end
-
-  def check_course_defined
-    # redirect_to_course_start_date if !@form.instance_of?(Questionnaires::ChooseYourCourse) && defined?(@form.course) && !@form.course
-    # redirect_to_course_start_date if @form.instance_of?(Questionnaires::CheckAnswers) && !@wizard.course
   end
 
   def registration_closed

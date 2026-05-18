@@ -1,18 +1,16 @@
 require "rails_helper"
 
 RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
-  let!(:lead_provider) { create(:lead_provider, :with_courses) }
-  let(:course) { lead_provider.course_cohorts.last.course }
+  let!(:cohort) { create(:cohort, :current) }
+  let!(:lead_provider) { create(:lead_provider) }
+  let!(:course) { create(:course, :tte_early_years, lead_provider:) }
+  let!(:course_cohort) { create(:course_cohort, course:, cohort:, lead_provider:) }
 
   describe "validations" do
     let(:current_step) { "choose_your_provider" }
     let(:request) { nil }
     let(:school) { bulid_stubbed(:school) }
-    let(:store) do
-      {
-        "course_identifier" => course.identifier,
-      }
-    end
+    let(:store) { {} }
     let(:wizard) do
       RegistrationWizard.new(
         current_step:,
@@ -47,7 +45,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
   describe "#previous_step" do
     subject { described_class.new.previous_step }
 
-    it { is_expected.to eq :choose_your_course }
+    it { is_expected.to eq :course_start_date }
   end
 
   describe "#next_step" do
@@ -68,18 +66,12 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
-    let(:store) do
-      {
-        "course_identifier" => course_identifier,
-      }
-    end
-    let(:course_identifier) { course.identifier }
-    let(:expected_providers) { course.lead_providers.alphabetical }
+    let(:expected_providers) { LeadProvider.for(course:).alphabetical }
 
     before do
       form.wizard = RegistrationWizard.new(
         current_step: :choose_your_provider,
-        store:,
+        store: {},
         request: nil,
         current_user: create(:user),
       )

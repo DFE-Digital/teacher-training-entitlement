@@ -21,7 +21,6 @@ module API
         field(:ukprn) { |a| a.institution&.ukprn }
         field(:status)
         field(:reason_for_rejection)
-        field(:works_in_school)
         field(:cohort) { |a| a.cohort&.start_year&.to_s }
         field(:inside_uk_catchment?, name: :teacher_catchment)
         field(:teacher_catchment_country)

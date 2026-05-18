@@ -23,7 +23,7 @@ module Questionnaires
     end
 
     def previous_step
-      :kind_of_nursery
+      :work_setting
     end
   end
 end

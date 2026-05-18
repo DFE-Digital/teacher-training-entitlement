@@ -21,28 +21,8 @@
         </div>
       <% end %>
 
-      <% if application.inside_catchment? && application.works_in_childcare %>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Early years setting</dt>
-          <dd class="govuk-summary-list__value"><%= I18n.t(application.kind_of_nursery, scope: "helpers.label.registration_wizard.kind_of_nursery_options") %></dd>
-        </div>
-        <% if application.private_nursery? %>
-          <% if application.private_childcare_provider.present? %>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Ofsted unique reference number (URN)</dt>
-              <dd class="govuk-summary-list__value"><%= application.private_childcare_provider.display_name %></dd>
-            </div>
-          <% else %>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Ofsted unique reference number (URN)</dt>
-              <dd class="govuk-summary-list__value">Not applicable</dd>
-            </div>
-          <% end %>
-        <% end %>
-      <% end %>
-
       <% if application.inside_catchment? %>
-        <% if application.school.present? || (application.works_in_childcare && application.public_nursery?) %>
+        <% if application.school.present? %>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Workplace</dt>
             <dd class="govuk-summary-list__value"><%= application.long_employer_name_to_display %></dd>

@@ -14,7 +14,7 @@ RSpec.describe AdminService::ApplicationsSearch do
       it { is_expected.to include(application) }
 
       context "and the application has no school relation" do
-        before { application.update! institution: nil, works_in_school: false }
+        before { application.update! institution: nil }
 
         it { is_expected.to include(application) }
       end

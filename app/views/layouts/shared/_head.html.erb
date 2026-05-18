@@ -1,9 +1,9 @@
 <head>
   <meta charset="utf-8">
   <% if content_for?(:title) %>
-    <title><%= content_for(:title) %> - Teacher training entitlement</title>
+    <title><%= content_for(:title) %></title>
   <% else %>
-    <title>Teacher training entitlement</title>
+    <title><%= default_page_title %></title>
   <% end %>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>

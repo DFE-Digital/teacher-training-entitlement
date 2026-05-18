@@ -36,7 +36,6 @@ RSpec.describe RegistrationWizard do
           "chosen_provider" => "yes",
           "teacher_catchment" => "england",
           "teacher_catchment_country" => "",
-          "works_in_school" => "no",
           "trn_knowledge" => "yes",
           "trn" => "123456",
           "full_name" => "Maia Mack",
@@ -44,9 +43,7 @@ RSpec.describe RegistrationWizard do
           "national_insurance_number" => "123420",
           "trn_auto_verified" => nil,
           "verified_trn" => nil,
-          "works_in_childcare" => "yes",
           "work_setting" => "early_years_or_childcare",
-          "kind_of_nursery" => "local_authority_maintained_nursery",
           "institution_name" => "",
           "institution_id" => school.institution.id,
           "course_identifier" => "tte-early-years",
@@ -81,8 +78,6 @@ RSpec.describe RegistrationWizard do
           "trn_auto_verified" => nil,
           "trn_knowledge" => "yes",
           "verified_trn" => nil,
-          "works_in_childcare" => "yes",
-          "works_in_school" => "no",
           "referred_by_return_to_teaching_adviser" => "no",
         }
       end

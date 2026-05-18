@@ -116,16 +116,6 @@ RSpec.describe Application do
 
   describe "enums" do
     it {
-      expect(subject).to define_enum_for(:kind_of_nursery).with_values(
-        local_authority_maintained_nursery: "local_authority_maintained_nursery",
-        preschool_class_as_part_of_school: "preschool_class_as_part_of_school",
-        private_nursery: "private_nursery",
-        another_early_years_setting: "another_early_years_setting",
-        childminder: "childminder",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-
-    it {
       expect(subject).to define_enum_for(:funding_choice).with_values(
         school: "school",
         trust: "trust",
@@ -249,7 +239,7 @@ RSpec.describe Application do
       if school
         create(:application, cohort:, school_record: school, teacher_catchment:)
       else
-        create(:application, cohort:, institution: nil, teacher_catchment:, works_in_school: false)
+        create(:application, cohort:, institution: nil, teacher_catchment:)
       end
     end
 
@@ -347,7 +337,7 @@ RSpec.describe Application do
 
     context "when no institution is available" do
       let(:name) { "" }
-      let(:application) { build(:application, institution: nil, works_in_school: false) }
+      let(:application) { build(:application, institution: nil) }
 
       include_examples "employer_name"
     end

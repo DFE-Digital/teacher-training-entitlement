@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_18_170538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -27,7 +27,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
   create_enum "funding_choices", ["school", "trust", "self", "another", "employer"]
-  create_enum "kind_of_nurseries", ["local_authority_maintained_nursery", "preschool_class_as_part_of_school", "private_nursery", "another_early_years_setting", "childminder"]
   create_enum "outcome_states", ["passed", "failed", "voided"]
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
   create_enum "statement_item_states", ["eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
@@ -127,7 +126,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.enum "funding_choice", enum_type: "funding_choices"
     t.string "funding_eligiblity_status_code"
     t.bigint "institution_id"
-    t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
     t.string "notes"
     t.integer "number_of_pupils", default: 0
     t.string "on_submission_trn"
@@ -145,9 +143,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.text "work_setting"
-    t.boolean "works_in_childcare"
-    t.boolean "works_in_nursery"
-    t.boolean "works_in_school"
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
@@ -379,6 +374,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.string "hint"
     t.text "name", null: false
     t.datetime "updated_at", null: false
+    t.string "url"
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
   end
 
