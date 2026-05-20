@@ -113,6 +113,8 @@ jobs:
         healthcheck: ${{ env.HEALTHCHECK_CMD }}
         db-seed: true
         # smoke-test: true
+        gcp-wip: ${{ vars.GCP_WIP }}
+        gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
 
   deploy-staging:
     name: Deploy staging
@@ -171,6 +173,8 @@ jobs:
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Notify teams channel failure
         if: ${{ failure() }}

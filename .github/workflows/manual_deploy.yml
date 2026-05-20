@@ -62,4 +62,5 @@ jobs:
           deploy-commit-sha: ${{ inputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
           pull-request-number: ${{ inputs.pull-request-number }}
-
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}

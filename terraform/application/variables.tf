@@ -100,8 +100,8 @@ variable "app_suffix" {
 }
 
 variable "container_delete_retention_days" {
-  type    = number
-  default = null
+  type        = number
+  default     = null
   description = "Number of days to retain deleted containers"
 }
 
@@ -127,19 +127,19 @@ variable "worker_memory_max" {
 }
 
 variable "worker_replicas" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "command" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "enable_dfe_analytics_federated_auth" {
   description = "Create the resources in Google cloud for federated authentication and enable in application"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "postgres_flexible_server_sku" {
@@ -152,4 +152,11 @@ variable "azure_maintenance_window" {
 
 variable "postgres_enable_high_availability" {
   default = false
+}
+
+variable "gcp_table_deletion_protection" {
+  type        = bool
+  description = "Prevents deletion of the event table. Default: true"
+  default     = true
+  nullable    = false
 }
