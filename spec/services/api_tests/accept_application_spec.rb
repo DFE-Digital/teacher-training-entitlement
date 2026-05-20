@@ -23,7 +23,7 @@ RSpec.describe APITests::AcceptApplication, type: :model do
   end
 
   before do
-    stub_const("LEAD_PROVIDER_TOKENS", lead_provider.name => "test-token") if lead_provider
+    stub_const("LEAD_PROVIDER_CONFIG", lead_provider.name => { token: "test-token" }) if lead_provider
     allow(HTTParty).to receive(:put).and_return(api_response)
   end
 

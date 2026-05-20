@@ -1,13 +1,19 @@
 module Helpers
   module JourneyStepHelper
     def choose_a_school(js:, name:)
+      institution = Institution
+        .where(institutionable_type: %w[School LocalAuthority])
+        .open_school_or_non_school
+        .search_by_name(name)
+        .first
+
       if js
         navigate_to_page(path: "/reception-registration/choose-school", submit_form: true) do
           within ".npq-js-reveal" do
             page.fill_in "What is the name of your workplace?", with: name
           end
 
-          page.find("#choose-school-institution-id-field__option--0").click
+          page.execute_script("document.getElementById('choose-school-institution-id-field-select').value = '#{institution.id}'")
         end
       else
         navigate_to_page(path: "/reception-registration/choose-school", submit_form: true) do
@@ -16,7 +22,7 @@ module Helpers
           end
 
           page.click_button("Continue")
-          page.choose name
+          find("input[type='radio'][value='#{institution.id}']", visible: :all).choose
         end
       end
     end

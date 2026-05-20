@@ -2,31 +2,15 @@ module ReceptionRegistrations
   class RegistrationState
     include DfE::Wizard::StateStore
 
-    KIND_OF_NURSERY_PUBLIC_OPTIONS = %w[
-      local_authority_maintained_nursery
-      preschool_class_as_part_of_school
-    ].freeze
-
-    KIND_OF_NURSERY_PRIVATE_OPTIONS = %w[
-      childminder
-      private_nursery
-      another_early_years_setting
-    ].freeze
-
-    KIND_OF_NURSERY_OPTIONS = KIND_OF_NURSERY_PUBLIC_OPTIONS + KIND_OF_NURSERY_PRIVATE_OPTIONS
-
     VALID_FUNDING_OPTIONS = [
       SCHOOL = "school".freeze,
       TRUST = "trust".freeze,
       SELF = "self".freeze,
       ANOTHER_ = "another".freeze,
-      EMPLOYER = "employer".freeze,
     ].freeze
 
     def course
-      return nil if course_identifier.blank?
-
-      @course ||= Course.find_by(identifier: course_identifier)
+      @course ||= Course.reception
     end
 
     def lead_provider
@@ -35,13 +19,11 @@ module ReceptionRegistrations
       @lead_provider ||= LeadProvider.find_by(id: lead_provider_id)
     end
 
-    def lead_provider_not_chosen?
-      lead_provider_id == "not_chosen"
+    def state_funded_institution?
+      self["work_setting"] == Institution::STATE_FUNDED_INSTITUTION
     end
 
     def funding_eligibility_status_code
-      return FundingEligibility::INELIGIBLE_SETTING if kind_of_nursery_private? || works_in_other?
-
       self["funding_eligibility_status_code"]
     end
 
@@ -49,28 +31,12 @@ module ReceptionRegistrations
       self["eligible_for_funding"] || false
     end
 
-    def works_in_school
-      self["works_in_school"]
-    end
-
-    def works_in_childcare
-      self["works_in_childcare"]
-    end
-
     def trn
       self["trn"]
     end
 
     def course_start
-      @course_start ||= Cohort.application_course_start_date
-    end
-
-    def public_nursery?
-      KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(kind_of_nursery)
-    end
-
-    def kind_of_nursery_private?
-      KIND_OF_NURSERY_PRIVATE_OPTIONS.include?(kind_of_nursery)
+      @course_start ||= Cohort.course_start_date
     end
 
     def works_in_other?
@@ -130,12 +96,6 @@ module ReceptionRegistrations
         Sentry.capture_message("Could not find the ISO3166 alpha3 code for #{teacher_catchment_country}.", level: :warning)
         nil
       end
-    end
-
-    def inelegible_for_funding_type
-      return :ineligible_setting if kind_of_nursery_private? || works_in_other?
-
-      funding_eligibility_status_code
     end
 
   private

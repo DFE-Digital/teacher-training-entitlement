@@ -18,8 +18,6 @@ RSpec.feature "Reception registration application submission", :with_default_lea
       institution: nil,
       teacher_catchment: "england",
       work_setting: "other",
-      works_in_school: false,
-      works_in_childcare: false,
       status: Application::PENDING,
     )
   end
@@ -28,10 +26,7 @@ RSpec.feature "Reception registration application submission", :with_default_lea
     page.set_rack_session("user_id" => user.id, session_key => {})
 
     visit "#{base_path}/course-start-date"
-    page.choose("Yes", visible: :all)
-    page.click_button("Continue")
-
-    expect(page).to have_current_path("#{base_path}/choose-your-course")
+    page.choose(Cohort.course_start_date, visible: :all)
     page.click_button("Continue")
 
     expect(page).to have_current_path("#{base_path}/choose-your-provider")

@@ -1,15 +1,17 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Choose Your Provider", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course) { create(:course, display: true, lead_provider:) }
+  let(:course) { Course.reception || create(:course, :tte_early_years, display: true) }
   let(:url) { "/reception-registration/choose-your-provider" }
-  let(:registration_session) { { confirmation: "yes", course_identifier: course.identifier } }
+  let(:registration_session) { { confirmation: "yes" } }
   let(:session) { { user_id: user.id, "registrations_#{user.id}" => registration_session }.with_indifferent_access }
 
   before do
+    course_cohort = course.course_cohorts.find_by(cohort: Cohort.current) || create(:course_cohort, course:, cohort: Cohort.current)
+    create(:course_cohort_provider, course_cohort:, lead_provider:) unless course_cohort.course_cohort_providers.exists?(lead_provider:)
+
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
       .and_return(session)
@@ -28,13 +30,6 @@ RSpec.describe "Reception Registrations / Choose Your Provider", type: :request 
       it "redirects to choose school path" do
         patch url, params: { "choose-your-provider" => { lead_provider_id: lead_provider.id } }
         expect(response).to redirect_to(reception_registration_path("teacher-catchment"))
-      end
-    end
-
-    context "without choosing a provider" do
-      it "redirects to choose school path" do
-        patch url, params: { "choose-your-provider" => { lead_provider_id: "not_chosen" } }
-        expect(response).to redirect_to(reception_registration_path("choose-a-tte-and-provider"))
       end
     end
 

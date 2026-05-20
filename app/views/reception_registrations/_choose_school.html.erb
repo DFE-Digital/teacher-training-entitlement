@@ -1,18 +1,14 @@
 <%= render "reception_registrations/backlink", step: @step %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <%= form_with model: current_step,
+<%= form_with model: current_step,
           url: @wizard.current_step_path,
           scope: current_step_name,
           method: :patch do |f| %>
-      <%= f.govuk_error_summary %>
-      <%= render "reception_registrations/shared/questions/auto_complete_institution", form: f, question: current_step.question %>
+  <%= f.govuk_error_summary %>
+  <%= render "reception_registrations/shared/questions/auto_complete_institution", form: f, question: current_step.question %>
 
-      <%= f.govuk_submit %>
-    <% end  %>
-  </div>
-</div>
+  <%= f.govuk_submit %>
+<% end  %>
 
 <%= govuk_details(summary_text: "If you cannot find your workplace") do %>
   <p>You can:</p>

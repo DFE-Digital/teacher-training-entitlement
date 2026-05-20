@@ -25,8 +25,8 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     expect(page).not_to have_content("Before you start")
 
     expect_page_to_have(path: "/reception-registration/course-start-date", submit_form: true) do
-      expect(page).to have_text("When do you want to start the course?")
-      page.choose("October 2026", visible: :all)
+      expect(page).to have_text("Do you want to start a course in #{Cohort.course_start_date}?")
+      page.choose(Cohort.course_start_date, visible: :all)
     end
 
     expect_page_to_have(path: "/reception-registration/choose-your-provider", submit_form: true) do
@@ -57,8 +57,8 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     expect_page_to_have(path: "/reception-registration/check-answers", submit_button_text: "Submit", submit_form: true) do
       expect_check_answers_page_to_have_answers(
         {
-          "Course start" => "In #{application_course_start_date}",
-          "Course" => "TTE Early Years Course 1",
+          "Course start" => Cohort.course_start_date,
+          "Course" => I18n.t(Course.reception.identifier, scope: "course.name"),
           "Provider" => LeadProvider.first.name,
           "Workplace" => "open manchester school – street 1, manchester",
           "Work setting" => "State-funded nursery, pre-school, school or academy trust",
@@ -125,19 +125,17 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       "primary_establishment" => false,
       "number_of_pupils" => nil,
       "work_setting" => "state_funded_institution",
-      "on_submission_trn" => nil,
+      "on_submission_trn" => "1234567",
       "review_status" => nil,
       "raw_application_data" => {
         "can_share_choices" => "1",
         "confirmation" => "yes",
-        "course_identifier" => "tte-early-years",
         "eligible_for_funding" => true,
         "funding_eligibility_status_code" => "funded",
         "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
         "institution_name" => js ? "" : "open",
         "lead_provider_id" => LeadProvider.first.id.to_s,
         "teacher_catchment" => "england",
-        "teacher_catchment_country" => nil,
         "work_setting" => "state_funded_institution",
       },
     )

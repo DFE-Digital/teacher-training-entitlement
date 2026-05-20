@@ -7,7 +7,6 @@ module Applications
              :funding_choice,
              :funding_eligibility_status_code,
              :inside_catchment?,
-             :kind_of_nursery,
              :lead_provider,
              :number_of_pupils,
              :primary_establishment,
@@ -18,8 +17,6 @@ module Applications
              :trn,
              :ukprn,
              :work_setting,
-             :works_in_childcare,
-             :works_in_school,
              to: :state_store
 
     def initialize(state_store:, user:)
@@ -37,11 +34,8 @@ module Applications
         funding_eligiblity_status_code: funding_eligibility_status_code,
         funding_choice:,
         teacher_catchment:,
-        works_in_school:,
         primary_establishment:,
         number_of_pupils:,
-        works_in_childcare:,
-        kind_of_nursery:,
         work_setting:,
         raw_application_data: state_store.read,
         on_submission_trn: trn || @user.trn,

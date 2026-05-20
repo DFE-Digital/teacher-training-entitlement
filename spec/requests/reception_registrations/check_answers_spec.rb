@@ -13,8 +13,6 @@ RSpec.describe "Reception Registrations / Check Answers", type: :request do
       lead_provider_id: lead_provider.id.to_s,
       teacher_catchment: "england",
       work_setting: "other",
-      works_in_school: false,
-      works_in_childcare: false,
       institution_id: school.institution.id.to_s,
       funding: "self",
       can_share_choices: "1",

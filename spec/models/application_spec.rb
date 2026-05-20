@@ -632,45 +632,6 @@ RSpec.describe Application do
     end
   end
 
-  describe "#latest_participant_outcome_state" do
-    subject { application.latest_participant_outcome_state }
-
-    let(:application) { create(:application, :accepted, participant_outcome_state: "anything") }
-    let(:declaration) { create(:declaration, :completed, application:) }
-    let!(:participant_outcome) { create(:participant_outcome, declaration:) }
-
-    it "returns the state from latest outcome" do
-      expect(subject).to eq("passed")
-    end
-
-    context "when no completed declaration exists" do
-      before { declaration.update!(application: create(:application)) }
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-
-    context "when other type of declaration exists" do
-      before { declaration.update!(declaration_type: "retained-1") }
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-
-    context "when completed declaration is voided" do
-      before do
-        declaration.update!(state: "voided")
-        participant_outcome.update!(state: "voided")
-      end
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-  end
-
   describe "#deferred_at" do
     subject { application.deferred_at }
 

@@ -14,13 +14,12 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
   before do
     page.set_rack_session(
       "user_id" => user.id,
-      "registration_store" => {
+      "registrations_#{user.id}" => {
         "institution_id" => school.institution.id.to_s,
         "confirmation" => "yes",
-        "course_identifier" => course.identifier,
         "lead_provider_id" => lead_provider.id.to_s,
         "teacher_catchment" => "england",
-        "work_setting" => "a_school",
+        "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
       },
     )
   end
@@ -28,9 +27,7 @@ RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
   scenario "displays previously selected school when returning to choose-school page" do
     visit "/reception-registration/choose-school/change"
 
-    within(".npq-js-reveal") do
-      input = find("input[type='text']", visible: true)
-      expect(input.value).to eq(school.name_with_address)
-    end
+    expect(page).to have_field("What is the name of your workplace?", with: school.name_with_address)
+    expect(page).to have_css("#choose-school-institution-id-field-select[value='#{school.institution.id}']", visible: :all)
   end
 end

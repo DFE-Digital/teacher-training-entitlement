@@ -18,14 +18,6 @@ RSpec.feature "Sad journeys", :npq, type: :feature do
       page.choose("October 2026", visible: :all)
     end
 
-    expect_page_to_have(path: "/reception-registration/provider-check", submit_form: true) do
-      page.choose("Yes", visible: :all)
-    end
-
-    expect_page_to_have(path: "/reception-registration/teacher-catchment", submit_form: true) do
-      page.choose("Yes", visible: :all)
-    end
-
     expect_page_to_have(path: "/reception-registration/work-setting", submit_form: true) do
       page.choose("Another setting", visible: :all)
     end

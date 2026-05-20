@@ -2,6 +2,7 @@ class ReceptionRegistrationsController < LoggedInController
   skip_before_action :authenticate_user!, only: %i[show development_login]
   before_action :authenticate_user_unless_public_step, only: :show
   before_action :redirect_to_closed_registration, only: %i[show update], unless: :closed_step?
+  before_action :check_duplicate_applications, only: %i[show]
 
   helper_method :current_step, :previous_step, :current_step_name
   delegate :current_step, :previous_step, :current_step_name, to: :wizard
@@ -61,6 +62,20 @@ class ReceptionRegistrationsController < LoggedInController
   end
 
 private
+
+  def check_duplicate_applications
+    return if current_user.nil?
+
+    active_applications = current_user.active_applications_for(course: wizard.state_store.course, cohort: Cohort.current)
+    return if active_applications.empty?
+
+    flash[:alert] = {
+      title: "Application already registered",
+      message: "You have already made an application for #{wizard.state_store.course.name}",
+    }
+
+    redirect_to application_path(active_applications.last.ecf_id)
+  end
 
   def update_service
     @update_service ||= ReceptionRegistrations::ServiceStrategy.for(wizard:, user: current_user)

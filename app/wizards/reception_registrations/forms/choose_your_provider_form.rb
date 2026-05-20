@@ -4,13 +4,9 @@ module ReceptionRegistrations
       attribute :lead_provider_id, :string
 
       validates :lead_provider_id, presence: true
-      validate :validate_lead_provider_exists, unless: -> { lead_provider_id.blank? || not_chosen_provider? }
+      validate :validate_lead_provider_exists, unless: -> { lead_provider_id.blank? }
 
       delegate :state_store, to: :wizard
-
-      def not_chosen_option
-        @not_chosen_option ||= "not_chosen".freeze
-      end
 
       def lead_providers
         @lead_providers ||= LeadProvider.for(course: state_store.course).alphabetical
@@ -18,10 +14,6 @@ module ReceptionRegistrations
 
       def lead_provider
         @lead_provider ||= lead_providers.find_by(id: lead_provider_id)
-      end
-
-      def not_chosen_provider?
-        lead_provider_id == not_chosen_option
       end
 
       def self.permitted_params

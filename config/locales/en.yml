@@ -444,7 +444,7 @@ en:
         admin/delivery_partners/continue_form:
           attributes:
             continue:
-              inclusion: Select ‘Yes’ or ‘No’ to continue
+              inclusion: Select ‘Yes' or ‘No' to continue
         shared_change_funding_eligibility: &shared_change_funding_eligibility
           attributes:
             eligible_for_funding:
@@ -551,7 +551,7 @@ en:
         questionnaires/teacher_catchment:
           attributes:
             teacher_catchment:
-              blank: Select ‘Yes’ if you work in England
+              blank: Select ‘Yes' if you work in England
             teacher_catchment_country:
         questionnaires/registration_interest_notification:
           attributes:
@@ -571,11 +571,11 @@ en:
         session_wizard_steps/sign_in:
           attributes:
             email:
-              blank: Email can’t be blank
+              blank: Email can't be blank
         session_wizard_steps/sign_in_code:
           attributes:
             code:
-              blank: Code can’t be blank
+              blank: Code can't be blank
               incorrect: Code is not correct. Please try again
         participants/change_trn:
           attributes:
@@ -792,35 +792,32 @@ en:
       tte-early-years: Early Years
     outcome:
       passed_html: <a href="https://access-your-teaching-qualifications.education.gov.uk/qualifications/start"
-        class="govuk-link">Access your teaching qualifications</a> to get your certificate.
-      failed: If you think this is mistake or need to appeal this outcome, contact
-        your training provider.
+        class="govuk-link">Download your certificate</a>.
   funding_details:
     targeted_funding_eligibility: Your workplace will receive a <a href="https://www.gov.uk/government/publications/targeted-support-funding-for-national-professional-qualifications"
       class="govuk-link">targeted support funding</a> payment to support you to do
       this NPQ.
-    ineligible_message: This means that you would need to pay for the course another
-      way.
-    ineligible_setting: You’re not eligible for scholarship funding as you
+    ineligible_message: This means that you would need to pay for the course another way.
+    ineligible_setting: You're not eligible for scholarship funding as you
       do not work in one of the eligible settings, such as state-funded schools.
-    inside_catchment: You’re not eligible for scholarship funding as you do
+    inside_catchment: You're not eligible for scholarship funding as you do
       not work in England.
-    no_Ofsted: You’re not eligible for schools funding as you or your employer
+    no_Ofsted: You're not eligible for schools funding as you or your employer
       is not registered on the Ofsted Early Years Register or with a registered Childminder
       Agency.
     previously_funded: You have already been allocated scholarship funding
       for %{course_name}.
-    not_eligible_ehco: You’re not eligible for scholarship funding for %{course_name}.
-    not_a_pp50: You’re not eligible for scholarship funding for the NPQ as
+    not_eligible_ehco: You're not eligible for scholarship funding for %{course_name}.
+    not_a_pp50: You're not eligible for scholarship funding for the NPQ as
       your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
       of settings that are eligible for funding</a>.
-    not_entitled_ey_institution: You’re not eligible for scholarship funding
+    not_entitled_ey_institution: You're not eligible for scholarship funding
       for the NPQ as your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
       of settings that are eligible for funding</a>.
-    not_entitled_childminder: You’re not eligible for scholarship funding for
+    not_entitled_childminder: You're not eligible for scholarship funding for
       the NPQ as you or your employer is not registered on the Ofsted early years
       register or with a registered Childminder Agency.
-    scholarship_eligibility: You’re not eligible for scholarship funding.
+    scholarship_eligibility: 	You're not eligible for scholarship funding as you do not work in one of the eligible settings, such as state-funded schools.
     subject_to_review: You may be eligible for scholarship funding, subject
       to review of your application by DfE.
   provider_details:
@@ -828,27 +825,28 @@ en:
       you can register again later for courses starting in October 2024. You'll receive
       an email when registrations open. This is usually around June.
   course_start_details:
-    eligible_for_funding: If your provider does not confirm you’ve started the course
-      by %{date}, your registration will expire. You can register again later, but
-      your funding may change.
-    not_eligible_for_funding: If your provider does not confirm you’ve started the
+    eligible_for_funding: If your provider does not confirm you've started the course
+      by %{date}, your registration will expire. You can register again later
+      for a future start date.
+    not_eligible_for_funding: If your provider does not confirm you've started the
       course by %{date}, your registration will expire. You can register again later.
   provider_details:
     expired_status_when_service_is_closed: "Your registration has expired but you can register again later for courses starting in October 2024. You'll receive an email when registrations open. This is usually around June."
   deferral_details:
       date_deferred: "Date deferred: %{deferred_at}"
       if_you_restart: If you wish to restart the course, you must do so within 12 months of deferring. Please contact your provider to do this.
-      if_you_do_not_restart: If you do not restart the course within 12 months your registration will expire and you will be withdrawn from the course.
+      if_you_do_not_restart: If you do not restart the course within 12 months your registration will expire and you will be withdrawn from the course. After you have been withdrawn, you can register again but you will not be eligible for further funding.
       funded_place: After you have been withdrawn, you will not be eligible for further funding.
   withdrawal_details:
-      submit_new_registration_html: "If you wish to register for a new course, you can %{link}."
+      submit_new_registration_html: "If you want to take this course again, you need to %{link}."
+      previously_started_text: As you have previously started the course, you will not be eligible for scholarship funding.
       submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
   course_start_details:
-    eligible_for_funding: If your provider does not confirm you’ve started the course
-      by %{date}, your registration will expire. You can register again later, but
-      your funding may change.
-    not_eligible_for_funding: If your provider does not confirm you’ve started the
+    eligible_for_funding: If your provider does not confirm you've started the course
+      by %{date}, your registration will expire. You can register again 
+      for a future start date.
+    not_eligible_for_funding: If your provider does not confirm you've started the
       course by %{date}, your registration will expire. You can register again later.
   statements:
     payment_authorisations:
@@ -954,17 +952,8 @@ en:
           in autumn 2025.
         course_start_date_three: Early headship coaching offer start dates vary by
           provider and are throughout the year.
-        work_setting_options:
-          early_years_or_childcare_html: ""
-          a_16_to_19_educational_setting_html: "Includes:<ul class=\"question-hint-list\"><li>sixth form colleges</li><li>further education colleges</li><li>schools that also teach ages 16 to 19</li></ul>"
-          a_school_html: "Includes:<ul class=\"question-hint-list\"><li>local authority maintained schools (some may provide hospital education, for example pupil referral units, alternative provision or special schools)</li><li>secure children’s homes and secure training centres</li></ul>"
-          an_academy_trust_html: "<div class=\"govuk-!-margin-bottom-1\">Some may provide hospital education (for example, alternative provision or academy special schools)</p>"
-          another_setting_html: "For example: <ul class=\"question-hint-list\"><li>local authority (for staff in a direct teaching role, virtual school headteachers and staff in defined deputy headteacher roles)</li><li>initial teacher training (ITT) providers (for ITT lead mentors)</li><li>independent hospital education organisations</li><li>young offender institutions</li></ul>"
-          other_html: "Select ‘Other’ if you were referred by the Return to Teaching Advisory (RTTA) service, or if none of the above options apply to you, for example you’re:<ul class=\"question-hint-list\"><li>self-employed</li><li>not working in an educational setting</li><li>an agency supply teacher</li><li>working in any other independent setting</li></ul>"
         course_identifier_options:
             opportunities if you’re a headteacher in your first 5 years of headship.
-        npqh_status_title_hint: To be eligible for the Early headship coaching offer
-          you need to do the Headship NPQ.
         funding_options:
           another: For example, I am sharing the costs with my workplace
         can_share_choices:
@@ -983,7 +972,7 @@ en:
           If you work for a trust, enter the name of one of their schools.
         choose_private_childcare_provider: For example a 7 digit number (1234567)
           or a 6 digit number sometimes prefixed with EY (EY456789)
-        choose_private_childcare_provider_search: Enter your or your employer’s URN
+        choose_private_childcare_provider_search: Enter your or your employer's URN
         institution_location_html: Enter <strong>just the first part of your workplace
           postcode</strong>, for example SW19. If you work for a trust, use the postcode
           of one of its schools.
@@ -991,13 +980,13 @@ en:
         lead_provider_id: These are the training providers who provide <b>%{course_name}</b>.
           Providers may have different entry requirements.
         trn: TRNs are 7 digits long. Teachers can find it on their payslip, teaching
-          contract or teachers’ pension records.
+          contract or teachers' pension records.
         full_name: Your full name exactly as it appears on the Teaching Regulation
           Agency records
         date_of_birth: For example, 31 3 1980
-        national_insurance_number: This will help us match your details. It’s on your
+        national_insurance_number: This will help us match your details. It's on your
           National Insurance card, benefit letter, payslip or P60. For example, ‘QQ
-          12 34 56 C’.
+          12 34 56 C'.
         work_setting: Make sure the information you provide is correct, as your course
           provider will check your details. Register using your current workplace
           details, even if they will change soon.
@@ -1015,10 +1004,11 @@ en:
           other: Other
         course_start_date_options:
           "yes": 'Yes'
+          "yes": 'Yes'
           "no": No, I want to start later
         kind_of_nursery_options:
           local_authority_maintained_nursery: Local authority-maintained nursery
-          preschool_class_as_part_of_school: Pre-school class or nursery that’s
+          preschool_class_as_part_of_school: Pre-school class or nursery that's
             part of a school (maintained or independent)
           private_nursery: Private nursery
           childminder: As a childminder
@@ -1041,7 +1031,7 @@ en:
         choose_school: What is the name of your workplace?
         choose_school_search: Workplace not shown above
         choose_school_fallback: Select your workplace
-        choose_private_childcare_provider: Enter your or your employer’s unique reference
+        choose_private_childcare_provider: Enter your or your employer's unique reference
           number (URN)
         choose_private_childcare_provider_search: My employer is not shown above
         choose_private_childcare_provider_fallback: Select yourself or your employer

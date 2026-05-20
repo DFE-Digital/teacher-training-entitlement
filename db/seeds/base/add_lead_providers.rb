@@ -1,5 +1,7 @@
 require_relative "constants"
 
-LEAD_PROVIDERS.each do |name|
-  LeadProvider.find_by(name:) || FactoryBot.create(:lead_provider, name:)
+LEAD_PROVIDER_CONFIG.each do |name, config|
+  lead_provider = LeadProvider.find_or_initialize_by(name:)
+  lead_provider.assign_attributes(config.slice(:url, :hint))
+  lead_provider.save! if lead_provider.changed?
 end

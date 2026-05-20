@@ -121,6 +121,6 @@ RSpec.describe FundingEligibility do
       allow(institution).to receive(:eligible_establishment?).and_return(true)
     end
 
-    it { is_expected.to eq "You’re not eligible for scholarship funding." }
+    it { is_expected.to eq "You're not eligible for scholarship funding as you do not work in one of the eligible settings, such as state-funded schools." }
   end
 end

@@ -1,20 +1,11 @@
-<% content_for :title do %>
-  <%= t("helpers.title.registration_wizard.ineligible_for_funding") %>
-<% end %>
-
 <%= render "reception_registrations/backlink", step: @step %>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <%= render "reception_registrations/ineligible_for_funding/#{@wizard.state_store.inelegible_for_funding_type}", course: @wizard.state_store.course, lead_provider: @wizard.state_store.lead_provider&.name %>
+<%= render "reception_registrations/ineligible_for_funding/#{@wizard.state_store.funding_eligibility_status_code}", course: @wizard.state_store.course, lead_provider: @wizard.state_store.lead_provider&.name %>
 
-    <%= govuk_button_link_to "Continue", reception_registration_path("funding-your-course") %>
+<%= govuk_button_link_to "Continue", reception_registration_path("funding-your-course") %>
 
-  </div>
-</div>
-
-<% if Rails.env.staging? || Rails.env.development? %>
+<% unless Rails.env.production? %>
   <p class="govuk-body">
-    Ineligible type: "<%= @wizard.state_store.inelegible_for_funding_type %>"
+    Ineligible type: "<%= @wizard.state_store.funding_eligibility_status_code %>"
     <br />
     <i>Note: this will not show in production</i>
   </p>

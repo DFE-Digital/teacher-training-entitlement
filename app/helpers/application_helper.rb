@@ -51,7 +51,8 @@ module ApplicationHelper
   def application_status_badge(status)
     return nil unless status.presence
 
-    govuk_tag(text: status.humanize, colour: application_status_colour(status))
+    text = status == Application::COMPLETED ? "Successful" : status.humanize
+    govuk_tag(text:, colour: application_status_colour(status))
   end
 
   def application_status_colour(status)
@@ -59,6 +60,7 @@ module ApplicationHelper
       pending: "blue",
       accepted: "green",
       started: "green",
+      completed: "green",
       deferred: "yellow",
       rejected: "red",
       withdrawn: "red",

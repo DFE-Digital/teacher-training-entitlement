@@ -7,11 +7,7 @@ module ReceptionRegistrations
       validate :validate_funding
 
       def options
-        if state_store["works_in_school"] && state_store.inside_catchment?
-          RegistrationState::VALID_FUNDING_OPTIONS - [RegistrationState::EMPLOYER]
-        else
-          RegistrationState::VALID_FUNDING_OPTIONS - [RegistrationState::TRUST, RegistrationState::EMPLOYER]
-        end
+        RegistrationState::VALID_FUNDING_OPTIONS
       end
 
       def self.permitted_params

@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Teacher Catchment", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:lead_provider) { create(:lead_provider) }
   let(:course) { create(:course, display: true, lead_provider:) }
   let(:url) { "/reception-registration/teacher-catchment" }

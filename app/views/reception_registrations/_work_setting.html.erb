@@ -10,9 +10,8 @@
       <% legend = { text: I18n.t("helpers.legend.registration_wizard.work_setting"), tag: "h1", size: "xl" } %>
       <%= f.govuk_radio_buttons_fieldset(:work_setting, **{ legend:, hint: { text: I18n.t("helpers.hint.registration_wizard.work_setting")} }) do %>
         <% current_step.work_settings_options.each do |work_setting| %>
-          <% hint = { text: I18n.t("helpers.hint.registration_wizard.work_setting_options.#{work_setting}_html").html_safe } %>
           <% label = { size: "s", text: I18n.t("helpers.label.registration_wizard.work_setting_options.#{work_setting}") } %>
-          <%= f.govuk_radio_button(:work_setting, work_setting, hint:, label:) %>
+          <%= f.govuk_radio_button(:work_setting, work_setting, label:) %>
         <% end %>
       <% end %>
 

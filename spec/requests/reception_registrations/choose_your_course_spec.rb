@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Choose Your Course", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:course) { create(:course, :tte_early_years, display: true) }
   let(:url) { "/reception-registration/choose-your-course" }
   let(:registration_session) { { confirmation: "yes" } }
@@ -17,29 +16,24 @@ RSpec.describe "Reception Registrations / Choose Your Course", type: :request do
   end
 
   describe "GET /reception-registration/choose-your-course" do
-    it "renders the show template" do
+    it "redirects to start" do
       get url
-      expect(response).to render_template(:show)
-      expect(response).to render_template(:_choose_your_course)
+      expect(response).to redirect_to(reception_registration_path("start"))
     end
   end
 
   describe "PATCH /reception-registration/choose-your-course" do
     context "with valid course" do
-      it "redirects to choose provider path" do
+      it "redirects to exit" do
         patch url, params: { "choose-your-course" => { course_identifier: course.identifier } }
-        expect(response).to redirect_to(reception_registration_path("choose-your-provider"))
+        expect(response).to redirect_to(reception_registration_path("exit"))
       end
     end
 
     context "with invalid form" do
-      it "renders form again" do
+      it "redirects to exit" do
         patch url, params: { "choose-your-course" => { course_identifier: nil } }
-        expect(response).to have_http_status(:ok)
-        expect(response).to render_template(:show)
-        expect(response).to render_template(:_choose_your_course)
-        expect(assigns[:step]).not_to be_nil
-        expect(assigns[:step].errors[:course_identifier]).to eq(["can't be blank"])
+        expect(response).to redirect_to(reception_registration_path("exit"))
       end
     end
   end

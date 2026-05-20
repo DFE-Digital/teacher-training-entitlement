@@ -1,48 +1,19 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl"><%= t("helpers.title.registration_wizard.course_start_date", date: application_course_start_date) %></h1>
-  </div>
-</div>
+<h1 class="govuk-heading-xl"><%= t("helpers.title.registration_wizard.course_start_date") %></h1>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-body govuk-!-margin-bottom-4">
-      <%= t("helpers.hint.registration_wizard.course_start_date_one") %>
-    </p>
-  </div>
-</div>
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-body govuk-!-margin-bottom-4">
-      <%= t("helpers.hint.registration_wizard.course_start_date_two") %>
-    </p>
-  </div>
-</div>
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-body govuk-!-margin-bottom-4">
-      <%= t("helpers.hint.registration_wizard.course_start_date_three", date: application_course_start_date) %>
-    </p>
-  </div>
-</div>
+<p class="govuk-body"><%= t("helpers.title.registration_wizard.course_start_date_sub", date: application_course_start_date) %>.</p>
 
 <%= render "reception_registrations/backlink", step: @step %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <%= form_with model: current_step,
+<%= form_with model: current_step,
           url: @wizard.current_step_path,
           scope: current_step_name,
           method: :patch do |f| %>
-      <%= f.govuk_error_summary %>
-      <%= f.govuk_radio_buttons_fieldset(:confirmation, **{ legend: { text: "Do you want to start a course in #{application_course_start_date}?", tag: "h2", size: "m" }}) do %>
-        <%= f.govuk_radio_button(:confirmation, 'yes', label: { text: I18n.t("helpers.label.registration_wizard.course_start_date_options.yes") }, link_errors: true, hint: { text: I18n.t("helpers.hint.registration_wizard.course_start_date_hint")}) %>
-        <%= f.govuk_radio_button(:confirmation, 'no', label: { text: I18n.t("helpers.label.registration_wizard.course_start_date_options.no") }) %>
-      <% end %>
+  <%= f.govuk_error_summary %>
+  <%= f.govuk_radio_buttons_fieldset(:confirmation, **{ legend: { text: "Do you want to start a course in #{application_course_start_date}?", tag: "h2", size: "m" }}) do %>
+    <%= f.govuk_radio_button(:confirmation, 'yes', label: { text: application_course_start_date }, link_errors: true, hint: { text: I18n.t("helpers.hint.registration_wizard.course_start_date_hint")}) %>
+    <%= f.govuk_radio_button(:confirmation, 'spring', label: { text: application_next_course_start_date }) %>
+    <%= f.govuk_radio_button(:confirmation, 'no', label: { text: I18n.t("helpers.label.registration_wizard.course_start_date_options.no") }) %>
+  <% end %>
 
-      <%= f.govuk_submit %>
-    <% end  %>
-  </div>
-</div>
+  <%= f.govuk_submit %>
+<% end  %>

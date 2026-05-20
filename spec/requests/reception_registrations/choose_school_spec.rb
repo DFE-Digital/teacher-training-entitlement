@@ -1,19 +1,17 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Choose School", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course) { create(:course, display: true, lead_provider:) }
+  let(:course) { create(:course, :tte_early_years, display: true, lead_provider:) }
   let(:school) { create(:school, urn: "123456") }
   let(:url) { "/reception-registration/choose-school" }
   let(:registration_session) do
     {
       confirmation: "yes",
-      course_identifier: course.identifier,
       lead_provider_id: lead_provider.id.to_s,
       teacher_catchment: "england",
-      work_setting: "a_school",
+      work_setting: Institution::STATE_FUNDED_INSTITUTION,
     }
   end
   let(:session) { { user_id: user.id, "registrations_#{user.id}" => registration_session }.with_indifferent_access }

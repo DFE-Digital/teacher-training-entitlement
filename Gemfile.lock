@@ -9,8 +9,10 @@ GIT
       multi_xml (~> 0.6.0)
       request_store_rails (~> 2)
 
-PATH
-  remote: ../dfe-wizard
+GIT
+  remote: https://github.com/DFE-Digital/dfe-wizard.git
+  revision: 449473a0ffb69b63832f11cab7e5555513edfb21
+  branch: main
   specs:
     dfe-wizard (1.0.0.beta)
       activemodel

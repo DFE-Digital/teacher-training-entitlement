@@ -12,11 +12,13 @@
             component.with_row do |row|
               row.with_key { answer.key }
               row.with_value { answer.value }
-              row.with_action(
-                text: 'Change',
-                visually_hidden_text: answer.key,
-                href: reception_registration_path(answer.step),
-              )
+              if answer.step
+                row.with_action(
+                  text: 'Change',
+                  visually_hidden_text: answer.key,
+                  href: reception_registration_path(answer.step),
+                )
+              end
             end
           end
     end %>

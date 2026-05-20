@@ -1,58 +1,42 @@
-<div class="govuk-summary-card">
-  <div class="govuk-summary-card__title-wrapper">
-    <div>
-      <h2 class="govuk-summary-card__title"><%= application.course.title_embedded_course_name %></h2>
-      <p class="govuk-body">
-        <%= application.lead_provider.name %>
-      </p>
-    </div>
-    <span class="govuk-summary-card__action govuk-!-margin-top-1">
-      <%= govuk_link_to("View details", application_path(application.ecf_id)) %>
-    </span>
-  </div>
-  <div class="govuk-summary-card__content">
-    <dl class="govuk-summary-list">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Registration submitted
-        </dt>
-        <dd class="govuk-summary-list__value">
-          <%= application.created_at.to_date.to_fs(:govuk_short) %>
-        </dd>
-      </div>
+<%=
+  govuk_summary_list(
+    card: {
+      title: application.course.title_embedded_course_name,
+      actions: [govuk_link_to("View details", application_path(application.ecf_id))],
+    },
+  ) do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Provider")
+      row.with_value(text: application.lead_provider.name)
+    end
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Provider application
-        </dt>
-        <dd class="govuk-summary-list__value">
-          <% if application.status.blank? || pending?(application) %>
-            <%= govuk_tag(text: "Apply with provider", colour: "yellow") %>
-            <%= render 'provider_pending_status' %>
-          <% elsif application.accepted_status?(application) %>
-            <%= govuk_tag(text: "Successful", colour: "green") %>
-          <% elsif application.rejected_status? %>
-            <%= govuk_tag(text: "Unsuccessful", colour: "red") %>
-          <% end %>
-        </dd>
-      </div>
+    sl.with_row do |row|
+      row.with_key(text: "Registration submitted")
+      row.with_value(text: application.created_at.to_date.to_fs(:govuk_short))
+    end
 
-      <% if application.latest_participant_outcome_state.present? && application.accepted_status? %>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">
-            Course outcome
-          </dt>
-          <dd class="govuk-summary-list__value">
-            <% if application.latest_participant_outcome_state.capitalize == "Passed" %>
-              <%= govuk_tag(text: "Passed", colour: "green") %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= t("course.outcome.passed_html")  %></p>
-            <% elsif application.latest_participant_outcome_state.capitalize == "Failed" %>
-              <%= govuk_tag(text: "Not passed", colour: "red") %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= t("course.outcome.failed")  %></p>
-            <% end %>
-          </dd>
-        </div>
-      <% end %>
-    </dl>
-  </div>
-</div>
+    sl.with_row do |row|
+      row.with_key(text: "Provider application")
+      row.with_value do
+        if application.status.blank? || pending?(application)
+          concat govuk_tag(text: "Apply with provider", colour: "yellow")
+          concat render("provider_pending_status")
+        elsif application.accepted_status?(application)
+          concat govuk_tag(text: "Successful", colour: "green")
+        elsif application.rejected_status?
+          concat govuk_tag(text: "Unsuccessful", colour: "red")
+        end
+      end
+    end
+
+    if application.completed_status?
+      sl.with_row do |row|
+        row.with_key(text: "Course outcome")
+        row.with_value do
+          concat govuk_tag(text: "Completed", colour: "green")
+          concat tag.p(t("course.outcome.passed_html"), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+        end
+      end
+    end
+  end
+%>

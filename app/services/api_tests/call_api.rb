@@ -32,7 +32,7 @@ module APITests
     end
 
     def token_for(lead_provider:)
-      token = LEAD_PROVIDER_TOKENS[lead_provider.name]
+      token = LEAD_PROVIDER_CONFIG.dig(lead_provider.name, :token)
       raise "[CallApi] No seeded token found for '#{lead_provider.name}'" if token.nil?
 
       token

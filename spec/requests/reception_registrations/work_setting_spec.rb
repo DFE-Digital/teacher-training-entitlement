@@ -1,15 +1,13 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Work Setting", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course) { create(:course, display: true, lead_provider:) }
+  let(:course) { create(:course, :tte_early_years, display: true, lead_provider:) }
   let(:url) { "/reception-registration/work-setting" }
   let(:registration_session) do
     {
       confirmation: "yes",
-      course_identifier: course.identifier,
       lead_provider_id: lead_provider.id.to_s,
       teacher_catchment: "england",
     }
@@ -33,7 +31,7 @@ RSpec.describe "Reception Registrations / Work Setting", type: :request do
   describe "PATCH /reception-registration/work-setting" do
     context "with valid work setting" do
       it "redirects to choose school path" do
-        patch url, params: { "work-setting" => { work_setting: "a_school" } }
+        patch url, params: { "work-setting" => { work_setting: Institution::STATE_FUNDED_INSTITUTION } }
         expect(response).to redirect_to(reception_registration_path("choose-school"))
       end
     end
@@ -45,7 +43,7 @@ RSpec.describe "Reception Registrations / Work Setting", type: :request do
         expect(response).to render_template(:show)
         expect(response).to render_template(:_work_setting)
         expect(assigns[:step]).not_to be_nil
-        expect(assigns[:step].errors[:work_setting]).to eq(["can't be blank"])
+        expect(assigns[:step].errors[:work_setting]).to eq(["can't be blank", "is not included in the list"])
       end
     end
   end

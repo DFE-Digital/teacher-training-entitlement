@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Course Start Date", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:url) { "/reception-registration/course-start-date" }
 
   before do
@@ -21,9 +20,9 @@ RSpec.describe "Reception Registrations / Course Start Date", type: :request do
 
   describe "PATCH /reception-registration/course-start-date" do
     context "with valid confirmation" do
-      it "redirects to choose course path" do
+      it "redirects to choose provider path" do
         patch url, params: { "course-start-date" => { confirmation: "yes" } }
-        expect(response).to redirect_to(reception_registration_path("choose-your-course"))
+        expect(response).to redirect_to(reception_registration_path("choose-your-provider"))
       end
     end
 

@@ -6,7 +6,6 @@ module ReceptionRegistrations
       start
       closed
       course-start-date
-      choose-your-course
       choose-your-provider
       teacher-catchment
       work-setting
@@ -26,7 +25,7 @@ module ReceptionRegistrations
             state_store: RegistrationState.new(
               repository: DfE::Wizard::Repository::Session.new(
                 session:,
-                key: :"registrations_#{user.id}",
+                key: :"registrations_#{user&.id}",
               ),
             ))
     end
@@ -44,11 +43,9 @@ module ReceptionRegistrations
         end
 
         graph.add_node :"cannot-register-yet", ReceptionRegistrations::Forms::NoOpForm
-        graph.add_node :"choose-a-tte-and-provider", ReceptionRegistrations::Forms::NoOpForm
-        graph.add_node :"kind-of-nursery", ReceptionRegistrations::Forms::KindOfNurseryForm
+        graph.add_node :"choose-your-course", ReceptionRegistrations::Forms::NoOpForm
         graph.add_node :"possible-funding", ReceptionRegistrations::Forms::NoOpForm
         graph.add_node :"ineligible-for-funding", ReceptionRegistrations::Forms::NoOpForm
-        graph.add_node :"have-ofsted-urn", ReceptionRegistrations::Forms::NoOpForm
 
         graph.before_next_step do
           # TODO: Implement a after_step to decorate the state store
@@ -58,8 +55,6 @@ module ReceptionRegistrations
               funding_eligibility_status_code: funding_eligibility_service.funding_eligiblity_status_code,
               eligible_for_funding: funding_eligibility_service.eligible_for_funding?,
             )
-          elsif current_step_name == :"work-setting" && @action_type == :update
-            write_state(works_in_school: current_step.works_in_school?, works_in_childcare: current_step.works_in_childcare?)
           end
           next_step_name
         end
@@ -103,10 +98,8 @@ module ReceptionRegistrations
         course: state_store.course,
         institution: state_store.selected_institution,
         inside_catchment: state_store.inside_catchment?,
-        trn: @user.trn,
-        get_an_identity_id: @user.get_an_identity_id,
+        user: @user,
         work_setting: state_store.work_setting,
-        kind_of_nursery: state_store.kind_of_nursery,
       )
     end
 

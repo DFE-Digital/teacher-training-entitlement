@@ -116,7 +116,6 @@ erDiagram
         string school_urn
         string lead_provider_approval_status
         string training_status
-        boolean works_in_school
         boolean eligible_for_funding
         boolean targeted_delivery_funding_eligibility
         string teacher_catchment

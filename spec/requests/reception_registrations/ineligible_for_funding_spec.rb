@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Ineligible For Funding", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:lead_provider) { create(:lead_provider) }
   let(:course) { create(:course, :tte_early_years, display: true, lead_provider:) }
   let(:school) { create(:school, urn: "123456") }

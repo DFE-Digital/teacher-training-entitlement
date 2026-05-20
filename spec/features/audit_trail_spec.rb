@@ -96,7 +96,6 @@ RSpec.feature "Recording audit trail via papertrail", :revisit, :versioning, typ
         lead_provider_id: lead_provider.id.to_s,
         teacher_catchment: "england",
         work_setting: "other",
-        works_in_school: false,
         works_in_childcare: false,
         institution_id: school.institution.id.to_s,
         funding: "self",

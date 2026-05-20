@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Reception Registrations / Funding Your Course", type: :request do
-  let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:user) { create(:user) }
   let(:lead_provider) { create(:lead_provider) }
   let(:course) { create(:course, :tte_early_years, display: true, lead_provider:) }
   let(:school) { create(:school, urn: "123456") }
@@ -54,7 +53,7 @@ RSpec.describe "Reception Registrations / Funding Your Course", type: :request d
       end
 
       it "renders form again when funding is not an option" do
-        patch url, params: { "funding-your-course" => { funding: "trust" } }
+        patch url, params: { "funding-your-course" => { funding: "not-an-option" } }
         expect(response).to have_http_status(:ok)
         expect(response).to render_template(:show)
         expect(response).to render_template(:_funding_your_course)

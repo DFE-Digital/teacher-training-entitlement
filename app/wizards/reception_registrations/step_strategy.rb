@@ -23,20 +23,12 @@ module ReceptionRegistrations
     def resolve_on_update
       if current_step_name == :"course-start-date" && current_step.confirmation == "no"
         :"cannot-register-yet"
-      elsif current_step_name == :"choose-your-provider" && current_step.not_chosen_provider?
-        :"choose-a-tte-and-provider"
       elsif current_step_name == :"work-setting"
         return :"ineligible-for-funding" unless state_store.inside_catchment?
-        return :"choose-school" if current_step.works_in_school?
-        return :"kind-of-nursery" if current_step.works_in_childcare?
+
+        return :"choose-school" if state_store.state_funded_institution?
 
         :"ineligible-for-funding"
-      elsif current_step_name == :"kind-of-nursery"
-        if state_store.public_nursery?
-          :"choose-school"
-        else
-          :"ineligible-for-funding"
-        end
       elsif current_step_name == :"choose-school"
 
         if state_store.no_institution_selected?
@@ -52,7 +44,7 @@ module ReceptionRegistrations
     end
 
     def resolve_on_show
-      return if step_available?
+      return if step_available? # current step ok
 
       :start
     end
@@ -63,18 +55,12 @@ module ReceptionRegistrations
         true
       when :"cannot-register-yet"
         state_store.confirmation == "no"
-      when :"choose-your-course"
-        course_start_date_confirmed?
       when :"choose-your-provider"
         course_selected?
-      when :"choose-a-tte-and-provider"
-        course_selected? && lead_provider_not_chosen?
       when :"teacher-catchment"
         provider_selected?
       when :"work-setting"
         teacher_catchment_selected?
-      when :"kind-of-nursery"
-        childcare_work_setting_selected?
       when :"choose-school"
         school_required?
       when :"possible-funding"
@@ -122,9 +108,8 @@ module ReceptionRegistrations
 
     def school_required?
       return false unless teacher_catchment_selected?
-      return false unless state_store.inside_catchment?
 
-      school_work_setting_selected? || state_store.public_nursery?
+      state_store.inside_catchment?
     end
 
     def funding_eligibility_known?
@@ -140,13 +125,10 @@ module ReceptionRegistrations
     def ineligible_funding_step_available?
       return false unless work_setting_selected?
       return true unless state_store.inside_catchment?
-      return true if state_store.works_in_other?
-      return true if state_store.kind_of_nursery_private?
-      if funding_eligibility_can_be_calculated? && !@funding_eligibility_service.eligible_for_funding?
-        return true
-      end
+      return true unless state_store.state_funded_institution?
+      return true if funding_eligibility_known? && !state_store.eligible_for_funding
 
-      funding_eligibility_known? && !state_store.eligible_for_funding
+      funding_eligibility_can_be_calculated? && !@funding_eligibility_service.eligible_for_funding?
     end
 
     def funding_eligibility_can_be_calculated?

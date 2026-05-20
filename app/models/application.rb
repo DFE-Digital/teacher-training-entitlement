@@ -230,16 +230,16 @@ class Application < ApplicationRecord
     eligible_for_dfe_funding?(with_funded_place: true)
   end
 
-  def latest_participant_outcome_state
-    declarations.completed.billable_or_voidable.latest_first.first&.participant_outcomes&.latest&.state
-  end
-
   def transition_status!(status, reason: nil, metadata: {}, **attributes)
     metadata.merge!(reason:) if reason.present?
     self.class.transaction do
       state_changes.create!(event: status, lead_provider:, metadata:)
       update!(attributes.merge(status:))
     end
+  end
+
+  def previously_started?
+    declarations.started.not_voided.any?
   end
 
 private
