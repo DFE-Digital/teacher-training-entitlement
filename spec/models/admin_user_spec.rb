@@ -8,7 +8,7 @@ RSpec.describe AdminUser, type: :model do
     end
 
     describe "email" do
-      it { is_expected.to validate_presence_of(:email).with_message("Enter an email address") }
+      it { is_expected.to validate_presence_of(:email).with_message("Enter an email address in the correct format, like name@example.com") }
       it { is_expected.to validate_length_of(:email).is_at_most(64).with_message("Email must be shorter than 64 characters") }
     end
   end
