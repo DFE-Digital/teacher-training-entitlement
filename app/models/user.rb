@@ -38,6 +38,11 @@ class User < ApplicationRecord
   after_commit :touch_significantly_updated_at
 
   scope :admins, -> { where(admin: true) }
+  scope :needing_token_refresh, lambda {
+    where(trn: nil)
+      .where.not(refresh_token: nil)
+      .where("refresh_token_updated_at < ?", 1.day.ago)
+  }
 
   EMAIL_UPDATES_STATES = %i[senco other_npq].freeze
   EMAIL_UPDATES_ALL_STATES = [:empty] + EMAIL_UPDATES_STATES
