@@ -105,10 +105,10 @@ private
 
     return applications_path if user.applications.any?
 
-    start_questionnaire_path(user)
+    start_questionnaire_path
   end
 
-  def start_questionnaire_path(user)
+  def start_questionnaire_path
     reception_registration_path("course-start-date")
   end
 

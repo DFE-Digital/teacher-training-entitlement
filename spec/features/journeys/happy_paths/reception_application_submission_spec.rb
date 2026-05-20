@@ -60,5 +60,4 @@ RSpec.feature "Reception registration application submission", :with_default_lea
       expect(application).to be_present
     end
   end
-
 end
