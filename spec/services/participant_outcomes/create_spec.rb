@@ -41,6 +41,12 @@ RSpec.describe ParticipantOutcomes::Create, :npq, type: :model do
       it { is_expected.to have_error(:completion_date, :invalid, "The '#/completion_date' value must be in the following format: 'yyyy-mm-dd'") }
     end
 
+    context "when the completion date is not a string" do
+      let(:completion_date) { 1 }
+
+      it { is_expected.to have_error(:completion_date, :invalid, "The '#/completion_date' value must be in the following format: 'yyyy-mm-dd'") }
+    end
+
     describe "completed declarations" do
       context "when the participant has no completed declarations" do
         before { completed_declaration.destroy! }

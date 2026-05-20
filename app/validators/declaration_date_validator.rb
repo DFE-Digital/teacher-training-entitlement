@@ -7,6 +7,8 @@ class DeclarationDateValidator < ActiveModel::Validator
     return if record.errors.any?
 
     date_has_the_right_format(record)
+    return if record.errors.any?
+
     declaration_within_schedule(record)
   end
 
@@ -14,8 +16,10 @@ private
 
   def date_has_the_right_format(record)
     return if record.raw_declaration_date.blank?
-    return if record.raw_declaration_date.match?(RFC3339_DATE_REGEX) && begin
-      Time.zone.parse(record.raw_declaration_date.to_s)
+
+    raw_declaration_date = record.raw_declaration_date.to_s
+    return if raw_declaration_date.match?(RFC3339_DATE_REGEX) && begin
+      Time.zone.parse(raw_declaration_date)
     rescue ArgumentError
       false
     end
