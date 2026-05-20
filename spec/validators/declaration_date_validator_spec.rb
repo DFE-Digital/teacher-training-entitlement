@@ -76,6 +76,15 @@ RSpec.describe DeclarationDateValidator do
           expect(subject.errors.first).to have_attributes(attribute: :declaration_date, type: :invalid)
         end
       end
+
+      context "when declaration date is not a string" do
+        subject { model_class.new(declaration_date: 1) }
+
+        it "has a meaningful error", :aggregate_failures do
+          expect(subject).to be_invalid
+          expect(subject.errors.first).to have_attributes(attribute: :declaration_date, type: :invalid)
+        end
+      end
     end
 
     context "when declaration_date is before the schedule start" do
