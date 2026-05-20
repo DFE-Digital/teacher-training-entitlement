@@ -118,6 +118,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
                                                              "refresh_token_updated_at" => nil,
                                                              "trn_auto_verified" => true,
                                                              "trn_lookup_status" => nil,
+                                                             "trn_requested_at" => nil,
                                                              "trn_verified" => true,
                                                            ))
 

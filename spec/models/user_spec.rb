@@ -479,4 +479,62 @@ RSpec.describe User do
       end
     end
   end
+
+  describe "#requires_token_refresh?" do
+    subject { user.requires_token_refresh? }
+
+    context "when user has no TRN, has refresh token, and no trn_requested_at" do
+      let(:user) { create(:user, trn: nil, refresh_token: "token", trn_requested_at: nil) }
+
+      it { is_expected.to be true }
+    end
+
+    context "when user has TRN" do
+      let(:user) { create(:user, trn: "1234567", refresh_token: "token", trn_requested_at: nil) }
+
+      it { is_expected.to be false }
+    end
+
+    context "when user has no refresh token" do
+      let(:user) { create(:user, trn: nil, refresh_token: nil, trn_requested_at: nil) }
+
+      it { is_expected.to be false }
+    end
+
+    context "when user has trn_requested_at set" do
+      let(:user) { create(:user, trn: nil, refresh_token: "token", trn_requested_at: 1.hour.ago) }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe ".needing_token_refresh" do
+    subject { described_class.needing_token_refresh }
+
+    let!(:user_needing_refresh) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 2.days.ago) }
+
+    it "includes users without TRN, with refresh token, and stale refresh" do
+      expect(subject).to include(user_needing_refresh)
+    end
+
+    it "excludes users with TRN" do
+      user_with_trn = create(:user, trn: "1234567", refresh_token: "token", refresh_token_updated_at: 2.days.ago)
+      expect(subject).not_to include(user_with_trn)
+    end
+
+    it "excludes users without refresh token" do
+      user_no_token = create(:user, trn: nil, refresh_token: nil)
+      expect(subject).not_to include(user_no_token)
+    end
+
+    it "excludes users with recent refresh" do
+      user_recent_refresh = create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 1.hour.ago)
+      expect(subject).not_to include(user_recent_refresh)
+    end
+
+    it "excludes users with TRN already requested" do
+      user_trn_requested = create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 2.days.ago, trn_requested_at: 1.hour.ago)
+      expect(subject).not_to include(user_trn_requested)
+    end
+  end
 end

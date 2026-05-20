@@ -60,6 +60,8 @@
   - created_at
   - trn
   - updated_at
+  :lead_providers:
+  - email
   :financial_change_logs:
   - id
   - created_at
@@ -108,10 +110,6 @@
   - created_at
   - email
   - updated_at
-  :application_events:
-  - type
-  :lead_providers:
-  - email
   :application_lead_providers:
   - id
   - application_id
@@ -151,10 +149,11 @@
   - archived_email
   - date_of_birth
   - national_insurance_number
+  - one_login_id
   - raw_tra_provider_data
   - refresh_token
   - refresh_token_updated_at
-  - one_login_id
+  - trn_requested_at
   :bulk_operations:
   - id
   - admin_id

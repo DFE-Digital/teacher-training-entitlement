@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_20_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -586,6 +586,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_13_120000) do
     t.text "trn"
     t.boolean "trn_auto_verified", default: false
     t.string "trn_lookup_status"
+    t.datetime "trn_requested_at"
     t.boolean "trn_verified", default: false, null: false
     t.datetime "updated_at", null: false
     t.datetime "updated_from_tra_at", precision: nil
