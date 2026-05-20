@@ -12,7 +12,6 @@ FactoryBot.define do
     course_identifier { course.identifier }
     institution_id { school.institution.id }
     lead_provider_id { lead_provider.id }
-    works_in_school { "yes" }
     teacher_catchment { "england" }
     work_setting { "a_school" }
     referred_by_return_to_teaching_adviser { "no" }

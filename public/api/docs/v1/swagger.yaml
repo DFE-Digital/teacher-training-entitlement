@@ -115,7 +115,6 @@ paths:
                         ukprn: '10079319'
                         status: accepted
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -196,7 +195,6 @@ paths:
                         ukprn: '10079319'
                         status: rejected
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -259,7 +257,6 @@ paths:
                         ukprn: '10079319'
                         status: accepted
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -340,7 +337,6 @@ paths:
                         ukprn: '10079319'
                         status: deferred
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -421,7 +417,6 @@ paths:
                         ukprn: '10079319'
                         status: started
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -502,7 +497,6 @@ paths:
                         ukprn: '10079319'
                         status: withdrawn
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -583,7 +577,6 @@ paths:
                         ukprn: '10079319'
                         status: accepted
                         reason_for_rejection: rejected-by-provider
-                        works_in_school: true
                         cohort: '2022'
                         eligible_for_funding: true
                         teacher_catchment: true
@@ -1445,11 +1438,6 @@ components:
               type: string
               nullable: true
               example: rejected-by-provider
-            works_in_school:
-              description: Indicates whether the participant is currently employed
-                by school
-              type: boolean
-              example: true
             cohort:
               description: Indicates which call-off contract would fund this participant's
                 training. 2021 indicates a participant that has started, or will start,

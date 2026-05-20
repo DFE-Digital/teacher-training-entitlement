@@ -12,16 +12,16 @@ RSpec.describe Questionnaires::CourseStartDate, type: :model do
     let(:store) { {} }
     let(:current_user) { create :user }
 
-    context "when selecting no" do
-      before { instance.course_start_date = "no" }
+    context "when selecting a later start date" do
+      before { instance.course_start_date = "january_to_march_2027" }
 
       it { is_expected.to eq :cannot_register_yet }
     end
 
-    context "when selecting yes" do
+    context "when selecting the open cohort" do
       before { instance.course_start_date = "yes" }
 
-      it { is_expected.to eq :choose_your_course }
+      it { is_expected.to eq :choose_your_provider }
     end
   end
 end

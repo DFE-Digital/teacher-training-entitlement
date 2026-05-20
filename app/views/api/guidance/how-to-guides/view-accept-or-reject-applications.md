@@ -66,7 +66,6 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
         "school_urn": "106286",
         "school_ukprn": "10079319",
         "status": "pending",
-        "works_in_school": true,
         "cohort": "2025",
         "eligible_for_funding": true,
         "teacher_catchment": true,

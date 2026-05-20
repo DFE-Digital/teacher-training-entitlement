@@ -14,6 +14,10 @@ class Course < ApplicationRecord
 
   IDENTIFIERS = %w[tte-early-years].freeze
 
+  def self.reception
+    where(identifier: "tte-early-years").last
+  end
+
   def course_short_code
     I18n.t(identifier, scope: "course.short_code")
   end

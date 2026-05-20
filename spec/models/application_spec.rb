@@ -116,16 +116,6 @@ RSpec.describe Application do
 
   describe "enums" do
     it {
-      expect(subject).to define_enum_for(:kind_of_nursery).with_values(
-        local_authority_maintained_nursery: "local_authority_maintained_nursery",
-        preschool_class_as_part_of_school: "preschool_class_as_part_of_school",
-        private_nursery: "private_nursery",
-        another_early_years_setting: "another_early_years_setting",
-        childminder: "childminder",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-
-    it {
       expect(subject).to define_enum_for(:funding_choice).with_values(
         school: "school",
         trust: "trust",
@@ -249,7 +239,7 @@ RSpec.describe Application do
       if school
         create(:application, cohort:, school_record: school, teacher_catchment:)
       else
-        create(:application, cohort:, institution: nil, teacher_catchment:, works_in_school: false)
+        create(:application, cohort:, institution: nil, teacher_catchment:)
       end
     end
 
@@ -347,7 +337,7 @@ RSpec.describe Application do
 
     context "when no institution is available" do
       let(:name) { "" }
-      let(:application) { build(:application, institution: nil, works_in_school: false) }
+      let(:application) { build(:application, institution: nil) }
 
       include_examples "employer_name"
     end
@@ -638,45 +628,6 @@ RSpec.describe Application do
             end
           end
         end
-      end
-    end
-  end
-
-  describe "#latest_participant_outcome_state" do
-    subject { application.latest_participant_outcome_state }
-
-    let(:application) { create(:application, :accepted, participant_outcome_state: "anything") }
-    let(:declaration) { create(:declaration, :completed, application:) }
-    let!(:participant_outcome) { create(:participant_outcome, declaration:) }
-
-    it "returns the state from latest outcome" do
-      expect(subject).to eq("passed")
-    end
-
-    context "when no completed declaration exists" do
-      before { declaration.update!(application: create(:application)) }
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-
-    context "when other type of declaration exists" do
-      before { declaration.update!(declaration_type: "retained-1") }
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-
-    context "when completed declaration is voided" do
-      before do
-        declaration.update!(state: "voided")
-        participant_outcome.update!(state: "voided")
-      end
-
-      it "returns nil" do
-        expect(subject).to be_nil
       end
     end
   end

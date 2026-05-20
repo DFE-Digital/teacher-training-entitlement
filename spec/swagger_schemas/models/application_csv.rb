@@ -100,11 +100,6 @@ APPLICATION_CSV = {
         example: Application::API_STATUSES.first,
         enum: Application::API_STATUSES,
       },
-      works_in_school: {
-        description: "Indicates whether the participant is currently employed by school",
-        type: :boolean,
-        example: true,
-      },
       created_at: {
         description: "The date the application was created",
         type: :string,

@@ -18,22 +18,18 @@ class FundingEligibility
     INELIGIBLE_SETTING => "funding_details.ineligible_setting",
   }.freeze
 
-  attr_reader :institution,
-              :course,
-              :query_store
-
-  delegate :work_setting,
-           to: :query_store
-
+  # NOTE: get_an_identity_id is a temporary parameter while we migrate to Teacher Auth/OneLogin
   def initialize(institution:,
                  course:,
                  inside_catchment:,
-                 query_store:,
+                 user:,
+                 work_setting:,
                  **)
     @institution = institution
     @course = course
     @inside_catchment = inside_catchment
-    @query_store = query_store
+    @user = user
+    @work_setting = work_setting
   end
 
   def funded?
@@ -45,54 +41,41 @@ class FundingEligibility
   end
 
   def funding_eligiblity_status_code
-    @funding_eligiblity_status_code ||= begin
-      return NOT_IN_ENGLAND unless @inside_catchment
-      return PREVIOUSLY_FUNDED if previously_funded?
-
-      case work_setting
-      when *Questionnaires::WorkSetting::CHILDCARE_SETTINGS then childcare_policy
-      when *Questionnaires::WorkSetting::SCHOOL_SETTINGS then school_policy
-      else INELIGIBLE_SETTING
-      end
-    end
+    @funding_eligiblity_status_code ||= if !@inside_catchment
+                                          NOT_IN_ENGLAND
+                                        elsif previously_funded?
+                                          PREVIOUSLY_FUNDED
+                                        elsif state_funded_eligible_setting?
+                                          FUNDED_ELIGIBILITY_RESULT
+                                        else
+                                          INELIGIBLE_SETTING
+                                        end
   end
 
   def get_description_for_funding_status
     key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligiblity_status_code)
-    course_name = course.localise_sentence_embedded_course_name
+    course_name = @course.localise_sentence_embedded_course_name
 
     I18n.t(key, course_name:).html_safe if key
   end
 
 private
 
-  def childcare_policy
-    kind_of_nursery = query_store.store["kind_of_nursery"]
+  def state_funded_eligible_setting?
+    raise MissingMandatoryInstitution if @institution.nil? && state_funded_institution?
 
-    return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?
-    return FUNDED_ELIGIBILITY_RESULT if kind_of_nursery.in?(ELIGIBLE_NURSERY_TYPES)
-
-    INELIGIBLE_SETTING
+    state_funded_institution? &&
+      @institution.eligible_establishment?
   end
 
-  def school_policy
-    return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?
-
-    FUNDED_ELIGIBILITY_RESULT
+  def state_funded_institution?
+    @work_setting == Institution::STATE_FUNDED_INSTITUTION
   end
 
   def users
-    return User.where(trn:) if trn.present?
+    return User.where(trn: @user.trn) if @user.trn.present?
 
-    User.where(one_login_id:)
-  end
-
-  def trn
-    query_store.current_user&.trn
-  end
-
-  def one_login_id
-    query_store.current_user&.one_login_id
+    User.where(one_login_id: @user.one_login_id)
   end
 
   def accepted_applications
@@ -107,11 +90,5 @@ private
 
       Application.where(id: application_ids)
     end
-  end
-
-  def mandatory_institution
-    raise MissingMandatoryInstitution if institution.nil?
-
-    institution
   end
 end

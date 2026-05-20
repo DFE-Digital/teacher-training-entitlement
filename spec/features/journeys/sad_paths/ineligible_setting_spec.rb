@@ -46,7 +46,6 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, :with_default_s
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "england",
           "work_setting" => "a_school",
-          "works_in_school" => "yes",
           "institution_id" => school.institution.id.to_s,
         },
       )

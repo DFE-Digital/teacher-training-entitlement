@@ -57,10 +57,6 @@ FactoryBot.define do
 
       institution { school_record.institution }
       ukprn { school_record.ukprn }
-
-      works_in_school { true }
-      works_in_childcare { false }
-      kind_of_nursery { nil }
     end
 
     trait :with_private_childcare_provider do
@@ -69,10 +65,6 @@ FactoryBot.define do
       end
 
       institution { provider_record.institution }
-
-      works_in_school { false }
-      works_in_childcare { true }
-      kind_of_nursery { Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.first }
     end
 
     trait :with_public_childcare_provider do
@@ -81,10 +73,6 @@ FactoryBot.define do
       end
 
       institution { school_record.institution }
-
-      works_in_school { false }
-      works_in_childcare { true }
-      kind_of_nursery { Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.first }
     end
 
     trait :eligible_for_funding do

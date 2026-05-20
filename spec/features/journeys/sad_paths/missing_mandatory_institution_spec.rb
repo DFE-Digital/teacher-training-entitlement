@@ -15,7 +15,7 @@ RSpec.feature "Sad journeys", :npq, type: :feature do
     end
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      page.choose("Yes", visible: :all)
+      page.choose("October 2026", visible: :all)
     end
 
     expect_page_to_have(path: "/registration/provider-check", submit_form: true) do

@@ -1,11 +1,11 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def npq_registration_link
-    if signed_in?
-      registration_wizard_show_path(:course_start_date)
+  def default_page_title
+    if request.path.match?(%r{\A/registration/})
+      t("helpers.title.registration_wizard.service_title")
     else
-      "/"
+      "National Professional Development(NPD)"
     end
   end
 
@@ -31,7 +31,11 @@ module ApplicationHelper
   end
 
   def application_course_start_date
-    "autumn 2025"
+    Cohort.course_start_date
+  end
+
+  def application_next_course_start_date
+    Cohort.next_course_start_date
   end
 
   def show_otp_code_in_ui(current_env, admin)
@@ -43,7 +47,8 @@ module ApplicationHelper
   def application_status_badge(status)
     return nil unless status.presence
 
-    govuk_tag(text: status.humanize, colour: application_status_colour(status))
+    text = status == Application::COMPLETED ? "Successful" : status.humanize
+    govuk_tag(text:, colour: application_status_colour(status))
   end
 
   def application_status_colour(status)
@@ -51,6 +56,7 @@ module ApplicationHelper
       pending: "blue",
       accepted: "green",
       started: "green",
+      completed: "green",
       deferred: "yellow",
       rejected: "red",
       withdrawn: "red",

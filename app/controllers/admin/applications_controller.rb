@@ -12,7 +12,7 @@ module Admin
                                  course_cohort: %i[course cohort])
                        .merge(filter_scope)
                        .merge(search_scope)
-                       .order("applications.created_at ASC")
+                       .order(created_at: :desc)
       @pagy, @applications = pagy(applications)
     end
 

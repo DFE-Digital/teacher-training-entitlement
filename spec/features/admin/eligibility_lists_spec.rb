@@ -31,8 +31,8 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
 
   scenario "Updating PP50 Schools eligibility list" do
     expect(PP50_SCHOOLS_URN_HASH[urn]).to be_nil
-    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be false
-    expect(already_eligible_school_pp50.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be true
+    expect(EligibilityList::Pp50School.eligible?(urn)).to be false
+    expect(PP50_SCHOOLS_URN_HASH[already_eligible_school_pp50.urn]).to be true
 
     within "div#pp50-schools" do
       attach_file "eligibility_lists_update[file]", csv_file("PP50 School URN").path
@@ -40,14 +40,14 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(Institution.find_by(institution_reference_number: urn, institutionable_type: "School").institutionable.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be false
-    expect(already_eligible_school_pp50.pp50?(Questionnaires::WorkSetting::A_SCHOOL)).to be true
+    expect(EligibilityList::Pp50School.eligible?(urn)).to be true
+    expect(PP50_SCHOOLS_URN_HASH[already_eligible_school_pp50.urn]).to be true
   end
 
   scenario "Updating PP50 FE eligibility list" do
     expect(PP50_FE_UKPRN_HASH[ukprn]).to be_nil
-    expect(School.find_by(ukprn:).pp50?(Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING)).to be false
-    expect(already_eligible_fe_pp50.pp50?(Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING)).to be true
+    expect(EligibilityList::Pp50FurtherEducation.eligible?(ukprn)).to be false
+    expect(PP50_FE_UKPRN_HASH[already_eligible_fe_pp50.ukprn]).to be true
 
     click_link "PP50 FE"
     within "div#pp50-fe" do
@@ -56,8 +56,8 @@ RSpec.feature "Updating eligibility lists", :no_js, type: :feature do
     end
 
     expect(page).to have_content "Eligibility list updated"
-    expect(School.find_by(ukprn:).pp50?(Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING)).to be false
-    expect(already_eligible_fe_pp50.pp50?(Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING)).to be true
+    expect(EligibilityList::Pp50FurtherEducation.eligible?(ukprn)).to be true
+    expect(PP50_FE_UKPRN_HASH[already_eligible_fe_pp50.ukprn]).to be true
   end
 
   scenario "Updating Childminders eligibility list" do

@@ -1,5 +1,5 @@
 <% content_for :side_navigation do %>
-    <%= render CohortsComponent.new(
+  <%= render CohortsComponent.new(
         request.path,
         cohorts: @cohorts,
         base_path: :admin_lead_providers_path,
@@ -12,7 +12,7 @@ govuk_table do |table|
     table.with_head do |header|
         header.with_row do |row|
             row.with_cell(text: "Name")
-            row.with_cell(text: "Nb applications")
+            row.with_cell(text: "Application count")
         end
     end
 

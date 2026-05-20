@@ -26,8 +26,8 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
     expect(page).not_to have_content("Before you start")
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      expect(page).to have_text(I18n.t("helpers.hint.registration_wizard.course_start_date_one"))
-      page.choose("Yes", visible: :all)
+      expect(page).to have_text("When do you want to start the course?")
+      page.choose("October 2026", visible: :all)
     end
 
     expect_page_to_have(path: "/registration/provider-check", submit_form: true) do

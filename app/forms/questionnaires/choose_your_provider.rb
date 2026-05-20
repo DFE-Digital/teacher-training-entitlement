@@ -1,11 +1,9 @@
 module Questionnaires
   class ChooseYourProvider < Base
-    NOT_CHOSEN = "not_chosen".freeze
-
     attr_accessor :lead_provider_id
 
     validates :lead_provider_id, presence: true
-    validate :validate_lead_provider_exists, unless: :not_chosen_provider?
+    validate :validate_lead_provider_exists
 
     def self.permitted_params
       %i[
@@ -25,38 +23,26 @@ module Questionnaires
     end
 
     def next_step
-      return :choose_a_tte_and_provider if not_chosen_provider?
-
       :teacher_catchment
     end
 
     def previous_step
-      :choose_your_course
+      :course_start_date
     end
 
     def options
-      providers.each_with_index.map { |provider, index|
+      providers.each_with_index.map do |provider, index|
         build_option_struct(
           value: provider.id,
           label: provider.name,
           hint: provider.hint,
           link_errors: index.zero?,
         )
-      } + [
-        build_option_struct(
-          value: NOT_CHOSEN,
-          label: I18n.t("helpers.label.registration_wizard.lead_provider_id_options.not_chosen"),
-          divider: true,
-        ),
-      ]
+      end
     end
 
     def after_save
       wizard.store["lead_provider_id"] = lead_provider_id
-    end
-
-    def not_chosen_provider?
-      lead_provider_id == NOT_CHOSEN
     end
 
   private

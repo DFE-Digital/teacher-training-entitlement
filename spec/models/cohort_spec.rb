@@ -177,6 +177,50 @@ RSpec.describe Cohort, type: :model do
     end
   end
 
+  describe ".course_start_date" do
+    before do
+      create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 1, 1))
+    end
+
+    context "when the current date is between January and March" do
+      before { travel_to Time.zone.local(2026, 2, 15) }
+
+      it "returns the current cohort's spring course start date" do
+        expect(described_class.course_start_date).to eq("January to March 2026")
+      end
+    end
+
+    context "when the current date is after March" do
+      before { travel_to Time.zone.local(2026, 4, 1) }
+
+      it "returns the current cohort's October course start date" do
+        expect(described_class.course_start_date).to eq("October 2026")
+      end
+    end
+  end
+
+  describe ".next_course_start_date" do
+    before do
+      create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 1, 1))
+    end
+
+    context "when the current date is between January and March" do
+      before { travel_to Time.zone.local(2026, 2, 15) }
+
+      it "returns the current cohort's October course start date" do
+        expect(described_class.next_course_start_date).to eq("October 2026")
+      end
+    end
+
+    context "when the current date is after March" do
+      before { travel_to Time.zone.local(2026, 4, 1) }
+
+      it "returns the next spring course start date" do
+        expect(described_class.next_course_start_date).to eq("January to March 2027")
+      end
+    end
+  end
+
   describe "#name" do
     subject { cohort.name }
 
