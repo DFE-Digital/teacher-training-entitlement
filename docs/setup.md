@@ -18,7 +18,34 @@
 1. Run `yarn` to install node dependencies
 1. Run `bin/rails db:setup` to set up the database development and test schemas, and seed with test data
 1. Copy `.env.example` to `.env` and fill in the values (ask a team member for `TEACHER_AUTH_*` values)
+1. Set up Rails encrypted credentials (see [Credentials](#credentials) below)
 1. Run `./bin/dev` to launch the app on http://localhost:3000 and auto-compile assets
+
+### Credentials
+
+Rails encrypted credentials are used to store sensitive configuration (e.g. ActiveRecord encryption keys). Each environment has its own encrypted file and key:
+
+| Environment | Encrypted file | Key |
+|-------------|----------------|-----|
+| Development | `config/credentials/development.yml.enc` | `config/credentials/development.key` or `RAILS_MASTER_KEY` |
+| Test | Hardcoded in `config/environments/test.rb` | N/A |
+| Staging/Review | `config/credentials/staging.yml.enc` | `RAILS_MASTER_KEY` |
+| Sandbox | `config/credentials/sandbox.yml.enc` | `RAILS_MASTER_KEY` |
+| Production | `config/credentials/production.yml.enc` | `RAILS_MASTER_KEY` |
+
+**For local development**, either:
+- Get `config/credentials/development.key` from a team member, or
+- Set `RAILS_MASTER_KEY` in your `.env` file
+
+**To view credentials:**
+```bash
+bin/rails credentials:show --environment development
+```
+
+**To edit credentials:**
+```bash
+EDITOR=vim bin/rails credentials:edit --environment development
+```
 
 ## Codespaces
 

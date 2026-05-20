@@ -10,6 +10,7 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
   let(:email) { "user@example.com" }
   let(:trn) { "1234567" }
   let(:verified_name) { %w[Test User] }
+  let(:refresh_token) { nil }
 
   let(:provider_data) do
     OpenStruct.new({
@@ -23,6 +24,9 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           verified_name:,
           verified_date_of_birth: "1990-01-01",
         }),
+      }),
+      credentials: OpenStruct.new({
+        refresh_token:,
       }),
     })
   end
@@ -153,7 +157,45 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
 
   context "when no TRN is specified" do
     let(:trn) { nil }
+    let(:refresh_token) { "test_refresh_token" }
 
-    it_behaves_like "logging in using provider and One Login ID"
+    context "when a user exists with the same provider and One Login ID" do
+      let(:existing_user) { create(:user, :with_one_login_id, one_login_id: uid) }
+
+      before { existing_user }
+
+      it "stores refresh_token and refresh_token_updated_at" do
+        freeze_time do
+          make_request
+          expect(existing_user.reload).to have_attributes(
+            refresh_token: "test_refresh_token",
+            refresh_token_updated_at: Time.current,
+          )
+        end
+      end
+
+      it "sets trn_verified and trn_auto_verified to false" do
+        make_request
+        expect(existing_user.reload).to have_attributes(
+          trn_verified: false,
+          trn_auto_verified: false,
+        )
+      end
+    end
+
+    context "when no user exists with the same provider and One Login ID" do
+      it "creates a new user with refresh_token and refresh_token_updated_at" do
+        freeze_time do
+          make_request
+          expect(User.find_by(provider: "teacher_auth", one_login_id: uid)).to have_attributes(
+            trn: nil,
+            trn_verified: false,
+            trn_auto_verified: false,
+            refresh_token: "test_refresh_token",
+            refresh_token_updated_at: Time.current,
+          )
+        end
+      end
+    end
   end
 end

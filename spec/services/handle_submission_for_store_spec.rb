@@ -41,6 +41,8 @@ RSpec.describe HandleSubmissionForStore do
       "national_insurance_number" => nil,
       "notify_user_for_future_reg" => false,
       "preferred_name" => user.preferred_name,
+      "refresh_token" => nil,
+      "refresh_token_updated_at" => nil,
       "trn_auto_verified" => false,
       "trn_lookup_status" => nil,
       "trn_verified" => false,

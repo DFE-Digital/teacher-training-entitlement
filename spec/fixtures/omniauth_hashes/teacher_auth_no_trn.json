@@ -43,6 +43,6 @@
     "token": "sometoken",
     "id_token": "someidtoken",
     "expires_in": 3599,
-    "refresh_token": null
+    "refresh_token": "test_refresh_token"
   }
 }
