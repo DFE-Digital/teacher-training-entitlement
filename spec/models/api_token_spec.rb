@@ -53,7 +53,7 @@ RSpec.describe APIToken, type: :model do
       before { APIToken.create_with_known_token!(unhashed_token, scope: "teacher_record_service") }
 
       it "doesn't find the APIToken" do
-        expect(APIToken.find_by_unhashed_token(unhashed_token, scope:)).to be_nil
+        expect { APIToken.find_by_unhashed_token(unhashed_token, scope:) }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end
