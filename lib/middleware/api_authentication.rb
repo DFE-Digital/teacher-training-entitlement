@@ -32,10 +32,13 @@ module Middleware
         if api_token
           api_token.update!(last_used_at: Time.zone.now)
           api_token.lead_provider
+        else
+          raise ActiveRecord::RecordNotFound, "token not found"
         end
       end
     rescue StandardError => e
       Sentry.capture_exception(e)
+      nil
     end
 
     def unauthenticated
