@@ -111,6 +111,29 @@ RSpec.describe ParticipantOutcomes::Query do
           expect(query.scope).not_to constrain_attribute("ecf_id")
         end
       end
+
+      describe "application_id" do
+        it "filters by application_id" do
+          application = create(:application)
+          outcome = create(:participant_outcome, declaration: create(:declaration, application:))
+          create(:participant_outcome)
+
+          query = described_class.new(application_id: application.ecf_id)
+          expect(query.participant_outcomes).to contain_exactly(outcome)
+        end
+
+        it "doesn't filter by application_id when none supplied" do
+          condition_string = %("applications"."ecf_id")
+          expect(described_class.new(application_id: SecureRandom.uuid).scope.to_sql).to include(condition_string)
+          expect(described_class.new.scope.to_sql).not_to include(condition_string)
+        end
+
+        it "does not filter by application_id if an empty string is supplied" do
+          condition_string = %("applications"."ecf_id")
+          query = described_class.new(application_id: " ")
+          expect(query.scope.to_sql).not_to include(condition_string)
+        end
+      end
     end
   end
 end

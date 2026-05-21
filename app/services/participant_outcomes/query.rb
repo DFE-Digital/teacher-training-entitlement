@@ -41,7 +41,7 @@ module ParticipantOutcomes
     def where_application_id_is(application_id)
       return if ignore?(filter: application_id)
 
-      scope.merge!(ParticipantOutcome.where(declaration: { application: { ecf_id: application_id } }))
+      scope.merge!(ParticipantOutcome.where(declaration: { applications: { ecf_id: application_id } }))
     end
 
     def all_participant_outcomes
