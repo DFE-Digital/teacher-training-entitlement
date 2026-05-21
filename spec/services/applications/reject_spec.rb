@@ -61,5 +61,29 @@ RSpec.describe Applications::Reject, type: :model do
         expect(ActionMailer::MailDeliveryJob).not_to have_been_enqueued.with("GenericMailer", "registration-expired", "deliver_now", anything)
       end
     end
+
+    context "when user has no other pending applications and requires token refresh" do
+      let(:user) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
+      let(:application) { create(:application, :pending, user:) }
+
+      it "clears the refresh token" do
+        service.call
+        user.reload
+        expect(user.refresh_token).to be_nil
+        expect(user.refresh_token_updated_at).to be_nil
+      end
+    end
+
+    context "when user has other pending applications" do
+      let(:user) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
+      let(:application) { create(:application, :pending, user:) }
+
+      before { create(:application, :pending, user:) }
+
+      it "does not clear the refresh token" do
+        service.call
+        expect(user.reload.refresh_token).to eq("token")
+      end
+    end
   end
 end

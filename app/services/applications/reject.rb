@@ -25,6 +25,7 @@ module Applications
       application.transition_status!(Application::REJECTED, reason:)
 
       send_provider_rejected_email if reason == "rejected-by-provider"
+      clear_refresh_token_if_no_pending_applications
 
       true
     end
@@ -60,6 +61,14 @@ module Applications
         error: :not_rejectable,
       )
       errors.add(:application, :not_rejectable) if errors.blank? && application.invalid?
+    end
+
+    def clear_refresh_token_if_no_pending_applications
+      user = application.user
+      return if user.trn.present?
+      return if user.applications.pending_status.where.not(id: application.id).exists?
+
+      user.update!(refresh_token: nil, refresh_token_updated_at: nil)
     end
   end
 end
