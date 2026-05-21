@@ -8,8 +8,9 @@ RSpec.describe "Expression of interest accessibility", :axe, type: :feature do
     click_button("Confirm")
     expect(page).to be_axe_clean
 
-    fill_in "questionnaires_registration_interest_notification[email]", with: "alsa@email.com"
+    fill_in "questionnaires_registration_interest_notification[email]", with: "test@example.com"
     click_button("Confirm")
+    page.driver.browser.navigate.refresh
     expect(page).to be_axe_clean
   end
 end
