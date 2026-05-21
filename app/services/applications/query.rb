@@ -16,6 +16,7 @@ module Applications
                                  :cohort,
                                  :schedule,
                                  :institution,
+                                 :rejected_event,
                                  { course_cohort: %i[course cohort schedule] }],
                  )
                  .preload(application: { institution: :institutionable })
