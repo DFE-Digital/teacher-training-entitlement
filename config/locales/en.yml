@@ -18,8 +18,9 @@ en:
   application_not_found: Application could not be found
 
   errors:
-    email:
-      invalid: Enter a valid email address
+    email: &email
+      invalid: Enter an email address in the correct format, like name@example.com
+      blank: Enter an email address in the correct format, like name@example.com
     ecf_id:
       blank: Enter an ECF ID
       taken: ECF ID must be unique
@@ -189,7 +190,7 @@ en:
               blank: Enter a full name
               too_long: Full name must be shorter than %{count} characters
             email:
-              blank: Enter an email address
+              <<: *email
               too_long: Email must be shorter than %{count} characters
         cohort:
           attributes:
@@ -366,7 +367,7 @@ en:
             full_name:
               blank: Enter a full name
             email:
-              blank: Enter an email address
+              <<: *email
               taken: Email address must be unique
             ecf_id:
               blank: Enter an ECF ID
@@ -555,8 +556,7 @@ en:
             notification_option:
               inclusion: Select an option
             email:
-              blank: Enter an email address
-              invalid: This email is invalid
+              <<: *email
               taken: This email has already been registered for interest
         questionnaires/work_setting:
           attributes:
