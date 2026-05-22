@@ -20,12 +20,22 @@ module ValidTestDataGenerators
         @applications_data ||= load_applications_data
       end
 
+      def custom_email_templates
+        @custom_email_templates ||= load_custom_email_templates
+      end
+
     private
 
       def load_applications_data
         config_path = Rails.root.join("config/api_test_scenarios.yml")
         config = YAML.load_file(config_path)
         config["applications"].map(&:deep_symbolize_keys)
+      end
+
+      def load_custom_email_templates
+        config_path = Rails.root.join("config/api_test_scenarios.yml")
+        config = YAML.load_file(config_path)
+        config["custom_email_templates"] || {}
       end
     end
 
@@ -41,8 +51,18 @@ module ValidTestDataGenerators
       @logger = logger
     end
 
-    def user_email(email)
-      email.gsub("example", to_dns_name(@lead_provider.name))
+    def user_email(email, user_id = nil)
+      # Check if custom email template exists for this lead provider
+      custom_template = self.class.custom_email_templates[@lead_provider.name]
+
+      if custom_template.present? && user_id.present?
+        # Generate email in format: prefix+<user.id>@domain
+        prefix, domain = custom_template.split("@")
+        "#{prefix}+#{user_id}@#{domain}"
+      else
+        # Fall back to original logic
+        email.gsub("example", to_dns_name(@lead_provider.name))
+      end
     end
 
     def call
@@ -91,8 +111,13 @@ module ValidTestDataGenerators
       applications_data.map { |app| user_email(app[:email]) }
     end
 
+    def test_user_ecf_ids
+      applications_data.map { |app| user_ecf_id(app[:participant_id]) }
+    end
+
     def test_scenarios_drop_data!
-      test_users = User.includes(:applications).where(email: test_emails)
+      # Find test users by ecf_id for reliable identification
+      test_users = User.includes(:applications).where(ecf_id: test_user_ecf_ids)
 
       # Delete applications for these test users with this lead provider
       applications_to_delete = lead_provider.applications.where(user: test_users)
@@ -191,34 +216,59 @@ module ValidTestDataGenerators
     def create_random_user(with_trn: true)
       name = Faker::Name.unique.name
       email_part = name.tr(" '.", "").downcase
-      email = "#{email_part}@#{to_dns_name(@lead_provider.name)}.com"
 
-      User.find_or_create_by!(email:) do |user|
-        user.full_name = name
-        user.trn = generate_trn if with_trn
-        user.date_of_birth = Faker::Date.birthday(min_age: 20)
-        user.ecf_id = SecureRandom.uuid
-        user.trn_verified = true if with_trn
-        user.trn_lookup_status = "Found" if with_trn
+      # Create with temporary email first
+      temp_email = "#{email_part}@#{to_dns_name(@lead_provider.name)}.com"
+      ecf_id = SecureRandom.uuid
+
+      user = User.find_or_create_by!(ecf_id: ecf_id) do |u|
+        u.email = temp_email
+        u.full_name = name
+        u.trn = generate_trn if with_trn
+        u.date_of_birth = Faker::Date.birthday(min_age: 20)
+        u.trn_verified = true if with_trn
+        u.trn_lookup_status = "Found" if with_trn
       end
+
+      # Update email if custom template exists for this lead provider
+      custom_template = self.class.custom_email_templates[@lead_provider.name]
+      if custom_template.present?
+        custom_email = "#{custom_template.split('@')[0]}+#{user.id}@#{custom_template.split('@')[1]}"
+        user.update!(email: custom_email)
+      end
+
+      user
     end
 
     def create_user(app_data)
-      email = user_email(app_data[:email])
+      ecf_id = user_ecf_id(app_data[:participant_id])
+
       attrs = {
         full_name: app_data[:full_name],
         trn: generate_trn,
         date_of_birth: Faker::Date.birthday(min_age: 20),
         trn_verified: true,
         trn_lookup_status: "Found",
-        ecf_id: user_ecf_id(app_data[:participant_id]),
+        ecf_id:,
       }
 
-      user = User.find_by(email:)
+      # Try to find by ECF ID first (more reliable than email)
+      user = User.find_by(ecf_id: ecf_id)
+
       if user
+        # Update existing user
         user.update!(attrs)
       else
-        user = User.create!(attrs.merge(email:))
+        # Create new user with temporary email
+        temp_email = user_email(app_data[:email])
+        user = User.create!(attrs.merge(email: temp_email))
+      end
+
+      # Update email if custom template exists for this lead provider
+      custom_template = self.class.custom_email_templates[@lead_provider.name]
+      if custom_template.present?
+        custom_email = user_email(app_data[:email], user.id)
+        user.update!(email: custom_email)
       end
 
       user

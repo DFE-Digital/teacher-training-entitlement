@@ -59,7 +59,7 @@ private
       .applications
       .joins(:user)
       .merge(ApplicationLeadProvider.current)
-      .where(users: { email: seeder.test_emails })
+      .where(users: { ecf_id: seeder.test_user_ecf_ids })
       .count
   end
 end
