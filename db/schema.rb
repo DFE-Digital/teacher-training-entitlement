@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_170538) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_21_102746) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -26,6 +26,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_170538) do
   create_enum "declaration_state_reasons", ["duplicate"]
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
+  create_enum "email_updates_statuses", ["npd_registration_open"]
   create_enum "funding_choices", ["school", "trust", "self", "another", "employer"]
   create_enum "outcome_states", ["passed", "failed", "voided"]
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
@@ -566,7 +567,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_170538) do
     t.date "date_of_birth"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.string "email", default: "", null: false
-    t.integer "email_updates_status", default: 0
+    t.enum "email_updates_status", enum_type: "email_updates_statuses"
     t.string "email_updates_unsubscribe_key"
     t.string "feature_flag_id"
     t.text "full_name"

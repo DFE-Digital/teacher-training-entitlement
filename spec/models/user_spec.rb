@@ -105,10 +105,8 @@ RSpec.describe User do
   describe "enums" do
     it {
       expect(subject).to define_enum_for(:email_updates_status).with_values(
-        empty: 0,
-        senco: 1,
-        other_npq: 2,
-      ).backed_by_column_of_type(:integer).with_suffix
+        npd_registration_open: "npd_registration_open",
+      ).backed_by_column_of_type(:enum).with_suffix
     }
   end
 
@@ -196,56 +194,6 @@ RSpec.describe User do
     end
   end
 
-  describe "#update_email_updates_status" do
-    let(:user) { create(:user) }
-    let(:form) { EmailUpdates.new(email_updates_status: :senco) }
-    let(:uuid) { "7d023b82-e0eb-4ae2-b613-0a4a51bacf8f" }
-
-    before do
-      allow(SecureRandom).to receive(:uuid) { uuid }
-    end
-
-    context "when value is correct" do
-      it "saves the value" do
-        expect {
-          user.update_email_updates_status(form)
-        }.to change { user.reload.email_updates_status }.from("empty").to("senco")
-      end
-
-      it "creates proper unsubscribe key" do
-        expect {
-          user.update_email_updates_status(form)
-        }.to change { user.reload.email_updates_unsubscribe_key }.from(nil).to(uuid)
-      end
-    end
-
-    context "when value is changed" do
-      let(:user) { create(:user, email_updates_unsubscribe_key: "432") }
-
-      it "does not changes unsubscribe key" do
-        expect {
-          user.update_email_updates_status(form)
-        }.not_to(change { user.reload.email_updates_unsubscribe_key })
-      end
-    end
-  end
-
-  describe "#unsubscribe_from_email_updates" do
-    let(:user) { create(:user, email_updates_unsubscribe_key: "432", email_updates_status: "senco") }
-
-    it "saves the value" do
-      expect {
-        user.unsubscribe_from_email_updates
-      }.to change { user.reload.email_updates_status }.from("senco").to("empty")
-    end
-
-    it "creates proper unsubscribe key" do
-      expect {
-        user.unsubscribe_from_email_updates
-      }.to change { user.reload.email_updates_unsubscribe_key }.from("432").to(nil)
-    end
-  end
-
   describe "#archived?" do
     context "when user is archived" do
       subject(:user) { build(:user, :archived) }
@@ -324,6 +272,28 @@ RSpec.describe User do
       it "changes updated_from_tra_at" do
         expect(user.updated_from_tra_at).not_to be_present
       end
+    end
+  end
+
+  describe "#change_unsubscribe_key_on_update_email_status" do
+    let(:user) { create(:user, email_updates_unsubscribe_key: "old-key") }
+
+    before do
+      allow(SecureRandom).to receive(:uuid).and_return("new-key")
+    end
+
+    it "sets a new unsubscribe key when the email updates status changes" do
+      expect {
+        user.update!(email_updates_status: :npd_registration_open)
+      }.to change { user.reload.email_updates_unsubscribe_key }.from("old-key").to("new-key")
+    end
+
+    it "clears the unsubscribe key when the email updates status is cleared" do
+      user.update_columns(email_updates_status: "npd_registration_open", email_updates_unsubscribe_key: "old-key")
+
+      expect {
+        user.update!(email_updates_status: nil)
+      }.to change { user.reload.email_updates_unsubscribe_key }.from("old-key").to(nil)
     end
   end
 

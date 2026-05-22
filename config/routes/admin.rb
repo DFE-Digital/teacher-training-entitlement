@@ -28,17 +28,13 @@ namespace :admin do
   end
 
   namespace :registration_closed, path: "registration-closed" do
-    resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
+    dashed_resources :reopening_email_subscriptions do
       member do
         get "unsubscribe"
         post "unsubscribe"
       end
-      collection do
-        get "all_users"
-        get "senco"
-      end
     end
-    resources :closed_registration_users, path: "closed-registration-users" do
+    dashed_resources :closed_registration_users do
       member do
         get "destroy"
         delete "destroy"

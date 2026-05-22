@@ -879,15 +879,9 @@ en:
       registration_wizard:
         service_title: "Register for a National Professional Development (NPD) course"
         get_an_identity: Get an identity
-        about_ehco: Early Headship Coaching Offer
-        ehco_funding_not_available: DfE scholarship funding not available
-        ehco_possible_funding: You may qualify for DfE scholarship funding
-        ehco_previously_funded: DfE scholarship funding not available
-        ehco_unavailable: You cannot register for the Early Headship Coaching Offer
-        choose_your_npq: Choose an NPQ
         choose_your_course: Choose a TTE course
         course_start_date: Choose your course start date
-        course_start_date_sub: Registrations are currently open for courses starting in %{date}
+        course_start_date_sub: Registration for this course will open at different times througout the year
         childcare_provider_not_in_england: Nursery must be in England, Guernsey, Jersey
           or the Isle of Man
         cannot_register_yet: You cannot register yet
@@ -911,9 +905,6 @@ en:
         change_your_course_or_provider: Change your course or provider
         choose_a_tte_and_provider: Choose a TTE course and provider
     legend:
-      applications_change_status:
-      applications_change_funding_eligibility:
-      applications_change_lead_provider:
       applications_change_cohort:
         cohort_id: Choose a cohort
       form:
@@ -941,38 +932,7 @@ en:
         email_updates_status: Are you interested in the special educational needs
           co-ordinator (SENCO) NPQ?
     hint:
-      applications_change_status:
       registration_wizard:
-        choose_your_course:
-        - This course is aimed at teachers who have completed their induction and
-          are currently teaching reception age children, or plan to in the future.
-        - If you do not want to do this course, %{link} to find the right course for
-          you.
-        course_start_date_one: NPQ courses start once a year every autumn.
-        course_start_date_two: Registrations are currently open for courses starting
-          in autumn 2025.
-        course_start_date_three: Early headship coaching offer start dates vary by
-          provider and are throughout the year.
-        work_setting_options:
-            form colleges</li><li>further education colleges</li><li>schools that
-            also teach ages 16 to 19</li></ul>
-            authority maintained schools (some may provide hospital education, for
-            example pupil referral units, alternative provision or special schools)</li><li>secure
-            children's homes and secure training centres</li></ul>
-            may provide hospital education (for example, alternative provision or
-            academy special schools)</p>
-            authority (for staff in a direct teaching role, virtual school headteachers
-            and staff in defined deputy headteacher roles)</li><li>initial teacher
-            training (ITT) providers (for ITT lead mentors)</li><li>independent hospital
-            education organisations</li><li>young offender institutions</li></ul>'
-            Teaching Advisory (RTTA) service, or if none of the above options apply
-            to you, for example you're:<ul class="question-hint-list"><li>self-employed</li><li>not
-            working in an educational setting</li><li>an agency supply teacher</li><li>working
-            in any other independent setting</li></ul>
-        course_identifier_options:
-            opportunities if you're a headteacher in your first 5 years of headship.
-        npqh_status_title_hint: To be eligible for the Early headship coaching offer
-          you need to do the Headship NPQ.
         funding_options:
           another: For example, I am sharing the costs with my workplace
         can_share_choices:

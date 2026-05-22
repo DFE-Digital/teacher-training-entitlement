@@ -2,15 +2,14 @@ class Admin::RegistrationClosed::ReopeningEmailSubscriptionsController < AdminCo
   before_action :require_super_admin
 
   def index
-    subscriptions = params[:senco_only] ? [:senco] : %i[senco other_npq]
-    @all_users = User.where(email_updates_status: subscriptions)
+    @all_users = User.where.not(email_updates_status: nil)
     @pagy, @users = pagy(@all_users)
 
     respond_to do |format|
       format.html
       format.csv do
         response.headers["Content-Type"] = "text/csv; charset=utf-8"
-        response.headers["Content-Disposition"] = "attachment; filename=reopening_email_subscriptions_#{subscriptions.join("-")}.csv"
+        response.headers["Content-Disposition"] = "attachment; filename=reopening_email_subscriptions.csv"
       end
     end
   end
@@ -19,7 +18,7 @@ class Admin::RegistrationClosed::ReopeningEmailSubscriptionsController < AdminCo
     @user = User.find(params[:id])
     if request.post?
       flash[:success] = "Email '#{@user.email}' unsubscribed"
-      @user.unsubscribe_from_email_updates
+      @user.update!(email_updates_status: nil)
 
       redirect_to admin_registration_closed_reopening_email_subscriptions_path
     end

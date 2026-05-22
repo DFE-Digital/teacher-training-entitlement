@@ -7,9 +7,7 @@
 %>
   <h1 class="govuk-heading-xl">You cannot register yet</h1>
 
-  <p class="govuk-body">Registrations are currently only open for courses starting in <%= application_course_start_date %>.</p>
-
-  <p class="govuk-body">The next cohort will begin their course from <%= application_next_course_start_date %>.</p>
+  <p class="govuk-body">Registrations are currently open for courses starting in <%= application_course_start_date %>.</p>
 
   <h2 class="govuk-heading-m">Stay informed</h2>
 
@@ -19,7 +17,7 @@
     <li>find out when NPD registration opens</li>
   </ul>
 
-  <p class="govuk-body">
-    <%= govuk_link_to "Sign up for updates", new_email_update_path %>
-  </p>
+  <%= form_with model: @form, url: email_updates_path do |f| %>
+    <%= f.govuk_submit('Sign up for updates') %>
+  <% end %>
 <% end %>
