@@ -25,7 +25,7 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
       previous_step_path: "start",
       next_step_path: "check-answers",
       current_step: :teacher_catchment,
-      course: nil,
+      course: course_stub,
       store: store_stub,
       answers: answers_stub,
     )
@@ -34,8 +34,8 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
   # Stub course for templates that need it
   let(:course_stub) do
     OpenStruct.new(
-      identifier: "npq-leading-teaching",
-      name: "NPQ Leading Teaching",
+      identifier: "the-course",
+      name: "The course",
     )
   end
 
@@ -77,6 +77,8 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
   before do
     assign(:wizard, wizard_stub)
     assign(:form, form_stub)
+    course = course_stub
+    view.define_singleton_method(:course) { course }
     allow(view).to receive_messages(current_user: user_stub, registration_wizard_form_url: "/registration/test")
   end
 
