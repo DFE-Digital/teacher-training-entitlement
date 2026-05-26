@@ -3,14 +3,14 @@ require "rails_helper"
 RSpec.describe GenericMailer, type: :mailer do
   describe "#email_updates_confirmation" do
     let(:to) { "recipient@example.com" }
-    let(:service_link) { "https://example.com/service" }
+    let(:name) { "Some One" }
     let(:unsubscribe_link) { "https://example.com/unsubscribe" }
 
     subject(:mail) do
       described_class.with(
         to:,
-        service_link:,
         unsubscribe_link:,
+        name:,
       ).email_updates_confirmation
     end
 
@@ -21,7 +21,6 @@ RSpec.describe GenericMailer, type: :mailer do
         expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.email_updates_confirmation"))
 
         body = mail.personalisation[:body]
-        expect(body).to include(service_link)
         expect(body).to include(unsubscribe_link)
       end
     end
