@@ -48,7 +48,7 @@ RSpec.describe DeliveryPartners::Query do
     end
 
     context "when filtering by cohort" do
-      subject(:query) { described_class.new lead_provider: lead_provider_1, cohort_start_year: cohort_22.start_year }
+      subject(:query) { described_class.new lead_provider: lead_provider_1, cohort_start_years: cohort_22.start_year }
 
       it "returns delivery partners for the specified cohort" do
         expect(query.delivery_partners).to eq([delivery_partner_2])
@@ -58,7 +58,7 @@ RSpec.describe DeliveryPartners::Query do
     context "when in use in multiple cohorts in a single year" do
       subject :query do
         described_class.new(lead_provider: lead_provider_1,
-                            cohort_start_year: cohort_21.start_year)
+                            cohort_start_years: cohort_21.start_year)
       end
 
       before do
@@ -70,6 +70,19 @@ RSpec.describe DeliveryPartners::Query do
       it "returns delivery partners for the specified cohort year" do
         expect(query.delivery_partners)
           .to contain_exactly(delivery_partner_1, delivery_partner_2)
+      end
+    end
+
+    context "when filtering by multiple cohort start years" do
+      subject(:query) do
+        described_class.new(
+          lead_provider: lead_provider_1,
+          cohort_start_years: "#{cohort_21.start_year},#{cohort_23.start_year}",
+        )
+      end
+
+      it "returns delivery partners matching any of the specified years" do
+        expect(query.delivery_partners).to contain_exactly(delivery_partner_1, delivery_partner_2, delivery_partner_an_hour_ago)
       end
     end
   end
