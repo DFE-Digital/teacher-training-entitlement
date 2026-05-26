@@ -88,7 +88,7 @@ module Admin
       when "notes"
         { details_summary: "Review notes", details: simple_format(value[1]) }
       when "eligible_for_funding"
-        { bullet: "Status code changed to #{object_changes['funding_eligiblity_status_code'][1]}" }
+        { bullet: "Status code changed to #{object_changes.dig('funding_eligiblity_status_code', 1)}" }
       end
     end
 
