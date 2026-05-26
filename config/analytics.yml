@@ -114,6 +114,7 @@ shared:
     - updated_at
     - ecf_id
     - hint
+    - url
   :delivery_partners:
     - id
     - ecf_id
