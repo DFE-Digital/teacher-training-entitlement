@@ -1,16 +1,19 @@
 require "rails_helper"
 
 RSpec.describe "Expression of interest accessibility", :axe, type: :feature do
-  it "checks expressions of interest page" do
+  it "sign up page is accessible" do
     visit registration_interest_sign_up_path
     expect(page).to be_axe_clean
+  end
 
+  it "sign up page with validation errors is accessible" do
+    visit registration_interest_sign_up_path
     click_button("Confirm")
     expect(page).to be_axe_clean
+  end
 
-    fill_in "questionnaires_registration_interest_notification[email]", with: "test@example.com"
-    click_button("Confirm")
-    page.driver.browser.navigate.refresh
+  it "confirmation page is accessible" do
+    visit registration_interest_sign_up_confirm_path(email: "test@example.com")
     expect(page).to be_axe_clean
   end
 end
