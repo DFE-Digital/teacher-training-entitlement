@@ -252,7 +252,6 @@ module ValidTestDataGenerators
         ecf_id:,
       }
 
-      # Try to find by ECF ID first (more reliable than email)
       user = User.find_by(ecf_id: ecf_id)
 
       if user
