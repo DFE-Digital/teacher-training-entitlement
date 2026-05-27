@@ -41,6 +41,9 @@ COPY . .
 
 # Precompile assets
 RUN RAILS_ENV=production SECRET_KEY_BASE=required-to-run-but-not-used \
+    ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=required-to-run-but-not-used \
+    ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=required-to-run-but-not-used \
+    ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=required-to-run-but-not-used \
     bundle exec rails assets:precompile
 
 # Cleanup to save space in the production image
