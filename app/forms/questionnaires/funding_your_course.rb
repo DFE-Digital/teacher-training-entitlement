@@ -36,12 +36,10 @@ module Questionnaires
     def options
       [
         build_option_struct(value: "school", link_errors: true),
-        (build_option_struct(value: "trust") if works_in_school? && inside_catchment?),
+        build_option_struct(value: "trust"),
         build_option_struct(value: "self"),
         build_option_struct(value: "another"),
-      ].compact.freeze
+      ].freeze
     end
-
-    delegate :works_in_school?, :inside_catchment?, to: :query_store
   end
 end

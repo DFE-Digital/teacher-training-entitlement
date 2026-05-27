@@ -23,11 +23,7 @@ RSpec.feature "Sad journey", :with_default_lead_provider, :with_default_schedule
     end
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      page.choose("Yes", visible: :all)
-    end
-
-    expect_page_to_have(path: "/registration/choose-your-course", submit_form: false) do
-      click_button "Continue"
+      page.choose("October 2026", visible: :all)
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do

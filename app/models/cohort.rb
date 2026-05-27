@@ -48,6 +48,22 @@ class Cohort < ApplicationRecord
     scope.first!
   end
 
+  def self.course_start_date
+    if Time.zone.now.month.between?(1, 3)
+      "January to March #{current.start_year}"
+    else
+      "October #{current.start_year}"
+    end
+  end
+
+  def self.next_course_start_date
+    if Time.zone.now.month.between?(1, 3)
+      "October #{current.start_year}"
+    else
+      "January to March #{current.start_year + 1}"
+    end
+  end
+
   def name
     suffix == "a" ? start_year.to_s : identifier
   end

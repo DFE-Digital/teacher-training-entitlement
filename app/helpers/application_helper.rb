@@ -1,11 +1,11 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def npq_registration_link
-    if signed_in?
-      registration_wizard_show_path(:course_start_date)
+  def default_page_title
+    if request.path.match?(%r{\A/registration/})
+      t("helpers.title.registration_wizard.service_title")
     else
-      "/"
+      "National Professional Development(NPD)"
     end
   end
 
@@ -31,7 +31,7 @@ module ApplicationHelper
   end
 
   def application_course_start_date
-    "autumn 2025"
+    Cohort.course_start_date
   end
 
   def show_otp_code_in_ui(current_env, admin)

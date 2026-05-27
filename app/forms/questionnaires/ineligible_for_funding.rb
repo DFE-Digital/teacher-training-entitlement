@@ -13,13 +13,11 @@ module Questionnaires
     end
 
     def previous_step
-      # Check the catchment first as works_in_school? can also be true
-      return :work_setting unless inside_catchment?
-      return :choose_school if works_in_school?
-      return :choose_school if kind_of_nursery_public?
-      return :kind_of_nursery if kind_of_nursery_private?
-
-      :work_setting # works_in_other
+      if wizard.query_store.work_setting == Institution::STATE_FUNDED_INSTITUTION
+        :choose_school
+      else
+        :work_setting
+      end
     end
 
     def ineligible_template

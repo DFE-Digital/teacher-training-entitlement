@@ -23,8 +23,6 @@ module Questionnaires
     end
 
     def previous_step
-      return :kind_of_nursery if query_store.works_in_childcare?
-
       :work_setting
     end
 

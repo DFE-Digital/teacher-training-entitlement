@@ -52,17 +52,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
   describe "#previous_step" do
     subject { described_class.new(wizard:).previous_step }
 
-    context "when user works in childcare (early years flow)" do
-      let(:store) { { "works_in_childcare" => "yes" } }
-
-      it { is_expected.to eq :kind_of_nursery }
-    end
-
-    context "when user works in school" do
-      let(:store) { { "works_in_school" => "yes" } }
-
-      it { is_expected.to eq :work_setting }
-    end
+    it { is_expected.to eq :work_setting }
   end
 
   describe "#next_step" do
@@ -75,8 +65,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     let(:store) do
       {
         "course_identifier" => course.identifier.to_s,
-        "works_in_school" => "yes",
-        "work_setting" => "a_school",
+        "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
         "teacher_catchment" => "england",
       }
     end
@@ -104,22 +93,6 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     context "when school has ineligible establishment type" do
       let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school, :ineligible_establishment_type) }
-
-      it { is_expected.to eq :ineligible_for_funding }
-    end
-
-    context "when early years route with ineligible establishment type" do
-      let(:institution_id) { school.institution.id.to_s }
-      let(:school) { create(:school, :ineligible_establishment_type) }
-      let(:store) do
-        {
-          "course_identifier" => course.identifier.to_s,
-          "works_in_childcare" => "yes",
-          "work_setting" => "early_years_or_childcare",
-          "kind_of_nursery" => "local_authority_maintained_nursery",
-          "teacher_catchment" => "england",
-        }
-      end
 
       it { is_expected.to eq :ineligible_for_funding }
     end

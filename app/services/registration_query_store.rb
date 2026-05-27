@@ -79,7 +79,7 @@ class RegistrationQueryStore
   end
 
   def course
-    @course ||= Course.find_by(identifier: store["course_identifier"])
+    @course ||= Course.reception
   end
 
   def lead_provider

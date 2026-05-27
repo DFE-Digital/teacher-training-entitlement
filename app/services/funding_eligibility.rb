@@ -50,6 +50,7 @@ class FundingEligibility
       return PREVIOUSLY_FUNDED if previously_funded?
 
       case work_setting
+      when Institution::STATE_FUNDED_INSTITUTION then school_policy
       when *Questionnaires::WorkSetting::CHILDCARE_SETTINGS then childcare_policy
       when *Questionnaires::WorkSetting::SCHOOL_SETTINGS then school_policy
       else INELIGIBLE_SETTING

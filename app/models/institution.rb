@@ -1,6 +1,11 @@
 class Institution < ApplicationRecord
   include PgSearch::Model
 
+  PRIVATE_INSTITUTION = "private_institution".freeze
+  STATE_FUNDED_INSTITUTION = "state_funded_institution".freeze
+  OTHER = "other".freeze
+  ALL_SETTINGS = [PRIVATE_INSTITUTION, STATE_FUNDED_INSTITUTION, OTHER].freeze
+
   REDACTED_DATA_STRING = "REDACTED".freeze
   TYPES = %w[School PrivateChildcareProvider LocalAuthority].freeze
 

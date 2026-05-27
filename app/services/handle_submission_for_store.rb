@@ -16,10 +16,10 @@ class HandleSubmissionForStore
         funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
         funding_choice:,
         teacher_catchment:,
-        works_in_school: store["works_in_school"] == "yes",
+        works_in_school: works_in_school?,
         primary_establishment:,
         number_of_pupils:,
-        works_in_childcare: store["works_in_childcare"] == "yes",
+        works_in_childcare: !works_in_school?,
         kind_of_nursery: store["kind_of_nursery"],
         work_setting: store["work_setting"],
         referred_by_return_to_teaching_adviser: store["referred_by_return_to_teaching_adviser"],
@@ -35,6 +35,12 @@ class HandleSubmissionForStore
   end
 
 private
+
+  def works_in_school?
+    return false if institution_from_store.nil?
+
+    institution_from_store.institutionable.is_a?(School)
+  end
 
   def raw_application_data
     # Cutting out confirmation keys since that is not application related data

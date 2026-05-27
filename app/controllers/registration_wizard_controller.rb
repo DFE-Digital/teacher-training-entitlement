@@ -4,10 +4,11 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_form
   before_action :check_end_of_journey, only: %i[update]
   before_action :check_duplicate_applications, only: %i[update]
-  before_action :check_course_defined, only: %i[show]
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
+
+  helper_method :course
 
   def show
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
@@ -97,14 +98,14 @@ private
   end
 
   def check_duplicate_applications
-    return unless @wizard.current_step.to_s == "choose_your_course" && @form.course_identifier.present?
+    return unless @wizard.current_step.to_s == "course_start_date"
 
-    active_applications = current_user.active_applications_for(course: @form.course, cohort: Cohort.current)
+    active_applications = current_user.active_applications_for(course:, cohort: Cohort.current)
     return if active_applications.empty?
 
     flash[:alert] = {
       title: "Application already registered",
-      message: "You have already made an application for #{@form.course.name}",
+      message: "You have already made an application for #{course.name}",
     }
 
     redirect_to application_path(active_applications.last.ecf_id)
@@ -119,11 +120,6 @@ private
       message: "Check the details of your registration and find out more about applying with your provider",
     }
     redirect_to application_path(current_user.applications.last.ecf_id)
-  end
-
-  def check_course_defined
-    # redirect_to_course_start_date if !@form.instance_of?(Questionnaires::ChooseYourCourse) && defined?(@form.course) && !@form.course
-    # redirect_to_course_start_date if @form.instance_of?(Questionnaires::CheckAnswers) && !@wizard.course
   end
 
   def registration_closed
@@ -146,5 +142,9 @@ private
     return {} if Feature.registration_closed?(current_user)
 
     params.fetch(:registration_wizard, {}).permit(RegistrationWizard.permitted_params_for_step(params[:step].underscore))
+  end
+
+  def course
+    @course ||= Course.reception
   end
 end

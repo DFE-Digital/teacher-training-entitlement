@@ -12,16 +12,16 @@
           component.with_row do |row|
             row.with_key { answer.key }
             row.with_value { answer.value }
-            row.with_action(
-              text: 'Change',
-              visually_hidden_text: answer.key,
-              href: "/registration/#{answer.change_step.to_s.dasherize}/change",
-            )
+            if answer.change_step
+              row.with_action(
+                text: 'Change',
+                visually_hidden_text: answer.key,
+                href: "/registration/#{answer.change_step.to_s.dasherize}/change",
+              )
+            end
           end
         end
   end %>
-
-  <%= govuk_warning_text(text: "If you enter your information incorrectly, it may result in you not being offered a funded place on an NPQ course.") %>
 
   <%= form_with model: @form, url: registration_wizard_form_url(@form), scope: 'registration_wizard', method: :patch do |f| %>
     <%= f.govuk_submit "Submit" %>

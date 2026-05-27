@@ -15,19 +15,15 @@ class RegistrationWizard
     closed
     course_start_date
     cannot_register_yet
-    choose_your_course
     choose_your_provider
-    choose_a_tte_and_provider
     teacher_catchment
     work_setting
     choose_school
-    kind_of_nursery
     possible_funding
     ineligible_for_funding
     funding_your_course
     share_provider
     check_answers
-    have_ofsted_urn
   ].freeze
 
   REMOVED_REGISTRATION_STEPS = %i[].freeze
