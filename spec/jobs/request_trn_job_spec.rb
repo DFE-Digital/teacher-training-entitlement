@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe RequestTrnJob do
+RSpec.describe RequestTrnJob, type: :job do
   describe "#perform" do
     let(:user) { create(:user, trn: nil, refresh_token: "old-token", refresh_token_updated_at: 1.day.ago) }
     let(:application) { create(:application, user:) }
