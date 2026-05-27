@@ -10,10 +10,10 @@ on:
         type: choice
         default: review
         options:
-        - review
-        - staging
-        - sandbox
-        - production
+          - review
+          - staging
+          - sandbox
+          - production
       docker-image-tag:
         description: "Docker image tag to deploy (optional)"
         required: true
@@ -23,16 +23,16 @@ on:
         required: false
         type: string
   push:
-   branches:
-    - main
+    branches:
+      - main
   pull_request:
     branches:
-    - main
+      - main
     types: [opened, reopened, synchronize, labeled]
 
 env:
   TERRAFORM_BASE: terraform/application
-  HEALTHCHECK_CMD: 'healthcheck'
+  HEALTHCHECK_CMD: "healthcheck"
 
 permissions:
   contents: read
@@ -71,19 +71,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
-      name: Checkout
+      - uses: actions/checkout@v6
+        name: Checkout
 
-    - name: Build and push docker image
-      id: build-image
-      uses: DFE-Digital/github-actions/build-docker-image@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        context: .
-        docker-repository: ${{ env.DOCKER_REPOSITORY }}
-        max-cache: true
-        reuse-cache: true
-        snyk-token: ${{ secrets.SNYK_TOKEN }}
+      - name: Build and push docker image
+        id: build-image
+        uses: DFE-Digital/github-actions/build-docker-image@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          docker-repository: ${{ env.DOCKER_REPOSITORY }}
+          max-cache: true
+          reuse-cache: true
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
 
   deploy-review-app:
     name: Deployment To Review
@@ -99,22 +99,22 @@ jobs:
       pull-requests: write
 
     steps:
-    - name: Deploy App to Review
-      id: deploy_review
-      uses: DFE-Digital/github-actions/deploy-to-aks@master
-      with:
-        azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        environment: review
-        pr-number: ${{ github.event.pull_request.number }}
-        sha: ${{ needs.build.outputs.docker-image-tag }}
-        terraform-base: ${{ env.TERRAFORM_BASE }}
-        healthcheck: ${{ env.HEALTHCHECK_CMD }}
-        db-seed: true
-        # smoke-test: true
-        gcp-wip: ${{ vars.GCP_WIP }}
-        gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+      - name: Deploy App to Review
+        id: deploy_review
+        uses: DFE-Digital/github-actions/deploy-to-aks@master
+        with:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          environment: review
+          pr-number: ${{ github.event.pull_request.number }}
+          sha: ${{ needs.build.outputs.docker-image-tag }}
+          terraform-base: ${{ env.TERRAFORM_BASE }}
+          healthcheck: ${{ env.HEALTHCHECK_CMD }}
+          db-seed: true
+          # smoke-test: true
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
 
   deploy-staging:
     name: Deploy staging
@@ -139,6 +139,8 @@ jobs:
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Notify teams channel failure
         if: ${{ failure() }}
@@ -207,6 +209,8 @@ jobs:
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Notify teams channel failure
         if: ${{ failure() }}
@@ -234,9 +238,9 @@ jobs:
         id: deploy_domains_infra
         uses: DFE-Digital/github-actions/deploy-domains-infra@master
         with:
-          azure-client-id:  ${{ secrets.AZURE_CLIENT_ID  }}
-          azure-tenant-id:  ${{ secrets.AZURE_TENANT_ID   }}
-          azure-subscription-id:  ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID   }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
           teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
           service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
 
@@ -260,9 +264,9 @@ jobs:
         id: deploy_domains_env
         uses: DFE-Digital/github-actions/deploy-domains-env@master
         with:
-          azure-client-id:  ${{ secrets.AZURE_CLIENT_ID  }}
-          azure-tenant-id:  ${{ secrets.AZURE_TENANT_ID   }}
-          azure-subscription-id:  ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID   }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
           environment: ${{ matrix.domain_environment }}
           healthcheck: healthcheck
           teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
