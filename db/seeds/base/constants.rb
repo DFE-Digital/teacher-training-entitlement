@@ -4,34 +4,14 @@ LEAD_PROVIDER_CONFIG = {
     url: "https://www.ambition.org.uk/",
     hint: nil,
   },
-  "Best Practice Network" => {
-    token: "best-practice-token",
-    url: "https://www.bestpracticenet.co.uk/",
-    hint: nil,
-  },
-  "Church of England" => {
-    token: "coe-token",
-    url: "https://www.nse.org.uk/",
-    hint: nil,
-  },
-  "University College London (UCL) Institute of Education" => {
-    token: "ucl-token",
-    url: "https://www.ucl.ac.uk/ioe/courses/professional-development-teachers/",
-    hint: nil,
-  },
-  "National Institute of Teaching" => {
-    token: "niot-token",
-    url: "https://niot.org.uk/",
-    hint: nil,
-  },
-  "LLSE" => {
-    token: "llse-token",
-    url: "https://www.llse.org.uk/",
-    hint: nil,
-  },
   "Teach First" => {
     token: "teach-first-token",
     url: "https://teachfirst.co.uk",
     hint: nil,
+  },
+  "forfendinfosec" => {
+    token: "forfendinfosec-token",
+    url: "forfendinfosec.com",
+    hint: "forfendinfosec",
   },
 }.freeze
