@@ -64,6 +64,15 @@ RSpec.feature "User administration", type: :feature do
       end
     end
 
+    scenario "shows 'TRN Requested' when TRN has been requested" do
+      user.update!(trn: nil, trn_requested_at: 1.hour.ago)
+      visit admin_user_path(user)
+
+      within(".govuk-summary-card", text: "Overview") do |summary_card|
+        expect(summary_card).to have_summary_item("TRN", "TRN Requested")
+      end
+    end
+
     scenario "renders when attributes with method chains are nil" do
       user.update!(date_of_birth: nil)
       visit admin_user_path(user)
