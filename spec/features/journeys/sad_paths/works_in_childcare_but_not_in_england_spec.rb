@@ -5,6 +5,8 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
   include Helpers::JourneyStepHelper
   include ApplicationHelper
 
+  let!(:provider) { create(:lead_provider) }
+
   include_context "retrieve latest application data"
   include_context "Stub Teacher Auth Responses"
 
@@ -66,7 +68,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
       expect(page).to have_text("Select your provider")
-      page.choose("Teach First", visible: :all)
+      page.choose(provider.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
@@ -81,7 +83,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
           "Course" => "Senior leadership",
           "Course funding" => "My workplace is covering the cost",
           "Work setting" => "Early years or childcare",
-          "Provider" => "Teach First",
+          "Provider" => provider.name,
           "Workplace in England" => "No",
         },
       )
@@ -108,7 +110,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
       "funding_choice" => "school",
       "funding_eligiblity_status_code" => "not_in_england",
       "kind_of_nursery" => nil,
-      "lead_provider_id" => LeadProvider.find_by(name: "Teach First").id,
+      "lead_provider_id" => provider.id,
       "notes" => nil,
       "private_childcare_provider_id" => nil,
       "school_id" => nil,
@@ -138,7 +140,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
         "funding" => "school",
         "funding_amount" => nil,
         "funding_eligiblity_status_code" => "not_in_england",
-        "lead_provider_id" => LeadProvider.find_by(name: "Teach First").id.to_s,
+        "lead_provider_id" => provider.id.to_s,
         "submitted" => true,
         "teacher_catchment" => "another",
         "teacher_catchment_country" => nil,
