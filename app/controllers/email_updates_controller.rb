@@ -14,7 +14,11 @@ class EmailUpdatesController < PublicPagesController
     @form = EmailUpdates.new(email_update_params)
     if @form.valid?
       current_user.update_email_updates_status(@form)
-      GenericMailer.with(to: current_user.email, service_link: Rails.configuration.service_base_url, unsubscribe_link:).email_updates_confirmation.deliver_now
+      GenericMailer.with(
+        to: current_user.email,
+        name: current_user.full_name,
+        unsubscribe_link:,
+      ).email_updates_confirmation.deliver_now
     else
       render :new
     end
