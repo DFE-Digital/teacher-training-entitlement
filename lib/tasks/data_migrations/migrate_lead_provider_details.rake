@@ -2,8 +2,6 @@ OLD_NAMES_MAP = {
   "UCL Institute of Education" => "University College London (UCL) Institute of Education",
 }.freeze
 
-DELETED_LPS = ["Teach First"].freeze
-
 namespace :data_migrations do
   desc "Update provider url and h"
   task migrate_lead_provider_details: :environment do
