@@ -24,23 +24,27 @@ module "application_configuration" {
       RAILS_ENV                  = var.environment
       AZURE_STORAGE_ACCOUNT_NAME = module.storage_account.name
       AZURE_STORAGE_CONTAINER    = "uploads"
+      BIGQUERY_PROJECT_ID        = "ecf-bq"
+      BIGQUERY_TABLE_NAME        = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].bigquery_table_name : null
+      BIGQUERY_DATASET           = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].bigquery_dataset : null
     },
     var.environment == "review" ? {
       HOSTING_DOMAIN = "https://${var.service_name}-${local.environment}.${module.cluster_data.ingress_domain}"
     } : {}
   )
   secret_variables = {
-    DATABASE_URL = module.postgres.url
-    REDIS_CACHE_URL = var.deploy_redis_cache ? module.redis-cache.url : ""
-    AZURE_STORAGE_ACCESS_KEY   = module.storage_account.primary_access_key
+    DATABASE_URL             = module.postgres.url
+    REDIS_CACHE_URL          = var.deploy_redis_cache ? module.redis-cache.url : ""
+    AZURE_STORAGE_ACCESS_KEY = module.storage_account.primary_access_key
+    GOOGLE_CLOUD_CREDENTIALS = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].google_cloud_credentials : null
   }
 }
 
 module "web_application" {
   source = "./vendor/modules/aks//aks/application"
 
-  is_web = true
-  web_port = 8080
+  is_web       = true
+  web_port     = 8080
   namespace    = var.namespace
   environment  = local.environment
   service_name = var.service_name
@@ -53,8 +57,8 @@ module "web_application" {
 
   docker_image = var.docker_image
   enable_logit = true
-  command = var.command
-  probe_path = "/up"
+  command      = var.command
+  probe_path   = "/up"
 
   send_traffic_to_maintenance_page = var.send_traffic_to_maintenance_page
 }
@@ -64,7 +68,7 @@ module "worker_application" {
 
   is_web = false
 
-  name = "worker"
+  name         = "worker"
   namespace    = var.namespace
   environment  = local.environment
   service_name = var.service_name
@@ -81,7 +85,7 @@ module "worker_application" {
   replicas   = var.worker_replicas
   max_memory = var.worker_memory_max
 
-  enable_logit = var.enable_logit
+  enable_logit   = var.enable_logit
   enable_gcp_wif = var.enable_dfe_analytics_federated_auth
 
   depends_on = [time_sleep.wait_15_seconds]
@@ -93,7 +97,7 @@ module "worker_application" {
 //
 // Adding a 15 second delay before removing postgres for review apps solves this
 resource "time_sleep" "wait_15_seconds" {
-  count = var.deploy_azure_backing_services ? 0 : 1
-  depends_on = [module.postgres]
+  count            = var.deploy_azure_backing_services ? 0 : 1
+  depends_on       = [module.postgres]
   destroy_duration = "15s"
 }

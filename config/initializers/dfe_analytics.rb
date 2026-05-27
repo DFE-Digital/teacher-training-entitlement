@@ -20,9 +20,7 @@ DfE::Analytics.configure do |config|
 
   # The name of the BigQuery dataset we're writing to.
   #
-  # config.bigquery_dataset = ENV['BIGQUERY_DATASET']
-
-  config.bigquery_dataset = ENV["BIGQUERY_DFE_ANALYTICS_DATASET"] || "npq_events_#{Rails.env}"
+  config.bigquery_dataset = ENV["BIGQUERY_DATASET"]
 
   # Service account JSON key for the BigQuery API. See
   # https://cloud.google.com/bigquery/docs/authentication/service-account-file
