@@ -29,4 +29,9 @@ LEAD_PROVIDER_CONFIG = {
     url: "https://www.llse.org.uk/",
     hint: "An Outstanding Lead Provider of National Professional Qualifications (NPQs) for School Leadership",
   },
+  "Teach First" => {
+    token: "teach-first-token",
+    url: "https://teachfirst.co.uk",
+    hint: "Teach first hint",
+  },
 }.freeze
