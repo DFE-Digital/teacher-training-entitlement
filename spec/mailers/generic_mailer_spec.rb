@@ -22,6 +22,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
         body = mail.personalisation[:body]
         expect(body).to include(unsubscribe_link)
+        expect(body).to include(name)
       end
     end
 
