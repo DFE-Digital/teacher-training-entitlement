@@ -95,7 +95,7 @@ class GenericMailerPreview < ActionMailer::Preview
   def previous_provider
     GenericMailer.with(
       to: "test@example.com",
-      provider_name: "Teach First",
+      provider_name: LeadProvider.first.name,
       course_name: "Teaching in Reception",
       participant_trn: nil,
       particitpant_name: "Tobias Harris",
