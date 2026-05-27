@@ -7,19 +7,17 @@
 %>
   <h1 class="govuk-heading-xl">You cannot register yet</h1>
 
-  <p class="govuk-body">Registrations are currently only open for courses starting in autumn 2025.</p>
-
-  <p class="govuk-body">The next cohort will begin their course in autumn 2026.</p>
+  <p class="govuk-body">Registrations are currently open for courses starting in <%= application_course_start_date %>.</p>
 
   <h2 class="govuk-heading-m">Stay informed</h2>
 
   <p class="govuk-body">You can sign up for email updates to:</p>
 
   <ul class="govuk-list govuk-list--bullet">
-    <li>find out when NPQ registration opens</li>
+    <li>find out when NPD registration opens</li>
   </ul>
 
-  <p class="govuk-body">
-    <%= govuk_link_to "Sign up for updates", new_email_update_path %>
-  </p>
+  <%= form_with model: @form, url: email_updates_path do |f| %>
+    <%= f.govuk_submit('Sign up for updates') %>
+  <% end %>
 <% end %>
