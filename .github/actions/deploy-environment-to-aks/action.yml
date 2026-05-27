@@ -26,6 +26,12 @@ inputs:
   statuscake-api-token:
     description: The Statuscake token
     required: false
+  gcp-wip:
+    description: The full identifier of the GCP Workload Identity Provider.
+    required: false
+  gcp-project-id:
+    description: The name of the GCP Project ID.
+    required: false
 
 outputs:
   url:
@@ -46,6 +52,12 @@ runs:
         client-id: ${{ inputs.azure-client-id }}
         tenant-id: ${{ inputs.azure-tenant-id }}
         subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - uses: google-github-actions/auth@v2
+      if: ${{ inputs.gcp-wip != '' }}
+      with:
+        project_id: ${{ inputs.gcp-project-id }}
+        workload_identity_provider: ${{ inputs.gcp-wip }}
 
     - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
       with:
