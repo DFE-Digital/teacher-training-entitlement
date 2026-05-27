@@ -69,4 +69,5 @@ jobs:
           resource-group-name: "s189t01-cpdtte-rv-rg"
           storage-account-name: "s189t01cpdttervtfsa"
           tf-state-file: "${{ github.event.pull_request.number || github.event.inputs.pr_number }}.tfstate"
-
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
