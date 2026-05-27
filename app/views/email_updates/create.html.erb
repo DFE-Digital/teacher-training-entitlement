@@ -1,25 +1,9 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-
-    <div class="govuk-panel govuk-panel--confirmation">
-      <h1 class="govuk-panel__title">
-        <% if Feature.registration_closed?(current_user) %>
-          Your email request has been set up
-        <% else %>
-          You’ve signed up for email updates
-        <% end %>
-      </h1>
-    </div>
-
-    <% if Feature.registration_closed?(current_user) %>
-      <p class="govuk-body">We’ll send updates to <strong><%= current_user.email %></strong> about when registration will open.</p>
-    <% else %>
-      <p class="govuk-body">We’ll send updates to <strong><%= current_user.email %></strong> when registration opens for courses starting in autumn 2026.</p>
-    <% end %>
-
-    <% if current_user.applications.any? %>
-      <p class="govuk-body"><%= govuk_link_to "View your existing registrations", applications_path %>.</p>
-    <% end %>
-
-  </div>
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">You've signed up for email updates</h1>
 </div>
+
+<p class="govuk-body">We'll send updates to <strong><%= current_user.email %></strong> when registration opens for the next course.</p>
+
+<% if current_user.applications.any? %>
+  <p class="govuk-body"><%= govuk_link_to "View your existing registrations", applications_path %>.</p>
+<% end %>

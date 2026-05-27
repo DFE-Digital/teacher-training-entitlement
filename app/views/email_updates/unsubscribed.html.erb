@@ -7,12 +7,16 @@
     </div>
 
     <p class="govuk-body">
-      You will not receive any further emails about the opening of the 'Register for a national professional qualification (NPQ)' service.
+      You will not receive any further emails about the opening of NPD service.
     </p>
 
     <% if current_user&.persisted? %>
       <p class="govuk-body">
-        Did you unsubscribe by accident? <%= link_to "Re-subscribe", new_email_update_path, class: "govuk-link" %>
+        Did you unsubscribe by accident?
+        <%= form_for :form, url: email_updates_path do |f| %>
+          <%= f.govuk_submit('Re-subscribe') %>
+        <% end %>
+
       </p>
     <% else %>
       <p class="govuk-body">
