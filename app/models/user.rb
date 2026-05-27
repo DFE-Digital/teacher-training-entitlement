@@ -50,7 +50,7 @@ class User < ApplicationRecord
   ].freeze
 
   enum :email_updates_status,
-       EMAIL_UPDATES_STATES.index_with(&:to_s),
+       { EMAIL_NPD_REGISTRATION_OPEN => EMAIL_NPD_REGISTRATION_OPEN.to_s },
        suffix: true
 
   attr_accessor :version_note, :skip_touch_significantly_updated_at
