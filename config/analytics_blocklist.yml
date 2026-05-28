@@ -112,6 +112,7 @@
   - type
   :lead_providers:
   - email
+  - active
   :application_lead_providers:
   - id
   - application_id

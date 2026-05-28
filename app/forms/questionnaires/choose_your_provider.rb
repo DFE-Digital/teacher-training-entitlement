@@ -62,7 +62,7 @@ module Questionnaires
   private
 
     def providers
-      LeadProvider.for(course:).alphabetical
+      LeadProvider.for(course:).alphabetical.active
     end
 
     def lead_provider

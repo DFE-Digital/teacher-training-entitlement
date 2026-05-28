@@ -16,6 +16,7 @@ class LeadProvider < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
   scope :alphabetical, -> { order(name: :asc) }
+  scope :active, -> { where(active: true) }
 
   def self.for(course:, cohort: nil)
     course_cohorts = { course_id: course.id, cohort_id: cohort&.id || Cohort.current.id }

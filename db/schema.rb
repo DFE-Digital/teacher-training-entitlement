@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_21_102746) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_084509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -374,6 +374,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_21_102746) do
   end
 
   create_table "lead_providers", force: :cascade do |t|
+    t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.uuid "ecf_id"
     t.string "email"
