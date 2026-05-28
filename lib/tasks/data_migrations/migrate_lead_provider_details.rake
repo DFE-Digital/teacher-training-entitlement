@@ -3,9 +3,9 @@ OLD_NAMES_MAP = {
 }.freeze
 
 namespace :data_migrations do
-  desc "Update provider url and h"
+  desc "Update provider details from config"
   task migrate_lead_provider_details: :environment do
-    LeadProvider.where(url: nil).find_each do |lead_provider|
+    LeadProvider.find_each do |lead_provider|
       config = LEAD_PROVIDER_CONFIG[lead_provider.name]
 
       # If the name has changed, update it
