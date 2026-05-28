@@ -22,6 +22,11 @@ module TeacherAuth
 
       unless response.success?
         Rails.logger.error("TeacherAuth::ActivateTrn failed: #{response.code} - #{response.body}")
+        Sentry::Metrics.count(
+          "teacher_auth.activate_trn.failure",
+          value: 1,
+          attributes: { status_code: response.code },
+        )
         return
       end
 
