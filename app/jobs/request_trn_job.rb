@@ -23,7 +23,7 @@ class RequestTrnJob < ApplicationJob
     }
 
     # If TRN returned immediately, update user and clear refresh token
-    if result&.dig(:trn).present?
+    if result && result[:trn].present?
       user_attrs.merge!(
         trn: result[:trn],
         trn_verified: true,
