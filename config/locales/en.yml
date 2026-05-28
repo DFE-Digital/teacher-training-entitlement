@@ -984,6 +984,9 @@ en:
           1: Yes, I'm ready to authorise this for payment
       registration_wizard:
         work_setting_options:
+          private_institution: Private nursery, pre-school or school
+          state_funded_institution: State-funded nursery, pre-school, school or academy trust
+          other: Other
           early_years_or_childcare: Early years or childcare
           a_school: A school
           an_academy_trust: An academy trust

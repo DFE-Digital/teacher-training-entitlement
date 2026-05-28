@@ -258,6 +258,10 @@ class Application < ApplicationRecord
     end
   end
 
+  def previously_started?
+    declarations.started.not_voided_state.any?
+  end
+
 private
 
   def not_admin_user?

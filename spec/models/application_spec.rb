@@ -176,6 +176,28 @@ RSpec.describe Application do
     end
   end
 
+  describe "#previously_started?" do
+    subject(:previously_started?) { application.previously_started? }
+
+    let(:application) { create(:application, :accepted) }
+
+    context "when the application has no declarations" do
+      it { is_expected.to be false }
+    end
+
+    context "when the application has a started declaration" do
+      before { create(:declaration, :started, application:) }
+
+      it { is_expected.to be true }
+    end
+
+    context "when the application only has a voided started declaration" do
+      before { create(:declaration, :started, :voided, application:) }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "scopes" do
     describe ".accepted" do
       it "returns accepted applications" do
