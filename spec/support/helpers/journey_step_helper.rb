@@ -4,7 +4,7 @@ module Helpers
       if js
         navigate_to_page(path: "/registration/choose-school", submit_form: true) do
           within ".npq-js-reveal" do
-            page.fill_in "What is the name of your workplace?", with: name
+            page.fill_in "Select your workplace", with: name
           end
 
           page.find("#registration-wizard-institution-id-field__option--0").click
@@ -12,7 +12,7 @@ module Helpers
       else
         navigate_to_page(path: "/registration/choose-school", submit_form: true) do
           within ".npq-js-hidden" do
-            page.fill_in "What is the name of your workplace?", with: name
+            page.fill_in "Select your workplace", with: name
           end
 
           page.click_button("Continue")
@@ -25,7 +25,7 @@ module Helpers
       if js
         navigate_to_page(path: "/registration/choose-childcare-provider", submit_form: true) do
           within ".npq-js-reveal" do
-            page.fill_in "What is the name of your workplace?", with: "open"
+            page.fill_in "Select your workplace", with: "open"
           end
 
           page.find("#nursery-picker__option--0").click
@@ -33,7 +33,7 @@ module Helpers
       else
         navigate_to_page(path: "/registration/choose-childcare-provider", submit_form: true) do
           within ".npq-js-hidden" do
-            page.fill_in "What is the name of your workplace?", with: name
+            page.fill_in "Select your workplace", with: name
           end
 
           page.click_button("Continue")

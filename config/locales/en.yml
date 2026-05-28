@@ -912,7 +912,7 @@ en:
       registration_wizard:
         can_share_choices: Sharing your NPD information
         employment_type: How are you employed?
-        work_setting: What setting do you work in?
+        work_setting: Tell us where you work
         funding: How are you funding your course?
         teacher_catchment: Do you work in England?
         referred_by_return_to_teaching_adviser: Did a Return To Teaching Adviser (RTTA)
@@ -952,16 +952,11 @@ en:
         - For more information about who we share your data with read our <a href="https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers#NPQ"
           class="govuk-link">privacy notice</a>.
         - If you do not agree to share your information you will not be able to progress with your NPD course.
-        choose_childcare_provider_html: Search by postcode, unique reference number
-          (URN) or name. If you work for a trust, use the details of one of its schools.
-        choose_childcare_provider_search: Search for your workplace
-        choose_school_html: Search by postcode, unique reference number (URN) or name.
-          If you work for a trust, use the details of one of its schools.
-        choose_school_search: Start your search by entering the name of your workplace.
-          If you work for a trust, enter the name of one of their schools.
-        choose_private_childcare_provider: For example a 7 digit number (1234567)
-          or a 6 digit number sometimes prefixed with EY (EY456789)
-        choose_private_childcare_provider_search: Enter your or your employer's URN
+        choose_school_html: 
+          Search for your workplace by postcode, unique reference number (URN) or name. 
+          <br/>
+          If you work for a trust, use the details of one of its schools.          
+        choose_school_search: Start typing to search by name, URN or postcode
         institution_location_html: Enter <strong>just the first part of your workplace
           postcode</strong>, for example SW19. If you work for a trust, use the postcode
           of one of its schools.
@@ -976,9 +971,10 @@ en:
         national_insurance_number: This will help us match your details. It's on your
           National Insurance card, benefit letter, payslip or P60. For example, ‘QQ
           12 34 56 C'.
-        work_setting: Make sure the information you provide is correct, as your course
-          provider will check your details. Register using your current workplace
-          details, even if they will change soon.
+        work_setting: 
+          Make sure the information you provide is correct, as your provider will check your details. 
+          <br/>
+          Register using your current workplace details, even if they will change soon.
     label:
       form:
         course_cohort_id: Course Cohort
@@ -1018,16 +1014,9 @@ en:
         teacher_catchment_country: Which country do you teach in?
         lead_provider_id_options:
           not_chosen: I have not chosen a provider yet
-        choose_childcare_provider: What is the name of your workplace?
-        choose_childcare_provider_search: Workplace not shown above
-        choose_childcare_provider_fallback: Select your workplace
-        choose_school: What is the name of your workplace?
+        choose_school: Select your workplace
         choose_school_search: Workplace not shown above
         choose_school_fallback: Select your workplace
-        choose_private_childcare_provider: Enter your or your employer's unique reference
-          number (URN)
-        choose_private_childcare_provider_search: My employer is not shown above
-        choose_private_childcare_provider_fallback: Select yourself or your employer
         trn: Teacher reference number (TRN)
         full_name: Full name
         national_insurance_number: National Insurance number (optional)

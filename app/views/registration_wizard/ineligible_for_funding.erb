@@ -12,6 +12,6 @@
 
 <% end %>
 
-<% if Rails.env.staging? || Rails.env.development? %>
+<% if Rails.env.development? %>
   <p>"<%= @form.funding_eligiblity_status_code %>"</p>
 <% end  %>

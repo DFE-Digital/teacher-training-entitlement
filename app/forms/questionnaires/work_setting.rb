@@ -89,7 +89,7 @@ module Questionnaires
           name: :work_setting,
           options:,
           style_options: {
-            hint: { text: I18n.t("helpers.hint.registration_wizard.work_setting") },
+            hint: { text: I18n.t("helpers.hint.registration_wizard.work_setting").html_safe },
             width: "three-quarters",
           },
         ),
