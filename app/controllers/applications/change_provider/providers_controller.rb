@@ -26,6 +26,7 @@ module Applications
         @providers ||= LeadProvider
           .for(course: application.course)
           .alphabetical
+          .active
           .reject { |p| p.id == application.lead_provider.id }
           .reject { |p| p.id.in?(application.application_lead_providers.map(&:lead_provider_id)) }
       end
