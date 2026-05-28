@@ -1,6 +1,6 @@
 [![View performance data on Skylight](https://badges.skylight.io/status/xxxxx.svg)](https://oss.skylight.io/app/applications/xxxxxx) 
 
-Test branch for ITHC
+Branch for ITHC testing
 
 # Register for Teacher Training Entitlement (TTE)
 
