@@ -58,6 +58,13 @@ Rails.application.configure do
   config.active_record.encryption.deterministic_key = "test-deterministic-key-32-bytes!"
   config.active_record.encryption.key_derivation_salt = "test-key-derivation-salt-value!"
 
+  # Teacher Auth / TRS config for testing
+  config.x.teacher_auth.domain = "https://teacher-auth.example.com"
+  config.x.teacher_auth.client_id = "teacher-training-entitlement"
+  config.x.teacher_auth.client_secret = "test-secret"
+  config.x.teacher_auth.one_login_home_url = "https://home.integration.account.gov.uk"
+  config.x.trs_api_url = "https://trs-api.example.com"
+
   config.service_base_url = "http://test.tte.education.gov.uk"
   config.sign_in_link = "http://test.sign_in.education.gov.uk"
   config.feedback_link = "http://test.feedback.education.gov.uk"

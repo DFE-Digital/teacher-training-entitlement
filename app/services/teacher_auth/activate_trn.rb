@@ -4,7 +4,7 @@ module TeacherAuth
 
     REQUIRED_API_VERSION = "20260416".freeze
 
-    base_uri ENV.fetch("TRS_API_URL", nil)
+    base_uri Rails.application.config.x.trs_api_url
 
     def initialize(access_token)
       @access_token = access_token

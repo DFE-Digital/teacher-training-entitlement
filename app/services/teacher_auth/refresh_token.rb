@@ -2,7 +2,7 @@ module TeacherAuth
   class RefreshToken
     include HTTParty
 
-    base_uri ENV.fetch("TEACHER_AUTH_DOMAIN", nil)
+    base_uri Rails.application.config.x.teacher_auth.domain
 
     def initialize(refresh_token)
       @refresh_token = refresh_token
@@ -14,8 +14,8 @@ module TeacherAuth
         body: {
           grant_type: "refresh_token",
           refresh_token: @refresh_token,
-          client_id: ENV.fetch("TEACHER_AUTH_CLIENT_ID", nil),
-          client_secret: ENV.fetch("TEACHER_AUTH_CLIENT_SECRET", nil),
+          client_id: Rails.application.config.x.teacher_auth.client_id,
+          client_secret: Rails.application.config.x.teacher_auth.client_secret,
         },
       )
 
