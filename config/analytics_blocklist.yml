@@ -113,11 +113,7 @@
   :lead_providers:
   - email
   :application_lead_providers:
-  - id
-  - application_id
   - created_at
-  - current
-  - lead_provider_id
   - updated_at
   :application_events:
   - type

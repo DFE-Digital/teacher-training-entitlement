@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_21_102746) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_29_121944) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -110,9 +110,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_21_102746) do
 
   create_table "application_lead_providers", force: :cascade do |t|
     t.bigint "application_id"
+    t.datetime "assigned_at"
     t.datetime "created_at", null: false
     t.boolean "current", default: false
     t.bigint "lead_provider_id"
+    t.datetime "unassigned_at"
     t.datetime "updated_at", null: false
     t.index ["application_id", "lead_provider_id"], name: "idx_on_application_id_lead_provider_id_f38fa4893f", unique: true
     t.index ["application_id"], name: "index_application_lead_providers_on_application_id"
