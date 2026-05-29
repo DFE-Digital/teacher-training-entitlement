@@ -49,7 +49,7 @@ class Application < ApplicationRecord
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
 
-  attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user
+  attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user, :assignment
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
@@ -125,8 +125,26 @@ class Application < ApplicationRecord
   def lead_provider=(new_provider)
     return if new_provider == lead_provider
 
-    application_lead_providers.current.update_all(current: false, updated_at: Time.zone.now)
-    application_lead_providers.create!(lead_provider: new_provider, current: true)
+    timestamp = Time.zone.now
+    application_lead_providers.current.update_all(
+      current: false,
+      updated_at: timestamp,
+      unassigned_at: timestamp,
+    )
+    application_lead_providers.create!(
+      lead_provider: new_provider,
+      current: true,
+      assigned_at: timestamp,
+    )
+  end
+
+  def assigned_at
+    current_application_lead_provider.assigned_at
+  end
+
+  def unassigned_at
+    # assignment is a specific previous application_lead_provider record set before render
+    assignment&.unassigned_at
   end
 
   def can_change_provider?
