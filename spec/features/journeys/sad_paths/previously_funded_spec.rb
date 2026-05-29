@@ -37,7 +37,7 @@ RSpec.feature "Previously funded participant", :with_default_schedules, type: :f
     visit "/registration/ineligible-for-funding"
 
     expect(page).to have_text("Funding eligibility result")
-    expect(page).to have_text("You’ve already been allocated scholarship funding")
+    expect(page).to have_text("You've already been allocated scholarship funding")
   end
 
   scenario "continue button navigates to funding your course page (AC2)" do
