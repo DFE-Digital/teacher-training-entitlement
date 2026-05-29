@@ -151,6 +151,20 @@ APPLICATION = {
             format: :"date-time",
             example: "2021-05-31T02:22:32.000Z",
           },
+          assigned_at: {
+            description: "The date the application was assigned to a lead provider",
+            type: :string,
+            nullable: false,
+            format: :"date-time",
+            example: "2021-05-31T02:22:32.000Z",
+          },
+          unassigned_at: {
+            description: "The date the application was unassigned from a lead provider",
+            type: :string,
+            nullable: true,
+            format: :"date-time",
+            example: "2021-05-31T02:22:32.000Z",
+          },
           schedule_identifier: {
             description: "The new schedule of the participant",
             nullable: true,

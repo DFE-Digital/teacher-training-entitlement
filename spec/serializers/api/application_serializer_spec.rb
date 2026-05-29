@@ -7,7 +7,8 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:schedule) { create(:schedule) }
   let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }
   let(:institution) { create(:institution, :for_school) }
-  let(:application) { build(:application, course_cohort:, institution:) }
+  let(:application) { create(:application, course_cohort:, institution:) }
+  let(:unassigned) { build(:application_lead_provider, :unassigned) }
   let(:v1_json) { JSON.parse(described_class.render(application, view: :v1, root: "data")) }
 
   describe "core attributes" do
@@ -75,6 +76,15 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes["teacher_catchment_iso_country_code"]).to eq(application.teacher_catchment_iso_country_code)
     end
 
+    it "serializes the `assigned_at`" do
+      expect(attributes["assigned_at"]).to eq(application.current_application_lead_provider.assigned_at.rfc3339)
+    end
+
+    it "serializes the `unassigned_at`" do
+      application.assignment = unassigned
+      expect(attributes["unassigned_at"]).to eq(unassigned.unassigned_at.rfc3339)
+    end
+
     describe "cohort serialization" do
       it "serializes the `cohort`" do
         cohort.start_year = 2025
@@ -93,7 +103,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       end
 
       context "when `school` is `nil`" do
-        let(:application) { build(:application, cohort:, course:, institution: nil) }
+        let(:application) { create(:application, cohort:, course:, institution: nil) }
 
         it { expect(attributes["institution_reference_number"]).to be_nil }
         it { expect(attributes["institution_type"]).to be_nil }

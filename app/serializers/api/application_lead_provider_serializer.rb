@@ -11,7 +11,9 @@ module API
 
       def render_one(application_lead_provider, view:, root:)
         view = application_lead_provider.current? ? view : "#{view}_reassigned".to_sym
-        ApplicationSerializer.render(application_lead_provider.application, view:, root:)
+        application = application_lead_provider.application
+        application.assignment = application_lead_provider
+        ApplicationSerializer.render(application, view:, root:)
       end
 
       def render_array(application_lead_providers, view:, root:)

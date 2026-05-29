@@ -28,6 +28,8 @@ module API
         field(:teacher_catchment_iso_country_code)
         field(:funded_place)
         field(:schedule_identifier) { |a| a.schedule&.identifier }
+        field(:assigned_at)
+        field(:unassigned_at)
         field(:created_at)
         field(:updated_at) do |a|
           [
@@ -40,7 +42,7 @@ module API
       view :v1_reassigned do
         include_view :v1
 
-        field(:status) { |_| Application::REASSIGNED }
+        field(:status) { Application::REASSIGNED }
       end
     end
 

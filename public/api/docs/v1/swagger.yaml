@@ -125,6 +125,8 @@ paths:
                         funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -206,6 +208,8 @@ paths:
                         funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -269,6 +273,8 @@ paths:
                         funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -350,6 +356,8 @@ paths:
                         funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -431,6 +439,8 @@ paths:
                         funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -512,6 +522,8 @@ paths:
                         funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -593,6 +605,8 @@ paths:
                         funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
+                        assigned_at: '2021-05-31T02:22:32.000Z'
+                        unassigned_at: '2021-05-31T02:22:32.000Z'
                         schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
@@ -1501,6 +1515,18 @@ components:
               description: The date the application was last updated
               type: string
               nullable: false
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            assigned_at:
+              description: The date the application was assigned to a lead provider
+              type: string
+              nullable: false
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            unassigned_at:
+              description: The date the application was unassigned from a lead provider
+              type: string
+              nullable: true
               format: date-time
               example: '2021-05-31T02:22:32.000Z'
             schedule_identifier:
