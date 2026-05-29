@@ -41,7 +41,7 @@ module Questionnaires
           link_errors: true,
           hint: "You can also select this option if you've already started",
         ),
-        build_option_struct(value: "later", label: "I want to start at later date"),
+        build_option_struct(value: "later", label: "I want to start at a later date"),
       ]
     end
 

@@ -881,7 +881,7 @@ en:
         get_an_identity: Get an identity
         choose_your_course: Choose a TTE course
         course_start_date: Choose your course start date
-        course_start_date_sub: Registration for this course will open at different times througout the year
+        course_start_date_sub: Registration for this course will open at different times throughout the year
         childcare_provider_not_in_england: Nursery must be in England, Guernsey, Jersey
           or the Isle of Man
         cannot_register_yet: You cannot register yet
@@ -947,7 +947,7 @@ en:
           another: For example, I am sharing the costs with my workplace
         can_share_choices:
         - All the information you enter for your NPD registration will be shared with external organisations 
-          including auditors, evaluators, relevant bodies and training providers - this allows your provider 
+          including auditors, evaluators, relevant bodies and training providers — this allows your provider
           to register you onto their course.
         - For more information about who we share your data with read our <a href="https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers#NPQ"
           class="govuk-link">privacy notice</a>.
