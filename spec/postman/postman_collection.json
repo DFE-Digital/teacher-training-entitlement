@@ -15,7 +15,7 @@
           "name": "1.1 Listing Applications",
           "item": [
             {
-              "name": "REG-001 List all applications (expect 12)",
+              "name": "REG-001 List all applications (expect 13)",
               "event": [
                 {
                   "listen": "test",
@@ -39,7 +39,8 @@
                       "  'test-adm-completed':  'appId009',",
                       "  'test-adm-failed':     'appId010',",
                       "  'test-adm-voided':     'appId011',",
-                      "  'test-adm-deferred':   'appId012'",
+                      "  'test-adm-deferred':   'appId012',",
+                      "  'test-provider':     'appId013'",
                       "};",
                       "",
                       "let captured = 0;",
@@ -57,7 +58,7 @@
                       "  }",
                       "});",
                       "",
-                      "pm.test('REG-001: All 12 appId variables captured from email matching', () => pm.expect(captured).to.eql(12));"
+                      "pm.test('REG-001: All 13 appId variables captured from email matching', () => pm.expect(captured).to.eql(13));"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -69,7 +70,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications?page[page]=1&page[per_page]=100&filter[participant_id]=0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
+                  "raw": "{{baseUrl}}/api/v1/applications?page[page]=1&page[per_page]=100&filter[participant_id]=4e87fadb-f678-4934-0003-000000000001,4e87fadb-f678-4934-0003-000000000002,4e87fadb-f678-4934-0003-000000000003,4e87fadb-f678-4934-0003-000000000004,4e87fadb-f678-4934-0003-000000000005,4e87fadb-f678-4934-0003-000000000006,4e87fadb-f678-4934-0003-000000000007,4e87fadb-f678-4934-0003-000000000008,4e87fadb-f678-4934-0003-000000000009,4e87fadb-f678-4934-0003-000000000010,4e87fadb-f678-4934-0003-000000000011,4e87fadb-f678-4934-0003-000000000012,4e87fadb-f678-4934-0003-000000000013",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -89,7 +90,7 @@
                     },
                     {
                       "key": "filter[participant_id]",
-                      "value": "0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba"
+                      "value": "4e87fadb-f678-4934-0003-000000000001,4e87fadb-f678-4934-0003-000000000002,4e87fadb-f678-4934-0003-000000000003,4e87fadb-f678-4934-0003-000000000004,4e87fadb-f678-4934-0003-000000000005,4e87fadb-f678-4934-0003-000000000006,4e87fadb-f678-4934-0003-000000000007,4e87fadb-f678-4934-0003-000000000008,4e87fadb-f678-4934-0003-000000000009,4e87fadb-f678-4934-0003-000000000010,4e87fadb-f678-4934-0003-000000000011,4e87fadb-f678-4934-0003-000000000012,4e87fadb-f678-4934-0003-000000000013"
                     }
                   ]
                 }
@@ -97,7 +98,7 @@
               "response": []
             },
             {
-              "name": "REG-002 List applications filtered by cohort 2026 (expect 11)",
+              "name": "REG-002 List applications filtered by cohort 2026 (expect 12) Copy",
               "event": [
                 {
                   "listen": "test",
@@ -105,7 +106,7 @@
                     "exec": [
                       "pm.test('REG-002: Status 200', () => pm.response.to.have.status(200));",
                       "const json = pm.response.json();",
-                      "pm.test('REG-002: Returns 11 applications (APP-006 excluded)', () => pm.expect(json.data.length).to.eql(11));",
+                      "pm.test('REG-002: Returns 11 applications (APP-006 excluded)', () => pm.expect(json.data.length).to.eql(12));",
                       "pm.test('REG-002: No cohort 2027 applications present', () => {",
                       "  const hasWrongCohort = json.data.some(app => app.attributes.cohort === '2027');",
                       "  pm.expect(hasWrongCohort).to.be.false;",
@@ -121,7 +122,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2026&filter[participant_id]=0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
+                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2026&filter[participant_id]=4e87fadb-f678-4934-0003-000000000001,4e87fadb-f678-4934-0003-000000000002,4e87fadb-f678-4934-0003-000000000003,4e87fadb-f678-4934-0003-000000000004,4e87fadb-f678-4934-0003-000000000005,4e87fadb-f678-4934-0003-000000000006,4e87fadb-f678-4934-0003-000000000007,4e87fadb-f678-4934-0003-000000000008,4e87fadb-f678-4934-0003-000000000009,4e87fadb-f678-4934-0003-000000000010,4e87fadb-f678-4934-0003-000000000011,4e87fadb-f678-4934-0003-000000000012,4e87fadb-f678-4934-0003-000000000013",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -137,8 +138,7 @@
                     },
                     {
                       "key": "filter[participant_id]",
-                      "value": "0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
-                      "type": "text"
+                      "value": "4e87fadb-f678-4934-0003-000000000001,4e87fadb-f678-4934-0003-000000000002,4e87fadb-f678-4934-0003-000000000003,4e87fadb-f678-4934-0003-000000000004,4e87fadb-f678-4934-0003-000000000005,4e87fadb-f678-4934-0003-000000000006,4e87fadb-f678-4934-0003-000000000007,4e87fadb-f678-4934-0003-000000000008,4e87fadb-f678-4934-0003-000000000009,4e87fadb-f678-4934-0003-000000000010,4e87fadb-f678-4934-0003-000000000011,4e87fadb-f678-4934-0003-000000000012,4e87fadb-f678-4934-0003-000000000013"
                     }
                   ]
                 }
@@ -166,7 +166,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2000&filter[participant_id]=0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
+                  "raw": "{{baseUrl}}/api/v1/applications?filter[cohort]=2000&filter[participant_id]=4e87fadb-f678-4934-0003-000000000001,4e87fadb-f678-4934-0003-000000000002,4e87fadb-f678-4934-0003-000000000003,4e87fadb-f678-4934-0003-000000000004,4e87fadb-f678-4934-0003-000000000005,4e87fadb-f678-4934-0003-000000000006,4e87fadb-f678-4934-0003-000000000007,4e87fadb-f678-4934-0003-000000000008,4e87fadb-f678-4934-0003-000000000009,4e87fadb-f678-4934-0003-000000000010,4e87fadb-f678-4934-0003-000000000011,4e87fadb-f678-4934-0003-000000000012,4e87fadb-f678-4934-0003-000000000013",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -182,8 +182,7 @@
                     },
                     {
                       "key": "filter[participant_id]",
-                      "value": "0c659721-8708-445c-93a7-aeab218f8da0,3707391b-7d9c-4716-af47-eed641fa9eb5,78bc6c75-847c-4823-970d-b779e0e286f0,1a858161-9ad4-4c93-babb-40314814ac8a,add35f69-d558-4065-a0d9-d27ebccc9d0d,71418899-5d92-412f-a241-52545e8c1088,89dc732b-1e60-4f8a-a8cc-27a46a14e9da,a32a9e54-f711-40ec-bb62-c8670751741d,6741f155-a82e-41ae-ac63-e4ce3699dc66,3488708b-6106-48c8-a4be-d202e116d8fc,da463c20-0301-4deb-9fd2-6b6fed7e87c0,cce7e5f9-f957-4b4a-896d-553dec1943ba",
-                      "type": "text"
+                      "value": "4e87fadb-f678-4934-0003-000000000001,4e87fadb-f678-4934-0003-000000000002,4e87fadb-f678-4934-0003-000000000003,4e87fadb-f678-4934-0003-000000000004,4e87fadb-f678-4934-0003-000000000005,4e87fadb-f678-4934-0003-000000000006,4e87fadb-f678-4934-0003-000000000007,4e87fadb-f678-4934-0003-000000000008,4e87fadb-f678-4934-0003-000000000009,4e87fadb-f678-4934-0003-000000000010,4e87fadb-f678-4934-0003-000000000011,4e87fadb-f678-4934-0003-000000000012,4e87fadb-f678-4934-0003-000000000013"
                     }
                   ]
                 }
@@ -787,6 +786,54 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "REG-017b Accept APP-006 with funded place",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-006: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('REG-006: Status is accepted', () => pm.expect(json.data.attributes.status).to.eql('accepted'));",
+                      "pm.test('REG-006: funded_place is true', () => pm.expect(json.data.attributes.funded_place).to.be.true);",
+                      "pm.collectionVariables.set('partId001', json.data.attributes.participant_id);",
+                      "console.log('PART-001 participant_id captured:', json.data.attributes.participant_id);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"funded_place\": true\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId006}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId006}}",
+                    "accept"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -915,19 +962,21 @@
               "response": []
             },
             {
-              "name": "REG-021 Reject APP-006 (expect error — different cohort / not owned)",
+              "name": "REG-021 Reject APP-013 (expect error —  not owned)",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test('REG-021: Non-200 error (cross-cohort boundary or access denied)', () => pm.expect(pm.response.code).to.be.oneOf([400, 404, 422]));",
+                      "pm.test('REG-021: Non-200 error (forbidden action)', () => pm.expect(pm.response.code).to.be.oneOf([400, 403]));",
                       "pm.test('REG-021: Response body contains error information', () => {",
                       "  const json = pm.response.json();",
                       "  pm.expect(json.errors || json.error).to.exist;",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
                   }
                 }
               ],
@@ -940,7 +989,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/applications/{{appId006}}/reject",
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId013}}/reject",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -948,7 +997,7 @@
                     "api",
                     "v1",
                     "applications",
-                    "{{appId006}}",
+                    "{{appId013}}",
                     "reject"
                   ]
                 }
@@ -1137,6 +1186,106 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "1.6 Change schedule",
+          "item": [
+            {
+              "name": "REG-026 change schedule (X-With-Server-Date)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('REG-026: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "const cohort = json.data.attributes.cohort;",
+                      "const schedule = json.data.attributes.schedule_identifier;",
+                      "pm.test('REG-026: cohort', () => pm.expect(cohort).to.eq('2027'));",
+                      "pm.test('REG-026: schedule', () => pm.expect(schedule).to.eq('tte-reception-spring'));",
+                      "console.log('APP-006 cohort:', cohort);",
+                      "console.log('APP-006 schedule:', schedule);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "console.log(\"baseurl: \", pm.environment.get('baseUrl'));",
+                      "pm.sendRequest({",
+                      "    url: pm.environment.get('baseUrl') + '/api/v1/schedules?filter[cohort]=2027',",
+                      "    method: 'GET',",
+                      "    header: {",
+                      "        'Content-Type': 'application/json',",
+                      "        'Authorization': 'Bearer ' + pm.environment.get('apiKey')",
+                      "    }",
+                      "}, function (err, response) {",
+                      "    if (err) {",
+                      "        console.error(err);",
+                      "        return;",
+                      "    }",
+                      "",
+                      "    const jsonResponse = response.json();",
+                      "",
+                      "    const schedule = jsonResponse.data.find(",
+                      "        item => item.attributes.schedule_identifier === 'tte-reception-spring'",
+                      "    );",
+                      "",
+                      "    if (!schedule) {",
+                      "        console.error('No matching schedule found');",
+                      "        return;",
+                      "    }",
+                      "",
+                      "    pm.collectionVariables.set('cohort2027Spring', schedule.id);",
+                      "    console.log('scheduleId set:', schedule.id);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-With-Server-Date",
+                    "value": "2026-04-10T10:42:00Z",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"schedule_id\": \"{{cohort2027Spring}}\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/applications/{{appId006}}/change-schedule",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "applications",
+                    "{{appId006}}",
+                    "change-schedule"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ],
       "description": "Objective: Validate that the lead provider can successfully list, accept, and reject applications via the API."
@@ -1159,9 +1308,15 @@
                       "pm.test('SETUP: Delivery partners array returned', () => pm.expect(json.data).to.be.an('array').with.lengthOf.at.least(1));",
                       "const first = json.data[0];",
                       "pm.collectionVariables.set('deliveryPartnerId', first.id);",
+                      "json.data.forEach((partner, index) => {",
+                      "    pm.collectionVariables.set(`deliveryPartner${index}`, partner.id)",
+                      "})",
+                      "pm.collectionVariables.set()",
                       "console.log('deliveryPartnerId captured:', first.id, '— name:', first.attributes.name);"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
                   }
                 }
               ],
@@ -2426,6 +2581,41 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "2.6 Change delivery partner",
+          "item": [
+            {
+              "name": "DCL-030 Change primary delivery partner",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"delivery_partner_id\": \"{{deliveryPartner4}}\",\n      \"secondary_delivery_partner_id\": \"{{deliveryPartner2}}\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/declarations/{{declId_APP002_started}}/change-delivery-partner",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "declarations",
+                    "{{declId_APP002_started}}",
+                    "change-delivery-partner"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ],
       "description": "Objective: Validate that the lead provider can submit, list, view, and void declarations via the API.\nPrerequisites: Section 1 completed."
@@ -2530,7 +2720,9 @@
                   "  json.data.forEach(s => pm.expect(s.attributes.cohort).to.eql('2026'));",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -3017,19 +3209,19 @@
               "response": []
             },
             {
-              "name": "PAR-016 Withdraw APP-007 with no started declaration (expect error)",
+              "name": "PAR-016 Withdraw accepted applications APP-007",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test('PAR-016: Non-200 error (no started declaration)', () => pm.expect(pm.response.code).to.be.oneOf([400, 422]));",
-                      "pm.test('PAR-016: Response body contains errors', () => {",
-                      "  const json = pm.response.json();",
-                      "  pm.expect(json.errors || json.error).to.exist;",
-                      "});"
+                      "pm.test('PAR-014: Status 200', () => pm.response.to.have.status(200));",
+                      "const json = pm.response.json();",
+                      "pm.test('PAR-014: Status is withdrawn', () => pm.expect(json.data.attributes.status).to.eql('withdrawn'));"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
                   }
                 }
               ],
@@ -3664,23 +3856,342 @@
       "description": "Verify that requests with an invalid API key return 401. Run this first to confirm auth is correctly configured."
     },
     {
-      "name": "outcomes",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/outcomes",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "outcomes"
-          ]
+      "name": "7. Outcomes",
+      "item": [
+        {
+          "name": "outcomes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outcomes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outcomes"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
+    },
+    {
+      "name": "Misc",
+      "item": [
+        {
+          "name": "List Applications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('List applications', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "json.data.forEach(app => {",
+                  "   pm.collectionVariables.set(\"targetApp\", app.id)",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "applications"
+              ],
+              "query": [
+                {
+                  "key": "filter[cohort]",
+                  "value": "2025",
+                  "disabled": true
+                },
+                {
+                  "key": "filter[status]",
+                  "value": "reassigned",
+                  "disabled": true
+                },
+                {
+                  "key": "filter[course]",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "filter[update_since]",
+                  "value": "2026-06-12T09:16:20Z",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "page[page]",
+                  "value": "12",
+                  "disabled": true
+                },
+                {
+                  "key": "page[per_page]",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "-created_at",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get single application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/{{targetApp}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "applications",
+                "{{targetApp}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Defer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"reason\": \"parental-leave\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/{{targetApp}}/defer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "applications",
+                "{{targetApp}}",
+                "defer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change schedule (X-With-Server-Date)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-With-Server-Date",
+                "value": "2026-04-10T10:42:00Z",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"type\": \"application\",\n    \"attributes\": {\n      \"schedule_id\": \"24807cd8-2a9e-4bc2-9afc-57c61ae4609c\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/{{targetApp}}/change-schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "applications",
+                "{{targetApp}}",
+                "change-schedule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "started declaration",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"type\": \"declaration\",\n    \"attributes\": {\n      \"declaration_date\": \"{{today}}\",\n      \"delivery_partner_id\": \"{{deliveryPartnerId}}\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/applications/{{targetApp}}/declarations/started",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "applications",
+                "{{targetApp}}",
+                "declarations",
+                "started"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get declaration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/declarations/{{targetDeclaration}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "declarations",
+                "{{targetDeclaration}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List declarations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/declarations?filter[application_id]=1ebb5a07-9a89-4ccc-80ab-a81852f171c6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "declarations"
+              ],
+              "query": [
+                {
+                  "key": "filter[application_id]",
+                  "value": "1ebb5a07-9a89-4ccc-80ab-a81852f171c6",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Void declaration",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/declarations/{{targetDeclaration}}/void",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "declarations",
+                "{{targetDeclaration}}",
+                "void"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "auth": {
@@ -3893,6 +4404,50 @@
     },
     {
       "key": "springScheduleId",
+      "value": ""
+    },
+    {
+      "key": "deliveryPartner{index}",
+      "value": ""
+    },
+    {
+      "key": "null",
+      "value": ""
+    },
+    {
+      "key": "deliveryPartner0",
+      "value": ""
+    },
+    {
+      "key": "deliveryPartner1",
+      "value": ""
+    },
+    {
+      "key": "deliveryPartner2",
+      "value": ""
+    },
+    {
+      "key": "deliveryPartner3",
+      "value": ""
+    },
+    {
+      "key": "deliveryPartner4",
+      "value": ""
+    },
+    {
+      "key": "targetApp",
+      "value": ""
+    },
+    {
+      "key": "cohort2027Spring",
+      "value": ""
+    },
+    {
+      "key": "appId013",
+      "value": ""
+    },
+    {
+      "key": "parId013",
       "value": ""
     }
   ]
