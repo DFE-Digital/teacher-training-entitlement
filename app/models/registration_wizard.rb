@@ -165,7 +165,7 @@ private
 
   def t(key)
     I18n.t(store[key], scope: "helpers.label.registration_wizard.#{key}_options")
-  rescue StandardError => e
+  rescue StandardError
     key.to_s.humanize
   end
 end
