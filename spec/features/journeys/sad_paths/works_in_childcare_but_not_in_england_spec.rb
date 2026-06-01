@@ -67,7 +67,7 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
-      expect(page).to have_text("Select your provider")
+      expect(page).to have_text("Select your training provider")
       page.choose(provider.name, visible: :all)
     end
 

@@ -30,7 +30,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
-      expect(page).to have_text("Select your provider")
+      expect(page).to have_text("Select your training provider")
       page.choose(LeadProvider.first.name, visible: :all)
     end
 
