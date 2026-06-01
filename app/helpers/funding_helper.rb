@@ -22,7 +22,7 @@ module FundingHelper
     {
       FundingEligibility::FUNDED_ELIGIBILITY_RESULT => "green",
       FundingEligibility::NOT_IN_ENGLAND => "red",
-      FundingEligibility::PREVIOUSLY_FUNDED => "blue",
+      FundingEligibility::PREVIOUSLY_FUNDED => "red",
       FundingEligibility::INELIGIBLE_SETTING => "red",
 
     }.fetch(status.to_s.to_sym, "grey")

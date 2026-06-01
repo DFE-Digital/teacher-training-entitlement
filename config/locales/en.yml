@@ -802,8 +802,8 @@ en:
     no_Ofsted: You're not eligible for schools funding as you or your employer
       is not registered on the Ofsted Early Years Register or with a registered Childminder
       Agency.
-    previously_funded: You have already been allocated scholarship funding
-      for %{course_name}.
+    previously_funded: You're not eligible for scholarship funding as you
+      do not work in one of the eligible settings, such as state-funded schools.
     not_eligible_ehco: You're not eligible for scholarship funding for %{course_name}.
     not_a_pp50: You're not eligible for scholarship funding for the NPQ as
       your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
@@ -834,6 +834,8 @@ en:
       submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
   course_start_details:
+    accepted: When we receive confirmation from your provider that you have completed the course
+      you will be able to download your certificate.
     unsuccessful: This means your chosen provider is not able to offer you a place. 
       If you want to continue with your current registration you can register with a different provider.
     eligible_for_funding: If your provider does not confirm you've started the course by %{date}, 
