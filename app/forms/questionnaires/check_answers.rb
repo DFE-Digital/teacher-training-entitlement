@@ -4,17 +4,17 @@ module Questionnaires
       :share_provider
     end
 
-    def next_step; end
+    def next_step
+      :registration_submitted
+    end
 
     def last_step?
-      true
+      false
     end
 
     def after_save
       wizard.store["funding_amount"] = nil
-
       wizard.store["submitted"] = true
-      wizard.session["clear_tra_login"] = true
 
       HandleSubmissionForStore.new(store: wizard.store).call
     end

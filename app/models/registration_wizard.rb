@@ -24,9 +24,10 @@ class RegistrationWizard
     funding_your_course
     share_provider
     check_answers
+    registration_submitted
   ].freeze
 
-  REMOVED_REGISTRATION_STEPS = %i[].freeze
+  VALID_BLANK_STEPS = %w[closed start course-start-date registration-submitted].freeze
 
   attr_reader :current_step, :params, :store, :request, :current_user
 
@@ -39,9 +40,8 @@ class RegistrationWizard
 
   class << self
     def validate_step!(step)
+      # raise "#{step.to_sym} #{VALID_REGISTRATION_STEPS.include?(step.to_sym)}"
       return step.to_sym if VALID_REGISTRATION_STEPS.include?(step.to_sym)
-
-      raise RemovedStep, "This step has been removed: #{step}" if REMOVED_REGISTRATION_STEPS.include?(step.to_sym)
 
       raise InvalidStep, "Could not find step: #{step}"
     end
@@ -165,5 +165,7 @@ private
 
   def t(key)
     I18n.t(store[key], scope: "helpers.label.registration_wizard.#{key}_options")
+  rescue StandardError => e
+    key.to_s.humanize
   end
 end

@@ -31,10 +31,10 @@ module Helpers
     end
 
     def expect_applicant_reached_end_of_journey(total_number_of_created_applications: 1)
-      expect_page_to_have(path: "/applications/#{latest_application.reload.ecf_id}", submit_form: false) do
-        expect(page).to have_content("Registration successfully submitted")
-        expect(page).to have_text("Registration successfully submitted")
-        expect(page).to have_text("Application ID: #{latest_application.ecf_id}")
+      expect_page_to_have(path: "/registration/registration-submitted") do
+        expect(page).to have_text("Registration submitted")
+        expect(page).to have_text("We will notify your training provider of your registration")
+        expect(page).to have_link("View your registration details", href: application_path(latest_application.ecf_id))
       end
 
       expect(User.count).to be(1)
