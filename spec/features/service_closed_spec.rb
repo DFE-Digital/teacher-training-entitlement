@@ -4,6 +4,7 @@ RSpec.feature "Service is closed", type: :feature do
   include Helpers::AdminLogin
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
+  include ApplicationHelper
 
   include_context "Stub Teacher Auth Responses"
 
@@ -29,7 +30,7 @@ RSpec.feature "Service is closed", type: :feature do
     page.click_button("Start now")
 
     expect(page).to have_text("Choose your course start date")
-    page.choose(Cohort.course_start_date, visible: :all)
+    page.choose(application_course_start_date, visible: :all)
 
     # Registration is now closed
     close_registration!

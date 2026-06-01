@@ -789,7 +789,7 @@ en:
       tte-early-years: Early Years
     outcome:
       passed_html: <a href="https://access-your-teaching-qualifications.education.gov.uk/qualifications/start"
-        class="govuk-link">Download your certificate</a>.
+        class="govuk-link">Download your certificate</a>
   funding_details:
     targeted_funding_eligibility: Your workplace will receive a <a href="https://www.gov.uk/government/publications/targeted-support-funding-for-national-professional-qualifications"
       class="govuk-link">targeted support funding</a> payment to support you to do
@@ -821,12 +821,6 @@ en:
     expired_status_when_service_is_closed: Your registration has expired but
       you can register again later for courses starting in October 2024. You'll receive
       an email when registrations open. This is usually around June.
-  course_start_details:
-    eligible_for_funding: If your provider does not confirm you've started the course
-      by %{date}, your registration will expire. You can register again later
-      for a future start date.
-    not_eligible_for_funding: If your provider does not confirm you've started the
-      course by %{date}, your registration will expire. You can register again later.
   provider_details:
     expired_status_when_service_is_closed: "Your registration has expired but you can register again later for courses starting in October 2024. You'll receive an email when registrations open. This is usually around June."
   deferral_details:
@@ -840,11 +834,12 @@ en:
       submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
   course_start_details:
-    eligible_for_funding: If your provider does not confirm you've started the course
-      by %{date}, your registration will expire. You can register again 
-      for a future start date.
-    not_eligible_for_funding: If your provider does not confirm you've started the
-      course by %{date}, your registration will expire. You can register again later.
+    unsuccessful: This means your chosen provider is not able to offer you a place. 
+      If you want to continue with your current registration you can register with a different provider.
+    eligible_for_funding: If your provider does not confirm you've started the course by %{date}, 
+      your registration will expire. You can register again for a future start date.
+    not_eligible_for_funding: If your provider does not confirm you’ve started the
+      course by %{date}, your registration will expire. You can register again for a future start date.
   statements:
     payment_authorisations:
       tag:

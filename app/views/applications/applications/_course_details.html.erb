@@ -24,10 +24,11 @@
         if application.pending_status?
           concat govuk_tag(text: "Apply with provider", colour: application_status_colour(application.status))
           concat render("provider_pending_status")
-        elsif application.accepted_status?
+        elsif application.accepted_status? || application.completed_status?
           concat govuk_tag(text: "Successful", colour: application_status_colour(application.status))
         elsif application.rejected_status?
           concat govuk_tag(text: "Unsuccessful", colour: application_status_colour(application.status))
+          concat tag.p(I18n.t("course_start_details.unsuccessful"), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
         elsif application.deferred_status?
           concat application_status_badge(application.status)
           concat render("deferral_details", application:)
@@ -46,12 +47,9 @@
         row.with_value do
           concat application_course_start_date.titleize
 
-          if application.pending_status? || application.accepted_status?
-            if application.eligible_for_funding
-              concat tag.p(I18n.t("course_start_details.eligible_for_funding", date: application_course_start_date), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
-            else
-              concat tag.p(I18n.t("course_start_details.not_eligible_for_funding", date: application_course_start_date), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
-            end
+          if application.pending_status? || application.accepted_status? || application.rejected_status?
+            text = application.eligible_for_funding ? "eligible_for_funding" : "not_eligible_for_funding"
+            concat tag.p(I18n.t("course_start_details.#{text}", date: application_started_confirmed_by_date), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
           end
         end
       end
