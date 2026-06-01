@@ -17,7 +17,7 @@
     <li>find out when NPD registration opens</li>
   </ul>
 
-  <%= form_with model: @form, url: email_updates_path do |f| %>
+  <%= form_for :form, url: email_updates_path do |f| %>
     <%= f.govuk_submit('Sign up for updates') %>
   <% end %>
 <% end %>

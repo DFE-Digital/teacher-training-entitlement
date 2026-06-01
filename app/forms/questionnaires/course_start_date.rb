@@ -7,7 +7,7 @@ module Questionnaires
       end
 
       def question_text
-        "Do you want to start a course in #{application_course_start_date}?"
+        "When do you want to start the course?"
       end
     end
 
@@ -35,8 +35,13 @@ module Questionnaires
 
     def options
       [
-        build_option_struct(value: "yes", link_errors: true, hint: I18n.t("helpers.hint.registration_wizard.course_start_date_hint")),
-        build_option_struct(value: "no"),
+        build_option_struct(
+          value: "yes",
+          label: application_course_start_date,
+          link_errors: true,
+          hint: "You can also select this option if you've already started",
+        ),
+        build_option_struct(value: "later", label: "I want to start at a later date"),
       ]
     end
 
@@ -48,7 +53,7 @@ module Questionnaires
       if course_start_date == "yes"
         wizard.store["course_start"] = "In #{application_course_start_date}"
         wizard.current_user.update!(notify_user_for_future_reg: false)
-        :choose_your_course
+        :choose_your_provider
       else
         wizard.current_user.update!(notify_user_for_future_reg: true)
         :cannot_register_yet

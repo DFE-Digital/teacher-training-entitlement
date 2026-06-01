@@ -26,13 +26,21 @@ module Questionnaires
 
     attr_accessor :work_setting
 
-    validates :work_setting, presence: true, inclusion: { in: ALL_SETTINGS }
+    validates :work_setting, presence: true, inclusion: { in: Institution::ALL_SETTINGS }
 
     def self.permitted_params
       %i[work_setting]
     end
 
     def after_save
+      if other?
+        wizard.store.delete("funding")
+        wizard.store.delete("institution_id")
+        return
+      end
+
+      return if state_funded_instition? || private_institution?
+
       # we are inferring `works_in_school` and `works_in_childcare` to maintain
       # consistency with older records
 
@@ -68,11 +76,7 @@ module Questionnaires
     end
 
     def next_step
-      return :ineligible_for_funding unless wizard.query_store.inside_catchment?
-      return :choose_school if works_in_school?
-      return :kind_of_nursery if works_in_childcare?
-
-      :ineligible_for_funding
+      state_funded_instition? ? :choose_school : :ineligible_for_funding
     end
 
     def previous_step
@@ -85,7 +89,7 @@ module Questionnaires
           name: :work_setting,
           options:,
           style_options: {
-            hint: { text: I18n.t("helpers.hint.registration_wizard.work_setting") },
+            hint: { text: I18n.t("helpers.hint.registration_wizard.work_setting").html_safe },
             width: "three-quarters",
           },
         ),
@@ -94,18 +98,13 @@ module Questionnaires
 
     def options
       [
-        build_option_struct(value: "early_years_or_childcare", link_errors: true),
-        build_option_struct(value: "a_school"),
-        build_option_struct(value: "a_16_to_19_educational_setting"),
-        build_option_struct(value: "other", divider: true),
+        build_option_struct(value: Institution::STATE_FUNDED_INSTITUTION, link_errors: true),
+        build_option_struct(value: Institution::PRIVATE_INSTITUTION),
+        build_option_struct(value: Institution::OTHER, divider: true),
       ]
     end
 
   private
-
-    def build_option_struct(**kwargs)
-      super(**kwargs.deep_merge(label: { size: "s" }))
-    end
 
     def works_in_school?
       SCHOOL_SETTINGS.include?(work_setting)
@@ -121,6 +120,18 @@ module Questionnaires
 
     def works_in_other?
       OTHER_SETTINGS.include?(work_setting)
+    end
+
+    def state_funded_instition?
+      work_setting == Institution::STATE_FUNDED_INSTITUTION
+    end
+
+    def private_institution?
+      work_setting == Institution::PRIVATE_INSTITUTION
+    end
+
+    def other?
+      work_setting == Institution::OTHER
     end
   end
 end

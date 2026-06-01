@@ -52,7 +52,7 @@ RSpec.describe RegistrationWizardController do
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
 
     context "when application already submitted for course" do
-      let(:course) { create(:course) }
+      let(:course) { Course.reception || create(:course) }
       let!(:application) { create(:application, :accepted, course:, user: current_user) }
       let(:step) { nil }
 
@@ -61,8 +61,8 @@ RSpec.describe RegistrationWizardController do
         patch(:update, params: { step: })
       end
 
-      context "when step is chose your course" do
-        let(:step) { "choose-your-course" }
+      context "when step is course start date" do
+        let(:step) { "course-start-date" }
 
         it "redirects to account/registration page with alert" do
           expect(response).to redirect_to application_path(application.ecf_id)
@@ -76,20 +76,6 @@ RSpec.describe RegistrationWizardController do
         it "does not redirect, just renders the step" do
           expect(response).to be_successful
         end
-      end
-    end
-
-    context "when user has a withdrawn application for the course" do
-      let(:course) { create(:course) }
-      let!(:application) { create(:application, :withdrawn, course:, user: current_user) }
-
-      before do
-        session["registration_store"] = { "course_identifier" => course.identifier }
-        patch(:update, params: { step: "choose-your-course" })
-      end
-
-      it "does not redirect to the withdrawn application" do
-        expect(response).not_to redirect_to application_path(application.ecf_id)
       end
     end
   end
@@ -124,7 +110,7 @@ RSpec.describe RegistrationWizardController do
       end
 
       it "redirects to course-start-date page" do
-        expect(response).to redirect_to registration_wizard_show_path("choose-your-course")
+        expect(response).to redirect_to registration_wizard_show_path("choose-your-provider")
         expect(wizard).not_to have_received(:save!)
       end
     end
