@@ -923,8 +923,8 @@ en:
         course_start_date: Do you want to start a course before April 2024?
         itt_provider: Enter the name of the ITT provider you are working with
         trn_knowledge: Do you have a TRN?
-        lead_provider_id: Select your provider
-        chosen_provider: Have you chosen an NPQ and provider?
+        lead_provider_id: Select your training provider
+        chosen_provider: Have you chosen a training provider?
         has_ofsted_urn: Do you or your employer have an Ofsted unique reference number
           (URN)?
         qualified_teacher_check: Check your details
