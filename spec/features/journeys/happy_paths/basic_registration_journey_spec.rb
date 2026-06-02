@@ -91,7 +91,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     else
       navigate_to_page(path: "/applications", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Early Years")
+        expect(page).to have_text("Excellence in Reception Teaching")
       end
     end
 

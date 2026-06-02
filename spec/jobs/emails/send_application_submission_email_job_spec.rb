@@ -17,7 +17,7 @@ RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
         to: application.user.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
-        course_name: "the Early Years TTE",
+        course_name: "the Excellence in Reception Teaching",
         ecf_id: application.ecf_id,
       )
 
