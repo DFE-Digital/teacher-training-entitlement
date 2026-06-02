@@ -788,8 +788,7 @@ en:
     name:
       tte-early-years: Early Years
     outcome:
-      passed_html: <a href="https://access-your-teaching-qualifications.education.gov.uk/qualifications/start"
-        class="govuk-link">Download your certificate</a>.
+      passed_html: <a href="/certificates" class="govuk-link">Download your certificate</a>
   funding_details:
     targeted_funding_eligibility: Your workplace will receive a <a href="https://www.gov.uk/government/publications/targeted-support-funding-for-national-professional-qualifications"
       class="govuk-link">targeted support funding</a> payment to support you to do
@@ -802,8 +801,8 @@ en:
     no_Ofsted: You're not eligible for schools funding as you or your employer
       is not registered on the Ofsted Early Years Register or with a registered Childminder
       Agency.
-    previously_funded: You have already been allocated scholarship funding
-      for %{course_name}.
+    previously_funded: You're not eligible for scholarship funding as you
+      do not work in one of the eligible settings, such as state-funded schools.
     not_eligible_ehco: You're not eligible for scholarship funding for %{course_name}.
     not_a_pp50: You're not eligible for scholarship funding for the NPQ as
       your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
@@ -821,12 +820,6 @@ en:
     expired_status_when_service_is_closed: Your registration has expired but
       you can register again later for courses starting in October 2024. You'll receive
       an email when registrations open. This is usually around June.
-  course_start_details:
-    eligible_for_funding: If your provider does not confirm you've started the course
-      by %{date}, your registration will expire. You can register again later
-      for a future start date.
-    not_eligible_for_funding: If your provider does not confirm you've started the
-      course by %{date}, your registration will expire. You can register again later.
   provider_details:
     expired_status_when_service_is_closed: "Your registration has expired but you can register again later for courses starting in October 2024. You'll receive an email when registrations open. This is usually around June."
   deferral_details:
@@ -836,15 +829,17 @@ en:
       funded_place: After you have been withdrawn, you will not be eligible for further funding.
   withdrawal_details:
       submit_new_registration_html: "If you want to take this course again, you need to %{link}."
-      previously_started_text: As you have previously started the course, you will not be eligible for scholarship funding.
       submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
   course_start_details:
-    eligible_for_funding: If your provider does not confirm you've started the course
-      by %{date}, your registration will expire. You can register again 
-      for a future start date.
-    not_eligible_for_funding: If your provider does not confirm you've started the
-      course by %{date}, your registration will expire. You can register again later.
+    accepted: When we receive confirmation from your provider that you have completed the course
+      you will be able to download your certificate.
+    unsuccessful: This means your chosen provider is not able to offer you a place. 
+      If you want to continue with your current registration you can register with a different provider.
+    eligible_for_funding: If your provider does not confirm you've started the course by %{date}, 
+      your registration will expire. You can register again for a future start date.
+    not_eligible_for_funding: If your provider does not confirm you’ve started the
+      course by %{date}, your registration will expire. You can register again for a future start date.
   statements:
     payment_authorisations:
       tag:
@@ -984,6 +979,9 @@ en:
           1: Yes, I'm ready to authorise this for payment
       registration_wizard:
         work_setting_options:
+          private_institution: Private nursery, pre-school or school
+          state_funded_institution: State-funded nursery, pre-school, school or academy trust
+          other: Other
           early_years_or_childcare: Early years or childcare
           a_school: A school
           an_academy_trust: An academy trust

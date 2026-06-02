@@ -1,94 +1,71 @@
-<div class="govuk-summary-card">
-  <div class="govuk-summary-card__title-wrapper">
-    <h2 class="govuk-summary-card__title">Course details</h2>
-  </div>
-  <div class="govuk-summary-card__content">
-    <dl class="govuk-summary-list">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Course
-        </dt>
-        <dd class="govuk-summary-list__value">
-          <%= application.course.title_embedded_course_name %>
-        </dd>
-      </div>
+<%=
+  govuk_summary_list(card: { title: "Course details" }) do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Course")
+      row.with_value(text: application.course.title_embedded_course_name)
+    end
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Provider
-        </dt>
-        <dd class="govuk-summary-list__value">
-          <%= application.lead_provider.name %>
-        </dd>
-        <% if application.can_change_provider? %>
-          <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="<%= application_change_provider_start_index_path(application.ecf_id) %>">Register with a different provider</a>
-          </dd>
-        <% end %>
-        <% if application.accepted_status? %>
-          <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="<%= application_change_provider_contact_us_path(application.ecf_id) %>">Register with a different provider</a>
-          </dd>
-        <% end %>
+    sl.with_row do |row|
+      row.with_key(text: "Provider")
+      row.with_value(text: application.lead_provider.name)
 
-      </div>
+      if application.can_change_provider?
+        row.with_action(text: "Register with a different provider", href: application_change_provider_start_index_path(application.ecf_id))
+      end
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Provider application
-        </dt>
-        <dd class="govuk-summary-list__value">
-          <% if application.pending_status? %>
-            <%= govuk_tag(text: "Apply with provider", colour: application_status_colour(application.status)) %>
-            <%= render 'provider_pending_status' %>
-          <% elsif application.accepted_status? %>
-            <%= govuk_tag(text: "Successful", colour: application_status_colour(application.status)) %>
-          <% elsif application.rejected_status? %>
-            <%= govuk_tag(text: "Unsuccessful", colour: application_status_colour(application.status)) %>
-          <% elsif application.deferred_status? %>
-            <%= application_status_badge(application.status) %>
-            <%= render "deferral_details", application: application %>
-          <% elsif application.withdrawn_status? %>
-            <%= application_status_badge(application.status) %>
-            <%= render "withdrawal_details", application: application %>
-          <% else %>
-            <%= application_status_badge(application.status) %>
-          <% end %>
-        </dd>
-      </div>
+      if application.accepted_status?
+        row.with_action(text: "Register with a different provider", href: application_change_provider_contact_us_path(application.ecf_id))
+      end
+    end
 
-      <% if application.pending_status? %>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">
-            Course start
-          </dt>
-          <dd class="govuk-summary-list__value">
-            <%= application_course_start_date.titleize %>
-            <% if application.eligible_for_funding %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= I18n.t("course_start_details.eligible_for_funding", date: application_course_start_date) %></p>
-            <% else %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= I18n.t("course_start_details.not_eligible_for_funding", date: application_course_start_date) %></p>
-            <% end %>
-          </dd>
-        </div>
-      <% end %>
+    sl.with_row do |row|
+      row.with_key(text: "Provider application")
+      row.with_value do
+        if application.pending_status?
+          concat govuk_tag(text: "Apply with provider", colour: application_status_colour(application.status))
+          concat render("provider_pending_status")
+        elsif application.accepted_status?
+          concat govuk_tag(text: "Successful", colour: application_status_colour(application.status))
+          concat tag.p(I18n.t("course_start_details.accepted"), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+        elsif application.completed_status?
+          concat govuk_tag(text: "Successful", colour: application_status_colour(application.status))
+        elsif application.rejected_status?
+          concat govuk_tag(text: "Unsuccessful", colour: application_status_colour(application.status))
+          concat tag.p(I18n.t("course_start_details.unsuccessful"), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+        elsif application.deferred_status?
+          concat application_status_badge(application.status)
+          concat render("deferral_details", application:)
+        elsif application.withdrawn_status?
+          concat application_status_badge(application.status)
+          concat render("withdrawal_details", application:)
+        else
+          concat application_status_badge(application.status)
+        end
+      end
+    end
 
-      <% if application.latest_participant_outcome_state.present? && application.accepted_status? %>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">
-            Course outcome
-          </dt>
-          <dd class="govuk-summary-list__value">
-            <% if application.latest_participant_outcome_state.capitalize == "Passed" %>
-              <%= govuk_tag(text: "Passed", colour: "green") %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= t("course.outcome.passed_html")  %></p>
-            <% elsif application.latest_participant_outcome_state.capitalize == "Failed" %>
-              <%= govuk_tag(text: "Not passed", colour: "red") %>
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= t("course.outcome.failed")  %></p>
-            <% end %>
-          </dd>
-        </div>
-      <% end %>
-    </dl>
-  </div>
-</div>
+    unless application.completed_status?
+      sl.with_row do |row|
+        row.with_key(text: "Course start")
+        row.with_value do
+          concat application_course_start_date.titleize
+
+          if application.pending_status? || application.accepted_status? || application.rejected_status?
+            text = application.eligible_for_funding ? "eligible_for_funding" : "not_eligible_for_funding"
+            concat tag.p(I18n.t("course_start_details.#{text}", date: application_started_confirmed_by_date), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+          end
+        end
+      end
+    end
+
+    if application.completed_status?
+      sl.with_row do |row|
+        row.with_key(text: "Course outcome")
+        row.with_value do
+          concat govuk_tag(text: "Completed", colour: "green")
+          concat tag.p(t("course.outcome.passed_html"), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+        end
+      end
+    end
+  end
+%>

@@ -133,7 +133,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     context "with pending" do
       let(:status) { "pending" }
 
-      it { is_expected.to have_css ".govuk-tag--blue", text: "Pending" }
+      it { is_expected.to have_css ".govuk-tag--yellow", text: "Pending" }
     end
 
     context "with accepted" do
@@ -151,7 +151,13 @@ RSpec.describe ApplicationHelper, type: :helper do
     context "with deferred" do
       let(:status) { "deferred" }
 
-      it { is_expected.to have_css ".govuk-tag--yellow", text: "Deferred" }
+      it { is_expected.to have_css ".govuk-tag--red", text: "Deferred" }
+    end
+
+    context "with completed" do
+      let(:status) { "completed" }
+
+      it { is_expected.to have_css ".govuk-tag--green", text: "Completed" }
     end
 
     context "with something else" do

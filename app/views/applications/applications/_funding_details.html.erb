@@ -1,40 +1,29 @@
-<% def scholarship_funding_row(application) %>
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Scholarship funding
-    </dt>
-    <dd class="govuk-summary-list__value">
-      <% if application.eligible_for_funding %>
-        <%= render "eligible_for_funding_details", application: @application %>
-      <% elsif scholarship_eligibility_in_review?(application) %>
-        <%= render "in_review_funding_details", application: @application %>
-      <% else %>
-        <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= scholarship_funding_eligibility(application) %></p>
-        <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0"><%= I18n.t("funding_details.ineligible_message") %></p>
-      <% end %>
-    </dd>
-  </div>
-<% end %>
+<%=
+  govuk_summary_list(card: { title: "Funding details" }) do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Scholarship funding")
+      row.with_value do
+        concat funding_status_badge(application)
 
-<div class="govuk-summary-card">
-  <div class="govuk-summary-card__title-wrapper">
-    <h2 class="govuk-summary-card__title">Funding details</h2>
-  </div>
-  <div class="govuk-summary-card__content">
-    <dl class="govuk-summary-list">
-      <% scholarship_funding_row(application) %>
+        if application.eligible_for_funding
+          concat render("eligible_for_funding_details", application: @application)
+        elsif scholarship_eligibility_in_review?(application)
+          concat render("in_review_funding_details", application: @application)
+        else
+          concat tag.p(scholarship_funding_eligibility(application), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+          concat tag.p(I18n.t("funding_details.ineligible_message"), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+        end
+      end
+    end
 
-      <% unless application.eligible_for_funding? %>
-        <% if application.raw_application_data["funding"].present? %>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Course funding</dt>
-            <dd class="govuk-summary-list__value">
-              <%= I18n.t(application.raw_application_data["funding"], scope: "helpers.label.registration_wizard.funding_options") %>.
-              <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-0">You may want to check the cost of the NPQ course with your provider.</p>
-            </dd>
-          </div>
-        <% end %>
-      <% end %>
-    </dl>
-  </div>
-</div>
+    if !application.eligible_for_funding? && application.raw_application_data["funding"].present?
+      sl.with_row do |row|
+        row.with_key(text: "Course funding")
+        row.with_value do
+          concat "#{I18n.t(application.raw_application_data["funding"], scope: "helpers.label.registration_wizard.funding_options")}."
+          concat tag.p("You may want to check the cost of the course with your provider.", class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+        end
+      end
+    end
+  end
+%>

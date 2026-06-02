@@ -1,4 +1,11 @@
 module FundingHelper
+  FUNDING_STATUS_COLOUR_MAP = {
+    FundingEligibility::FUNDED_ELIGIBILITY_RESULT => "green",
+    FundingEligibility::NOT_IN_ENGLAND => "red",
+    FundingEligibility::PREVIOUSLY_FUNDED => "red",
+    FundingEligibility::INELIGIBLE_SETTING => "red",
+  }.freeze
+
   def scholarship_funding_eligibility(application)
     funding_eligibility = funding_eligibility_calculator(application)
 
@@ -18,6 +25,18 @@ module FundingHelper
     I18n.t("funding_details.targeted_funding_eligibility").html_safe
   end
 
+  def funding_status_colour(status)
+    FUNDING_STATUS_COLOUR_MAP.fetch(status.to_s.to_sym, "grey")
+  end
+
+  def funding_status_badge(application)
+    text = "Not eligible"
+    if application.funding_eligiblity_status_code.to_s == FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s
+      text = "Eligible"
+    end
+    govuk_tag(text:, colour: funding_status_colour(application.funding_eligiblity_status_code))
+  end
+
 private
 
   def funding_eligibility_calculator(application)
@@ -25,11 +44,7 @@ private
       course: application.course,
       institution: application.institution,
       inside_catchment: application.teacher_catchment == "england",
-      query_store: query_store(application),
+      query_store: RegistrationQueryStore.new(store: application.raw_application_data),
     )
-  end
-
-  def query_store(application)
-    RegistrationQueryStore.new(store: application.raw_application_data)
   end
 end

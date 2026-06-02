@@ -31,7 +31,15 @@ module ApplicationHelper
   end
 
   def application_course_start_date
-    Cohort.course_start_date
+    "October 2026"
+  end
+
+  def application_next_course_start_date
+    "Spring 2027"
+  end
+
+  def application_started_confirmed_by_date
+    "Spring 2027"
   end
 
   def show_otp_code_in_ui(current_env, admin)
@@ -48,10 +56,11 @@ module ApplicationHelper
 
   def application_status_colour(status)
     {
-      pending: "blue",
+      pending: "yellow",
       accepted: "green",
       started: "green",
-      deferred: "yellow",
+      completed: "green",
+      deferred: "red",
       rejected: "red",
       withdrawn: "red",
       reassigned: "red",

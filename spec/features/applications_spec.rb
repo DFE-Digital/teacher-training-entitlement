@@ -46,7 +46,6 @@ RSpec.feature "Applications", type: :feature do
       visit application_path(application.ecf_id)
 
       expect(page).to have_text("Withdrawn")
-      expect(page).to have_text("Date withdrawn:")
       expect(page).to have_link("submit a new registration", href: registration_wizard_show_path(step: "course-start-date"))
     end
 
