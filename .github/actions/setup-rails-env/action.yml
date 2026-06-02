@@ -14,4 +14,4 @@ runs:
         echo "TEACHER_AUTH_CLIENT_SECRET=test-secret" >> $GITHUB_ENV
         echo "ONE_LOGIN_HOME_URL=https://home.integration.account.gov.uk" >> $GITHUB_ENV
         echo "TRS_API_URL=https://trs-api.example.com" >> $GITHUB_ENV
-        echo "HOSTING_DOMAIN=http://localhost:3000" >> $GITHUB_ENV
+        echo "HOSTING_DOMAIN=http://test.host" >> $GITHUB_ENV
