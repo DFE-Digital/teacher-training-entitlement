@@ -40,7 +40,7 @@ class User < ApplicationRecord
   before_save :change_unsubscribe_key_on_update_email_status
 
   scope :admins, -> { where(admin: true) }
-  scope :needing_token_refresh, lambda {
+  scope :requiring_token_refresh, lambda {
     where(trn: nil)
       .where.not(refresh_token: nil)
       .where("refresh_token_updated_at < ?", 1.day.ago)

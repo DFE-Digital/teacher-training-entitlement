@@ -478,8 +478,8 @@ RSpec.describe User do
     end
   end
 
-  describe ".needing_token_refresh" do
-    subject { described_class.needing_token_refresh }
+  describe ".requiring_token_refresh" do
+    subject { described_class.requiring_token_refresh }
 
     let!(:user_needing_refresh) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 2.days.ago) }
 
