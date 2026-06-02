@@ -27,9 +27,6 @@ env:
   code-coverage-artifact-name: code_coverage_${{github.run_number}}
   unit-tests-artifact-name: unit_tests_${{github.run_number}}
   rubocop-artifact-name: rubocop_results_${{github.run_number}}
-  ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: abc123
-  ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: abc123
-  ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: abc123
 
 jobs:
   ruby_linting:
@@ -41,6 +38,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         name: Checkout Code
+
+      - name: Setup Rails environment
+        uses: ./.github/actions/setup-rails-env
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -60,6 +60,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         name: Checkout Code
+
+      - name: Setup Rails environment
+        uses: ./.github/actions/setup-rails-env
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -105,6 +108,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Setup Rails environment
+        uses: ./.github/actions/setup-rails-env
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
