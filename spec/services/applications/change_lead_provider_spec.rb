@@ -4,16 +4,23 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
   let(:old_provider) { create(:lead_provider) }
   let(:new_provider) { create(:lead_provider) }
   let(:application) { create(:application, :pending, lead_provider: old_provider) }
+  let(:new_assignment_date) { Time.zone.now }
+  let(:old_application_lead_provider) { build(:application_lead_provider, :unassigned, application:, lead_provider: old_provider) }
 
   subject(:service) { described_class.new(application:, new_provider:) }
 
   describe ".call" do
     before do
-      subject.call
+      travel_to(new_assignment_date) do
+        subject.call
+      end
     end
 
     it do
+      application.assignment = old_application_lead_provider
       expect(application.reload.lead_provider).to eq(new_provider)
+      expect(application.assigned_at.to_fs).to eq(new_assignment_date.to_fs)
+      expect(application.unassigned_at.to_fs).to eq(new_assignment_date.to_fs)
       expect(application.status).to eq(Application::PENDING)
       expect(application.application_lead_providers.previous.last.lead_provider).to eq(old_provider)
 

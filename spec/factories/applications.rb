@@ -31,8 +31,7 @@ FactoryBot.define do
 
     after(:create) do |application, evaluator|
       lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
-      create(:application_lead_provider,
-             application:, lead_provider:, current: true)
+      create(:application_lead_provider, :current, application:, lead_provider:)
     end
 
     trait :with_state_change do
@@ -155,7 +154,11 @@ FactoryBot.define do
       end
       after(:create) do |application, eval|
         lead_provider = eval.old_lead_provider || create(:lead_provider)
-        application.application_lead_providers.create!(application:, lead_provider:)
+        application.application_lead_providers.create!(
+          application:,
+          lead_provider:,
+          assigned_at: application.created_at,
+        )
       end
     end
 

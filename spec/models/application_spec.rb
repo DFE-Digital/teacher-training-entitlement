@@ -738,22 +738,36 @@ RSpec.describe Application do
   describe "#lead_provider=" do
     let(:lead_provider) { create(:lead_provider) }
     let(:another_lead_provider) { create(:lead_provider) }
-    let(:application) { create(:application, lead_provider:) }
+    let(:assignment_date) { 1.day.ago }
+    let(:application) do
+      travel_to(assignment_date) { create(:application, lead_provider:) }
+    end
 
     it "marks the current provider as previous and creates a new current provider link" do
       expect(application.application_lead_providers.count).to eq(1)
       expect(application.current_application_lead_provider.lead_provider).to eq(lead_provider)
       expect(application.current_application_lead_provider.current).to be(true)
+      expect(application.current_application_lead_provider.assigned_at.to_fs).to eq(assignment_date.to_fs)
+      expect(application.current_application_lead_provider.unassigned_at).to be_nil
 
       application.lead_provider = another_lead_provider
 
       application_lead_providers = application.application_lead_providers.reload
 
       expect(application_lead_providers.count).to eq(2)
-      expect(application_lead_providers.first.lead_provider).to eq(lead_provider)
-      expect(application_lead_providers.first.current).to be(false)
-      expect(application_lead_providers.last.lead_provider).to eq(another_lead_provider)
-      expect(application_lead_providers.last.current).to be(true)
+      previous = application_lead_providers.first
+      current = application_lead_providers.last
+
+      expect(previous.lead_provider).to eq(lead_provider)
+      expect(previous.current).to be(false)
+      expect(previous.assigned_at).to be_present
+      expect(previous.unassigned_at).to be_present
+
+      expect(current.lead_provider).to eq(another_lead_provider)
+      expect(current.current).to be(true)
+      expect(current.assigned_at).to be_present
+      expect(current.unassigned_at).to be_nil
+
       expect(application.reload.lead_provider).to eq(another_lead_provider)
     end
 
