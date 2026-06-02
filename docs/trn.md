@@ -10,7 +10,50 @@ The TRN acquisition process involves two main flows:
 
 ## Flow Diagram
 
-![TRN Acquisition Flow](assets/trn-acquisition-flow.png)
+```mermaid
+---
+layout: elk
+---
+
+flowchart TD
+    A(["User authenticates via Teacher Auth"]) --> B{"Has TRN?"}
+    B -- Yes --> F["Proceed with normal flow"]
+    B -- No --> C["Store refresh_token from request"]
+
+    subgraph DailyMaintenance [Daily Maintenance]
+        direction TB
+        D["Refresh token daily to keep it alive"]
+        G["Poll TRN activation if TRN not yet created"]
+    end
+
+    C --> D
+
+    E["Application accepted"] --> H["Request TRN via activation endpoint"]
+    H --> I{"TRN created?"}
+
+    %% Move the TRN Created 'Yes' path to the right
+    I -- Yes --> JR["Store TRN for user"]
+
+    I -- No --> G
+    G --> JR
+
+    %% Future webhook path outside of Daily Maintenance
+    W["(Future) Receive TRN via TRS webhook"]
+    I -- No --> W
+    W --> JR
+
+    classDef indigo stroke:#818cf8,fill:#eef2ff
+    classDef teal stroke:#2dd4bf,fill:#f0fdfa
+    classDef green stroke:#4ade80,fill:#f0fdf4
+    classDef orange stroke:#fb923c,fill:#fff7ed
+    classDef fuchsia stroke:#e879f9,fill:#fdf4ff
+
+    class A,F indigo
+    class B,C orange
+    class D,G teal
+    class E,H,I,JR green
+    class W fuchsia
+```
 
 ## Process Details
 
