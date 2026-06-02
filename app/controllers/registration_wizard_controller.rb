@@ -2,8 +2,8 @@ class RegistrationWizardController < PublicPagesController
   before_action :registration_closed
   before_action :set_wizard
   before_action :set_form
-  before_action :check_end_of_journey, only: %i[update]
   before_action :check_duplicate_applications, only: %i[update]
+  before_action :ensure_can_render_step, only: :show
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
@@ -14,9 +14,6 @@ class RegistrationWizardController < PublicPagesController
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
 
     @wizard.before_render
-
-    return redirect_to registration_wizard_show_path(@wizard.next_step_path) if @wizard.skip_step?
-    return redirect_to root_path unless @form.requirements_met?
 
     render @wizard.current_step
 
@@ -68,6 +65,14 @@ class RegistrationWizardController < PublicPagesController
 
 private
 
+  def ensure_can_render_step
+    return redirect_to root_path unless @form.requirements_met?
+    return redirect_to registration_wizard_show_path(@wizard.next_step_path) if @wizard.skip_step?
+
+    redirect_to root_path if store.except("current_user_id").blank? &&
+      !params[:step].in?(RegistrationWizard::VALID_BLANK_STEPS)
+  end
+
   def redirect_to_course_start_date
     redirect_to registration_wizard_show_path("course-start-date")
   end
@@ -109,17 +114,6 @@ private
     }
 
     redirect_to application_path(active_applications.last.ecf_id)
-  end
-
-  def check_end_of_journey
-    return unless @form.valid? && @form.last_step?
-
-    @wizard.save!
-    flash[:notice] = {
-      title: "Registration successfully submitted",
-      message: "Check the details of your registration and find out more about applying with your provider",
-    }
-    redirect_to application_path(current_user.applications.last.ecf_id)
   end
 
   def registration_closed
