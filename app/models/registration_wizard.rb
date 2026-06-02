@@ -40,7 +40,6 @@ class RegistrationWizard
 
   class << self
     def validate_step!(step)
-      # raise "#{step.to_sym} #{VALID_REGISTRATION_STEPS.include?(step.to_sym)}"
       return step.to_sym if VALID_REGISTRATION_STEPS.include?(step.to_sym)
 
       raise InvalidStep, "Could not find step: #{step}"
@@ -165,7 +164,5 @@ private
 
   def t(key)
     I18n.t(store[key], scope: "helpers.label.registration_wizard.#{key}_options")
-  rescue StandardError
-    key.to_s.humanize
   end
 end
