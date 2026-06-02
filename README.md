@@ -17,6 +17,7 @@
     1. [Eligibility Lists](docs/eligibility_lists.md)
 1. [DfE Analytics](docs/dfe_analytics.md)
 1. [Sending emails](docs/sending_emails.md)
+1. [TRN Acquisition Flow](docs/trn.md)
 1. [TTE Contracts](docs/TTE_contracts.md)
 1. [Funding](docs/funding.md)
 1. [Data Model](docs/data_model.md)
