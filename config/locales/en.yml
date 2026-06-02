@@ -788,8 +788,7 @@ en:
     name:
       tte-early-years: Early Years
     outcome:
-      passed_html: <a href="https://access-your-teaching-qualifications.education.gov.uk/qualifications/start"
-        class="govuk-link">Download your certificate</a>
+      passed_html: <a href="/certificates" class="govuk-link">Download your certificate</a>
   funding_details:
     targeted_funding_eligibility: Your workplace will receive a <a href="https://www.gov.uk/government/publications/targeted-support-funding-for-national-professional-qualifications"
       class="govuk-link">targeted support funding</a> payment to support you to do

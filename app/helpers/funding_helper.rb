@@ -1,4 +1,11 @@
 module FundingHelper
+  FUNDING_STATUS_COLOUR_MAP = {
+    FundingEligibility::FUNDED_ELIGIBILITY_RESULT => "green",
+    FundingEligibility::NOT_IN_ENGLAND => "red",
+    FundingEligibility::PREVIOUSLY_FUNDED => "red",
+    FundingEligibility::INELIGIBLE_SETTING => "red",
+  }.freeze
+
   def scholarship_funding_eligibility(application)
     funding_eligibility = funding_eligibility_calculator(application)
 
@@ -19,13 +26,7 @@ module FundingHelper
   end
 
   def funding_status_colour(status)
-    {
-      FundingEligibility::FUNDED_ELIGIBILITY_RESULT => "green",
-      FundingEligibility::NOT_IN_ENGLAND => "red",
-      FundingEligibility::PREVIOUSLY_FUNDED => "red",
-      FundingEligibility::INELIGIBLE_SETTING => "red",
-
-    }.fetch(status.to_s.to_sym, "grey")
+    FUNDING_STATUS_COLOUR_MAP.fetch(status.to_s.to_sym, "grey")
   end
 
   def funding_status_badge(application)
