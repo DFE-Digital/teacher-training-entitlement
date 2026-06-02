@@ -829,7 +829,6 @@ en:
       funded_place: After you have been withdrawn, you will not be eligible for further funding.
   withdrawal_details:
       submit_new_registration_html: "If you want to take this course again, you need to %{link}."
-      previously_started_text: As you have previously started the course, you will not be eligible for scholarship funding.
       submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
   course_start_details:
