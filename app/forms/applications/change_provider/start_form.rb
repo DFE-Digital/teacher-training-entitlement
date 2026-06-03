@@ -22,10 +22,7 @@ module Applications
       end
 
       def confirmation_blank_message
-        I18n.t(
-          "applications.change_provider.start.application_#{application.status}.form.blank",
-          default: I18n.t("applications.change_provider.start.form.blank"),
-        )
+        I18n.t("applications.change_provider.start.application_#{application.status}.form.blank")
       end
     end
   end

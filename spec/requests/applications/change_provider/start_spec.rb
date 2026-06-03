@@ -57,10 +57,7 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
 
       it "redirects to the application page" do
         post url, params: { form: { confirmation: "1" } }
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(response).to render_template(:index)
-        expect(assigns[:form]).not_to be_nil
-        expect(assigns[:form].errors[:cannot_change_provider]).to eq([I18n.t("applications.change_provider.start.form.cannot_change_provider")])
+        expect(response).to redirect_to(application_path(application.ecf_id))
       end
     end
   end

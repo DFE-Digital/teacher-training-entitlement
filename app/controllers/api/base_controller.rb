@@ -86,7 +86,7 @@ module API
 
       errors = [{
         title: "Participant ID has been changed",
-        detail: I18n.t("participant_id.changed", **participant_id_change.i18n_params),
+        detail: I18n.t("participant_id_changed", **participant_id_change.i18n_params),
         participant_id_changes: [API::ParticipantIdChangeSerializer.render_as_hash(participant_id_change)],
       }]
 
