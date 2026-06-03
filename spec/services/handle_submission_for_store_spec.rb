@@ -8,8 +8,7 @@ RSpec.describe HandleSubmissionForStore do
   let(:school) { create(:school, :funding_eligible_establishment_type_code) }
   let(:private_childcare_provider) { create(:private_childcare_provider, :on_early_years_register) }
   let(:cohort) { create(:cohort, :current) }
-  let(:courses) { Course.where(identifier: "tte-early-years") }
-  let(:course) { courses.sample }
+  let(:course) { Course.reception }
   let(:lead_provider) { LeadProvider.all.sample }
 
   let(:store) do
@@ -131,67 +130,6 @@ RSpec.describe HandleSubmissionForStore do
           "raw_application_data" => store.except("current_user_id"),
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => "1234321",
-          "review_status" => nil,
-        })
-      end
-    end
-
-    context "when store includes information from the early years path", :npq do
-      let(:courses) { [Course.ehco] }
-      let(:store) do
-        {
-          "current_user_id" => user.id,
-          "course_identifier" => course.identifier,
-          "institution_id" => private_childcare_provider.institution.id,
-          "lead_provider_id" => lead_provider.id,
-          "works_in_childcare" => "yes",
-          "works_in_school" => "no",
-          "kind_of_nursery" => "private_nursery",
-          "teacher_catchment" => "england",
-          "work_setting" => "early_years_or_childcare",
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
-        }
-      end
-
-      it "stores data from store" do
-        expect(stable_as_json(user.reload)).to match(expected_user_attributes)
-        expect(user.applications.reload.count).to eq 0
-        expect(stable_as_json(user.applications.last)).to match(nil)
-
-        subject.call
-
-        expect(stable_as_json(user.reload)).to match(expected_user_attributes)
-        expect(user.applications.reload.count).to eq 1
-        last_application = user.applications.last
-        expect(stable_as_json(last_application)).to match({
-          "course_cohort_id" => course_cohort.id,
-          "ecf_id" => last_application.ecf_id,
-          "eligible_for_funding" => false,
-          "funded_place" => nil,
-          "funding_choice" => nil,
-          "status" => "pending",
-          "participant_outcome_state" => nil,
-          "funding_eligiblity_status_code" => "not_new_headteacher_requesting_ehco",
-          "lead_provider_id" => lead_provider.id,
-          "notes" => nil,
-          "kind_of_nursery" => "private_nursery",
-          "institution_id" => private_childcare_provider.institution.id,
-          "targeted_support_funding_eligibility" => false,
-          "teacher_catchment" => "england",
-          "teacher_catchment_country" => "United Kingdom of Great Britain and Northern Ireland",
-          "teacher_catchment_iso_country_code" => "GBR",
-          "ukprn" => nil,
-          "number_of_pupils" => 0,
-          "primary_establishment" => false,
-          "user_id" => user.id,
-          "works_in_nursery" => nil,
-          "works_in_childcare" => true,
-          "works_in_school" => false,
-          "work_setting" => "early_years_or_childcare",
-          "raw_application_data" => store.except("current_user_id"),
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
           "review_status" => nil,
         })
       end

@@ -6,8 +6,8 @@ RSpec.describe ApplicationTallyComponent, type: :component do
   let(:cohort) { create(:cohort, :current) }
   let(:course_cohort1) { create :course_cohort, cohort:, course: course_1 }
   let(:course_cohort2) { create :course_cohort, cohort:, course: course_2 }
-  let(:course_1) { create :course, :tte_early_years }
-  let(:course_2) { create :course }
+  let(:course_1) { create :course, name: "Course 1" }
+  let(:course_2) { create :course, name: "Course 2" }
 
   before do
     create(:application, course_cohort: course_cohort1)
@@ -21,8 +21,8 @@ RSpec.describe ApplicationTallyComponent, type: :component do
 
   it "returns the correct rows" do
     expect(subject.rows).to eq([
-      [course_2.name, 1],
       [course_1.name, 2],
+      [course_2.name, 1],
     ])
   end
 

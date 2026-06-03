@@ -28,7 +28,7 @@ RSpec.describe Statements::Query do
       before do
         create(:statement_item, statement: statement1)
         create(:statement_item, statement: statement1)
-        create(:contract, course: create(:course, :tte_early_years), statement: statement1)
+        create(:contract, course: create(:course, :npd_eirt), statement: statement1)
         create(:contract, course: create(:course), statement: statement1)
       end
 

@@ -9,7 +9,7 @@ RSpec.describe Statements::SummaryCalculator, :revisit do
   let(:application) { create(:application, :accepted, :eligible_for_funding, course:, lead_provider:, cohort:) }
   let(:declaration_type) { "started" }
 
-  let!(:course) { create(:course, :tte_early_years) }
+  let!(:course) { create(:course, :npd_eirt) }
   let!(:contract) { create(:contract, course:, statement:) }
   let(:contract_template_monthly_service_fee) { nil }
 

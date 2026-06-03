@@ -15,7 +15,7 @@ module Helpers
     def declarations_file
       @declarations_file ||= begin
         cohort = Cohort.current
-        course = create(:course, :tte_early_years)
+        course = create(:course, :npd_eirt)
 
         lead_provider = create(:lead_provider)
         delivery_partner = create(:delivery_partner)

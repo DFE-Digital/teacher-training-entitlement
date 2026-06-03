@@ -6,7 +6,7 @@ RSpec.describe "particpant_outcome", :npq do
 
     let(:user) { create(:user) }
     let(:lead_provider) { create(:lead_provider) }
-    let(:course) { create(:course, :tte_early_years) }
+    let(:course) { create(:course, :npd_eirt) }
     let(:completion_date) { Date.new(2025, 8, 1).as_json }
     let(:application) { create(:application, :accepted, user:, course:, lead_provider:) }
     let(:declaration) { create(:declaration, :completed, user:, lead_provider:, course:, application:) }

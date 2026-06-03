@@ -13,7 +13,7 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
         GenericMailer.with(
           to: application.user.email,
           full_name: application.user.full_name,
-          course_name: application.course.title_embedded_course_name,
+          course_name: application.course.name,
           next_course_start_date: cohort.registration_starts_at.to_fs(:govuk),
           deferral_date: application.deferred_at.to_fs(:govuk_date_only),
           ecf_id: application.ecf_id,

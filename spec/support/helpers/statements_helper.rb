@@ -9,7 +9,7 @@ module Helpers
       # examples use Course.first and Course.last
       before do
         Course.destroy_all
-        create(:course, :tte_early_years)
+        create(:course, :npd_eirt)
       end
     end
   end

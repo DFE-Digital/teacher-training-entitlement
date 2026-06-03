@@ -10,7 +10,7 @@ RSpec.feature "Statement", :revisit, type: :feature do
 
   let!(:contracts) do
     [
-      create(:contract, course: create(:course, :tte_early_years), statement:),
+      create(:contract, course: create(:course, :npd_eirt), statement:),
     ]
   end
 

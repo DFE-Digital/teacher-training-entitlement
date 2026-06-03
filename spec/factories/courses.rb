@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :course do
-    sequence(:name) { |n| "TTE Course #{n}" }
+    sequence(:name) { |n| "NPD Course #{n}" }
     sequence(:identifier) { |n| "identifier-#{n}" }
     ecf_id { SecureRandom.uuid }
     course_group { "reception" }
@@ -9,14 +9,17 @@ FactoryBot.define do
       Course.find_by(identifier:) || new(**attributes)
     end
 
-    trait :tte_early_years do
-      sequence(:name) { |n| "TTE Early Years Course #{n}" }
+    trait :npd_eirt do
+      sequence(:name) { |n| "Excellence in Reception Teaching #{n}" }
+      # identifier { "npd-excellence-in-reception-teaching" }
       identifier { "tte-early-years" }
       course_group { "reception" }
-      short_code { "TTEEY" }
+      short_code { "NPDEIRT" }
     end
 
-    factory :"tte-early-years", traits: [:tte_early_years]
+    factory :"npd-excellence-in-reception-teaching", traits: [:npd_eirt]
+    factory :"npd-eirt", traits: [:npd_eirt]
+    factory :"tte-early-years", traits: [:npd_eirt]
 
     transient do
       lead_provider { nil }

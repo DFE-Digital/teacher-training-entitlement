@@ -221,8 +221,8 @@ RSpec.describe "update_application", :revisit do
     let(:cohort) { create(:cohort, :current) }
     let(:schedule) { Schedule.where(cohort:, course_group: course.course_group).last }
     let(:application) { create(:application, course:, cohort:, schedule:) }
-    let(:course) { create(:course, :tte_early_years) }
-    let(:new_course) { create(:course, :tte_early_years) }
+    let(:course) { create(:course, :npd_eirt) }
+    let(:new_course) { create(:course, :npd_eirt) }
 
     it "updates the course of the application" do
       run_task

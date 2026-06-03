@@ -79,7 +79,7 @@ RSpec.feature "User administration", type: :feature do
     end
 
     scenario "shows a summary of each user application" do
-      applications = %i[tte_early_years]
+      applications = %i[npd_eirt]
         .map { create(:application, user:, course: create(:course, _1)) }
         .sort_by { [_1.created_at, _1.id] }
 

@@ -4,7 +4,7 @@ require "swagger_helper"
 RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:course) { create(:course, :tte_early_years) }
+  let(:course) { create(:course, :npd_eirt) }
   let(:cohort) { create(:cohort, :current) }
   let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:user) { create(:user, :with_verified_trn) }

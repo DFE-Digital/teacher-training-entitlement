@@ -35,7 +35,7 @@ module Applications
         to: application.user.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
-        course_name: application.course.title_embedded_course_name,
+        course_name: application.course.name,
         cohort_date: application.cohort.name,
         sign_in_link: Rails.configuration.sign_in_link,
         ecf_id: application.ecf_id,

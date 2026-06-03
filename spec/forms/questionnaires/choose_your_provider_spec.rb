@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
   let!(:cohort) { create(:cohort, :current) }
   let!(:lead_provider) { create(:lead_provider) }
-  let!(:course) { create(:course, :tte_early_years, lead_provider:) }
+  let!(:course) { create(:course, :npd_eirt, lead_provider:) }
 
   before { create(:course_cohort, course:, cohort:, lead_provider:) }
 

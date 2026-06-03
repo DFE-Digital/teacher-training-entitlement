@@ -7,7 +7,7 @@ RSpec.describe Contracts::ChangePerParticipant, type: :model do
 
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { create(:statement, lead_provider:) }
-  let(:course) { create(:course, :tte_early_years) }
+  let(:course) { create(:course, :npd_eirt) }
   let(:last_months_statement) { create(:statement, lead_provider:, for_date: 1.month.ago) }
   let!(:last_months_contract) { create(:contract, statement: last_months_statement, course:) }
   let(:this_months_statement) { create(:statement, lead_provider:, for_date: Time.zone.today) }

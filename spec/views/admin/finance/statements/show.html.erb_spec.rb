@@ -4,7 +4,7 @@ RSpec.describe "admin/finance/statements/show", type: :view do
   subject { Capybara.string(render) }
 
   let(:contract) { create(:contract, course:, statement:) }
-  let(:course) { create(:course, :tte_early_years) }
+  let(:course) { create(:course, :npd_eirt) }
 
   before do
     assign(:statement, statement)

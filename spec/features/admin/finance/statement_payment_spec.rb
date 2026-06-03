@@ -11,7 +11,7 @@ RSpec.feature "Statement payment", :revisit, type: :feature do
   before do
     create(:declaration, :payable, statement:)
     # contracts needed to test queries in summary calculator are optimised
-    create(:contract, course: create(:course, :tte_early_years), statement:)
+    create(:contract, course: create(:course, :npd_eirt), statement:)
     statement.update!(state: "payable", deadline_date: Time.zone.yesterday)
     sign_in_as(create(:admin))
     visit(admin_finance_statement_path(statement))

@@ -23,7 +23,7 @@ RSpec.describe FundingEligibility do
   let(:institution) { nil }
   let(:work_setting) { nil }
   let(:kind_of_nursery) { nil }
-  let(:course) { build(:course, :tte_early_years) }
+  let(:course) { build(:course, :npd_eirt) }
   let(:query_store) { RegistrationQueryStore.new(store:) }
 
   describe "#funding_eligiblity_status_code" do

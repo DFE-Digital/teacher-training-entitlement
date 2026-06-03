@@ -2,7 +2,7 @@
   govuk_summary_list(card: { title: "Course details" }) do |sl|
     sl.with_row do |row|
       row.with_key(text: "Course")
-      row.with_value(text: application.course.title_embedded_course_name)
+      row.with_value(text: application.course.name)
     end
 
     sl.with_row do |row|

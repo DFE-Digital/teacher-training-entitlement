@@ -18,7 +18,7 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, :revisit, type: :
   end
 
   before do
-    create(:application, :accepted, schedule: schedules[1], cohort:, course: create(:course, :tte_early_years))
+    create(:application, :accepted, schedule: schedules[1], cohort:, course: create(:course, :npd_eirt))
     sign_in_as admin
   end
 

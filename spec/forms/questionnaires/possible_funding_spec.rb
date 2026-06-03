@@ -29,7 +29,7 @@ RSpec.describe Questionnaires::PossibleFunding do
   end
 
   describe "#course" do
-    let!(:course) { create(:course, :tte_early_years) }
+    let!(:course) { create(:course, :npd_eirt) }
     let(:request) { nil }
 
     before do
