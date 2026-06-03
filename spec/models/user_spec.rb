@@ -336,55 +336,6 @@ RSpec.describe User do
     end
   end
 
-  describe "#set_trn_from_provider_data" do
-    let(:user) { create(:user, trn:, trn_lookup_status:) }
-    let(:trn) { "1234567" }
-    let(:trn_lookup_status) { nil }
-
-    subject { user.set_trn_from_provider_data(trn: new_trn, trn_lookup_status: new_trn_lookup_status) }
-
-    context "when TRN is blank" do
-      let(:new_trn) { nil }
-      let(:new_trn_lookup_status) { nil }
-
-      it "changes nothing" do
-        expect { subject }.not_to(change { user })
-      end
-    end
-
-    context "when TRN is present" do
-      let(:new_trn) { "2345678" }
-      let(:new_trn_lookup_status) { "Found" }
-
-      it "updates the TRN and trn_lookup_status" do
-        subject
-
-        expect(user.trn).to eq new_trn
-        expect(user.trn_lookup_status).to eq new_trn_lookup_status
-      end
-    end
-  end
-
-  describe "#trn_lookup_status_found?" do
-    subject { user.trn_lookup_status_found? }
-
-    let(:user) { build(:user, trn_lookup_status:) }
-
-    context "when trn_lookup_status is 'Found'" do
-      let(:trn_lookup_status) { "Found" }
-
-      it { is_expected.to be true }
-    end
-
-    [nil, "None", "Pending", "Failed"].each do |status|
-      context "when trn_lookup_status is #{status.inspect}" do
-        let(:trn_lookup_status) { status }
-
-        it { is_expected.to be false }
-      end
-    end
-  end
-
   describe "#requires_token_refresh?" do
     subject { user.requires_token_refresh? }
 

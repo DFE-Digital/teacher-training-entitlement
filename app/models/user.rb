@@ -90,19 +90,6 @@ class User < ApplicationRecord
     self.updated_from_tra_at = Time.zone.now
   end
 
-  def set_trn_from_provider_data(trn:, trn_lookup_status:)
-    return if trn.blank?
-
-    assign_attributes(
-      trn:,
-      trn_lookup_status:,
-    )
-  end
-
-  def trn_lookup_status_found?
-    trn_lookup_status == "Found"
-  end
-
   def requires_token_refresh?
     trn.blank? && refresh_token.present? && trn_requested_at.blank?
   end
