@@ -590,6 +590,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_29_121944) do
     t.text "trn"
     t.boolean "trn_auto_verified", default: false
     t.string "trn_lookup_status"
+    t.datetime "trn_requested_at"
     t.boolean "trn_verified", default: false, null: false
     t.datetime "updated_at", null: false
     t.datetime "updated_from_tra_at", precision: nil

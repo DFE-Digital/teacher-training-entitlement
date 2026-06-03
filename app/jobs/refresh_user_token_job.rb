@@ -1,7 +1,6 @@
 class RefreshUserTokenJob < ApplicationJob
   def perform(user)
-    return if user.trn.present?
-    return if user.refresh_token.blank?
+    return unless user.requires_token_refresh?
 
     result = TeacherAuth::RefreshToken.new(user.refresh_token).call
 

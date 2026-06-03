@@ -46,6 +46,8 @@ module Applications
       opts[:funded_place] = funded_place if cohort.funding_cap?
 
       application.transition_status!(Application::ACCEPTED, **opts)
+
+      RequestTrnJob.perform_later(application) if user.trn.blank?
     end
 
     def eligible_for_funded_place

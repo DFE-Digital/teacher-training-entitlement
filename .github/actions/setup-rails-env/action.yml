@@ -1,0 +1,17 @@
+name: Setup Rails Environment
+description: Sets common environment variables for Rails CI
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=abc123" >> $GITHUB_ENV
+        echo "ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=abc123" >> $GITHUB_ENV
+        echo "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=abc123" >> $GITHUB_ENV
+        echo "TEACHER_AUTH_DOMAIN=https://teacher-auth.example.com" >> $GITHUB_ENV
+        echo "TEACHER_AUTH_CLIENT_ID=teacher-training-entitlement" >> $GITHUB_ENV
+        echo "TEACHER_AUTH_CLIENT_SECRET=test-secret" >> $GITHUB_ENV
+        echo "ONE_LOGIN_HOME_URL=https://home.integration.account.gov.uk" >> $GITHUB_ENV
+        echo "TRS_API_URL=https://trs-api.example.com" >> $GITHUB_ENV
+        echo "HOSTING_DOMAIN=http://test.host" >> $GITHUB_ENV

@@ -14,6 +14,7 @@ class User < ApplicationRecord
     email_updates_unsubscribe_key
     refresh_token
     refresh_token_updated_at
+    trn_requested_at
   ].freeze
 
   devise :omniauthable, omniauth_providers: [Omniauth::Strategies::TeacherAuth::NAME]
@@ -39,10 +40,11 @@ class User < ApplicationRecord
   before_save :change_unsubscribe_key_on_update_email_status
 
   scope :admins, -> { where(admin: true) }
-  scope :needing_token_refresh, lambda {
+  scope :requiring_token_refresh, lambda {
     where(trn: nil)
       .where.not(refresh_token: nil)
       .where("refresh_token_updated_at < ?", 1.day.ago)
+      .where(trn_requested_at: nil)
   }
 
   EMAIL_UPDATES_STATES = [
@@ -103,6 +105,10 @@ class User < ApplicationRecord
 
   def trn_lookup_status_found?
     trn_lookup_status == "Found"
+  end
+
+  def requires_token_refresh?
+    trn.blank? && refresh_token.present? && trn_requested_at.blank?
   end
 
   def active_applications_for(course:, cohort:)

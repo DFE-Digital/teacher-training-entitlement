@@ -94,6 +94,6 @@ module ApplicationHelper
   end
 
   def one_login_home_url
-    ENV.fetch("ONE_LOGIN_HOME_URL")
+    Rails.application.config.x.teacher_auth.one_login_home_url
   end
 end

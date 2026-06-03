@@ -87,6 +87,34 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     end
   end
 
+  describe "TRN request" do
+    include ActiveJob::TestHelper
+
+    before do
+      ActiveJob::Base.queue_adapter = :test
+    end
+
+    context "when user has no TRN" do
+      let(:user) { create(:user, trn: nil, refresh_token: "token") }
+      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true, user:) }
+      let(:funded_place) { true }
+
+      it "enqueues RequestTrnJob" do
+        expect { service.call }.to have_enqueued_job(RequestTrnJob).with(application)
+      end
+    end
+
+    context "when user has TRN" do
+      let(:user) { create(:user, trn: "1234567") }
+      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true, user:) }
+      let(:funded_place) { true }
+
+      it "does not enqueue RequestTrnJob" do
+        expect { service.call }.not_to have_enqueued_job(RequestTrnJob)
+      end
+    end
+  end
+
   describe "#accept errors scenarios" do
     context "when application missing" do
       let(:application) { nil }

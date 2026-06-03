@@ -46,6 +46,15 @@ RSpec.describe RefreshUserTokenJob, type: :job do
       end
     end
 
+    context "when TRN was already requested" do
+      let(:user) { create(:user, trn: nil, refresh_token: "token", trn_requested_at: 1.hour.ago) }
+
+      it "does nothing" do
+        expect(TeacherAuth::RefreshToken).not_to receive(:new)
+        described_class.perform_now(user)
+      end
+    end
+
     context "when refresh fails" do
       let(:refresh_service) { instance_double(TeacherAuth::RefreshToken) }
 
