@@ -31,10 +31,10 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     })
   end
 
-  before { create(:user, trn:, trn_verified: true, archived_at: 1.day.ago) if trn.present? }
+  before { create(:user, trn:, archived_at: 1.day.ago) if trn.present? }
 
-  context "when the TRN matches a verified TRN on one user" do
-    let(:user) { create(:user, trn:, trn_verified: true) }
+  context "when the TRN matches an existing user" do
+    let(:user) { create(:user, trn:) }
 
     before { user }
 
@@ -55,9 +55,9 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
     end
   end
 
-  context "when the TRN matches a verified TRN on more than one user" do
-    let(:most_recently_updated_user) { create(:user, trn:, trn_verified: true) }
-    let(:older_user) { create(:user, trn:, trn_verified: true, updated_at: 2.days.ago) }
+  context "when the TRN matches more than one user" do
+    let(:most_recently_updated_user) { create(:user, trn:) }
+    let(:older_user) { create(:user, trn:, updated_at: 2.days.ago) }
     let(:application) { create(:application, user: older_user) }
 
     before do
@@ -124,13 +124,9 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
       context "when the TRN is different" do
         let(:existing_user) { create(:user, :with_one_login_id, email:, one_login_id: uid, trn: "2345678") }
 
-        it "updates the verified TRN on the user" do
+        it "updates the TRN on the user" do
           make_request
-          expect(existing_user.reload).to have_attributes(
-            trn:,
-            trn_verified: true,
-            trn_auto_verified: true,
-          )
+          expect(existing_user.reload).to have_attributes(trn:)
         end
       end
     end
@@ -141,8 +137,6 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
         expect(User.find_by(provider: "teacher_auth", one_login_id: uid)).to have_attributes(
           email:,
           trn:,
-          trn_verified: true,
-          trn_auto_verified: true,
           full_name: verified_name.join(" "),
           date_of_birth: Date.parse("1990-01-01"),
           feature_flag_id:,
@@ -173,14 +167,6 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           )
         end
       end
-
-      it "sets trn_verified and trn_auto_verified to false" do
-        make_request
-        expect(existing_user.reload).to have_attributes(
-          trn_verified: false,
-          trn_auto_verified: false,
-        )
-      end
     end
 
     context "when no user exists with the same provider and One Login ID" do
@@ -189,8 +175,6 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           make_request
           expect(User.find_by(provider: "teacher_auth", one_login_id: uid)).to have_attributes(
             trn: nil,
-            trn_verified: false,
-            trn_auto_verified: false,
             refresh_token: "test_refresh_token",
             refresh_token_updated_at: Time.current,
           )

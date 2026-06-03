@@ -73,8 +73,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       expect(user.email).to eql("user@example.com")
       expect(user.full_name).to eql("John Doe")
       expect(user.trn).to eql("1234567")
-      expect(user.trn_verified).to be_truthy
-      expect(user.trn_auto_verified).to be_truthy
       expect(user.date_of_birth).to eql(Date.new(1980, 12, 13))
       expect(user.national_insurance_number).to be_nil
       expect(user.applications.count).to be(1)
@@ -112,10 +110,8 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
                                                              "raw_tra_provider_data" => nil,
                                                              "refresh_token" => nil,
                                                              "refresh_token_updated_at" => nil,
-                                                             "trn_auto_verified" => true,
                                                              "trn_lookup_status" => nil,
                                                              "trn_requested_at" => nil,
-                                                             "trn_verified" => true,
                                                            ))
 
     deep_compare_application_data(

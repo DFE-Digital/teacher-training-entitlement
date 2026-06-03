@@ -20,8 +20,7 @@ FactoryBot.define do
       full_name { Faker::Name.name }
     end
 
-    trait :with_verified_trn do
-      trn_verified { true }
+    trait :with_trn do
       trn_lookup_status { "Found" }
     end
 

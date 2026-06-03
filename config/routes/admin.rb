@@ -181,10 +181,6 @@ namespace :admin do
       post "run", on: :member
     end
 
-    resources :update_and_verify_trns, controller: "update_and_verify_trns", only: %i[index create show] do
-      post "run", on: :member
-    end
-
     resources :backfill_declaration_delivery_partners, controller: "backfill_declaration_delivery_partners", only: %i[index create show] do
       post "run", on: :member
     end

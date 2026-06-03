@@ -26,8 +26,6 @@ class RequestTrnJob < ApplicationJob
     if result && result[:trn].present?
       user_attrs.merge!(
         trn: result[:trn],
-        trn_verified: true,
-        trn_auto_verified: true,
         refresh_token: nil,
         refresh_token_updated_at: nil,
       )

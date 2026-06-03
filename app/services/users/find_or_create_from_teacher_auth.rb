@@ -38,7 +38,7 @@ module Users
     def matching_users
       return [] if trn.blank?
 
-      @matching_users ||= User.where(trn:, trn_verified: true, archived_at: nil).order(updated_at: :desc).to_a
+      @matching_users ||= User.where(trn:, archived_at: nil).order(updated_at: :desc).to_a
     end
 
     def merge_and_archive_other_users(user_to_keep, users_to_merge)
@@ -61,15 +61,11 @@ module Users
 
       if trn.present?
         attrs.merge!(
-          trn_verified: true,
-          trn_auto_verified: true,
           refresh_token: nil,
           refresh_token_updated_at: nil,
         )
       else
         attrs.merge!(
-          trn_verified: false,
-          trn_auto_verified: false,
           refresh_token:,
           refresh_token_updated_at: Time.current,
         )

@@ -83,8 +83,7 @@ module ValidTestDataGenerators
                         :with_random_name,
                         date_of_birth: Date.new(1990, 1, 1),
                         trn: Faker::Number.unique.number(digits: 7),
-                        trn_verified: true,
-                        trn_auto_verified: true)
+                        trn_lookup_status: "Found")
     end
 
     def create_application(user, school, course, schedule)

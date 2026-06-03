@@ -2,7 +2,7 @@ class User < ApplicationRecord
   encrypts :refresh_token
 
   # TO DO: remove after succesful deploy
-  self.ignored_columns += %w[get_an_identity_id_synced_to_ecf]
+  self.ignored_columns += %w[get_an_identity_id_synced_to_ecf trn_verified trn_auto_verified]
 
   INSIGNIFICANT_ATTRIBUTES = %w[
     raw_tra_provider_data
@@ -91,14 +91,10 @@ class User < ApplicationRecord
   end
 
   def set_trn_from_provider_data(trn:, trn_lookup_status:)
-    trn_lookup_status_found = (trn_lookup_status == "Found")
-    trn_unchanged = (self.trn == trn)
-
-    return if trn.blank? || (trn_verified? && trn_unchanged && !trn_lookup_status_found)
+    return if trn.blank?
 
     assign_attributes(
       trn:,
-      trn_verified: trn_lookup_status_found,
       trn_lookup_status:,
     )
   end

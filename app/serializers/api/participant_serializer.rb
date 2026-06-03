@@ -9,7 +9,7 @@ module API
       view :v1 do
         field(:full_name)
         field(:teacher_reference_number) do |object, _options|
-          object.trn if object.trn_verified
+          object.trn
         end
         field(:updated_at) do |object, _options|
           updated_at(object)

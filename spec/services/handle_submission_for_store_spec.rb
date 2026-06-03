@@ -43,10 +43,8 @@ RSpec.describe HandleSubmissionForStore do
       "preferred_name" => user.preferred_name,
       "refresh_token" => nil,
       "refresh_token_updated_at" => nil,
-      "trn_auto_verified" => false,
       "trn_lookup_status" => nil,
       "trn_requested_at" => nil,
-      "trn_verified" => false,
       "feature_flag_id" => user.feature_flag_id,
     }
   end

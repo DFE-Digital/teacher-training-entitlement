@@ -98,8 +98,6 @@ RSpec.feature "Sad journeys", :npq, :with_default_schedules, type: :feature do
                                                              "ecf_id" => latest_application_user.ecf_id,
                                                              "national_insurance_number" => nil,
                                                              "notify_user_for_future_reg" => false,
-                                                             "trn_auto_verified" => false,
-                                                             "trn_verified" => true,
                                                            ))
 
     deep_compare_application_data(

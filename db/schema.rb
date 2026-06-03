@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_29_121944) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_03_161027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -588,10 +588,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_29_121944) do
     t.datetime "refresh_token_updated_at"
     t.datetime "significantly_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "trn"
-    t.boolean "trn_auto_verified", default: false
     t.string "trn_lookup_status"
     t.datetime "trn_requested_at"
-    t.boolean "trn_verified", default: false, null: false
     t.datetime "updated_at", null: false
     t.datetime "updated_from_tra_at", precision: nil
     t.index ["created_at"], name: "index_users_on_created_at"

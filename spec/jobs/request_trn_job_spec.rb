@@ -25,7 +25,6 @@ RSpec.describe RequestTrnJob, type: :job do
         user.reload
         expect(user).to have_attributes(
           trn: "1234567",
-          trn_verified: true,
           refresh_token: nil,
         )
       end

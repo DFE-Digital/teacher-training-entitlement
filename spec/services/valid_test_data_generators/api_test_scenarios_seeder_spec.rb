@@ -187,11 +187,10 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(Schedule.find_by(identifier: "tte-reception-autumn")).to be_present
         end
 
-        it "creates users with verified TRNs" do
+        it "creates users with TRNs" do
           seeder.call
 
           users = User.where(email: seeder.test_emails)
-          expect(users.pluck(:trn_verified).uniq).to eq([true])
           expect(users.pluck(:trn_lookup_status).uniq).to eq(%w[Found])
         end
 
