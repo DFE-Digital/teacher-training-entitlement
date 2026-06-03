@@ -58,7 +58,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       expect_check_answers_page_to_have_answers(
         {
           "Course start" => "In #{application_course_start_date}",
-          "Course" => "Early Years",
+          "Course" => "Excellence in Reception Teaching",
           "Provider" => LeadProvider.first.name,
           "Workplace" => "open manchester school – street 1, manchester",
           "Work setting" => "State-funded nursery, pre-school, school or academy trust",
@@ -86,12 +86,12 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     if User.last.applications.count == 1
       navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Early Years")
+        expect(page).to have_text("Excellence in Reception Teaching")
       end
     else
       navigate_to_page(path: "/applications", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Early Years")
+        expect(page).to have_text("Excellence in Reception Teaching")
       end
     end
 

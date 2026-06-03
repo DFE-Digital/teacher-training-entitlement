@@ -781,12 +781,12 @@ en:
       show:
   course:
     embedded_sentence:
-      default: the %{course_name} TTE
-      title: "%{course_name} TTE"
+      default: the %{course_name}
+      title: "%{course_name}"
     short_code:
       tte-early-years: TTEEY
     name:
-      tte-early-years: Early Years
+      tte-early-years: Excellence in Reception Teaching
     outcome:
       passed_html: <a href="/certificates" class="govuk-link">Download your certificate</a>
   funding_details:
