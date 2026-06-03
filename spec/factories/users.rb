@@ -20,10 +20,6 @@ FactoryBot.define do
       full_name { Faker::Name.name }
     end
 
-    trait :with_trn do
-      trn_lookup_status { "Found" }
-    end
-
     trait :with_application do
       transient do
         lead_provider { LeadProvider.first }

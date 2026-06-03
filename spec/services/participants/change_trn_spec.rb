@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Participants::ChangeTrn, type: :model do
   subject { described_class.new(trn: trn, user: user) }
 
-  let(:user) { create(:user, :with_trn, trn: original_trn) }
+  let(:user) { create(:user, trn: original_trn) }
   let(:original_trn) { "1234567" }
   let(:trn) { "2345678" }
 
