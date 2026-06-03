@@ -16,7 +16,7 @@ en:
   cannot_create_completed_declaration: Could not create completed declaration. Contact the DfE for support.
   application_not_updateable: Application is no longer updateable
   application_not_found: Application could not be found
-
+  participant_id_changed: "The participant_id '%{from_participant_id}' has been replaced with '%{to_participant_id}'."
   errors:
     email: &email
       invalid: Enter an email address in the correct format, like name@example.com
@@ -25,6 +25,8 @@ en:
       blank: Enter an ECF ID
       taken: ECF ID must be unique
     attributes:
+      statement:
+        must_be_output_fee_true: Statement must have output fee
       trn:
         invalid: TRN must only contain numbers
         blank: TRN can't be blank
@@ -111,6 +113,8 @@ en:
           blank: Please select a provider
           different_provider: Please choose a different provider to your current provider
       check_answers:
+        fail:
+          title: We encountered an error whilst changing provider
         title: Check your answer and submit
         new_provider: Provider
         success:
@@ -454,6 +458,10 @@ en:
               <<: *application
         admin/applications/change_funding_eligibility_form:
           <<: *shared_change_funding_eligibility
+        admin/applications/change_status_form:
+          attributes:
+            status:
+              unchanged: Status must be different
         applications/change_funding_eligibility:
           <<: *shared_change_funding_eligibility
         applications/revert_to_pending:
@@ -478,6 +486,8 @@ en:
               declarations_present: Cannot change cohort for an application with declarations
             application:
               <<: *application
+            course_cohort:
+              not_found: Course cohort cannot be found
         applications/change_lead_provider:
           base:
             provider_must_be_different: Application has {lead_provider_name} already as provider

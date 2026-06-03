@@ -2,13 +2,12 @@ module Applications
   module ChangeProvider
     class StartController < ::Applications::ApplicationsController
       include MultiStepFormSession
+      before_action :ensure_can_change_provider
 
       before_action :set_form
       storing_form_session_as :change_provider
 
-      def index
-        redirect_to application_path(application.ecf_id) unless application.can_change_provider?
-      end
+      def index; end
 
       def create
         render :index, status: :unprocessable_content and return unless @form.valid?
@@ -23,6 +22,10 @@ module Applications
       end
 
     private
+
+      def ensure_can_change_provider
+        redirect_to application_path(application.ecf_id) unless application.can_change_provider?
+      end
 
       def set_form
         @form = Applications::ChangeProvider::StartForm.new(form_params)

@@ -19,7 +19,7 @@ RSpec.shared_examples "an API endpoint that checks participant_id change" do
     expect(parsed_response["errors"]).to eq([
       {
         "title" => "Participant ID has been changed",
-        "detail" => I18n.t("participant_id.changed", **participant_id_change.i18n_params),
+        "detail" => I18n.t("participant_id_changed", **participant_id_change.i18n_params),
         "participant_id_changes" => [
           {
             "from_participant_id" => participant_id_change.from_participant_id,

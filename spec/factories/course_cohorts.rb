@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :course_cohort do
-    course
+    association :course, factory: :"tte-early-years"
     cohort
 
     schedule do
