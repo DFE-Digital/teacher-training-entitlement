@@ -69,13 +69,9 @@ RSpec.describe "Omniauth callbacks", type: :request do
         end
       end
 
-      context "when user creation fails" do
-        let(:invalid_user) { build(:user) }
-        let(:service) { instance_double(Users::FindOrCreateFromTeacherAuth, call: invalid_user) }
-
+      context "when the service raises an error" do
         before do
-          allow(Users::FindOrCreateFromTeacherAuth).to receive(:new).and_return(service)
-          allow(invalid_user).to receive(:persisted?).and_return(false)
+          allow(Users::FindOrCreateFromTeacherAuth).to receive(:new).and_raise(StandardError, "Something went wrong")
         end
 
         it "redirects to the failed sign in path" do
