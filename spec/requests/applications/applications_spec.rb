@@ -13,7 +13,7 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
 
   describe "GET /applications" do
     context "when the user has multiple applications" do
-      let!(:completed_application) { create(:application, :completed, user: pending_application.user, course_cohort: create(:course_cohort)) }
+      let!(:completed_application) { create(:application, :completed, user: pending_application.user) }
 
       it do
         get "/applications"
