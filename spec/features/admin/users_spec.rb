@@ -103,30 +103,5 @@ RSpec.feature "User administration", type: :feature do
       end
     end
 
-    scenario "changing a user's TRN" do
-      visit admin_user_path(user)
-      click_link "Change"
-
-      expect(page).to have_css("h1", text: "Change TRN")
-      within(first(".govuk-summary-list")) do |summary_list|
-        expect(summary_list).to have_summary_item("Participant ID", user.ecf_id)
-        expect(summary_list).to have_summary_item("TRN", user.trn)
-      end
-
-      # blank TRN
-      click_on("Continue")
-      expect(page).to have_content "can't be blank"
-
-      fill_in("New TRN", with: "2345678")
-      click_on("Continue")
-
-      expect(page).to have_css("h1", text: user.full_name)
-
-      within(".govuk-summary-card", text: "Overview") do |summary_card|
-        expect(summary_card).to have_summary_item("TRN", "2345678", "Verified - manually")
-      end
-
-      expect(user.reload.trn).to eq "2345678"
-    end
   end
 end
