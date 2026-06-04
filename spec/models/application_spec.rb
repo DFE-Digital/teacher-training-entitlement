@@ -588,21 +588,10 @@ RSpec.describe Application do
     end
   end
 
-  describe "touch user when application changes" do
+  describe "updating the user when application changes" do
     let!(:old_datetime) { 6.months.ago }
     let(:user) { create(:user, updated_at: old_datetime) }
     let(:application) { create(:application, :pending, user:) }
-
-    context "when application is created" do
-      it "updates user.updated_at" do
-        freeze_time do
-          expect(user.updated_at).to be_within(1.second).of(old_datetime)
-
-          create(:application, user:)
-          expect(user.updated_at).to eq(Time.zone.now)
-        end
-      end
-    end
 
     context "when application is updated" do
       before do
@@ -613,7 +602,7 @@ RSpec.describe Application do
       end
 
       context "when status is changed" do
-        it "updates user.updated_at" do
+        it "does not update user.updated_at" do
           freeze_time do
             expect(user.updated_at).to be_within(1.second).of(old_datetime)
             expect(application.updated_at).to be_within(1.second).of(old_datetime)
@@ -621,21 +610,7 @@ RSpec.describe Application do
             application.rejected_status!
 
             expect(application.updated_at).to eq(Time.zone.now)
-            expect(user.updated_at).to eq(Time.zone.now)
-          end
-        end
-
-        context "when skip_touch_user_if_changed is true" do
-          it "does not update user.updated_at" do
-            freeze_time do
-              expect(user.updated_at).to be_within(1.second).of(old_datetime)
-              expect(application.updated_at).to be_within(1.second).of(old_datetime)
-
-              application.update!(status: Application::REJECTED, skip_touch_user_if_changed: true)
-
-              expect(application.updated_at).to eq(Time.zone.now)
-              expect(user.updated_at).to be_within(1.second).of(old_datetime)
-            end
+            expect(user.reload.updated_at).to be_within(1.second).of(old_datetime)
           end
         end
       end

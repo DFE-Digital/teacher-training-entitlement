@@ -144,7 +144,7 @@ RSpec.describe User do
       expect(user.significantly_updated_at).to be_within(1.second).of(significantly_updated_at)
     end
 
-    context "when skip_touch_user_if_changed is true" do
+    context "when skip_touch_significantly_updated_at is true" do
       before { user.skip_touch_significantly_updated_at = true }
 
       it "does not update significantly_updated_at" do

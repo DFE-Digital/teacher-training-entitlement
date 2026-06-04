@@ -143,7 +143,6 @@ RSpec.describe Participants::Query do
             expect(query.participants).to contain_exactly(participant2, participant1)
 
             participant3.applications.first.update!(updated_at: Time.zone.now)
-            participant3.update!(updated_at: 5.days.ago) # to account for touch model changes
             expect(query.participants).to contain_exactly(participant2, participant1, participant3)
           end
         end
