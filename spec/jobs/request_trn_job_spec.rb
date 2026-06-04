@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe RequestTrnJob, type: :job do
   describe "#perform" do
     let(:user) { create(:user, trn: nil, refresh_token: "old-token", refresh_token_updated_at: 1.day.ago) }
-    let(:application) { create(:application, user:) }
 
     let(:refresh_service) { instance_double(TeacherAuth::RefreshToken) }
     let(:activate_service) { instance_double(TeacherAuth::ActivateTrn) }
@@ -21,7 +20,7 @@ RSpec.describe RequestTrnJob, type: :job do
       end
 
       it "updates user with TRN and clears refresh token" do
-        described_class.perform_now(application)
+        described_class.perform_now(user)
         user.reload
         expect(user).to have_attributes(
           trn: "1234567",
@@ -31,7 +30,7 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "sets trn_requested_at" do
         freeze_time do
-          described_class.perform_now(application)
+          described_class.perform_now(user)
           expect(user.reload.trn_requested_at).to eq(Time.current)
         end
       end
@@ -51,7 +50,7 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "updates refresh token and sets trn_requested_at but does not set TRN" do
         freeze_time do
-          described_class.perform_now(application)
+          described_class.perform_now(user)
           user.reload
           expect(user.trn).to be_nil
           expect(user.refresh_token).to eq("new-refresh-token")
@@ -65,7 +64,7 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "does nothing" do
         expect(TeacherAuth::RefreshToken).not_to receive(:new)
-        described_class.perform_now(application)
+        described_class.perform_now(user)
       end
     end
 
@@ -74,7 +73,7 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "does nothing" do
         expect(TeacherAuth::RefreshToken).not_to receive(:new)
-        described_class.perform_now(application)
+        described_class.perform_now(user)
       end
     end
 
@@ -83,7 +82,7 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "does nothing" do
         expect(TeacherAuth::RefreshToken).not_to receive(:new)
-        described_class.perform_now(application)
+        described_class.perform_now(user)
       end
     end
 
@@ -94,7 +93,7 @@ RSpec.describe RequestTrnJob, type: :job do
       end
 
       it "raises RefreshTokenError and does not set trn_requested_at" do
-        expect { described_class.new.perform(application) }
+        expect { described_class.new.perform(user) }
           .to raise_error(RequestTrnJob::RefreshTokenError)
         expect(user.reload.trn_requested_at).to be_nil
       end
@@ -114,7 +113,7 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "updates refresh token and sets trn_requested_at" do
         freeze_time do
-          described_class.perform_now(application)
+          described_class.perform_now(user)
           user.reload
           expect(user.refresh_token).to eq("new-refresh-token")
           expect(user.trn_requested_at).to eq(Time.current)

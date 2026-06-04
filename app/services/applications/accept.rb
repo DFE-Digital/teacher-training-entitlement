@@ -47,7 +47,7 @@ module Applications
 
       application.transition_status!(Application::ACCEPTED, **opts)
 
-      RequestTrnJob.perform_later(application) if user.trn.blank?
+      RequestTrnJob.perform_later(user) if user.trn.blank?
     end
 
     def eligible_for_funded_place

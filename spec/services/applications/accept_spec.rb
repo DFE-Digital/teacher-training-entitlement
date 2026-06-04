@@ -100,7 +100,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
       let(:funded_place) { true }
 
       it "enqueues RequestTrnJob" do
-        expect { service.call }.to have_enqueued_job(RequestTrnJob).with(application)
+        expect { service.call }.to have_enqueued_job(RequestTrnJob).with(user)
       end
     end
 
