@@ -118,13 +118,7 @@ namespace :admin do
     concerns :cohortable, index: "courses#index"
   end
 
-  resources :users, only: %i[index show] do
-    member do
-      namespace :users, path: nil do
-        resource :change_trn, controller: "change_trn", only: %i[show create]
-      end
-    end
-  end
+  resources :users, only: %i[index show]
 
   namespace :finance do
     resources :contracts, only: [] do
