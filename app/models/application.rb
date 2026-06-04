@@ -313,5 +313,4 @@ private
       errors.add(:funded_place, :not_eligible)
     end
   end
-
 end

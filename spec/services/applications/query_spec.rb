@@ -49,7 +49,6 @@ RSpec.describe Applications::Query do
             expect(query.applications).to contain_exactly(application)
           end
         end
-
       end
 
       context "when filtering by cohort" do
