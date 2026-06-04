@@ -55,7 +55,7 @@
           TRN
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.trn %>
+          <%= @user.trn.presence || ("TRN Requested" if @user.trn_requested_at) %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
