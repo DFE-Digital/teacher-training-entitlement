@@ -182,4 +182,136 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
       end
     end
   end
+
+  describe "email clash handling" do
+    context "when another user already has the incoming email" do
+      context "when clashing user has no TRN" do
+        let(:clashing_user) { create(:user, email:, trn: nil) }
+
+        before { clashing_user }
+
+        context "when TRN matches an existing user" do
+          let(:user) { create(:user, trn:, email: "old@example.com") }
+
+          before { user }
+
+          it "archives the clashing user" do
+            make_request
+            expect(clashing_user.reload).to be_archived
+          end
+
+          it "updates the matched user with the new email" do
+            make_request
+            expect(user.reload.email).to eq(email)
+          end
+
+          context "when clashing user has applications" do
+            let!(:clashing_application) { create(:application, user: clashing_user) }
+
+            it "moves applications to the matched user" do
+              make_request
+              expect(clashing_application.reload.user).to eq(user)
+            end
+          end
+        end
+
+        context "when one_login_id matches an existing user" do
+          let(:trn) { nil }
+          let(:existing_user) { create(:user, :with_one_login_id, one_login_id: uid, email: "old@example.com") }
+
+          before { existing_user }
+
+          it "archives the clashing user" do
+            make_request
+            expect(clashing_user.reload).to be_archived
+          end
+
+          it "updates the matched user with the new email" do
+            make_request
+            expect(existing_user.reload.email).to eq(email)
+          end
+
+          context "when clashing user has applications" do
+            let!(:clashing_application) { create(:application, user: clashing_user) }
+
+            it "moves applications to the matched user" do
+              make_request
+              expect(clashing_application.reload.user).to eq(existing_user)
+            end
+          end
+        end
+
+        context "when creating a new user" do
+          let(:trn) { nil }
+
+          it "archives the clashing user" do
+            make_request
+            expect(clashing_user.reload).to be_archived
+          end
+
+          it "creates the new user with the email" do
+            make_request
+            expect(User.find_by(one_login_id: uid).email).to eq(email)
+          end
+        end
+      end
+
+      context "when clashing user has a TRN (different verified person)" do
+        let(:clashing_user) { create(:user, email:, trn: "9999999") }
+
+        before { clashing_user }
+
+        context "when TRN matches an existing user" do
+          let(:user) { create(:user, trn:, email: "old@example.com") }
+
+          before { user }
+
+          it "archives the clashing user" do
+            make_request
+            expect(clashing_user.reload).to be_archived
+          end
+
+          it "updates the matched user with the new email" do
+            make_request
+            expect(user.reload.email).to eq(email)
+          end
+
+          context "when clashing user has applications" do
+            let!(:clashing_application) { create(:application, user: clashing_user) }
+
+            it "does not move applications (different verified person)" do
+              make_request
+              expect(clashing_application.reload.user).to eq(clashing_user)
+            end
+          end
+        end
+
+        context "when one_login_id matches an existing user" do
+          let(:trn) { nil }
+          let(:existing_user) { create(:user, :with_one_login_id, one_login_id: uid, email: "old@example.com") }
+
+          before { existing_user }
+
+          it "archives the clashing user" do
+            make_request
+            expect(clashing_user.reload).to be_archived
+          end
+
+          it "updates the matched user with the new email" do
+            make_request
+            expect(existing_user.reload.email).to eq(email)
+          end
+
+          context "when clashing user has applications" do
+            let!(:clashing_application) { create(:application, user: clashing_user) }
+
+            it "does not move applications (different verified person)" do
+              make_request
+              expect(clashing_application.reload.user).to eq(clashing_user)
+            end
+          end
+        end
+      end
+    end
+  end
 end
