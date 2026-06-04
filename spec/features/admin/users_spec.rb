@@ -111,6 +111,5 @@ RSpec.feature "User administration", type: :feature do
         end
       end
     end
-
   end
 end
