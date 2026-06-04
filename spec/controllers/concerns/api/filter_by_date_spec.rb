@@ -47,6 +47,12 @@ RSpec.describe API::FilterByDate do
 
       it { expect { subject }.to raise_error(ActionController::BadRequest).with_message(I18n.t(:invalid_date_filter, attribute: :updated_since)) }
     end
+
+    context "when the updated_since filter includes a positive timezone offset" do
+      let(:updated_since_param) { "2022-02-01T10:30:00+01:00" }
+
+      it { is_expected.to eq(Time.iso8601(updated_since_param)) }
+    end
   end
 
   describe "#created_since" do

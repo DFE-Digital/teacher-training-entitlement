@@ -17,7 +17,7 @@ module API
 
       return if date_param.blank?
 
-      Time.iso8601(URI.decode_www_form_component(date_param))
+      Time.iso8601(URI::DEFAULT_PARSER.unescape(date_param))
     rescue ArgumentError
       raise ActionController::BadRequest, I18n.t(:invalid_date_filter, attribute: filter_name)
     end
