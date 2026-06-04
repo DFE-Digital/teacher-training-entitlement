@@ -59,8 +59,17 @@ RSpec.feature "User administration", type: :feature do
         expect(summary_card).to have_summary_item("Email", user.email)
         expect(summary_card).to have_summary_item("Date of birth", user.date_of_birth.to_fs(:govuk_short))
         expect(summary_card).to have_summary_item("National Insurance number", user.national_insurance_number)
-        expect(summary_card).to have_summary_item("TRN", user.trn, "Not verified")
+        expect(summary_card).to have_summary_item("TRN", user.trn)
         expect(summary_card).to have_summary_item("One Login ID", user.one_login_id)
+      end
+    end
+
+    scenario "shows 'TRN Requested' when TRN has been requested" do
+      user.update!(trn: nil, trn_requested_at: 1.hour.ago)
+      visit admin_user_path(user)
+
+      within(".govuk-summary-card", text: "Overview") do |summary_card|
+        expect(summary_card).to have_summary_item("TRN", "TRN Requested")
       end
     end
 
