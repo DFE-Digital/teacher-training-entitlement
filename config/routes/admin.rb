@@ -161,7 +161,7 @@ namespace :admin do
     end
   end
 
-  resources :lead_providers, only: %i[index show], path: "providers" do
+  resources :lead_providers, only: %i[index show edit update], path: "providers" do
     concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
   end
   resources :admins, only: %i[index]

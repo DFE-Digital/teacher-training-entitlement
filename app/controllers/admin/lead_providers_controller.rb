@@ -30,7 +30,25 @@ module Admin
       end
     end
 
+    def edit
+      @lead_provider = LeadProvider.find(params[:id])
+    end
+
+    def update
+      @lead_provider = LeadProvider.find(params[:id])
+
+      if @lead_provider.update(lead_provider_params)
+        redirect_to admin_lead_provider_path(@lead_provider), flash: { success: "Provider updated" }
+      else
+        render :edit, status: :unprocessable_content
+      end
+    end
+
   private
+
+    def lead_provider_params
+      params.require(:lead_provider).permit(:name, :email, :hint, :url)
+    end
 
     def resources
       if @current_cohort
