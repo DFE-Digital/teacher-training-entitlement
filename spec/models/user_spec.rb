@@ -393,4 +393,46 @@ RSpec.describe User do
       expect(subject).not_to include(user_trn_requested)
     end
   end
+
+  describe ".needing_trn_activation_check" do
+    subject { described_class.needing_trn_activation_check }
+
+    let!(:user_needing_check) { create(:user, trn: nil, refresh_token: "token", trn_requested_at: 1.day.ago) }
+
+    it "includes users without TRN, with refresh token, and with trn_requested_at set" do
+      expect(subject).to include(user_needing_check)
+    end
+
+    it "excludes users with TRN" do
+      user_with_trn = create(:user, trn: "1234567", refresh_token: "token", trn_requested_at: 1.day.ago)
+      expect(subject).not_to include(user_with_trn)
+    end
+
+    it "excludes users without refresh token" do
+      user_no_token = create(:user, trn: nil, refresh_token: nil, trn_requested_at: 1.day.ago)
+      expect(subject).not_to include(user_no_token)
+    end
+
+    it "excludes users without trn_requested_at" do
+      user_not_requested = create(:user, trn: nil, refresh_token: "token", trn_requested_at: nil)
+      expect(subject).not_to include(user_not_requested)
+    end
+  end
+
+  describe "#can_request_trn?" do
+    it "returns true when user has no TRN and has refresh token" do
+      user = build(:user, trn: nil, refresh_token: "token")
+      expect(user.can_request_trn?).to be true
+    end
+
+    it "returns false when user has TRN" do
+      user = build(:user, trn: "1234567", refresh_token: "token")
+      expect(user.can_request_trn?).to be false
+    end
+
+    it "returns false when user has no refresh token" do
+      user = build(:user, trn: nil, refresh_token: nil)
+      expect(user.can_request_trn?).to be false
+    end
+  end
 end
