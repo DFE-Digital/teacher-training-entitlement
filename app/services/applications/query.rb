@@ -17,6 +17,7 @@ module Applications
                                  :schedule,
                                  :institution,
                                  :rejected_event,
+                                 :current_application_lead_provider,
                                  { course_cohort: %i[course cohort schedule] }],
                  )
                  .preload(application: { institution: :institutionable })
