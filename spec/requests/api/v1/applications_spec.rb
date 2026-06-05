@@ -59,20 +59,28 @@ RSpec.describe "Application endpoints", type: :request do
       let(:path) { api_v1_applications_path }
 
       context "with the old provider" do
-        before { create(:application, :pending, lead_provider: old_lead_provider) }
+        let!(:pending_application) { create(:application, :pending, lead_provider: old_lead_provider) }
 
         it "can see the applications list with reassigned status" do
-          api_get(path, lead_provider: old_lead_provider, params: { filter: { status: Application::REASSIGNED } })
-
-          expect(response_ids).to include(application.ecf_id)
-          expect(JSON.parse(response.body)["data"].size).to eq(1)
+          api_get(path, lead_provider: old_lead_provider)
+          expect(response_ids).to contain_exactly(application.ecf_id, pending_application.ecf_id)
           expect(JSON.parse(response.body)["data"].first["attributes"]["status"]).to eq(Application::REASSIGNED)
         end
 
         it "can filter the applications with reassigned status" do
-          api_get(path, lead_provider: old_lead_provider)
-          expect(response_ids).to include(application.ecf_id)
+          api_get(path, lead_provider: old_lead_provider, params: { filter: { status: Application::REASSIGNED } })
+
+          expect(response_ids).to contain_exactly(application.ecf_id)
+          expect(JSON.parse(response.body)["data"].size).to eq(1)
           expect(JSON.parse(response.body)["data"].first["attributes"]["status"]).to eq(Application::REASSIGNED)
+        end
+
+        it "filters applications with pending status correctly" do
+          api_get(path, lead_provider: old_lead_provider, params: { filter: { status: Application::PENDING } })
+
+          expect(response_ids).to contain_exactly(pending_application.ecf_id)
+          expect(JSON.parse(response.body)["data"].size).to eq(1)
+          expect(JSON.parse(response.body)["data"].first["attributes"]["status"]).to eq(Application::PENDING)
         end
       end
 
