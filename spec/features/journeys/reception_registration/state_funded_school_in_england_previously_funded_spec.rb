@@ -13,6 +13,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
     institution = Institution.find_by!(institution_reference_number: "100000")
     previously_funded_user = create(:user, trn: user_trn)
     create(:application, :accepted, :eligible_for_funding, user: previously_funded_user, course: Course.reception, cohort: create(:cohort, :unique))
+    previously_funded_user.update!(archived_at: Time.current, archived_email: previously_funded_user.email, email: "archived@example.com")
 
     start_registration
     choose_current_course_start_date

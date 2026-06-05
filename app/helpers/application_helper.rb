@@ -78,21 +78,6 @@ module ApplicationHelper
     args.select(&:present?).join(", ")
   end
 
-  def trn_verified_badge(user)
-    return unless user
-
-    if user.trn_verified == false
-      govuk_tag(text: "Not verified", colour: "red")
-    else
-      verified_method = if user.trn_auto_verified? || user.trn_lookup_status_found?
-                          "automatically"
-                        else
-                          "manually"
-                        end
-      govuk_tag(text: "Verified", colour: "green") + " - #{verified_method}"
-    end
-  end
-
   def one_login_home_url
     Rails.application.config.x.teacher_auth.one_login_home_url
   end

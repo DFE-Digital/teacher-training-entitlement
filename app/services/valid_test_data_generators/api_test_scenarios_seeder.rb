@@ -226,7 +226,6 @@ module ValidTestDataGenerators
         u.full_name = name
         u.trn = generate_trn if with_trn
         u.date_of_birth = Faker::Date.birthday(min_age: 20)
-        u.trn_verified = true if with_trn
         u.trn_lookup_status = "Found" if with_trn
       end
 
@@ -247,7 +246,6 @@ module ValidTestDataGenerators
         full_name: app_data[:full_name],
         trn: generate_trn,
         date_of_birth: Faker::Date.birthday(min_age: 20),
-        trn_verified: true,
         trn_lookup_status: "Found",
         ecf_id:,
       }

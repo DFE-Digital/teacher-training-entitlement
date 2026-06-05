@@ -6,16 +6,13 @@ RSpec.describe Questionnaires::CheckAnswers do
   let(:load_provider) { LeadProvider.all.sample }
   let(:course) { create(:course) }
   let(:school) { create(:school) }
-  let(:verified_trn) { rand(1_000_000..9_999_999).to_s }
   let(:store_trn) { "1234567" }
   let(:store) do
     {
       lead_provider_id: load_provider.id,
       institution_id: school.institution.id,
       course_identifier: course.identifier,
-      trn_verified: true,
       trn: store_trn,
-      verified_trn:,
       confirmed_email: user.email,
     }.stringify_keys
   end

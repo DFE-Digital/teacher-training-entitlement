@@ -25,7 +25,6 @@ User.find_or_create_by!(email: "jerome.riga@education.gov.uk") do |user|
   user.assign_attributes(
     full_name: "Jerome Riga",
     trn: "3013406",
-    trn_verified: true,
   )
 end
 
@@ -33,6 +32,5 @@ User.find_or_create_by!(email: "ben.keeping@education.gov.uk") do |user|
   user.assign_attributes(
     full_name: "Ben Keeping",
     trn: "3013408",
-    trn_verified: true,
   )
 end
