@@ -49,7 +49,7 @@ class Application < ApplicationRecord
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
 
-  attr_accessor :version_note, :skip_touch_user_if_changed, :admin_user, :assignment
+  attr_accessor :version_note, :admin_user, :assignment
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
@@ -64,8 +64,6 @@ class Application < ApplicationRecord
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
-
-  after_commit :touch_user_if_changed
 
   STATUSES =
     [
@@ -314,12 +312,5 @@ private
     if funded_place && !eligible_for_funding
       errors.add(:funded_place, :not_eligible)
     end
-  end
-
-  def touch_user_if_changed
-    return if skip_touch_user_if_changed
-    return unless saved_change_to_status?
-
-    user.touch(time: updated_at)
   end
 end

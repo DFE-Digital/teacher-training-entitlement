@@ -49,27 +49,6 @@ RSpec.describe Applications::Query do
             expect(query.applications).to contain_exactly(application)
           end
         end
-
-        context "when user was updated recently" do
-          let(:user) { create(:user) }
-          let(:updated_since) { 7.days.ago }
-
-          it "filters by user.updated_at" do
-            application1 = travel_to(10.days.ago) do
-              create(:application, lead_provider:)
-            end
-            application2 = travel_to(5.days.ago) do
-              create(:application, lead_provider:)
-            end
-
-            expect(query.applications).to contain_exactly(application2)
-
-            application1.user.update!(updated_at: 12.days.ago, significantly_updated_at: 1.day.ago)
-
-            query2 = described_class.new(lead_provider:, updated_since: 2.days.ago)
-            expect(query2.applications).to contain_exactly(application1)
-          end
-        end
       end
 
       context "when filtering by cohort" do
