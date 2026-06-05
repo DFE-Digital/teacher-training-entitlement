@@ -1,0 +1,44 @@
+<%= form_with model: [:admin, lead_provider] do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <%=
+    form.govuk_text_field :name,
+                          width: "two-thirds",
+                          label: {
+                            text: "Provider name",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_text_field :email,
+                          width: "two-thirds",
+                          label: {
+                            text: "Email address",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_text_field :url,
+                          width: "two-thirds",
+                          label: {
+                            text: "Website URL",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_text_field :hint,
+                          width: "two-thirds",
+                          label: {
+                            text: "Hint text",
+                            size: "m",
+                          }
+  %>
+
+  <div class="govuk-button-group">
+    <%= form.govuk_submit "Save provider details" %>
+    <%= govuk_link_to "Cancel", admin_lead_provider_path(lead_provider), class: "govuk-link--no-visited-state" %>
+  </div>
+<% end %>
