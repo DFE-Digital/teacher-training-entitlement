@@ -1,3 +1,5 @@
+<% content_for :title, t("applications.change_provider.providers.form.title") %>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: application_change_provider_start_index_path(application.ecf_id)) %>

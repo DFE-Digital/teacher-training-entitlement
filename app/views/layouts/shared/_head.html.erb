@@ -1,10 +1,6 @@
 <head>
   <meta charset="utf-8">
-  <% if content_for?(:title) %>
-    <title><%= content_for(:title) %></title>
-  <% else %>
-    <title><%= default_page_title %></title>
-  <% end %>
+  <title><%= [content_for(:title).presence || default_page_title, "NPD", "GOV.UK"].compact.join(" - ") %></title>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <%# canonical_tag %>
