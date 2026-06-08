@@ -40,12 +40,13 @@ class User < ApplicationRecord
   before_save :change_unsubscribe_key_on_update_email_status
 
   scope :admins, -> { where(admin: true) }
+  scope :without_trn, -> { where(trn: nil).where.not(refresh_token: nil) }
   scope :requiring_token_refresh, lambda {
-    where(trn: nil)
-      .where.not(refresh_token: nil)
+    without_trn
       .where("refresh_token_updated_at < ?", 1.day.ago)
       .where(trn_requested_at: nil)
   }
+  scope :needing_trn_activation_check, -> { without_trn.where.not(trn_requested_at: nil) }
 
   EMAIL_UPDATES_STATES = [
     EMAIL_NPD_REGISTRATION_OPEN = :npd_registration_open,
@@ -92,6 +93,10 @@ class User < ApplicationRecord
 
   def requires_token_refresh?
     trn.blank? && refresh_token.present? && trn_requested_at.blank?
+  end
+
+  def can_request_trn?
+    trn.blank? && refresh_token.present?
   end
 
   def active_applications_for(course:, cohort:)

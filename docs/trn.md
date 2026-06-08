@@ -20,10 +20,10 @@ flowchart TD
     B -- Yes --> F["Proceed with normal flow"]
     B -- No --> C["Store refresh_token from request"]
 
-    subgraph DailyMaintenance [Daily Maintenance]
+    subgraph BackgroundJobs [Background Jobs]
         direction TB
-        D["Refresh token daily to keep it alive"]
-        G["Poll TRN activation if TRN not yet created"]
+        D["Refresh token daily<br/>(EnqueueTokenRefreshesJob)"]
+        G["Poll TRN activation daily<br/>(EnqueueTrnActivationChecksJob)"]
     end
 
     C --> D
@@ -69,11 +69,16 @@ flowchart TD
 2. If the TRN is created immediately, we store it
 3. If the TRN is not created immediately, we poll the activation endpoint daily until we receive it
 
-### Daily Maintenance
+### Background Jobs
 
-The system performs daily maintenance tasks:
-- **Refresh tokens** - Tokens are refreshed daily to keep them alive and valid
-- **Poll for TRN** - For users awaiting TRN creation, we poll the activation endpoint
+The system runs background jobs to manage TRN acquisition:
+
+| Job | Schedule | Purpose |
+|-----|----------|---------|
+| `EnqueueTokenRefreshesJob` | Hourly | Refreshes tokens for users awaiting application acceptance (no `trn_requested_at` set) |
+| `EnqueueTrnActivationChecksJob` | Daily at 6am | Re-polls TRN activation for users where TRN was requested but not yet returned |
+
+The token refresh job keeps refresh tokens valid while users wait for their application to be accepted. Once an application is accepted, `RequestTrnJob` is enqueued which calls the activation endpoint. If the TRN isn't returned immediately, the daily activation check job will continue polling until the TRN is received.
 
 ### Future Enhancement
 

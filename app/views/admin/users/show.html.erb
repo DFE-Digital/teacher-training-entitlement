@@ -55,10 +55,7 @@
           TRN
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.trn %>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" href="<%= admin_users_change_trn_path(@user) %>">Change<span class="govuk-visually-hidden"> age (Lead tenant)</span></a>
-        </dd>
+          <%= @user.trn.presence || ("TRN Requested" if @user.trn_requested_at) %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">

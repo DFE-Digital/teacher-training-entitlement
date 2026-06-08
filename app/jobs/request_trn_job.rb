@@ -3,10 +3,8 @@ class RequestTrnJob < ApplicationJob
 
   retry_on RefreshTokenError, wait: :polynomially_longer, attempts: 5
 
-  def perform(application)
-    user = application.user
-
-    return unless user.requires_token_refresh?
+  def perform(user)
+    return unless user.can_request_trn?
 
     # Get fresh access token
     tokens = TeacherAuth::RefreshToken.new(user.refresh_token).call

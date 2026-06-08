@@ -64,6 +64,15 @@ RSpec.feature "User administration", type: :feature do
       end
     end
 
+    scenario "shows 'TRN Requested' when TRN has been requested" do
+      user.update!(trn: nil, trn_requested_at: 1.hour.ago)
+      visit admin_user_path(user)
+
+      within(".govuk-summary-card", text: "Overview") do |summary_card|
+        expect(summary_card).to have_summary_item("TRN", "TRN Requested")
+      end
+    end
+
     scenario "renders when attributes with method chains are nil" do
       user.update!(date_of_birth: nil)
       visit admin_user_path(user)
@@ -101,32 +110,6 @@ RSpec.feature "User administration", type: :feature do
           expect(summary_card).to have_summary_item("Registration submission date", application.created_at.to_fs(:govuk_short))
         end
       end
-    end
-
-    scenario "changing a user's TRN" do
-      visit admin_user_path(user)
-      click_link "Change"
-
-      expect(page).to have_css("h1", text: "Change TRN")
-      within(first(".govuk-summary-list")) do |summary_list|
-        expect(summary_list).to have_summary_item("Participant ID", user.ecf_id)
-        expect(summary_list).to have_summary_item("TRN", user.trn)
-      end
-
-      # blank TRN
-      click_on("Continue")
-      expect(page).to have_content "can't be blank"
-
-      fill_in("New TRN", with: "2345678")
-      click_on("Continue")
-
-      expect(page).to have_css("h1", text: user.full_name)
-
-      within(".govuk-summary-card", text: "Overview") do |summary_card|
-        expect(summary_card).to have_summary_item("TRN", "2345678", "Verified - manually")
-      end
-
-      expect(user.reload.trn).to eq "2345678"
     end
   end
 end
