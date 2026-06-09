@@ -33,38 +33,8 @@ module Questionnaires
     end
 
     def after_save
-      if other?
-        wizard.store.delete("funding")
-        wizard.store.delete("institution_id")
-        return
-      end
-
-      return if state_funded_instition? || private_institution?
-
-      # we are inferring `works_in_school` and `works_in_childcare` to maintain
-      # consistency with older records
-
-      case work_setting
-      when *SCHOOL_SETTINGS
-        wizard.store["works_in_school"] = "yes"
-        wizard.store["works_in_childcare"] = "no"
-
-        %w[kind_of_nursery has_ofsted_urn institution_id].each { |field| wizard.store.delete(field) }
-      when *CHILDCARE_SETTINGS
-        wizard.store["works_in_childcare"] = "yes"
-        wizard.store["works_in_school"] = "no"
-
-        wizard.store.delete("institution_id")
-      when *OTHER_SETTINGS, *ANOTHER_SETTING_SETTINGS
-        wizard.store["works_in_school"] = "no"
-        wizard.store["works_in_childcare"] = "no"
-
-        %w[funding kind_of_nursery has_ofsted_urn institution_id].each do |field|
-          wizard.store.delete(field)
-        end
-      else
-        raise(ArgumentError, "invalid work setting #{work_setting}")
-      end
+      wizard.store.delete("funding")
+      wizard.store.delete("institution_id")
     end
 
     def requirements_met?
