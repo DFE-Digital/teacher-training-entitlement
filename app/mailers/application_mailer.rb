@@ -1,4 +1,4 @@
 class ApplicationMailer < Mail::Notify::Mailer
-  default from: "teacher-training-entitlement@digital.education.gov.uk"
+  default from: "continuing-professional-development@digital.education.gov.uk"
   layout "mailer"
 end
