@@ -83,6 +83,22 @@ RSpec.describe RequestTrnJob, type: :job do
       end
     end
 
+    context "when the token is invalid" do
+      before do
+        allow(TeacherAuth::RefreshToken).to receive(:new).and_return(refresh_service)
+        allow(refresh_service).to receive(:call).and_return(:invalid_token)
+      end
+
+      it "clears the user's auth tokens" do
+        expect(user).to receive(:clear_auth_tokens!)
+        described_class.perform_now(user)
+      end
+
+      it "does not raise an error" do
+        expect { described_class.perform_now(user) }.not_to raise_error
+      end
+    end
+
     context "when activate TRN returns nil" do
       before { stub_trn_services(trn: nil) }
 

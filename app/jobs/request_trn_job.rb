@@ -8,6 +8,12 @@ class RequestTrnJob < ApplicationJob
 
     # Get fresh access token
     tokens = TeacherAuth::RefreshToken.new(user.refresh_token).call
+
+    if tokens == :invalid_token
+      user.clear_auth_tokens!
+      return
+    end
+
     raise RefreshTokenError, "Failed to refresh token for user #{user.id}" unless tokens
 
     # Request TRN activation

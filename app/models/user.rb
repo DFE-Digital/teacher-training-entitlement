@@ -99,6 +99,10 @@ class User < ApplicationRecord
     trn.blank? && refresh_token.present?
   end
 
+  def clear_auth_tokens!
+    update!(refresh_token: nil, refresh_token_updated_at: nil)
+  end
+
   def active_applications_for(course:, cohort:)
     applications
       .active_applications

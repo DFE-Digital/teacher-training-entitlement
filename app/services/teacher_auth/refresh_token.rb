@@ -26,8 +26,16 @@ module TeacherAuth
         }
       else
         Rails.logger.error("TeacherAuth::RefreshToken failed: #{response.code} - #{response.body}")
-        nil
+        invalid_grant?(response) ? :invalid_token : nil
       end
+    end
+
+  private
+
+    def invalid_grant?(response)
+      return false unless response.code == 400
+
+      response.parsed_response["error"] == "invalid_grant"
     end
   end
 end

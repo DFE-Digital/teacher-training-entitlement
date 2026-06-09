@@ -4,6 +4,11 @@ class RefreshUserTokenJob < ApplicationJob
 
     result = TeacherAuth::RefreshToken.new(user.refresh_token).call
 
+    if result == :invalid_token
+      user.clear_auth_tokens!
+      return
+    end
+
     return unless result
 
     user.update!(
