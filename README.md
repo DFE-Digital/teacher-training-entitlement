@@ -1,4 +1,4 @@
-[![View performance data on Skylight](https://badges.skylight.io/status/xxxxx.svg)](https://oss.skylight.io/app/applications/xxxxxx) 
+[![View performance data on Skylight](https://badges.skylight.io/status/iNP1HEhdtAvN.svg?token=wq0669BuHNNGNqWAGk6ko2wboMzl-DGWFl8wYXLmdsE)](https://www.skylight.io/app/applications/iNP1HEhdtAvN)
 
 # Register for Teacher Training Entitlement (TTE)
 
