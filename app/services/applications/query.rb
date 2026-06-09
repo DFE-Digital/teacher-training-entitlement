@@ -68,17 +68,16 @@ module Applications
     def where_status_in(status)
       return if ignore?(filter: status)
 
-      if status == Application::REASSIGNED
-        scope.merge!(scope.where(current: false))
-      elsif status.is_a?(Array) && Application::REASSIGNED.in?(status)
-        filtered_status = extract_conditions(status, allowlist: Application::STATUSES)
+      filtered_status = extract_conditions(status, allowlist: Application::API_STATUSES)
 
-        scope.merge!(
-          scope.where(current: false)
-            .or(Application.where(status: filtered_status)),
-        )
+      if filtered_status == Application::REASSIGNED
+        scope.merge!(scope.previous)
+      elsif filtered_status.is_a?(Array) && Application::REASSIGNED.in?(filtered_status)
+        application_statuses = filtered_status - [Application::REASSIGNED]
+        application_status_scope = scope.current.merge(Application.where(status: application_statuses))
+        scope.merge!(scope.previous.or(application_status_scope))
       else
-        scope.merge!(Application.where(status: extract_conditions(status, allowlist: Application::STATUSES)))
+        scope.merge!(scope.current.merge(Application.where(status: filtered_status)))
       end
     end
 
