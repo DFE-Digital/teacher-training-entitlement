@@ -91,6 +91,28 @@ RSpec.describe RegistrationWizardController do
       expect(session["registration_store"]["course_start_date"]).to eql("yes")
     end
 
+    context "when updating the work setting step" do
+      let(:wizard_params) { { work_setting: Institution::STATE_FUNDED_INSTITUTION } }
+      let(:make_request) { patch :update, params: { step: "work-setting", registration_wizard: wizard_params } }
+
+      before do
+        session["registration_store"] = {
+          "funding" => "school",
+          "institution_id" => "123",
+        }
+      end
+
+      it "deletes funding from the session" do
+        make_request
+        expect(session["registration_store"]).not_to have_key("funding")
+      end
+
+      it "deletes institution_id from the session" do
+        make_request
+        expect(session["registration_store"]).not_to have_key("institution_id")
+      end
+    end
+
     context "when step is being skipped" do
       before do
         allow(RegistrationWizard).to receive(:new).and_return(wizard)

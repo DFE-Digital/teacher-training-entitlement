@@ -47,4 +47,30 @@ RSpec.describe Questionnaires::WorkSetting, type: :model do
       it { is_expected.to eq :choose_school }
     end
   end
+
+  describe "#after_save" do
+    subject(:form) { described_class.new(wizard:) }
+
+    let(:wizard) { RegistrationWizard.new(current_step: :work_setting, store:, request: nil, current_user: build_stubbed(:user)) }
+    let(:store) do
+      {
+        "funding" => "school",
+        "institution_id" => "123",
+        "teacher_catchment" => "england",
+      }
+    end
+
+    it "deletes funding from the wizard store" do
+      expect { form.after_save }.to change { store.key?("funding") }.from(true).to(false)
+    end
+
+    it "deletes institution_id from the wizard store" do
+      expect { form.after_save }.to change { store.key?("institution_id") }.from(true).to(false)
+    end
+
+    it "leaves other answers in the wizard store" do
+      form.after_save
+      expect(store["teacher_catchment"]).to eq("england")
+    end
+  end
 end
