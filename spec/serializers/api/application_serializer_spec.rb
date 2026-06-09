@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:user) { application.user }
-  let(:course) { create(:course, :tte_early_years) }
+  let(:course) { create(:course, :npd_eirt) }
   let(:cohort) { create(:cohort, :current) }
   let(:schedule) { create(:schedule) }
   let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }

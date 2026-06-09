@@ -7,7 +7,7 @@ RSpec.describe "Schedule endpoints", type: :request do
 
   describe "GET /api/v1/schedules" do
     let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :tte_early_years) }
+    let(:course) { create(:course, :npd_eirt) }
     let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
     let!(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_providers: [current_lead_provider]) }
 

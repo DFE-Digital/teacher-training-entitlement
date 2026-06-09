@@ -61,7 +61,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     let(:wizard) do
       RegistrationWizard.new(current_step:, store:, request:, current_user: create(:user))
     end
-    let(:course) { build_stubbed(:course, :tte_early_years) }
+    let(:course) { build_stubbed(:course, :npd_eirt) }
     let(:store) do
       {
         "course_identifier" => course.identifier.to_s,

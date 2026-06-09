@@ -13,39 +13,15 @@ class Course < ApplicationRecord
   scope :displayable, -> { where(display: true).order(:position) }
 
   IDENTIFIERS = %w[tte-early-years].freeze
+  # IDENTIFIERS = %w[npd-excellence-in-reception-teaching].freeze
 
   def self.reception
+    # Change this once we have sign-off from lead providers to change the identifier
+    # find_by(identifier: "npd-excellence-in-reception-teaching")
     find_by(identifier: "tte-early-years")
-  end
-
-  def course_short_code
-    I18n.t(identifier, scope: "course.short_code")
-  end
-
-  def localise_course_name
-    I18n.t(identifier, scope: "course.name")
-  end
-
-  # Returns either "the #{course_name} TTE"
-  def localise_sentence_embedded_course_name
-    I18n.t("course.embedded_sentence.default", course_name: localise_course_name)
   end
 
   def rebranded_alternative_courses
     [self]
-  end
-
-  def short_code
-    super.tap do |sc|
-      if sc.nil?
-        message = "A course short-code types mapping is missing: #{identifier}"
-        Rails.logger.warn(message)
-        Sentry.capture_message(message)
-      end
-    end
-  end
-
-  def title_embedded_course_name
-    I18n.t("course.embedded_sentence.title", course_name: localise_course_name)
   end
 end

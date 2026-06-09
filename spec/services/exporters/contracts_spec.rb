@@ -6,7 +6,7 @@ RSpec.describe Exporters::Contracts do
   let(:lead_provider) { create(:lead_provider, name: "Some Lead Provider") }
   let(:lead_provider_2) { create(:lead_provider, name: "Another Provider") }
   let(:course) { create(:course) }
-  let(:course_2) { create(:course, :tte_early_years) }
+  let(:course_2) { create(:course, :npd_eirt) }
 
   let(:cohort) { create(:cohort, :current) }
   let(:statement) { create(:statement, cohort:, lead_provider:) }

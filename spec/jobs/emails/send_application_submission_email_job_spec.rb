@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
-  let(:course) { create(:course, :tte_early_years) }
+  let(:course) { create(:course, :npd_eirt) }
   let(:application) { create(:application, course:, raw_application_data: { "funding_amount" => "123" }) }
 
   subject(:job) { described_class.new(application:) }
@@ -17,7 +17,7 @@ RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
         to: application.user.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
-        course_name: "the Excellence in Reception Teaching",
+        course_name: course.name,
         ecf_id: application.ecf_id,
       )
 

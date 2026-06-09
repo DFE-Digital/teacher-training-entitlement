@@ -60,9 +60,7 @@ class FundingEligibility
 
   def get_description_for_funding_status
     key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligiblity_status_code)
-    course_name = course.localise_sentence_embedded_course_name
-
-    I18n.t(key, course_name:).html_safe if key
+    I18n.t(key, course_name: course.name).html_safe if key
   end
 
 private

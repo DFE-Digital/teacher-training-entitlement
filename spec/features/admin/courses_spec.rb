@@ -6,7 +6,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
   let(:courses_per_page) { Pagy::DEFAULT[:limit] }
 
   before do
-    create(:course, :tte_early_years)
+    create(:course, :npd_eirt)
     sign_in_as(create(:admin))
   end
 

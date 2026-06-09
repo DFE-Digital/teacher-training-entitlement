@@ -7,7 +7,7 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, :revisit, type: :component
   let(:calculator) { ::Statements::CourseCalculator.new(contract:) }
   let(:statement) { create(:statement) }
   let(:paid_statement) { create(:statement, :paid) }
-  let(:course) { create(:course, :tte_early_years) }
+  let(:course) { create(:course, :npd_eirt) }
   let(:contract) { create(:contract, course:, statement:) }
 
   before do

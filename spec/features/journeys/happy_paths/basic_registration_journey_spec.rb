@@ -58,7 +58,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       expect_check_answers_page_to_have_answers(
         {
           "Course start" => "In #{application_course_start_date}",
-          "Course" => "Excellence in Reception Teaching",
+          "Course" => Course.last.name,
           "Provider" => LeadProvider.first.name,
           "Workplace" => "open manchester school – street 1, manchester",
           "Work setting" => "State-funded nursery, pre-school, school or academy trust",

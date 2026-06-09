@@ -7,7 +7,7 @@ RSpec.describe ValidTestDataGenerators::ApplicationsPopulater, :revisit, :with_d
   let(:cohort) { create(:cohort, :current) }
 
   before do
-    create(:course, :tte_early_years)
+    create(:course, :npd_eirt)
     allow(Rails).to receive(:env) { environment.inquiry }
   end
 

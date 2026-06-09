@@ -1,7 +1,7 @@
 <%=
   govuk_summary_list(
     card: {
-      title: application.course.title_embedded_course_name,
+      title: application.course.name,
       actions: [govuk_link_to("View details", application_path(application.ecf_id))],
     },
   ) do |sl|

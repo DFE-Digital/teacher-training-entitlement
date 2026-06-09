@@ -740,7 +740,7 @@ RSpec.describe Declaration, type: :model do
 
   describe "#duplicate_declarations" do
     let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :tte_early_years) }
+    let(:course) { create(:course, :npd_eirt) }
     let(:schedule) { create(:schedule, :npq_leadership_autumn, cohort:) }
     let(:application) { create(:application, :accepted, cohort:, course:) }
     let(:participant) { application.user }
@@ -761,7 +761,7 @@ RSpec.describe Declaration, type: :model do
 
         context "when declarations have been made for a different course", :npq do
           before do
-            course = create(:course, :tte_early_years)
+            course = create(:course, :npd_eirt)
             other_application = create(:application, :accepted, course:, cohort:, user: other_user)
             create(:declaration, application: other_application)
           end
@@ -805,7 +805,7 @@ RSpec.describe Declaration, type: :model do
 
     context "when declarations have been made for a different course", :npq do
       before do
-        course = create(:course, :tte_early_years)
+        course = create(:course, :npd_eirt)
         other_application = create(:application, :accepted, course:, cohort:, user: participant)
         create(:declaration, application: other_application)
       end

@@ -37,7 +37,7 @@ module Applications
         to: @application.user.email,
         full_name: @application.user.full_name,
         provider_name: @application.lead_provider.name,
-        course_name: @application.course.title_embedded_course_name,
+        course_name: @application.course.name,
         deferral_date: @application.deferred_at.to_fs(:govuk_date_only),
         ecf_id: @application.ecf_id,
       ).deferral_notification.deliver_later

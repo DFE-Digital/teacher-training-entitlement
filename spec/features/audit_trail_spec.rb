@@ -51,7 +51,7 @@ RSpec.feature "Recording audit trail via papertrail", :revisit, :versioning, typ
     end
 
     let(:raw_token) { "a-token" }
-    let(:course) { create(:course, :tte_early_years) }
+    let(:course) { create(:course, :npd_eirt) }
     let(:lead_provider) { create :lead_provider }
     let(:application) { create :application, lead_provider:, course:, cohort: }
 
