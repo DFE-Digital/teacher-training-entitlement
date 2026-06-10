@@ -116,6 +116,7 @@ namespace :admin do
 
   resources :courses, only: %i[index show] do
     concerns :cohortable, index: "courses#index"
+    resources :course_cohort_providers, path: "course-cohort-providers", only: %i[show update]
   end
 
   resources :users, only: %i[index show]

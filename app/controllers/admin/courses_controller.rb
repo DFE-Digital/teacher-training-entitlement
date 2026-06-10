@@ -8,6 +8,9 @@ module Admin
 
     def show
       @course = Course.find(params[:id])
+      @course_cohorts = @course.course_cohorts
+                               .includes(:cohort, :schedule, course_cohort_providers: :lead_provider)
+                               .sort_by { |course_cohort| course_cohort.cohort.start_year }
     end
 
   private
