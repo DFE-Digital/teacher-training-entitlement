@@ -50,6 +50,5 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
         api_get(path, params: { filter: { cohort: 2023 } })
       end
     end
-
   end
 end

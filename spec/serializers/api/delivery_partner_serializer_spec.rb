@@ -48,7 +48,6 @@ RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
       it "serializes the `updated_at`" do
         expect(attributes["updated_at"]).to eq(delivery_partner.updated_at.rfc3339)
       end
-
     end
   end
 end
