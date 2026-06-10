@@ -84,19 +84,12 @@ module Questionnaires
       wizard.store.slice(*self.class.permitted_params.map(&:to_s)) == attributes.stringify_keys
     end
 
-    def return_to_new_registration_flow?
-      wizard.current_user.present? && wizard.current_step == :change_your_course_or_provider
-    end
-
     def requirements_met?
-      # Redirect to new registration flow if a user wants to change the course or provider details
-      return true if return_to_new_registration_flow?
-
       # Ensures the user is:
       # a) logged in
       # b) has answered at least one question
       # Before allowing them to proceed into any questions.
-      # Certain questions, such as start and provider_check, override this
+      # Certain questions, such as start, override this
       # as they are the first questions in the flow.
       # Some questions add additional requirements, such as the confirmation page which requires
       # a lead provider and a course to have been selected.

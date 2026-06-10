@@ -85,10 +85,10 @@ private
       redirect_to registration_wizard_show_path("choose-school")
     elsif query_store.kind_of_nursery_private?
       flash[:error] = "Your application requires details of your nursery."
-      redirect_to registration_wizard_show_path("have-ofsted-urn")
+      redirect_to registration_wizard_show_path("work-setting")
     elsif query_store.works_in_childcare?
       flash[:error] = "Your application requires details of your early years setting."
-      redirect_to registration_wizard_show_path("choose-childcare-provider")
+      redirect_to registration_wizard_show_path("work-setting")
     else
       raise "Could not resolve institution picker"
     end
