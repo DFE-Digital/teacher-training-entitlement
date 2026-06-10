@@ -205,12 +205,6 @@ en:
               aken: Description is used by another cohort already
             start_year:
               blank: Enter the start year for the cohort
-            suffix:
-              blank: Enter the character suffix for the cohort
-              taken: Another cohort exists for that start year and suffix
-              invalid: Suffix must be a lower case character
-              too_long: Suffix must be a single character
-              too_short: Suffix must be a single character
             funding_cap:
               inclusion: Choose true or false for funding cap
             ecf_id:

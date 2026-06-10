@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe Cohort, type: :model do
   let(:cohort) { create(:cohort) }
 
-  let :suffixed_cohorts do
+  let :cohorts do
     (2024..2026).to_a.shuffle.flat_map do |start_year|
-      [["a", 4], ["b", 8]].shuffle.map do |suffix, month|
+      [5, 8].shuffle.map do |month|
         registration_starts_at = Date.new(start_year, month, 10)
-        create :cohort, start_year:, suffix:, registration_starts_at:
+        create :cohort, start_year:, registration_starts_at:, description: "#{start_year} #{Date::MONTHNAMES[month]}"
       end
     end
   end
@@ -55,25 +55,10 @@ RSpec.describe Cohort, type: :model do
       }
     end
 
-    describe "#suffix" do
-      it { is_expected.to have_attributes suffix: "a" } # default value when not set
-      it { is_expected.to validate_presence_of :suffix }
-      it { is_expected.to validate_uniqueness_of(:suffix).scoped_to(:start_year) }
-      it { is_expected.to validate_length_of(:suffix).is_at_least(1).is_at_most(1) }
-      it { is_expected.to allow_values(*("a".."z").to_a).for(:suffix) }
-      it { is_expected.not_to allow_values(*%w[A Z ? ab 123 1 2021a a+]).for(:suffix) }
-    end
-
     describe "#description" do
       it { is_expected.to validate_presence_of(:description) }
       it { is_expected.to validate_uniqueness_of(:description).case_insensitive }
       it { is_expected.to validate_length_of(:description).is_at_least(5).is_at_most(50) }
-    end
-
-    describe "#name" do
-      subject { create :cohort, start_year: 2029, suffix: "c" }
-
-      it { is_expected.to have_attributes name: "2029c" }
     end
 
     describe "changing funding_cap when there are applications" do
@@ -102,27 +87,27 @@ RSpec.describe Cohort, type: :model do
   end
 
   describe ".order_by_latest" do
-    subject { described_class.order_by_latest.pluck(:identifier) }
+    subject { described_class.where(id: cohorts.map(&:id)).order_by_latest.pluck(:identifier) }
 
-    before { suffixed_cohorts }
+    before { cohorts }
 
-    it { is_expected.to eq %w[2026b 2026a 2025b 2025a 2024b 2024a] }
+    it { is_expected.to eq %w[2026-August 2026-May 2025-August 2025-May 2024-August 2024-May] }
   end
 
   describe ".order_by_oldest" do
-    subject { described_class.order_by_oldest.pluck(:identifier) }
+    subject { described_class.where(id: cohorts.map(&:id)).order_by_oldest.pluck(:identifier) }
 
-    before { suffixed_cohorts }
+    before { cohorts }
 
-    it { is_expected.to eq %w[2024a 2024b 2025a 2025b 2026a 2026b] }
+    it { is_expected.to eq %w[2024-May 2024-August 2025-May 2025-August 2026-May 2026-August] }
   end
 
   describe ".prior_to" do
-    subject { described_class.prior_to(autumn2025).pluck(:identifier) }
+    subject { described_class.where(id: cohorts.map(&:id)).prior_to(cohort_2025).pluck(:identifier) }
 
-    let(:autumn2025) { suffixed_cohorts && Cohort.find_by!(identifier: "2025b") }
+    let(:cohort_2025) { cohorts && Cohort.find_by!(identifier: "2025-August") }
 
-    it { is_expected.to match_array %w[2025a 2024b 2024a] }
+    it { is_expected.to match_array %w[2025-May 2024-May 2024-August] }
   end
 
   describe ".current" do
@@ -153,41 +138,23 @@ RSpec.describe Cohort, type: :model do
     context "when there are multiple cohorts for the past year" do
       subject { Cohort.current(Date.new(2022, 4, 11)) }
 
-      before { cohorts }
+      before { multiple_cohorts }
 
-      let :cohorts do
+      let :multiple_cohorts do
         {
-          current: create(:cohort, start_year: 2022, suffix: "b", registration_starts_at: Date.new(2022, 4, 10)),
-          older: create(:cohort, start_year: 2022, suffix: "a", registration_starts_at: Date.new(2022, 1, 10)),
+          current: create(:cohort, start_year: 2022, registration_starts_at: Date.new(2022, 4, 10), description: "2022 April"),
+          older: create(:cohort, start_year: 2022, registration_starts_at: Date.new(2022, 1, 10), description: "2022 January"),
           future: create(:cohort, start_year: 2023, registration_starts_at: Date.new(2023, 4, 10)),
         }
       end
 
-      context "when suffixed cohorts are enabled" do
-        before { allow(Feature).to receive(:suffixed_cohorts?).and_return true }
-
-        it { is_expected.to eq(cohorts[:current]) }
-      end
-
-      context "when suffixed cohorts are not enabled" do
-        before { allow(Feature).to receive(:suffixed_cohorts?).and_return false }
-
-        it { is_expected.to eq(cohorts[:older]) }
-      end
+      it { is_expected.to eq(multiple_cohorts[:current]) }
     end
   end
 
   describe "#name" do
     subject { cohort.name }
 
-    context "with suffix of a" do
-      it { is_expected.to eq cohort.start_year.to_s }
-    end
-
-    context "with any other suffix" do
-      let(:cohort) { create(:cohort, suffix: "c") }
-
-      it { is_expected.to eq "#{cohort.start_year}#{cohort.suffix}" }
-    end
+    it { is_expected.to eq cohort.start_year.to_s }
   end
 end

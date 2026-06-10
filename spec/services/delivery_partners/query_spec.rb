@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe DeliveryPartners::Query do
   let(:lead_provider_1) { create(:lead_provider) }
   let(:lead_provider_2) { create(:lead_provider) }
-  let(:cohort_21) { create :cohort, start_year: 2021 }
-  let(:cohort_22) { create :cohort, start_year: 2022 }
-  let(:cohort_23) { create :cohort, start_year: 2023 }
-  let(:cohort_21_2) { create :cohort, start_year: 2021, suffix: "b" }
+  let(:cohort_21) { create :cohort, start_year: 2021, registration_starts_at: Date.new(2021, 4, 1) }
+  let(:cohort_22) { create :cohort, start_year: 2022, registration_starts_at: Date.new(2022, 4, 1) }
+  let(:cohort_23) { create :cohort, start_year: 2023, registration_starts_at: Date.new(2023, 4, 1) }
+  let(:cohort_21_2) { create :cohort, start_year: 2021, registration_starts_at: Date.new(2021, 10, 1) }
   let(:sort) { nil }
 
   subject(:query) { described_class.new(lead_provider: lead_provider_1, sort: sort) }

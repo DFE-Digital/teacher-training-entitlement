@@ -294,13 +294,11 @@ module ValidTestDataGenerators
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       cohort_year = registration_starts_at.year
       term = registration_starts_at.month < 8 ? "autumn" : "spring"
-      suffix = registration_starts_at.month < 8 ? "a" : "b"
-      current_cohort = Cohort.find_by(start_year: cohort_year, suffix:)
+      current_cohort = Cohort.find_by(registration_starts_at:)
 
       attrs = {
         start_year: cohort_year,
-        suffix:,
-        description: "#{cohort_year}#{suffix}",
+        description: "#{cohort_year} #{registration_starts_at.strftime('%B')}",
         registration_starts_at:,
         funding_cap: true,
       }

@@ -10,7 +10,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
   let(:data)          { AssuranceReports::Query.new(statement).declarations }
   let(:lead_provider) { create(:lead_provider) }
   let(:statement)     { create(:statement, lead_provider:, cohort:) }
-  let(:cohort)        { create(:cohort, :current, suffix: "b") }
+  let(:cohort)        { create(:cohort, :current) }
 
   let :application do
     create(:application, :accepted, :eligible_for_funded_place, lead_provider:, cohort:)

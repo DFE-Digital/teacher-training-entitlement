@@ -1,4 +1,6 @@
 class Cohort < ApplicationRecord
+  before_validation :set_identifier
+
   has_many :declarations, dependent: :restrict_with_exception
   has_many :statements, dependent: :restrict_with_exception
   has_many :delivery_partnerships, dependent: :destroy
@@ -13,39 +15,27 @@ class Cohort < ApplicationRecord
               less_than: 2030,
             }
 
-  validates :suffix,
-            presence: true,
-            uniqueness: { scope: :start_year },
-            length: { within: 1..1 },
-            format: { with: /\A[a-z]+\z/ }
-
   validates :description,
             presence: true,
             uniqueness: { case_sensitive: false },
             length: { within: 5..50 }
 
   validates :registration_starts_at, presence: true
+  validates :identifier, presence: true, uniqueness: { case_sensitive: false }
   validate :registration_starts_at_matches_start_year
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
   validate :changing_funding_cap_with_dependent_applications
 
-  scope :order_by_latest, -> { order(start_year: :desc, suffix: :desc) }
-  scope :order_by_oldest, -> { order(start_year: :asc, suffix: :asc) }
+  scope :order_by_latest, -> { order(registration_starts_at: :desc) }
+  scope :order_by_oldest, -> { order(registration_starts_at: :asc) }
 
   scope :prior_to, lambda { |cohort|
-    where("start_year < :year OR (start_year = :year AND suffix < :suffix)",
-          year: cohort.start_year, suffix: cohort.suffix)
+    where(registration_starts_at: ...cohort.registration_starts_at)
   }
 
   def self.current(timestamp = Time.zone.today)
-    scope = order_by_latest.where(registration_starts_at: ..timestamp)
-
-    unless Feature.suffixed_cohorts?
-      scope = scope.where(suffix: "a")
-    end
-
-    scope.first!
+    order(registration_starts_at: :desc).where(registration_starts_at: ..timestamp).first!
   end
 
   def self.course_start_date
@@ -65,7 +55,7 @@ class Cohort < ApplicationRecord
   end
 
   def name
-    suffix == "a" ? start_year.to_s : identifier
+    start_year.to_s
   end
 
 private
@@ -74,6 +64,12 @@ private
     return if registration_starts_at.blank?
 
     errors.add(:registration_starts_at, "year must match the start year") if registration_starts_at.year != start_year
+  end
+
+  def set_identifier
+    return if registration_starts_at.blank?
+
+    self.identifier = registration_starts_at.strftime("%Y-%B")
   end
 
   def changing_funding_cap_with_dependent_applications

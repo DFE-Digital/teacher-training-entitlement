@@ -60,7 +60,6 @@ private
       :registration_starts_at,
       :registration_ends_at,
       :funding_cap,
-      :suffix,
       :description,
     )
   end

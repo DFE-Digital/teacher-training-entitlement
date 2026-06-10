@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_03_161027) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_105000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -182,16 +182,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_161027) do
     t.string "description", limit: 50, null: false
     t.uuid "ecf_id"
     t.boolean "funding_cap", default: false, null: false
-    t.virtual "identifier", type: :string, as: "(start_year || (suffix)::text)", stored: true
+    t.string "identifier", null: false
     t.date "registration_ends_at"
     t.date "registration_starts_at"
     t.integer "start_year", null: false
-    t.string "suffix", limit: 1, default: "a", null: false
     t.datetime "updated_at", null: false
     t.index ["description"], name: "index_cohorts_on_description", unique: true
     t.index ["ecf_id"], name: "index_cohorts_on_ecf_id", unique: true
     t.index ["identifier"], name: "index_cohorts_on_identifier", unique: true
-    t.index ["start_year", "suffix"], name: "index_cohorts_on_start_year_and_suffix", unique: true
     t.index ["start_year"], name: "index_cohorts_on_start_year"
   end
 

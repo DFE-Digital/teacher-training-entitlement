@@ -168,7 +168,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when the application has resumed in a different cohort" do
-        let(:resume_cohort) { create(:cohort, suffix: "b") }
+        let(:resume_cohort) { create(:cohort, :next) }
         let(:course_cohort) { create(:course_cohort, cohort: resume_cohort) }
         let(:started_declaration) { application.declarations.started_declaration_type.first }
         let(:started_cohort) { started_declaration.cohort }
