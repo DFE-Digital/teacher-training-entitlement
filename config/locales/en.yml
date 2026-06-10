@@ -875,6 +875,9 @@ en:
     title:
       registration_wizard:
         service_title: "Register for a National Professional Development (NPD) course"
+        start: Check funding eligibility and register
+        registration_submitted: Registration submitted
+        closed: Registration has closed temporarily
         get_an_identity: Get an identity
         choose_your_course: Choose a TTE course
         course_start_date: Choose your course start date
@@ -901,6 +904,12 @@ en:
         national_insurance_number_optional: National Insurance number (optional)
         change_your_course_or_provider: Change your course or provider
         choose_a_tte_and_provider: Choose a TTE course and provider
+      email_updates:
+        create: You've signed up for email updates
+      interest_notification_sign_up:
+        new: Register interest in NPD course
+      pages:
+        closed_registration_exception: Register late for a national professional qualification (NPQ)
     legend:
       applications_change_cohort:
         cohort_id: Choose a cohort

@@ -1,3 +1,5 @@
+<% content_for :title, t("helpers.title.interest_notification_sign_up.new") %>
+
 <div class="govuk-grid-row">
   <h1 class="govuk-heading-xl">Register interest in NPD course</h1>
   <%= form_with model: @notification_form, url: registration_interest_sign_up_path do |f| %>
