@@ -644,13 +644,13 @@ GEM
       websocket (~> 1.0)
     semantic_logger (4.18.0)
       concurrent-ruby (~> 1.0)
-    sentry-delayed_job (6.6.1)
+    sentry-delayed_job (6.6.2)
       delayed_job (>= 4.0)
-      sentry-ruby (~> 6.6.1)
+      sentry-ruby (~> 6.6.2)
     sentry-rails (6.6.0)
       railties (>= 5.2.0)
       sentry-ruby (~> 6.6.0)
-    sentry-ruby (6.6.1)
+    sentry-ruby (6.6.2)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
