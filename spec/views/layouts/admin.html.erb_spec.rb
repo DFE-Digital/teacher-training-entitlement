@@ -14,7 +14,7 @@ RSpec.describe "layouts/admin.html.erb", type: :view do
   end
 
   describe "service navigation" do
-    it { is_expected.to have_css(".govuk-service-navigation__container", text: "TTE Admin console") }
+    it { is_expected.to have_css(".govuk-service-navigation__container", text: "NPD Admin console") }
 
     it "has links for the admin navigation primary structure" do
       expected_items.each do |item|
