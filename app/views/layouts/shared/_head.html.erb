@@ -14,6 +14,19 @@
   <%= nonced_stylesheet_link_tag 'application', media: 'all' %>
   <%= nonced_javascript_include_tag 'application', defer: true %>
 
+  <% if session[:user_id].present? %>
+    <meta name="hmrc-timeout-dialog"
+          content="hmrc-timeout-dialog"
+          data-timeout="1800"
+          data-countdown="300"
+          data-keep-alive-url="<%= extend_session_path %>"
+          data-sign-out-url="<%= sign_out_user_path %>"
+          data-title="You're about to be signed out"
+          data-message="For your security, we will sign you out in"
+          data-keep-alive-button-text="Stay signed in"
+          data-sign-out-button-text="Sign out" />
+  <% end %>
+
   <%= nonced_style_tag do %>
     .hidden-element { display: none; visibility: hidden }
   <% end %>

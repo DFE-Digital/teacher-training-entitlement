@@ -7,6 +7,7 @@ import accessibleAutocomplete from 'accessible-autocomplete';
 import institutionPicker from "./institution-picker";
 import cookieBanner from "./cookie-banner";
 import print from "./print";
+import HMRCFrontend from "hmrc-frontend/hmrc/all.js";
 
 Rails.start();
 import * as GOVUKFrontend from 'govuk-frontend'
@@ -16,6 +17,7 @@ window.GOVUKFrontend = GOVUKFrontend;
 
 window.onload = function init() {
   window.GOVUKFrontend.initAll();
+  HMRCFrontend.initAll();
 };
 
 if (document.querySelector('[data-picker="school"]')) {

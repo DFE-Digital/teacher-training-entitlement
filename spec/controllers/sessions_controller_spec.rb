@@ -3,6 +3,32 @@ require "rails_helper"
 RSpec.describe SessionsController do
   include Helpers::JourneyHelper
 
+  describe "#extend_session" do
+    context "when a user is signed in" do
+      let(:user) { create(:user) }
+
+      before do
+        session[:user_id] = user.id
+        session[:last_activity_at] = 20.minutes.ago
+      end
+
+      it "updates last_activity_at and returns ok" do
+        get :extend_session
+
+        expect(response).to have_http_status(:ok)
+        expect(session[:last_activity_at]).to be_within(1.second).of(Time.current)
+      end
+    end
+
+    context "when no user is signed in" do
+      it "returns unauthorized" do
+        get :extend_session
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
   context "when a user is signed in" do
     before do
       allow(controller).to receive(:current_user).and_return(create(:user))

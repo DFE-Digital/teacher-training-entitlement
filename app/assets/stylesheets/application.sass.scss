@@ -11,6 +11,7 @@ $moj-images-path: "/";
 @import "govuk-frontend/dist/govuk/utilities/index";
 @import "govuk-frontend/dist/govuk/overrides/index";
 @import "@ministryofjustice/frontend/moj/components/timeline/timeline";
+@import "hmrc-frontend/hmrc/components/timeout-dialog/timeout-dialog";
 @import "accessible-autocomplete/src/autocomplete";
 @import "contents-list";
 @import "big-number";
