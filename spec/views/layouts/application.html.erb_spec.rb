@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "layouts/application.html.erb", type: :view do
   subject { Capybara.string(render) }
 
-  let(:service_name) { "Teacher training entitlement" }
+  let(:service_name) { "Register for a National Professional Development (NPD) course" }
   let(:one_login_link_text) { "GOV.UK One Login" }
   let(:sign_out_link_text) { "Sign out" }
 
