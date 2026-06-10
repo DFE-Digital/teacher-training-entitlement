@@ -4,6 +4,7 @@ attributes:
 disconnected: true
 filename: docs/content_editors/images/erd
 filetype: png
+generator: graphviz
 indirect: false
 inheritance: false
 markup: false
