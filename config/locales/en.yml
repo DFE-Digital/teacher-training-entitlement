@@ -400,8 +400,7 @@ en:
         applications/resume:
           attributes:
             base:
-              already_started: The application is already started
-              already_accepted: The application is already accepted
+              application_status: The application status is not resumable
               cohort_not_in_training: Selected schedule is not currently in training
               cohort_missing: Cohort for the selected schedule cannot be found
               incompatible_schedule: Selected schedule is for a different course than

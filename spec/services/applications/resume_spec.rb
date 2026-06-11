@@ -31,10 +31,12 @@ RSpec.describe Applications::Resume, type: :model do
   end
 
   describe "errors scenarios" do
-    context "when application is not deferred" do
-      let(:application) { create(:application, :accepted, :with_declaration, course_cohort:) }
+    (Application::STATUSES - [Application::DEFERRED]).each do |status|
+      context "when application is #{status}" do
+        let(:application) { create(:application, status, :with_declaration, course_cohort:) }
 
-      it { expect { service.call }.not_to change(application, :status) }
+        it { expect { service.call }.not_to change(application, :status) }
+      end
     end
 
     context "when course cohort has a different course than application" do
