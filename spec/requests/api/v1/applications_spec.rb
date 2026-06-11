@@ -274,7 +274,7 @@ RSpec.describe "Application endpoints", type: :request do
       let(:expected_response) do
         {
           "errors" => [
-            { "title" => "base", "detail" => I18n.t("activemodel.errors.models.applications/resume.attributes.base.already_started") },
+            { "title" => "base", "detail" => I18n.t("activemodel.errors.models.applications/resume.attributes.base.application_status") },
           ],
         }
       end

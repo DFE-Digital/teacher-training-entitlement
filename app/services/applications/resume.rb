@@ -8,8 +8,7 @@ module Applications
 
     attr_reader :application
 
-    validate :not_already_started
-    validate :not_already_accepted
+    validate :application_status
     validate :incompatible_course
     validate :cohort_not_in_training
     validate :cohort_exists
@@ -30,12 +29,10 @@ module Applications
 
   private
 
-    def not_already_started
-      add_error(:base, :already_started) if @application.started_status?
-    end
+    def application_status
+      return if @application.deferred_status?
 
-    def not_already_accepted
-      add_error(:base, :already_accepted) if @application.accepted_status?
+      add_error(:base, :application_status)
     end
 
     def incompatible_course

@@ -78,13 +78,27 @@ class Application < ApplicationRecord
 
   API_STATUSES = STATUSES + [REASSIGNED = "reassigned".freeze].freeze
 
+  # status transitions details
+  # nil       -> pending   ; application creation
+  # pending   -> accepted  ; lead provider accepts application
+  # pending   -> rejected  ; lead provider rejects application
+  # accepted  -> started   ; lead provider sends started declaration
+  # accepted  -> withdrawn ; lead provider withdraws application
+  # started   -> completed ; lead provider sends completed declaration
+  # started   -> deferred  ; lead provider defers application
+  # started   -> withdraw  ; lead provider withdraws application
+  # started   -> accepted  ; lead provider voids started declaration
+  # deferred  -> started   ; lead provider resumes application
+  # deferred  -> withdrawn ; cron job ExpireDeferredApplication
+  # rejected  -> pending   ; admin console `revert pending` action
+  # completed -> started   ; lead provider voids completed declaration
+  #
   STATUS_TRANSITIONS = {
     nil => [PENDING].freeze,
     PENDING => [ACCEPTED, REJECTED].freeze,
-    ACCEPTED => [STARTED, COMPLETED, WITHDRAWN].freeze,
+    ACCEPTED => [STARTED, WITHDRAWN].freeze,
     STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
     DEFERRED => [STARTED, WITHDRAWN].freeze,
-    WITHDRAWN => [STARTED].freeze,
     REJECTED => [PENDING].freeze,
     COMPLETED => [STARTED].freeze,
   }.freeze
