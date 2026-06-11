@@ -9,7 +9,7 @@ FactoryBot.define do
     end
 
     identifier do
-      registration_starts_at.strftime("%Y-%B")
+      registration_starts_at.strftime("%Y-%B").downcase
     end
 
     initialize_with do
