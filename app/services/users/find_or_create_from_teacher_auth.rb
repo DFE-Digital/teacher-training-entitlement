@@ -18,6 +18,7 @@ module Users
       user_matched_using_trn = matching_users.first
 
       if user_matched_using_trn
+        merge_and_archive_clashing_email_user(user_matched_using_trn)
         user_matched_using_trn.update!(one_login_id:, provider: Omniauth::Strategies::TeacherAuth::NAME, email:, full_name:, feature_flag_id:)
         merge_and_archive_other_users(user_matched_using_trn, matching_users[1..])
         return user_matched_using_trn
@@ -26,10 +27,12 @@ module Users
       user_matched_using_one_login_id = User.find_by(provider: Omniauth::Strategies::TeacherAuth::NAME, one_login_id:)
 
       if user_matched_using_one_login_id
+        merge_and_archive_clashing_email_user(user_matched_using_one_login_id)
         user_matched_using_one_login_id.update!(user_attributes)
         return user_matched_using_one_login_id
       end
 
+      merge_and_archive_clashing_email_user(nil)
       create_user_with_provider_data
     end
 
@@ -44,6 +47,17 @@ module Users
     def merge_and_archive_other_users(user_to_keep, users_to_merge)
       users_to_merge.each do |user_to_merge|
         Users::MergeAndArchive.new(user_to_merge:, user_to_keep:).call(dry_run: false)
+      end
+    end
+
+    def merge_and_archive_clashing_email_user(user_to_keep)
+      clashing_user = User.find_by(email:)
+      return if clashing_user.nil? || clashing_user == user_to_keep
+
+      if user_to_keep && clashing_user.trn.blank?
+        Users::MergeAndArchive.new(user_to_merge: clashing_user, user_to_keep:).call(dry_run: false)
+      else
+        Users::Archiver.new(user: clashing_user).archive!
       end
     end
 

@@ -13,43 +13,15 @@ class OmniauthController < Devise::OmniauthCallbacksController
       feature_flag_id: session["feature_flag_id"],
     ).call
 
-    # @user.persisted? checks that it exists and has been persisted to the database
-    # @user.save checks that any changes made to an existing record have been persisted to that persisted record
-    if @user.persisted? && (user_saved = @user.save)
-      session["user_id"] = @user.id
-      @user.set_closed_registration_feature_flag
-      sign_in_and_redirect @user
-    else
-      # we should never get here - as errors should have been previously handled
-      # TODO: need a feature test for the error scenario:
-      # - email has already been taken - but somehow user_id_with_clashing_email is nil
-      user_id_with_clashing_email = User.find_by(email: provider_data.info.email)&.id
-
-      send_error_to_sentry(
-        "Could not persist user after omniauth callback",
-        contexts: {
-          "Errors" => @user.errors.to_hash,
-          "Provider" => {
-            provider: provider_data.provider,
-            uid: provider_data.uid,
-            user_id_with_clashing_email:,
-          },
-          "User" => {
-            persisted: @user.persisted?,
-            saved: user_saved,
-            multibyte_email_characters: multibyte_email_characters(provider_data.info.email).join(" / "),
-          },
-        },
-      )
-
-      flash[:error] = failure_message
-      redirect_to failed_sign_in_path
-    end
+    session["user_id"] = @user.id
+    @user.set_closed_registration_feature_flag
+    sign_in_and_redirect @user
   rescue StandardError => e
-    id = @user.try(:id)
-    Rails.logger.info("[TeacherAuth] #{e} raised, user_id=#{id} uid=#{try_to_extract_user_uid}")
+    Rails.logger.info("[TeacherAuth] #{e} raised, user_id=#{@user.try(:id)} uid=#{try_to_extract_user_uid}")
+    Sentry.capture_exception(e)
 
-    raise e
+    flash[:error] = failure_message
+    redirect_to failed_sign_in_path
   end
 
   def failure
@@ -69,14 +41,6 @@ class OmniauthController < Devise::OmniauthCallbacksController
   end
 
 private
-
-  def multibyte_email_characters(email)
-    email.each_char.filter_map.with_index do |c, i|
-      next unless c.bytesize > 1
-
-      "Character #{i} = U+" + c.ord.to_s(16).upcase
-    end
-  end
 
   def send_error_to_sentry(message, contexts: {})
     Sentry.with_scope do |scope|
