@@ -143,7 +143,7 @@ RSpec.describe Declarations::Create, type: :model do
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
     let!(:application) do
-      create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
+      create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
     end
 
     describe "happy paths" do

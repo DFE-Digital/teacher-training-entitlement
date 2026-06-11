@@ -240,7 +240,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "#/components/schemas/DeclarationResponse",
                       "#/components/schemas/DeclarationCompletedRequest" do
         let(:application) do
-          create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
+          create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
         end
         let(:resource) { application }
         let(:declaration_date) { schedule.training_starts_at + 1.hour }
