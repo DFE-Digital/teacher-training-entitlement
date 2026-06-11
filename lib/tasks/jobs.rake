@@ -5,4 +5,9 @@ namespace :db do
     Dir.glob(glob).each { |file| require file }
     CronJob.subclasses.each(&:schedule)
   end
+
+  # schedule cron jobs automatically when starting workers
+  %w[jobs:work].each do |task|
+    Rake::Task[task].enhance(["db:schedule_jobs"])
+  end
 end
