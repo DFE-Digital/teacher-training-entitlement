@@ -30,18 +30,6 @@ module ApplicationHelper
     Rails.configuration.x.tracking_pixels_enabled && cookies["consented-to-cookies"] == "accept"
   end
 
-  def application_course_start_date
-    "October 2026"
-  end
-
-  def application_next_course_start_date
-    "Spring 2027"
-  end
-
-  def application_started_confirmed_by_date
-    "Spring 2027"
-  end
-
   def show_otp_code_in_ui(current_env, admin)
     return unless current_env.in?(%w[development review staging]) && admin.present?
 

@@ -108,7 +108,16 @@ FactoryBot.define do
     trait :previously_funded do
       after(:create) do |application|
         course = application.course.rebranded_alternative_courses.first
-        previous_cohort = create(:cohort, :unique, :with_funding_cap)
+        previous_registration_starts_at = application.cohort.registration_starts_at.prev_month
+        previous_registration_starts_at = application.cohort.registration_starts_at.next_month if previous_registration_starts_at.year < 2021
+
+        previous_cohort = Cohort.find_by(registration_starts_at: previous_registration_starts_at) ||
+          create(
+            :cohort,
+            :with_funding_cap,
+            start_year: previous_registration_starts_at.year,
+            registration_starts_at: previous_registration_starts_at,
+          )
 
         if previous_cohort == application.cohort
           previous_cohort = create(:cohort, :with_funding_cap,

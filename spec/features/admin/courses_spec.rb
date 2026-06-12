@@ -4,16 +4,14 @@ RSpec.feature "Listing and viewing courses", type: :feature do
   include Helpers::AdminLogin
 
   let(:courses_per_page) { Pagy::DEFAULT[:limit] }
+  let(:admin_user) { create(:admin) }
 
   before do
     create(:course, :npd_eirt)
+    sign_in_as(admin_user)
   end
 
   context "when signed in as admin" do
-    before do
-      sign_in_as(create(:admin))
-    end
-
     scenario "viewing the list of courses" do
       course = create(:course, name: "Course with multiple cohorts", identifier: "course-with-multiple-cohorts")
 

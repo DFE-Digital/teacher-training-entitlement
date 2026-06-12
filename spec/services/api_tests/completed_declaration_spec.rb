@@ -10,7 +10,7 @@ RSpec.describe APITests::CompletedDeclaration, type: :model do
   let(:has_passed) { "true" }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
   # let(:declaration_date) { (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC") }
-  let(:declaration_date) { application.schedule.training_ends_at.in_time_zone("UTC") }
+  let(:declaration_date) { (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC") }
 
   let(:expected_body) do
     {

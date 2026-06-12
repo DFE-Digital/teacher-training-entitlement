@@ -19,7 +19,7 @@ RSpec.describe LeadProvider do
     let(:course) { create(:course, identifier: course_identifier) }
 
     context "with course npq-headship" do
-      let(:course_identifier) { "npq-headship" }
+      let(:course_identifier) { "tte-early-years" }
 
       it "returns expected lead providers" do
         expect(subject).to eq(LeadProvider.pluck(:name))

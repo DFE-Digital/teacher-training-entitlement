@@ -162,8 +162,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           seeder.call
 
           course = Course.find_by!(identifier: "tte-early-years")
-          primary_course_cohort = CourseCohort.find_by(course:, cohort: Cohort.find_by(registration_starts_at: Date.new(cohort_year, 7, 1)))
-          secondary_course_cohort = CourseCohort.find_by(course:, cohort: Cohort.find_by(registration_starts_at: Date.new(cohort_year + 1, 7, 1)))
+          cohort_start_dates = seeder.cohort_start_dates.take(4)
+          primary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[0])
+          secondary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[2])
+          primary_course_cohort = CourseCohort.find_by!(course:, cohort: primary_cohort)
+          secondary_course_cohort = CourseCohort.find_by!(course:, cohort: secondary_cohort)
 
           expect(lead_provider.updateable_applications.where(course_cohort: primary_course_cohort).count).to eq(11)
           expect(lead_provider.updateable_applications.where(course_cohort: secondary_course_cohort).count).to eq(1)

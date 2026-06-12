@@ -40,20 +40,13 @@ class Cohort < ApplicationRecord
     order(registration_starts_at: :desc).where(registration_starts_at: ..timestamp).first!
   end
 
-  def self.course_start_date
-    if Time.zone.now.month.between?(1, 3)
-      "January to March #{current.start_year}"
-    else
-      "October #{current.start_year}"
-    end
+  def registration_open?
+    Time.zone.today > registration_starts_at &&
+      (registration_ends_at.nil? || Time.zone.today <= registration_ends_at)
   end
 
-  def self.next_course_start_date
-    if Time.zone.now.month.between?(1, 3)
-      "October #{current.start_year}"
-    else
-      "January to March #{current.start_year + 1}"
-    end
+  def registration_upcoming?
+    registration_starts_at > Time.zone.today
   end
 
   def name

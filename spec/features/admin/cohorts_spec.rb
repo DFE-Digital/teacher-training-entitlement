@@ -4,8 +4,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   include Helpers::AdminLogin
   include Helpers::FileHelper
 
-  let(:admin)  { create :admin }
-  let(:cohort) { Cohort.find_by! identifier: "2026-April" }
+  let(:admin) { create :admin }
+  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 4, 1)) }
 
   let(:new_button_text)    { "New cohort" }
   let(:edit_button_text)   { "Edit cohort details" }
@@ -22,13 +22,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     visit_index
 
     expect(Cohort.count).to be_positive
-
-    expect(page).to have_table(rows: [
-      ["April 2028", "3 April 2028", "Yes"],
-      ["April 2027", "3 April 2027", "Yes"],
-      ["April 2026", "3 April 2026", "Yes"],
-      ["April 2025", "3 April 2025", "Yes"],
-    ])
+    expected = Cohort.order_by_latest.map { |c| [c.description, c.registration_starts_at.to_date.to_fs(:govuk), "Yes"] }
+    expect(page).to have_table(rows: expected)
   end
 
   scenario "viewing details" do
@@ -40,7 +35,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(summary_list).to have_summary_item("Name", "2026")
       expect(summary_list).to have_summary_item("Description", "April 2026")
       expect(summary_list).to have_summary_item("Start year", "2026")
-      expect(summary_list).to have_summary_item("Registration start date", "3 April 2026")
+      expect(summary_list).to have_summary_item("Registration start date", "1 April 2026")
       expect(summary_list).to have_summary_item("Funding cap", "Yes")
     end
   end

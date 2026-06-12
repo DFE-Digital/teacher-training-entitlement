@@ -3,11 +3,12 @@ require "rails_helper"
 RSpec.describe Cohort, type: :model do
   let(:cohort) { create(:cohort) }
 
-  let :cohorts do
+  let(:cohorts) do
     (2024..2026).to_a.shuffle.flat_map do |start_year|
       [5, 8].shuffle.map do |month|
         registration_starts_at = Date.new(start_year, month, 10)
-        create :cohort, start_year:, registration_starts_at:, description: "#{start_year} #{Date::MONTHNAMES[month]}"
+        exist = Cohort.find_by(identifier: registration_starts_at.strftime("%Y-%B"))
+        exist || create(:cohort, start_year:, registration_starts_at:)
       end
     end
   end

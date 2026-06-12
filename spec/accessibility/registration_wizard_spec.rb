@@ -23,6 +23,7 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
       next_step_path: "check-answers",
       current_step: :teacher_catchment,
       course: course_stub,
+      query_store: OpenStruct.new(course: course_stub),
       store: store_stub,
       answers: answers_stub,
     )
@@ -33,6 +34,7 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
     OpenStruct.new(
       identifier: "the-course",
       name: "The course",
+      next_cohort_start_date: "October 2026",
     )
   end
 

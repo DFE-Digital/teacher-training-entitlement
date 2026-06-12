@@ -46,7 +46,7 @@ RSpec.feature "Statement - change payment per participant", type: :feature do
 
     expect(page).to have_content("#{contract.course.name} payment per participant changed" \
                                  " for all #{statement.lead_provider.name} contracts"\
-                                 " in the #{statement.cohort.start_year} cohort" \
+                                 " in the #{statement.cohort.name} cohort" \
                                  " from #{Time.zone.today.strftime('%B %Y')} onwards")
     expect(contract.reload.per_participant).to eq(123)
     expect(future_contract.reload.per_participant).to eq(123)

@@ -10,18 +10,19 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
         registration_starts_at: Time.zone.yesterday.prev_year,
       )
     end
+    let(:course_cohort) { create(:course_cohort, course: Course.last, cohort: application_cohort) }
     let(:application) do
       create(
         :application,
         :deferred,
-        cohort: application_cohort,
+        course_cohort:,
         schedule: create(:schedule, cohort: application_cohort),
       )
     end
 
     before { create(:course_cohort, cohort:, course: application.course) }
 
-    it "enqueues an email for a deferred application when its course is on a cohort that opened yesterday" do
+    it "enqueues email for deferred applications when registration opened yesterday" do
       expect { described_class.perform_now }
         .to have_enqueued_mail(GenericMailer, :registration_open_notification)
     end

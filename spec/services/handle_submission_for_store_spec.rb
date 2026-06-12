@@ -51,7 +51,6 @@ RSpec.describe HandleSubmissionForStore do
   let!(:course_cohort) { create(:course_cohort, course:, cohort:) }
 
   before do
-    travel_to(Date.new(cohort.start_year, 9, 26))
     allow_any_instance_of(School).to receive(:pp50?).and_return(false)
   end
 

@@ -1,7 +1,6 @@
 module Questionnaires
   class CourseStartDate < Base
     class Form < QuestionTypes::RadioButtonGroup
-      include ApplicationHelper
       def type
         "radio_button_group"
       end
@@ -51,7 +50,7 @@ module Questionnaires
 
     def next_step
       if course_start_date == "yes"
-        wizard.store["course_start"] = "In #{application_course_start_date}"
+        wizard.store["course_start"] = application_course_start_date
         wizard.current_user.update!(notify_user_for_future_reg: false)
         :choose_your_provider
       else
@@ -62,6 +61,10 @@ module Questionnaires
 
     def previous_step
       :start
+    end
+
+    def application_course_start_date
+      @application_course_start_date ||= Course.reception.next_cohort_start_date
     end
   end
 end
