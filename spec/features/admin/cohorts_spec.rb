@@ -86,28 +86,28 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       navigate_to_cohort
       click_on edit_button_text
 
-      new_description = "2025 to 2026 #{rand(100)}"
+      new_description = "2026 to 2027 #{rand(100)}"
       fill_in "Description", with: new_description
-      fill_in "Start year", with: "2025"
+      fill_in "Start year", with: "2026"
       fill_in "Suffix", with: "b"
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "6"
         fill_in "Month", with: "5"
-        fill_in "Year", with: "2025"
+        fill_in "Year", with: "2026"
       end
       expect { click_on "Update cohort" }.not_to(change(Cohort, :count))
       expect(page).to have_text("Cohort updated")
 
       cohort.reload
 
-      expect(cohort.identifier).to eq("2025b")
-      expect(cohort.name).to eq("2025b")
+      expect(cohort.identifier).to eq("2026b")
+      expect(cohort.name).to eq("2026b")
       expect(cohort.description).to eq(new_description)
-      expect(cohort.start_year).to be(2025)
+      expect(cohort.start_year).to be(2026)
       expect(cohort.suffix).to eq("b")
       expect(cohort.funding_cap).to be(true)
-      expect(cohort.registration_starts_at.to_date).to eq(Date.new(2025, 5, 6))
+      expect(cohort.registration_starts_at.to_date).to eq(Date.new(2026, 5, 6))
     end
 
     scenario "deletion" do
