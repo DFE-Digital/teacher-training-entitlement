@@ -5,7 +5,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   include Helpers::FileHelper
 
   let(:admin) { create :admin }
-  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, registration_starts_at: Date.new(2026, 4, 1)) }
+  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 4, 1)) }
 
   let(:new_button_text)    { "New cohort" }
   let(:edit_button_text)   { "Edit cohort details" }
@@ -13,7 +13,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   let(:download_contracts_button_text) { "Download contracts CSV" }
 
   before do
-    (2026..2028).each { create :cohort, registration_starts_at: Date.new(_1, 4, 1) }
+    (2026..2028).each { create :cohort, start_year: _1 }
 
     sign_in_as admin
   end
@@ -33,6 +33,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
     within(".govuk-summary-list") do |summary_list|
       expect(summary_list).to have_summary_item("Name", "2026")
+      expect(summary_list).to have_summary_item("Description", "April 2026")
       expect(summary_list).to have_summary_item("Start year", "2026")
       expect(summary_list).to have_summary_item("Registration start date", "1 April 2026")
       expect(summary_list).to have_summary_item("Funding cap", "Yes")
@@ -49,9 +50,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       visit_index
       click_on new_button_text
 
-      expect(page).to have_css("a.govuk-back-link[href$='#{admin_cohorts_path}']", text: "Back")
-
       fill_in "Description", with: "2029 to 2030"
+      fill_in "Start year", with: "2029"
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "2"
@@ -65,7 +65,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       cohort = Cohort.order(created_at: :desc, id: :desc).first
       expect(cohort.identifier).to eq("2029-March")
-      expect(cohort.name).to eq("2029 to 2030")
+      expect(cohort.name).to eq("2029")
       expect(cohort.description).to eq("2029 to 2030")
       expect(cohort.start_year).to be(2029)
       expect(cohort.funding_cap).to be(true)
@@ -81,6 +81,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       new_description = "2025 to 2026 #{rand(100)}"
       fill_in "Description", with: new_description
+      fill_in "Start year", with: "2025"
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "6"
@@ -93,7 +94,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       cohort.reload
 
       expect(cohort.identifier).to eq("2025-May")
-      expect(cohort.name).to eq(new_description)
+      expect(cohort.name).to eq("2025")
       expect(cohort.description).to eq(new_description)
       expect(cohort.start_year).to be(2025)
       expect(cohort.funding_cap).to be(true)
@@ -116,7 +117,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
         end
       end
 
-      visit download_contracts_admin_cohort_path(cohort)
+      navigate_to_cohort
+      click_on download_contracts_button_text
       csv_file = "#{Capybara.save_path}/#{cohort.start_year}_cohort_contracts.csv"
       wait_for_file_to_be_created(csv_file)
       csv = CSV.read(csv_file)

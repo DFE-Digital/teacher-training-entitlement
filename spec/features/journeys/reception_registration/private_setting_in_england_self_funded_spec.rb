@@ -44,8 +44,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
       expect(application.raw_application_data).to match(
         "can_share_choices" => "1",
-        "course_start" => CourseCohort.next_open_for(course: Course.reception).name,
-        "course_cohort_id" => CourseCohort.next_open_for(course: Course.reception).id,
+        "course_start" => Course.reception.next_cohort_start_date,
         "course_start_date" => "yes",
         "funding" => "self",
         "funding_amount" => nil,

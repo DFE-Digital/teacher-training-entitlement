@@ -13,6 +13,20 @@ RSpec.describe LeadProvider do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
   end
 
+  describe "#for" do
+    subject { described_class.for(course:).map(&:name) }
+
+    let(:course) { create(:course, identifier: course_identifier) }
+
+    context "with course npq-headship" do
+      let(:course_identifier) { "tte-early-years" }
+
+      it "returns expected lead providers" do
+        expect(subject).to eq(LeadProvider.pluck(:name))
+      end
+    end
+  end
+
   describe "#next_output_fee_statement" do
     let(:cohort) { create(:cohort, :current) }
     let(:lead_provider) { next_output_fee_statement.lead_provider }
@@ -28,7 +42,7 @@ RSpec.describe LeadProvider do
       # Deadline is later
       create(:statement, output_fee: true, cohort:, lead_provider:, deadline_date: 2.days.from_now)
       # Wrong cohort
-      create(:statement, output_fee: true, cohort: create(:cohort, registration_starts_at: Date.new(cohort.start_year + 1, 4, 1)), lead_provider:, deadline_date: 1.hour.from_now)
+      create(:statement, output_fee: true, cohort: create(:cohort, start_year: cohort.start_year + 1), lead_provider:, deadline_date: 1.hour.from_now)
       # In the past
       create(:statement, output_fee: true, cohort:, lead_provider:, deadline_date: 1.day.ago)
     end
@@ -44,11 +58,11 @@ RSpec.describe LeadProvider do
     let :lead_provider do
       create_list(:lead_provider, 2, delivery_partners: {
         twenty_three => twenty_three_partner,
-        create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) => twenty_four_partner,
+        create(:cohort, start_year: 2024) => twenty_four_partner,
       }).first
     end
 
-    let(:twenty_three) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+    let(:twenty_three) { create(:cohort, start_year: 2023) }
     let(:twenty_three_partner) { create(:delivery_partner) }
     let(:twenty_four_partner) { create(:delivery_partner) }
     let(:unrelated_partner) { create(:delivery_partner) }

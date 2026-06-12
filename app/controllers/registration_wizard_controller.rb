@@ -1,6 +1,9 @@
 class RegistrationWizardController < PublicPagesController
   before_action :registration_closed
+<<<<<<< HEAD
   before_action :redirect_to_start_if_signed_out, except: :development_login
+=======
+>>>>>>> 96e3ad3d9 (Move registration cohort selection to be driven from course)
   before_action :set_wizard
   before_action :set_form
   before_action :check_duplicate_applications, only: %i[update]
@@ -9,7 +12,7 @@ class RegistrationWizardController < PublicPagesController
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
 
-  helper_method :course, :course_cohort
+  helper_method :course
 
   def show
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
@@ -74,13 +77,6 @@ private
       !params[:step].in?(RegistrationWizard::VALID_BLANK_STEPS)
   end
 
-  def redirect_to_start_if_signed_out
-    return if current_user.present?
-    return if params[:step].to_s.in?(%w[start closed])
-
-    redirect_to root_path
-  end
-
   def redirect_to_course_start_date
     redirect_to registration_wizard_show_path("course-start-date")
   end
@@ -112,6 +108,8 @@ private
 
   def check_duplicate_applications
     return unless @wizard.current_step.to_s == "course_start_date"
+
+    course_cohort = CourseCohort.find_by(course:, cohort: course.next_open_cohort)
     return unless course_cohort
 
     active_applications = current_user.applications.active_applications.where(course_cohort:)
@@ -149,9 +147,5 @@ private
 
   def course
     @course ||= Course.reception
-  end
-
-  def course_cohort
-    @course_cohort ||= CourseCohort.next_open_for(course:)
   end
 end

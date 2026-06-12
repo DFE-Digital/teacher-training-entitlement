@@ -1,5 +1,4 @@
 class Cohort < ApplicationRecord
-  before_validation :set_start_year
   before_validation :set_identifier
 
   has_many :declarations, dependent: :restrict_with_exception
@@ -7,7 +6,6 @@ class Cohort < ApplicationRecord
   has_many :delivery_partnerships, dependent: :destroy
   has_many :delivery_partners, through: :delivery_partnerships
   has_many :course_cohorts, dependent: :destroy
-  has_many :courses, through: :course_cohorts
   has_many :schedules, through: :course_cohorts
 
   validates :start_year,
@@ -23,8 +21,8 @@ class Cohort < ApplicationRecord
             length: { within: 5..50 }
 
   validates :registration_starts_at, presence: true
-  validates :identifier, presence: true
-  validate :identifier_is_unique
+  validates :identifier, presence: true, uniqueness: { case_sensitive: false }
+  validate :registration_starts_at_matches_start_year
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
   validate :changing_funding_cap_with_dependent_applications
@@ -50,30 +48,21 @@ class Cohort < ApplicationRecord
   end
 
   def name
-    description
+    start_year.to_s
   end
 
 private
 
-  def set_start_year
+  def registration_starts_at_matches_start_year
     return if registration_starts_at.blank?
 
-    self.start_year = registration_starts_at.year
+    errors.add(:registration_starts_at, "year must match the start year") if registration_starts_at.year != start_year
   end
 
   def set_identifier
     return if registration_starts_at.blank?
 
     self.identifier = registration_starts_at.strftime("%Y-%B")
-  end
-
-  def identifier_is_unique
-    return if identifier.blank?
-
-    duplicate = Cohort.where.not(id:).where("LOWER(identifier) = ?", identifier.downcase).exists?
-    return unless duplicate
-
-    errors.add(:identifier, :taken, cohort_start: registration_starts_at.strftime("%b %Y"))
   end
 
   def changing_funding_cap_with_dependent_applications

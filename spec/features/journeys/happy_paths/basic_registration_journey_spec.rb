@@ -27,7 +27,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
       expect(page).to have_text("When do you want to start the course?")
 
-      page.choose(CourseCohort.next_open_for(course: Course.reception).name, visible: :all)
+      page.choose(Course.reception.next_cohort_start_date, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
@@ -58,7 +58,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     expect_page_to_have(path: "/registration/check-answers", submit_button_text: "Submit", submit_form: true) do
       expect_check_answers_page_to_have_answers(
         {
-          "Course start" => CourseCohort.next_open_for(course: Course.reception).name,
+          "Course start" => Course.reception.next_cohort_start_date,
           "Course" => Course.last.name,
           "Provider" => LeadProvider.first.name,
           "Workplace" => "open manchester school – street 1, manchester",
@@ -141,8 +141,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
       "review_status" => nil,
       "raw_application_data" => {
         "can_share_choices" => "1",
-        "course_cohort_id" => latest_application.course_cohort_id,
-        "course_start" => latest_application.course_cohort.name,
+        "course_start" => Course.reception.next_cohort_start_date,
         "course_start_date" => "yes",
         "funding_amount" => nil,
         "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
