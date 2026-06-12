@@ -7,7 +7,7 @@ module Admin
     end
 
     def show
-      @course = Course.find(params[:id])
+      @course = Course.includes(course_cohorts: :cohort).find(params[:id])
     end
 
   private

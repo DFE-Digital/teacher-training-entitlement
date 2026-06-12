@@ -31,3 +31,35 @@
     end
   end
 %>
+
+<h2 class="govuk-heading-m">Course cohorts</h2>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Cohort")
+        row.with_cell(text: "Registration start date")
+        row.with_cell(text: "Action")
+      end
+    end
+
+    table.with_body do |body|
+      @course.course_cohorts.sort_by { _1.cohort.registration_starts_at }.each do |course_cohort|
+        cohort = course_cohort.cohort
+
+        body.with_row do |row|
+          row.with_cell(text: cohort.description)
+          row.with_cell(text: cohort.registration_starts_at.to_fs(:govuk_short))
+          row.with_cell do
+            govuk_link_to(
+              "Edit",
+              edit_admin_cohort_path(cohort, redirect_to: admin_course_path(@course)),
+              class: "govuk-button govuk-!-margin-bottom-0",
+            )
+          end
+        end
+      end
+    end
+  end
+%>

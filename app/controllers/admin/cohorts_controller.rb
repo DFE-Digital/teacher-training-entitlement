@@ -1,6 +1,7 @@
 class Admin::CohortsController < AdminController
   before_action :ensure_super_admin, except: %i[index show]
   before_action :cohort, only: %i[show edit update destroy]
+  before_action :set_back_path, only: %i[edit update]
 
   def index
     @pagy, @cohorts = pagy(Cohort.order_by_latest)
@@ -32,7 +33,7 @@ class Admin::CohortsController < AdminController
   def update
     if @cohort.update(cohort_params)
       flash[:success] = "Cohort updated"
-      redirect_to admin_cohort_path(@cohort)
+      redirect_to @back_path
     else
       render :form, status: :unprocessable_content
     end
@@ -60,13 +61,16 @@ private
       :registration_starts_at,
       :registration_ends_at,
       :funding_cap,
-      :suffix,
       :description,
     )
   end
 
   def cohort
     @cohort ||= Cohort.find(params[:id])
+  end
+
+  def set_back_path
+    @back_path = url_from(params[:redirect_to]) || admin_cohort_path(@cohort)
   end
 
   def ensure_super_admin
