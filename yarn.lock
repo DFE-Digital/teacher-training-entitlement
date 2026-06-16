@@ -2117,10 +2117,10 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hmrc-frontend@^7.20.0:
-  version "7.20.0"
-  resolved "https://registry.yarnpkg.com/hmrc-frontend/-/hmrc-frontend-7.20.0.tgz#b89486cce7a35e127f184dc46204754ee8f7799c"
-  integrity sha512-sz7W84UPMUupJygmiwTtbSCQYOxPDQiKtcMpB88RwBl3ryKBVlUN6PYdCdm+XucpopJyJS+etWzn52LPJ0sWPA==
+hmrc-frontend@^7.21.0:
+  version "7.21.0"
+  resolved "https://registry.yarnpkg.com/hmrc-frontend/-/hmrc-frontend-7.21.0.tgz#2f8dd85b8b03cdf2ae25625c946a9fa74af99846"
+  integrity sha512-9Hwcodw6xkHHEm4HsYHxl4Nnhc/EG+iwuaj0C5bKctiMMxDH9qt4Mrw16mPwd3sAWe0aV6V0EIN7jfWeisKfYw==
   dependencies:
     accessible-autocomplete "^3.0.1"
     govuk-frontend "^6.2.0"
