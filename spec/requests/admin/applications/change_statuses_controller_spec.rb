@@ -7,11 +7,7 @@ RSpec.describe Admin::Applications::ChangeStatusesController, :ecf_api_disabled,
 
   subject { response }
 
-  let :application do
-    create(:application, :accepted).tap do |application|
-      create(:declaration, application:)
-    end
-  end
+  let(:application) { create(:application, :started, :with_declaration) }
 
   context "when logged in" do
     before { sign_in_as_admin }

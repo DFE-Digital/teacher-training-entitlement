@@ -26,10 +26,18 @@ module Admin
       end
 
       def status_options
-        OPTIONS.without(application&.status)
+        if application.accepted_status?
+          [Application::DEFERRED]
+        elsif application.started_status?
+          OPTIONS.without(Application::ACCEPTED)
+        else
+          OPTIONS.without(application&.status)
+        end
       end
 
       def reason_options
+        return REASON_OPTIONS.except(::Application::WITHDRAWN) if application.accepted_status?
+
         REASON_OPTIONS
       end
 
