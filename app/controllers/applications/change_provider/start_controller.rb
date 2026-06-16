@@ -1,8 +1,7 @@
 module Applications
   module ChangeProvider
-    class StartController < ::Applications::ApplicationsController
+    class StartController < ChangeProviderController
       include MultiStepFormSession
-      before_action :ensure_can_change_provider
 
       before_action :set_form
       storing_form_session_as :change_provider
@@ -22,10 +21,6 @@ module Applications
       end
 
     private
-
-      def ensure_can_change_provider
-        redirect_to application_path(application.ecf_id) unless application.can_change_provider?
-      end
 
       def set_form
         @form = Applications::ChangeProvider::StartForm.new(form_params)
