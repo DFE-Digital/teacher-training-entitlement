@@ -307,7 +307,9 @@ RSpec.describe "Application endpoints", type: :request do
       api_put(withdraw_api_v1_application_path(ecf_id: application.ecf_id), params:)
     end
 
-    context "when the application can be withdrawn" do
+    context "when the application is started" do
+      let(:application_status_trait) { :started }
+
       it_behaves_like "a successful api call"
 
       it "creates a withdrawn event" do
@@ -320,12 +322,19 @@ RSpec.describe "Application endpoints", type: :request do
 
     context "when the application is accepted" do
       let(:application_status_trait) { :accepted }
-      let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course_cohort:) }
 
-      it_behaves_like "a successful api call"
+      let(:expected_response) do
+        {
+          "errors" => [
+            { "title" => "application", "detail" => I18n.t("activemodel.errors.models.applications/withdraw.attributes.application.not_withdrawable") },
+          ],
+        }
+      end
+
+      it_behaves_like "an unprocessable content api call"
     end
 
-    context "when the application cannot be withdrawn" do
+    context "when the application is already withdrawn" do
       let(:application_status_trait) { :withdrawn }
       let(:expected_response) do
         {
