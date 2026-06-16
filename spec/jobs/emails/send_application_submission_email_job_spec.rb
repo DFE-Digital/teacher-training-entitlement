@@ -7,18 +7,24 @@ RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
   subject(:job) { described_class.new(application:) }
 
   describe "#perform" do
+    let(:message) { instance_double(ActionMailer::MessageDelivery) }
+    let(:mailer) { instance_double(GenericMailer, application_submitted: message) }
+
     before do
-      allow(GenericMailer).to receive(:with).and_call_original
+      allow(GenericMailer).to receive(:with).and_return(mailer)
+      allow(message).to receive(:deliver_now)
     end
 
     it "calls `ApplicationSubmissionMailer`" do
       expect(GenericMailer).to receive(:with).with(
-        amount: "123",
         to: application.user.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
         course_name: course.name,
+        cohort_date: application.cohort.name,
         ecf_id: application.ecf_id,
+        sign_in_link: Rails.configuration.sign_in_link,
+        feedback_link: "https://forms.cloud.microsoft/e/hWuJx59U2P",
       )
 
       subject.perform_now

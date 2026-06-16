@@ -4,9 +4,11 @@ class GenericMailerPreview < ActionMailer::Preview
       to: "test@example.com",
       full_name: "Jane Smith",
       provider_name: "Ambition Institute",
-      course_name: "NPD Course",
-      amount: "£1,200",
+      course_name: "Teaching in Reception",
+      cohort_date: "autumn 2026",
       ecf_id: "abc-123-def-456",
+      sign_in_link: "https://signin.service.gov.uk",
+      feedback_link: "https://forms.cloud.microsoft/e/hWuJx59U2P",
     ).application_submitted
   end
 

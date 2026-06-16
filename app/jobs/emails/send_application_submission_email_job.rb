@@ -8,8 +8,10 @@ module Emails
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
         course_name: application.course.name,
-        amount: application.raw_application_data["funding_amount"],
+        cohort_date: application.cohort.name,
         ecf_id: application.ecf_id,
+        sign_in_link: Rails.configuration.sign_in_link,
+        feedback_link: "https://forms.cloud.microsoft/e/hWuJx59U2P",
       ).application_submitted.deliver_now
     end
   end
