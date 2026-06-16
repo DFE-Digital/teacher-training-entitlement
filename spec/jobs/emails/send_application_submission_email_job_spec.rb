@@ -24,7 +24,7 @@ RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
         cohort_date: application.cohort.name,
         ecf_id: application.ecf_id,
         sign_in_link: Rails.configuration.sign_in_link,
-        feedback_link: "https://forms.cloud.microsoft/e/hWuJx59U2P",
+        feedback_link: Rails.configuration.feedback_link,
       )
 
       subject.perform_now

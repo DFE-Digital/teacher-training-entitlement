@@ -8,7 +8,7 @@ class GenericMailerPreview < ActionMailer::Preview
       cohort_date: "autumn 2026",
       ecf_id: "abc-123-def-456",
       sign_in_link: "https://signin.service.gov.uk",
-      feedback_link: "https://forms.cloud.microsoft/e/hWuJx59U2P",
+      feedback_link: "https://feedback.service.gov.uk",
     ).application_submitted
   end
 
