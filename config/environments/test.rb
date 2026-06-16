@@ -66,6 +66,6 @@ Rails.application.configure do
   config.x.trs_api_url = "https://trs-api.example.com"
 
   config.service_base_url = "http://test.tte.education.gov.uk"
-  config.sign_in_link = "http://test.sign_in.education.gov.uk"
+  config.sign_in_link = "http://test.local"
   config.feedback_link = "http://test.feedback.education.gov.uk"
 end
