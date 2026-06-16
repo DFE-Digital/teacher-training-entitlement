@@ -6,8 +6,10 @@ namespace :db do
     CronJob.subclasses.each(&:schedule)
   end
 
-  # schedule cron jobs automatically when starting workers
-  %w[jobs:work].each do |task|
-    Rake::Task[task].enhance(["db:schedule_jobs"])
+  # schedule cron jobs automatically when starting workers (skip on review apps)
+  unless Rails.env.review?
+    %w[jobs:work].each do |task|
+      Rake::Task[task].enhance(["db:schedule_jobs"])
+    end
   end
 end
