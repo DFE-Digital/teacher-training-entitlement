@@ -27,7 +27,6 @@ module Applications
           .for(course: application.course)
           .alphabetical
           .reject { |p| p.id == application.lead_provider.id }
-          .reject { |p| p.id.in?(application.application_lead_providers.map(&:lead_provider_id)) }
       end
 
       def set_form
