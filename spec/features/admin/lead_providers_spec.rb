@@ -38,11 +38,11 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_25.name }])
 
-    click_link("2024 to 2025")
+    click_link(cohort_2024.description)
     find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_24.name }])
 
-    click_link("2023 to 2024")
+    click_link(cohort_2023.description)
     find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_23.name }])
   end

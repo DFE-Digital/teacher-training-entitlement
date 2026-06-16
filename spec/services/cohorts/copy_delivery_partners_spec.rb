@@ -43,32 +43,6 @@ RSpec.describe Cohorts::CopyDeliveryPartners do
       end
     end
 
-    context "when previous cohort is same in a year" do
-      before do
-        create(:delivery_partnership,
-               cohort: same_year_cohort,
-               lead_provider: lead_provider_1,
-               delivery_partner: delivery_partner_1)
-        create(:delivery_partnership,
-               cohort: same_year_cohort,
-               lead_provider: lead_provider_2,
-               delivery_partner: delivery_partner_2)
-      end
-
-      let(:partnerships) { cohort.delivery_partnerships }
-      let(:cohort) { create(:cohort, start_year: 2025, suffix: "b") }
-      let(:same_year_cohort) { create(:cohort, start_year: 2025, suffix: "a") }
-
-      it "copies delivery partners from the previous cohort" do
-        expect {
-          service.copy
-        }.to change { cohort.delivery_partnerships.count }.from(0).to(2)
-
-        expect(partnerships.pluck(:lead_provider_id)).to contain_exactly(lead_provider_1.id, lead_provider_2.id)
-        expect(partnerships.pluck(:delivery_partner_id)).to contain_exactly(delivery_partner_1.id, delivery_partner_2.id)
-      end
-    end
-
     context "when the previous cohort has no delivery partners" do
       it_behaves_like "does not copy delivery partners"
     end

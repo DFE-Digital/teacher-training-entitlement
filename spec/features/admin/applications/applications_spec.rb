@@ -87,7 +87,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     application.update!(course_cohort:)
 
     visit(admin_applications_path)
-    click_on "2022 to 2023"
+    click_on cohort.description
 
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(application)

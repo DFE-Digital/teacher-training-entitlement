@@ -9,7 +9,7 @@ namespace :tad_requests do
       "npq-early-years-leadership", # NPQEYL
     ].freeze
 
-    cohort = Cohort.find_by!(idenfitier: "2023a")
+    cohort = Cohort.find_by!(identifier: "2023-April")
     schedules = Schedule.where(identifier: %w[npq-specialist-autumn npq-leadership-autumn], cohort:)
     courses = Course.where(identifier: course_identifiers)
 

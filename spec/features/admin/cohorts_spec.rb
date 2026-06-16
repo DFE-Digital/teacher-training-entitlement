@@ -5,7 +5,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   include Helpers::FileHelper
 
   let(:admin)  { create :admin }
-  let(:cohort) { Cohort.find_by! identifier: "2026a" }
+  let(:cohort) { Cohort.find_by! identifier: "2026-April" }
 
   let(:new_button_text)    { "New cohort" }
   let(:edit_button_text)   { "Edit cohort details" }
@@ -24,23 +24,22 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     expect(Cohort.count).to be_positive
 
     expect(page).to have_table(rows: [
-      ["2028 to 2029", "3 April 2028", "Yes"],
-      ["2027 to 2028", "3 April 2027", "Yes"],
-      ["2026 to 2027", "3 April 2026", "Yes"],
-      ["2025 to 2026", "3 April 2025", "Yes"],
+      ["April 2028", "3 April 2028", "Yes"],
+      ["April 2027", "3 April 2027", "Yes"],
+      ["April 2026", "3 April 2026", "Yes"],
+      ["April 2025", "3 April 2025", "Yes"],
     ])
   end
 
   scenario "viewing details" do
     navigate_to_cohort
 
-    expect(page).to have_css("h1", text: "Cohort 2026 to 2027")
+    expect(page).to have_css("h1", text: "Cohort April 2026")
 
     within(".govuk-summary-list") do |summary_list|
       expect(summary_list).to have_summary_item("Name", "2026")
-      expect(summary_list).to have_summary_item("Description", "2026 to 2027")
+      expect(summary_list).to have_summary_item("Description", "April 2026")
       expect(summary_list).to have_summary_item("Start year", "2026")
-      expect(summary_list).to have_summary_item("Suffix", "a")
       expect(summary_list).to have_summary_item("Registration start date", "3 April 2026")
       expect(summary_list).to have_summary_item("Funding cap", "Yes")
     end
@@ -70,11 +69,10 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       end
 
       cohort = Cohort.order(created_at: :desc, id: :desc).first
-      expect(cohort.identifier).to eq("2029a")
+      expect(cohort.identifier).to eq("2029-March")
       expect(cohort.name).to eq("2029")
       expect(cohort.description).to eq("2029 to 2030")
       expect(cohort.start_year).to be(2029)
-      expect(cohort.suffix).to eq("a")
       expect(cohort.funding_cap).to be(true)
       expect(cohort.registration_starts_at).to eq(Date.new(2029, 3, 2))
       expect(cohort.delivery_partnerships.pluck(:delivery_partner_id, :lead_provider_id)).to eq(partnerships.pluck(:delivery_partner_id, :lead_provider_id))
@@ -89,7 +87,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       new_description = "2025 to 2026 #{rand(100)}"
       fill_in "Description", with: new_description
       fill_in "Start year", with: "2025"
-      fill_in "Suffix", with: "b"
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "6"
@@ -101,11 +98,10 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       cohort.reload
 
-      expect(cohort.identifier).to eq("2025b")
-      expect(cohort.name).to eq("2025b")
+      expect(cohort.identifier).to eq("2025-May")
+      expect(cohort.name).to eq("2025")
       expect(cohort.description).to eq(new_description)
       expect(cohort.start_year).to be(2025)
-      expect(cohort.suffix).to eq("b")
       expect(cohort.funding_cap).to be(true)
       expect(cohort.registration_starts_at.to_date).to eq(Date.new(2025, 5, 6))
     end
@@ -165,6 +161,6 @@ private
 
   def navigate_to_cohort
     visit_index
-    click_on "2026 to 2027"
+    click_on cohort.description
   end
 end
