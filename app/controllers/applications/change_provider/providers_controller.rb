@@ -1,6 +1,6 @@
 module Applications
   module ChangeProvider
-    class ProvidersController < ChangeProviderController
+    class ProvidersController < ::Applications::ChangeProvider::ChangeProviderController
       include MultiStepFormSession
 
       before_action :set_form

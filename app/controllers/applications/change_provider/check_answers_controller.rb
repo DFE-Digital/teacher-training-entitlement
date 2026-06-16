@@ -1,6 +1,6 @@
 module Applications
   module ChangeProvider
-    class CheckAnswersController < ChangeProviderController
+    class CheckAnswersController < ::Applications::ChangeProvider::ChangeProviderController
       include MultiStepFormSession
 
       storing_form_session_as :change_provider
