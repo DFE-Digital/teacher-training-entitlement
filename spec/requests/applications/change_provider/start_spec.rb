@@ -25,6 +25,16 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
         expect(response).to redirect_to(application_path(application.ecf_id))
       end
     end
+
+    context "when application cannot be found" do
+      let(:url) { "/applications/#{SecureRandom.uuid}/change-provider/start" }
+
+      it "redirects to the applications page" do
+        get url
+
+        expect(response).to redirect_to(applications_path)
+      end
+    end
   end
 
   describe "POST /applications/:application_id/change-provider/start" do

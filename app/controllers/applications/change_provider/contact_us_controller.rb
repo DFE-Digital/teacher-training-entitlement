@@ -1,6 +1,6 @@
 module Applications
   module ChangeProvider
-    class ContactUsController < ::Applications::ApplicationsController
+    class ContactUsController < ::Applications::ChangeProvider::ChangeProviderController
       def index; end
     end
   end

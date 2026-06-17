@@ -1,13 +1,11 @@
 module Applications
   module ChangeProvider
-    class CheckAnswersController < ::Applications::ApplicationsController
+    class CheckAnswersController < ::Applications::ChangeProvider::ChangeProviderController
       include MultiStepFormSession
 
       storing_form_session_as :change_provider
 
       def index
-        redirect_to application_path(application.ecf_id) and return unless application.can_change_provider?
-
         redirect_to application_change_provider_start_index_path(application.ecf_id) and return if new_provider.nil?
       end
 
