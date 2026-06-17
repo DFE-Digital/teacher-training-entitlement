@@ -34,10 +34,6 @@ RSpec.feature "Sad journey", :with_default_lead_provider, :with_default_schedule
       page.choose("No", visible: :all)
     end
 
-    expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
-      page.choose("Other", visible: :all)
-    end
-
     expect_page_to_have(path: "/registration/ineligible-for-funding")
   end
 end

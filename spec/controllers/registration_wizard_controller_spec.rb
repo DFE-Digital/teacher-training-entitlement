@@ -113,6 +113,24 @@ RSpec.describe RegistrationWizardController do
       end
     end
 
+    context "when teacher catchment is outside England" do
+      let(:wizard_params) { { teacher_catchment: "another" } }
+      let(:make_request) { patch :update, params: { step: "teacher-catchment", registration_wizard: wizard_params } }
+
+      before do
+        session["registration_store"] = {
+          "course_identifier" => create(:course).identifier,
+          "provider_id" => create(:lead_provider).id,
+        }
+      end
+
+      it "redirects to ineligible for funding" do
+        make_request
+
+        expect(response).to redirect_to registration_wizard_show_path("ineligible-for-funding")
+      end
+    end
+
     context "when step is being skipped" do
       before do
         allow(RegistrationWizard).to receive(:new).and_return(wizard)

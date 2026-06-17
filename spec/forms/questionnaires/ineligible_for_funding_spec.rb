@@ -34,7 +34,7 @@ RSpec.describe Questionnaires::IneligibleForFunding, type: :model do
     context "when user is not in England" do
       let(:store) { { "teacher_catchment" => "another" } }
 
-      it { is_expected.to eq(:work_setting) }
+      it { is_expected.to eq(:teacher_catchment) }
     end
   end
 end

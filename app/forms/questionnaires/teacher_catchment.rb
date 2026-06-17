@@ -2,7 +2,10 @@ module Questionnaires
   class TeacherCatchment < Base
     attr_accessor :teacher_catchment, :teacher_catchment_country
 
-    OPTIONS = %w[england another].freeze
+    OPTIONS = [
+      ENGLAND = "england".freeze,
+      NOT_ENGLAND = "another".freeze,
+    ].freeze
 
     validates :teacher_catchment, presence: true, inclusion: { in: OPTIONS }
 
@@ -22,6 +25,8 @@ module Questionnaires
     end
 
     def next_step
+      return :ineligible_for_funding if teacher_catchment == NOT_ENGLAND
+
       :work_setting
     end
 
@@ -40,8 +45,8 @@ module Questionnaires
 
     def options
       [
-        build_option_struct(value: "england", label: "Yes", link_errors: true),
-        build_option_struct(value: "another", label: "No"),
+        build_option_struct(value: ENGLAND, label: "Yes", link_errors: true),
+        build_option_struct(value: NOT_ENGLAND, label: "No"),
       ]
     end
   end

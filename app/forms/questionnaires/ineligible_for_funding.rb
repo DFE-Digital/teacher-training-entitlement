@@ -13,6 +13,8 @@ module Questionnaires
     end
 
     def previous_step
+      return :teacher_catchment unless wizard.query_store.inside_catchment?
+
       if wizard.query_store.work_setting == Institution::STATE_FUNDED_INSTITUTION
         :choose_school
       else

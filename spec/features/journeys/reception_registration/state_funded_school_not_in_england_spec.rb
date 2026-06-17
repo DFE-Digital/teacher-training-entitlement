@@ -10,14 +10,11 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
   scenario "state-funded school not in England without funded place" do
     lead_provider = LeadProvider.first
-    institution = Institution.find_by!(institution_reference_number: "100000")
 
     start_registration
     choose_current_course_start_date
     choose_provider(lead_provider)
     choose_teacher_catchment("No")
-    choose_work_setting("State-funded nursery, pre-school, school or academy trust")
-    choose_a_school(js: false, name: "open")
     continue_past_ineligible_funding
     choose_course_funding("My trust is paying")
     agree_to_share_provider_information
@@ -42,7 +39,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         teacher_catchment_iso_country_code: nil,
         targeted_support_funding_eligibility: false,
         ukprn: nil,
-        work_setting: Institution::STATE_FUNDED_INSTITUTION,
+        work_setting: nil,
       )
 
       expect(application.raw_application_data).to match(
@@ -51,13 +48,10 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         "course_start_date" => "yes",
         "funding" => "trust",
         "funding_amount" => nil,
-        "institution_id" => institution.id.to_s,
-        "institution_name" => "open",
         "lead_provider_id" => lead_provider.id.to_s,
         "submitted" => true,
         "teacher_catchment" => "another",
         "teacher_catchment_country" => nil,
-        "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
       )
     end
   end
