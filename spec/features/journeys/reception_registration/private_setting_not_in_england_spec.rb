@@ -14,7 +14,6 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
     choose_current_course_start_date
     choose_provider(lead_provider)
     choose_teacher_catchment("No")
-    choose_work_setting("Private nursery, pre-school or school")
     continue_past_ineligible_funding
     choose_course_funding("I am paying")
     agree_to_share_provider_information
@@ -39,7 +38,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         teacher_catchment_iso_country_code: nil,
         targeted_support_funding_eligibility: false,
         ukprn: nil,
-        work_setting: Institution::PRIVATE_INSTITUTION,
+        work_setting: nil,
       )
 
       expect(application.raw_application_data).to match(
@@ -52,7 +51,6 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         "submitted" => true,
         "teacher_catchment" => "another",
         "teacher_catchment_country" => nil,
-        "work_setting" => Institution::PRIVATE_INSTITUTION,
       )
     end
   end

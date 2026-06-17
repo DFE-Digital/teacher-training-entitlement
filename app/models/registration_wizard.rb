@@ -94,11 +94,15 @@ class RegistrationWizard
     array << Answer.new("Course", course.name, :course_start_date)
     array << Answer.new("Provider", lead_provider&.name, :choose_your_provider)
     array << Answer.new("Workplace in England", teacher_catchment_humanized, :teacher_catchment)
-    array << Answer.new("Work setting", t("work_setting"), :work_setting)
-    if kind_of_nursery_public?
-      array << Answer.new("Nursery", t("kind_of_nursery"), :kind_of_nursery)
+
+    if store["work_setting"].present?
+      array << Answer.new("Work setting", t("work_setting"), :work_setting)
     end
-    array << Answer.new("Workplace", institution_from_store.try(:name_with_address), :choose_school)
+
+    if institution_from_store
+      array << Answer.new("Workplace", institution_from_store.name_with_address, :choose_school)
+    end
+
     if store["funding"].present?
       array << Answer.new("Course funding", I18n.t(store["funding"], scope: "helpers.label.registration_wizard.funding_options"), :funding_your_course)
     end

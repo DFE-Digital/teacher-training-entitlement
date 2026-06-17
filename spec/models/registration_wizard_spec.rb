@@ -30,6 +30,22 @@ RSpec.describe RegistrationWizard do
   describe "#answers" do
     let(:school) { create(:school, establishment_type_code: "1") }
 
+    context "when work setting has not been answered" do
+      let(:lead_provider) { create(:lead_provider) }
+      let(:store) do
+        {
+          "course_identifier" => "tte-early-years",
+          "lead_provider_id" => lead_provider.id,
+          "teacher_catchment" => "another",
+          "funding" => "self",
+        }
+      end
+
+      it "does not show work setting answers" do
+        expect(subject.answers.map(&:key)).not_to include("Work setting", "Workplace")
+      end
+    end
+
     context "when working in Local authority maintained nursery" do
       let(:store) do
         {

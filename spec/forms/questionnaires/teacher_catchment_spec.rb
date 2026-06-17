@@ -28,7 +28,7 @@ RSpec.describe Questionnaires::TeacherCatchment, type: :model do
 
       let(:instance) { described_class.new(teacher_catchment: "another") }
 
-      it { is_expected.to eq :work_setting }
+      it { is_expected.to eq :ineligible_for_funding }
     end
   end
 end
