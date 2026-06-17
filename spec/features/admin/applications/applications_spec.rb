@@ -262,7 +262,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     within(".govuk-summary-list__row", text: "Application status") do |summary_list|
       expect(summary_list).to have_text "Accepted"
-      click_on "Defer/Withdraw"
+      click_on "Defer"
     end
 
     expect(page).to have_css("h1", text: "Change status")

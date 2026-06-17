@@ -35,6 +35,7 @@ RSpec.describe Admin::Applications::ChangeStatusForm, type: :model do
 
       context "with status set to withdrawn" do
         let(:status) { Application::WITHDRAWN }
+        let(:application) { create(:application, :started) }
 
         it do
           expect(subject).to validate_inclusion_of(:reason)
@@ -79,6 +80,12 @@ RSpec.describe Admin::Applications::ChangeStatusForm, type: :model do
     context "when application set to active" do
       let(:application) { create(:application, :accepted, status: Application::ACCEPTED) }
 
+      it { expect(subject.status_options).to contain_exactly(Application::DEFERRED) }
+    end
+
+    context "when application set to started" do
+      let(:application) { create(:application, :started) }
+
       it { expect(subject.status_options).to contain_exactly(Application::DEFERRED, Application::WITHDRAWN) }
     end
 
@@ -96,18 +103,33 @@ RSpec.describe Admin::Applications::ChangeStatusForm, type: :model do
   end
 
   describe "#reason_options" do
-    it "groups by training status" do
-      expect(form.reason_options.keys).to contain_exactly(Application::DEFERRED, Application::WITHDRAWN)
+    context "when application set to active" do
+      it "only includes deferral reasons" do
+        expect(form.reason_options.keys).to contain_exactly(Application::DEFERRED)
+      end
+
+      it "has reasons for deferral" do
+        expect(form.reason_options[Application::DEFERRED])
+          .to match_array(::Applications::Defer::DEFERRAL_REASONS)
+      end
     end
 
-    it "has reasons for deferral" do
-      expect(form.reason_options[Application::DEFERRED])
-        .to match_array(::Applications::Defer::DEFERRAL_REASONS)
-    end
+    context "when application set to started" do
+      let(:application) { create(:application, :started) }
 
-    it "has reasons for withdrawn" do
-      expect(form.reason_options[Application::WITHDRAWN])
-        .to match_array(::Applications::Withdraw::WITHDRAWAL_REASONS)
+      it "groups by training status" do
+        expect(form.reason_options.keys).to contain_exactly(Application::DEFERRED, Application::WITHDRAWN)
+      end
+
+      it "has reasons for deferral" do
+        expect(form.reason_options[Application::DEFERRED])
+          .to match_array(::Applications::Defer::DEFERRAL_REASONS)
+      end
+
+      it "has reasons for withdrawn" do
+        expect(form.reason_options[Application::WITHDRAWN])
+          .to match_array(::Applications::Withdraw::WITHDRAWAL_REASONS)
+      end
     end
   end
 end
