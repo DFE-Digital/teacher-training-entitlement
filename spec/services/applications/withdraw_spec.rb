@@ -1,9 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Applications::Withdraw, type: :model do
-  subject(:service) { described_class.new(application:, reason:, admin_user: build(:admin)) }
+  subject(:service) { described_class.new(application:, reason:, admin_user:) }
 
-  let(:application) { create(:application, :accepted, :with_declaration) }
+  let(:admin_user) { build(:admin) }
+  let(:application) { create(:application, :started, :with_declaration) }
   let(:reason) { nil }
   let(:error_message_path) { "activemodel.errors.models.applications/withdraw.attributes" }
 
@@ -30,13 +31,33 @@ RSpec.describe Applications::Withdraw, type: :model do
     end
   end
 
-  context "when successfully withdrawing" do
+  context "when successfully withdrawing a started application" do
     let(:reason) { "other" }
-    let(:application) { create(:application, :accepted, :with_declaration) }
+    let(:application) { create(:application, :started, :with_declaration) }
 
     it do
       expect(service.errors).to be_blank
       expect(application.reload.status).to eq(Application::WITHDRAWN)
+    end
+  end
+
+  context "when not an admin user" do
+    let(:admin_user) { nil }
+    let(:reason) { "other" }
+
+    context "when successfully withdrawing a started application" do
+      let(:application) { create(:application, :started, :with_declaration) }
+
+      it do
+        expect(service.errors).to be_blank
+        expect(application.reload.status).to eq(Application::WITHDRAWN)
+      end
+    end
+
+    context "when withdrawing an accepted application" do
+      let(:application) { create(:application, :accepted) }
+
+      it { is_expected.to have_error(:application, :not_withdrawable) }
     end
   end
 end
