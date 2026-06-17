@@ -91,6 +91,7 @@ namespace :admin do
   end
 
   resources :cohorts do
+    resources :courses, controller: "cohort_courses", only: %i[show new create]
     resources :schedules, except: :index do
       resources :milestones, except: :show
     end
@@ -116,6 +117,7 @@ namespace :admin do
 
   resources :courses, only: %i[index show edit update] do
     concerns :cohortable, index: "courses#index"
+    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 
   resources :users, only: %i[index show]

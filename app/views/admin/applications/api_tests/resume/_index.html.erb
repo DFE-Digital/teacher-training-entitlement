@@ -20,7 +20,7 @@
           next unless cc.schedule&.training_live?
           body.with_row do |row|
             row.with_cell do
-              link_to cc.course.name, admin_course_path(cc.course), target: "_blank"
+              link_to cc.course.name, admin_cohort_course_path(cc.cohort, cc.course), target: "_blank"
             end
             row.with_cell do
               link_to cc.cohort.description, admin_cohort_path(cc.cohort), target: "_blank"

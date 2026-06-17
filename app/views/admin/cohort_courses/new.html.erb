@@ -1,0 +1,42 @@
+<%= govuk_back_link href: admin_cohort_path(@cohort) %>
+
+<h1 class="govuk-heading-l">Add course to <%= @cohort.description %></h1>
+
+<%= form_with model: @course_cohort, url: admin_cohort_courses_path(@cohort) do |f| %>
+  <%= f.govuk_error_summary %>
+  <%=
+    f.govuk_collection_select(
+      :course_id,
+      @courses,
+      :id,
+      :name,
+      options: { include_blank: true },
+      label: { text: "Course" },
+    )
+  %>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <%=
+        f.govuk_collection_select(
+          :schedule_id,
+          @schedules,
+          :id,
+          :name,
+          options: { include_blank: true },
+          label: { text: "Schedule" },
+        )
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-6">
+      <%= link_to "New schedule",
+                  new_admin_cohort_schedule_path(@cohort),
+                  class: "govuk-button",
+                  target: "_blank",
+                  rel: "noopener" %>
+    </div>
+  </div>
+
+  <%= f.govuk_submit "Add course" %>
+<% end %>

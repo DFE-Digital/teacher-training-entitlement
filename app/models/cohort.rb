@@ -6,6 +6,7 @@ class Cohort < ApplicationRecord
   has_many :delivery_partnerships, dependent: :destroy
   has_many :delivery_partners, through: :delivery_partnerships
   has_many :course_cohorts, dependent: :destroy
+  has_many :courses, through: :course_cohorts
   has_many :schedules, through: :course_cohorts
 
   validates :start_year,

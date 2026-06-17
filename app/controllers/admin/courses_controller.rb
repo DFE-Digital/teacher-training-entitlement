@@ -32,7 +32,7 @@ module Admin
 
     def resources
       scope = Course
-                .includes(:course_cohorts, :applications)
+                .includes(:applications, course_cohorts: :cohort)
                 .order(name: :asc)
       scope.merge!(Course.where(course_cohorts: { cohort: @current_cohort })) if @current_cohort
       scope
