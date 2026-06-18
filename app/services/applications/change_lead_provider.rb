@@ -4,7 +4,6 @@ module Applications
     include ActiveModel::Validations
 
     validate :application_can_change_provider
-    validate :not_previously_changed_to_provider
     validate :new_provider_is_different
 
     attr_reader :application
@@ -60,12 +59,6 @@ module Applications
       return if @application.can_change_provider?
 
       errors.add(:application, :application_cannot_change_provider)
-    end
-
-    def not_previously_changed_to_provider
-      if @application.application_lead_providers.pluck(:lead_provider_id).include?(@new_provider.id)
-        errors.add(:base, :previously_changed_to_provider)
-      end
     end
 
     def new_provider_is_different

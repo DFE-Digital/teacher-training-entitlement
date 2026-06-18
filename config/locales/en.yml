@@ -484,7 +484,6 @@ en:
         applications/change_lead_provider:
           base:
             provider_must_be_different: Application has {lead_provider_name} already as provider
-            previously_changed_to_provider: Application has previously had {lead_provider_name} as provider
           attributes:
             application_cannot_change_provider: Application status must be pending or accepted to change provider
         eligibility_lists/update:

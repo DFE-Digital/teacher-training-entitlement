@@ -42,19 +42,6 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
         expect(subject).to have_error(:base, :provider_must_be_different)
       end
     end
-
-    context "when application has previously been assigned to new provider" do
-      let(:application) do
-        create(:application, :pending,
-               :with_application_lead_provider,
-               old_lead_provider: new_provider,
-               lead_provider: old_provider)
-      end
-
-      it do
-        expect(subject).to have_error(:base, :previously_changed_to_provider)
-      end
-    end
   end
 
   describe "notification" do
