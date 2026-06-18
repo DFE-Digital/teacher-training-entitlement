@@ -110,6 +110,11 @@ FactoryBot.define do
         course = application.course.rebranded_alternative_courses.first
         previous_cohort = create(:cohort, :unique, :with_funding_cap)
 
+        if previous_cohort == application.cohort
+          previous_cohort = create(:cohort, :with_funding_cap,
+                                   registration_starts_at: application.cohort.registration_starts_at.prev_year)
+        end
+
         create(:application, :accepted, :eligible_for_funding, user: application.user, course:, cohort: previous_cohort)
       end
     end
