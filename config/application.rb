@@ -80,7 +80,8 @@ module Registration
 
     config.skylight.environments += ["review", "sandbox", "staging"]
 
-    config.service_base_url = "http://#{ENV['HOSTING_DOMAIN']}"
+    # HOSTING_DOMAIN includes protocol
+    config.service_base_url = ENV.fetch("HOSTING_DOMAIN")
     config.sign_in_link = config.service_base_url
     config.feedback_link = "https://forms.cloud.microsoft/e/hWuJx59U2P"
   end
