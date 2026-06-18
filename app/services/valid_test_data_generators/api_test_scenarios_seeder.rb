@@ -392,7 +392,7 @@ module ValidTestDataGenerators
     end
 
     def create_app_event(application:, event:)
-      application.application_events.create!(event:, lead_provider: application.lead_provider)
+      application.state_changes.create!(event:, lead_provider: application.lead_provider)
     end
 
     def create_started_declaration(application:, declaration_date: nil)
