@@ -391,8 +391,12 @@ module ValidTestDataGenerators
       application
     end
 
-    def create_app_event(application:, event:)
+    def create_state_change(application:, event:)
       application.state_changes.create!(event:, lead_provider: application.lead_provider)
+    end
+
+    def create_app_event(application:, event:)
+      application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
     def create_started_declaration(application:, declaration_date: nil)
@@ -444,7 +448,7 @@ module ValidTestDataGenerators
           eligible_for_funding: index.even?,
           user: create_random_user(with_trn: [true, false].sample),
         ).tap do |application|
-          create_app_event(application:, event: Application::ACCEPTED)
+          create_state_change(application:, event: Application::ACCEPTED)
         end
       end
 
@@ -456,7 +460,7 @@ module ValidTestDataGenerators
           eligible_for_funding: index.even?,
           user: create_random_user(with_trn: [true, false].sample),
         ).tap do |application|
-          create_app_event(application:, event: Application::REJECTED)
+          create_state_change(application:, event: Application::REJECTED)
         end
       end
 
@@ -471,9 +475,9 @@ module ValidTestDataGenerators
             eligible_for_funding: index.even?,
             user: create_random_user,
           ).tap do |application|
-            create_app_event(application:, event: Application::ACCEPTED)
+            create_state_change(application:, event: Application::ACCEPTED)
             create_started_declaration(application:).tap { create_payable_statement(_1) }
-            create_app_event(application:, event: Application::STARTED)
+            create_state_change(application:, event: Application::STARTED)
           end
         end
 
@@ -485,11 +489,11 @@ module ValidTestDataGenerators
             eligible_for_funding: index.even?,
             user: create_random_user,
           ).tap do |application|
-            create_app_event(application:, event: Application::ACCEPTED)
+            create_state_change(application:, event: Application::ACCEPTED)
             create_started_declaration(application:).tap { create_paid_statement(_1) }
-            create_app_event(application:, event: Application::STARTED)
+            create_state_change(application:, event: Application::STARTED)
             create_completed_declaration(application:, has_passed: index.even?).tap { create_payable_statement(_1) }
-            create_app_event(application:, event: Application::COMPLETED)
+            create_state_change(application:, event: Application::COMPLETED)
           end
         end
 
@@ -501,13 +505,13 @@ module ValidTestDataGenerators
             eligible_for_funding: index.even?,
             user: create_random_user(with_trn: [true, false].sample),
           ).tap do |application|
-            create_app_event(application:, event: Application::ACCEPTED)
+            create_state_change(application:, event: Application::ACCEPTED)
             declaration = create_started_declaration(application:).tap { create_paid_statement(_1) }
-            create_app_event(application:, event: Application::STARTED)
+            create_state_change(application:, event: Application::STARTED)
             create_clawback_statement(declaration)
             create_started_declaration(application:).tap { create_payable_statement(_1) }
-            create_app_event(application:, event: Application::STARTED)
-            create_app_event(application:, event: Application::DEFERRED)
+            create_state_change(application:, event: Application::STARTED)
+            create_state_change(application:, event: Application::DEFERRED)
           end
         end
 
@@ -522,21 +526,21 @@ module ValidTestDataGenerators
             case index
             when index % 5
               # auto withdrawn
-              create_app_event(application:, event: Application::ACCEPTED)
-              create_app_event(application:, event: Application::STARTED)
-              create_app_event(application:, event: Application::DEFERRED)
+              create_state_change(application:, event: Application::ACCEPTED)
+              create_state_change(application:, event: Application::STARTED)
+              create_state_change(application:, event: Application::DEFERRED)
 
             when index % 3
               # withdraw after started acceptance
-              create_app_event(application:, event: Application::ACCEPTED)
-              create_app_event(application:, event: Application::STARTED)
+              create_state_change(application:, event: Application::ACCEPTED)
+              create_state_change(application:, event: Application::STARTED)
 
             when index % 2
               # withdraw after acceptance
-              create_app_event(application:, event: Application::ACCEPTED)
+              create_state_change(application:, event: Application::ACCEPTED)
             end
 
-            create_app_event(application:, event: Application::WITHDRAWN)
+            create_state_change(application:, event: Application::WITHDRAWN)
           end
         end
       end
