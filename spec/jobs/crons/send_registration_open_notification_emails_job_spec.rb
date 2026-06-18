@@ -2,29 +2,85 @@ require "rails_helper"
 
 RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
   describe "#perform" do
-    let(:cohort) { create(:cohort, start_year: Date.yesterday.year, registration_starts_at: Date.yesterday) }
-    let(:application) { create(:application, :deferred) }
+    let(:cohort) { create(:cohort, start_year: Time.zone.yesterday.year, registration_starts_at: Time.zone.yesterday) }
+    let(:application_cohort) do
+      create(
+        :cohort,
+        start_year: Time.zone.yesterday.prev_year.year,
+        registration_starts_at: Time.zone.yesterday.prev_year,
+      )
+    end
+    let(:application) do
+      create(
+        :application,
+        :deferred,
+        cohort: application_cohort,
+        schedule: create(:schedule, cohort: application_cohort),
+      )
+    end
+    let!(:course_cohort) { create(:course_cohort, cohort:, course: application.course) }
 
-    it "enqueues email for deferred applications when registration opened yesterday" do
-      cohort
-      application
-
+    it "enqueues an email for a deferred application when its course is on a cohort that opened yesterday" do
       expect { described_class.perform_now }
         .to have_enqueued_mail(GenericMailer, :registration_open_notification)
+    end
+
+    it "records a notification event for the cohort and course" do
+      perform_enqueued_jobs { described_class.perform_now }
+
+      notification = application.notifications.find_by!(event: "registration_open_notification")
+
+      expect(notification.metadata).to include(
+        "cohort_id" => cohort.id,
+        "course_id" => application.course.id,
+      )
+    end
+
+    it "skips deferred applications whose course is not on the cohort" do
+      other_course = build(:course, identifier: "another-course")
+      other_course.save!
+      other_cohort = create(:cohort, :unique)
+
+      create(
+        :application,
+        :deferred,
+        course: other_course,
+        cohort: other_cohort,
+        schedule: create(:schedule, cohort: other_cohort),
+      )
+
+      expect { described_class.perform_now }
+        .to have_enqueued_mail(GenericMailer, :registration_open_notification).once
     end
 
     it "skips applications that have already been notified for this cohort" do
       application.notifications.create!(
         event: "registration_open_notification",
-        metadata: { "cohort_id" => cohort.id },
+        metadata: {
+          "cohort_id" => cohort.id,
+          "course_id" => application.course.id,
+        },
       )
 
       expect { described_class.perform_now }
         .not_to have_enqueued_mail(GenericMailer, :registration_open_notification)
     end
 
+    it "does not treat a notification for another course as already sent" do
+      application.notifications.create!(
+        event: "registration_open_notification",
+        metadata: {
+          "cohort_id" => cohort.id,
+          "course_id" => -1,
+        },
+      )
+
+      expect { described_class.perform_now }
+        .to have_enqueued_mail(GenericMailer, :registration_open_notification)
+    end
+
     it "skips cohorts where registration did not open yesterday" do
-      cohort.update!(registration_starts_at: Date.current)
+      cohort.update!(registration_starts_at: Time.zone.today)
 
       expect { described_class.perform_now }
         .not_to have_enqueued_mail(GenericMailer, :registration_open_notification)

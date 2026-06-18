@@ -6,8 +6,8 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
   sentry_monitor_check_ins slug: "send-registration-open-notification-emails"
 
   def perform
-    Cohort.where(registration_starts_at: Date.yesterday).find_each do |cohort|
-      Application.deferred_status.find_each do |application|
+    Cohort.where(registration_starts_at: Time.zone.yesterday).find_each do |cohort|
+      eligible_applications(cohort).find_each do |application|
         next if already_notified?(application, cohort)
 
         GenericMailer.with(
@@ -18,6 +18,7 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
           deferral_date: application.deferred_at.to_fs(:govuk_date_only),
           ecf_id: application.ecf_id,
           cohort_id: cohort.id,
+          course_id: application.course.id,
         ).registration_open_notification.deliver_later
       end
     end
@@ -25,10 +26,19 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
 
 private
 
+  def eligible_applications(cohort)
+    Application
+      .deferred_status
+      .joins(:course_cohort)
+      .where(course_cohorts: { course_id: cohort.course_cohorts.select(:course_id) })
+      .includes(:user, course_cohort: :course)
+  end
+
   def already_notified?(application, cohort)
     application.notifications
                .where(event: "registration_open_notification")
                .where("metadata->>'cohort_id' = ?", cohort.id.to_s)
+               .where("metadata->>'course_id' = ?", application.course.id.to_s)
                .exists?
   end
 end
