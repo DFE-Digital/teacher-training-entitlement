@@ -79,5 +79,10 @@ module Registration
                                                expire_after: 2.weeks
 
     config.skylight.environments += ["review", "sandbox", "staging"]
+
+    # HOSTING_DOMAIN includes protocol
+    config.service_base_url = ENV.fetch("HOSTING_DOMAIN")
+    config.sign_in_link = config.service_base_url
+    config.feedback_link = "https://forms.cloud.microsoft/e/hWuJx59U2P"
   end
 end

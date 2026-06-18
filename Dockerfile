@@ -49,6 +49,7 @@ RUN RAILS_ENV=production SECRET_KEY_BASE=required-to-run-but-not-used \
     TEACHER_AUTH_CLIENT_SECRET=required-to-run-but-not-used \
     ONE_LOGIN_HOME_URL=required-to-run-but-not-used \
     TRS_API_URL=required-to-run-but-not-used \
+    HOSTING_DOMAIN=https://required-to-run-but-not-used \
     bundle exec rails assets:precompile
 
 # Cleanup to save space in the production image

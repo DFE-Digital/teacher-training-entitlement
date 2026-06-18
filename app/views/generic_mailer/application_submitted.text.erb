@@ -1,6 +1,39 @@
-Your application has been submitted.
-Full name: <%= params[:full_name] %>
-Provider name: <%= params[:provider_name] %>
-Course name: <%= params[:course_name] %>
-Amount: <%= params[:amount] %>
-ECF ID: <%= params[:ecf_id] %>
+^Department for Education
+
+Application ID: <%= params[:ecf_id] %>
+
+Dear <%= params[:full_name] %>
+
+You've registered for <%= params[:course_name] %> with <%= params[:provider_name] %> starting in <%= params[:cohort_date] %>.
+
+# Apply through your provider
+
+You still need to apply through <%= params[:provider_name] %>. They'll contact you by email to outline the next steps, including how to apply.
+
+After you apply, your course provider will check that:
+
+- you meet the course's suitability requirements
+- a funded place is available (if we've told you that you're eligible for funding)
+
+# Course start
+
+You've registered for a course which starts in <%= params[:cohort_date] %>.
+
+# Check or change your registration
+
+[Sign in](<%= params[:sign_in_link] %>) to:
+
+- update your name, date of birth, email address or phone number
+- change your course or provider
+- check your registration details, including any funding you're eligible for
+
+# We'd like your feedback
+
+Tell us about your experience using the registration service by [completing a short feedback form](<%= params[:feedback_link] %>).
+
+# Get help
+
+Email continuing-professional-development@digital.education.gov.uk
+
+Regards,
+The Teacher Continuing Professional Development team

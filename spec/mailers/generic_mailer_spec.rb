@@ -34,8 +34,10 @@ RSpec.describe GenericMailer, type: :mailer do
     let(:full_name) { "Example User" }
     let(:provider_name) { "Example Provider" }
     let(:course_name) { "Example Course" }
-    let(:amount) { "Example Amount" }
+    let(:cohort_date) { "autumn 2026" }
     let(:ecf_id) { "ABC123" }
+    let(:sign_in_link) { "sign_in_link" }
+    let(:feedback_link) { "feedback_link" }
 
     subject(:mail) do
       described_class.with(
@@ -43,8 +45,10 @@ RSpec.describe GenericMailer, type: :mailer do
         full_name:,
         provider_name:,
         course_name:,
-        amount:,
+        cohort_date:,
         ecf_id:,
+        sign_in_link:,
+        feedback_link:,
       ).application_submitted
     end
 
@@ -52,12 +56,15 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.application_submitted"))
+        expect(mail.personalisation[:subject]).to eq(I18n.t("mailers.application_submitted", course_name:))
 
         body = mail.personalisation[:body]
         expect(body).to include(full_name)
         expect(body).to include(provider_name)
         expect(body).to include(course_name)
+        expect(body).to include(cohort_date)
+        expect(body).to include(sign_in_link)
+        expect(body).to include(feedback_link)
         expect(body).to include(ecf_id)
       end
     end
@@ -173,7 +180,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
     it "creates an application event when ecf_id matches an application" do
       expect {
-        described_class.with(to:, ecf_id: application.ecf_id, full_name: "Test", provider_name: "Test", course_name: "Test").application_submitted.deliver_now
+        described_class.with(to:, ecf_id: application.ecf_id, full_name: "Test", provider_name: "Test", course_name: "Test", cohort_date: "autumn 2026", sign_in_link: "https://example.com", feedback_link: "https://example.com/feedback").application_submitted.deliver_now
       }.to change { application.notifications.count }.by(1)
 
       event = application.notifications.last
@@ -362,7 +369,7 @@ RSpec.describe GenericMailer, type: :mailer do
     end
 
     it "skips other notification emails" do
-      mail = described_class.with(to: "test@example.com", full_name: "Test", provider_name: "Test", course_name: "Test", ecf_id: "123").application_submitted
+      mail = described_class.with(to: "test@example.com", full_name: "Test", provider_name: "Test", course_name: "Test", cohort_date: "autumn 2026", ecf_id: "123", sign_in_link: "https://example.com", feedback_link: "https://example.com/feedback").application_submitted
       expect(mail.to).to be_nil
     end
   end

@@ -34,7 +34,7 @@ en:
         wrong_length: TRN is the wrong length (should be %{count} characters)
   mailers:
     eligible_for_funding: Eligible for funding
-    application_submitted: Application submitted
+    application_submitted: You've registered for %{course_name} – next steps
     confirmation_code:  Confirmation Code
     email_updates_confirmation: Email Updates Confirmation
     change_provider: You've registered for %{course_name} - next steps
