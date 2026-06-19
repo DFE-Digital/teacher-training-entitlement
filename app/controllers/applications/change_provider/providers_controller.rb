@@ -21,10 +21,8 @@ module Applications
     private
 
       def providers
-        @providers ||= LeadProvider
-          .for(course: application.course)
-          .alphabetical
-          .reject { |p| p.id == application.lead_provider.id }
+        @providers ||= application.course_cohort.lead_providers.alphabetical
+                        .reject { |p| p.id == application.lead_provider.id }
       end
 
       def set_form

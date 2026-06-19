@@ -59,7 +59,8 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
-    let(:expected_providers) { LeadProvider.for(course:).alphabetical }
+    let(:course_cohort) { CourseCohort.next_open_for(course:) }
+    let(:expected_providers) { course_cohort.lead_providers.alphabetical }
 
     before do
       form.wizard = RegistrationWizard.new(

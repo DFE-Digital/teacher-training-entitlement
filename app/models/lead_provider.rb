@@ -17,13 +17,6 @@ class LeadProvider < ApplicationRecord
 
   scope :alphabetical, -> { order(name: :asc) }
 
-  def self.for(course:, cohort: nil)
-    course_cohorts = { course_id: course.id, cohort_id: cohort&.id || course.next_open_cohort }
-    LeadProvider.joins(course_cohort_providers: :course_cohort)
-                .where(course_cohorts:)
-                .alphabetical
-  end
-
   def next_output_fee_statement(cohort)
     statements.next_output_fee_statements.where(cohort:).first
   end

@@ -64,7 +64,7 @@ module Questionnaires
     end
 
     def application_course_start_date
-      @application_course_start_date ||= Course.reception.next_cohort_start_date
+      @application_course_start_date ||= query_store.course_cohort&.name || "Registration closed"
     end
   end
 end

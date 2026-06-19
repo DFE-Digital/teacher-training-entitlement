@@ -50,7 +50,7 @@ class Cohort < ApplicationRecord
   end
 
   def name
-    start_year.to_s
+    description
   end
 
 private

@@ -82,6 +82,10 @@ class RegistrationQueryStore
     @course ||= Course.reception
   end
 
+  def course_cohort
+    @course_cohort ||= CourseCohort.next_open_for(course:)
+  end
+
   def lead_provider
     @lead_provider ||= LeadProvider.find_by(id: store["lead_provider_id"])
   end

@@ -30,7 +30,7 @@ RSpec.feature "Viewing the providers dashboard", type: :feature do
   scenario "filtering providers dashboard by a single cohort updates application counts" do
     visit admin_dashboard_path("providers-dashboard")
 
-    select previous_cohort.start_year.to_s, from: "Search by cohort"
+    select previous_cohort.description, from: "Search by cohort"
     click_button "Search"
 
     expect(page).to have_content("Test Provider")

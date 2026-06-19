@@ -48,7 +48,7 @@ module Questionnaires
   private
 
     def providers
-      @providers ||= LeadProvider.for(course:)
+      @providers ||= course_cohort.lead_providers.alphabetical
     end
 
     def lead_provider
@@ -56,6 +56,7 @@ module Questionnaires
     end
 
     delegate :course,
+             :course_cohort,
              :inside_catchment?,
              to: :query_store
 

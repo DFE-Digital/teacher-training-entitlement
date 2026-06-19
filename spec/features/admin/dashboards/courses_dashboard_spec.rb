@@ -30,7 +30,7 @@ RSpec.feature "Viewing the courses dashboard", type: :feature do
   scenario "filtering courses dashboard by a single cohort updates application counts" do
     visit admin_dashboard_path("courses-dashboard")
 
-    select previous_cohort.start_year.to_s, from: "Search by cohort"
+    select previous_cohort.description, from: "Search by cohort"
     click_button "Search"
 
     expect(page).to have_content("Test Course")
