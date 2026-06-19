@@ -10,7 +10,25 @@ module Admin
       @course = Course.find(params[:id])
     end
 
+    def edit
+      @course = Course.find(params[:id])
+    end
+
+    def update
+      @course = Course.find(params[:id])
+
+      if @course.update(course_params)
+        redirect_to admin_course_path(@course), flash: { success: "Course updated" }
+      else
+        render :edit, status: :unprocessable_content
+      end
+    end
+
   private
+
+    def course_params
+      params.require(:course).permit(:name, :description)
+    end
 
     def resources
       scope = Course

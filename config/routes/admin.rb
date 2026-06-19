@@ -114,7 +114,7 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show] do
+  resources :courses, only: %i[index show edit update] do
     concerns :cohortable, index: "courses#index"
   end
 

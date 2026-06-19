@@ -42,11 +42,39 @@ RSpec.feature "Listing and viewing courses", type: :feature do
     expect(page).to have_css("h1", text: course.name)
 
     within(".govuk-summary-list") do |summary_list|
+      expect(summary_list).to have_summary_item("Name", course.name)
       expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
       expect(summary_list).to have_summary_item("Identifier", course.identifier)
       expect(summary_list).to have_summary_item("Position", course.position)
       expect(summary_list).to have_summary_item("Description", course.description)
       expect(summary_list).to have_summary_item("Display", "Yes")
     end
+  end
+
+  scenario "editing a course name" do
+    course = Course.first
+
+    visit(admin_course_path(course))
+
+    click_link("Change name")
+
+    expect(page).to have_css("h1", text: "Edit course details")
+
+    fill_in("Course name", with: "Updated Course Name")
+    click_button("Save course details")
+
+    expect(page).to have_css("h1", text: "Updated Course Name")
+    expect(page).to have_summary_item("Name", "Updated Course Name")
+  end
+
+  scenario "editing a course with invalid input shows an error" do
+    course = Course.first
+
+    visit(edit_admin_course_path(course))
+
+    fill_in("Course name", with: "")
+    click_button("Save course details")
+
+    expect(page).to have_css(".govuk-error-summary", text: "can't be blank")
   end
 end
