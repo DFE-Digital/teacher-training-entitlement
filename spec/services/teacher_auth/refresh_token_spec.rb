@@ -27,10 +27,30 @@ RSpec.describe TeacherAuth::RefreshToken do
       end
     end
 
+    context "when the token is invalid" do
+      before do
+        stub_request(:post, %r{/oauth2/token})
+          .to_return(status: 400, body: { error: "invalid_grant" }.to_json, headers: { "Content-Type" => "application/json" })
+      end
+
+      it "returns :invalid_token" do
+        expect(subject).to eq(:invalid_token)
+      end
+
+      it "records a Sentry metric" do
+        expect(Sentry::Metrics).to receive(:count).with(
+          "teacher_auth.refresh_token.invalid_grant",
+          value: 1,
+          attributes: { status_code: 400 },
+        )
+        subject
+      end
+    end
+
     context "when the request fails" do
       before do
         stub_request(:post, %r{/oauth2/token})
-          .to_return(status: 400, body: { error: "invalid_grant" }.to_json)
+          .to_return(status: 500, body: "")
       end
 
       it "returns nil" do

@@ -24,10 +24,25 @@ module TeacherAuth
           access_token: response.parsed_response["access_token"],
           refresh_token: response.parsed_response["refresh_token"],
         }
+      elsif invalid_grant?(response)
+        Sentry::Metrics.count(
+          "teacher_auth.refresh_token.invalid_grant",
+          value: 1,
+          attributes: { status_code: response.code },
+        )
+        :invalid_token
       else
         Rails.logger.error("TeacherAuth::RefreshToken failed: #{response.code} - #{response.body}")
         nil
       end
+    end
+
+  private
+
+    def invalid_grant?(response)
+      return false unless response.code == 400
+
+      response.parsed_response["error"] == "invalid_grant"
     end
   end
 end

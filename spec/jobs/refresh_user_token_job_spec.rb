@@ -69,5 +69,19 @@ RSpec.describe RefreshUserTokenJob, type: :job do
         }.not_to(change { user.reload.refresh_token })
       end
     end
+
+    context "when the token is invalid" do
+      let(:refresh_service) { instance_double(TeacherAuth::RefreshToken) }
+
+      before do
+        allow(TeacherAuth::RefreshToken).to receive(:new).and_return(refresh_service)
+        allow(refresh_service).to receive(:call).and_return(:invalid_token)
+      end
+
+      it "clears the user's auth tokens" do
+        expect(user).to receive(:clear_auth_tokens!)
+        described_class.perform_now(user)
+      end
+    end
   end
 end

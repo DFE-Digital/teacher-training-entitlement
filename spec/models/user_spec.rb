@@ -435,4 +435,13 @@ RSpec.describe User do
       expect(user.can_request_trn?).to be false
     end
   end
+
+  describe "#clear_auth_tokens!" do
+    let(:user) { create(:user, refresh_token: "token", refresh_token_updated_at: 1.day.ago) }
+
+    it "clears refresh_token and refresh_token_updated_at" do
+      user.clear_auth_tokens!
+      expect(user.reload).to have_attributes(refresh_token: nil, refresh_token_updated_at: nil)
+    end
+  end
 end
