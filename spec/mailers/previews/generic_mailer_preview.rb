@@ -36,7 +36,7 @@ class GenericMailerPreview < ActionMailer::Preview
     GenericMailer.with(
       to: "test@example.com",
       full_name: "Jane Smith",
-      course_name: "Excellence in Reception Teaching",
+      course_name: "Excellence in reception teaching",
       deferral_date: 11.months.ago.to_fs(:govuk_date_only),
       ecf_id: "abc-123-def-456",
     ).deferral_expiring_notification
@@ -47,7 +47,7 @@ class GenericMailerPreview < ActionMailer::Preview
       to: "test@example.com",
       full_name: "Jane Smith",
       provider_name: "Ambition Institute",
-      course_name: "Excellence in Reception Teaching",
+      course_name: "Excellence in reception teaching",
       deferral_date: Date.current.to_fs(:govuk),
       ecf_id: "abc-123-def-456",
     ).deferral_notification
@@ -75,7 +75,7 @@ class GenericMailerPreview < ActionMailer::Preview
     GenericMailer.with(
       to: "test@example.com",
       full_name: "Jane Smith",
-      course_name: "Excellence in Reception Teaching",
+      course_name: "Excellence in reception teaching",
       next_course_start_date: Date.current.to_fs(:govuk),
       deferral_date: 3.months.ago.to_fs(:govuk_date_only),
       ecf_id: "abc-123-def-456",
@@ -86,7 +86,7 @@ class GenericMailerPreview < ActionMailer::Preview
     GenericMailer.with(
       to: "test@example.com",
       full_name: "Jane Smith",
-      course_name: "Excellence in Reception Teaching",
+      course_name: "Excellence in reception teaching",
       provider_name: "Ambition Institute",
       cohort_date: "Autumn 2026",
       sign_in_link: "https://national-professional-development.education.gov.uk/",

@@ -10,7 +10,7 @@ FactoryBot.define do
     end
 
     trait :npd_eirt do
-      sequence(:name) { |n| "Excellence in Reception Teaching #{n}" }
+      sequence(:name) { |n| "Excellence in reception teaching #{n}" }
       # identifier { "npd-excellence-in-reception-teaching" }
       identifier { "tte-early-years" }
       course_group { "reception" }
