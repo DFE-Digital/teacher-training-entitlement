@@ -10,9 +10,11 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let(:lead_provider) { create(:lead_provider, name: "Provider One") }
   let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:, lead_provider:) }
-  let!(:delivery_partnerships) { create_list(:delivery_partnership, 2, cohort:, lead_provider:) }
+
   let(:valid_params) { { course_cohort: { course_id: course.id, schedule_id: schedule.id } } }
   let(:invalid_params) { { course_cohort: { course_id: "", schedule_id: "" } } }
+
+  before { create_list(:delivery_partnership, 2, cohort:, lead_provider:) }
 
   context "when logged in as super admin" do
     before { sign_in_as_admin(super_admin: true) }
