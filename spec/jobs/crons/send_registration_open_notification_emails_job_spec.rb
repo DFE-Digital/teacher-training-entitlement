@@ -18,7 +18,8 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
         schedule: create(:schedule, cohort: application_cohort),
       )
     end
-    let!(:course_cohort) { create(:course_cohort, cohort:, course: application.course) }
+
+    before { create(:course_cohort, cohort:, course: application.course) }
 
     it "enqueues an email for a deferred application when its course is on a cohort that opened yesterday" do
       expect { described_class.perform_now }
