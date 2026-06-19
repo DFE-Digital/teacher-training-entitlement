@@ -102,7 +102,7 @@ RSpec.describe Application do
     end
 
     context "when the cohort does not have a funding cap" do
-      let(:cohort) { create(:cohort, :without_funding_cap) }
+      let(:cohort) { create(:cohort, :unique, :without_funding_cap) }
 
       subject { build(:application, :accepted, cohort:) }
 
