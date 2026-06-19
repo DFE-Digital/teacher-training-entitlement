@@ -1,6 +1,6 @@
 <%= govuk_back_link href: admin_cohort_path(@cohort) %>
 
-<h1 class="govuk-heading-l">Add course to <%= @cohort.description %></h1>
+<h1 class="govuk-heading-l">Add course to cohort <%= @cohort.description %></h1>
 
 <%= form_with model: @course_cohort, url: admin_cohort_courses_path(@cohort) do |f| %>
   <%= f.govuk_error_summary %>
@@ -22,7 +22,7 @@
           :schedule_id,
           @schedules,
           :id,
-          :name,
+          :name_and_start_date,
           options: { include_blank: true },
           label: { text: "Schedule" },
         )

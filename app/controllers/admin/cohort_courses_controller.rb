@@ -2,7 +2,12 @@ class Admin::CohortCoursesController < AdminController
   before_action :ensure_super_admin, except: :show
   before_action :course_cohort, only: :show
 
-  def show; end
+  def show
+    @delivery_partner_counts = DeliveryPartnership
+      .where(cohort:, lead_provider_id: @course_cohort.lead_provider_ids)
+      .group(:lead_provider_id)
+      .count
+  end
 
   def new
     @course_cohort = cohort.course_cohorts.new
@@ -39,7 +44,7 @@ private
 
   def load_form_options
     @courses = Course.where.not(id: cohort.course_cohorts.select(:course_id)).order(:name)
-    @schedules = Schedule.where(cohort:).order(:name)
+    @schedules = Schedule.order(training_starts_at: :desc)
   end
 
   def ensure_super_admin

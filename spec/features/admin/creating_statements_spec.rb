@@ -29,7 +29,7 @@ RSpec.feature "Creating statements", type: :feature do
     let(:admin) { create(:super_admin) }
 
     scenario "is possible" do
-      click_on "Create statements"
+      visit new_admin_cohort_statement_path(cohort)
 
       attach_file "statements_bulk_creator[statements_csv_file]", statements_csv.path, make_visible: true
       attach_file "statements_bulk_creator[contracts_csv_file]", contracts_csv.path, make_visible: true
@@ -67,7 +67,7 @@ RSpec.feature "Creating statements", type: :feature do
     end
 
     scenario "downloading examples" do
-      click_on "Create statements"
+      visit new_admin_cohort_statement_path(cohort)
 
       find("summary", text: "Example statements CSV").click
       click_on "Download empty statements template"
@@ -85,8 +85,7 @@ RSpec.feature "Creating statements", type: :feature do
       csv = CSV.read(csv_file)
       expect(csv.count).to eq(1)
 
-      visit admin_cohort_path(cohort)
-      click_on "Download contracts CSV"
+      visit download_contracts_admin_cohort_path(cohort)
       csv_file = "#{Capybara.save_path}/contracts.csv"
       wait_for_file_to_be_created(csv_file)
     end

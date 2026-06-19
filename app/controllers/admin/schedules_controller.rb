@@ -58,7 +58,7 @@ private
       :acceptance_window_start,
       :acceptance_window_end,
       allowed_declaration_types: [],
-    ).merge(cohort:)
+    )
   end
 
   def schedule

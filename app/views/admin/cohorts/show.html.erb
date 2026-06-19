@@ -32,8 +32,6 @@
 <% if current_admin.super_admin? %>
   <%= govuk_button_link_to("Edit cohort details", edit_admin_cohort_path(@cohort)) %>
   <%= govuk_button_link_to("Delete cohort", admin_cohort_path(@cohort), method: :delete, warning: true) %>
-  <%= govuk_button_link_to("Create statements", new_admin_cohort_statement_path(@cohort), secondary: true) %>
-  <%= govuk_button_link_to("Download contracts CSV", download_contracts_admin_cohort_path(@cohort), secondary: true) %>
 <% end %>
 
 <hr class="govuk-section-break govuk-section-break--l">

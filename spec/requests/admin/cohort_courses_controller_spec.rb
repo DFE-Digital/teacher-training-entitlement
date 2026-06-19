@@ -10,6 +10,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let(:lead_provider) { create(:lead_provider, name: "Provider One") }
   let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:, lead_provider:) }
+  let!(:delivery_partnerships) { create_list(:delivery_partnership, 2, cohort:, lead_provider:) }
   let(:valid_params) { { course_cohort: { course_id: course.id, schedule_id: schedule.id } } }
   let(:invalid_params) { { course_cohort: { course_id: "", schedule_id: "" } } }
 
@@ -21,8 +22,16 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
       it { is_expected.to have_http_status :success }
 
+      it "shows the cohort name" do
+        expect(response.body).to include(cohort.name)
+      end
+
       it "links to providers on the course cohort" do
         expect(response.body).to include(admin_lead_provider_path(lead_provider))
+      end
+
+      it "shows the number of delivery partners for the provider and cohort" do
+        expect(response.body).to include("2 delivery partners")
       end
 
       it "links to add or remove providers" do

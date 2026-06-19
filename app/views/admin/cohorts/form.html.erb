@@ -11,6 +11,7 @@
 </h1>
 
 <%= form_with model: [:admin, @cohort] do |f| %>
+  <%= f.govuk_error_summary %>
   <%= f.govuk_text_field :description %>
 
   <%= f.govuk_number_field :start_year,

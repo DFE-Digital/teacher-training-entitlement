@@ -1,4 +1,4 @@
-<%= govuk_back_link href: admin_cohort_path(@cohort) %>
+<%= govuk_back_link href: admin_cohorts_path %>
 
 <h1 class="govuk-heading-l"><%= @course.name %></h1>
 
@@ -6,6 +6,16 @@
   govuk_summary_list do |sl|
 
     sl.with_row do |row|
+      row.with_key(text: "Cohort name")
+      row.with_value(text: @cohort.name)
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Cohort registration open")
+      row.with_value(text: @cohort.registration_starts_at.to_date.to_fs(:govuk))
+    end
+
+sl.with_row do |row|
       row.with_key(text: "Course ID")
       row.with_value(text: @course.ecf_id)
     end
@@ -16,18 +26,8 @@
     end
 
     sl.with_row do |row|
-      row.with_key(text: "Position")
-      row.with_value(text: @course.position)
-    end
-
-    sl.with_row do |row|
       row.with_key(text: "Description")
       row.with_value(text: @course.description)
-    end
-
-    sl.with_row do |row|
-      row.with_key(text: "Display")
-      row.with_value(text: boolean_red_green_tag(@course.display?))
     end
   end
 %>
@@ -46,19 +46,16 @@
         row.with_cell(text: "Training starts")
         row.with_cell(text: "Training ends")
         row.with_cell(text: "Declaration types")
-        row.with_cell(text: "Milestones")
       end
     end
 
     table.with_body do |body|
-      milestone_counts = @cohort.schedules.joins(:milestones).group("schedules.id").count
       @cohort.schedules.includes(:milestones).order(:name).each do |schedule|
         body.with_row do |row|
           row.with_cell(text: govuk_link_to(schedule.name, admin_cohort_schedule_path(@cohort, schedule)))
           row.with_cell(text: schedule.training_starts_at.to_fs(:govuk_short))
           row.with_cell(text: schedule.training_ends_at.to_fs(:govuk_short))
-          row.with_cell(text: schedule.allowed_declaration_types.count)
-          row.with_cell(text: milestone_counts[schedule.id].to_i)
+          row.with_cell(text: schedule.allowed_declaration_types.join(', '))
         end
       end
     end
@@ -72,18 +69,11 @@
 <% end %>
 
 <%=
-  govuk_table do |table|
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Name")
-      end
-    end
-
-    table.with_body do |body|
-      @course_cohort.lead_providers.order(:name).each do |provider|
-        body.with_row do |row|
-          row.with_cell(text: govuk_link_to(provider.name, admin_lead_provider_path(provider)))
-        end
+  govuk_summary_list do |summary_list|
+    @course_cohort.lead_providers.order(:name).each do |provider|
+      summary_list.with_row do |row|
+        row.with_key(text: govuk_link_to(provider.name, admin_lead_provider_path(provider)))
+        row.with_value(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "delivery partner"))
       end
     end
   end
