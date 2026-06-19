@@ -83,13 +83,7 @@ class RegistrationQueryStore
   end
 
   def course_cohort
-    @course_cohort ||= CourseCohort.find_by(id: store["course_cohort_id"]) || assign_course_cohort
-  end
-
-  def assign_course_cohort
-    CourseCohort.next_open_for(course:).tap do |course_cohort|
-      store["course_cohort_id"] = course_cohort.id
-    end
+    @course_cohort ||= CourseCohort.next_open_for(course:)
   end
 
   def lead_provider

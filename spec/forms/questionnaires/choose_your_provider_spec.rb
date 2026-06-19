@@ -4,13 +4,14 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
   let!(:cohort) { create(:cohort, :current) }
   let!(:lead_provider) { create(:lead_provider) }
   let!(:course) { create(:course, :npd_eirt, lead_provider:) }
-  let!(:course_cohort) { create(:course_cohort, course:, cohort:, lead_provider:) }
+
+  before { create(:course_cohort, course:, cohort:, lead_provider:) }
 
   describe "validations" do
     let(:current_step) { "choose_your_provider" }
     let(:request) { nil }
     let(:school) { bulid_stubbed(:school) }
-    let(:store) { { "course_cohort_id" => course_cohort.id } }
+    let(:store) { {} }
     let(:wizard) do
       RegistrationWizard.new(
         current_step:,
@@ -58,12 +59,13 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
+    let(:course_cohort) { CourseCohort.next_open_for(course:) }
     let(:expected_providers) { course_cohort.lead_providers.alphabetical }
 
     before do
       form.wizard = RegistrationWizard.new(
         current_step: :choose_your_provider,
-        store: { "course_cohort_id" => course_cohort.id },
+        store: {},
         request: nil,
         current_user: create(:user),
       )

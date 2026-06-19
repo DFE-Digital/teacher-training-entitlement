@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe Cohorts::CopyDeliveryPartners do
   describe "#copy" do
     let!(:previous_cohort) do
-      create(:cohort, registration_starts_at: Date.new(2029, 1, 1))
+      create(:cohort, start_year: 2029, registration_starts_at: Date.new(2029, 1, 1))
     end
     let(:cohort) do
-      create(:cohort, registration_starts_at: Date.new(2029, 2, 1))
+      create(:cohort, start_year: 2029, registration_starts_at: Date.new(2029, 2, 1))
     end
     let(:service) { described_class.new(cohort) }
 

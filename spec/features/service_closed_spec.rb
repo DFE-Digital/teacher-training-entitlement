@@ -30,7 +30,7 @@ RSpec.feature "Service is closed", type: :feature do
     page.click_button("Start now")
 
     expect(page).to have_text("Choose your course start date")
-    page.choose(Course.reception.next_cohort_start_date, visible: :all)
+    page.choose("Registration closed", visible: :all)
 
     # Registration is now closed
     close_registration!
