@@ -36,6 +36,15 @@ RSpec.describe TeacherAuth::RefreshToken do
       it "returns :invalid_token" do
         expect(subject).to eq(:invalid_token)
       end
+
+      it "records a Sentry metric" do
+        expect(Sentry::Metrics).to receive(:count).with(
+          "teacher_auth.refresh_token.invalid_grant",
+          value: 1,
+          attributes: { status_code: 400 },
+        )
+        subject
+      end
     end
 
     context "when the request fails" do
