@@ -217,12 +217,10 @@ module ValidTestDataGenerators
       name = Faker::Name.unique.name
       email_part = name.tr(" '.", "").downcase
 
-      # Create with temporary email first
-      temp_email = "#{email_part}@#{to_dns_name(@lead_provider.name)}.com"
-      ecf_id = SecureRandom.uuid
+      email = "#{email_part}@#{to_dns_name(@lead_provider.name)}.com"
 
-      user = User.find_or_create_by!(ecf_id: ecf_id) do |u|
-        u.email = temp_email
+      user = User.find_or_create_by!(email:) do |u|
+        u.ecf_id = SecureRandom.uuid
         u.full_name = name
         u.trn = generate_trn if with_trn
         u.date_of_birth = Faker::Date.birthday(min_age: 20)
