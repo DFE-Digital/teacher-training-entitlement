@@ -24,8 +24,27 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
       it { is_expected.to have_http_status :success }
 
+      it "links back to courses when there is no referrer" do
+        expect(response.body).to include(%(href="#{admin_courses_path}"))
+      end
+
+      it "links back to the referrer when present" do
+        referrer = admin_cohort_path(cohort)
+
+        get admin_cohort_course_path(cohort, course_cohort.course), headers: { "HTTP_REFERER" => referrer }
+
+        expect(response.body).to include(%(href="#{referrer}"))
+      end
+
       it "shows the cohort name" do
         expect(response.body).to include(cohort.name)
+      end
+
+      it "shows the course cohort schedule" do
+        expect(response.body).to include(schedule.name)
+        expect(response.body).to include(schedule.training_starts_at.to_fs(:govuk_short))
+        expect(response.body).to include(schedule.training_ends_at.to_fs(:govuk_short))
+        expect(response.body).to include(schedule.allowed_declaration_types.join(", "))
       end
 
       it "links to providers on the course cohort" do

@@ -55,6 +55,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       visit_index
       click_on new_button_text
 
+      expect(page).to have_css("a.govuk-back-link[href$='#{admin_cohorts_path}']", text: "Back")
+
       fill_in "Description", with: "2029 to 2030"
       fill_in "Start year", with: "2029"
       check "Funding cap", visible: :all

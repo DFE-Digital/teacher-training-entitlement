@@ -26,6 +26,18 @@ RSpec.describe Cohort, type: :model do
     it { is_expected.not_to allow_value(nil).for(:funding_cap).with_message("Choose true or false for funding cap") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
 
+    it "shows the conflicting cohort start month when the identifier already exists" do
+      create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 1, 3))
+      duplicate = Cohort.new(
+        start_year: 2026,
+        registration_starts_at: Date.new(2026, 1, 20),
+        description: "Another January 2026 cohort",
+        funding_cap: true,
+      )
+
+      expect(duplicate).to have_error(:identifier, :taken, "Cohort starting 'Jan 2026' exists already")
+    end
+
     describe "registration_starts_at year should match start_year" do
       it "adds an error when the registration_starts_at year does not match the start_year" do
         cohort = Cohort.new(start_year: 2022, registration_starts_at: Date.new(2023, 4, 10))

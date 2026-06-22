@@ -1,5 +1,7 @@
 <% if @cohort.persisted? %>
   <%= govuk_back_link href: admin_cohort_path(@cohort) %>
+<% else %>
+  <%= govuk_back_link href: request.referrer.presence || admin_cohorts_path %>
 <% end %>
 
 <h1 class="govuk-heading-l">

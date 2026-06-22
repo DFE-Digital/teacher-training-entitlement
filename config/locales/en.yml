@@ -205,6 +205,9 @@ en:
               aken: Description is used by another cohort already
             start_year:
               blank: Enter the start year for the cohort
+            identifier:
+              blank: Enter a registration start date to generate the cohort identifier
+              taken: Cohort starting '%{cohort_start}' exists already
             funding_cap:
               inclusion: Choose true or false for funding cap
             ecf_id:

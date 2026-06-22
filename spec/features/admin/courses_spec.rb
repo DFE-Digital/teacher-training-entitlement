@@ -70,6 +70,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       visit(admin_course_path(course))
 
       expect(page).to have_css("h1", text: course.name)
+      expect(page).to have_css(".x-govuk-sub-navigation")
 
       within(".govuk-summary-list") do |summary_list|
         expect(summary_list).to have_summary_item("Name", course.name)
@@ -81,6 +82,8 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).not_to have_link("Change")
+      expect(page).not_to have_css("h2", text: "Schedule")
+      expect(page).not_to have_css("h2", text: "Providers")
     end
   end
 

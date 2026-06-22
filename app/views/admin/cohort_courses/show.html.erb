@@ -1,63 +1,74 @@
-<%= govuk_back_link href: admin_cohorts_path %>
+<%= govuk_back_link href: request.referrer.presence || admin_courses_path %>
+
+<% content_for :side_navigation do %>
+  <%= render CohortsComponent.new(
+    request.path,
+    cohorts: @cohorts,
+    base_path: :admin_course_path,
+    resource: @course,
+    cohort_path: ->(cohort) { admin_cohort_course_path(cohort, @course) },
+  ) %>
+<% end %>
 
 <h1 class="govuk-heading-l"><%= @course.name %></h1>
 
 <%=
-  govuk_summary_list do |sl|
-
-    sl.with_row do |row|
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
       row.with_key(text: "Cohort name")
       row.with_value(text: @cohort.name)
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Cohort registration open")
       row.with_value(text: @cohort.registration_starts_at.to_date.to_fs(:govuk))
     end
 
-sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Course ID")
       row.with_value(text: @course.ecf_id)
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Identifier")
       row.with_value(text: @course.identifier)
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Description")
       row.with_value(text: @course.description)
     end
   end
 %>
 
-<h2 class="govuk-heading-m">Schedules</h1>
+<h2 class="govuk-heading-m">Schedule</h2>
 
 <% if current_admin.super_admin? %>
   <%= govuk_button_link_to("New schedule", new_admin_cohort_schedule_path(@cohort)) %>
 <% end %>
 
 <%=
-  govuk_table do |table|
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Name")
-        row.with_cell(text: "Training starts")
-        row.with_cell(text: "Training ends")
-        row.with_cell(text: "Declaration types")
-      end
+  govuk_summary_list do |summary_list|
+    schedule = @course_cohort.schedule
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Name")
+      row.with_value(text: govuk_link_to(schedule.name, admin_cohort_schedule_path(@cohort, schedule)))
     end
 
-    table.with_body do |body|
-      @cohort.schedules.includes(:milestones).order(:name).each do |schedule|
-        body.with_row do |row|
-          row.with_cell(text: govuk_link_to(schedule.name, admin_cohort_schedule_path(@cohort, schedule)))
-          row.with_cell(text: schedule.training_starts_at.to_fs(:govuk_short))
-          row.with_cell(text: schedule.training_ends_at.to_fs(:govuk_short))
-          row.with_cell(text: schedule.allowed_declaration_types.join(', '))
-        end
-      end
+    summary_list.with_row do |row|
+      row.with_key(text: "Training starts")
+      row.with_value(text: schedule.training_starts_at.to_fs(:govuk_short))
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Training ends")
+      row.with_value(text: schedule.training_ends_at.to_fs(:govuk_short))
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Declaration types")
+      row.with_value(text: schedule.allowed_declaration_types.join(', '))
     end
   end
 %>
@@ -69,11 +80,20 @@ sl.with_row do |row|
 <% end %>
 
 <%=
-  govuk_summary_list do |summary_list|
-    @course_cohort.lead_providers.order(:name).each do |provider|
-      summary_list.with_row do |row|
-        row.with_key(text: govuk_link_to(provider.name, admin_lead_provider_path(provider)))
-        row.with_value(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "delivery partner"))
+  govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Provider")
+        row.with_cell(text: "Delivery partners")
+      end
+    end
+
+    table.with_body do |body|
+      @course_cohort.lead_providers.order(:name).each do |provider|
+        body.with_row do |row|
+          row.with_cell(text: govuk_link_to(provider.name, admin_lead_provider_path(provider)))
+          row.with_cell(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "delivery partner"))
+        end
       end
     end
   end

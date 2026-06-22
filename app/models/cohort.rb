@@ -22,7 +22,8 @@ class Cohort < ApplicationRecord
             length: { within: 5..50 }
 
   validates :registration_starts_at, presence: true
-  validates :identifier, presence: true, uniqueness: { case_sensitive: false }
+  validates :identifier, presence: true
+  validate :identifier_is_unique
   validate :registration_starts_at_matches_start_year
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
@@ -71,6 +72,15 @@ private
     return if registration_starts_at.blank?
 
     self.identifier = registration_starts_at.strftime("%Y-%B")
+  end
+
+  def identifier_is_unique
+    return if identifier.blank?
+
+    duplicate = Cohort.where.not(id:).where("LOWER(identifier) = ?", identifier.downcase).exists?
+    return unless duplicate
+
+    errors.add(:identifier, :taken, cohort_start: registration_starts_at.strftime("%b %Y"))
   end
 
   def changing_funding_cap_with_dependent_applications

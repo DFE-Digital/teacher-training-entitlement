@@ -1,38 +1,47 @@
-<%= govuk_back_link(href: url_for(:back)) %>
+<%= govuk_back_link href: request.referrer.presence || admin_courses_path %>
+
+<% content_for :side_navigation do %>
+  <%= render CohortsComponent.new(
+    request.path,
+    cohorts: @cohorts,
+    base_path: :admin_course_path,
+    resource: @course,
+    cohort_path: ->(cohort) { admin_cohort_course_path(cohort, @course) },
+  ) %>
+<% end %>
 
 <h1 class="govuk-heading-l"><%= @course.name %></h1>
 
 <%=
-  govuk_summary_list do |sl|
-
-    sl.with_row do |row|
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
       row.with_key(text: "Name")
       row.with_value(text: @course.name)
       row.with_action(text: "Change", href: edit_admin_course_path(@course), visually_hidden_text: "name") if current_admin.super_admin?
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Course ID")
       row.with_value(text: @course.ecf_id)
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Identifier")
       row.with_value(text: @course.identifier)
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Position")
       row.with_value(text: @course.position)
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Description")
       row.with_value(text: @course.description)
       row.with_action(text: "Change", href: edit_admin_course_path(@course), visually_hidden_text: "description") if current_admin.super_admin?
     end
 
-    sl.with_row do |row|
+    summary_list.with_row do |row|
       row.with_key(text: "Display")
       row.with_value(text: boolean_red_green_tag(@course.display?))
     end

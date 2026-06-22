@@ -1,5 +1,5 @@
 <% content_for :side_navigation do %>
-    <%= render CohortsComponent.new(
+  <%= render CohortsComponent.new(
         request.path,
         cohorts: @cohorts,
         base_path: :admin_courses_path,
