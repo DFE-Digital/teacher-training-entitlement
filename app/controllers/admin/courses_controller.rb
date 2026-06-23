@@ -1,23 +1,18 @@
 module Admin
   class CoursesController < AdminController
     include Cohortable
+    before_action :set_course, only: %i[show edit update]
     before_action :require_super_admin, only: %i[edit update]
 
     def index
       @pagy, @resources = pagy(resources)
     end
 
-    def show
-      @course = Course.find(params[:id])
-    end
+    def show; end
 
-    def edit
-      @course = Course.find(params[:id])
-    end
+    def edit; end
 
     def update
-      @course = Course.find(params[:id])
-
       if @course.update(course_params)
         redirect_to admin_course_path(@course), flash: { success: "Course updated" }
       else
@@ -26,6 +21,10 @@ module Admin
     end
 
   private
+
+    def set_course
+      @course = Course.find(params[:id])
+    end
 
     def course_params
       params.require(:course).permit(:name, :description)
