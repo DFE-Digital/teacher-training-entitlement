@@ -76,9 +76,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
   end
 
   context "when signed in as super admin" do
-    before do
-      sign_in_as(create(:super_admin))
-    end
+    let(:admin_user) { create(:super_admin) }
 
     scenario "editing a course name" do
       course = Course.first
