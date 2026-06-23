@@ -18,7 +18,7 @@ RSpec.feature "Change provider", type: :feature do
       #
       visit application_change_provider_start_index_path(application.ecf_id)
 
-      expect(page).to have_text("Register with a different provider for the #{application.course.name}")
+      expect(page).to have_text("#{application.course.name} course: register with a different provider")
 
       choose(I18n.t("applications.change_provider.start.application_#{application.status}.form.yes_option"), visible: :all)
 

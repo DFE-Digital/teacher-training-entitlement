@@ -7,46 +7,87 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
   before do
     create(:course, :npd_eirt)
-    sign_in_as(create(:admin))
   end
 
-  scenario "viewing the list of courses" do
-    visit(admin_courses_path)
-
-    expect(page).to have_css("h1", text: "Courses")
-
-    Course.order(name: :asc).limit(courses_per_page).each do |course|
-      expect(page).to have_link(course.name, href: admin_course_path(course))
+  context "when signed in as admin" do
+    before do
+      sign_in_as(create(:admin))
     end
 
-    # Not enough courses for pagination to kick in
-    # expect(page).to have_css(".govuk-pagination__item--current", text: 1)
+    scenario "viewing the list of courses" do
+      visit(admin_courses_path)
+
+      expect(page).to have_css("h1", text: "Courses")
+
+      Course.order(name: :asc).limit(courses_per_page).each do |course|
+        expect(page).to have_link(course.name, href: admin_course_path(course))
+      end
+
+      # Not enough courses for pagination to kick in
+      # expect(page).to have_css(".govuk-pagination__item--current", text: 1)
+    end
+
+    scenario "navigating to the second page of courses", :npq do
+      visit(admin_courses_path)
+
+      click_on("Next")
+
+      expect(page).to have_css("table.govuk-table tbody tr", count: 5)
+      expect(page).to have_css(".govuk-pagination__item--current", text: "2")
+    end
+
+    scenario "viewing course details" do
+      visit(admin_courses_path)
+
+      course = Course.order(name: :asc).first
+
+      click_link(course.name)
+
+      expect(page).to have_css("h1", text: course.name)
+
+      within(".govuk-summary-list") do |summary_list|
+        expect(summary_list).to have_summary_item("Name", course.name)
+        expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
+        expect(summary_list).to have_summary_item("Identifier", course.identifier)
+        expect(summary_list).to have_summary_item("Position", course.position)
+        expect(summary_list).to have_summary_item("Description", course.description)
+        expect(summary_list).to have_summary_item("Display", "Yes")
+      end
+
+      expect(page).not_to have_link("Change")
+    end
   end
 
-  scenario "navigating to the second page of courses", :npq do
-    visit(admin_courses_path)
+  context "when signed in as super admin" do
+    before do
+      sign_in_as(create(:super_admin))
+    end
 
-    click_on("Next")
+    scenario "editing a course name" do
+      course = Course.first
 
-    expect(page).to have_css("table.govuk-table tbody tr", count: 5)
-    expect(page).to have_css(".govuk-pagination__item--current", text: "2")
-  end
+      visit(admin_course_path(course))
 
-  scenario "viewing course details" do
-    visit(admin_courses_path)
+      click_link("Change name")
 
-    course = Course.order(name: :asc).first
+      expect(page).to have_css("h1", text: "Edit course details")
 
-    click_link(course.name)
+      fill_in("Course name", with: "Updated Course Name")
+      click_button("Save course details")
 
-    expect(page).to have_css("h1", text: course.name)
+      expect(page).to have_css("h1", text: "Updated Course Name")
+      expect(page).to have_summary_item("Name", "Updated Course Name")
+    end
 
-    within(".govuk-summary-list") do |summary_list|
-      expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
-      expect(summary_list).to have_summary_item("Identifier", course.identifier)
-      expect(summary_list).to have_summary_item("Position", course.position)
-      expect(summary_list).to have_summary_item("Description", course.description)
-      expect(summary_list).to have_summary_item("Display", "Yes")
+    scenario "editing a course with invalid input shows an error" do
+      course = Course.first
+
+      visit(edit_admin_course_path(course))
+
+      fill_in("Course name", with: "")
+      click_button("Save course details")
+
+      expect(page).to have_css(".govuk-error-summary", text: "can't be blank")
     end
   end
 end

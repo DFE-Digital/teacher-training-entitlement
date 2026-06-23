@@ -79,7 +79,7 @@ en:
             - come back to this service and you will be able to 'register with a different provider'
 
       start:
-        title: Register with a different provider for the %{course_name} course
+        title: "%{course_name} course: register with a different provider"
         text: 
           application_pending: You can only register with a different provider if you haven't started the course yet.
           application_rejected: ""

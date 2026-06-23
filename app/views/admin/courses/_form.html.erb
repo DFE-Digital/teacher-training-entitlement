@@ -1,0 +1,26 @@
+<%= form_with model: [:admin, course] do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <%=
+    form.govuk_text_field :name,
+                          width: "two-thirds",
+                          label: {
+                            text: "Course name",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_text_area :description,
+                         rows: 5,
+                         label: {
+                           text: "Course description",
+                           size: "m",
+                         }
+  %>
+
+  <div class="govuk-button-group">
+    <%= form.govuk_submit "Save course details" %>
+    <%= govuk_link_to "Cancel", admin_course_path(course), class: "govuk-link--no-visited-state" %>
+  </div>
+<% end %>
