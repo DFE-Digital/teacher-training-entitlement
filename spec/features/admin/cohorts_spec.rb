@@ -55,6 +55,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       visit_index
       click_on new_button_text
 
+      expect(page).to have_css("a.govuk-back-link[href$='#{admin_cohorts_path}']", text: "Back")
+
       fill_in "Description", with: "2029 to 2030"
       fill_in "Start year", with: "2029"
       check "Funding cap", visible: :all
@@ -122,8 +124,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
         end
       end
 
-      navigate_to_cohort
-      click_on download_contracts_button_text
+      visit download_contracts_admin_cohort_path(cohort)
       csv_file = "#{Capybara.save_path}/#{cohort.start_year}_cohort_contracts.csv"
       wait_for_file_to_be_created(csv_file)
       csv = CSV.read(csv_file)

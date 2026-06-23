@@ -3,11 +3,12 @@ class CohortsComponent < BaseComponent
 
   attr_accessor :current_path, :current_section, :heading
 
-  def initialize(current_path, cohorts:, base_path:, resource: nil)
+  def initialize(current_path, cohorts:, base_path:, resource: nil, cohort_path: nil)
     @current_path = current_path
     @cohorts = cohorts
     @base_path = base_path
     @resource = resource
+    @cohort_path = cohort_path
     @heading = { text: "Cohorts", visible: true }
   end
 
@@ -71,7 +72,9 @@ class CohortsComponent < BaseComponent
 private
 
   def cohort_resource_path(cohort)
-    if @resource
+    if @cohort_path
+      @cohort_path.call(cohort)
+    elsif @resource
       public_send(:"cohort_#{@base_path}", @resource, cohort)
     else
       public_send(:"cohort_#{@base_path}", cohort)

@@ -9,6 +9,7 @@ class CourseCohort < ApplicationRecord
   has_many :applications
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
+  validates :course_id, uniqueness: { scope: :cohort_id }
 
   delegate :name, to: :cohort
 end

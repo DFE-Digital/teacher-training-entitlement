@@ -205,6 +205,9 @@ en:
               aken: Description is used by another cohort already
             start_year:
               blank: Enter the start year for the cohort
+            identifier:
+              blank: Enter a registration start date to generate the cohort identifier
+              taken: Cohort starting '%{cohort_start}' exists already
             funding_cap:
               inclusion: Choose true or false for funding cap
             ecf_id:
@@ -271,6 +274,12 @@ en:
             ecf_id:
               blank: Enter an ECF ID
               taken: ECF ID must be unique
+        course_cohort:
+          attributes:
+            course:
+              required: A course is required
+            schedule:
+              required: A schedule is required
         declaration:
           attributes:
             declaration_date:
@@ -329,6 +338,20 @@ en:
               taken: ECF ID must be unique
         schedule:
           attributes:
+            name:
+              blank: Enter a name
+            identifier:
+              blank: Enter an identifier
+            policy_descriptor:
+              blank: Enter a policy descriptor
+            training_starts_at:
+              blank: Enter a training start date
+            training_ends_at:
+              blank: Enter a training end date
+            acceptance_window_start:
+              blank: Enter an acceptance window start date
+            acceptance_window_end:
+              blank: Enter an acceptance window end date
             ecf_id:
               blank: Enter an ECF ID
               taken: ECF ID must be unique

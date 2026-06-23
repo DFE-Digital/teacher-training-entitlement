@@ -30,6 +30,10 @@ class Schedule < ApplicationRecord
     Declaration.declaration_types.keys
   end
 
+  def name_and_start_date
+    "#{name} / #{training_starts_at.to_date.to_fs(:govuk)}"
+  end
+
   def training_live?
     training_started? && training_ends_at > Time.zone.today
   end

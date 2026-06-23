@@ -32,16 +32,14 @@
 <% if current_admin.super_admin? %>
   <%= govuk_button_link_to("Edit cohort details", edit_admin_cohort_path(@cohort)) %>
   <%= govuk_button_link_to("Delete cohort", admin_cohort_path(@cohort), method: :delete, warning: true) %>
-  <%= govuk_button_link_to("Create statements", new_admin_cohort_statement_path(@cohort), secondary: true) %>
-  <%= govuk_button_link_to("Download contracts CSV", download_contracts_admin_cohort_path(@cohort), secondary: true) %>
 <% end %>
 
 <hr class="govuk-section-break govuk-section-break--l">
 
-<h2 class="govuk-heading-m">Schedules</h1>
+<h2 class="govuk-heading-m">Courses</h1>
 
 <% if current_admin.super_admin? %>
-  <%= govuk_button_link_to("New schedule", new_admin_cohort_schedule_path(@cohort)) %>
+  <%= govuk_button_link_to("Add course", new_admin_cohort_course_path(@cohort)) %>
 <% end %>
 
 <%=
@@ -49,22 +47,13 @@
     table.with_head do |head|
       head.with_row do |row|
         row.with_cell(text: "Name")
-        row.with_cell(text: "Training starts")
-        row.with_cell(text: "Training ends")
-        row.with_cell(text: "Declaration types")
-        row.with_cell(text: "Milestones")
       end
     end
 
     table.with_body do |body|
-      milestone_counts = @cohort.schedules.joins(:milestones).group("schedules.id").count
-      @cohort.schedules.includes(:milestones).order(:name).each do |schedule|
+      @cohort.courses.order(:name).each do |course|
         body.with_row do |row|
-          row.with_cell(text: govuk_link_to(schedule.name, admin_cohort_schedule_path(@cohort, schedule)))
-          row.with_cell(text: schedule.training_starts_at.to_fs(:govuk_short))
-          row.with_cell(text: schedule.training_ends_at.to_fs(:govuk_short))
-          row.with_cell(text: schedule.allowed_declaration_types.count)
-          row.with_cell(text: milestone_counts[schedule.id].to_i)
+          row.with_cell(text: govuk_link_to(course.name, admin_cohort_course_path(@cohort, course)))
         end
       end
     end

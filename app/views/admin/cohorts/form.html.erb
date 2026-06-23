@@ -1,5 +1,7 @@
 <% if @cohort.persisted? %>
   <%= govuk_back_link href: admin_cohort_path(@cohort) %>
+<% else %>
+  <%= govuk_back_link href: request.referrer.presence || admin_cohorts_path %>
 <% end %>
 
 <h1 class="govuk-heading-l">
@@ -11,6 +13,7 @@
 </h1>
 
 <%= form_with model: [:admin, @cohort] do |f| %>
+  <%= f.govuk_error_summary %>
   <%= f.govuk_text_field :description %>
 
   <%= f.govuk_number_field :start_year,

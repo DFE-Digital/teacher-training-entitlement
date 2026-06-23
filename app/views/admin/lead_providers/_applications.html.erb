@@ -17,7 +17,7 @@
                 link_to application.user.full_name, admin_application_path(application), class: "govuk-link"
               end
               row.with_cell(text: application.user.email)
-              row.with_cell(text: application.course.name)
+              row.with_cell(text: application.course&.name)
               row.with_cell do
                 if application.lead_provider == @lead_provider
                   application_status_badge(application.status)
@@ -26,7 +26,7 @@
                 end
               end
               row.with_cell do
-                if application.cohort.funding_cap?
+                if application.cohort&.funding_cap?
                   if application.funded_place
                     tag.strong("Funded", class: "govuk-tag govuk-tag--blue")
                   elsif application.funded_place == false
