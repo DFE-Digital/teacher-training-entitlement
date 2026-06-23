@@ -48,7 +48,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       end
 
       it "links to providers on the course cohort" do
-        expect(response.body).to include(admin_lead_provider_path(lead_provider))
+        expect(response.body).to include(cohort_admin_lead_provider_path(lead_provider, cohort))
       end
 
       it "shows the number of delivery partners for the provider and cohort" do

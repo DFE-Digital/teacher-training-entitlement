@@ -91,7 +91,7 @@
     table.with_body do |body|
       @course_cohort.lead_providers.order(:name).each do |provider|
         body.with_row do |row|
-          row.with_cell(text: govuk_link_to(provider.name, admin_lead_provider_path(provider)))
+          row.with_cell(text: govuk_link_to(provider.name, cohort_admin_lead_provider_path(provider, @cohort)))
           row.with_cell(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "delivery partner"))
         end
       end

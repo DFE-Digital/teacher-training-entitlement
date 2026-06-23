@@ -15,17 +15,13 @@ RSpec.feature "Listing and viewing courses", type: :feature do
     end
 
     scenario "viewing the list of courses" do
-      latest_cohort = create(:cohort, :unique, registration_starts_at: Date.new(2028, 1, 1))
-      older_cohort = create(:cohort, :unique, registration_starts_at: Date.new(2027, 1, 1))
       course = create(:course, name: "Course with multiple cohorts", identifier: "course-with-multiple-cohorts")
-
-      create(:course_cohort, course:, cohort: older_cohort)
-      create(:course_cohort, course:, cohort: latest_cohort)
+      latest_course_cohort = course.course_cohorts.max_by { |course_cohort| course_cohort.cohort.registration_starts_at }
 
       visit(admin_courses_path)
 
       expect(page).to have_css("h1", text: "Courses")
-      expect(page).to have_link(course.name, href: admin_cohort_course_path(latest_cohort, course))
+      expect(page).to have_link(course.name, href: admin_cohort_course_path(latest_course_cohort.cohort, course))
       expect(page).to have_css(".x-govuk-sub-navigation")
 
       # Not enough courses for pagination to kick in
@@ -41,7 +37,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_css(".govuk-pagination__item--current", text: "2")
     end
 
-    scenario "viewing course details for the latest cohort" do
+    scenario "viewing course details for all cohorts and a selected cohort" do
       visit(admin_courses_path)
 
       course = Course.order(name: :asc).first
@@ -50,7 +46,6 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       click_link(course.name)
 
       expect(page).to have_css("h1", text: course.name)
-      expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
 
       within(".govuk-summary-list", match: :first) do |summary_list|
         expect(summary_list).to have_summary_item("Cohort name", course_cohort.cohort.name)
@@ -62,28 +57,26 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       expect(page).to have_css("h2", text: "Schedule")
       expect(page).to have_css("h2", text: "Providers")
-    end
+      expect(page).to have_link("All", href: admin_course_path(course))
+      expect(page).to have_link(course_cohort.cohort.description, href: admin_cohort_course_path(course_cohort.cohort, course))
+      expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
 
-    scenario "viewing course details for all cohorts" do
-      course = Course.first
+      click_on "All"
 
-      visit(admin_course_path(course))
-
-      expect(page).to have_css("h1", text: course.name)
-      expect(page).to have_css(".x-govuk-sub-navigation")
-
-      within(".govuk-summary-list") do |summary_list|
+      within(".govuk-summary-list", match: :first) do |summary_list|
         expect(summary_list).to have_summary_item("Name", course.name)
         expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
         expect(summary_list).to have_summary_item("Identifier", course.identifier)
         expect(summary_list).to have_summary_item("Position", course.position)
         expect(summary_list).to have_summary_item("Description", course.description)
         expect(summary_list).to have_summary_item("Display", "Yes")
+        expect(summary_list).not_to have_text("Cohort name")
       end
 
-      expect(page).not_to have_link("Change")
       expect(page).not_to have_css("h2", text: "Schedule")
       expect(page).not_to have_css("h2", text: "Providers")
+      expect(page).to have_current_path(admin_course_path(course))
+      expect(page).not_to have_link("Change")
     end
   end
 

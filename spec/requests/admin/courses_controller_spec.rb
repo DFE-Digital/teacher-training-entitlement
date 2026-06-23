@@ -85,13 +85,4 @@ RSpec.describe Admin::CoursesController, type: :request do
       end
     end
   end
-
-  describe "/admin/courses/:id" do
-    subject do
-      get admin_course_path(create(:course))
-      response
-    end
-
-    it { is_expected.to have_http_status(:ok) }
-  end
 end
