@@ -46,7 +46,7 @@ Rails.application.routes.draw do
   patch "/session/:step", to: "session_wizard#update", as: "session_wizard_update"
 
   get "/cookies", to: "pages#show", page: "cookies"
-  get "/privacy-policy", to: redirect("https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers#NPQ"), as: :privacy_policy
+  get "/privacy-policy", to: "pages#show", page: "privacy_policy", as: :privacy_policy
   get "/accessibility-statement", to: "pages#show", page: "accessibility"
   get "/choose-an-npq-and-provider", to: "pages#show", page: "choose_an_npq_and_provider"
   get "/closed_registration_exception", to: "pages#show", page: "closed_registration_exception"

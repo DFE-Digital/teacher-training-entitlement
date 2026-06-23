@@ -9,12 +9,15 @@
     <p>
 
     <ul class="govuk-footer__inline-list">
-      <% [{ text: "Cookies", href: cookies_path },
-          { text: "Privacy", href: privacy_policy_path },
-          { text: "Accessibility", href: accessibility_statement_path }].each do |link| %>
-
-        <%= tag.li(govuk_footer_link_to(link[:text], link[:href]), class: "govuk-footer__inline-list-item") %>
-      <% end %>
+      <li class="govuk-footer__inline-list-item">
+        <%= govuk_footer_link_to("Cookies", cookies_path) %>
+      </li>
+      <li class="govuk-footer__inline-list-item">
+        <%= govuk_footer_link_to("Privacy", privacy_policy_path, target: "_blank", rel: "noopener noreferrer") %>
+      </li>
+      <li class="govuk-footer__inline-list-item">
+        <%= govuk_footer_link_to("Accessibility", accessibility_statement_path) %>
+      </li>
     </ul>
   <% end %>
 
