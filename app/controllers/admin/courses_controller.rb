@@ -1,6 +1,7 @@
 module Admin
   class CoursesController < AdminController
     include Cohortable
+    before_action :require_super_admin, only: %i[edit update]
 
     def index
       @pagy, @resources = pagy(resources)
