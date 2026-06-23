@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         name: Checkout Code
 
       - name: Setup Rails environment
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         name: Checkout Code
 
       - name: Setup Rails environment
@@ -107,7 +107,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Rails environment
         uses: ./.github/actions/setup-rails-env
@@ -165,7 +165,7 @@ jobs:
   #     name: staging
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v6
+  #       uses: actions/checkout@v7
 
   #     - name: Set up Ruby
   #       uses: ruby/setup-ruby@v1
