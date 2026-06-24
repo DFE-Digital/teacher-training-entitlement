@@ -14,6 +14,8 @@ class Schedule < ApplicationRecord
   has_many :statements, through: :milestones
 
   scope :training_live, -> { where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..) }
+  scope :training_started_before, ->(date) { where(training_starts_at: ...date) }
+  scope :training_ended_before, ->(date) { where(training_ends_at: ...date) }
 
   normalizes :allowed_declaration_types, with: ->(value) { value.reject(&:blank?) }
 

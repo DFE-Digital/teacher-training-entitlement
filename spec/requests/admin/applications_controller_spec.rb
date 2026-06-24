@@ -15,6 +15,23 @@ RSpec.describe Admin::ApplicationsController, type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it "links to late declaration reports" do
+      get admin_applications_path
+
+      expect(response.body).to include("Late declarations")
+      expect(response.body).to include(admin_applications_late_started_declarations_path)
+      expect(response.body).to include(admin_applications_late_completed_declarations_path)
+    end
+
+    it "links to late declaration reports filtered by the selected cohort" do
+      cohort = pending_application.cohort
+
+      get cohort_admin_applications_path(cohort)
+
+      expect(response.body).to include(admin_applications_late_started_declarations_path(cohort_id: cohort.id))
+      expect(response.body).to include(admin_applications_late_completed_declarations_path(cohort_id: cohort.id))
+    end
+
     context "when filtering on status" do
       context "when filtering for pending applications" do
         it do

@@ -96,7 +96,7 @@
   padding-left: govuk-spacing(2);
 }
 
-.x-govuk-sub-navigation__link[aria-current] {
+.x-govuk-sub-navigation__link[aria-current=true] {
   font-weight: bold;
 }
 

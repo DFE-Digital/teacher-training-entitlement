@@ -1,0 +1,57 @@
+<% content_for :side_navigation do %>
+  <%= render @filters %>
+<% end %>
+
+<h1 class="govuk-heading-l">Late completed declarations</h1>
+
+<p class="govuk-body">
+  Applications where the training has ended, a started declaration has been submitted but no completed declaration has been submitted.
+</p>
+
+<% csv_params = request.query_parameters.except("page") %>
+<% csv_path = admin_applications_late_completed_declarations_path(format: :csv) %>
+<% csv_path = "#{csv_path}?#{csv_params.to_query}" if csv_params.present? %>
+
+<%= govuk_button_link_to(
+      "Download as CSV",
+      csv_path,
+      secondary: true,
+    ) %>
+
+<%=
+  govuk_table(classes: "govuk-!-font-size-16") do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "User")
+        row.with_cell(text: "Application status")
+        row.with_cell(text: "Provider")
+        row.with_cell(text: "Course")
+        row.with_cell(text: "Cohort")
+        row.with_cell(text: "Expected by")
+        row.with_cell(text: "")
+      end
+    end
+
+    table.with_body do |body|
+      @applications.each do |application|
+        body.with_row do |row|
+          row.with_cell(text: application.user.full_name)
+          row.with_cell do
+            application_status_badge(application.status, classes: "govuk-!-font-size-16")
+          end
+          row.with_cell(text: application.lead_provider&.name || "-")
+          row.with_cell(text: application.course.name)
+          row.with_cell(text: application.cohort.description)
+          row.with_cell(text: application.schedule.training_ends_at.to_date.to_fs(:govuk))
+          row.with_cell(text: govuk_link_to("View", admin_application_path(application.id)))
+        end
+      end
+    end
+  end
+%>
+
+<% if @applications.none? %>
+  <p class="govuk-body">No late completed declarations.</p>
+<% end %>
+
+<%= govuk_pagination(pagy: @pagy) %>

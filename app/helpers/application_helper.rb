@@ -48,10 +48,10 @@ module ApplicationHelper
     tag.p("OTP code: #{admin.otp_hash}")
   end
 
-  def application_status_badge(status)
+  def application_status_badge(status, classes: nil)
     return nil unless status.presence
 
-    govuk_tag(text: status.humanize, colour: application_status_colour(status))
+    govuk_tag(text: status.humanize, colour: application_status_colour(status), classes:)
   end
 
   def application_status_colour(status)

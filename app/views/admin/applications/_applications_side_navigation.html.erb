@@ -1,7 +1,32 @@
 <% content_for :side_navigation do %>
-    <%= render CohortsComponent.new(
+  <%= render CohortsComponent.new(
         request.path,
         cohorts: @cohorts,
         base_path: :admin_applications_path,
-    ) %>
+      ) %>
+
+  <% late_declarations_params = @current_cohort ? { cohort_id: @current_cohort.id } : {} %>
+
+  <nav class="x-govuk-sub-navigation" aria-labelledby="late-declarations-heading">
+    <h2 class="x-govuk-sub-navigation__heading govuk-heading-s" id="late-declarations-heading">
+      Late declarations
+    </h2>
+
+    <ul class="x-govuk-sub-navigation__section">
+      <li class="x-govuk-sub-navigation__section-item">
+        <%= govuk_link_to(
+              "Late started declarations",
+              admin_applications_late_started_declarations_path(late_declarations_params),
+              class: "x-govuk-sub-navigation__link",
+            ) %>
+      </li>
+      <li class="x-govuk-sub-navigation__section-item">
+        <%= govuk_link_to(
+              "Late completed declarations",
+              admin_applications_late_completed_declarations_path(late_declarations_params),
+              class: "x-govuk-sub-navigation__link",
+            ) %>
+      </li>
+    </ul>
+  </nav>
 <% end %>

@@ -46,6 +46,15 @@ namespace :admin do
     end
   end
 
+  namespace :applications, path: "applications" do
+    resources :late_started_declarations,
+              path: "late-started-declarations",
+              only: %i[index]
+    resources :late_completed_declarations,
+              path: "late-completed-declarations",
+              only: %i[index]
+  end
+
   resources :applications, only: %i[index show] do
     concerns :cohortable, index: "applications#index"
     collection do

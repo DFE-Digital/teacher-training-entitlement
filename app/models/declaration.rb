@@ -37,7 +37,8 @@ class Declaration < ApplicationRecord
   scope :billable_or_voidable, -> { billable.or(voidable) }
   scope :awaiting_clawback, -> { where(state: :awaiting_clawback) }
   scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
-  scope :completed, -> { where(declaration_type: "completed") }
+  scope :completed, -> { where(declaration_type: COMPLETED) }
+  scope :not_completed, -> { where.not(declaration_type: COMPLETED) }
   scope :with_course_identifier, ->(course_identifier) { joins(application: { course_cohort: :course }).where(courses: { identifier: course_identifier }) }
   scope :latest_first, -> { order(created_at: :desc, id: :desc) }
   scope :started, -> { where(declaration_type: STARTED) }

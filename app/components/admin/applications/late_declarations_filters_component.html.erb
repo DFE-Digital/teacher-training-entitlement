@@ -1,0 +1,37 @@
+<nav class="x-govuk-sub-navigation" aria-labelledby="late-declarations-filters-heading">
+  <h2 class="x-govuk-sub-navigation__heading govuk-heading-s" id="late-declarations-filters-heading">
+    Filters
+  </h2>
+
+  <% filter_sections.each do |section| %>
+    <h3 class="x-govuk-sub-navigation__heading govuk-heading-s">
+      <%= section[:title] %>
+    </h3>
+
+    <ul class="x-govuk-sub-navigation__section">
+      <li class="<%= class_names("x-govuk-sub-navigation__section-item", "x-govuk-sub-navigation__section-item--current" => section[:current_value].nil?) %>">
+        <%=
+          link_to(
+            "All",
+            clear_filter_path(section[:key]),
+            class: "x-govuk-sub-navigation__link",
+            aria: { current: ("page" if section[:current_value].nil?) },
+          )
+        %>
+      </li>
+
+      <% section[:values].each do |value| %>
+        <li class="<%= class_names("x-govuk-sub-navigation__section-item", "x-govuk-sub-navigation__section-item--current" => selected_filter?(section[:current_value]&.try(:id) || section[:current_value], value.try(:id) || value)) %>">
+          <%=
+            link_to(
+              value.public_send(section[:label_method]),
+              filter_path(section[:key], value.try(:id) || value),
+              class: "x-govuk-sub-navigation__link",
+              aria: { current: ("page" if selected_filter?(section[:current_value]&.try(:id) || section[:current_value], value.try(:id) || value)) },
+            )
+          %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</nav>
