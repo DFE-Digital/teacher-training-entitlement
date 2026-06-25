@@ -15,8 +15,8 @@
   <h2 class="govuk-heading-m">What happens next</h2>
   <ol class="govuk-list govuk-list--number">
 
-    <li>When you submit your registration we will notify your provider that you are eligible for a funded place</li>
-    <li>Your provider will contact you to complete your application and confirm if a funded place is available</li>
+    <li>When you submit your registration, we notify your provider that you're eligible for a funded place</li>
+    <li>Your provider will contact you to complete your application and confirm if a place is available</li>
   </ol>
   <%= form_with model: @form, url: registration_wizard_form_url(@form), scope: 'registration_wizard', method: :patch do |f| %>
     <%= f.govuk_submit %>
