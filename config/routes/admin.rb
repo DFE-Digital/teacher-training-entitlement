@@ -159,6 +159,10 @@ namespace :admin do
 
   resources :lead_providers, only: %i[index show edit update], path: "providers" do
     concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
+    resources :provider_course_profiles,
+              only: %i[edit update],
+              param: :course_id,
+              path: "provider-course-profiles"
   end
   resources :admins, only: %i[index]
 

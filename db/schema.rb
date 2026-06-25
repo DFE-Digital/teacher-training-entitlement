@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_105000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_113100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -470,6 +470,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_105000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provider_course_profiles", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "lead_provider_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.index ["course_id", "lead_provider_id"], name: "idx_on_course_id_lead_provider_id_365a49107b", unique: true
+    t.index ["course_id"], name: "index_provider_course_profiles_on_course_id"
+    t.index ["lead_provider_id"], name: "index_provider_course_profiles_on_lead_provider_id"
+  end
+
   create_table "registration_interests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.citext "email", null: false
@@ -643,6 +654,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_105000) do
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"
+  add_foreign_key "provider_course_profiles", "courses"
+  add_foreign_key "provider_course_profiles", "lead_providers"
   add_foreign_key "schedules", "cohorts"
   add_foreign_key "statement_items", "declarations"
   add_foreign_key "statement_items", "statements"

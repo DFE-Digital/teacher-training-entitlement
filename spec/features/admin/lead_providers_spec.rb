@@ -23,7 +23,9 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     cohort_2024 = create(:cohort, registration_starts_at: Date.new(2024, 4, 1))
     cohort_2023 = create(:cohort, registration_starts_at: Date.new(2023, 4, 1))
     lead_provider = LeadProvider.order(:name).first
+    course = create(:course, display: true, lead_provider:)
     lead_provider.update!(url: "https://example.com/provider")
+    create(:provider_course_profile, course:, lead_provider:, url: "https://example.com/provider-course")
     delivery_partner_25 = create(:delivery_partner, lead_providers: { cohort_2025 => lead_provider })
     delivery_partner_24 = create(:delivery_partner, lead_providers: { cohort_2024 => lead_provider })
     delivery_partner_23 = create(:delivery_partner, lead_providers: { cohort_2023 => lead_provider })
@@ -34,6 +36,12 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     expect(page).to have_css(".govuk-heading-l", text: lead_provider.name)
     expect(page).to have_text(lead_provider.email)
     expect(page).to have_text(lead_provider.url)
+
+    expect(page).to have_text("Provider course profiles")
+    expect(page).to have_text(course.name)
+    expect(page).to have_text("https://example.com/provider-course")
+
+    visit(admin_lead_provider_path(lead_provider))
 
     find("#tab_delivery-partners").click
     expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_25.name }])
@@ -67,6 +75,25 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     expect(lead_provider.email).to eq("updated-provider@example.com")
     expect(lead_provider.url).to eq("https://example.com/provider")
     expect(lead_provider.hint).to eq("Updated hint text")
+  end
+
+  scenario "editing provider course profile" do
+    lead_provider = LeadProvider.order(:name).first
+    course = create(:course, display: true, lead_provider:)
+
+    visit(admin_lead_provider_path(lead_provider))
+    within("tr", text: course.name) do
+      click_on("Edit")
+    end
+
+    fill_in("Website URL", with: "https://example.com/course-specific-provider")
+    click_on("Save profile")
+
+    expect(page).to have_text("Provider course profile updated")
+    expect(page).to have_text("https://example.com/course-specific-provider")
+
+    config = ProviderCourseProfile.find_by!(course:, lead_provider:)
+    expect(config.url).to eq("https://example.com/course-specific-provider")
   end
 
   scenario "editing course provider with invalid details" do

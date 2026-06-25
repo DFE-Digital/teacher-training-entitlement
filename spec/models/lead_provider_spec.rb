@@ -58,4 +58,31 @@ RSpec.describe LeadProvider do
     it { is_expected.not_to include twenty_four_partner }
     it { is_expected.not_to include unrelated_partner }
   end
+
+  describe "#url_for_course" do
+    subject { lead_provider.url_for_course(course:) }
+
+    let(:course) { create(:course) }
+    let(:lead_provider) { create(:lead_provider, url: "https://example.com/provider") }
+
+    context "when the provider has a profile for the course" do
+      before do
+        create(:provider_course_profile, course:, lead_provider:, url: "https://example.com/course-provider")
+      end
+
+      it { is_expected.to eq("https://example.com/course-provider") }
+    end
+
+    context "when the provider profile URL is blank" do
+      before do
+        create(:provider_course_profile, course:, lead_provider:, url: "")
+      end
+
+      it { is_expected.to eq("https://example.com/provider") }
+    end
+
+    context "when the provider does not have a profile for the course" do
+      it { is_expected.to eq("https://example.com/provider") }
+    end
+  end
 end

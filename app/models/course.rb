@@ -7,6 +7,7 @@ class Course < ApplicationRecord
   has_many :course_cohorts, dependent: :destroy
   has_many :course_cohort_providers, through: :course_cohorts
   has_many :cohorts, through: :course_cohorts
+  has_many :provider_course_profiles, dependent: :destroy
   has_many :lead_providers, through: :course_cohort_providers
   has_many :schedules, through: :course_cohorts
   has_many :applications, through: :course_cohorts

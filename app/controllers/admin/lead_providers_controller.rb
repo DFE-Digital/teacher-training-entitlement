@@ -7,7 +7,7 @@ module Admin
     end
 
     def show
-      @lead_provider = LeadProvider.find(params[:id])
+      @lead_provider = LeadProvider.includes(:provider_course_profiles).find(params[:id])
 
       # Added extra includes :course, :cohort to stop bogus warning issues;
       applications_scope = @lead_provider.applications

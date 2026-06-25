@@ -1,0 +1,29 @@
+<h2 class="govuk-heading-m">Provider course profiles</h1>
+<%=
+  govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Course")
+        row.with_cell(text: "Course Provider's URL")
+        row.with_cell(text: "")
+      end
+    end
+
+    table.with_body do |body|
+      @lead_provider.courses.each do |course|
+        profile = @lead_provider.provider_course_profile_for(course:)
+        body.with_row do |row|
+          row.with_cell(text: course.name)
+          row.with_cell do
+            if profile&.url.blank?
+              "Not set"
+            else
+              govuk_link_to(profile.url, profile.url, target: '_blank')
+            end
+          end
+          row.with_cell(text: govuk_button_link_to("Edit", edit_admin_lead_provider_provider_course_profile_path(@lead_provider, course)))
+        end
+      end
+    end
+  end
+%>

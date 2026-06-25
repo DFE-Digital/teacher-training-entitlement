@@ -28,7 +28,7 @@
     <ul class="govuk-list govuk-list--bullet">
       <% providers = course_cohort ? course_cohort.lead_providers.alphabetical : LeadProvider.none %>
       <% providers.each do |provider| %>
-        <li><%= govuk_link_to provider.name, provider.url %></li>
+        <li><%= govuk_link_to provider.name, provider.url_for_course(course:) %></li>
       <% end %>
     </ul>
 
@@ -76,7 +76,6 @@
       <li>change your training provider if you are already registered</li>
       <li>get your certificate when you have completed the course</li>
     </ul>
-
 
     <% if Feature.registration_enabled? %>
       <%= render 'shared/teacher_auth/redirect_button', button_text: "Log in", secondary: true %>

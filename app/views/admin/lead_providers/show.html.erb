@@ -1,5 +1,5 @@
 <% content_for :side_navigation do %>
-    <%= render CohortsComponent.new(
+  <%= render CohortsComponent.new(
         request.path,
         cohorts: @cohorts,
         base_path: :admin_lead_provider_path,
@@ -27,17 +27,19 @@
   <%= govuk_button_link_to "Edit provider details", edit_admin_lead_provider_path(@lead_provider) %>
 </p>
 
+<%= render 'provider_course_profiles' %>
+
 <%= govuk_tabs do |tabs| %>
-    <%= tabs.with_tab(label: "Applications") do %>
-        <%= render partial: "applications",  locals: { applications: @applications, pagy: @pagy_applications } %>
-    <% end %>
+  <%= tabs.with_tab(label: "Applications") do %>
+    <%= render partial: "applications",  locals: { applications: @applications, pagy: @pagy_applications } %>
+  <% end %>
 
-    <%= tabs.with_tab(label: "Delivery Partners") do %>
-        <%= render partial: "delivery_partners",  locals: { delivery_partners: @delivery_partners, pagy: @pagy_delivery_partners } %>
-    <% end %>
+  <%= tabs.with_tab(label: "Delivery Partners") do %>
+    <%= render partial: "delivery_partners",  locals: { delivery_partners: @delivery_partners, pagy: @pagy_delivery_partners } %>
+  <% end %>
 
-    <%= tabs.with_tab(label: "Statements") do %>
-        <%= render partial: "statements",  locals: { statements: @statements, pagy: @pagy_statements } %>
-    <% end %>
+  <%= tabs.with_tab(label: "Statements") do %>
+    <%= render partial: "statements",  locals: { statements: @statements, pagy: @pagy_statements } %>
+  <% end %>
 
 <% end %>
