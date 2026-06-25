@@ -5,6 +5,24 @@ RSpec.describe Crons::SendRegistrationInterestEmailsJob, type: :job do
     context "when registration opens today" do
       before { create(:cohort, start_year: Time.zone.today.year, registration_starts_at: Time.zone.today) }
 
+      context "when registration is disabled" do
+        before { Feature.disable_registration! }
+
+        it "does not enqueue registration interest emails" do
+          create(:registration_interest)
+
+          expect { described_class.perform_now }
+            .not_to have_enqueued_mail(GenericMailer, :registration_interest)
+        end
+
+        it "leaves the registration interest as not notified" do
+          registration_interest = create(:registration_interest)
+
+          expect { described_class.perform_now }
+            .not_to(change { registration_interest.reload.notified })
+        end
+      end
+
       it "enqueues registration interest emails" do
         create(:registration_interest)
 

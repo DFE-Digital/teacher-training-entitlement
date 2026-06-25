@@ -7,6 +7,7 @@ module Crons
     sentry_monitor_check_ins slug: "send-registration-interest-emails"
 
     def perform
+      return if Feature.registration_disabled?
       return unless Cohort.where(registration_starts_at: Time.zone.today).exists?
 
       RegistrationInterest.not_yet_notified.find_each do |registration_interest|
