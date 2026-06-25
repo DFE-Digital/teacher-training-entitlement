@@ -82,6 +82,13 @@ class GenericMailerPreview < ActionMailer::Preview
     ).registration_open_notification
   end
 
+  def registration_interest
+    GenericMailer.with(
+      to: "test@example.com",
+      registration_start_url: "#{Rails.configuration.service_base_url}/registration/start",
+    ).registration_interest
+  end
+
   def provider_rejected
     GenericMailer.with(
       to: "test@example.com",

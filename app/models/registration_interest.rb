@@ -10,6 +10,6 @@ class RegistrationInterest < ApplicationRecord
 
   # We did not originally valid email format so we need to check this before sending
   def valid_email?
-    NotifyEmailValidator.valid?(value)
+    NotifyEmailValidator.valid?(email)
   end
 end
