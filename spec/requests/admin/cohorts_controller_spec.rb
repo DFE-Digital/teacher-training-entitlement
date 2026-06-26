@@ -13,6 +13,8 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
       cohort: {
         funding_cap: true,
         registration_starts_at: "2029-03-02",
+        training_starts_at: "2029-09-01",
+        training_ends_at: "2030-08-31",
         name: "2029",
         description: "2029 to 2030",
       },
@@ -22,14 +24,8 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
   context "when logged in as super admin" do
     before { sign_in_as_admin(super_admin: true) }
 
-    describe "#index" do
-      before { get admin_cohorts_path }
-
-      it { is_expected.to have_http_status :success }
-    end
-
     describe "#show" do
-      before { get admin_cohorts_path(cohort) }
+      before { get admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to have_http_status :success }
     end
@@ -43,7 +39,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     describe "#create" do
       before { post admin_cohorts_path, params: valid_params }
 
-      it { is_expected.to redirect_to admin_cohorts_path }
+      it { is_expected.to redirect_to admin_courses_path }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Cohort created/i)
@@ -57,15 +53,15 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     end
 
     describe "#edit" do
-      before { get edit_admin_cohort_path(cohort) }
+      before { get edit_admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to have_http_status :success }
     end
 
     describe "#update" do
-      before { patch admin_cohort_path(cohort), params: valid_params }
+      before { patch admin_course_cohort_path(cohort.course, cohort), params: valid_params }
 
-      it { is_expected.to redirect_to admin_cohort_path(cohort) }
+      it { is_expected.to redirect_to admin_course_cohort_path(cohort.course, cohort) }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Cohort updated/i)
@@ -73,21 +69,21 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     end
 
     describe "#update with invalid params" do
-      before { patch admin_cohort_path(cohort), params: invalid_params }
+      before { patch admin_course_cohort_path(cohort.course, cohort), params: invalid_params }
 
       it { is_expected.to have_http_status :unprocessable_content }
     end
 
     describe "#destroy" do
-      before { delete admin_cohort_path(cohort) }
+      before { delete admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to have_http_status :success }
     end
 
     describe "#destroy with confirm" do
-      before { delete admin_cohort_path(cohort), params: { confirm: "1" } }
+      before { delete admin_course_cohort_path(cohort.course, cohort), params: { confirm: "1" } }
 
-      it { is_expected.to redirect_to admin_cohorts_path }
+      it { is_expected.to redirect_to admin_path }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Cohort deleted/i)
@@ -99,21 +95,15 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     before { sign_in_as_admin }
 
     shared_examples "inaccessible to normal admins" do |error_message: "You must be a super admin to change cohorts"|
-      it { is_expected.to redirect_to admin_cohorts_path }
+      it { is_expected.to redirect_to admin_path }
 
       it "flashes the correct error" do
         expect(flash[:error]).to match(/#{error_message}/i)
       end
     end
 
-    describe "#index" do
-      before { get admin_cohorts_path }
-
-      it { is_expected.to have_http_status :success }
-    end
-
     describe "#show" do
-      before { get admin_cohorts_path(cohort) }
+      before { get admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to have_http_status :success }
     end
@@ -131,39 +121,33 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     end
 
     describe "#edit" do
-      before { get edit_admin_cohort_path(cohort) }
+      before { get edit_admin_course_cohort_path(cohort.course, cohort) }
 
       it_behaves_like "inaccessible to normal admins"
     end
 
     describe "#update" do
-      before { patch admin_cohort_path(cohort), params: valid_params }
+      before { patch admin_course_cohort_path(cohort.course, cohort), params: valid_params }
 
       it_behaves_like "inaccessible to normal admins"
     end
 
     describe "#destroy" do
-      before { delete admin_cohort_path(cohort) }
+      before { delete admin_course_cohort_path(cohort.course, cohort) }
 
       it_behaves_like "inaccessible to normal admins"
     end
 
     describe "#download_contracts" do
-      before { get download_contracts_admin_cohort_path(cohort) }
+      before { get download_contracts_admin_course_cohort_path(cohort.course, cohort) }
 
       it_behaves_like "inaccessible to normal admins", error_message: "You must be a super admin to download contracts"
     end
   end
 
   context "when not logged in" do
-    describe "#index" do
-      before { get admin_cohorts_path }
-
-      it { is_expected.to redirect_to sign_in_path }
-    end
-
     describe "#show" do
-      before { get admin_cohorts_path(cohort) }
+      before { get admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
@@ -181,25 +165,25 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     end
 
     describe "#edit" do
-      before { get edit_admin_cohort_path(cohort) }
+      before { get edit_admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
 
     describe "#update" do
-      before { patch admin_cohort_path(cohort), params: valid_params }
+      before { patch admin_course_cohort_path(cohort.course, cohort), params: valid_params }
 
       it { is_expected.to redirect_to sign_in_path }
     end
 
     describe "#destroy" do
-      before { delete admin_cohort_path(cohort) }
+      before { delete admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
 
     describe "#download_contracts" do
-      before { get download_contracts_admin_cohort_path(cohort) }
+      before { get download_contracts_admin_course_cohort_path(cohort.course, cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end

@@ -7,23 +7,10 @@ class Application < ApplicationRecord
 
   has_paper_trail meta: { note: :version_note }
 
-  belongs_to :user
-  belongs_to :course_cohort
+  belongs_to :cohort
+  belongs_to :course
   belongs_to :institution, optional: true
-
-  has_one :course, through: :course_cohort
-  has_one :cohort, through: :course_cohort
-  has_one :schedule, through: :course_cohort
-
-  # Convenience methods to access the institutionable through institution
-  # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
-  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
-
-  def private_childcare_provider_including_disabled
-    return nil unless institution&.private_childcare_provider?
-
-    PrivateChildcareProvider.including_disabled.find_by(id: institution.institutionable_id)
-  end
+  belongs_to :user
 
   has_many :participant_id_changes, through: :user
   has_many :application_events
@@ -51,11 +38,13 @@ class Application < ApplicationRecord
 
   attr_accessor :version_note, :admin_user, :assignment
 
+  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
+
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validates :user_id,
             uniqueness: {
-              scope: :course_cohort_id,
+              scope: :cohort_id,
               conditions: -> { where.not(status: [REJECTED]) },
               message: "/ Course Cohort already exists for user",
             }, unless: -> { rejected_status? }
@@ -132,6 +121,15 @@ class Application < ApplicationRecord
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
+
+  def schedule
+    schedules = Schedule.where(cohort_id:, course_group: course.course_group)
+
+    schedules.where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..)
+             .order(created_at: :desc, id: :desc)
+             .first ||
+      schedules.order(created_at: :desc, id: :desc).first
+  end
 
   def lead_provider=(new_provider)
     change_provider!(to: new_provider)
@@ -239,7 +237,7 @@ class Application < ApplicationRecord
   end
 
   def inside_catchment?
-    %w[england].include?(teacher_catchment) || (cohort.start_year < 2024 && !!school&.urn&.starts_with?("1"))
+    %w[england].include?(teacher_catchment) || (cohort.start_year < 2024 && !!institution&.urn&.starts_with?("1"))
   end
 
   def employer_name_to_display

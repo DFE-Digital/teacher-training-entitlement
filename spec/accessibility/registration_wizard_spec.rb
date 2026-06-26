@@ -85,8 +85,10 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
     assign(:form, form_stub)
     course = course_stub
     course_cohort = course_cohort_stub
+    cohort = course_cohort.cohort
     view.define_singleton_method(:course) { course }
     view.define_singleton_method(:course_cohort) { course_cohort }
+    view.define_singleton_method(:cohort) { cohort }
     allow(view).to receive_messages(current_user: user_stub, registration_wizard_form_url: "/registration/test")
   end
 

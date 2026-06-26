@@ -7,13 +7,11 @@ RSpec.describe Applications::ChangeCohort, type: :service do
   let(:error_message_path) { "activemodel.errors.models.applications/change_cohort.attributes.base" }
   let(:current_cohort) { create(:cohort, start_year: 2025) }
   let(:new_cohort) { current_cohort }
-  let(:course_cohort) { create(:course_cohort, cohort: current_cohort) }
-  let(:application) { create(:application, course_cohort:) }
+  let(:application) { create(:application, cohort: current_cohort) }
 
   subject(:service) { described_class.new(application:, new_cohort:, override_declarations_check:) }
 
   before do
-    create(:course_cohort, cohort: new_cohort)
     subject.call
   end
 
@@ -37,7 +35,7 @@ RSpec.describe Applications::ChangeCohort, type: :service do
 
     context "when the application has declarations" do
       let(:new_cohort) { create(:cohort, start_year: 2026) }
-      let(:application) { create(:application, :with_declaration, course_cohort:) }
+      let(:application) { create(:application, :with_declaration, cohort: current_cohort) }
 
       it do
         expect(subject).not_to be_valid
@@ -48,7 +46,7 @@ RSpec.describe Applications::ChangeCohort, type: :service do
         let(:override_declarations_check) { true }
 
         it do
-          expect(application.reload.course_cohort.cohort).to eq(new_cohort)
+          expect(application.reload.cohort).to eq(new_cohort)
         end
       end
     end

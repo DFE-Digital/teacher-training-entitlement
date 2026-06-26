@@ -7,7 +7,7 @@ module Applications
       when Application::DEFERRED
         Defer.new(application:, reason:, admin_user:)
       when Application::ACCEPTED
-        Resume.new(application:, course_cohort: application.course_cohort, admin_user:)
+        Resume.new(application:, cohort: application.cohort, admin_user:)
       end
     end
   end

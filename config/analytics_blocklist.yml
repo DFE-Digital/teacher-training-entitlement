@@ -89,6 +89,16 @@
   - created_at
   - statement_id
   - updated_at
+  :cohort_providers:
+  - id
+  - created_at
+  - lead_provider_id
+  - updated_at
+  - cohort_id
+  :cohorts:
+  - course_id
+  - training_starts_at
+  - training_ends_at
   :closed_registration_users:
   - id
   - created_at

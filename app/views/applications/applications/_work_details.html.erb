@@ -19,7 +19,7 @@
       end
     end
 
-    if application.inside_catchment? && application.school.present?
+    if application.inside_catchment? && application.institution.present?
       sl.with_row do |row|
         row.with_key(text: "Workplace")
         row.with_value(text: application.long_employer_name_to_display)

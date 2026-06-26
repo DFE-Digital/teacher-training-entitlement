@@ -122,7 +122,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.bigint "course_cohort_id"
+    t.bigint "cohort_id"
+    t.bigint "course_id"
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "eligible_for_funding", default: false, null: false
@@ -151,11 +152,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
     t.boolean "works_in_childcare"
     t.boolean "works_in_nursery"
     t.boolean "works_in_school"
-    t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
+    t.index ["cohort_id"], name: "index_applications_on_cohort_id"
+    t.index ["course_id"], name: "index_applications_on_course_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["status"], name: "index_applications_on_status"
-    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
+    t.index ["user_id", "cohort_id"], name: "index_applications_on_user_id_and_cohort_id", unique: true
     t.index ["user_id"], name: "index_applications_on_user_id"
   end
 
@@ -177,7 +179,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "cohort_providers", force: :cascade do |t|
+    t.bigint "cohort_id"
+    t.datetime "created_at", null: false
+    t.bigint "lead_provider_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cohort_id", "lead_provider_id"], name: "index_cohort_providers_on_cohort_id_and_lead_provider_id", unique: true
+    t.index ["cohort_id"], name: "index_cohort_providers_on_cohort_id"
+    t.index ["lead_provider_id"], name: "index_cohort_providers_on_lead_provider_id"
+  end
+
   create_table "cohorts", force: :cascade do |t|
+    t.bigint "course_id"
     t.datetime "created_at", null: false
     t.string "description", limit: 50, null: false
     t.uuid "ecf_id"
@@ -186,7 +199,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
     t.date "registration_ends_at"
     t.date "registration_starts_at"
     t.integer "start_year", null: false
+    t.date "training_ends_at"
+    t.date "training_starts_at"
     t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_cohorts_on_course_id"
     t.index ["description"], name: "index_cohorts_on_description", unique: true
     t.index ["ecf_id"], name: "index_cohorts_on_ecf_id", unique: true
     t.index ["identifier"], name: "index_cohorts_on_identifier", unique: true
@@ -219,16 +235,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
     t.index ["course_id"], name: "index_contracts_on_course_id"
     t.index ["statement_id", "course_id"], name: "index_contracts_on_statement_id_and_course_id", unique: true
     t.index ["statement_id"], name: "index_contracts_on_statement_id"
-  end
-
-  create_table "course_cohort_providers", force: :cascade do |t|
-    t.bigint "course_cohort_id", null: false
-    t.datetime "created_at", null: false
-    t.bigint "lead_provider_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["course_cohort_id", "lead_provider_id"], name: "idx_on_course_cohort_id_lead_provider_id_3527d5c43f", unique: true
-    t.index ["course_cohort_id"], name: "index_course_cohort_providers_on_course_cohort_id"
-    t.index ["lead_provider_id"], name: "index_course_cohort_providers_on_lead_provider_id"
   end
 
   create_table "course_cohorts", force: :cascade do |t|
@@ -621,11 +627,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "users"
+  add_foreign_key "cohort_providers", "lead_providers"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"
   add_foreign_key "contracts", "statements"
-  add_foreign_key "course_cohort_providers", "course_cohorts"
-  add_foreign_key "course_cohort_providers", "lead_providers"
   add_foreign_key "course_cohorts", "cohorts"
   add_foreign_key "course_cohorts", "courses"
   add_foreign_key "declarations", "applications"

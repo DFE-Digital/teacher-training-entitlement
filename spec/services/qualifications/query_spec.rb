@@ -7,10 +7,23 @@ RSpec.describe Qualifications::Query do
     let(:user) { create(:user) }
     let(:trn) { user.trn }
     let(:different_user_with_same_trn) { create(:user, trn:) }
-    let!(:older_passed_participant_outcome) { create(:participant_outcome, :passed, user:, completion_date: 1.year.ago) }
-    let!(:latest_passed_participant_outcome) { create(:participant_outcome, :passed, user:, declaration: older_passed_participant_outcome.declaration, course: older_passed_participant_outcome.course) }
-    let!(:older_passed_participant_outcome_different_declaration) { create(:participant_outcome, :passed, user:, completion_date: 6.months.ago, course: older_passed_participant_outcome.course) }
-    let!(:older_passed_participant_outcome_different_user_same_trn) { create(:participant_outcome, :passed, user: different_user_with_same_trn, completion_date: 1.month.ago, course: older_passed_participant_outcome.course) }
+    let(:course) { create(:course, short_code: "NPQLT") }
+    let(:lead_provider) { create(:lead_provider) }
+    let(:application) { create_application_for(user) }
+    let!(:older_passed_participant_outcome) { create_participant_outcome(application:, completion_date: 1.year.ago) }
+    let!(:latest_passed_participant_outcome) { create(:participant_outcome, :passed, declaration: older_passed_participant_outcome.declaration) }
+    let!(:older_passed_participant_outcome_different_declaration) { create_participant_outcome(application:, completion_date: 6.months.ago) }
+    let!(:older_passed_participant_outcome_different_user_same_trn) { create_participant_outcome(application: create_application_for(different_user_with_same_trn), completion_date: 1.month.ago) }
+
+    def create_application_for(user)
+      create(:application, :accepted, user:, course:, cohort: create(:cohort, :previous, :unique, course:), lead_provider:)
+    end
+
+    def create_participant_outcome(application:, completion_date:)
+      declaration = create(:declaration, :completed, :payable, application:, lead_provider:)
+
+      create(:participant_outcome, :passed, declaration:, completion_date:)
+    end
 
     it "returns the latest passed participant outcomes for the given TRN" do
       expect(subject).to eq [

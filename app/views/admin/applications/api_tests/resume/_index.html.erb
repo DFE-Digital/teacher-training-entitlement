@@ -16,19 +16,19 @@
       end
 
       table.with_body do |body|
-        @application.lead_provider.course_cohorts.each do |cc|
-          next unless cc.schedule&.training_live?
+        @application.lead_provider.cohorts.includes(:course).each do |cohort|
+          next unless cohort.training_live?
           body.with_row do |row|
             row.with_cell do
-              link_to cc.course.name, admin_cohort_course_path(cc.cohort, cc.course), target: "_blank"
+              link_to cohort.course.name, admin_course_path(cohort.course), target: "_blank"
             end
             row.with_cell do
-              link_to cc.cohort.description, admin_cohort_path(cc.cohort), target: "_blank"
+              link_to cohort.description, admin_course_cohort_path(cohort.course, cohort), target: "_blank"
             end
-            row.with_cell(text: boolean_red_green_tag(cc.schedule&.training_live?))
+            row.with_cell(text: boolean_red_green_tag(cohort.training_live?))
             row.with_cell do
               form_for :form, url: admin_applications_api_tests_resume_index_path(@application) do |f|
-                f.hidden_field :course_cohort_id, value: cc.id
+                f.hidden_field :cohort_id, value: cohort.id
                 f.govuk_submit("Call Resume API")
               end
             end

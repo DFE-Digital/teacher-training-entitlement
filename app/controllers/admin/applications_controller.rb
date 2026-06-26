@@ -6,10 +6,9 @@ module Admin
 
     def index
       applications = Application
-                       .includes(:current_application_lead_provider,
-                                 :institution, :user, :lead_provider,
-                                 application_lead_providers: %i[lead_provider],
-                                 course_cohort: %i[course cohort])
+                       .includes(:current_application_lead_provider, :cohort,
+                                 :institution, :user, :lead_provider, :course,
+                                 application_lead_providers: %i[lead_provider])
                        .merge(filter_scope)
                        .merge(search_scope)
                        .order("applications.created_at ASC")
@@ -24,9 +23,8 @@ module Admin
       return if params[:id].nil?
 
       @application = Application
-                   .includes(:institution, :user,
-                             application_lead_providers: { lead_provider: { course_cohorts: [:schedule] } },
-                             course_cohort: %i[course cohort schedule])
+                   .includes(:institution, :user, :course, :cohort,
+                             application_lead_providers: :lead_provider)
                    .find(params[:id])
     end
 
@@ -46,9 +44,9 @@ module Admin
       if filter_params[:cohort_id].present?
         scope.merge!(
           Application
-            .joins(:course_cohort)
-            .includes(course_cohort: %i[course cohort])
-            .where(course_cohorts: { cohort_id: filter_params[:cohort_id] }),
+            .joins(:cohort)
+            .includes(:course, :cohort)
+            .where(cohort_id: filter_params[:cohort_id]),
         )
       end
 

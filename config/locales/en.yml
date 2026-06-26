@@ -439,7 +439,7 @@ en:
               already_accepted: The participant is already active
         admin/applications/change_cohort_form:
           attributes:
-            course_cohort_id:
+            cohort_id:
               blank: Choose a cohort
         admin/adjustments/create_adjustment_form:
           attributes:
@@ -931,7 +931,7 @@ en:
       applications_change_cohort:
         cohort_id: Choose a cohort
       form:
-        course_cohort_id: Choose a cohort
+        cohort_id: Choose a cohort
       registration_wizard:
         can_share_choices: Sharing your NPD information
         employment_type: How are you employed?
@@ -1000,7 +1000,7 @@ en:
           Register using your current workplace details, even if they will change soon.
     label:
       form:
-        course_cohort_id: Course Cohort
+        cohort_id: Cohort
       applications_change_status:
       statements_payment_authorisation_form:
         checks_done_options:

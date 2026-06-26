@@ -193,10 +193,10 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when declaration_date is before the schedule start" do
-      let(:declaration_date) { application.schedule.training_starts_at.prev_week }
+      let(:declaration_date) { application.cohort.training_starts_at.prev_week }
 
       context "when declaration is being created" do
-        before { subject.declaration_date = subject.application.schedule.training_starts_at.prev_week }
+        before { subject.declaration_date = subject.application.cohort.training_starts_at.prev_week }
 
         it "has a meaningful error" do
           expect(subject).to be_invalid
@@ -207,8 +207,9 @@ RSpec.describe Declaration, type: :model do
       context "when declaration already exists" do
         let(:user) { create(:user) }
         let(:course) { create(:course) }
+        let(:cohort) { create(:cohort, course:, training_starts_at: 1.month.ago, training_ends_at: 1.month.from_now) }
 
-        let(:application) { create(:application, :accepted, user:, course:) }
+        let(:application) { create(:application, :accepted, user:, course:, cohort:) }
 
         subject { build(:declaration, course:, user:, application:, declaration_date:).tap { |d| d.save!(validate: false) } }
 
@@ -217,8 +218,8 @@ RSpec.describe Declaration, type: :model do
         end
 
         context "when declaration_date is going to be changed" do
-          let(:declaration_date) { application.schedule.training_starts_at.next_week }
-          let(:new_declaration_date) { application.schedule.training_starts_at.prev_week }
+          let(:declaration_date) { application.cohort.training_starts_at.next_week }
+          let(:new_declaration_date) { application.cohort.training_starts_at.prev_week }
 
           it "is not valid" do
             subject.declaration_date = new_declaration_date
@@ -229,7 +230,7 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when declaration_date is at the schedule start" do
-      before { subject.declaration_date = subject.application.schedule.training_starts_at }
+      before { subject.declaration_date = subject.application.cohort.training_starts_at }
 
       it { is_expected.to be_valid }
     end
@@ -680,17 +681,18 @@ RSpec.describe Declaration, type: :model do
     describe ".for_delivery_partners" do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
-      let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+      let(:application) { create(:application, :accepted, course:, cohort:, lead_provider:, schedule:) }
       let(:declaration_date) { schedule.training_starts_at + 1.hour }
-      let(:course_cohort) { create(:course_cohort, schedule:) }
+      let(:course) { create(:course) }
+      let(:cohort) { schedule.cohort.tap { |cohort| cohort.update!(course:) } }
       let(:lead_provider) { create(:lead_provider) }
       let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
 
       let(:delivery_partner) do
-        create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+        create(:delivery_partner, lead_providers: { cohort => lead_provider })
       end
       let(:secondary_delivery_partner) do
-        create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+        create(:delivery_partner, lead_providers: { cohort => lead_provider })
       end
 
       let(:declaration_as_primary) do
@@ -761,7 +763,7 @@ RSpec.describe Declaration, type: :model do
 
         context "when declarations have been made for a different course", :npq do
           before do
-            course = create(:course, :npd_eirt)
+            course = create(:course)
             other_application = create(:application, :accepted, course:, cohort:, user: other_user)
             create(:declaration, application: other_application)
           end
@@ -805,8 +807,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when declarations have been made for a different course", :npq do
       before do
-        course = create(:course, :npd_eirt)
-        other_application = create(:application, :accepted, course:, cohort:, user: participant)
+        course = create(:course)
+        other_cohort = create(:cohort, :unique, course:)
+        other_application = create(:application, :accepted, course:, cohort: other_cohort, user: participant)
         create(:declaration, application: other_application)
       end
 

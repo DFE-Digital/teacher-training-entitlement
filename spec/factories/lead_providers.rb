@@ -28,7 +28,8 @@ FactoryBot.define do
 
     trait :with_courses do
       after :create do |lead_provider|
-        create(:course, lead_provider:)
+        course = create(:course)
+        create(:cohort, :current, course:, lead_provider:)
       end
     end
   end

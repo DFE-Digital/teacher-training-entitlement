@@ -7,31 +7,43 @@ FactoryBot.define do
     status { :pending }
     ecf_id { SecureRandom.uuid }
 
-    transient do
-      lead_provider { nil }
-      course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
-      cohort do
-        existing = user.persisted? &&
-          user.applications.not_rejected
-            .joins(:course_cohort)
-            .merge(CourseCohort.where(course:))
-            .exists?
-        existing ? create(:cohort, :unique) : create(:cohort, :current)
-      end
-      schedule { CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule) }
+    course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
+    cohort do
+      next schedule.cohort if schedule
+
+      existing = user&.persisted? &&
+        user.applications.not_rejected
+          .where(course:)
+          .exists?
+      existing ? create(:cohort, :unique, course:) : create(:cohort, :current, course:)
     end
 
-    course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
-    teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
+    transient do
+      lead_provider { nil }
+      schedule { nil }
+    end
+
+    teacher_catchment { cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
     funding_choice { Application.funding_choices.keys.first }
     ukprn { rand(10_000_000..99_999_999).to_s }
-    funded_place { course_cohort.cohort.funding_cap ? !!eligible_for_funding : nil }
+    funded_place { cohort.funding_cap ? !!eligible_for_funding : nil }
 
     after(:create) do |application, evaluator|
       lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
       create(:application_lead_provider, :current, application:, lead_provider:)
+
+      Schedule.find_or_create_by!(cohort: application.cohort, course_group: application.course.course_group) do |schedule|
+        schedule.name = "Schedule #{application.cohort.name}"
+        schedule.identifier = "schedule-#{application.cohort.id}"
+        schedule.training_starts_at = application.cohort.training_starts_at
+        schedule.training_ends_at = application.cohort.training_ends_at
+        schedule.allowed_declaration_types = Schedule.allowed_declaration_types
+        schedule.policy_descriptor = 1
+        schedule.acceptance_window_start = application.cohort.training_starts_at
+        schedule.acceptance_window_end = application.cohort.training_ends_at
+      end
     end
 
     trait :with_state_change do
@@ -92,7 +104,7 @@ FactoryBot.define do
 
     trait :eligible_for_funded_place do
       eligible_for_funding
-      funded_place { course_cohort.cohort.funding_cap ? true : nil }
+      funded_place { cohort.funding_cap ? true : nil }
     end
 
     trait :with_funded_place do
@@ -158,7 +170,13 @@ FactoryBot.define do
 
     trait :with_declaration do
       after(:create) do |application|
-        application.declarations << create(:declaration, :started, application:, cohort: application.cohort)
+        application.declarations << create(
+          :declaration,
+          :started,
+          application:,
+          cohort: application.cohort,
+          declaration_date: application.cohort.training_starts_at.beginning_of_day + 1.hour,
+        )
       end
     end
 

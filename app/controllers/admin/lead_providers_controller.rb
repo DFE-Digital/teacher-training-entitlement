@@ -12,12 +12,11 @@ module Admin
       # Added extra includes :course, :cohort to stop bogus warning issues;
       applications_scope = @lead_provider.applications
                              .includes(:current_application_lead_provider,
-                                       :lead_provider, :user, :course, :cohort,
-                                       course_cohort: %i[course cohort])
+                                       :lead_provider, :user, :course, :cohort)
                              .order(created_at: :desc)
 
       if @current_cohort
-        applications_scope.merge!(Application.where(course_cohorts: { cohort: @current_cohort }))
+        applications_scope.merge!(Application.where(cohort: @current_cohort))
         @pagy_applications, @applications = pagy(applications_scope, items: 25)
 
         @pagy_delivery_partners, @delivery_partners = pagy(@lead_provider.delivery_partners_for_cohort(@current_cohort))
@@ -53,13 +52,13 @@ module Admin
     def resources
       if @current_cohort
         scope = LeadProvider
-                  .includes(:applications, :course_cohorts, applications: :course_cohort)
+                  .includes(:applications, :cohorts, applications: :cohort)
                   .order(name: :asc)
-                  .where(course_cohorts: { cohort: @current_cohort })
+                  .where(cohorts: { id: @current_cohort.id })
 
         # group in memory, no N+1
         @apps_by_provider = scope.each_with_object({}) do |lp, hash|
-          hash[lp.id] = lp.applications.select { |a| a.course_cohort.cohort_id == @current_cohort.id }
+          hash[lp.id] = lp.applications.select { |a| a.cohort_id == @current_cohort.id }
         end
 
         scope

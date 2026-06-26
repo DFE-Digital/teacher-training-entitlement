@@ -22,5 +22,17 @@ FactoryBot.define do
     trait :voided do
       state { "voided" }
     end
+
+    trait :for_application do
+      transient do
+        application { create(:application, :accepted, user:, course:, lead_provider:) }
+        declaration_type { Declaration::COMPLETED }
+        declaration_state { :payable }
+      end
+
+      declaration do
+        create(:declaration, application:, lead_provider:, declaration_type:, state: declaration_state)
+      end
+    end
   end
 end

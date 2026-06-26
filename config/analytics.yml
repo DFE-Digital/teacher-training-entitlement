@@ -199,7 +199,8 @@ shared:
   :applications:
     - id
     - user_id
-    - course_cohort_id
+    - course_id
+    - cohort_id
     - created_at
     - updated_at
     - ecf_id

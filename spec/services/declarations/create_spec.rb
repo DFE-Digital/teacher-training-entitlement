@@ -15,17 +15,17 @@ RSpec.describe Declarations::Create, type: :model do
       secondary_delivery_partner_id:,
     }
   end
-  let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+  let(:application) { create(:application, :accepted, cohort:, lead_provider:, teacher_catchment: "england") }
   let(:declaration_date) { schedule.training_starts_at + 1.hour }
-  let(:course_cohort) { create(:course_cohort, schedule:) }
+  let(:cohort) { create(:cohort, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+  let(:schedule) { create(:schedule, cohort:, training_starts_at: cohort.training_starts_at, training_ends_at: cohort.training_ends_at) }
   let(:has_passed) { true }
   let(:delivery_partner_id) do
-    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+    create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id
   end
   let(:secondary_delivery_partner_id) do
-    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+    create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id
   end
 
   RSpec.shared_examples "does not update the application" do
@@ -86,7 +86,7 @@ RSpec.describe Declarations::Create, type: :model do
 
       context "when application has a voided started declaration" do
         let(:application) do
-          create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:)
+          create(:application, :accepted, :with_declaration, cohort:, lead_provider:, teacher_catchment: "england")
         end
 
         before { application.declarations.where(declaration_type:).first.mark_voided! }
@@ -115,7 +115,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when application already has a started declaration" do
-        let(:application) { create(:application, :accepted, :with_declaration, course_cohort:, lead_provider:) }
+        let(:application) { create(:application, :accepted, :with_declaration, cohort:, lead_provider:, teacher_catchment: "england") }
 
         it { is_expected.to validate_param(:base).with_message("A declaration has already been submitted that will be, or has been, paid for this event") }
       end
@@ -143,7 +143,7 @@ RSpec.describe Declarations::Create, type: :model do
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
     let!(:application) do
-      create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
+      create(:application, :started, :with_declaration, cohort:, lead_provider:, teacher_catchment: "england")
     end
 
     describe "happy paths" do
@@ -168,8 +168,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when the application has resumed in a different cohort" do
-        let(:resume_cohort) { create(:cohort, :next) }
-        let(:course_cohort) { create(:course_cohort, cohort: resume_cohort) }
+        let(:resume_cohort) { create(:cohort, :next, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
         let(:started_declaration) { application.declarations.started_declaration_type.first }
         let(:started_cohort) { started_declaration.cohort }
         let(:delivery_partner_id) do
@@ -188,7 +187,7 @@ RSpec.describe Declarations::Create, type: :model do
         end
 
         before do
-          application.update!(course_cohort:)
+          application.update!(cohort: resume_cohort)
         end
 
         it "uses the started declaration cohort" do
@@ -235,7 +234,7 @@ RSpec.describe Declarations::Create, type: :model do
 
     context "when application has status different from `accepted`" do
       context "when pending" do
-        let(:application) { create(:application, :pending, course_cohort:, lead_provider:) }
+        let(:application) { create(:application, :pending, cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
 
@@ -243,7 +242,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when rejected" do
-        let(:application) { create(:application, :rejected, course_cohort:, lead_provider:) }
+        let(:application) { create(:application, :rejected, cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
 
@@ -251,7 +250,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when deferred" do
-        let(:application) { create(:application, :deferred, course_cohort:, lead_provider:) }
+        let(:application) { create(:application, :deferred, cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
 
@@ -259,7 +258,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when withdrawn" do
-        let(:application) { create(:application, :withdrawn, course_cohort:, lead_provider:) }
+        let(:application) { create(:application, :withdrawn, cohort:, lead_provider:) }
 
         it { is_expected.to validate_param(:application).with_message("The application current state does not allow declaration creation.") }
 

@@ -3,9 +3,8 @@ require "rails_helper"
 RSpec.describe Exporters::TadDataRequest do
   let(:file) { Tempfile.new }
   let(:course) { create(:course, name: "Some course") }
-  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+  let(:cohort) { create(:cohort, start_year: 2023, course:) }
   let(:schedule) { create(:schedule, cohort: cohort, course_group: course.course_group, name: "Schedule Autumn 2023") }
-  let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:) }
   let(:user) { create(:user, full_name: "John Doe", email: "john@example.com") }
   let(:user2) { create(:user) }
 
@@ -15,7 +14,8 @@ RSpec.describe Exporters::TadDataRequest do
       :accepted,
       :eligible_for_funding,
       user:,
-      course_cohort:,
+      course:,
+      cohort:,
     )
   end
 
@@ -25,11 +25,13 @@ RSpec.describe Exporters::TadDataRequest do
       :accepted,
       :eligible_for_funding,
       user: user2,
-      course_cohort:,
+      course:,
+      cohort:,
     )
   end
 
   before do
+    schedule
     create(:declaration, :paid, cohort: cohort, application: application)
     application2
   end
@@ -51,7 +53,7 @@ RSpec.describe Exporters::TadDataRequest do
     let(:csv) do
       <<~CSV
         Full Name,Email,User ID,Teacher Reference Number,Institution URN,Lead Provider Name,Course Name,Schedule,Cohort Start Year,Eligible for Funding,Participant Status,Targeted Support Funding Eligibility,Outcome 1,Outcome 1 Date,Outcome 2,Outcome 1 Date,Outcome 3,Outcome 3 Date,Outcome 4,Outcome 4 Date
-        John Doe,john@example.com,#{user.id},#{user.trn},#{application.school.urn},#{application.lead_provider.name},#{application.course.name},Schedule Autumn 2023,#{cohort.identifier},true,accepted,false
+        John Doe,john@example.com,#{user.id},#{user.trn},#{application.institution.urn},#{application.lead_provider.name},#{application.course.name},Schedule Autumn 2023,#{cohort.identifier},true,accepted,false
       CSV
     end
 

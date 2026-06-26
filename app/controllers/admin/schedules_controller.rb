@@ -14,7 +14,7 @@ class Admin::SchedulesController < AdminController
 
     if @schedule.save
       flash[:success] = "Schedule created"
-      redirect_to admin_cohort_path(cohort)
+      redirect_to cohort_path(cohort)
     else
       render :form, status: :unprocessable_content
     end
@@ -37,7 +37,7 @@ class Admin::SchedulesController < AdminController
     if params[:confirm].present?
       @schedule.destroy!
       flash[:success] = "Schedule deleted"
-      redirect_to admin_cohort_path(@schedule.cohort)
+      redirect_to cohort_path(@schedule.cohort)
     else
       render :destroy
     end
@@ -72,7 +72,13 @@ private
   def ensure_super_admin
     unless current_admin.super_admin?
       flash[:error] = "You must be a super admin to change schedules"
-      redirect_to admin_cohort_path(cohort)
+      redirect_to cohort_path(cohort)
     end
+  end
+
+  def cohort_path(cohort)
+    return admin_course_cohort_path(cohort.course, cohort) if cohort.course.present?
+
+    admin_courses_path
   end
 end

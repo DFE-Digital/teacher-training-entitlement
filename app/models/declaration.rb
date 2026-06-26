@@ -38,7 +38,7 @@ class Declaration < ApplicationRecord
   scope :awaiting_clawback, -> { where(state: :awaiting_clawback) }
   scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
   scope :completed, -> { where(declaration_type: "completed") }
-  scope :with_course_identifier, ->(course_identifier) { joins(application: { course_cohort: :course }).where(courses: { identifier: course_identifier }) }
+  scope :with_course_identifier, ->(course_identifier) { joins(application: :course).where(courses: { identifier: course_identifier }) }
   scope :latest_first, -> { order(created_at: :desc, id: :desc) }
   scope :started, -> { where(declaration_type: STARTED) }
   scope :not_voided, -> { where.not(state: :voided) }
@@ -189,7 +189,7 @@ class Declaration < ApplicationRecord
     self
       .class
       .billable_or_changeable
-      .joins(application: [:user, { course_cohort: :course }])
+      .joins(application: %i[user course])
       .where(user: { trn: application.user.trn })
       .where.not(user: { trn: nil })
       .where.not(user: { id: application.user_id })
@@ -224,11 +224,17 @@ class Declaration < ApplicationRecord
 private
 
   def validate_declaration_date_within_schedule
-    return unless application&.schedule
     return unless declaration_date
+    return unless application
+    return unless cohort
     return if persisted? && !declaration_date_changed?
 
-    if declaration_date < application.schedule.training_starts_at
+    training_starts_at = [
+      application.schedule&.training_starts_at,
+      cohort.training_starts_at,
+    ].compact.min
+
+    if declaration_date.to_date < training_starts_at.to_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
     end
   end

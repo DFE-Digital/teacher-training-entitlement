@@ -235,10 +235,9 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "PUT /api/v1/applications/:ecf_id/defer" do
     let(:expected_data_id) { application.ecf_id }
-    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
-    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
+    let(:cohort) { create(:cohort, lead_provider: current_lead_provider) }
     let(:application_status_trait) { :started }
-    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course: course_cohort.course) }
+    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course: cohort.course) }
     let(:params) { { data: { attributes: { reason: "career-break" } } } }
 
     before do
@@ -284,11 +283,15 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "PUT /api/v1/applications/:ecf_id/resume" do
     let(:expected_data_id) { application.ecf_id }
-    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
-    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
+    let!(:cohort) do
+      create(:cohort,
+             :unique,
+             ecf_id: SecureRandom.uuid,
+             lead_provider: current_lead_provider)
+    end
     let(:application_status_trait) { :deferred }
-    let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course_cohort:) }
-    let(:params) { { data: { attributes: { schedule_id: course_cohort.ecf_id } } } }
+    let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, cohort:) }
+    let(:params) { { data: { attributes: { schedule_id: cohort.ecf_id } } } }
 
     before do
       api_put(resume_api_v1_application_path(ecf_id: application.ecf_id), params:)
@@ -326,10 +329,9 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "PUT /api/v1/applications/:ecf_id/withdraw" do
     let(:expected_data_id) { application.ecf_id }
-    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
-    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, schedule:) }
+    let!(:cohort) { create(:cohort, lead_provider: current_lead_provider) }
     let(:application_status_trait) { :started }
-    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course_cohort:) }
+    let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, cohort:) }
     let(:params) { { data: { attributes: { reason: "insufficient-capacity" } } } }
 
     before do
@@ -390,29 +392,26 @@ RSpec.describe "Application endpoints", type: :request do
   end
 
   describe "PUT /api/v1/applications/:ecf_id/change-schedule" do
-    let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
-    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_provider: current_lead_provider) }
+    let(:resource) { create(:application, :accepted, cohort:, lead_provider: current_lead_provider) }
+    let(:cohort) { create(:cohort, :unique, course:, lead_provider: current_lead_provider) }
     let(:course) { create(:course) }
-    let(:cohort) { create(:cohort, :current) }
-    let(:schedule) { create(:schedule, training_starts_at: 1.month.from_now, training_ends_at: 6.months.from_now) }
 
-    let(:target_course_cohort) do
-      create(:course_cohort,
+    let(:target_cohort) do
+      create(:cohort,
+             :unique,
+             :future_training,
              course: target_course,
-             cohort: target_cohort,
-             schedule: target_schedule,
+             ecf_id: SecureRandom.uuid,
              lead_provider: current_lead_provider)
     end
 
     let(:target_course) { course }
-    let(:target_cohort) { create(:cohort, :next) }
-    let(:target_schedule) { create(:schedule, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now, change_training_dates: false) }
 
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::ChangeSchedule }
     let(:action) { :call }
-    let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
-    let(:service_args) { { application: resource, course_cohort: target_course_cohort } }
+    let(:attributes) { { schedule_id: target_cohort.ecf_id } }
+    let(:service_args) { { application: resource, cohort: target_cohort } }
 
     def path(id = nil)
       change_schedule_api_v1_application_path(ecf_id: id)
@@ -435,16 +434,16 @@ RSpec.describe "Application endpoints", type: :request do
   end
 
   describe "POST /api/v1/applications/:ecf_id/declarations/started" do
-    let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
+    let(:resource) { create(:application, :accepted, cohort:, lead_provider: current_lead_provider) }
     let(:declaration_date) { schedule.training_starts_at + 1.hour }
-    let(:course_cohort) { create(:course_cohort, schedule:) }
-    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let(:cohort) { create(:cohort) }
+    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now, cohort:) }
     let(:has_passed) { true }
     let(:delivery_partner_id) do
-      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+      create(:delivery_partner, lead_providers: { cohort => current_lead_provider }).ecf_id
     end
     let(:secondary_delivery_partner_id) do
-      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+      create(:delivery_partner, lead_providers: { cohort => current_lead_provider }).ecf_id
     end
 
     let(:resource_id) { resource.ecf_id }
@@ -493,14 +492,13 @@ RSpec.describe "Application endpoints", type: :request do
   describe "POST /api/v1/applications/:ecf_id/declarations/completed" do
     let(:resource) { create(:application, :with_declaration, lead_provider: current_lead_provider) }
     let(:declaration_date) { schedule.training_starts_at + 1.hour }
-    let(:course_cohort) { create(:course_cohort, schedule:) }
-    let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+    let(:schedule) { create(:schedule, cohort: resource.cohort, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
     let(:has_passed) { true }
     let(:delivery_partner_id) do
-      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+      create(:delivery_partner, lead_providers: { resource.cohort => current_lead_provider }).ecf_id
     end
     let(:secondary_delivery_partner_id) do
-      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+      create(:delivery_partner, lead_providers: { resource.cohort => current_lead_provider }).ecf_id
     end
 
     let(:resource_id) { resource.ecf_id }
@@ -539,6 +537,13 @@ RSpec.describe "Application endpoints", type: :request do
       include_context "with application which changed provider"
       let(:path) { completed_declaration_api_v1_application_path(ecf_id: application.ecf_id) }
       let(:params) { { data: { attributes: } } }
+      let(:declaration_date) { application.cohort.training_starts_at + 1.hour }
+      let(:delivery_partner_id) do
+        create(:delivery_partner, lead_providers: { application.cohort => current_lead_provider }).ecf_id
+      end
+      let(:secondary_delivery_partner_id) do
+        create(:delivery_partner, lead_providers: { application.cohort => current_lead_provider }).ecf_id
+      end
 
       it "the old provider cannot create the declaration" do
         expect { api_post(path, lead_provider: old_lead_provider, params:) }

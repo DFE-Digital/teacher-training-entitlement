@@ -78,7 +78,7 @@ module Declarations
     def where_course_identifier_in(course_identifier)
       return if ignore?(filter: course_identifier)
 
-      scope.merge!(Declaration.joins(application: { course_cohort: :course }).where(courses: { identifier: extract_conditions(course_identifier) }))
+      scope.merge!(Declaration.joins(application: :course).where(courses: { identifier: extract_conditions(course_identifier) }))
     end
 
     def all_declarations
@@ -91,7 +91,7 @@ module Declarations
           application: [
             :user,
             :course,
-            { application_lead_providers: [:lead_provider], course_cohort: [:course] },
+            { application_lead_providers: [:lead_provider] },
           ],
           statement_items: %i[
             statement

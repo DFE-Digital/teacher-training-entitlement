@@ -90,13 +90,11 @@ namespace :admin do
     end
   end
 
-  resources :cohorts do
-    resources :courses, controller: "cohort_courses", only: %i[index show new create]
+  resources :cohorts, only: %i[new create] do
     resources :schedules, except: :index do
       resources :milestones, except: :show
     end
     resources :statements, only: %i[new create show]
-    member { get :download_contracts, path: "download-contracts" }
   end
 
   resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
@@ -116,8 +114,9 @@ namespace :admin do
   end
 
   resources :courses, only: %i[index show edit update] do
-    concerns :cohortable, index: "courses#index"
-    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
+    resources :cohorts, only: %i[show edit update destroy] do
+      member { get :download_contracts, path: "download-contracts" }
+    end
   end
 
   resources :users, only: %i[index show]

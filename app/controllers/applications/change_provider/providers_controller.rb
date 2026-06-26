@@ -21,7 +21,7 @@ module Applications
     private
 
       def providers
-        @providers ||= application.course_cohort.lead_providers.alphabetical
+        @providers ||= application.cohort.lead_providers.alphabetical
                         .reject { |p| p.id == application.lead_provider.id }
       end
 

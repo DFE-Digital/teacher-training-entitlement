@@ -12,14 +12,12 @@ module Applications
                  .where(id: lead_provider.application_lead_providers.preferred_per_application)
                  .joins(:application)
                  .includes(
-                   application: [:user,
-                                 :course,
-                                 :cohort,
-                                 :schedule,
-                                 :institution,
-                                 :rejected_event,
-                                 :current_application_lead_provider,
-                                 { course_cohort: %i[course cohort schedule] }],
+                   application: %i[user
+                                   course
+                                   cohort
+                                   institution
+                                   rejected_event
+                                   current_application_lead_provider],
                  )
                  .preload(application: { institution: :institutionable })
       @sort = sort
@@ -51,7 +49,7 @@ module Applications
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
 
-      scope.merge!(Application.joins(course_cohort: :cohort).where(cohorts: { start_year: extract_conditions(cohort_start_years) }))
+      scope.merge!(Application.joins(:cohort).where(cohort: { start_year: extract_conditions(cohort_start_years) }))
     end
 
     def where_updated_since(updated_since)
@@ -85,7 +83,7 @@ module Applications
     def where_course_identifier_in(course_identifier)
       return if ignore?(filter: course_identifier)
 
-      scope.merge!(Application.joins(course_cohort: :course).where(courses: { identifier: extract_conditions(course_identifier) }))
+      scope.merge!(Application.joins(:course).where(courses: { identifier: extract_conditions(course_identifier) }))
     end
 
     def order_by

@@ -12,7 +12,7 @@ module Admin
 
         service = ::Applications::ChangeCohort.new(
           application:,
-          new_cohort: @form.course_cohort.cohort,
+          new_cohort: @form.cohort,
           override_declarations_check: @form.override_declarations_check,
         )
 
@@ -37,7 +37,7 @@ module Admin
       def form_params
         params
           .fetch(:form, {})
-          .permit(:course_cohort_id)
+          .permit(:cohort_id)
           .merge(application:)
       end
     end

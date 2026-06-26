@@ -12,10 +12,11 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
     }
   end
 
-  let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
+  let(:application) { create(:application, :accepted, lead_provider:, course:, cohort:) }
   let(:funded_place) { true }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:) }
+  let(:course) { create(:course) }
+  let(:cohort) { create(:cohort, :previous) }
 
   describe "#change happy path" do
     context "when application eligible for funding" do
@@ -23,7 +24,8 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
         create(:application,
                :accepted,
                lead_provider:,
-               course_cohort:,
+               course:,
+               cohort:,
                eligible_for_funding: true,
                funded_place: true)
       end
@@ -50,7 +52,8 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
         create(:application,
                :accepted,
                lead_provider:,
-               course_cohort:,
+               course:,
+               cohort:,
                eligible_for_funding: false,
                funded_place: false)
       end
@@ -81,7 +84,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
     end
 
     context "when application is in any other status than `accepted`" do
-      let(:application) { create(:application, lead_provider:, course_cohort:) }
+      let(:application) { create(:application, lead_provider:, course:, cohort:) }
 
       it "returns an error" do
         expect(service).to have_error(
@@ -93,7 +96,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
     end
 
     context "when application is not eligible for funding" do
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: false) }
+      let(:application) { create(:application, lead_provider:, course:, cohort:, eligible_for_funding: false) }
 
       it "returns an error" do
         expect(service).to have_error(
@@ -110,7 +113,8 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
                :accepted,
                :with_declaration,
                lead_provider:,
-               course_cohort:,
+               course:,
+               cohort:,
                eligible_for_funding: true,
                funded_place: true)
       end

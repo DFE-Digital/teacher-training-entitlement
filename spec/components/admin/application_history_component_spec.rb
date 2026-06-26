@@ -8,8 +8,9 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   let(:time_2) { Time.zone.local(2025, 3, 1, 14, 0, 0) }
   let(:time_3) { Time.zone.local(2025, 3, 1, 15, 0, 0) }
   let(:time_4) { Time.zone.local(2025, 3, 1, 16, 0, 0) }
-  let(:cohort) { create(:cohort, start_year: 2024) }
-  let(:older_cohort) { create(:cohort, start_year: 2023) }
+  let(:course) { create(:course) }
+  let(:cohort) { create(:cohort, start_year: 2024, course:) }
+  let(:older_cohort) { create(:cohort, start_year: 2023, course:) }
   let(:whodunnit) { "AdminUser 1" }
 
   before do
@@ -25,22 +26,21 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     let(:original_lead_provider) { create(:lead_provider) }
     let(:new_lead_provider) { create(:lead_provider) }
     let(:original_ecf_id) { SecureRandom.uuid }
-    let(:course) { create(:course) }
-    let(:course_cohort) { create(:course_cohort, cohort:, course:) }
     let(:application) do
       create(
         :application,
         :accepted,
         lead_provider: original_lead_provider,
         ecf_id: original_ecf_id,
-        course_cohort:,
+        course:,
+        cohort:,
       )
     end
     let(:whodunnit) { "some user" }
     let(:schedule) { create(:schedule, course_group: application.course.course_group, identifier: application.schedule.identifier) }
 
     before do
-      create(:course_cohort, cohort: older_cohort, course:, schedule:)
+      create(:schedule, cohort: older_cohort, course_group: course.course_group)
       travel_to time_2
       Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
     end

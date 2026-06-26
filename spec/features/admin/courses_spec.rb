@@ -13,13 +13,13 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
   context "when signed in as admin" do
     scenario "viewing the list of courses" do
-      course = create(:course, name: "Course with multiple cohorts", identifier: "course-with-multiple-cohorts")
-
       visit(admin_courses_path)
 
       expect(page).to have_css("h1", text: "Courses")
-      expect(page).to have_link(course.name, href: admin_course_path(course))
-      expect(page).to have_css(".x-govuk-sub-navigation")
+
+      Course.order(name: :asc).limit(courses_per_page).each do |course|
+        expect(page).to have_link(course.name, href: admin_course_path(course))
+      end
 
       # Not enough courses for pagination to kick in
       # expect(page).to have_css(".govuk-pagination__item--current", text: 1)
@@ -30,48 +30,35 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       click_on("Next")
 
-      expect(page).to have_css("table.govuk-table tbody tr", count: 5)
+      expect(page).to have_css(".govuk-heading-m", count: 5)
       expect(page).to have_css(".govuk-pagination__item--current", text: "2")
     end
 
-    scenario "viewing course details for all cohorts and a selected cohort" do
+    scenario "viewing course details" do
       visit(admin_courses_path)
 
       course = Course.order(name: :asc).first
-      course_cohort = course.course_cohorts.max_by { |cc| cc.cohort.registration_starts_at }
 
       click_link(course.name)
 
       expect(page).to have_css("h1", text: course.name)
 
-      within(".govuk-summary-list", match: :first) do |summary_list|
+      within(".govuk-summary-list") do |summary_list|
         expect(summary_list).to have_summary_item("Name", course.name)
         expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
         expect(summary_list).to have_summary_item("Identifier", course.identifier)
         expect(summary_list).to have_summary_item("Description", course.description)
-        expect(summary_list).not_to have_text("Cohort name")
       end
 
-      expect(page).not_to have_css("h2", text: "Schedule")
-      expect(page).not_to have_css("h2", text: "Providers")
-      expect(page).to have_link("All", href: admin_course_path(course))
-      expect(page).to have_link(course_cohort.cohort.description, href: admin_cohort_course_path(course_cohort.cohort, course))
-      expect(page).to have_current_path(admin_course_path(course))
       expect(page).not_to have_link("Change")
 
-      click_on course_cohort.cohort.description
-
-      within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Cohort name", course_cohort.cohort.name)
-        expect(summary_list).to have_summary_item("Cohort registration open", course_cohort.cohort.registration_starts_at.to_date.to_fs(:govuk))
-        expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
-        expect(summary_list).to have_summary_item("Identifier", course.identifier)
-        expect(summary_list).to have_summary_item("Description", course.description)
+      course.cohorts.each do |cohort|
+        expect(page).to have_link(cohort.description, href: admin_course_cohort_path(course, cohort))
+        within("tr", text: cohort.description) do
+          expect(page).to have_css("td", text: Application.where(cohort:).count.to_s)
+          expect(page).to have_text(cohort.registration_starts_at.to_date.to_fs(:govuk_short))
+        end
       end
-
-      expect(page).to have_css("h2", text: "Schedule")
-      expect(page).to have_css("h2", text: "Providers")
-      expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
     end
   end
 
@@ -92,6 +79,43 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       expect(page).to have_css("h1", text: "Updated Course Name")
       expect(page).to have_summary_item("Name", "Updated Course Name")
+    end
+
+    scenario "adding a cohort to a course" do
+      course = Course.first
+
+      visit(admin_course_path(course))
+
+      click_on("New cohort")
+
+      fill_in "Description", with: "2029 to 2030"
+      check "Funding cap", visible: :all
+      within(".starts_at") do
+        fill_in "Day", with: "2"
+        fill_in "Month", with: "3"
+        fill_in "Year", with: "2029"
+      end
+      within(".ends_at") do
+        fill_in "Day", with: "31"
+        fill_in "Month", with: "8"
+        fill_in "Year", with: "2029"
+      end
+      within(".training_starts_at") do
+        fill_in "Day", with: "1"
+        fill_in "Month", with: "9"
+        fill_in "Year", with: "2029"
+      end
+      within(".training_ends_at") do
+        fill_in "Day", with: "31"
+        fill_in "Month", with: "8"
+        fill_in "Year", with: "2030"
+      end
+
+      expect { click_on "Create cohort" }.to change(course.cohorts, :count).by(1)
+
+      cohort = course.cohorts.order(created_at: :desc, id: :desc).first
+      expect(page).to have_current_path(admin_course_cohort_path(course, cohort))
+      expect(page).to have_text("Cohort created")
     end
 
     scenario "editing a course with invalid input shows an error" do

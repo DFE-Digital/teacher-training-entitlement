@@ -26,15 +26,17 @@ FactoryBot.define do
     end
 
     after(:create) do |course, evaluator|
-      if course.course_cohorts.empty?
+      if course.cohorts.empty?
         cohort = begin
           Cohort.current
         rescue StandardError
           create(:cohort, :current)
         end
 
-        schedule = CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
-        course.course_cohorts << create(:course_cohort, course:, cohort:, schedule:, lead_provider: evaluator.lead_provider)
+        if Schedule.find_by(cohort:).nil?
+          create(:schedule, cohort:)
+        end
+        course.cohorts << cohort
       end
     end
   end

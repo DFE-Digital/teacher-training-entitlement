@@ -8,8 +8,9 @@ RSpec.describe Admin::Applications::APITests::ResumeController, type: :request d
   subject { response }
 
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:, schedule: create(:schedule)) }
-  let(:application) { create(:application, :deferred, course_cohort:, lead_provider:) }
+  let(:course) { create(:course) }
+  let(:cohort) { create(:cohort, course:, lead_provider:, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+  let(:application) { create(:application, :deferred, course:, cohort:, lead_provider:) }
 
   before { sign_in_as_admin(super_admin: true) }
 
@@ -24,13 +25,13 @@ RSpec.describe Admin::Applications::APITests::ResumeController, type: :request d
     let(:resume_application) { instance_double(::APITests::ResumeApplication, call: api_response) }
 
     before do
-      allow(::APITests::ResumeApplication).to receive(:new).with(application:, course_cohort:).and_return(resume_application)
+      allow(::APITests::ResumeApplication).to receive(:new).with(application:, cohort:).and_return(resume_application)
 
-      post admin_applications_api_tests_resume_index_path(application), params: { course_cohort_id: course_cohort.id }
+      post admin_applications_api_tests_resume_index_path(application), params: { cohort_id: cohort.id }
     end
 
-    it "calls the resume helper with the application and course cohort" do
-      expect(::APITests::ResumeApplication).to have_received(:new).with(application:, course_cohort:)
+    it "calls the resume helper with the application and cohort" do
+      expect(::APITests::ResumeApplication).to have_received(:new).with(application:, cohort:)
       expect(resume_application).to have_received(:call)
 
       expect(subject).to be_successful

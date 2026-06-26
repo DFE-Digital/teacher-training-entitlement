@@ -5,12 +5,14 @@ require "rails_helper"
 RSpec.feature "Voided declarations", type: :feature do
   include Helpers::AdminLogin
 
-  let(:statement) { create(:statement) }
-  let(:other_statement) { create(:statement) }
+  let(:cohort) { create(:cohort, training_starts_at: 1.month.ago, training_ends_at: 1.month.from_now) }
+  let(:other_cohort) { create(:cohort, :unique, training_starts_at: 1.month.ago, training_ends_at: 1.month.from_now) }
+  let(:statement) { create(:statement, cohort:) }
+  let(:other_statement) { create(:statement, cohort: other_cohort) }
 
-  let!(:eligible_declaration) { create(:declaration, :eligible, statement:) }
-  let!(:voided_declaration) { create(:declaration, :voided, statement:) }
-  let!(:other_voided_declaration) { create(:declaration, :voided, statement: other_statement) }
+  let!(:eligible_declaration) { create(:declaration, :eligible, statement:, cohort: statement.cohort, lead_provider: statement.lead_provider, declaration_date: statement.cohort.training_starts_at + 1.day) }
+  let!(:voided_declaration) { create(:declaration, :voided, statement:, cohort: statement.cohort, lead_provider: statement.lead_provider, declaration_date: statement.cohort.training_starts_at + 1.day) }
+  let!(:other_voided_declaration) { create(:declaration, :voided, statement: other_statement, cohort: other_statement.cohort, lead_provider: other_statement.lead_provider, declaration_date: other_statement.cohort.training_starts_at + 1.day) }
 
   before { sign_in_as(create(:admin)) }
 

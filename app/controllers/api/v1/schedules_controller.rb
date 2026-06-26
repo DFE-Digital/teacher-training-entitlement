@@ -4,7 +4,7 @@ module API
       include Pagination
 
       def index
-        render json: to_json(paginate(schedules_query.course_cohorts))
+        render json: to_json(paginate(schedules_query.schedules))
       end
 
     private

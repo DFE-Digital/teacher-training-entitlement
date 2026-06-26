@@ -31,7 +31,7 @@ module API
       end
 
       def resume
-        service = Applications::Resume.new(application: updateable_application, course_cohort:)
+        service = Applications::Resume.new(application: updateable_application, cohort:)
         call_and_render(service:)
       end
 
@@ -46,7 +46,7 @@ module API
       end
 
       def change_schedule
-        service = Applications::ChangeSchedule.new(application: updateable_application, course_cohort:)
+        service = Applications::ChangeSchedule.new(application: updateable_application, cohort:)
         call_and_render(service:)
       end
 
@@ -141,10 +141,10 @@ module API
         application_action_params[:funded_place]
       end
 
-      def course_cohort
-        @course_cohort ||= begin
-          course_cohort_ecf_id = application_action_params[:schedule_id]
-          current_lead_provider.course_cohorts.find_by(ecf_id: course_cohort_ecf_id)
+      def cohort
+        @cohort ||= begin
+          cohort_ecf_id = application_action_params[:schedule_id]
+          current_lead_provider.cohorts.find_by(ecf_id: cohort_ecf_id)
         end
       end
     end

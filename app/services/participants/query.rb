@@ -73,7 +73,6 @@ module Participants
             lead_provider
             application_events
             application_lead_providers
-            schedule
           ],
         )
     end

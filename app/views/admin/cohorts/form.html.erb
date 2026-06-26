@@ -1,19 +1,21 @@
 <% if @cohort.persisted? %>
-  <%= govuk_back_link href: admin_cohort_path(@cohort) %>
+  <%= govuk_back_link href: admin_course_cohort_path(@cohort.course, @cohort) %>
 <% else %>
-  <%= govuk_back_link href: request.referrer.presence || admin_cohorts_path %>
+  <%= govuk_back_link href: request.referrer.presence || admin_courses_path %>
 <% end %>
 
 <h1 class="govuk-heading-l">
   <% if @cohort.new_record? %>
-    New cohort
+    New cohort for <%= @cohort.course.name %>
   <% else %>
     Edit cohort
   <% end %>
 </h1>
 
-<%= form_with model: [:admin, @cohort] do |f| %>
+<%= form_with model: @cohort, url: @cohort.persisted? ? admin_course_cohort_path(@cohort.course, @cohort) : admin_cohorts_path do |f| %>
   <%= f.govuk_error_summary %>
+  <%= f.hidden_field :course_id if @cohort.course.present? %>
+
   <%= f.govuk_text_field :description %>
 
   <%= f.govuk_check_box :funding_cap,
@@ -30,6 +32,14 @@
   <%= f.govuk_date_field :registration_ends_at,
                          legend: { text: "Registration end date" },
                          class: "govuk-!-margin-top-5 ends_at" %>
+
+  <%= f.govuk_date_field :training_starts_at,
+                         legend: { text: "Training start date" },
+                         class: "govuk-!-margin-top-5 training_starts_at" %>
+
+  <%= f.govuk_date_field :training_ends_at,
+                         legend: { text: "Training end date" },
+                         class: "govuk-!-margin-top-5 training_ends_at" %>
 
   <%= f.govuk_submit @cohort.new_record? ? "Create cohort" : "Update cohort" %>
 <% end %>

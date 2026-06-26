@@ -28,7 +28,7 @@ RSpec.describe Admin::SchedulesController, :ecf_api_disabled, :revisit, type: :r
     describe "#create" do
       before { post admin_cohort_schedules_path(cohort), params: valid_params }
 
-      it { is_expected.to redirect_to admin_cohort_path(cohort) }
+      it { is_expected.to redirect_to admin_course_cohort_path(cohort.course, cohort) }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Schedule created/i)
@@ -72,7 +72,7 @@ RSpec.describe Admin::SchedulesController, :ecf_api_disabled, :revisit, type: :r
     describe "#destroy with confirm" do
       before { delete admin_cohort_schedule_path(cohort, schedule), params: { confirm: "1" } }
 
-      it { is_expected.to redirect_to admin_cohort_path(cohort) }
+      it { is_expected.to redirect_to admin_course_cohort_path(cohort.course, cohort) }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Schedule deleted/i)
@@ -84,7 +84,7 @@ RSpec.describe Admin::SchedulesController, :ecf_api_disabled, :revisit, type: :r
     before { sign_in_as_admin }
 
     shared_examples "inaccessible to normal admins" do
-      it { is_expected.to redirect_to admin_cohort_path(cohort) }
+      it { is_expected.to redirect_to admin_course_cohort_path(cohort.course, cohort) }
 
       it "flashes the correct error" do
         expect(flash[:error]).to match(/You must be a super admin to change schedules/i)

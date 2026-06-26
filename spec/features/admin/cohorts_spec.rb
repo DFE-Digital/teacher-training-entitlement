@@ -5,7 +5,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   include Helpers::FileHelper
 
   let(:admin) { create :admin }
-  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 4, 1)) }
+  let(:course) { create(:course) }
+  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 4, 1), course:) }
 
   let(:new_button_text)    { "New cohort" }
   let(:edit_button_text)   { "Edit cohort details" }
@@ -13,17 +14,9 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   let(:download_contracts_button_text) { "Download contracts CSV" }
 
   before do
-    (2026..2028).each { create :cohort, start_year: _1 }
+    (2026..2028).each { create(:cohort, start_year: _1, course:) }
 
     sign_in_as admin
-  end
-
-  scenario "listing cohorts" do
-    visit_index
-
-    expect(Cohort.count).to be_positive
-    expected = Cohort.order_by_latest.map { |c| [c.description, c.registration_starts_at.to_date.to_fs(:govuk), "Yes"] }
-    expect(page).to have_table(rows: expected)
   end
 
   scenario "viewing details" do
@@ -46,8 +39,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
     scenario "creation" do
       partnerships = create_list(:delivery_partnership, 3, cohort: Cohort.order_by_latest.first)
-      visit_index
-      click_on new_button_text
+      visit new_admin_cohort_path(course_id: course.id)
 
       fill_in "Description", with: "2029 to 2030"
       fill_in "Start year", with: "2029"
@@ -56,6 +48,16 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
         fill_in "Day", with: "2"
         fill_in "Month", with: "3"
         fill_in "Year", with: "2029"
+      end
+      within(".training_starts_at") do
+        fill_in "Day", with: "1"
+        fill_in "Month", with: "9"
+        fill_in "Year", with: "2029"
+      end
+      within(".training_ends_at") do
+        fill_in "Day", with: "31"
+        fill_in "Month", with: "8"
+        fill_in "Year", with: "2030"
       end
 
       perform_enqueued_jobs do
@@ -69,6 +71,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(cohort.start_year).to be(2029)
       expect(cohort.funding_cap).to be(true)
       expect(cohort.registration_starts_at).to eq(Date.new(2029, 3, 2))
+      expect(cohort.training_starts_at).to eq(Date.new(2029, 9, 1))
+      expect(cohort.training_ends_at).to eq(Date.new(2030, 8, 31))
       expect(cohort.delivery_partnerships.pluck(:delivery_partner_id, :lead_provider_id)).to eq(partnerships.pluck(:delivery_partner_id, :lead_provider_id))
     end
 
@@ -127,8 +131,8 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
   context "when logged in as a normal admin" do
     scenario "cannot create" do
-      visit_index
-      expect(page).not_to have_link(new_button_text)
+      visit new_admin_cohort_path
+      expect(page).to have_text("You must be a super admin to change cohorts")
     end
 
     scenario "cannot edit" do
@@ -147,14 +151,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     end
   end
 
-private
-
-  def visit_index
-    visit admin_cohorts_path
-  end
-
   def navigate_to_cohort
-    visit_index
-    click_on cohort.description
+    visit admin_course_cohort_path(cohort.course, cohort)
   end
 end

@@ -6,9 +6,9 @@ module API
     class AttributesSerializer < Blueprinter::Base
       exclude :id
 
-      field(:course_identifier) { |cc| cc.course.identifier }
-      field(:schedule_identifier) { |cc| cc.schedule.identifier }
-      field(:cohort) { |cc| cc.cohort.start_year.to_s }
+      field(:course_identifier) { |schedule| schedule.cohort.course.identifier }
+      field(:schedule_identifier, &:identifier)
+      field(:cohort) { |schedule| schedule.cohort.start_year.to_s }
     end
 
     view :v1 do

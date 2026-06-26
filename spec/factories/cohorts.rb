@@ -1,14 +1,28 @@
 FactoryBot.define do
   factory :cohort do
     sequence(:start_year, 0) { |n| 2021 + n % 9 }
-    registration_starts_at { Date.new(start_year, Date.current.month - 1, 3) }
+    registration_starts_at { Date.new(start_year, [Date.current.month - 1, 1].max, 3) }
     registration_ends_at { registration_starts_at.advance(months: 2) }
+    training_starts_at { 1.day.ago.to_date }
+    training_ends_at { 1.month.from_now.to_date }
     funding_cap { true }
     description { registration_starts_at.strftime("%B %Y") }
     identifier { registration_starts_at.strftime("%Y-%B") }
+    course { Course.reception || create(:course) }
 
     initialize_with do
       Cohort.find_or_create_by(registration_starts_at:)
+    end
+
+    transient do
+      lead_provider { nil }
+    end
+
+    after(:create) do |cohort, evaluator|
+      if evaluator.lead_provider || cohort.cohort_providers.empty?
+        lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
+        cohort.cohort_providers.find_or_create_by!(lead_provider:)
+      end
     end
 
     trait :current do
@@ -21,6 +35,11 @@ FactoryBot.define do
 
     trait :previous do
       start_year { Date.current.year.pred }
+    end
+
+    trait :future_training do
+      training_starts_at { 1.month.from_now.to_date }
+      training_ends_at { 6.months.from_now.to_date }
     end
 
     trait :unique do

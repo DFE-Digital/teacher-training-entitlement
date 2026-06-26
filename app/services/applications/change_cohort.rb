@@ -6,7 +6,6 @@ module Applications
 
     validate :declarations_present
     validate :different_cohort
-    validate :new_course_cohort
 
     def initialize(application:, new_cohort:, override_declarations_check: false)
       @application = application
@@ -17,11 +16,7 @@ module Applications
     def call
       return if invalid?
 
-      @application.update!(course_cohort:)
-    end
-
-    def course_cohort
-      @course_cohort ||= CourseCohort.find_by(cohort: @new_cohort, course: @application.course)
+      @application.update!(cohort: @new_cohort)
     end
 
   private
@@ -34,12 +29,6 @@ module Applications
       return if @override_declarations_check
 
       add_error(:base, :declarations_present) if @application.declarations.any?
-    end
-
-    def new_course_cohort
-      return if course_cohort
-
-      add_error(:course_cohort, :not_found)
     end
 
     def add_error(group, key)

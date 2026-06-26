@@ -1,12 +1,12 @@
 require "rails_helper"
 
 RSpec.describe APITests::ResumeApplication, type: :model do
-  subject(:service) { described_class.new(application:, course_cohort:) }
+  subject(:service) { described_class.new(application:, cohort:) }
 
-  let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
+  let(:course) { create(:course) }
+  let(:application) { create(:application, :deferred, lead_provider:, course:, cohort:) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:, schedule:) }
-  let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+  let(:cohort) { create(:cohort, course:, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
 
   let(:expected_body) do
@@ -14,7 +14,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
       data: {
         type: "application",
         attributes: {
-          schedule_id: course_cohort.ecf_id,
+          schedule_id: cohort.ecf_id,
         },
       },
     }.to_json
@@ -27,6 +27,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
   before do
     stub_const("LEAD_PROVIDER_CONFIG", lead_provider.name => { token: "test-token" }) if lead_provider
     allow(HTTParty).to receive(:put).and_return(api_response)
+    create(:cohort_provider, lead_provider:, cohort:)
   end
 
   describe "#call" do
@@ -43,7 +44,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
     context "when a course cohort is not provided" do
       subject(:service) { described_class.new(application:) }
 
-      it "uses the lead provider's last training-live course cohort" do
+      it "uses the lead provider's last training-live cohort" do
         service.call
 
         expect(HTTParty).to have_received(:put).with(
@@ -55,11 +56,11 @@ RSpec.describe APITests::ResumeApplication, type: :model do
     end
 
     context "when an application is not provided" do
-      subject(:service) { described_class.new(course_cohort:) }
+      subject(:service) { described_class.new(cohort:) }
 
-      let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
+      let(:application) { create(:application, :deferred, lead_provider:, course:, cohort:) }
 
-      it "uses the most recent deferred application for a provider with a live course cohort" do
+      it "uses the most recent deferred application for a provider with a live cohort" do
         application
         service.call
 
@@ -72,11 +73,11 @@ RSpec.describe APITests::ResumeApplication, type: :model do
     end
 
     context "when a deferred application cannot be found" do
-      subject(:service) { described_class.new(course_cohort:) }
+      subject(:service) { described_class.new(cohort:) }
 
       let(:application) { nil }
 
-      before { course_cohort }
+      before { cohort }
 
       it "raises an error" do
         expect { service.call }
@@ -84,15 +85,15 @@ RSpec.describe APITests::ResumeApplication, type: :model do
       end
     end
 
-    context "when the provider has no live course cohorts" do
+    context "when the provider has no live cohorts" do
       subject(:service) { described_class.new(application:) }
 
-      let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
-      let(:schedule) { create(:schedule, training_starts_at: 3.days.ago, training_ends_at: 1.day.ago) }
+      let(:application) { create(:application, :deferred, lead_provider:, course:, cohort:) }
+      let(:cohort) { create(:cohort, course:, training_starts_at: 3.days.ago, training_ends_at: 1.day.ago) }
 
       it "raises an error" do
         expect { service.call }
-          .to raise_error(RuntimeError, "Cannot find any live course cohorts for #{lead_provider.name}")
+          .to raise_error(RuntimeError, "Cannot find any live cohorts for #{lead_provider.name}")
       end
     end
   end

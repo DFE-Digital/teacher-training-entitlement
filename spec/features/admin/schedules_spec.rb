@@ -120,7 +120,7 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, :revisit, type: :
 private
 
   def visit_cohort
-    visit admin_cohort_path(cohort)
+    visit admin_course_cohort_path(cohort.course, cohort)
   end
 
   def navigate_to_schedule

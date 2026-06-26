@@ -9,11 +9,11 @@ RSpec.describe APITests::ChangeDeliveryPartner, type: :model do
     )
   end
 
-  let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
-  let(:declaration) { create(:declaration, :started, application:, lead_provider:, course_cohort:, delivery_partner: default_delivery_partner) }
+  let(:course) { create(:course) }
+  let(:application) { create(:application, :accepted, lead_provider:, course:, cohort:) }
+  let(:declaration) { create(:declaration, :started, application:, lead_provider:, delivery_partner: default_delivery_partner) }
   let(:lead_provider) { create(:lead_provider, delivery_partners: { cohort => [default_delivery_partner, fallback_secondary_delivery_partner] }) }
-  let(:course_cohort) { create(:course_cohort, cohort:) }
-  let(:cohort) { create(:cohort, :current) }
+  let(:cohort) { create(:cohort, :current, course:) }
   let(:default_delivery_partner) { create(:delivery_partner) }
   let(:fallback_secondary_delivery_partner) { create(:delivery_partner) }
   let(:delivery_partner) { create(:delivery_partner) }
@@ -109,7 +109,7 @@ RSpec.describe APITests::ChangeDeliveryPartner, type: :model do
         )
       end
 
-      let(:declaration) { create(:declaration, :started, application:, lead_provider:, course_cohort:, delivery_partner: default_delivery_partner) }
+      let(:declaration) { create(:declaration, :started, application:, lead_provider:, delivery_partner: default_delivery_partner) }
 
       it "uses the most recent declaration" do
         declaration

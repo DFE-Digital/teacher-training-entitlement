@@ -6,19 +6,19 @@ module Applications
     include ActiveModel::Attributes
 
     attribute :application
-    attribute :course_cohort
+    attribute :cohort
 
     validates :application, presence: true
-    validates :course_cohort, presence: true
+    validates :cohort, presence: true
     validate :accepted_application, if: -> { application }
     validate :eligible_for_changing_funded_place, if: -> { application }
-    validate :incompatible_course, if: -> { application && course_cohort }
-    validate :cohort_in_training, if: -> { course_cohort }
+    validate :incompatible_course, if: -> { application && cohort }
+    validate :cohort_in_training, if: -> { cohort }
 
     def call
       return false unless valid?
 
-      application.update!(course_cohort:)
+      application.update!(cohort:)
 
       true
     end
@@ -39,13 +39,13 @@ module Applications
     end
 
     def incompatible_course
-      return if course_cohort.course == application.course
+      return if cohort.course == application.course
 
       add_error(:application, :incompatible_schedule)
     end
 
     def cohort_in_training
-      return unless course_cohort.schedule.training_started?
+      return unless cohort.training_starts_at < Time.zone.today
 
       add_error(:base, :cohort_in_training)
     end

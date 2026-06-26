@@ -3,18 +3,22 @@ FactoryBot.define do
     transient do
       user { create(:user) }
       course { nil }
-      course_cohort { course ? create(:course_cohort, course:) : create(:course_cohort) }
       statement { nil }
       paid_statement { nil }
+      change_training_dates { true }
     end
 
-    application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
+    application do
+      application_course = course || create(:course)
+
+      association(:application, :accepted, user:, course: application_course, cohort: create(:cohort, :previous, course: application_course))
+    end
     lead_provider { application&.lead_provider || create(:lead_provider) }
-    cohort { course_cohort.cohort }
+    cohort { application.cohort }
 
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     started
-    declaration_date { application.schedule.training_starts_at + 1.day }
+    declaration_date { application&.schedule&.training_starts_at || cohort&.training_starts_at || Time.zone.today }
     submitted
     ecf_id { SecureRandom.uuid }
 
@@ -28,6 +32,31 @@ FactoryBot.define do
 
         create(:statement_item, declaration:, state: declaration.state, statement: evaluator.statement)
       end
+    end
+
+    before(:create) do |declaration, evaluator|
+      next unless evaluator.change_training_dates
+
+      cohort = declaration.cohort
+      schedule = declaration.application&.schedule
+
+      if schedule&.training_starts_at&.future?
+        schedule.update_columns(
+          training_starts_at: 1.month.ago.to_date,
+          training_ends_at: 1.month.from_now.to_date,
+        )
+      end
+
+      declaration.declaration_date = schedule.reload.training_starts_at if schedule
+
+      next unless cohort
+      next unless cohort.training_starts_at.future?
+
+      cohort.update_columns(
+        training_starts_at: 1.month.ago.to_date,
+        training_ends_at: 1.month.from_now.to_date,
+      )
+      declaration.declaration_date = cohort.reload.training_starts_at
     end
 
     trait :submitted_or_eligible do

@@ -16,13 +16,18 @@ RSpec.describe Cohort, type: :model do
   subject { cohort }
 
   describe "relationships" do
+    it { is_expected.to belong_to(:course).optional }
     it { is_expected.to have_many(:declarations).dependent(:restrict_with_exception) }
     it { is_expected.to have_many(:statements).dependent(:restrict_with_exception) }
     it { is_expected.to have_many(:delivery_partnerships) }
+    it { is_expected.to have_many(:cohort_providers).dependent(:destroy) }
+    it { is_expected.to have_many(:lead_providers).through(:cohort_providers) }
   end
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:registration_starts_at) }
+    it { is_expected.to validate_presence_of(:training_starts_at) }
+    it { is_expected.to validate_presence_of(:training_ends_at) }
     it { is_expected.to allow_value(%w[true false]).for(:funding_cap).with_message("Choose true or false for funding cap") }
     it { is_expected.not_to allow_value(nil).for(:funding_cap).with_message("Choose true or false for funding cap") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }

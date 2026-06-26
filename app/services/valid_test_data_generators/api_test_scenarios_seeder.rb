@@ -274,7 +274,7 @@ module ValidTestDataGenerators
         "4e87fadb",
         "f678",
         "4934",
-        sprintf("%04d", @lead_provider.id),
+        Digest::SHA1.hexdigest(@lead_provider.id.to_s).first(4),
         sprintf("%012d", index),
       ].join("-")
     end
@@ -293,11 +293,16 @@ module ValidTestDataGenerators
       cohort_year = registration_starts_at.year
       term = registration_starts_at.month < 8 ? "autumn" : "spring"
       current_cohort = Cohort.find_by(registration_starts_at:)
+      training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
+      training_ends_at = training_starts_at + 6.months
 
       attrs = {
         start_year: cohort_year,
         description: "#{registration_starts_at.strftime('%B')} #{cohort_year}",
         registration_starts_at:,
+        registration_ends_at: registration_starts_at + 2.months,
+        training_starts_at:,
+        training_ends_at:,
         funding_cap: true,
       }
       if current_cohort
@@ -308,7 +313,6 @@ module ValidTestDataGenerators
 
       name = "TTE Reception #{term}"
       identifier = "tte-reception-#{term}"
-      training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
       attrs = {
         cohort: current_cohort,
         name:,
@@ -338,7 +342,7 @@ module ValidTestDataGenerators
           schedule: current_schedule,
         )
       end
-      cc.course_cohort_providers.find_or_create_by!(lead_provider:)
+      current_cohort.cohort_providers.find_or_create_by!(lead_provider:)
 
       delivery_partners.each do |dp|
         dp.delivery_partnerships.find_or_create_by!(lead_provider:, cohort: current_cohort)
@@ -368,12 +372,17 @@ module ValidTestDataGenerators
       funding_eligiblity_status_code = eligible_for_funding ? nil : :ineligible_setting
       funding_choice = (eligible_for_funding ? %w[school] : Application.funding_choices.values - %w[school]).sample
 
-      application = lead_provider.updateable_applications.find_or_create_by!(user:, course_cohort:)
+      application = lead_provider.updateable_applications.find_or_create_by!(
+        user:,
+        course: course_cohort.course,
+        cohort: course_cohort.cohort,
+      )
       application.update!(
         user:,
         lead_provider:,
         institution:,
-        course_cohort:,
+        course: course_cohort.course,
+        cohort: course_cohort.cohort,
         status:,
         funded_place:,
         eligible_for_funding:,

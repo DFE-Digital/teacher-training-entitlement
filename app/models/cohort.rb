@@ -1,12 +1,18 @@
 class Cohort < ApplicationRecord
+  before_validation :set_start_year
   before_validation :set_identifier
 
+  belongs_to :course, optional: true
+
   has_many :declarations, dependent: :restrict_with_exception
+  has_many :applications
   has_many :statements, dependent: :restrict_with_exception
   has_many :delivery_partnerships, dependent: :destroy
   has_many :delivery_partners, through: :delivery_partnerships
-  has_many :course_cohorts, dependent: :destroy
-  has_many :schedules, through: :course_cohorts
+  has_many :cohort_providers, dependent: :destroy
+  has_many :lead_providers, through: :cohort_providers
+  # has_many :course_cohorts, dependent: :destroy
+  has_many :schedules, dependent: :destroy
 
   validates :start_year,
             presence: true,
@@ -21,6 +27,8 @@ class Cohort < ApplicationRecord
             length: { within: 5..50 }
 
   validates :registration_starts_at, presence: true
+  validates :training_starts_at, presence: true, if: -> { new_record? || training_starts_at_was }
+  validates :training_ends_at, presence: true, if: -> { new_record? || training_ends_at_was }
   validates :identifier, presence: true, uniqueness: { case_sensitive: false }
   validate :registration_starts_at_matches_start_year
   validates :funding_cap, inclusion: { in: [true, false] }
@@ -29,6 +37,7 @@ class Cohort < ApplicationRecord
 
   scope :order_by_latest, -> { order(registration_starts_at: :desc) }
   scope :order_by_oldest, -> { order(registration_starts_at: :asc) }
+  scope :training_live, -> { where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..) }
 
   scope :prior_to, lambda { |cohort|
     where(registration_starts_at: ...cohort.registration_starts_at)
@@ -38,6 +47,10 @@ class Cohort < ApplicationRecord
     order(registration_starts_at: :desc).where(registration_starts_at: ..timestamp).first!
   end
 
+  def application_started_confirmed_by_date
+    "#{training_ends_at.month.between?(1, 4) ? 'Spring' : 'Summer'} #{training_ends_at.year}"
+  end
+
   def registration_open?
     Time.zone.today >= registration_starts_at &&
       (registration_ends_at.nil? || Time.zone.today <= registration_ends_at)
@@ -45,6 +58,14 @@ class Cohort < ApplicationRecord
 
   def registration_upcoming?
     registration_starts_at > Time.zone.today
+  end
+
+  def training_live?
+    training_starts_at <= Time.zone.today && training_ends_at >= Time.zone.today
+  end
+
+  def allowed_declaration_types
+    Schedule.allowed_declaration_types
   end
 
   def name
@@ -65,8 +86,14 @@ private
     self.identifier = registration_starts_at.strftime("%Y-%B")
   end
 
+  def set_start_year
+    return if registration_starts_at.blank?
+
+    self.start_year = registration_starts_at.year
+  end
+
   def changing_funding_cap_with_dependent_applications
-    return unless funding_cap_changed? && Application.joins(:course_cohort).where(course_cohorts: { cohort: self }).any?
+    return unless funding_cap_changed? && Application.where(cohort: self).any?
 
     errors.add(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
   end

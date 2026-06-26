@@ -8,6 +8,11 @@
     end
 
     sl.with_row do |row|
+      row.with_key(text: "Course Name")
+      row.with_value(text: @cohort.course.name)
+    end
+
+    sl.with_row do |row|
       row.with_key(text: "Start year")
       row.with_value(text: @cohort.start_year)
     end
@@ -25,32 +30,6 @@
 %>
 
 <% if current_admin.super_admin? %>
-  <%= govuk_button_link_to("Edit cohort details", edit_admin_cohort_path(@cohort)) %>
-  <%= govuk_button_link_to("Delete cohort", admin_cohort_path(@cohort), method: :delete, warning: true) %>
+  <%= govuk_button_link_to("Edit cohort details", edit_admin_course_cohort_path(@cohort.course, @cohort)) %>
+  <%= govuk_button_link_to("Delete cohort", admin_course_cohort_path(@cohort.course, @cohort), method: :delete, warning: true) %>
 <% end %>
-
-<hr class="govuk-section-break govuk-section-break--l">
-
-<h2 class="govuk-heading-m">Courses</h1>
-
-<% if current_admin.super_admin? %>
-  <%= govuk_button_link_to("Add course", new_admin_cohort_course_path(@cohort)) %>
-<% end %>
-
-<%=
-  govuk_table do |table|
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Name")
-      end
-    end
-
-    table.with_body do |body|
-      @cohort.courses.order(:name).each do |course|
-        body.with_row do |row|
-          row.with_cell(text: govuk_link_to(course.name, admin_cohort_course_path(@cohort, course)))
-        end
-      end
-    end
-  end
-%>

@@ -8,11 +8,13 @@ RSpec.feature "Viewing participant outcomes", type: :feature do
   end
 
   scenario "viewing an application with outcomes" do
-    application = create(:application)
+    course = create(:course)
+    cohort = create(:cohort, course:, training_starts_at: 1.month.ago, training_ends_at: 1.month.from_now)
+    application = create(:application, course:, cohort:)
 
     # The declaration is started by default (declaration_type: "started")
-    started_declaration   = create(:declaration, application: application)
-    completed_declaration = create(:declaration, :completed, application: application)
+    started_declaration   = create(:declaration, application: application, declaration_date: cohort.training_starts_at + 1.day)
+    completed_declaration = create(:declaration, :completed, application: application, declaration_date: cohort.training_starts_at + 2.days)
     outcome               = create(:participant_outcome, :passed, declaration: completed_declaration)
 
     visit(admin_applications_path)

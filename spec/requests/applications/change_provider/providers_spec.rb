@@ -11,9 +11,8 @@ RSpec.describe "Applications::ChangeProvider::Providers", type: :request do
       .to receive(:session)
       .and_return({ user_id: user.id })
 
-    create(:course_cohort, lead_provider: another_provider,
-                           course: application.course,
-                           cohort: application.cohort)
+    create(:cohort_provider, lead_provider: another_provider,
+                             cohort: application.cohort)
   end
 
   describe "GET /applications/:application_id/change-provider/providers" do

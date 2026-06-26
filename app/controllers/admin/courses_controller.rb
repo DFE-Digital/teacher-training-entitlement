@@ -1,7 +1,5 @@
 module Admin
   class CoursesController < AdminController
-    include Cohortable
-
     before_action :set_course, only: %i[show edit update]
     before_action :require_super_admin, only: %i[edit update]
 
@@ -10,7 +8,8 @@ module Admin
     end
 
     def show
-      @cohorts = Cohort.where(id: @course.course_cohorts.select(:cohort_id)).order_by_latest
+      @cohorts = @course.cohorts.order_by_latest
+      @cohort_applications_counts = Application.where(cohort: @course.cohorts).group(:cohort_id).count
     end
 
     def edit; end
@@ -34,11 +33,7 @@ module Admin
     end
 
     def resources
-      scope = Course
-                .includes(:applications, course_cohorts: :cohort)
-                .order(name: :asc)
-      scope.merge!(Course.where(course_cohorts: { cohort: @current_cohort })) if @current_cohort
-      scope
+      Course.includes(:cohorts, :applications).order(name: :asc)
     end
   end
 end

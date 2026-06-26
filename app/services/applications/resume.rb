@@ -14,17 +14,17 @@ module Applications
     validate :cohort_exists
     validate :application_resumable
 
-    def initialize(application:, course_cohort:, admin_user: nil)
+    def initialize(application:, cohort:, admin_user: nil)
       @application = application
       @application.admin_user = admin_user
-      @course_cohort = course_cohort
+      @cohort = cohort
       @admin_user = admin_user
     end
 
     def call
       return if invalid?
 
-      @application.transition_status!(Application::STARTED, course_cohort: @course_cohort)
+      @application.transition_status!(Application::STARTED, cohort: @cohort)
     end
 
   private
@@ -36,13 +36,13 @@ module Applications
     end
 
     def incompatible_course
-      return if @course_cohort.nil? || @course_cohort.course == @application.course
+      return if @cohort.nil? || @cohort.course == @application.course
 
       add_error(:base, :incompatible_schedule)
     end
 
     def cohort_not_in_training
-      return if @course_cohort.nil? || @course_cohort.schedule.training_live?
+      return if @cohort.nil? || (@cohort.training_starts_at <= Time.zone.today && @cohort.training_ends_at > Time.zone.today)
 
       add_error(:base, :cohort_not_in_training)
     end
@@ -58,7 +58,7 @@ module Applications
     end
 
     def cohort_exists
-      return if @course_cohort
+      return if @cohort
 
       add_error(:base, :cohort_missing)
     end

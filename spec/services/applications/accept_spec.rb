@@ -12,14 +12,15 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     }
   end
 
-  let(:application) { create(:application, lead_provider:, course_cohort:) }
+  let(:application) { create(:application, lead_provider:, course:, cohort:) }
   let(:funded_place) { true }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:) }
+  let(:course) { create(:course) }
+  let(:cohort) { create(:cohort, :previous) }
 
   describe "#accept happy path" do
     context "when application eligible for funding" do
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true) }
+      let(:application) { create(:application, lead_provider:, course:, cohort:, eligible_for_funding: true) }
 
       context "with funded place" do
         let(:funded_place) { true }
@@ -53,7 +54,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     end
 
     context "when application not eligible for funding" do
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: false) }
+      let(:application) { create(:application, lead_provider:, course:, cohort:, eligible_for_funding: false) }
 
       context "with funded place" do
         let(:funded_place) { true }
@@ -96,7 +97,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
 
     context "when user has no TRN" do
       let(:user) { create(:user, trn: nil, refresh_token: "token") }
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true, user:) }
+      let(:application) { create(:application, lead_provider:, course:, cohort:, eligible_for_funding: true, user:) }
       let(:funded_place) { true }
 
       it "enqueues RequestTrnJob" do
@@ -106,7 +107,7 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
 
     context "when user has TRN" do
       let(:user) { create(:user, trn: "1234567") }
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true, user:) }
+      let(:application) { create(:application, lead_provider:, course:, cohort:, eligible_for_funding: true, user:) }
       let(:funded_place) { true }
 
       it "does not enqueue RequestTrnJob" do
@@ -130,21 +131,21 @@ RSpec.describe Applications::Accept, :with_default_schedules, type: :model do
     end
 
     context "when application already accepted" do
-      let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
+      let(:application) { create(:application, :accepted, lead_provider:, course:, cohort:) }
 
       it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::ACCEPTED) }
     end
 
     context "when application already rejected" do
-      let(:application) { create(:application, :rejected, lead_provider:, course_cohort:) }
+      let(:application) { create(:application, :rejected, lead_provider:, course:, cohort:) }
 
       it { expect(service.call).to be false }
       it { expect(service.application.status).to eq(Application::REJECTED) }
     end
 
     context "when application cannot transition to accepted" do
-      let(:application) { create(:application, :completed, :eligible_for_funding, lead_provider:, course_cohort:) }
+      let(:application) { create(:application, :completed, :eligible_for_funding, lead_provider:, course:, cohort:) }
 
       it { expect(service.call).to be false }
       it { is_expected.to have_error(:application, :invalid_status_transition) }

@@ -125,28 +125,31 @@ RSpec.describe User do
     let(:user) { create(:user) }
     let(:lead_provider) { create(:lead_provider) }
     let(:course_identifier) { ParticipantOutcomes::Create::PERMITTED_COURSES.first }
-    let(:participant_outcome) { create(:participant_outcome, user:, course:, lead_provider:) }
     let(:course) { Course.find_by!(identifier: course_identifier) }
+    let(:application) { create(:application, :accepted, user:, course:, cohort: create(:cohort, :previous, :unique, course:), lead_provider:) }
+    let(:participant_outcome) { create(:participant_outcome, :for_application, application:, lead_provider:) }
 
     subject { user.latest_participant_outcome(lead_provider, course_identifier) }
 
     before do
       # Older participant outcome.
-      travel_to(1.day.ago) { create(:participant_outcome, user:, course:, lead_provider:) }
+      travel_to(1.day.ago) { create(:participant_outcome, :for_application, application:, lead_provider:) }
 
       travel_to(1.day.from_now) do
         # Not a completed declaration.
-        create(:participant_outcome, user:, course:, lead_provider:).declaration.update!(declaration_type: "retained-1")
+        create(:participant_outcome, :for_application, application:, lead_provider:, declaration_type: Declaration::RETAINED_1)
 
         # Declaration on another provider.
-        create(:participant_outcome, user:, course:, lead_provider: LeadProvider.where.not(id: lead_provider.id).first)
+        create(:participant_outcome, :for_application, application:, lead_provider: LeadProvider.where.not(id: lead_provider.id).first)
 
         # Declaration with different course.
-        create(:participant_outcome, user:, course: create(:course, identifier: "other-course"), lead_provider:)
+        other_course = create(:course, identifier: "other-course")
+        other_application = create(:application, :accepted, user:, course: other_course, cohort: create(:cohort, :previous, :unique, course: other_course), lead_provider:)
+        create(:participant_outcome, :for_application, application: other_application, lead_provider:)
 
         # Declarations that are not billable or voidable.
         Declaration.states.keys.excluding(Declaration::BILLABLE_STATES + Declaration::VOIDABLE_STATES).each do |state|
-          create(:participant_outcome, user:, course:, lead_provider:).declaration.update!(state:)
+          create(:participant_outcome, :for_application, application:, lead_provider:, declaration_state: state)
         end
       end
 

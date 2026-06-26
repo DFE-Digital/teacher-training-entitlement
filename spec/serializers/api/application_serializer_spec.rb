@@ -4,10 +4,9 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:user) { application.user }
   let(:course) { create(:course, :npd_eirt) }
   let(:cohort) { create(:cohort, :current) }
-  let(:schedule) { create(:schedule) }
-  let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }
+  let(:schedule) { create(:schedule, cohort:) }
   let(:institution) { create(:institution, :for_school) }
-  let(:application) { create(:application, course_cohort:, institution:) }
+  let(:application) { create(:application, course:, cohort:, institution:) }
   let(:unassigned) { build(:application_lead_provider, :unassigned) }
   let(:v1_json) { JSON.parse(described_class.render(application, view: :v1, root: "data")) }
 
@@ -29,7 +28,9 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     subject(:attributes) { v1_json.dig("data", "attributes") }
 
     it "serializes the `schedule_identifier`" do
-      expect(attributes["schedule_identifier"]).to eq(application.schedule.identifier)
+      schedule
+
+      expect(attributes["schedule_identifier"]).to eq(schedule.identifier)
     end
 
     it "serializes the `funding_choice`" do

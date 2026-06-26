@@ -82,8 +82,8 @@ class RegistrationQueryStore
     @course ||= Course.reception
   end
 
-  def course_cohort
-    @course_cohort ||= CourseCohort.next_open_for(course:)
+  def cohort
+    @cohort ||= course.next_open_cohort
   end
 
   def lead_provider

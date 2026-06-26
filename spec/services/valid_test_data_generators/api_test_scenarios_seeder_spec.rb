@@ -143,9 +143,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates 2 cohorts" do
           expect { seeder.call }.to change(Cohort, :count).by_at_least(2)
 
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[0])).to be_present
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[2])).to be_present
+          expect(Cohort.find_by(start_year: cohort_year)).to be_present
+          expect(Cohort.find_by(start_year: cohort_year + 1)).to be_present
         end
 
         it "creates 2 course_cohorts" do
@@ -153,8 +152,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
           course = Course.find_by!(identifier: "tte-early-years")
           cohort_start_dates = seeder.cohort_start_dates.take(4)
-          primary_cohort = Cohort.find_by(registration_starts_at: cohort_start_dates[0])
-          secondary_cohort = Cohort.find_by(registration_starts_at: cohort_start_dates[2])
+          primary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[0])
+          secondary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[2])
 
           expect(CourseCohort.find_by(course:, cohort: primary_cohort)).to be_present
           expect(CourseCohort.find_by(course:, cohort: secondary_cohort)).to be_present
@@ -167,11 +166,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           cohort_start_dates = seeder.cohort_start_dates.take(4)
           primary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[0])
           secondary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[2])
-          primary_course_cohort = CourseCohort.find_by!(course:, cohort: primary_cohort)
-          secondary_course_cohort = CourseCohort.find_by!(course:, cohort: secondary_cohort)
-
-          expect(lead_provider.updateable_applications.where(course_cohort: primary_course_cohort).count).to eq(11)
-          expect(lead_provider.updateable_applications.where(course_cohort: secondary_course_cohort).count).to eq(1)
+          expect(lead_provider.updateable_applications.where(course:, cohort: primary_cohort).count).to eq(11)
+          expect(lead_provider.updateable_applications.where(course:, cohort: secondary_cohort).count).to eq(1)
         end
 
         it "creates 2 statements" do
@@ -210,7 +206,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       describe "idempotency (running twice)" do
         before do
-          seeder.call
+          expect(seeder.call.success).to be true
         end
 
         it "deletes and recreates applications" do
@@ -242,7 +238,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
         it "does not delete users with other applications" do
           # Create another application for one of the test users
-          user = User.find_by(email: seeder.test_emails.first)
+          user = User.find_by(ecf_id: seeder.test_user_ecf_ids.first)
           other_provider = create(:lead_provider)
           create(:application, user: user, lead_provider: other_provider)
 
@@ -257,9 +253,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates cohorts for the specified year" do
           seeder.call
 
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[0])).to be_present
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[2])).to be_present
+          expect(Cohort.find_by(start_year: 2027)).to be_present
+          expect(Cohort.find_by(start_year: 2028)).to be_present
         end
 
         it "creates statements for the specified year" do

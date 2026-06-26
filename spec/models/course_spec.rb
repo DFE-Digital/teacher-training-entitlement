@@ -8,4 +8,10 @@ RSpec.describe Course do
     it { is_expected.to validate_uniqueness_of(:identifier).with_message("Identifier already exists, enter a unique one") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
   end
+
+  describe "relationships" do
+    it { is_expected.to have_many(:cohorts) }
+    it { is_expected.to have_many(:cohort_providers).through(:cohorts) }
+    it { is_expected.to have_many(:lead_providers).through(:cohort_providers) }
+  end
 end

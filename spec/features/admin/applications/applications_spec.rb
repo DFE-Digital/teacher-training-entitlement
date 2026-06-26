@@ -81,10 +81,10 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "filtering applications by year of application" do
-    cohort = create(:cohort, registration_starts_at: Date.new(2022, 4, 1))
-    course_cohort = create(:course_cohort, cohort:)
+    course = create(:course)
+    cohort = create(:cohort, start_year: 2022, course:)
     application = applications_in_order.last
-    application.update!(course_cohort:)
+    application.update!(course:, cohort:)
 
     visit(admin_applications_path)
     click_on cohort.description
@@ -174,8 +174,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       expect(summary_list).to have_summary_item("Eligible for funding", "Yes")
       expect(summary_list).to have_summary_item("Funded place", "")
       expect(summary_list).to have_summary_item("Status code", application.funding_eligiblity_status_code.humanize)
-      expect(summary_list).to have_summary_item("Schedule cohort", application.cohort.name)
-      expect(summary_list).to have_summary_item("Schedule identifier", "-")
+      expect(summary_list).to have_summary_item("Cohort", application.cohort.name)
       expect(summary_list).to have_summary_item("Funding choice", application.funding_choice&.capitalize)
       expect(summary_list).to have_summary_item("Notes", "No notes")
     end
@@ -251,10 +250,11 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "changing status" do
     lead_provider = create(:lead_provider)
-    schedule = create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
-    course_cohort = create(:course_cohort, lead_provider: lead_provider, schedule:)
-    application = create(:application, :accepted, course_cohort:, lead_provider:)
-    create(:declaration, application:, course: course_cohort.course, cohort: course_cohort.cohort, lead_provider:, declaration_type: "started", declaration_date: schedule.training_starts_at + 1.hour)
+    course = create(:course)
+    cohort = create(:cohort, course:, lead_provider:, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
+    schedule = create(:schedule, cohort:, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
+    application = create(:application, :accepted, course:, cohort:, lead_provider:)
+    create(:declaration, application:, course:, cohort:, lead_provider:, declaration_type: "started", declaration_date: schedule.training_starts_at + 1.hour)
 
     visit admin_application_path(application)
 
@@ -326,15 +326,15 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "changing schedule cohort" do
-    future_cohort = create(:cohort, registration_starts_at: 3.years.from_now.to_date.beginning_of_month)
-    course_cohort = create(:course_cohort, cohort: Cohort.first)
-    create(:course_cohort, course: course_cohort.course, cohort: future_cohort)
-    create(:cohort, registration_starts_at: 2.years.from_now.to_date.beginning_of_month)
-    application = create(:application, course_cohort:)
+    course = create(:course)
+    cohort = create(:cohort, course:, start_year: 2028, registration_starts_at: Date.new(2028, 12, 13))
+    future_cohort = create(:cohort, course:, start_year: 2029, registration_starts_at: Date.new(2029, 1, 13))
+    create(:cohort, start_year: 2029, registration_starts_at: Date.new(2029, 2, 13))
+    application = create(:application, course:, cohort:)
 
     visit admin_application_path(application)
 
-    within(".govuk-summary-list__row", text: "Schedule cohort") do
+    within(".govuk-summary-list__row", text: "Cohort") do
       click_link("Change")
     end
 
@@ -346,7 +346,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     choose future_cohort.name, visible: :all
     click_button "Continue"
 
-    within(".govuk-summary-list__row", text: "Schedule cohort") do |row|
+    within(".govuk-summary-list__row", text: "Cohort") do |row|
       expect(row).to have_text(future_cohort.start_year.to_s)
     end
   end

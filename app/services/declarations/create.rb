@@ -28,7 +28,7 @@ module Declarations
     validate :declaration_valid
     validate :application_updateable
 
-    delegate :lead_provider, :schedule, to: :application
+    delegate :lead_provider, to: :application
 
     attr_reader :raw_declaration_date, :declaration
 
@@ -78,16 +78,22 @@ module Declarations
     end
 
     def cohort
-      if started_declaration?
-        application.cohort
+      started_declaration = application
+        .declarations
+        .started_declaration_type
+        .billable_or_changeable
+        .first
+
+      if completed_declaration? && started_declaration
+        started_declaration.cohort
       else
         application
-          .declarations
-          .started_declaration_type
-          .billable_or_changeable
-          .first
           .cohort
       end
+    end
+
+    def schedule
+      Schedule.find_by(cohort:) || application.schedule || cohort
     end
 
   private

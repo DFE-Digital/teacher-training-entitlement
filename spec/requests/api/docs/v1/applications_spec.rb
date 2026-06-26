@@ -4,9 +4,18 @@ require "swagger_helper"
 RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
   let(:course) { create(:course, :npd_eirt) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn) }
-  let(:course_cohort) { create(:course_cohort, course:, schedule:) }
-  let(:application) { create(:application, lead_provider:, course_cohort:) }
+  let(:cohort) do
+    create(:cohort,
+           course:,
+           start_year: Date.current.year,
+           registration_starts_at: Date.new(Date.current.year, 6, 3),
+           training_starts_at: 1.day.ago,
+           training_ends_at: 1.day.from_now)
+  end
+  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
+  let(:application) { create(:application, lead_provider:, course:, cohort:) }
+
+  before { schedule }
 
   describe "list applications" do
     it_behaves_like "an API index endpoint documentation",
@@ -80,7 +89,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application after changing the funded place",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationChangeFundedPlaceRequest" do
-        let(:application) { create(:application, :accepted, :eligible_for_funding, lead_provider:, course_cohort:) }
+        let(:application) { create(:application, :accepted, :eligible_for_funding, lead_provider:, course:, cohort:) }
         let(:resource) { application }
         let(:type) { "application" }
         let(:attributes) { { funded_place: true } }
@@ -102,7 +111,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application being deferred",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationDeferRequest" do
-        let(:application) { create(:application, :started, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
+        let(:application) { create(:application, :started, :with_declaration, :eligible_for_funding, lead_provider:, course:, cohort:) }
         let(:resource) { application }
         let(:type) { "application" }
         let(:attributes) { { reason: ::Applications::Defer::DEFERRAL_REASONS.first } }
@@ -124,19 +133,21 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application being resumed",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationResumeRequest" do
-        let(:application) { create(:application, :deferred, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
-        let(:target_course_cohort) do
-          create(:course_cohort,
-                 course: course_cohort.course,
-                 cohort: create(:cohort, :current),
-                 schedule: target_schedule,
-                 lead_provider: application.lead_provider)
+        let(:application) { create(:application, :deferred, :with_declaration, :eligible_for_funding, lead_provider:, course:, cohort:) }
+        let(:target_cohort) do
+          create(:cohort,
+                 course:,
+                 lead_provider: application.lead_provider,
+                 start_year: Date.current.year,
+                 registration_starts_at: Date.new(Date.current.year, 7, 3),
+                 training_starts_at: 1.day.ago,
+                 training_ends_at: 1.day.from_now)
         end
-        let(:target_schedule) { create(:schedule, :tte_reception_autumn, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now, change_training_dates: false) }
+        let(:target_schedule) { create(:schedule, :tte_reception_autumn, cohort: target_cohort, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now, change_training_dates: false) }
 
         let(:resource) { application }
         let(:type) { "application" }
-        let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
+        let(:attributes) { { schedule_id: target_cohort.ecf_id } }
         let(:invalid_attributes) { { schedule_id: nil } }
         let(:response_example) do
           base_response_example.tap do |example|
@@ -155,7 +166,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application being withdrawn",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationWithdrawRequest" do
-        let(:application) { create(:application, :started, :with_declaration, :eligible_for_funding, lead_provider:, course_cohort:) }
+        let(:application) { create(:application, :started, :with_declaration, :eligible_for_funding, lead_provider:, course:, cohort:) }
         let(:resource) { application }
         let(:type) { "application" }
         let(:attributes) { { reason: ::Applications::Withdraw::WITHDRAWAL_REASONS.first } }
@@ -176,19 +187,20 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application's schedule being changed",
                       "#/components/schemas/ApplicationResponse",
                       "#/components/schemas/ApplicationChangeScheduleRequest" do
-        let(:application) { create(:application, :accepted, :eligible_for_funding, lead_provider:, course_cohort:) }
-        let(:target_course_cohort) do
-          create(:course_cohort,
-                 course: course_cohort.course,
-                 cohort: create(:cohort, :next),
-                 schedule: target_schedule,
-                 lead_provider: application.lead_provider)
+        let(:application) { create(:application, :accepted, :eligible_for_funding, lead_provider:, course:, cohort:) }
+        let(:target_cohort) do
+          create(:cohort,
+                 :next,
+                 course:,
+                 lead_provider: application.lead_provider,
+                 training_starts_at: 1.day.from_now,
+                 training_ends_at: 2.days.from_now)
         end
-        let(:target_schedule) { create(:schedule, :tte_reception_spring, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now, change_training_dates: false) }
+        let(:target_schedule) { create(:schedule, :tte_reception_spring, cohort: target_cohort, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now, change_training_dates: false) }
 
         let(:resource) { application }
         let(:type) { "application" }
-        let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
+        let(:attributes) { { schedule_id: target_cohort.ecf_id } }
         let(:invalid_attributes) { { schedule_id: nil } }
         let(:response_example) do
           base_response_example.tap do |example|
@@ -207,15 +219,15 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "The application being started declaration being created",
                       "#/components/schemas/DeclarationResponse",
                       "#/components/schemas/DeclarationStartedRequest" do
-        let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
+        let(:application) { create(:application, :accepted, lead_provider:, course:, cohort:) }
         let(:resource) { application }
         let(:declaration_date) { schedule.training_starts_at + 1.hour }
-        let(:schedule) { create(:schedule, :tte_reception_autumn, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+        let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
         let(:delivery_partner_id) do
-          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+          create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id
         end
         let(:secondary_delivery_partner_id) do
-          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+          create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id
         end
 
         let(:type) { "declaration" }
@@ -240,18 +252,18 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "#/components/schemas/DeclarationResponse",
                       "#/components/schemas/DeclarationCompletedRequest" do
         let(:application) do
-          create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
+          create(:application, :started, :with_declaration, course:, cohort:, lead_provider:)
         end
         let(:resource) { application }
         let(:declaration_date) { schedule.training_starts_at + 1.hour }
         let(:schedule) do
-          create(:schedule, :tte_reception_autumn, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
+          create(:schedule, :tte_reception_autumn, cohort:, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
         end
         let(:delivery_partner_id) do
-          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+          create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id
         end
         let(:secondary_delivery_partner_id) do
-          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+          create(:delivery_partner, lead_providers: { cohort => lead_provider }).ecf_id
         end
 
         let(:type) { "declaration" }

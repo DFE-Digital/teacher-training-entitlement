@@ -3,9 +3,9 @@ module APITests
     include CallAPI
     include Rails.application.routes.url_helpers
 
-    def initialize(application: nil, course_cohort: nil)
+    def initialize(application: nil, cohort: nil)
       @application = application
-      @course_cohort = course_cohort
+      @cohort = cohort
     end
 
     def call
@@ -17,7 +17,7 @@ module APITests
         data: {
           type: "application",
           attributes: {
-            schedule_id: course_cohort.ecf_id,
+            schedule_id: cohort.ecf_id,
           },
         },
       }.to_json
@@ -31,8 +31,8 @@ module APITests
 
     def application
       @application ||= LeadProvider.find_each do |lead_provider|
-        course_cohorts = training_live_course_cohorts_for(lead_provider:)
-        next unless course_cohorts.any?
+        cohorts = training_live_cohorts_for(lead_provider:)
+        next unless cohorts.any?
 
         applications = lead_provider.applications.deferred_status
 
@@ -40,19 +40,19 @@ module APITests
       end
     end
 
-    def course_cohort
-      @course_cohort ||= begin
-        course_cohorts = training_live_course_cohorts_for(lead_provider: application.lead_provider)
-        if course_cohorts.blank?
-          raise "Cannot find any live course cohorts for #{application.lead_provider.name}"
+    def cohort
+      @cohort ||= begin
+        cohorts = training_live_cohorts_for(lead_provider: application.lead_provider)
+        if cohorts.blank?
+          raise "Cannot find any live cohorts for #{application.lead_provider.name}"
         end
 
-        course_cohorts.last
+        cohorts.last
       end
     end
 
-    def training_live_course_cohorts_for(lead_provider:)
-      lead_provider.course_cohorts.select { |cc| cc.schedule&.training_live? }
+    def training_live_cohorts_for(lead_provider:)
+      lead_provider.cohorts.select(&:training_live?)
     end
   end
 end

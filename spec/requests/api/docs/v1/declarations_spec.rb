@@ -51,9 +51,9 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "#/components/schemas/DeclarationChangeDeliveryPartnerRequest" do
       end
       let(:lead_provider) { create(:lead_provider) }
-      let(:cohort) { create(:cohort, :current) }
-      let(:course_cohort) { create(:course_cohort, cohort:, course: create(:course, :npd_eirt)) }
-      let(:application) { create(:application, :accepted, course_cohort:) }
+      let(:course) { create(:course, :npd_eirt) }
+      let(:cohort) { create(:cohort, :current, course:) }
+      let(:application) { create(:application, :accepted, course:, cohort:) }
       let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
       let(:secondary_delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
       let(:new_delivery_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }

@@ -5,7 +5,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
   let!(:lead_provider) { create(:lead_provider) }
   let!(:course) { create(:course, :npd_eirt, lead_provider:) }
 
-  before { create(:course_cohort, course:, cohort:, lead_provider:) }
+  before { create(:cohort_provider, cohort:, lead_provider:) }
 
   describe "validations" do
     let(:current_step) { "choose_your_provider" }
@@ -59,8 +59,8 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
-    let(:course_cohort) { CourseCohort.next_open_for(course:) }
-    let(:expected_providers) { course_cohort.lead_providers.alphabetical }
+    let(:cohort) { course.next_open_cohort }
+    let(:expected_providers) { cohort.lead_providers.alphabetical }
 
     before do
       form.wizard = RegistrationWizard.new(

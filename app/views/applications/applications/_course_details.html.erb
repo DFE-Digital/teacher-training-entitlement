@@ -52,7 +52,7 @@
 
           if application.pending_status? || application.accepted_status? || application.rejected_status?
             text = application.eligible_for_funding ? "eligible_for_funding" : "not_eligible_for_funding"
-            concat tag.p(I18n.t("course_start_details.#{text}", date: application.course_cohort.application_started_confirmed_by_date), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+            concat tag.p(I18n.t("course_start_details.#{text}", date: application.cohort.application_started_confirmed_by_date), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
           end
         end
       end

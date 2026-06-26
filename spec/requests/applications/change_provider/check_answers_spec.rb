@@ -14,9 +14,8 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
       .to receive(:session)
       .and_return(session)
 
-    create(:course_cohort, lead_provider: new_provider,
-                           course: application.course,
-                           cohort: application.cohort)
+    create(:cohort_provider, lead_provider: new_provider,
+                             cohort: application.cohort)
   end
 
   describe "GET /applications/:application_id/change-provider/check-answers" do

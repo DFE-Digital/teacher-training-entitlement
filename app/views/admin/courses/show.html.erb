@@ -6,7 +6,7 @@
     cohorts: @cohorts,
     base_path: :admin_course_path,
     resource: @course,
-    cohort_path: ->(cohort) { admin_cohort_course_path(cohort, @course) },
+    cohort_path: ->(cohort) { admin_course_cohort_path(@course, cohort) },
   ) %>
 <% end %>
 
@@ -36,6 +36,40 @@
     summary_list.with_row do |row|
       row.with_key(text: "Description")
       row.with_value(text: @course.description)
+    end
+  end
+%>
+
+<h2 class="govuk-heading-m">Cohorts</h2>
+
+<% if current_admin.super_admin? %>
+  <%= govuk_button_link_to("New cohort", new_admin_cohort_path(course_id: @course.id)) %>
+<% end %>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Cohort")
+        row.with_cell(text: "Applications")
+        row.with_cell(text: "Registration starts")
+        row.with_cell(text: "Registration ends")
+        row.with_cell(text: "Training starts")
+        row.with_cell(text: "Training ends")
+      end
+    end
+
+    table.with_body do |body|
+      @course.cohorts.sort_by(&:registration_starts_at).reverse_each do |cohort|
+        body.with_row do |row|
+          row.with_cell(text: govuk_link_to(cohort.description, admin_course_cohort_path(@course, cohort)))
+          row.with_cell(text: @cohort_applications_counts.fetch(cohort.id, 0))
+          row.with_cell(text: cohort.registration_starts_at.to_date.to_fs(:govuk_short))
+          row.with_cell(text: cohort.registration_ends_at&.to_date&.to_fs(:govuk_short) || "-")
+          row.with_cell(text: cohort.training_starts_at&.to_date&.to_fs(:govuk_short) || "-")
+          row.with_cell(text: cohort.training_ends_at&.to_date&.to_fs(:govuk_short) || "-")
+        end
+      end
     end
   end
 %>

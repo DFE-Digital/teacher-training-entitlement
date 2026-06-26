@@ -26,7 +26,7 @@
     <%= govuk_warning_text(text: "You must register with DfE before you apply with a provider.") %>
 
     <ul class="govuk-list govuk-list--bullet">
-      <% providers = course_cohort ? course_cohort.lead_providers.alphabetical : LeadProvider.none %>
+      <% providers = cohort ? cohort.lead_providers.alphabetical : LeadProvider.none %>
       <% providers.each do |provider| %>
         <li><%= govuk_link_to provider.name, provider.url %></li>
       <% end %>

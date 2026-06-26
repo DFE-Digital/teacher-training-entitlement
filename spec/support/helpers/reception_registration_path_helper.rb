@@ -8,7 +8,7 @@ module Helpers
 
     def choose_current_course_start_date
       expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-        page.choose(CourseCohort.next_open_for(course: Course.reception).name, visible: :all)
+        page.choose(Course.reception.next_open_cohort.name, visible: :all)
       end
     end
 

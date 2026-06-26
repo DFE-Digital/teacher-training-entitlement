@@ -10,7 +10,6 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
 
     expected_structure =
       {
-        "Cohorts" => "/admin/cohorts",
         "Courses" => "/admin/courses",
         "Applications" => "/admin/applications",
         "Providers" => "/admin/providers",
