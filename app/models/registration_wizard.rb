@@ -91,7 +91,7 @@ class RegistrationWizard
     array = []
 
     array << Answer.new("Course start", store["course_start"], :course_start_date)
-    array << Answer.new("Course", course.name, :course_start_date)
+    array << Answer.new("Course", course.name)
     array << Answer.new("Provider", lead_provider&.name, :choose_your_provider)
     array << Answer.new("Workplace in England", teacher_catchment_humanized, :teacher_catchment)
 
