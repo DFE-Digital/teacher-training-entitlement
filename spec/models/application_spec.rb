@@ -407,8 +407,8 @@ RSpec.describe Application do
     let(:course) { create(:course) }
     let(:course_cohort) { create(:course_cohort, course:, cohort: cohort_with_funding_cap) }
     let(:application) { create(:application, :previously_funded, user:, course_cohort:) }
-    let(:cohort_with_funding_cap) { create(:cohort, :with_funding_cap) }
-    let(:cohort_without_funding_cap) { create(:cohort, :without_funding_cap) }
+    let(:cohort_with_funding_cap) { create(:cohort, :unique, :with_funding_cap) }
+    let(:cohort_without_funding_cap) { create(:cohort, :unique, :without_funding_cap) }
     let(:previous_application) { user.applications.where.not(id: application.id).first! }
     let(:course_cohort_no_cap) { create(:course_cohort, course:, cohort: cohort_without_funding_cap) }
 
