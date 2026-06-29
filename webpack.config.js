@@ -8,6 +8,11 @@ module.exports = {
   optimization: {
     moduleIds: 'deterministic',
   },
+  resolve: {
+    alias: {
+      'govuk-frontend/dist': path.resolve(__dirname, 'node_modules/govuk-frontend/dist')
+    }
+  },
   entry: {
     application: "./app/javascript/application.js",
     mermaid: "./app/javascript/mermaid.js",
