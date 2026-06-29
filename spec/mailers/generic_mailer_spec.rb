@@ -296,12 +296,11 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq("Registration is now open")
+        expect(mail.personalisation[:subject]).to eq("Registration open for Excellence in reception teaching course")
 
         body = mail.personalisation[:body]
-        expect(body).to include("Registration is now open")
-        expect(body).to include("You asked us to email you when registration opened")
-        expect(body).to include("[apply for a course](#{registration_start_url})")
+        expect(body).to include("The excellence in teaching reception NPD course is now open for applications.")
+        expect(body).to include("[#{registration_start_url}](#{registration_start_url})")
       end
     end
 
