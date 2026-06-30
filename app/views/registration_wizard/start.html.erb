@@ -36,17 +36,17 @@
 
     <p>When you register with the DfE, we will:</p>
 
-    <ul class="govuk-list govuk-list--bullet">
+    <ol class="govuk-list govuk-list--number">
       <li>check and confirm your eligibility for funding</li>
       <li>notify your chosen training provider</li>
-    </ul>
+    </ol>
 
     <p>Your provider will contact you to complete your application and:</p>
 
-    <ul class="govuk-list govuk-list--bullet">
+    <ol class="govuk-list govuk-list--number">
       <li>check your suitability for the course</li>
       <li>confirm if they can offer you a place</li>
-    </ul>
+    </ol>
 
     <p>If your training provider is unable to offer a funded place, you can log in to register with a different provider.</p>
 
@@ -77,7 +77,9 @@
       <li>get your certificate when you have completed the course</li>
     </ul>
 
-    <%= render 'shared/teacher_auth/redirect_button', button_text: "Log in", secondary: true %>
 
+    <% if Feature.registration_enabled? %>
+      <%= render 'shared/teacher_auth/redirect_button', button_text: "Log in", secondary: true %>
+    <% end %>
   </div>
 </div>
