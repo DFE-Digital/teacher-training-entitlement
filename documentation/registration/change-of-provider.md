@@ -103,8 +103,11 @@ accepts is caught before any redirect.
 alphabetically, with the current provider removed:
 
 ```ruby
-LeadProvider.for(course: application.course).alphabetical
-            .reject { |p| p.id == application.lead_provider.id }
+application
+  .course_cohort
+  .lead_providers
+  .alphabetical
+  .reject { |p| p.id == application.lead_provider.id }
 ```
 
 **Step 3 — check-answers.** Shows the chosen provider and a "Submit change"
