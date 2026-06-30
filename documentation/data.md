@@ -5,9 +5,6 @@ application and is still evolving. An auto-generated entity-relationship diagram
 is available at [`domain-model.md`](domain-model.md) — regenerate it with
 `bundle exec mermaid_erd` whenever schema changes are made.
 
-> The older [`npq_data_model.md`](npq_data_model.md) contains the original NPQ
-> narrative and is preserved for historical reference.
-
 ---
 
 ## Data dictionary
@@ -64,7 +61,7 @@ Tables are grouped by domain. Column types are abbreviated: `PK` (primary key),
 
 ---
 
-### 4. Institutions & eligibility
+### 4. Institutions
 
 | Table                              | Role                                                                                                              | Key columns                                                                                                                                       |
 |------------------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -119,5 +116,4 @@ erDiagram
 ## Related docs
 
 - [`domain-model.md`](domain-model.md) — auto-generated Mermaid ERD (run `bundle exec mermaid_erd` to refresh)
-- [`npq_data_model.md`](npq_data_model.md) — original NPQ-centric narrative (historical reference)
 - [`db/schema.rb`](../db/schema.rb) — canonical schema definition
