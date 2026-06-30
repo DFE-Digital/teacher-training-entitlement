@@ -11,7 +11,9 @@ chosen `LeadProvider`.
 ```mermaid
 flowchart LR
     Start([/registration/start]) --> Csd[course-start-date]
-    Csd -- "Yes" --> Cyp[choose-your-provider]
+    Csd -- "Yes" --> DupCheck{Duplicate active application?}
+    DupCheck -- "No" --> Cyp[choose-your-provider]
+    DupCheck -- "Yes" --> Dup([alert: already registered])
     Csd -- "Later" --> Cry[cannot-register-yet]
     Cyp --> Tc[teacher-catchment]
     Tc -- "England" --> Ws[work-setting]
@@ -28,7 +30,6 @@ flowchart LR
     Sp --> Ca[check-answers]
     Ca -- "Submit" --> Sub{Save}
     Sub -- "ok" --> Rs[registration-submitted]
-    Sub -- "duplicate" --> Dup([alert: already registered])
     Rs --> App((Application pending))
     App --> LP{LP action}
     LP -- "Accept" --> Accepted([Application accepted])
