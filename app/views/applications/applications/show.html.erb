@@ -5,11 +5,6 @@
       text: "Back to your registrations",
       href: applications_path
     ) %>
-  <% else %>
-    <%= render GovukComponent::BackLinkComponent.new(
-      text: "Back",
-      href: request.referrer.presence || root_path
-    ) %>
   <% end %>
 <% end %>
 <span class="govuk-caption-m">Submitted <%= application.created_at.to_date.to_fs(:govuk_short) %></span>
