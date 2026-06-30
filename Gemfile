@@ -67,6 +67,7 @@ group :development, :test do
   gem "debug"
   gem "dotenv-rails"
   gem "knapsack"
+  gem "mermaid_erd"
   gem "parallel_tests"
   gem "pry"
   gem "rspec-rails"
@@ -74,7 +75,6 @@ group :development, :test do
   gem "rswag-specs"
   gem "rubocop-govuk"
   gem "scss_lint-govuk"
-  gem "mermaid_erd"
   gem "simplecov", require: false
 end
 
