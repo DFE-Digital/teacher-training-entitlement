@@ -81,9 +81,9 @@ FundingEligibility.call(user:, course_cohort:)
 ```
 
 It decides whether a user can register for a given `CourseCohort`. The wizard
-calls it before allowing submission. See [`docs/funding.md`](../funding.md)
+calls it before allowing submission. See [`funding.md`](../funding.md)
 for the rules and status codes, and the forthcoming
-`docs/registration/application-submission.md` for how the wizard uses it.
+`application-submission.md` for how the wizard uses it.
 
 ## Where the code lives
 
@@ -95,11 +95,9 @@ for the rules and status codes, and the forthcoming
 | Funding rules       | `app/services/funding_eligibility.rb`                      |
 
 ## Related docs
-
-- [`docs/data_model.md`](../data_model.md) — entity relationships.
-- [`docs/funding.md`](../funding.md) — funding eligibility rules and codes.
-- `docs/registration/authentication.md` — sign-in and sessions *(forthcoming)*.
-- `docs/registration/application-submission.md` — wizard, forms, and how
-  `FundingEligibility` is invoked *(forthcoming)*.
-- `docs/registration/change-of-provider.md` — change-of-provider flow
-  *(forthcoming)*.
+- [`data_model.md`](../data_model.md) — entity relationships.
+- [`funding.md`](../funding.md) — funding eligibility rules and codes.
+- [`authentication.md`](authentication.md) — sign-in and sessions.
+- [`application-submission.md`](application-submission.md) — wizard, forms, and how
+  `FundingEligibility` is invoked.
+- [`change-of-provider.md`](change-of-provider.md) — change-of-provider flow.

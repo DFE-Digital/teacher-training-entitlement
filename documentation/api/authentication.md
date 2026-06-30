@@ -174,4 +174,4 @@ any log.
 - [`endpoints.md`](./endpoints.md) — full endpoint reference
 - [`swagger.md`](./swagger.md) — OpenAPI workflow
 - [`/api/guidance/get-started`](../../app/views/api/guidance/get-started.md) — what we send to LPs
-- [`docs/api/overview.md#error-envelope`](./overview.md#error-envelope) — full error table
+- [`api/overview.md#error-envelope`](./overview.md#error-envelope) — full error table

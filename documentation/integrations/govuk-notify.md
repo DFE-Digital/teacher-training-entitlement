@@ -6,8 +6,8 @@ The service uses [GOV.UK Notify](https://www.notifications.service.gov.uk/) to s
 
 - The Notify API key is supplied through the `GOVUK_NOTIFY_API_KEY` environment variable.
 - Delivery is configured in `config/application.rb` as `config.action_mailer.delivery_method = :notify`.
-- Developers must have a Notify account created during onboarding to send real emails locally (see `docs/development/ways-of-working.md`).
-- For other service integrations, see `docs/integrations/README.md`.
+- Developers must have a Notify account created during onboarding to send real emails locally (see [`ways-of-working.md`](../development/ways-of-working.md)).
+- For other service integrations, see [`README.md`](./README.md).
 
 ## 2. Architecture
 
@@ -126,7 +126,7 @@ The value of `personalisation[:body]` is rendered from the `app/views/mailers/ge
 - `config/initializers/mailer_log_redactor.rb` prepends a module onto `RailsSemanticLogger::ActionMailer::LogSubscriber::EventFormatter` to filter email addresses and other sensitive payload fields from log output.
 - Redaction uses `ActiveSupport::ParameterFilter` with the application's `config.filter_parameters`.
 - `ActionMailer::MailDeliveryJob.log_arguments = false` prevents email arguments from appearing in job logs.
-- See `docs/monitoring/logging.md` for broader logging practices.
+- See [`logging.md`](../monitoring/logging.md) for broader logging practices.
 
 ## 10. Email validation
 

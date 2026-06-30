@@ -11,10 +11,10 @@ TRN lookup and activation via the **Teacher Record Service (TRS) API**.
 This document is the deep dive on the OIDC protocol, token lifecycle, TRN
 activation, and sign-out. For the registration-journey view of authentication
 (user provisioning, session expiry, the sign-in button in the wizard) see
-[`docs/registration/authentication.md`](../registration/authentication.md).
+[`registration/authentication.md`](../registration/authentication.md).
 
 For a listing of all external integrations see
-[`docs/integrations/README.md`](./README.md).
+[`integrations/README.md`](./README.md).
 
 ## 2. Architecture overview
 
@@ -194,8 +194,8 @@ do not participate in OIDC logout).
 
 ## 12. Related docs
 
-- [`docs/registration/authentication.md`](../registration/authentication.md) —
+- [`registration/authentication.md`](../registration/authentication.md) —
   registration-journey view (user provisioning, session expiry, TRN acquisition
   from the participant's perspective).
-- [`docs/integrations/README.md`](./README.md) — full integration index.
+- [`integrations/README.md`](./README.md) — full integration index.
 

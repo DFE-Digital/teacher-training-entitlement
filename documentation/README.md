@@ -55,6 +55,12 @@ This directory is organised by domain.
 - [`govuk-notify.md`](integrations/govuk-notify.md) — email notifications via single template
 - [`govuk-gias.md`](integrations/govuk-gias.md) — daily school data import from Azure edubase
 
+## Data model
+
+- [`data.md`](data.md) — data dictionary, key relationships, links to auto-generated ERD
+- [`domain-model.md`](domain-model.md) — auto-generated Mermaid entity-relationship diagram (run `bundle exec mermaid_erd` to refresh)
+- [`npq_data_model.md`](npq_data_model.md) — original NPQ-centric narrative (historical reference)
+
 ## Remaining legacy files (not restructured)
 
 - [`content_editors/`](content_editors/)

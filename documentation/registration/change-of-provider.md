@@ -211,5 +211,4 @@ email on record.
 - [`overview.md`](./overview.md) — registration domain map.
 - [`authentication.md`](./authentication.md) — sign-in and `User` provisioning.
 - [`application-submission.md`](./application-submission.md) — how the `Application` and its first `LeadProvider` are created.
-- [`docs/data_model.md`](../data_model.md) — `Application`, `ApplicationLeadProvider`, `LeadProvider`, `ApplicationEvent` relationships.
-- `docs/admin/applications.md` *(forthcoming)* — the admin-side equivalent (DfE-initiated provider changes and reverting `accepted` applications).
+- [`data_model.md`](../data_model.md) — `Application`, `ApplicationLeadProvider`, `LeadProvider`, `ApplicationEvent` relationships.

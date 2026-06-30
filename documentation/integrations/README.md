@@ -36,8 +36,6 @@ tracked via the Notify API for delivery status.
 **What the detail page covers:** template ID, personalisation fields,
 send-email lifecycle, idempotency guarantees, and troubleshooting failed sends.
 
-**Legacy source:** [`docs/sending_emails.md`](../sending_emails.md)
-
 ---
 
 ## [GIAS (Get Information About Schools)](./govuk-gias.md)

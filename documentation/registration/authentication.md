@@ -9,8 +9,8 @@ for application acceptance to ask TRS for one.
 
 This is the registration-journey view. The deep dive on the GOV.UK One Login /
 TRS integration lives in
-[`docs/integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
-(forthcoming).
+[`integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
+.
 
 ## Sign-in
 
@@ -169,7 +169,7 @@ to ride out transient Teacher Auth blips without losing the token.
 | `TRS_API_URL`                | Base URL for `TeacherAuth::ActivateTrn` (TRS activate) |
 
 The full table — including local-dev fixtures and key vault mapping — is in
-[`docs/integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
+[`integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
 (forthcoming).
 
 ## Failure modes
@@ -187,10 +187,10 @@ token refresh or TRN polling.
 
 ## Related docs
 
-- [`docs/registration/overview.md`](./overview.md) — registration domain map.
-- `docs/registration/application-submission.md` *(forthcoming)* — wizard, forms,
+- [`registration/overview.md`](./overview.md) — registration domain map.
+- [`application-submission.md`](application-submission.md) — wizard, forms,
   and how `FundingEligibility` is invoked.
-- `docs/registration/change-of-provider.md` *(forthcoming)* — change-of-provider.
-- [`docs/integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
-  *(forthcoming)* — Teacher Auth + TRS deep dive (replaces `docs/trn.md`).
+- [`change-of-provider.md`](change-of-provider.md) — change-of-provider.
+- [`integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
+  — Teacher Auth + TRS deep dive.
 

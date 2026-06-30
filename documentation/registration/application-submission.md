@@ -122,7 +122,7 @@ end
 What matters from outside:
 
 - The course is anchored via `CourseCohort.find_by!(course:, cohort: Cohort.current)`
-   — never directly to `Course`. See [`docs/data_model.md`](../data_model.md).
+   — never directly to `Course`. See [`data_model.md`](../data_model.md).
 - The chosen `LeadProvider` is recorded as a current `ApplicationLeadProvider`.
   The list of available providers is `LeadProvider.for(course:)`
   (`app/models/lead_provider.rb`) — driven by which LPs are joined to the
@@ -151,7 +151,7 @@ funding.previously_funded?                   # prior accepted, eligible-for-fund
 ```
 
 Full rules and downstream effects (accept, declarations) live in
-[`docs/funding.md`](../funding.md).
+[`funding.md`](../funding.md).
 
 ## Status lifecycle (pending → acceptance)
 
@@ -191,6 +191,6 @@ submitted application becomes visible at `/applications/<ecf_id>`.
 - [`overview.md`](./overview.md) — registration domain map.
 - [`authentication.md`](./authentication.md) — sign-in and how a `User` is provisioned before the wizard.
 - `change-of-provider.md` *(forthcoming)* — change-of-provider flow (participant action after submission; guarded by `Application#can_change_provider?`).
-- [`docs/funding.md`](../funding.md) — `FundingEligibility` status codes and downstream effect on declarations.
-- [`docs/data_model.md`](../data_model.md) — `Application`, `CourseCohort`, `LeadProvider` relationships.
+- [`funding.md`](../funding.md) — `FundingEligibility` status codes and downstream effect on declarations.
 
+  - [`data_model.md`](../data_model.md) — `Application`, `CourseCohort`, `LeadProvider` relationships.

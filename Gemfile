@@ -74,6 +74,7 @@ group :development, :test do
   gem "rswag-specs"
   gem "rubocop-govuk"
   gem "scss_lint-govuk"
+  gem "mermaid_erd"
   gem "simplecov", require: false
 end
 
