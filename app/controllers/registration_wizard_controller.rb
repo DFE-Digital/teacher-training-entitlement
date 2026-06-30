@@ -8,7 +8,7 @@ class RegistrationWizardController < PublicPagesController
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
 
-  helper_method :course
+  helper_method :course, :course_cohort
 
   def show
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
@@ -104,8 +104,9 @@ private
 
   def check_duplicate_applications
     return unless @wizard.current_step.to_s == "course_start_date"
+    return unless course_cohort
 
-    active_applications = current_user.active_applications_for(course:, cohort: Cohort.current)
+    active_applications = current_user.applications.active_applications.where(course_cohort:)
     return if active_applications.empty?
 
     flash[:alert] = {
@@ -140,5 +141,9 @@ private
 
   def course
     @course ||= Course.reception
+  end
+
+  def course_cohort
+    @course_cohort ||= CourseCohort.next_open_for(course:)
   end
 end

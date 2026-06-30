@@ -1,6 +1,6 @@
 <h1 class="govuk-heading-xl"><%= t("helpers.title.registration_wizard.course_start_date") %></h1>
 
-<p class="govuk-body"><%= t("helpers.title.registration_wizard.course_start_date_sub", date: application_course_start_date) %>.</p>
+<p class="govuk-body"><%= t("helpers.title.registration_wizard.course_start_date_sub", date: @form.application_course_start_date) %>.</p>
 
 <%=
   render(

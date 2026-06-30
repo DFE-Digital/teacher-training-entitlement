@@ -343,7 +343,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     click_button "Continue"
     expect(page).to have_css(".govuk-error-message", text: "Choose a cohort")
 
-    choose future_cohort.start_year.to_s, visible: :all
+    choose future_cohort.name, visible: :all
     click_button "Continue"
 
     within(".govuk-summary-list__row", text: "Schedule cohort") do |row|

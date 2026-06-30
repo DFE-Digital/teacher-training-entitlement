@@ -20,20 +20,26 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
         current_user: create(:user),
       )
     end
+    let(:lead_provider_id) { nil }
 
     before do
       subject.wizard = wizard
     end
 
+    subject { described_class.new(lead_provider_id:) }
+
     it { is_expected.to validate_presence_of(:lead_provider_id) }
 
-    it "lead provider must exist" do
-      subject.lead_provider_id = 0
-      subject.valid?
-      expect(subject.errors[:lead_provider_id]).to be_present
-      subject.lead_provider_id = lead_provider.id
-      subject.valid?
-      expect(subject.errors[:lead_provider_id]).to be_blank
+    context "No lead provider" do
+      let(:lead_provider_id) { 0 }
+
+      it { is_expected.to have_error(:lead_provider_id) }
+    end
+
+    context "With lead provider" do
+      let(:lead_provider_id) { lead_provider.id }
+
+      it { is_expected.not_to have_error(:lead_provider_id) }
     end
   end
 
@@ -53,7 +59,8 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
-    let(:expected_providers) { LeadProvider.for(course:).alphabetical }
+    let(:course_cohort) { CourseCohort.next_open_for(course:) }
+    let(:expected_providers) { course_cohort.lead_providers.alphabetical }
 
     before do
       form.wizard = RegistrationWizard.new(

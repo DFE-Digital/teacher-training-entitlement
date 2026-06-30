@@ -4,10 +4,10 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   subject { render_inline described_class.new(record: application) }
 
   let(:application) { create(:application) }
-  let(:time_1) { Time.zone.local(2025, 1, 1, 13, 0, 0) }
-  let(:time_2) { Time.zone.local(2025, 1, 1, 14, 0, 0) }
-  let(:time_3) { Time.zone.local(2025, 1, 1, 15, 0, 0) }
-  let(:time_4) { Time.zone.local(2025, 1, 1, 16, 0, 0) }
+  let(:time_1) { Time.zone.local(2025, 3, 1, 13, 0, 0) }
+  let(:time_2) { Time.zone.local(2025, 3, 1, 14, 0, 0) }
+  let(:time_3) { Time.zone.local(2025, 3, 1, 15, 0, 0) }
+  let(:time_4) { Time.zone.local(2025, 3, 1, 16, 0, 0) }
   let(:cohort) { create(:cohort, start_year: 2024) }
   let(:older_cohort) { create(:cohort, start_year: 2023) }
   let(:whodunnit) { "AdminUser 1" }
@@ -46,7 +46,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     it "shows the date of each change" do
-      expect(subject).to have_css(".moj-timeline__byline", text: "by some user, 1 Jan 2025 2:00pm")
+      expect(subject).to have_css(".moj-timeline__byline", text: "by some user, 1 Mar 2025 2:00pm")
     end
 
     context "when the user is an Admin" do
@@ -143,7 +143,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
 
     it "shows who made the change using the whodunnit string and the date of the change" do
       expect(subject).to have_text("Notes updated")
-      expect(subject).to have_text("by #{whodunnit}, 1 Jan 2025 4:00pm")
+      expect(subject).to have_text("by #{whodunnit}, 1 Mar 2025 4:00pm")
     end
 
     it "renders the note with a details component" do

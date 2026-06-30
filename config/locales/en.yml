@@ -500,6 +500,8 @@ en:
               schedule_not_found: There is no schedule for the current course in the
                 specified cohort
               declarations_present: Cannot change cohort for an application with declarations
+            course_cohort:
+              not_found: Cannot find course cohort for give new cohort/course
             application:
               <<: *application
             course_cohort:

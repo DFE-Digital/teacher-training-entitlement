@@ -8,7 +8,7 @@ class HandleSubmissionForStore
   def call
     ActiveRecord::Base.transaction do
       @application = user.applications.create!(
-        course_cohort: CourseCohort.find_by!(course:, cohort: Cohort.current),
+        course_cohort:,
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"])],
         institution: (institution_from_store if inside_catchment?),
         ukprn:,
@@ -53,7 +53,8 @@ private
     @query_store ||= RegistrationQueryStore.new(store:)
   end
 
-  delegate :inside_catchment?,
+  delegate :course_cohort,
+           :inside_catchment?,
            to: :query_store
 
   def primary_establishment

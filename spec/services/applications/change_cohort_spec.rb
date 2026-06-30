@@ -3,20 +3,23 @@
 require "rails_helper"
 
 RSpec.describe Applications::ChangeCohort, type: :service do
-  subject(:service) { described_class.new(application:, new_cohort:) }
-
-  let(:cohort_2021) { create(:cohort, start_year: 2021) }
-  let(:course_cohort) { create(:course_cohort, cohort: cohort_2021) }
+  let(:override_declarations_check) { false }
   let(:error_message_path) { "activemodel.errors.models.applications/change_cohort.attributes.base" }
-  let(:new_cohort) { create(:cohort, start_year: 2025) }
-  let(:new_course_cohort) { create(:course_cohort, cohort: new_cohort) }
+  let(:current_cohort) { create(:cohort, start_year: 2025) }
+  let(:new_cohort) { current_cohort }
+  let(:course_cohort) { create(:course_cohort, cohort: current_cohort) }
   let(:application) { create(:application, course_cohort:) }
 
-  before { subject.call }
+  subject(:service) { described_class.new(application:, new_cohort:, override_declarations_check:) }
+
+  before do
+    create(:course_cohort, cohort: new_cohort)
+    subject.call
+  end
 
   describe "validation" do
-    context "when the new cohort start_year is different to the current cohort start year" do
-      let(:new_cohort) { application.cohort }
+    context "when the new cohort start_year is the same" do
+      let(:new_cohort) { create(:cohort, start_year: 2025) }
 
       it do
         expect(subject).not_to be_valid
@@ -25,12 +28,15 @@ RSpec.describe Applications::ChangeCohort, type: :service do
     end
 
     context "when the new cohort start_year is different" do
+      let(:new_cohort) { create(:cohort, start_year: 2026) }
+
       it do
         expect(subject.errors).to be_blank
       end
     end
 
     context "when the application has declarations" do
+      let(:new_cohort) { create(:cohort, start_year: 2026) }
       let(:application) { create(:application, :with_declaration, course_cohort:) }
 
       it do
@@ -39,11 +45,11 @@ RSpec.describe Applications::ChangeCohort, type: :service do
       end
 
       context "when override_declarations_check is true" do
-        subject(:service) { described_class.new(application:, new_cohort:, override_declarations_check: true) }
+        let(:override_declarations_check) { true }
 
-        before { application.course_cohort = course_cohort }
-
-        it { is_expected.to be_valid }
+        it do
+          expect(application.reload.course_cohort.cohort).to eq(new_cohort)
+        end
       end
     end
   end

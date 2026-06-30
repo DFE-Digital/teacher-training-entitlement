@@ -6,9 +6,8 @@ RSpec.describe Admin::Applications::ChangeCohortForm, type: :model do
   subject(:service) { described_class.new(application:, course_cohort_id:) }
 
   let(:application) { create(:application, course_cohort:) }
-  let(:course_cohort) { create(:course_cohort, cohort: cohort_2021) }
+  let(:course_cohort) { create(:course_cohort, cohort: create(:cohort, start_year: 2021)) }
   let(:course) { course_cohort.course }
-  let(:cohort_2021) { create(:cohort, start_year: 2021) }
   let(:new_cohort) { create(:cohort, start_year: 2025) }
   let(:new_course_cohort) { create(:course_cohort, course:, cohort: new_cohort) }
   let(:course_cohort_id) { new_course_cohort.id }
@@ -22,11 +21,13 @@ RSpec.describe Admin::Applications::ChangeCohortForm, type: :model do
     let(:cohort_2023) { create(:cohort, start_year: 2023) }
     let(:cohort_2024) { create(:cohort, start_year: 2024) }
 
-    let!(:cc_2022) { create(:course_cohort, course:, cohort: cohort_2022) }
-    let!(:cc_2023) { create(:course_cohort, course:, cohort: cohort_2023) }
+    before do
+      create(:course_cohort, course:, cohort: cohort_2022)
+      create(:course_cohort, course:, cohort: cohort_2023)
+    end
 
     it "includes all cohorts except the application's current cohort" do
-      expect(service.course_cohort_options).to eq [cc_2022, cc_2023, new_course_cohort]
+      expect(service.course_cohort_options.map(&:id).sort).to eq(course.course_cohorts.map(&:id).excluding(application.course_cohort_id).sort)
     end
   end
 end

@@ -103,13 +103,6 @@ class User < ApplicationRecord
     update!(refresh_token: nil, refresh_token_updated_at: nil)
   end
 
-  def active_applications_for(course:, cohort:)
-    applications
-      .active_applications
-      .joins(:course_cohort)
-      .where(course_cohorts: { course_id: course.id, cohort_id: cohort.id })
-  end
-
 private
 
   def change_unsubscribe_key_on_update_email_status

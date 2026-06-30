@@ -296,7 +296,7 @@ module ValidTestDataGenerators
 
       attrs = {
         start_year: cohort_year,
-        description: "#{cohort_year} #{registration_starts_at.strftime('%B')}",
+        description: "#{registration_starts_at.strftime('%B')} #{cohort_year}",
         registration_starts_at:,
         funding_cap: true,
       }

@@ -23,6 +23,7 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
       next_step_path: "check-answers",
       current_step: :teacher_catchment,
       course: course_stub,
+      query_store: OpenStruct.new(course: course_stub, course_cohort: course_cohort_stub),
       store: store_stub,
       answers: answers_stub,
     )
@@ -33,6 +34,14 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
     OpenStruct.new(
       identifier: "the-course",
       name: "The course",
+      next_cohort_start_date: "October 2026",
+    )
+  end
+
+  let(:course_cohort_stub) do
+    OpenStruct.new(
+      name: "October 2026",
+      lead_providers: LeadProvider.none,
     )
   end
 
@@ -75,7 +84,9 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
     assign(:wizard, wizard_stub)
     assign(:form, form_stub)
     course = course_stub
+    course_cohort = course_cohort_stub
     view.define_singleton_method(:course) { course }
+    view.define_singleton_method(:course_cohort) { course_cohort }
     allow(view).to receive_messages(current_user: user_stub, registration_wizard_form_url: "/registration/test")
   end
 

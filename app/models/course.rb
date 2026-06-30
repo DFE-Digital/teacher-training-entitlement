@@ -16,9 +16,8 @@ class Course < ApplicationRecord
   # IDENTIFIERS = %w[npd-excellence-in-reception-teaching].freeze
 
   def self.reception
-    # Change this once we have sign-off from lead providers to change the identifier
-    # find_by(identifier: "npd-excellence-in-reception-teaching")
-    find_by(identifier: "tte-early-years")
+    find_by(identifier: "npd-excellence-in-reception-teaching") ||
+      find_by(identifier: "tte-early-years")
   end
 
   def rebranded_alternative_courses

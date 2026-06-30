@@ -13,20 +13,6 @@ RSpec.describe LeadProvider do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
   end
 
-  describe "#for" do
-    subject { described_class.for(course:).map(&:name) }
-
-    let(:course) { create(:course, identifier: course_identifier) }
-
-    context "with course npq-headship" do
-      let(:course_identifier) { "npq-headship" }
-
-      it "returns expected lead providers" do
-        expect(subject).to eq(LeadProvider.pluck(:name))
-      end
-    end
-  end
-
   describe "#next_output_fee_statement" do
     let(:cohort) { create(:cohort, :current) }
     let(:lead_provider) { next_output_fee_statement.lead_provider }
