@@ -83,7 +83,12 @@ class RegistrationQueryStore
   end
 
   def course_cohort
-    @course_cohort ||= CourseCohort.next_open_for(course:)
+    if store["course_cohort_id"].nil?
+      @course_cohort = CourseCohort.next_open_for(course:)
+      store["course_cohort_id"] = @course_cohort.id
+    end
+
+    @course_cohort ||= CourseCohort.find_by(id: store["course_cohort_id"])
   end
 
   def lead_provider
