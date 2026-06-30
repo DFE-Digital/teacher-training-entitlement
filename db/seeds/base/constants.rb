@@ -11,7 +11,7 @@ LEAD_PROVIDER_CONFIG = {
   },
   "Church of England" => {
     token: "coe-token",
-    url: "https://www.nse.org.uk",
+    url: "https://www.nse.org.uk/npd/excellence-in-reception-teaching",
     hint: nil,
   },
   "University College London (UCL) Institute of Education" => {
