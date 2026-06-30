@@ -150,7 +150,7 @@ graph TD
 - [Authentication flow](./authentication.md) — how admins sign in and how sessions work
 - [Applications management](./applications.md) — detailed application lifecycle and admin capabilities
 - [Change of provider](../registration/change-of-provider.md) — participant-side provider changes (admin-side equivalent)
-- [Legacy admin docs](../admins.md) — predecessor documentation (still accurate for admin account management basics)
+
 
 ## Environment-specific features
 

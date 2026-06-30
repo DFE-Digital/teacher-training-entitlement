@@ -426,6 +426,6 @@ make production disable-maintenance
 
 - [Deployment overview](overview.md) — pipeline, container runtime, scaling, AKS access
 - [Environments](environments.md) — permanent envs, state storage, Key Vaults
-- [Maintenance mode](../maintenance_mode.md) — fail-over to static page
-- [Disaster recovery](../disaster_recovery.md) — backup and restore
-- [Azure Key Vault](../azure-keyvault.md) — managing secrets per environment
+- [Maintenance mode](maintenance-mode.md) — fail-over to static page
+- [Disaster recovery](disaster-recovery.md) — backup and restore
+- [Azure access](../development/azure-access.md) — Azure CLI, PIM, and Konduit DB tunnels

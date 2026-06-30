@@ -18,7 +18,7 @@ Versions are pinned in [`.tool-versions`](../../.tool-versions):
 - **Terraform** 1.14.5 — only if working on infrastructure
 - **kubectl** 1.29.0 — only if working on infrastructure
 
-See [Azure access](../connecting-to-azure.md) for infra setup.
+See [Azure access](azure-access.md) for infra setup.
 
 ---
 
@@ -63,7 +63,7 @@ docker compose run -e RAILS_ENV=test web bundle exec rake parallel:spec
 ```
 
 The `ops` service is scaled to 0 by default. Start it manually for `az`,
-`kubectl`, or konduit tasks (see [Azure access](../connecting-to-azure.md)):
+`kubectl`, or konduit tasks (see [Azure access](azure-access.md)):
 
 ```bash
 docker compose run ops

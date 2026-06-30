@@ -203,7 +203,7 @@ Two recurring patterns produce alerts that turn out to be benign.
 
 Deployments that touch the ingress, DNS, or SSL certificate can briefly make
 the apex or `/healthcheck.json` unreachable. The service runs in maintenance
-mode during planned downtime (see [Maintenance mode](../maintenance_mode.md))
+mode during planned downtime (see [Maintenance mode](../deployment/maintenance-mode.md))
 to suppress participant-facing errors — but **StatusCake is not paused
 automatically**.
 
@@ -248,4 +248,4 @@ treat it as a real outage and investigate the renewal runbook.
 
 - [Monitoring overview](./overview.md) — top-level page introducing all monitoring components
 - [Logging](./logging.md) — log aggregation with Logit/ELK (in-cluster, complementary to StatusCake)
-- [Maintenance mode](../maintenance_mode.md) — pausing the service during planned downtime
+- [Maintenance mode](../deployment/maintenance-mode.md) — pausing the service during planned downtime

@@ -187,7 +187,7 @@ TF_VAR_send_traffic_to_maintenance_page=true make staging terraform-apply
 | `mode`        | `enable`, `disable`     | Enable or disable maintenance |
 
 The action internally invokes `failover.sh` / `failback.sh`. This is the same workflow
-referenced in the [disaster recovery procedure](../disaster_recovery.md).
+referenced in the [disaster recovery procedure](disaster-recovery.md).
 
 ---
 
@@ -198,7 +198,7 @@ referenced in the [disaster recovery procedure](../disaster_recovery.md).
 | Upstream provider has intermittent issues          | Enable soft banner                            |
 | Planned downtime                                   | Enable hard maintenance                       |
 | Database restore in progress                       | Enable hard maintenance (see                  |
-|                                                    | [disaster recovery](../disaster_recovery.md)) |
+|                                                    | [disaster recovery](disaster-recovery.md)) |
 | Checking the app is healthy behind the static page | Temp URL (auto-created)                       |
 | kubectl access unavailable                         | Terraform toggle                              |
 | Prefer GitHub UI over command line                 | GitHub Action workflow                        |
@@ -208,4 +208,4 @@ referenced in the [disaster recovery procedure](../disaster_recovery.md).
 - [Deployment overview](overview.md) — pipeline, scaling, AKS access
 - [Environments](environments.md) — environment details, PIM, namespaces
 - [Feature flags](../feature_flags.md) — Flipper-managed flags
-- [Disaster recovery](../disaster_recovery.md) — database restore procedure
+- [Disaster recovery](disaster-recovery.md) — database restore procedure

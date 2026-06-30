@@ -141,7 +141,7 @@ the database. Tokens are managed through the admin console.
 |---------------------------------------------|-----------------------------------------|
 | **Development**                             | `.env` file (loaded by `dotenv-rails`)  |
 | **Test**                                    | Hardcoded defaults or `.env.test`       |
-| **Review / Staging / Sandbox / Production** | [Azure Key Vault](../azure-keyvault.md) |
+| **Review / Staging / Sandbox / Production** | Azure Key Vault |
 
 Variables required locally (see `.env.template`):
 

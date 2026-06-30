@@ -198,4 +198,4 @@ do not participate in OIDC logout).
   registration-journey view (user provisioning, session expiry, TRN acquisition
   from the participant's perspective).
 - [`docs/integrations/README.md`](./README.md) — full integration index.
-- [`docs/trn.md`](../trn.md) — predecessor TRN doc (diagrams reused elsewhere).
+

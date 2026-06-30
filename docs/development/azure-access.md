@@ -195,7 +195,7 @@ az keyvault secret show \
 ```
 
 For production Key Vaults, set the production subscription and ensure PIM is
-active. Full guide: [Azure Key Vault](../azure-keyvault.md).
+active.
 
 ---
 
@@ -252,7 +252,7 @@ flowchart LR
 ## Useful links
 
 - [Teacher Services Cloud developer docs](https://github.com/DFE-Digital/teacher-services-cloud/blob/main/documentation/developer-onboarding.md)
-- [Azure Key Vault guide](../azure-keyvault.md) — managing secrets
+
 - [Deployment environments](../deployment/environments.md) — full environment reference
 - [Deployment overview](../deployment/overview.md) — pipeline, scaling, smoke tests
 - [Development overview](./overview.md) — tech stack, local setup, CI

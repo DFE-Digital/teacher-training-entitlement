@@ -197,7 +197,6 @@ Use `make <env> <target>`:
 ## Related docs
 
 - [Deployment overview](overview.md) — pipeline, container runtime, scaling.
-- [Azure Key Vault](../azure-keyvault.md) — managing secrets per environment.
-- [Connecting to Azure](../connecting-to-azure.md) — Azure setup and PIM walkthrough.
-- [Setup](../setup.md) — local development environment.
+- [Azure access](../development/azure-access.md) — Azure CLI, PIM, and Konduit DB tunnels.
+- [Local setup](../development/local-setup.md) — local development environment.
 - [Makefile](../../Makefile) — all available targets.

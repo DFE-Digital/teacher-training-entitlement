@@ -112,7 +112,7 @@ flowchart TD
 Before any restore:
 
 1. **Azure permissions**: the account needs Contributor access to the target
-   resource group. Production requires [PIM elevation](../environments.md#pim).
+   resource group. Production requires [PIM elevation](environments.md#pim).
 2. **GitHub Actions permissions**: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
    `AZURE_SUBSCRIPTION_ID` secrets on the target GitHub environment.
 3. **Maintenance mode**: Blob restore and snapshot operations require traffic
@@ -278,7 +278,7 @@ bin/konduit.sh -n cpd-production -d s189p01-cpdtte-pd-pg-snapshot \
 | BigQuery                | Yes        | Table deletion protection (`gcp_table_deletion_protection`)                              | Federated auth via GCP WIF                                   |
 | Source code             | Yes        | Git (GitHub) + ghcr.io container registry                                                | See GitHub documentation                                     |
 | Terraform state         | Yes        | Azure Storage blobs (per-environment)                                                    | See [Terraform state storage](terraform.md#state-management) |
-| Key Vault (production)  | Yes        | Purge protection enabled                                                                 | See [Azure Key Vault](../azure-keyvault.md)                  |
+| Key Vault (production)  | Yes        | Purge protection enabled                                                                 | See [Azure access](../development/azure-access.md)           |
 
 > **RPO/RTO:** Not formally documented. The daily blob backup provides an
 > effective RPO of ~24 hours; PITR within the 7-day window provides finer
@@ -328,4 +328,4 @@ verification. See [Maintenance mode](maintenance-mode.md) for full details.
 - [Environments](environments.md) — environment details, PIM, namespaces
 - [Maintenance mode](maintenance-mode.md) — ingress fail-over procedure
 - [Terraform](terraform.md) — infrastructure-as-code
-- [Azure Key Vault](../azure-keyvault.md) — secrets management
+- [Azure access](../development/azure-access.md) — Azure CLI, PIM, and Konduit DB tunnels

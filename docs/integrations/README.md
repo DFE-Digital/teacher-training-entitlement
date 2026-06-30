@@ -21,7 +21,6 @@ follow an assisted-verification path.
 **What the detail page covers:** OIDC flow, TRN acquisition via the TRS API,
 TeacherAuth middleware, and assisted-verification handling.
 
-**Legacy source:** [`docs/trn.md`](../trn.md)
 
 ---
 

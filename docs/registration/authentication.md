@@ -193,4 +193,4 @@ token refresh or TRN polling.
 - `docs/registration/change-of-provider.md` *(forthcoming)* — change-of-provider.
 - [`docs/integrations/govuk-one-login.md`](../integrations/govuk-one-login.md)
   *(forthcoming)* — Teacher Auth + TRS deep dive (replaces `docs/trn.md`).
-- [`docs/trn.md`](../trn.md) — predecessor TRN doc; diagram reused above.
+

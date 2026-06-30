@@ -55,7 +55,7 @@ The database is seeded with `db:seed:replant` after deployment.
 | Sandbox     | `sandbox.teacher-training-entitlement.education.gov.uk` | production  | Yes          | External (lead providers) |
 | Production  | `teacher-training-entitlement.education.gov.uk`         | production  | Yes          | Real users                |
 
-→ [Full environments reference](../environments.md)
+→ [Full environments reference](environments.md)
 
 ## Deployment triggers
 
@@ -207,8 +207,8 @@ wired into CI. Run manually or re-enable per environment.)
 
 ## Related docs
 
-- [Environments](../environments.md) — permanent environments, HTTP basic auth
+- [Environments](environments.md) — permanent environments, HTTP basic auth
 - [Terraform](terraform.md) — infrastructure-as-code deep dive
 - [Maintenance mode](maintenance-mode.md) — fail-over to maintenance page
 - [Disaster recovery](disaster-recovery.md) — backup and restore procedures
-- [Setup](../setup.md) — local development environment
+- [Local setup](../development/local-setup.md) — local development environment

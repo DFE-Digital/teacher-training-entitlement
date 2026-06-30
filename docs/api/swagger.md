@@ -172,6 +172,6 @@ special permission handling is needed.
 - [`overview.md`](./overview.md) — Lead Provider API surface
 - [`endpoints.md`](./endpoints.md) — full endpoint reference
 - [`authentication.md`](./authentication.md) — bearer token flow
-- [Legacy `../swagger.md`](../swagger.md) — predecessor doc; the OpenAPI 3.0.1
+
   / `rswag` / one-version-at-a-time narrative has been folded into this page,
   the multi-version commentary there is stale.

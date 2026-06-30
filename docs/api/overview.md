@@ -200,6 +200,6 @@ workflow, schemas and how to add new endpoints are in
 - [`authentication.md`](./authentication.md) — bearer token details
 - [`endpoints.md`](./endpoints.md) — full endpoint reference
 - [`swagger.md`](./swagger.md) — OpenAPI workflow
-- [Legacy `docs/swagger.md`](../swagger.md) — predecessor doc (kept for history)
+
 - [Data model](../data_model.md) — entities the API exposes
 - [Public LP guidance site](/api/guidance) — rendered at runtime

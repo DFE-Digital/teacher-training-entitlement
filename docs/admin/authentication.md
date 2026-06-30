@@ -192,4 +192,4 @@ Neither can an admin delete themselves or another super admin via the console
 
 - [Admin console overview](./overview.md) — who uses the console, permissions, navigation
 - [Applications management](./applications.md) — detailed application lifecycle
-- [Legacy admin docs](../admins.md) — predecessor doc (still accurate for admin account management basics)
+

@@ -193,4 +193,4 @@ submitted application becomes visible at `/applications/<ecf_id>`.
 - `change-of-provider.md` *(forthcoming)* — change-of-provider flow (participant action after submission; guarded by `Application#can_change_provider?`).
 - [`docs/funding.md`](../funding.md) — `FundingEligibility` status codes and downstream effect on declarations.
 - [`docs/data_model.md`](../data_model.md) — `Application`, `CourseCohort`, `LeadProvider` relationships.
-- [`docs/how_does_tte_work.md`](../how_does_tte_work.md) — predecessor; this file supersedes its "Registration Wizard", "Forms", "The Store", "RegistrationQueryStore", "Courses", "Lead Providers" and "Funding Eligibility" sections.
+
