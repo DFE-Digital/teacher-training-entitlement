@@ -67,6 +67,7 @@ group :development, :test do
   gem "debug"
   gem "dotenv-rails"
   gem "knapsack"
+  gem "mermaid_erd"
   gem "parallel_tests"
   gem "pry"
   gem "rspec-rails"

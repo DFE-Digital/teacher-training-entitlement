@@ -338,6 +338,8 @@ GEM
       rack (>= 2.1.4.1)
     marcel (1.1.0)
     matrix (0.4.3)
+    mermaid_erd (0.1.1)
+      rails (~> 8.0)
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (6.0.6)
@@ -781,6 +783,7 @@ DEPENDENCIES
   knapsack
   listen
   mail-notify
+  mermaid_erd
   method_source
   net-imap
   net-pop

@@ -1,0 +1,17 @@
+only:
+  - Course
+  - Cohort
+  - Schedule
+  - CourseCohort
+  - CourseCohortProvider
+  - Institution
+  - School
+  - PrivateChildcareProvider
+  - LeadProvider
+  - DeliveryPartnership
+  - DeliveryPartner
+  - User
+  - ApplicationLeadProvider
+  - Application
+  - ApplicationEvent
+  - Declaration
