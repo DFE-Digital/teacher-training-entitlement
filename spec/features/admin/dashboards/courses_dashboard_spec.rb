@@ -13,8 +13,8 @@ RSpec.feature "Viewing the courses dashboard", type: :feature do
   before do
     sign_in_as(create(:admin))
 
-    create_list(:application, 2, course: test_course, cohort: current_cohort)
-    create(:application, course: test_course, cohort: previous_cohort)
+    create_list(:application, 2, :for_cohort_starting_on, course: test_course, registration_starts_at: current_cohort.registration_starts_at)
+    create(:application, :for_cohort_starting_on, course: test_course, registration_starts_at: previous_cohort.registration_starts_at)
   end
 
   scenario "viewing the courses dashboard table" do

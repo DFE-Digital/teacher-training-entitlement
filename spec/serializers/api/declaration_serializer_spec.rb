@@ -9,7 +9,7 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
            secondary_delivery_partner:)
   end
 
-  let(:application) { create(:application, :accepted) }
+  let(:application) { create(:application, :accepted, :for_cohort_starting_on, registration_starts_at: Date.new(2021, 4, 1)) }
   let(:cohort) { application.cohort }
   let(:lead_provider) { application.lead_provider }
   let(:delivery_partner) do

@@ -76,9 +76,9 @@ RSpec.describe Applications::Reject, type: :model do
 
     context "when user has other pending applications" do
       let(:user) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
-      let(:application) { create(:application, :pending, user:) }
+      let(:application) { create(:application, :pending, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 5, 1)) }
 
-      before { create(:application, :pending, user:) }
+      before { create(:application, :pending, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1)) }
 
       it "does not clear the refresh token" do
         service.call

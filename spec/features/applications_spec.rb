@@ -36,7 +36,7 @@ RSpec.feature "Applications", type: :feature do
 
   describe "withdrawn application" do
     let(:user) { create(:user) }
-    let!(:application) { create(:application, :withdrawn, user:) }
+    let!(:application) { create(:application, :withdrawn, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1)) }
 
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
@@ -57,7 +57,7 @@ RSpec.feature "Applications", type: :feature do
     end
 
     context "when user also has a newer active application" do
-      let!(:active_application) { create(:application, :accepted, user:, created_at: 1.day.from_now) }
+      let!(:active_application) { create(:application, :accepted, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 5, 1), created_at: 1.day.from_now) }
 
       scenario "redirects to the most recent application" do
         visit applications_path

@@ -43,7 +43,13 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource_id_key) { :ecf_id }
 
     def create_resource(**attrs)
-      create(:application, **attrs).application_lead_providers.first
+      cohort = attrs.delete(:cohort)
+
+      if cohort
+        create(:application, :for_cohort_starting_on, **attrs, registration_starts_at: cohort.registration_starts_at).application_lead_providers.first
+      else
+        create(:application, **attrs).application_lead_providers.first
+      end
     end
 
     it_behaves_like "an API index endpoint"

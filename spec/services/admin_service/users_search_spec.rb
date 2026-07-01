@@ -79,7 +79,7 @@ RSpec.describe AdminService::UsersSearch do
       let(:q) { user.full_name }
 
       before do
-        create(:application, user:)
+        create(:application, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1))
       end
 
       it "returns one result" do

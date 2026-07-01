@@ -103,8 +103,9 @@ RSpec.describe Application do
 
     context "when the cohort does not have a funding cap" do
       let(:cohort) { create(:cohort, :without_funding_cap, registration_starts_at: Date.new(2024, 5, 1)) }
+      let(:course_cohort) { create(:course_cohort, cohort:) }
 
-      subject { build(:application, :accepted, cohort:) }
+      subject { build(:application, :accepted, course_cohort:) }
 
       it "validates funded_place is nil" do
         subject.funded_place = false
@@ -247,11 +248,12 @@ RSpec.describe Application do
 
     let(:application) do
       if school
-        create(:application, cohort:, school_record: school, teacher_catchment:)
+        create(:application, course_cohort:, school_record: school, teacher_catchment:)
       else
-        create(:application, cohort:, institution: nil, teacher_catchment:, works_in_school: false)
+        create(:application, course_cohort:, institution: nil, teacher_catchment:, works_in_school: false)
       end
     end
+    let(:course_cohort) { create(:course_cohort, cohort:) }
 
     context "when the application is in the 2023 cohort or earlier" do
       let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }

@@ -117,7 +117,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   end
 
   context "when there is a change to the status field with a reason" do
-    let(:application) { create(:application, :with_declaration, :accepted) }
+    let(:application) { create(:application, :with_declaration, :accepted, :for_cohort_starting_on, registration_starts_at: Date.new(2021, 4, 1)) }
 
     before do
       ::Applications::Defer.new(application:, reason: "other", admin_user: create(:admin)).call

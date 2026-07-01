@@ -189,7 +189,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
       end
 
       context "when there're multiple application with different lead provider approval states" do
-        before { create(:application, lead_provider:, user: participant) }
+        before { create(:application, :for_cohort_starting_on, lead_provider:, user: participant, registration_starts_at: Date.new(2021, 4, 1)) }
 
         it "serializes only accepted `enrolments`" do
           expect(attributes["enrolments"].size).to eq(1)
