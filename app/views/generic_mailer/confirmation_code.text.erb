@@ -1,2 +1,11 @@
-Your confirmation code is <%= params[:code].upcase %>.
-It will expire in 10 minutes.
+Your confirmation code is: <%= params[:code].upcase %>
+
+This code will expire in 10 minutes.
+
+---
+
+[Go to NPD service admin console](<%= Rails.application.routes.url_helpers.admin_url %>)
+
+---
+
+If you did not request this code, you can safely ignore this email.

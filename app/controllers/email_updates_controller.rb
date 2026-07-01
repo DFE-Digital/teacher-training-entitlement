@@ -32,6 +32,6 @@ class EmailUpdatesController < PublicPagesController
 private
 
   def unsubscribe_link
-    "#{Rails.configuration.service_base_url}#{unsubscribe_email_updates_path(unsubscribe_key: current_user.email_updates_unsubscribe_key)}"
+    unsubscribe_email_updates_url(unsubscribe_key: current_user.email_updates_unsubscribe_key)
   end
 end
