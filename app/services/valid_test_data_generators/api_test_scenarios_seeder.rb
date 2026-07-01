@@ -248,15 +248,15 @@ module ValidTestDataGenerators
         ecf_id:,
       }
 
-      email = user_email(app_data[:email])
-      user = User.find_by(ecf_id: ecf_id) || User.find_by(email:)
+      temp_email = user_email(app_data[:email])
+      user = User.find_by(ecf_id: ecf_id) || User.find_by(email: temp_email)
 
       if user
         # Update existing user
         user.update!(attrs)
       else
         # Create new user with temporary email
-        user = User.create!(attrs.merge(email:))
+        user = User.create!(attrs.merge(email: temp_email))
       end
 
       # Update email if custom template exists for this lead provider
