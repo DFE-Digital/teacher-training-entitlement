@@ -167,6 +167,7 @@ shared:
     - description
   :application_events:
     - id
+    - type
     - application_id
     - lead_provider_id
     - event
