@@ -92,9 +92,11 @@ Tables are grouped by domain. Column types are abbreviated: `PK` (primary key),
 
 ```mermaid
 erDiagram
+  ApplicationEvent }o--|| Application : ""
   CourseCohort }o--|| Course : ""
   CourseCohort }o--|| Cohort : ""
   CourseCohort }o--|| Schedule : ""
+  CourseCohort }o--o{ CourseCohortProvider : ""
   Application }o--|| CourseCohort : ""
   Application }o--|| User : ""
   Application }o--|| Institution : ""
@@ -104,12 +106,14 @@ erDiagram
 
   ApplicationLeadProvider }o--|| Application : ""
   ApplicationLeadProvider }o--|| LeadProvider : ""
-  ApplicationEvent }o--|| Application : ""
 
-  Institution }o--o{ School : polymorphic
-  Institution }o--o{ PrivateChildcareProvider : polymorphic
-  Institution }o--o{ LocalAuthority : polymorphic
+  Institution ||--|| Institutionable : polymorphic
 ```
+
+Institutionable is one of these entities:
+- School
+- PrivateChildcareProvider
+- LocalAuthority
 
 ---
 
