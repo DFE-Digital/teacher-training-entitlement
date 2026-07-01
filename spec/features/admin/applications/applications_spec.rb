@@ -81,7 +81,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "filtering applications by year of application" do
-    cohort = create(:cohort, start_year: 2022)
+    cohort = create(:cohort, registration_starts_at: Date.new(2022, 4, 1))
     course_cohort = create(:course_cohort, cohort:)
     application = applications_in_order.last
     application.update!(course_cohort:)
@@ -326,10 +326,10 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "changing schedule cohort" do
-    future_cohort = create(:cohort, start_year: 3.years.from_now.year)
+    future_cohort = create(:cohort, registration_starts_at: 3.years.from_now.to_date.beginning_of_month)
     course_cohort = create(:course_cohort, cohort: Cohort.first)
     create(:course_cohort, course: course_cohort.course, cohort: future_cohort)
-    create(:cohort, start_year: 2.years.from_now.year)
+    create(:cohort, registration_starts_at: 2.years.from_now.to_date.beginning_of_month)
     application = create(:application, course_cohort:)
 
     visit admin_application_path(application)

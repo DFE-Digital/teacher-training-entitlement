@@ -53,7 +53,8 @@ RSpec.describe RegistrationWizardController do
 
     context "when application already submitted for course" do
       let(:course) { Course.reception || create(:course) }
-      let!(:application) { create(:application, :accepted, course:, user: current_user) }
+      let(:course_cohort) { CourseCohort.next_open_for(course:) || create(:course_cohort, course:) }
+      let!(:application) { create(:application, :accepted, course:, cohort: course_cohort.cohort, user: current_user) }
       let(:step) { nil }
 
       before do

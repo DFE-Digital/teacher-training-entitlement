@@ -63,7 +63,7 @@ class Statement < ApplicationRecord
   end
 
   def use_targeted_delivery_funding?
-    Date.new(year, month) <= Date.new(2025, 10) && cohort.start_year >= 2022
+    Date.new(year, month) <= Date.new(2025, 10) && cohort.registration_starts_at.year >= 2022
   end
 
   def past?

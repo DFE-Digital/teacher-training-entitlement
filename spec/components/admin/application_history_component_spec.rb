@@ -8,8 +8,8 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
   let(:time_2) { Time.zone.local(2025, 3, 1, 14, 0, 0) }
   let(:time_3) { Time.zone.local(2025, 3, 1, 15, 0, 0) }
   let(:time_4) { Time.zone.local(2025, 3, 1, 16, 0, 0) }
-  let(:cohort) { create(:cohort, start_year: 2024) }
-  let(:older_cohort) { create(:cohort, start_year: 2023) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
+  let(:older_cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
   let(:whodunnit) { "AdminUser 1" }
 
   before do

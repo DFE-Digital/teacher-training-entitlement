@@ -6,9 +6,9 @@ RSpec.describe Admin::Applications::ChangeCohortForm, type: :model do
   subject(:service) { described_class.new(application:, course_cohort_id:) }
 
   let(:application) { create(:application, course_cohort:) }
-  let(:course_cohort) { create(:course_cohort, cohort: create(:cohort, start_year: 2021)) }
+  let(:course_cohort) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2021, 4, 1))) }
   let(:course) { course_cohort.course }
-  let(:new_cohort) { create(:cohort, start_year: 2025) }
+  let(:new_cohort) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
   let(:new_course_cohort) { create(:course_cohort, course:, cohort: new_cohort) }
   let(:course_cohort_id) { new_course_cohort.id }
 
@@ -17,9 +17,9 @@ RSpec.describe Admin::Applications::ChangeCohortForm, type: :model do
   end
 
   describe "#cohort_options" do
-    let(:cohort_2022) { create(:cohort, start_year: 2022) }
-    let(:cohort_2023) { create(:cohort, start_year: 2023) }
-    let(:cohort_2024) { create(:cohort, start_year: 2024) }
+    let(:cohort_2022) { create(:cohort, registration_starts_at: Date.new(2022, 4, 1)) }
+    let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+    let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
 
     before do
       create(:course_cohort, course:, cohort: cohort_2022)

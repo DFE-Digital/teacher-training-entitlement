@@ -16,7 +16,7 @@ RSpec.describe Schedules::Query do
   let(:sort) { nil }
 
   let(:course_cohort1) { create(:course_cohort, course: create(:course, identifier: "other")) }
-  let(:course_cohort2) { create(:course_cohort, cohort: create(:cohort, start_year: 2021, registration_starts_at: Date.new(2021, 9, 1))) }
+  let(:course_cohort2) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2021, 9, 1))) }
 
   describe "#course_cohorts" do
     before do

@@ -1,4 +1,5 @@
 class Cohort < ApplicationRecord
+  before_validation :set_start_year
   before_validation :set_identifier
 
   has_many :declarations, dependent: :restrict_with_exception
@@ -24,7 +25,6 @@ class Cohort < ApplicationRecord
   validates :registration_starts_at, presence: true
   validates :identifier, presence: true
   validate :identifier_is_unique
-  validate :registration_starts_at_matches_start_year
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
   validate :changing_funding_cap_with_dependent_applications
@@ -55,10 +55,10 @@ class Cohort < ApplicationRecord
 
 private
 
-  def registration_starts_at_matches_start_year
+  def set_start_year
     return if registration_starts_at.blank?
 
-    errors.add(:registration_starts_at, "year must match the start year") if registration_starts_at.year != start_year
+    self.start_year = registration_starts_at.year
   end
 
   def set_identifier

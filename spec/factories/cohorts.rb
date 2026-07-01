@@ -1,36 +1,27 @@
 FactoryBot.define do
   factory :cohort do
-    sequence(:start_year, 0) { |n| 2021 + n % 9 }
-    registration_starts_at { Date.new(start_year, Date.current.month - 1, 3) }
+    registration_starts_at { 1.week.ago.to_date.beginning_of_month }
     registration_ends_at { registration_starts_at.advance(months: 2) }
     funding_cap { true }
     description { registration_starts_at.strftime("%B %Y") }
     identifier { registration_starts_at.strftime("%Y-%B") }
 
     initialize_with do
-      Cohort.find_or_create_by(registration_starts_at:)
+      Cohort.find_or_initialize_by(identifier:) do |cohort|
+        cohort.assign_attributes(attributes)
+      end
     end
 
     trait :current do
-      start_year { Date.current.year }
+      registration_starts_at { 1.week.ago.to_date.beginning_of_month }
     end
 
     trait :next do
-      start_year { Date.current.year.succ }
+      registration_starts_at { 1.week.ago.to_date.beginning_of_month.next_year }
     end
 
     trait :previous do
-      start_year { Date.current.year.pred }
-    end
-
-    trait :unique do
-      sequence(:registration_starts_at, 0) do |n|
-        year = 2021 + (n / 12) % 9
-        month = (n % 12) + 1
-
-        Date.new(year, month, 3)
-      end
-      start_year { registration_starts_at.year }
+      registration_starts_at { 1.week.ago.to_date.beginning_of_month.prev_year }
     end
 
     trait :with_funding_cap do
@@ -42,7 +33,7 @@ FactoryBot.define do
     end
 
     trait :has_targeted_delivery_funding do
-      start_year { 2022 }
+      registration_starts_at { Date.new(2022, 4, 1) }
     end
   end
 end

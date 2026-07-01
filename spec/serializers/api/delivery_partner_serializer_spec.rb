@@ -11,9 +11,9 @@ RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
              cohort_23 => other_lead_provider,
            })
   end
-  let(:cohort_21) { create :cohort, start_year: 2021 }
-  let(:cohort_22) { create :cohort, start_year: 2022 }
-  let(:cohort_23) { create :cohort, start_year: 2023 }
+  let(:cohort_21) { create :cohort, registration_starts_at: Date.new(2021, 4, 1) }
+  let(:cohort_22) { create :cohort, registration_starts_at: Date.new(2022, 4, 1) }
+  let(:cohort_23) { create :cohort, registration_starts_at: Date.new(2023, 4, 1) }
 
   subject(:response) { JSON.parse(described_class.render(delivery_partner)) }
 

@@ -4,7 +4,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:admin) { create(:admin) }
   let(:bulk_operation) { create(:submit_declarations_bulk_operation, admin: admin) }
 
-  let(:cohort) { create(:cohort, start_year: 2023) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
   let(:course) { create(:course, identifier: "leadership-development") }
   let(:lead_provider) { create(:lead_provider) }
   let(:delivery_partner) { create(:delivery_partner) }

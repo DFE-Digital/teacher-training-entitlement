@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe ValidTestDataGenerators::StatementsPopulater do
   let(:lead_provider) { create(:lead_provider) }
-  let(:cohort) { create(:cohort, start_year: 2021) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2021, 4, 1)) }
 
   before { allow(Rails).to receive(:env) { environment.inquiry } }
 

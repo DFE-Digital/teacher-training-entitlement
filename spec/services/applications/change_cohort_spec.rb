@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Applications::ChangeCohort, type: :service do
   let(:override_declarations_check) { false }
   let(:error_message_path) { "activemodel.errors.models.applications/change_cohort.attributes.base" }
-  let(:current_cohort) { create(:cohort, start_year: 2025) }
+  let(:current_cohort) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
   let(:new_cohort) { current_cohort }
   let(:course_cohort) { create(:course_cohort, cohort: current_cohort) }
   let(:application) { create(:application, course_cohort:) }
@@ -19,7 +19,7 @@ RSpec.describe Applications::ChangeCohort, type: :service do
 
   describe "validation" do
     context "when the new cohort start_year is the same" do
-      let(:new_cohort) { create(:cohort, start_year: 2025) }
+      let(:new_cohort) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
 
       it do
         expect(subject).not_to be_valid
@@ -28,7 +28,7 @@ RSpec.describe Applications::ChangeCohort, type: :service do
     end
 
     context "when the new cohort start_year is different" do
-      let(:new_cohort) { create(:cohort, start_year: 2026) }
+      let(:new_cohort) { create(:cohort, registration_starts_at: Date.new(2026, 4, 1)) }
 
       it do
         expect(subject.errors).to be_blank
@@ -36,7 +36,7 @@ RSpec.describe Applications::ChangeCohort, type: :service do
     end
 
     context "when the application has declarations" do
-      let(:new_cohort) { create(:cohort, start_year: 2026) }
+      let(:new_cohort) { create(:cohort, registration_starts_at: Date.new(2026, 4, 1)) }
       let(:application) { create(:application, :with_declaration, course_cohort:) }
 
       it do

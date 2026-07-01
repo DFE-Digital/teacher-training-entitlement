@@ -11,12 +11,20 @@ FactoryBot.define do
       lead_provider { nil }
       course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
       cohort do
-        existing = user.persisted? &&
-          user.applications.not_rejected
-            .joins(:course_cohort)
-            .merge(CourseCohort.where(course:))
-            .exists?
-        existing ? create(:cohort, :unique) : create(:cohort, :current)
+        existing_cohorts = if user.persisted?
+                             user.applications.not_rejected
+                               .joins(:course_cohort)
+                               .merge(CourseCohort.where(course:))
+                               .map(&:cohort)
+                           else
+                             []
+                           end
+
+        if existing_cohorts.any?
+          create(:cohort, registration_starts_at: existing_cohorts.map(&:registration_starts_at).max.next_month)
+        else
+          create(:cohort, :current)
+        end
       end
       schedule { CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule) }
     end
@@ -115,7 +123,6 @@ FactoryBot.define do
           create(
             :cohort,
             :with_funding_cap,
-            start_year: previous_registration_starts_at.year,
             registration_starts_at: previous_registration_starts_at,
           )
 

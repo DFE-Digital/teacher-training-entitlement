@@ -52,9 +52,9 @@ RSpec.describe Applications::Query do
       end
 
       context "when filtering by cohort" do
-        let(:cohort_2023) { create(:cohort, start_year: 2023) }
-        let(:cohort_2024) { create(:cohort, start_year: 2024) }
-        let(:cohort_2025) { create(:cohort, start_year: 2025) }
+        let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+        let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
+        let(:cohort_2025) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
 
         context "when 2024" do
           let(:cohort_start_years) { "2024" }

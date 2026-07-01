@@ -63,8 +63,8 @@ RSpec.describe CourseCohort do
     end
 
     def create_cohort(registration_starts_at, registration_ends_at: registration_starts_at.advance(months: 2))
-      Cohort.create!(
-        start_year: registration_starts_at.year,
+      create(
+        :cohort,
         registration_starts_at:,
         registration_ends_at:,
         funding_cap: true,

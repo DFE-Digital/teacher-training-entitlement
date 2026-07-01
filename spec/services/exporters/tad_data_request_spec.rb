@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Exporters::TadDataRequest do
   let(:file) { Tempfile.new }
   let(:course) { create(:course, name: "Some course") }
-  let(:cohort) { create(:cohort, start_year: 2023) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
   let(:schedule) { create(:schedule, cohort: cohort, course_group: course.course_group, name: "Schedule Autumn 2023") }
   let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:) }
   let(:user) { create(:user, full_name: "John Doe", email: "john@example.com") }

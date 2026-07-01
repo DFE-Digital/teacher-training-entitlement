@@ -70,7 +70,7 @@ RSpec.describe Exporters::Contracts do
   context "when there are statements that have different values for the same cohort, lead provider and course" do
     subject { described_class.new(cohort: older_cohort).call }
 
-    let(:older_cohort) { create(:cohort, start_year: 2022) }
+    let(:older_cohort) { create(:cohort, registration_starts_at: Date.new(2022, 4, 1)) }
     let(:older_statement_output_fee_true) { create(:statement, cohort: older_cohort, lead_provider:, output_fee: true, for_date: Date.new(2022, 1, 1)) }
     let(:older_statement_output_fee_false) { create(:statement, cohort: older_cohort, lead_provider:, output_fee: false, for_date: Date.new(2022, 2, 1)) }
     let(:latest_statement_output_fee_true) { create(:statement, cohort: older_cohort, lead_provider:, output_fee: true, for_date: Date.new(2022, 6, 1)) }
