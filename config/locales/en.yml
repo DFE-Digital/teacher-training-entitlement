@@ -848,9 +848,10 @@ en:
       funded_place: After you have been withdrawn, you will not be eligible for further funding.
       register_again: You can register for the course again, but if previously funded, no further funding will be available.
   withdrawal_details:
-      submit_new_registration_html: "If you want to take this course again, you need to %{link}."
+      submit_new_registration_html: "If you want to start this course again, you need to %{link}."
       submit_new_registration_link: "submit a new registration"
       date_withdrawn: "Date withdrawn: %{withdrawn_at}"
+      funding_note: "Please note: if your course was previously funded, you will not be eligible for funding again."
   course_start_details:
     accepted: When we receive confirmation from your provider that you have completed the course
       you will be able to download your certificate.
