@@ -6,13 +6,12 @@ RSpec.describe Statements::MarkAsPaidJob, type: :job do
   subject(:job) { described_class.new.perform(statement_id:) }
 
   before do
-    allow(Statements::MarkAsPaid).to receive(:new).with(statement).and_return(service)
-    allow(service).to receive(:mark).and_return(true)
+    allow(Statements::MarkAsPaid).to receive(:new).and_return(service)
     allow(Rails.logger).to receive(:warn)
     allow(Sentry).to receive(:capture_exception).and_return(true)
   end
 
-  let(:service) { Statements::MarkAsPaid.new(statement) }
+  let(:service) { instance_double(Statements::MarkAsPaid, mark: true) }
   let(:statement) { create(:statement, :payable) }
   let(:statement_id) { statement.id }
 
@@ -22,6 +21,7 @@ RSpec.describe Statements::MarkAsPaidJob, type: :job do
     context "with correct params" do
       context "when statement is payable" do
         it "calls the correct service" do
+          expect(Statements::MarkAsPaid).to have_received(:new).with(statement)
           expect(service).to have_received(:mark)
         end
       end
