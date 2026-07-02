@@ -62,4 +62,4 @@ This directory is organised by domain.
 
 ## Content editor guidance
 
-- [`content_editors/`](content_editors/)
+- [`content_editors`](content_editors/api_guidance_pages.md) - Recommendation for API content update for non-tech team members
