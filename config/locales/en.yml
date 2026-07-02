@@ -40,6 +40,7 @@ en:
     change_provider: Registration updated for %{course_name} - next steps
     deferral_notification: Notification of deferral - %{course_name}
     registration_open_notification: Registration open - %{course_name}
+    registration_interest: Registration open for Excellence in reception teaching course 
     deferral_expiring_notification: Registration about to expire - %{course_name}
     provider_rejected: Registration status updated for %{course_name} – next steps
     previous_provider: Change provider notification

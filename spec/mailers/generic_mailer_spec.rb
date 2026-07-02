@@ -286,6 +286,27 @@ RSpec.describe GenericMailer, type: :mailer do
     it_behaves_like "a mailer with redacted logs"
   end
 
+  describe "#registration_interest" do
+    let(:to) { "recipient@example.com" }
+    let(:registration_start_url) { Rails.application.routes.url_helpers.registration_wizard_show_url(:start) }
+
+    subject(:mail) { described_class.with(to:, registration_start_url:).registration_interest }
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Registration open for Excellence in reception teaching course")
+
+        body = mail.personalisation[:body]
+        expect(body).to include("The excellence in teaching reception NPD course is now open for applications.")
+        expect(body).to include("[#{registration_start_url}](#{registration_start_url})")
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
+  end
+
   describe "#deferral_expiring_notification" do
     let(:to) { "recipient@example.com" }
     let(:full_name) { "Example User" }

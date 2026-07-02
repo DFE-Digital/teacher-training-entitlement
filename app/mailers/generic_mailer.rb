@@ -31,6 +31,10 @@ class GenericMailer < ApplicationMailer
     generic_mail(subject: "mailers.registration_open_notification")
   end
 
+  def registration_interest
+    generic_mail(subject: "mailers.registration_interest")
+  end
+
   def deferral_expiring_notification
     generic_mail(subject: "mailers.deferral_expiring_notification")
   end

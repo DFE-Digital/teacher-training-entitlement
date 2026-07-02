@@ -124,8 +124,10 @@ FactoryBot.define do
           )
 
         if previous_cohort == application.cohort
+          registration_starts_at = application.cohort.registration_starts_at.prev_year
           previous_cohort = create(:cohort, :with_funding_cap,
-                                   registration_starts_at: application.cohort.registration_starts_at.prev_year)
+                                   start_year: registration_starts_at.year,
+                                   registration_starts_at:)
         end
 
         create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, user: application.user, course:, registration_starts_at: previous_cohort.registration_starts_at)
