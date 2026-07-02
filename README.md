@@ -1,6 +1,6 @@
 [![View performance data on Skylight](https://badges.skylight.io/status/iNP1HEhdtAvN.svg?token=wq0669BuHNNGNqWAGk6ko2wboMzl-DGWFl8wYXLmdsE)](https://www.skylight.io/app/applications/iNP1HEhdtAvN)
-[![Test status](https://github.com/DFE-Digital/teacher-training-entitlement/actions/workflows/rspec.yml/badge.svg)]
-[![Deployment status](https://github.com/DFE-Digital/teacher-training-entitlement/actions/workflows/deploy.yml/badge.svg)]
+![Test status](https://github.com/DFE-Digital/teacher-training-entitlement/actions/workflows/rspec.yml/badge.svg)
+![Deployment status](https://github.com/DFE-Digital/teacher-training-entitlement/actions/workflows/deploy.yml/badge.svg)
 
 # Register for Teacher Training Entitlement (TTE)
 
