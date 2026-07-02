@@ -85,7 +85,7 @@ class GenericMailerPreview < ActionMailer::Preview
   def registration_interest
     GenericMailer.with(
       to: "test@example.com",
-      registration_start_url: "#{Rails.configuration.service_base_url}/registration/start",
+      registration_start_url: Rails.application.routes.url_helpers.registration_wizard_show_url(:start),
     ).registration_interest
   end
 

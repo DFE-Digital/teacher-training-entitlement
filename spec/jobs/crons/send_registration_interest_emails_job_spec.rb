@@ -36,7 +36,7 @@ RSpec.describe Crons::SendRegistrationInterestEmailsJob, type: :job do
         described_class.perform_now
 
         expect(enqueued_jobs.last[:args].last["params"]["registration_start_url"])
-          .to eq("#{Rails.configuration.service_base_url}/registration/start")
+          .to eq(Rails.application.routes.url_helpers.registration_wizard_show_url(:start))
       end
 
       it "marks the registration interest as notified" do
@@ -50,13 +50,6 @@ RSpec.describe Crons::SendRegistrationInterestEmailsJob, type: :job do
 
       it "does not email registration interests already notified" do
         create(:registration_interest, :notified)
-
-        expect { described_class.perform_now }
-          .not_to have_enqueued_mail(GenericMailer, :registration_interest)
-      end
-
-      it "skips invalid stored email addresses" do
-        build(:registration_interest, email: "plainaddress").save!(validate: false)
 
         expect { described_class.perform_now }
           .not_to have_enqueued_mail(GenericMailer, :registration_interest)

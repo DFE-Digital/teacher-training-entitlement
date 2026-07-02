@@ -288,7 +288,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#registration_interest" do
     let(:to) { "recipient@example.com" }
-    let(:registration_start_url) { "http://test.npd.education.gov.uk/registration/start" }
+    let(:registration_start_url) { Rails.application.routes.url_helpers.registration_wizard_show_url(:start) }
 
     subject(:mail) { described_class.with(to:, registration_start_url:).registration_interest }
 
