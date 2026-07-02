@@ -7,7 +7,7 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
   let(:admin) { create(:admin) }
   let(:filename) { File.basename(file.path) }
   let(:lead_provider) { LeadProvider.first }
-  let(:cohort) { create(:cohort, start_year: 2023) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
   let(:bulk_operation) { create(:backfill_declaration_delivery_partners_bulk_operation, admin: create(:admin)) }
   let(:instance) { described_class.new(bulk_operation:) }
   let(:declaration) { create(:declaration, lead_provider:, cohort:, delivery_partner: nil) }

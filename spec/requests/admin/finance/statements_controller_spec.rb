@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Admin::Finance::StatementsController, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
-  let(:cohort) { create(:cohort, start_year: 2024) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { statements.first }
 

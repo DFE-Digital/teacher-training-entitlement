@@ -3,14 +3,15 @@ require "rails_helper"
 RSpec.describe Users::MergeAndArchive do
   let(:user_to_merge) { create(:user, :with_one_login_id) }
   let(:user_to_keep) { create(:user) }
+  let(:course) { create(Course::IDENTIFIERS.first.to_sym) }
 
-  let!(:user_to_keep_rejected_application) { create(:application, :rejected, user: user_to_keep, cohort: create(:cohort, :unique)) }
-  let!(:user_to_keep_pending_application) { create(:application, :pending, user: user_to_keep, cohort: create(:cohort, :unique)) }
-  let!(:user_to_keep_accepted_application) { create(:application, :accepted, user: user_to_keep, cohort: create(:cohort, :unique)) }
+  let!(:user_to_keep_rejected_application) { create(:application, :rejected, :for_cohort_starting_on, user: user_to_keep, course:, registration_starts_at: Date.new(2021, 4, 1)) }
+  let!(:user_to_keep_pending_application) { create(:application, :pending, :for_cohort_starting_on, user: user_to_keep, course:, registration_starts_at: Date.new(2021, 5, 1)) }
+  let!(:user_to_keep_accepted_application) { create(:application, :accepted, :for_cohort_starting_on, user: user_to_keep, course:, registration_starts_at: Date.new(2021, 6, 1)) }
 
-  let!(:user_to_merge_rejected_application) { create(:application, :rejected, user: user_to_merge, cohort: create(:cohort, :unique)) }
-  let!(:user_to_merge_pending_application) { create(:application, :pending, user: user_to_merge, cohort: create(:cohort, :unique)) }
-  let!(:user_to_merge_accepted_application) { create(:application, :accepted, user: user_to_merge, cohort: create(:cohort, :unique)) }
+  let!(:user_to_merge_rejected_application) { create(:application, :rejected, :for_cohort_starting_on, user: user_to_merge, course:, registration_starts_at: Date.new(2021, 7, 1)) }
+  let!(:user_to_merge_pending_application) { create(:application, :pending, :for_cohort_starting_on, user: user_to_merge, course:, registration_starts_at: Date.new(2021, 8, 1)) }
+  let!(:user_to_merge_accepted_application) { create(:application, :accepted, :for_cohort_starting_on, user: user_to_merge, course:, registration_starts_at: Date.new(2021, 9, 1)) }
 
   let!(:existing_participant_id_change) { create(:participant_id_change, user: user_to_merge) }
 

@@ -357,7 +357,7 @@ RSpec.describe Statement, type: :model do
     subject { statement.use_targeted_delivery_funding? }
 
     let(:statement) { build(:statement, cohort:) }
-    let(:cohort) { build(:cohort, start_year: cohort_start_year) }
+    let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
 
     context "when the statement date is before November 2025" do
       let(:statement) { build(:statement, month: 10, year: 2025, cohort:) }

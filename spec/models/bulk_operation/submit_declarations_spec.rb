@@ -4,7 +4,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:admin) { create(:admin) }
   let(:bulk_operation) { create(:submit_declarations_bulk_operation, admin: admin) }
 
-  let(:cohort) { create(:cohort, start_year: 2023) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
   let(:course) { create(:course, identifier: "leadership-development") }
   let(:lead_provider) { create(:lead_provider) }
   let(:delivery_partner) { create(:delivery_partner) }
@@ -12,7 +12,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:statement) { create(:statement, cohort:, lead_provider:) }
   let(:participant) { create(:user) }
 
-  let!(:application) { create(:application, :accepted, user: participant, cohort:, course:, lead_provider:, schedule:) }
+  let!(:application) { create(:application, :accepted, :for_cohort_starting_on, user: participant, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }
 
   describe "validations" do
     context "with valid CSV file" do
@@ -83,7 +83,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
 
     context "when the entire CSV is valid" do
       let(:participant2) { create(:user) }
-      let!(:application2) { create(:application, :accepted, user: participant2, cohort:, course:, lead_provider:, schedule:) }
+      let!(:application2) { create(:application, :accepted, :for_cohort_starting_on, user: participant2, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }
 
       let(:csv) do
         <<~CSV

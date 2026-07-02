@@ -8,7 +8,7 @@ RSpec.describe Cohort, type: :model do
       [5, 8].shuffle.map do |month|
         registration_starts_at = Date.new(start_year, month, 10)
         exist = Cohort.find_by(identifier: registration_starts_at.strftime("%Y-%B"))
-        exist || create(:cohort, start_year:, registration_starts_at:)
+        exist || create(:cohort, registration_starts_at:)
       end
     end
   end
@@ -28,44 +28,14 @@ RSpec.describe Cohort, type: :model do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
 
     it "shows the conflicting cohort start month when the identifier already exists" do
-      create(:cohort, start_year: 2026, registration_starts_at: Date.new(2026, 1, 3))
+      create(:cohort, registration_starts_at: Date.new(2026, 1, 3))
       duplicate = Cohort.new(
-        start_year: 2026,
         registration_starts_at: Date.new(2026, 1, 20),
         description: "Another January 2026 cohort",
         funding_cap: true,
       )
 
       expect(duplicate).to have_error(:identifier, :taken, "Cohort starting 'Jan 2026' exists already")
-    end
-
-    describe "registration_starts_at year should match start_year" do
-      it "adds an error when the registration_starts_at year does not match the start_year" do
-        cohort = Cohort.new(start_year: 2022, registration_starts_at: Date.new(2023, 4, 10))
-
-        cohort.valid?
-        expect(cohort.errors[:registration_starts_at]).to include("year must match the start year")
-      end
-
-      it "does not add an error when the registration_starts_at year matches the start_year" do
-        cohort = Cohort.new(start_year: 2022, registration_starts_at: Date.new(2022, 4, 10))
-
-        cohort.valid?
-        expect(cohort.errors[:registration_starts_at]).not_to include("year must match the start year")
-      end
-    end
-
-    describe "start_year" do
-      it { is_expected.to validate_presence_of(:start_year) }
-
-      it {
-        expect(subject)
-          .to(
-            validate_numericality_of(:start_year)
-              .is_greater_than_or_equal_to(2021)
-              .is_less_than(2030),
-          )
-      }
     end
 
     describe "#description" do
@@ -125,17 +95,17 @@ RSpec.describe Cohort, type: :model do
 
   describe ".current" do
     it "returns the closest cohort in the past" do
-      current_cohort = create(:cohort, start_year: 2022, registration_starts_at: Date.new(2022, 4, 10))
-      _older_cohort = create(:cohort, start_year: 2021, registration_starts_at: Date.new(2021, 4, 10))
-      _future_cohort = create(:cohort, start_year: 2023, registration_starts_at: Date.new(2023, 4, 10))
+      current_cohort = create(:cohort, registration_starts_at: Date.new(2022, 4, 10))
+      _older_cohort = create(:cohort, registration_starts_at: Date.new(2021, 4, 10))
+      _future_cohort = create(:cohort, registration_starts_at: Date.new(2023, 4, 10))
 
       expect(Cohort.current(Date.new(2022, 4, 11))).to eq(current_cohort)
     end
 
     it "includes the Cohort starting exactly on the current date" do
-      current_cohort = create(:cohort, start_year: 2022, registration_starts_at: Date.new(2022, 4, 10))
-      _older_cohort = create(:cohort, start_year: 2021, registration_starts_at: Date.new(2021, 4, 10))
-      _future_cohort = create(:cohort, start_year: 2023, registration_starts_at: Date.new(2023, 4, 10))
+      current_cohort = create(:cohort, registration_starts_at: Date.new(2022, 4, 10))
+      _older_cohort = create(:cohort, registration_starts_at: Date.new(2021, 4, 10))
+      _future_cohort = create(:cohort, registration_starts_at: Date.new(2023, 4, 10))
 
       expect(Cohort.current(Date.new(2022, 4, 10))).to eq(current_cohort)
     end
@@ -155,9 +125,9 @@ RSpec.describe Cohort, type: :model do
 
       let :multiple_cohorts do
         {
-          current: create(:cohort, start_year: 2022, registration_starts_at: Date.new(2022, 4, 10), description: "2022 April"),
-          older: create(:cohort, start_year: 2022, registration_starts_at: Date.new(2022, 1, 10), description: "2022 January"),
-          future: create(:cohort, start_year: 2023, registration_starts_at: Date.new(2023, 4, 10)),
+          current: create(:cohort, registration_starts_at: Date.new(2022, 4, 10), description: "2022 April"),
+          older: create(:cohort, registration_starts_at: Date.new(2022, 1, 10), description: "2022 January"),
+          future: create(:cohort, registration_starts_at: Date.new(2023, 4, 10)),
         }
       end
 

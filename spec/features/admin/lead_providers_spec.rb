@@ -19,9 +19,9 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
   end
 
   scenario "viewing course provider details" do
-    cohort_2025 = create(:cohort, start_year: 2025)
-    cohort_2024 = create(:cohort, start_year: 2024)
-    cohort_2023 = create(:cohort, start_year: 2023)
+    cohort_2025 = create(:cohort, registration_starts_at: Date.new(2025, 4, 1))
+    cohort_2024 = create(:cohort, registration_starts_at: Date.new(2024, 4, 1))
+    cohort_2023 = create(:cohort, registration_starts_at: Date.new(2023, 4, 1))
     lead_provider = LeadProvider.order(:name).first
     lead_provider.update!(url: "https://example.com/provider")
     delivery_partner_25 = create(:delivery_partner, lead_providers: { cohort_2025 => lead_provider })

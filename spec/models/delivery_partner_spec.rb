@@ -115,11 +115,7 @@ RSpec.describe DeliveryPartner, type: :model do
     let(:lead_provider) { create :lead_provider }
     let(:other_lead_provider) { create :lead_provider }
     let(:cohort) { create :cohort }
-    let(:other_cohort) { create :cohort }
-
-    before do
-      create :delivery_partner, lead_providers: { cohort => lead_provider, other_cohort => other_lead_provider }
-    end
+    let(:other_cohort) { create :cohort, registration_starts_at: Date.new(2024, 5, 1) }
 
     it { is_expected.to eq [cohort] }
   end

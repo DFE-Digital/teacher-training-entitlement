@@ -26,8 +26,8 @@ RSpec.feature "viewing application history", :revisit, :versioning, type: :featu
 
   context "when there are changes to the application" do
     let(:application) { create(:application, :accepted, cohort:, lead_provider: LeadProvider.first) }
-    let(:cohort) { create(:cohort, start_year: 2024) }
-    let(:older_cohort) { create(:cohort, start_year: 2023) }
+    let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
+    let(:older_cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
     let(:new_lead_provider) { create(:lead_provider, :with_courses) }
 
     before do

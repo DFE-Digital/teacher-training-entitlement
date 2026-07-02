@@ -42,8 +42,8 @@ RSpec.describe Participants::Query do
       before do
         create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id)
         create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id)
-        create(:application, :accepted, user: participant1, lead_provider:)
-        create(:application, :accepted, user: participant1, lead_provider:)
+        create(:application, :accepted, :for_cohort_starting_on, user: participant1, lead_provider:, registration_starts_at: Date.new(2021, 4, 1))
+        create(:application, :accepted, :for_cohort_starting_on, user: participant1, lead_provider:, registration_starts_at: Date.new(2021, 5, 1))
       end
 
       it "does not return duplicate participants" do
@@ -118,8 +118,8 @@ RSpec.describe Participants::Query do
 
         context "when a participant was not updated within the time-frame and they have applications that have been updated both inside and outside the time-frame" do
           let(:participant1) { create(:user) }
-          let!(:application_outside_time_frame) { travel_to(4.days.ago) { create(:application, :accepted, lead_provider:, user: participant1) } }
-          let!(:application_inside_time_frame) { travel_to(2.days.ago) { create(:application, :accepted, lead_provider:, user: participant1) } }
+          let!(:application_outside_time_frame) { travel_to(4.days.ago) { create(:application, :accepted, :for_cohort_starting_on, lead_provider:, user: participant1, registration_starts_at: Date.new(2021, 4, 1)) } }
+          let!(:application_inside_time_frame) { travel_to(2.days.ago) { create(:application, :accepted, :for_cohort_starting_on, lead_provider:, user: participant1, registration_starts_at: Date.new(2021, 5, 1)) } }
           let(:participant2) { travel_to(10.days.ago) { create(:user) } }
 
           let(:params) { { updated_since: 3.days.ago } }
@@ -198,7 +198,7 @@ RSpec.describe Participants::Query do
 
           before do
             participant1.applications.first.update_columns(status: Application::WITHDRAWN)
-            create(:application, :accepted, user: participant1, lead_provider:)
+            create(:application, :accepted, :for_cohort_starting_on, user: participant1, lead_provider:, registration_starts_at: Date.new(2021, 4, 1))
           end
 
           it "filters the users by status and only returns applications with the matching status" do

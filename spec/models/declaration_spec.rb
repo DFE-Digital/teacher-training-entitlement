@@ -61,7 +61,7 @@ RSpec.describe Declaration, type: :model do
 
       let :old_cohort_partner do
         create :delivery_partner, lead_providers: {
-          create(:cohort, start_year: 2023) => declaration.lead_provider,
+          create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) => declaration.lead_provider,
         }
       end
 
@@ -76,7 +76,7 @@ RSpec.describe Declaration, type: :model do
 
       describe "skipping validation for certain cases" do
         let(:declaration) { build(:declaration, cohort:, delivery_partner: nil) }
-        let(:cohort) { create(:cohort, start_year: cohort_start_year) }
+        let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
 
         context "with earlier cohort" do
@@ -143,7 +143,7 @@ RSpec.describe Declaration, type: :model do
 
       context "with existing declarations" do
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
-        let(:cohort) { create(:cohort, start_year: cohort_start_year) }
+        let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
 
         subject(:declaration) { create(:declaration, cohort:) }
 
@@ -828,12 +828,12 @@ RSpec.describe Declaration, type: :model do
     let :lead_provider do
       create :lead_provider, delivery_partners: {
         twenty_three => twenty_three_partner,
-        create(:cohort, start_year: 2024) => twenty_four_partner,
+        create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) => twenty_four_partner,
       }
     end
 
     let(:declaration) { build(:declaration, lead_provider:, cohort: twenty_three) }
-    let(:twenty_three) { create(:cohort, start_year: 2023) }
+    let(:twenty_three) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
     let(:twenty_three_partner) { create(:delivery_partner) }
     let(:twenty_four_partner) { create(:delivery_partner) }
 

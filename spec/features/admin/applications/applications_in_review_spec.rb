@@ -13,8 +13,8 @@ RSpec.feature "Applications in review", :npq, type: :feature do
   let(:serialized_application) { { application: 1 } }
 
   before do
-    create(:cohort, :without_funding_cap, start_year: 2021)
-    create(:cohort, :without_funding_cap, start_year: 2022)
+    create(:cohort, :without_funding_cap, registration_starts_at: Date.new(2021, 4, 1))
+    create(:cohort, :without_funding_cap, registration_starts_at: Date.new(2022, 4, 1))
     sign_in_as create(:admin)
     visit admin_applications_path
     click_on "In review"

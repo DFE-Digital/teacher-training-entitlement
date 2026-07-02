@@ -52,16 +52,16 @@ RSpec.describe Applications::Query do
       end
 
       context "when filtering by cohort" do
-        let(:cohort_2023) { create(:cohort, start_year: 2023) }
-        let(:cohort_2024) { create(:cohort, start_year: 2024) }
-        let(:cohort_2025) { create(:cohort, start_year: 2025) }
+        let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+        let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
+        let(:cohort_2025) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
 
         context "when 2024" do
           let(:cohort_start_years) { "2024" }
 
           it "filters by cohort" do
-            create(:application, cohort: cohort_2023)
-            application = create(:application, lead_provider:, cohort: cohort_2024)
+            create(:application, :for_cohort_starting_on, registration_starts_at: cohort_2023.registration_starts_at)
+            application = create(:application, :for_cohort_starting_on, lead_provider:, registration_starts_at: cohort_2024.registration_starts_at)
             expect(query.applications).to contain_exactly(application)
           end
         end
@@ -70,9 +70,9 @@ RSpec.describe Applications::Query do
           let(:cohort_start_years) { "2023,2024" }
 
           it "filters by multiple cohorts" do
-            application1 = create(:application, lead_provider:, cohort: cohort_2023)
-            application2 = create(:application, lead_provider:, cohort: cohort_2024)
-            create(:application, cohort: cohort_2025)
+            application1 = create(:application, :for_cohort_starting_on, lead_provider:, registration_starts_at: cohort_2023.registration_starts_at)
+            application2 = create(:application, :for_cohort_starting_on, lead_provider:, registration_starts_at: cohort_2024.registration_starts_at)
+            create(:application, :for_cohort_starting_on, registration_starts_at: cohort_2025.registration_starts_at)
 
             expect(query.applications).to contain_exactly(application1, application2)
           end
@@ -159,22 +159,27 @@ RSpec.describe Applications::Query do
         let(:user) { create(:user) }
 
         context "with valid id" do
-          let(:application) { create(:application, lead_provider:, user:) }
+          let(:application) { create(:application, :for_cohort_starting_on, lead_provider:, user:, registration_starts_at: Date.new(2021, 5, 1)) }
           let(:participant_ids) { application.user.ecf_id }
 
           it "filters by participant_id" do
-            create(:application, user:)
+            create(:application, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1))
 
             expect(query.applications).to contain_exactly(application)
           end
         end
 
         context "with multiple values" do
-          let(:applications) { create_list(:application, 2, lead_provider:, user:) }
+          let(:applications) do
+            [
+              create(:application, :for_cohort_starting_on, lead_provider:, user:, registration_starts_at: Date.new(2021, 4, 1)),
+              create(:application, :for_cohort_starting_on, lead_provider:, user:, registration_starts_at: Date.new(2021, 5, 1)),
+            ]
+          end
           let(:participant_ids) { applications.map { _1.user.ecf_id } }
 
           it "filters by multiple participant_ids" do
-            create(:application, user:)
+            create(:application, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 6, 1))
 
             expect(query.applications).to match_array(applications)
           end

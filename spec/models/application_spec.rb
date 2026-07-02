@@ -102,9 +102,10 @@ RSpec.describe Application do
     end
 
     context "when the cohort does not have a funding cap" do
-      let(:cohort) { create(:cohort, :unique, :without_funding_cap) }
+      let(:cohort) { create(:cohort, :without_funding_cap, registration_starts_at: Date.new(2024, 5, 1)) }
+      let(:course_cohort) { create(:course_cohort, cohort:) }
 
-      subject { build(:application, :accepted, cohort:) }
+      subject { build(:application, :accepted, course_cohort:) }
 
       it "validates funded_place is nil" do
         subject.funded_place = false
@@ -247,14 +248,15 @@ RSpec.describe Application do
 
     let(:application) do
       if school
-        create(:application, cohort:, school_record: school, teacher_catchment:)
+        create(:application, course_cohort:, school_record: school, teacher_catchment:)
       else
-        create(:application, cohort:, institution: nil, teacher_catchment:, works_in_school: false)
+        create(:application, course_cohort:, institution: nil, teacher_catchment:, works_in_school: false)
       end
     end
+    let(:course_cohort) { create(:course_cohort, cohort:) }
 
     context "when the application is in the 2023 cohort or earlier" do
-      let(:cohort) { create(:cohort, start_year: 2023) }
+      let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
 
       context "when the teacher_catchment is not set" do
         let(:teacher_catchment) { nil }
@@ -286,7 +288,7 @@ RSpec.describe Application do
     end
 
     context "when the application is in the 2024 cohort or later" do
-      let(:cohort) { create(:cohort, start_year: 2024) }
+      let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
       let(:school) { nil }
 
       context "when the teacher_catchment is not set" do
@@ -407,8 +409,8 @@ RSpec.describe Application do
     let(:course) { create(:course) }
     let(:course_cohort) { create(:course_cohort, course:, cohort: cohort_with_funding_cap) }
     let(:application) { create(:application, :previously_funded, user:, course_cohort:) }
-    let(:cohort_with_funding_cap) { create(:cohort, :unique, :with_funding_cap) }
-    let(:cohort_without_funding_cap) { create(:cohort, :unique, :without_funding_cap) }
+    let(:cohort_with_funding_cap) { create(:cohort, :with_funding_cap, registration_starts_at: Date.new(2024, 5, 1)) }
+    let(:cohort_without_funding_cap) { create(:cohort, :without_funding_cap, registration_starts_at: Date.new(2024, 6, 1)) }
     let(:previous_application) { user.applications.where.not(id: application.id).first! }
     let(:course_cohort_no_cap) { create(:course_cohort, course:, cohort: cohort_without_funding_cap) }
 

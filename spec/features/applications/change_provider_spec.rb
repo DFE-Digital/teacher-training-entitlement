@@ -75,7 +75,7 @@ RSpec.feature "Change provider", type: :feature do
   end
 
   context "when application is started" do
-    let(:application) { create(:application, :started) }
+    let(:application) { create(:application, :started, :for_cohort_starting_on, registration_starts_at: Date.new(2021, 4, 1)) }
 
     it "redirects you back to application#show" do
       visit application_change_provider_start_index_path(application.ecf_id)

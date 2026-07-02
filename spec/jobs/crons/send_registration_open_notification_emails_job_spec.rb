@@ -2,11 +2,10 @@ require "rails_helper"
 
 RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
   describe "#perform" do
-    let(:cohort) { create(:cohort, start_year: Time.zone.yesterday.year, registration_starts_at: Time.zone.yesterday) }
+    let(:cohort) { create(:cohort, registration_starts_at: Time.zone.yesterday) }
     let(:application_cohort) do
       create(
         :cohort,
-        start_year: Time.zone.yesterday.prev_year.year,
         registration_starts_at: Time.zone.yesterday.prev_year,
       )
     end
@@ -41,13 +40,14 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
     it "skips deferred applications whose course is not on the cohort" do
       other_course = build(:course, identifier: "another-course")
       other_course.save!
-      other_cohort = create(:cohort, :unique)
+      other_cohort = create(:cohort, registration_starts_at: Date.new(2024, 5, 1))
 
       create(
         :application,
         :deferred,
+        :for_cohort_starting_on,
         course: other_course,
-        cohort: other_cohort,
+        registration_starts_at: other_cohort.registration_starts_at,
         schedule: create(:schedule, cohort: other_cohort),
       )
 

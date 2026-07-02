@@ -14,7 +14,7 @@ FactoryBot.define do
 
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     started
-    declaration_date { Date.current }
+    declaration_date { application.schedule.training_starts_at + 1.day }
     submitted
     ecf_id { SecureRandom.uuid }
 

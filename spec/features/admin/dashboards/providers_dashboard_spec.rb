@@ -7,15 +7,14 @@ RSpec.feature "Viewing the providers dashboard", type: :feature do
   let(:current_cohort) { create(:cohort, :current) }
 
   let :previous_cohort do
-    create(:cohort, start_year: current_cohort.start_year - 1,
-                    registration_starts_at: (current_cohort.registration_starts_at - 1.year))
+    create(:cohort, registration_starts_at: (current_cohort.registration_starts_at - 1.year))
   end
 
   before do
     sign_in_as(create(:admin))
 
-    create_list(:application, 2, cohort: current_cohort, lead_provider: test_provider)
-    create(:application, cohort: previous_cohort, lead_provider: test_provider)
+    create_list(:application, 2, :for_cohort_starting_on, registration_starts_at: current_cohort.registration_starts_at, lead_provider: test_provider)
+    create(:application, :for_cohort_starting_on, registration_starts_at: previous_cohort.registration_starts_at, lead_provider: test_provider)
   end
 
   scenario "viewing the providers dashboard table" do

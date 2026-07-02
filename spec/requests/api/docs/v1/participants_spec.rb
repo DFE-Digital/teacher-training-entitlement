@@ -12,14 +12,15 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
   let(:application) do
     create(:application,
            application_status_trait,
+           :for_cohort_starting_on,
            :with_declaration,
            :with_accepted_event,
            :eligible_for_funded_place,
            :with_participant_id_change,
            lead_provider:,
            course:,
-           cohort:,
            schedule:,
+           registration_starts_at: cohort.registration_starts_at,
            user:,
            funded_place: true)
   end

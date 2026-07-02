@@ -6,12 +6,11 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
   subject { response }
 
   let(:cohort)         { create(:cohort) }
-  let(:invalid_params) { valid_params.deep_merge(cohort: { start_year: 1066 }) }
+  let(:invalid_params) { valid_params.deep_merge(cohort: { registration_starts_at: "1066-04-01" }) }
 
   let :valid_params do
     {
       cohort: {
-        start_year: 2029,
         funding_cap: true,
         registration_starts_at: "2029-03-02",
         name: "2029",

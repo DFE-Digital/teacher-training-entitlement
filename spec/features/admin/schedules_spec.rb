@@ -4,7 +4,7 @@ RSpec.feature "Managing schedules", :ecf_api_disabled, :no_js, :revisit, type: :
   include Helpers::AdminLogin
 
   let(:admin)  { create :admin }
-  let(:cohort) { create :cohort, start_year: 2026 }
+  let(:cohort) { create :cohort, registration_starts_at: Date.new(2026, 4, 1) }
 
   let(:new_button_text) { "New schedule" }
   let(:edit_button_text) { "Edit schedule details" }

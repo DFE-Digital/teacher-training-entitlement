@@ -248,14 +248,14 @@ module ValidTestDataGenerators
         ecf_id:,
       }
 
-      user = User.find_by(ecf_id: ecf_id)
+      temp_email = user_email(app_data[:email])
+      user = User.find_by(ecf_id: ecf_id) || User.find_by(email: temp_email)
 
       if user
         # Update existing user
         user.update!(attrs)
       else
         # Create new user with temporary email
-        temp_email = user_email(app_data[:email])
         user = User.create!(attrs.merge(email: temp_email))
       end
 
@@ -274,7 +274,7 @@ module ValidTestDataGenerators
         "4e87fadb",
         "f678",
         "4934",
-        sprintf("%04d", @lead_provider.id),
+        sprintf("%04x", @lead_provider.id % 0x10000),
         sprintf("%012d", index),
       ].join("-")
     end
@@ -295,7 +295,6 @@ module ValidTestDataGenerators
       current_cohort = Cohort.find_by(registration_starts_at:)
 
       attrs = {
-        start_year: cohort_year,
         description: "#{registration_starts_at.strftime('%B')} #{cohort_year}",
         registration_starts_at:,
         funding_cap: true,

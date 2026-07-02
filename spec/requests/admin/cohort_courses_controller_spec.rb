@@ -5,7 +5,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
   subject { response }
 
-  let(:cohort) { create(:cohort, :unique) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 5, 1)) }
   let!(:schedule) { create(:schedule, cohort:) }
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let(:lead_provider) { create(:lead_provider, name: "Provider One") }

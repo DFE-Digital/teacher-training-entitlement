@@ -11,17 +11,12 @@ FactoryBot.define do
       lead_provider { nil }
       course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
       cohort do
-        existing = user.persisted? &&
-          user.applications.not_rejected
-            .joins(:course_cohort)
-            .merge(CourseCohort.where(course:))
-            .exists?
-        existing ? create(:cohort, :unique) : create(:cohort, :current)
+        course.cohorts.last
       end
-      schedule { CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule) }
+      schedule { course.course_cohorts.last&.schedule || create(:schedule, cohort: course.cohorts.last) }
     end
 
-    course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
+    course_cohort { course.course_cohorts.last }
     teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
@@ -46,6 +41,16 @@ FactoryBot.define do
       after(:create) do |application|
         application.state_changes << create(:state_change, :accepted, application:, lead_provider: application.lead_provider)
       end
+    end
+
+    trait :for_cohort_starting_on do
+      transient do
+        registration_starts_at { 1.week.ago.to_date.beginning_of_month }
+      end
+
+      cohort { create(:cohort, registration_starts_at:) }
+      schedule { create(:schedule, cohort:) }
+      course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
     end
 
     trait :with_school do
@@ -115,7 +120,6 @@ FactoryBot.define do
           create(
             :cohort,
             :with_funding_cap,
-            start_year: previous_registration_starts_at.year,
             registration_starts_at: previous_registration_starts_at,
           )
 
@@ -124,7 +128,7 @@ FactoryBot.define do
                                    registration_starts_at: application.cohort.registration_starts_at.prev_year)
         end
 
-        create(:application, :accepted, :eligible_for_funding, user: application.user, course:, cohort: previous_cohort)
+        create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, user: application.user, course:, registration_starts_at: previous_cohort.registration_starts_at)
       end
     end
 
@@ -158,7 +162,21 @@ FactoryBot.define do
 
     trait :with_declaration do
       after(:create) do |application|
-        application.declarations << create(:declaration, :started, application:, cohort: application.cohort)
+        if application.schedule.training_starts_at.future?
+          application.schedule.update!(
+            training_starts_at: 1.month.ago.beginning_of_day,
+            training_ends_at: 1.month.from_now.beginning_of_day,
+          )
+        end
+
+        application.declarations << create(
+          :declaration,
+          :started,
+          application:,
+          course_cohort: application.course_cohort,
+          cohort: application.cohort,
+          declaration_date: application.schedule.reload.training_starts_at + 1.day,
+        )
       end
     end
 

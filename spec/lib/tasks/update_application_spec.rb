@@ -4,8 +4,7 @@ RSpec.describe "update_application", :revisit do
   include_context "with default schedules"
 
   let(:cohort) do
-    create(:cohort, :without_funding_cap, start_year: 1.year.ago.year,
-                                          registration_starts_at: 1.year.ago)
+    create(:cohort, :without_funding_cap, registration_starts_at: 1.year.ago)
   end
 
   shared_examples "outputting an error" do |message: "Application not found: "|
@@ -104,7 +103,7 @@ RSpec.describe "update_application", :revisit do
       end
 
       context "when the target schedule does not exist" do
-        let(:new_cohort) { create(:cohort, start_year: 2029) }
+        let(:new_cohort) { create(:cohort, registration_starts_at: Date.new(2029, 4, 1)) }
 
         it "raises an error" do
           expect { run_task }.to raise_error(
