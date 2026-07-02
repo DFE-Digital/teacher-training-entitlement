@@ -11,8 +11,7 @@ The service runs as two deployment groups of the same docker container:​
 
 this is to ensure reliable performance across both workloads.​
 
-The infrastructure is provisioned and maintained through Terraform scripts​
-and they define our data and compute resource requirements.​
+The infrastructure is provisioned and maintained through Terraform scripts​ and they define our data and compute resource requirements.​
 
 # Integrations
 
@@ -69,5 +68,5 @@ procedure.
 
 ## Related
 
-- [Service data model](../data_model.md) — how imported GIAS records relate to
-  applications and participants.
+- [Data imports](../development/data-imports.md) — how imported GIAS records relate to
+  applications.
