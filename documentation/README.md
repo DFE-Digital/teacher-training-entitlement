@@ -60,7 +60,6 @@ This directory is organised by domain.
 - [`data.md`](data.md) — data dictionary, key relationships, links to auto-generated ERD
 - [`domain-model.md`](domain-model.md) — auto-generated Mermaid entity-relationship diagram (run `bundle exec mermaid_erd` to refresh)
 
-## Remaining legacy files (not restructured)
+## Content editor guidance
 
 - [`content_editors/`](content_editors/)
-- [`assets/`](assets/)
