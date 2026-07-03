@@ -814,15 +814,17 @@ en:
       class="govuk-link">targeted support funding</a> payment to support you to do
       this NPQ.
     ineligible_message: This means that you would need to pay for the course another way.
-    ineligible_setting: You're not eligible for scholarship funding as you
-      do not work in one of the eligible settings, such as state-funded schools.
+    ineligible_setting: <p>You're not eligible for scholarship funding as you
+      do not work in one of the eligible settings, such as state-funded schools.</p>
+      <p>This means that you would need to pay for the course another way.</p>
     inside_catchment: You're not eligible for scholarship funding as you do
       not work in England.
     no_Ofsted: You're not eligible for schools funding as you or your employer
       is not registered on the Ofsted Early Years Register or with a registered Childminder
       Agency.
-    previously_funded: You're not eligible for scholarship funding as you
-      do not work in one of the eligible settings, such as state-funded schools.
+    previously_funded: <p>You're not eligible for scholarship funding because
+      you have previously been funded for this course.</p>
+      <p>You can pay for the course another way.</p>
     not_eligible_ehco: You're not eligible for scholarship funding for %{course_name}.
     not_a_pp50: You're not eligible for scholarship funding for the NPQ as
       your workplace is not in the <a class="govuk-link" href="https://www.gov.uk/guidance/funding-for-national-professional-qualifications-npqs#scholarship-funding-for-autumn-2024">list
