@@ -9,17 +9,20 @@ class SessionsController < PublicPagesController
   end
 
   def destroy
-    admin = current_admin
-    user = current_user
     id_token = session[:id_token]
-
     sign_out_all_scopes
 
-    redirect_to("/admin") and return if admin
+    if id_token
+      redirect_to build_sign_out_uri(id_token), allow_other_host: true
+    else
+      redirect_to(root_path)
+    end
+  end
 
-    redirect_to(root_path) and return unless user
+  def destroy_admin
+    sign_out_all_scopes
 
-    redirect_to build_sign_out_uri(id_token), allow_other_host: true
+    redirect_to("/admin")
   end
 
 private
@@ -34,7 +37,7 @@ private
       path: "/oauth2/logout",
       query: URI.encode_www_form({
         "id_token_hint" => id_token,
-        "post_logout_redirect_uri" => post_logout_uri.to_s,
+        "post_logout_redirect_uri" => post_logout_uri,
       }),
     }).to_s
   end
