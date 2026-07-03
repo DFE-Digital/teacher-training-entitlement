@@ -1,4 +1,5 @@
 class InterestNotificationSignUpController < PublicPagesController
+  before_action :ensure_registration_closed
   before_action :set_notification_form, only: %i[new]
 
   def new; end
@@ -26,5 +27,9 @@ private
 
   def set_notification_form
     @notification_form = Questionnaires::RegistrationInterestNotification.new
+  end
+
+  def ensure_registration_closed
+    redirect_to root_path unless Feature.registration_closed?(current_user)
   end
 end

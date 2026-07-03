@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe "Expression of interest accessibility", :axe, type: :feature do
+  before do
+    Flipper.disable(Feature::REGISTRATION_OPEN)
+  end
+
   it "sign up page is accessible" do
     visit registration_interest_sign_up_path
     expect(page).to be_axe_clean

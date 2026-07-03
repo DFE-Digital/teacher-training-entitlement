@@ -3,6 +3,10 @@ require "rails_helper"
 RSpec.feature "Register interest", type: :feature do
   include_context "Stub Teacher Auth Responses"
 
+  before do
+    Flipper.disable(Feature::REGISTRATION_OPEN)
+  end
+
   scenario "Sign up to notification with direct link" do
     visit "/registration-interest/sign-up"
 
