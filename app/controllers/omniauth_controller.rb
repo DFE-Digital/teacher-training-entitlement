@@ -29,10 +29,14 @@ class OmniauthController < Devise::OmniauthCallbacksController
 
     Rails.logger.info("[TeacherAuth][omniauth_failure] uid=#{try_to_extract_user_uid} error=#{try_to_extract_error_type}")
     send_error_to_sentry(
-      "Omniauth login failure",
+      "Omniauth login failure (#{try_to_extract_error_type})",
       contexts: {
-        "Strategy" => { name: request.env["omniauth.error.strategy"].name },
-        "Error" => { "omniauth.error.type" => Base64.encode64(request.env["omniauth.error.type"].to_s) },
+        "OmniAuth" => {
+          error_type: try_to_extract_error_type.to_s,
+          strategy: request.env["omniauth.error.strategy"]&.name,
+          origin: request.env["omniauth.origin"],
+          uid: try_to_extract_user_uid,
+        },
       },
     )
 
