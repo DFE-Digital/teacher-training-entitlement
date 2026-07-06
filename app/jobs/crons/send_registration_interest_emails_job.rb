@@ -3,7 +3,7 @@ module Crons
     include Sentry::Cron::MonitorCheckIns
     include Rails.application.routes.url_helpers
 
-    self.cron_expression = "0 11 * * *"
+    self.cron_expression = "0 14 * * *"
 
     sentry_monitor_check_ins slug: "send-registration-interest-emails"
 
