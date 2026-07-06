@@ -41,7 +41,7 @@ class Cohort < ApplicationRecord
   end
 
   def registration_open?
-    Time.zone.today > registration_starts_at &&
+    Time.zone.today >= registration_starts_at &&
       (registration_ends_at.nil? || Time.zone.today <= registration_ends_at)
   end
 
