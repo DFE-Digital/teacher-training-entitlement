@@ -74,8 +74,8 @@ RSpec.describe Crons::SendRegistrationInterestEmailsJob, type: :job do
       end
     end
 
-    it "runs at 2pm each day" do
-      expect(described_class.cron_expression).to eq("0 14 * * *")
+    it "runs at 12:45pm each day" do
+      expect(described_class.cron_expression).to eq("45 12 * * *")
     end
   end
 end
