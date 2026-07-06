@@ -33,6 +33,7 @@ class OmniauthController < Devise::OmniauthCallbacksController
       contexts: {
         "OmniAuth" => {
           error_type: try_to_extract_error_type.to_s,
+          error: request.env["omniauth.error"].inspect,
           strategy: request.env["omniauth.error.strategy"]&.name,
           origin: request.env["omniauth.origin"],
           uid: try_to_extract_user_uid,
