@@ -51,6 +51,26 @@ RSpec.describe RegistrationWizardController do
     it { is_expected.to have_http_status :success }
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
 
+    context "when the user session is stale" do
+      before { session["user_id"] = "999999" }
+
+      it "redirects registration steps to the start page" do
+        make_request
+
+        expect(response).to redirect_to(root_path)
+      end
+
+      context "when loading the start page" do
+        let(:make_request) { get(:show, params: { step: "start" }) }
+
+        it "renders the start page" do
+          make_request
+
+          expect(response).to be_successful
+        end
+      end
+    end
+
     context "when application already submitted for course" do
       let(:course) { Course.reception || create(:course) }
       let(:course_cohort) { CourseCohort.next_open_for(course:) || create(:course_cohort, course:) }
@@ -86,6 +106,16 @@ RSpec.describe RegistrationWizardController do
     let(:make_request) { patch :update, params: { step: "course-start-date", registration_wizard: wizard_params } }
 
     it_behaves_like "it redirects on missing mandatory institution"
+
+    context "when the user session is stale" do
+      before { session["user_id"] = "999999" }
+
+      it "redirects to the start page" do
+        make_request
+
+        expect(response).to redirect_to(root_path)
+      end
+    end
 
     it "persists data to session" do
       make_request
