@@ -68,14 +68,6 @@
   - data_changes
   - operation_description
   - updated_at
-  :course_cohort_providers:
-  - id
-  - course_cohort_id
-  - created_at
-  - lead_provider_id
-  - updated_at
-  :courses:
-  - position
   :contract_templates:
   - id
   - created_at
