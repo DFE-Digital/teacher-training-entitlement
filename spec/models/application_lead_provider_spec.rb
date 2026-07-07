@@ -9,14 +9,13 @@ RSpec.describe ApplicationLeadProvider, type: :model do
   end
 
   describe "validations" do
-    describe "uniqueness" do
-      subject { described_class.new }
+    it "allows the same lead provider to be assigned to an application more than once" do
+      application = create(:application)
+      lead_provider = application.lead_provider
 
-      before { create(:application_lead_provider) }
+      application_lead_provider = build(:application_lead_provider, application:, lead_provider:)
 
-      it "lead provider must be unique for a given application" do
-        expect(subject).to validate_uniqueness_of(:lead_provider_id).scoped_to(:application_id)
-      end
+      expect(application_lead_provider).to be_valid
     end
   end
 end
