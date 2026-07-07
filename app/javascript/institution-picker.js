@@ -11,8 +11,13 @@ function institutionPicker (options) {
   })
 }
 
-async function fetchSource(lookupPath, query, location) {
-  const res  = await fetch( `/${lookupPath}.json?location=${encodeURIComponent(location)}&name=${encodeURIComponent(query)}` );
+async function fetchSource(lookupPath, query) {
+  const res  = await fetch(`/${lookupPath}.json?name=${encodeURIComponent(query)}` );
+
+  if (!res.ok) {
+    return [];
+  }
+
   const data = await res.json();
   return data;
 }
@@ -47,11 +52,13 @@ institutionPicker.enhanceSelectElement = (configurationOptions) => {
     }
   }
 
-  const location = configurationOptions.selectElement.getAttribute("data-institution-location")
-
   configurationOptions.source = debounce( async ( query, populateResults ) => {
-    const res = await fetchSource(configurationOptions.lookupPath, query, location);
-    populateResults(res);
+    try {
+      const res = await fetchSource(configurationOptions.lookupPath, query);
+      populateResults(res);
+    } catch (_) {
+      populateResults([]);
+    }
   }, 300 )
 
   if (configurationOptions.name === undefined) configurationOptions.name = ''
