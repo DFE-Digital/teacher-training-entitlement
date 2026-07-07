@@ -38,19 +38,20 @@ RSpec.describe "Application endpoints", type: :request do
       describe "when viewing as a provider with previous and current assignments" do
         let(:another_old_lead_provider) { create(:lead_provider) }
 
+        # Set up the data so current_lead_provider was assigned, replaced, and
+        # then assigned again as the current provider.
+        #
+        # Assignment history:
+        # current_lead_provider -> another_old_lead_provider -> current_lead_provider
+        #
+        # application_lead_providers, newest first:
+        #
+        # | lead_provider             | current |
+        # |---------------------------|---------|
+        # | current_lead_provider     | true    |
+        # | another_old_lead_provider | false   |
+        # | current_lead_provider     | false   |
         before do
-          # Set up the data so the current_lead_provider was also assigned once before
-          # another_old_lead_provider was assigned, and then once again current_lead_provider
-          # was once again asssigned.
-          #
-          # This creates the history as changed lead provider like this:
-          # current_lead_provider --> another_old_lead_provider --> current_lead_provider
-          #
-          # So application_lead_providers table looks like (newest first):
-          # |lead_provider|current|
-          # |Current LP|true
-          # |Another old LP|false
-          # |Current LP|false
           create(:application_lead_provider, :unassigned, application:, lead_provider: current_lead_provider)
           create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
         end
@@ -66,18 +67,20 @@ RSpec.describe "Application endpoints", type: :request do
       describe "when viewing as a provider with multiple previous assignments" do
         let(:another_old_lead_provider) { create(:lead_provider) }
 
-        # Set up the data so the another_old_lead_provider was assigned a couple of times,
+        # Set up the data so another_old_lead_provider was assigned more than once,
         # but is not the current provider.
         #
-        # This creates the history as changed lead provider like this:
-        # another_old_lead_provider --> current_lead_provider -->  another_old_lead_provider --> current_lead_provider
+        # Assignment history:
+        # another_old_lead_provider -> current_lead_provider -> another_old_lead_provider -> current_lead_provider
         #
-        # So application_lead_providers table looks like (newest first):
-        # |lead_provider|current|
-        # |Current LP|true
-        # |Another old LP|false
-        # |Current LP|false
-        # |Another old LP|false
+        # application_lead_providers, newest first:
+        #
+        # | lead_provider             | current |
+        # |---------------------------|---------|
+        # | current_lead_provider     | true    |
+        # | another_old_lead_provider | false   |
+        # | current_lead_provider     | false   |
+        # | another_old_lead_provider | false   |
         before do
           create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
           create(:application_lead_provider, :unassigned, application:, lead_provider: current_lead_provider)
