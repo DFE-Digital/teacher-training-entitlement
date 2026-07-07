@@ -34,6 +34,63 @@ RSpec.describe "Application endpoints", type: :request do
           expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(application.status)
         end
       end
+
+      describe "when viewing as a provider with previous and current assignments" do
+        let(:another_old_lead_provider) { create(:lead_provider) }
+
+        before do
+          # Set up the data so the current_lead_provider was also assigned once before
+          # another_old_lead_provider was assigned, and then once again current_lead_provider
+          # was once again asssigned.
+          #
+          # This creates the history as changed lead provider like this:
+          # current_lead_provider --> another_old_lead_provider --> current_lead_provider
+          #
+          # So application_lead_providers table looks like (newest first):
+          # |lead_provider|current|
+          # |Current LP|true
+          # |Another old LP|false
+          # |Current LP|false
+          create(:application_lead_provider, :unassigned, application:, lead_provider: current_lead_provider)
+          create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
+        end
+
+        it "can see the application with a pending status" do
+          api_get(api_v1_application_path(application.ecf_id), lead_provider: current_lead_provider)
+
+          expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(Application::PENDING)
+        end
+      end
+
+      describe "when viewing as a provider with multiple previous assignments" do
+        let(:another_old_lead_provider) { create(:lead_provider) }
+
+        # Set up the data so the another_old_lead_provider was assigned a couple of times,
+        # but is not the current provider.
+        #
+        # This creates the history as changed lead provider like this:
+        # another_old_lead_provider --> current_lead_provider -->  another_old_lead_provider --> current_lead_provider
+        #
+        # So application_lead_providers table looks like (newest first):
+        # |lead_provider|current|
+        # |Current LP|true
+        # |Another old LP|false
+        # |Current LP|false
+        # |Another old LP|false
+        before do
+          create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
+          create(:application_lead_provider, :unassigned, application:, lead_provider: current_lead_provider)
+          create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
+        end
+
+        it "can see the application with a reassigned status" do
+          api_get(api_v1_application_path(application.ecf_id), lead_provider: another_old_lead_provider)
+
+          expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(Application::REASSIGNED)
+        end
+      end
     end
   end
 
