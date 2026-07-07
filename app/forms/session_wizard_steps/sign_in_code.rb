@@ -25,12 +25,19 @@ module SessionWizardSteps
     def validate_correct_code
       if user.blank?
         errors.add(:code, :incorrect)
+      elsif user.otp_locked_out?
+        errors.add(:code, :locked)
       elsif code == user.otp_hash
         if user.otp_expires_at < Time.zone.now
           errors.add(:code, :expired)
         end
       else
-        errors.add(:code, :incorrect)
+        user.increment_otp_failed_attempts!
+        if user.otp_locked_out?
+          errors.add(:code, :locked)
+        else
+          errors.add(:code, :incorrect)
+        end
       end
     end
   end

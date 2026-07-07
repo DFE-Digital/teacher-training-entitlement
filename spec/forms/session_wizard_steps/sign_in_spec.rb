@@ -39,5 +39,13 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
 
       expect { subject }.not_to raise_error
     end
+
+    context "when admin has failed OTP attempts" do
+      let(:admin) { create(:admin, otp_failed_attempts: 3) }
+
+      it "resets the OTP failed attempts counter" do
+        expect { subject }.to change { admin.reload.otp_failed_attempts }.from(3).to(0)
+      end
+    end
   end
 end
