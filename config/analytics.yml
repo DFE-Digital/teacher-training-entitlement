@@ -154,6 +154,7 @@ shared:
     - identifier
     - course_group
     - short_code
+    - position
   :course_cohorts:
     - id
     - cohort_id
@@ -161,6 +162,12 @@ shared:
     - created_at
     - ecf_id
     - schedule_id
+    - updated_at
+  :course_cohort_providers:
+    - id
+    - course_cohort_id
+    - created_at
+    - lead_provider_id
     - updated_at
   :cohorts:
     - id
