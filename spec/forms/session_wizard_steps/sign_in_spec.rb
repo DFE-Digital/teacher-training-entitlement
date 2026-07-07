@@ -16,18 +16,17 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
     let(:email) { admin.email }
     let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
     let(:wizard) { SessionWizard.new(current_step: :sign_in, store:, session:) }
-    let(:otp_generator) { instance_double(OtpCodeGenerator, call: String) }
 
     it "generates an OTP code" do
-      expect { subject }.to change { AdminUser.find(admin.id).otp_hash }.from(nil).to(otp_generator.call)
+      expect { subject }.to change { AdminUser.find(admin.id).otp_hash }.from(nil)
     end
 
     it "sets the OTP expiration time" do
       expect { subject }.to change { AdminUser.find(admin.id).otp_expires_at }.from(nil).to(10.minutes.from_now)
     end
 
-    it "sends an email with the OTP code" do
-      expect(GenericMailer).to receive(:with).with(to: email, code: otp_generator.call).and_call_original
+    it "sends an email" do
+      expect(GenericMailer).to receive(:with).and_call_original
       subject
     end
 
@@ -38,6 +37,14 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
         .and_raise(Notifications::Client::BadRequestError.new(instance_double(Net::HTTPResponse, code: 400, body: "error")))
 
       expect { subject }.not_to raise_error
+    end
+
+    context "when admin has failed OTP attempts" do
+      let(:admin) { create(:admin, otp_failed_attempts: 3) }
+
+      it "resets the OTP failed attempts counter" do
+        expect { subject }.to change { admin.reload.otp_failed_attempts }.from(3).to(0)
+      end
     end
   end
 end

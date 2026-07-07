@@ -111,6 +111,7 @@
   - email
   - full_name
   - otp_expires_at
+  - otp_failed_attempts
   - otp_hash
   - super_admin
   - updated_at
