@@ -15,10 +15,8 @@ import * as GOVUKFrontend from 'govuk-frontend'
 
 window.GOVUKFrontend = GOVUKFrontend;
 
-window.onload = function init() {
-  window.GOVUKFrontend.initAll();
-  HMRCFrontend.initAll();
-};
+GOVUKFrontend.initAll();
+HMRCFrontend.initAll();
 
 if (document.querySelector('[data-picker="school"]')) {
   institutionPicker.enhanceSelectElement({
