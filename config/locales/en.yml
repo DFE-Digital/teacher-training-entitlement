@@ -801,12 +801,7 @@ en:
     'yes': 'Yes'
     'no': 'No'
     change: Change
-  admin:
-    layout:
-    applications:
-      show:
-    users:
-      show:
+  course:
     outcome:
       passed_html: <a href="/certificates" class="govuk-link">Download your certificate</a>
   funding_details:
