@@ -10,13 +10,11 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
   subject(:service) { described_class.new(application:, new_provider:) }
 
   describe ".call" do
-    before do
+    it do
       travel_to(new_assignment_date) do
         subject.call
       end
-    end
 
-    it do
       application.assignment = old_application_lead_provider
       expect(application.reload.lead_provider).to eq(new_provider)
       expect(application.assigned_at).to be_within(5.seconds).of(new_assignment_date)
@@ -40,6 +38,40 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
 
       it do
         expect(subject).to have_error(:base, :provider_must_be_different)
+      end
+    end
+
+    context "when changing back to a previous provider" do
+      let(:original_provider) { create(:lead_provider) }
+      let(:current_provider) { create(:lead_provider) }
+      let(:new_provider) { original_provider }
+      let(:application) { create(:application, :pending, lead_provider: current_provider) }
+
+      before do
+        create(
+          :application_lead_provider,
+          :unassigned,
+          application:,
+          lead_provider: original_provider,
+        )
+      end
+
+      it "allows adding the original provider back to being current" do
+        expect(service).to be_valid
+
+        expect { service.call }
+          .to change(application.application_lead_providers, :count).by(1)
+
+        application.reload
+
+        expect(application.lead_provider).to eq(original_provider)
+        expect(application.application_lead_providers.current.count).to eq(1)
+        expect(application.current_application_lead_provider.lead_provider).to eq(original_provider)
+        expect(application.current_application_lead_provider.unassigned_at).to be_nil
+        expect(application.application_lead_providers.previous.pluck(:lead_provider_id)).to contain_exactly(
+          original_provider.id,
+          current_provider.id,
+        )
       end
     end
   end
