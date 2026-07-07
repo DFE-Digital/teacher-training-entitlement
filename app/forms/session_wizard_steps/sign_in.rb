@@ -24,10 +24,7 @@ module SessionWizardSteps
       admin = AdminUser.find_by(email:)
       return unless admin
 
-      # TODO: extract out
-      code = OtpCodeGenerator.new.call
-      admin.update!(otp_hash: code, otp_expires_at: 10.minutes.from_now)
-
+      code = admin.generate_otp!
       GenericMailer.with(to: email, code:).confirmation_code.deliver_now
     rescue Notifications::Client::BadRequestError => e
       Rails.logger.error("Failed to send OTP email: #{e.message}")
