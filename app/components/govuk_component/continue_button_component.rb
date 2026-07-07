@@ -1,7 +1,7 @@
 class GovukComponent::ContinueButtonComponent < GovukComponent::Base
   BUTTON_ATTRIBUTES = {
     draggable: "false",
-    data: { module: "govuk-button" },
+    data: { module: "govuk-button", prevent_double_click: true },
   }.freeze
 
   LINK_ATTRIBUTES = BUTTON_ATTRIBUTES.merge({ role: "button" }).freeze
