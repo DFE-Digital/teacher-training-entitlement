@@ -20,6 +20,10 @@ module SessionWizardSteps
     end
     alias_method :user, :admin
 
+    def after_save
+      admin.clear_otp!
+    end
+
   private
 
     def validate_correct_code
