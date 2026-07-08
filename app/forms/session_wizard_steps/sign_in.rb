@@ -24,8 +24,7 @@ module SessionWizardSteps
       admin = AdminUser.find_by(email:)
       return unless admin
 
-      # TODO: extract out
-      code = OtpCodeGenerator.new.call
+      code = rand(100_000..999_999).to_s
       admin.update!(otp_hash: code, otp_expires_at: 10.minutes.from_now, otp_failed_attempts: 0)
       GenericMailer.with(to: email, code:).confirmation_code.deliver_now
     rescue Notifications::Client::BadRequestError => e

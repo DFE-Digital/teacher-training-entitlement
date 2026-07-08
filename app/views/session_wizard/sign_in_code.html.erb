@@ -20,11 +20,17 @@
     <%= form_with model: @form, url: session_wizard_update_path, scope: "session_wizard", method: :patch do |f| %>
       <%= f.govuk_error_summary %>
 
-      <%= f.govuk_text_field :code,
-        width: 10,
-        label: { text: "Enter your code" } %>
+      <% if @form.admin&.otp_locked_out? %>
+        <p class="govuk-body">
+          <%= govuk_link_to "Request a new code", sign_in_path %>
+        </p>
+      <% else %>
+        <%= f.govuk_text_field :code,
+          width: 10,
+          label: { text: "Enter your code" } %>
 
-      <%= f.govuk_submit "Sign in" %>
+        <%= f.govuk_submit "Sign in" %>
+      <% end %>
     <% end %>
 
     <h2 class="govuk-heading-m">If you don’t get an email to sign in:</h2>

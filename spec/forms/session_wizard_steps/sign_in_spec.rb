@@ -16,10 +16,10 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
     let(:email) { admin.email }
     let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
     let(:wizard) { SessionWizard.new(current_step: :sign_in, store:, session:) }
-    let(:otp_generator) { instance_double(OtpCodeGenerator, call: String) }
 
-    it "generates an OTP code" do
-      expect { subject }.to change { AdminUser.find(admin.id).otp_hash }.from(nil).to(otp_generator.call)
+    it "generates a 6-digit OTP code" do
+      subject
+      expect(admin.reload.otp_hash).to match(/\A\d{6}\z/)
     end
 
     it "sets the OTP expiration time" do
@@ -27,8 +27,9 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
     end
 
     it "sends an email with the OTP code" do
-      expect(GenericMailer).to receive(:with).with(to: email, code: otp_generator.call).and_call_original
+      allow(GenericMailer).to receive(:with).and_call_original
       subject
+      expect(GenericMailer).to have_received(:with).with(to: email, code: admin.reload.otp_hash)
     end
 
     it "catches Notify errors" do

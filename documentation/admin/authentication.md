@@ -59,9 +59,9 @@ sequenceDiagram
 The admin enters their email address.
 
 - The `SessionWizardSteps::SignIn` form validates the email format.
-- `after_save` looks up the `AdminUser`, generates a 6-digit OTP via
-  `OtpCodeGenerator`, stores `otp_hash` and `otp_expires_at` (10 minutes from now)
-  on the record, and sends the code via `GenericMailer`.
+- `after_save` looks up the `AdminUser`, generates a random 6-digit OTP,
+  stores `otp_hash` and `otp_expires_at` (10 minutes from now) on the record,
+  and sends the code via `GenericMailer`.
 - If the email has no matching `AdminUser`, **no error is shown** — the code is
   simply not sent. This prevents email enumeration.
 
@@ -184,7 +184,6 @@ Neither can an admin delete themselves or another super admin via the console
 | Sign-in views         | `app/views/session_wizard/sign_in.html.erb`        |
 | Code-entry view       | `app/views/session_wizard/sign_in_code.html.erb`   |
 | Sign-out              | `app/controllers/sessions_controller.rb`           |
-| OTP generator         | `app/services/otp_code_generator.rb`               |
 | Routes (public)       | `config/routes.rb` (lines 41–46)                   |
 | Routes (admin)        | `config/routes/admin.rb`                           |
 
