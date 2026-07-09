@@ -29,8 +29,9 @@ class Cohort < ApplicationRecord
   validates :registration_starts_at, presence: true
   validates :training_starts_at, presence: true, if: -> { new_record? || training_starts_at_was }
   validates :training_ends_at, presence: true, if: -> { new_record? || training_ends_at_was }
-  validates :identifier, presence: true, uniqueness: { case_sensitive: false }
+  validates :identifier, presence: true
   validate :registration_starts_at_matches_start_year
+  validate :identifier_is_unique
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
   validate :changing_funding_cap_with_dependent_applications
@@ -78,6 +79,13 @@ private
     return if registration_starts_at.blank?
 
     errors.add(:registration_starts_at, "year must match the start year") if registration_starts_at.year != start_year
+  end
+
+  def identifier_is_unique
+    return if identifier.blank?
+    return unless self.class.where.not(id:).where("LOWER(identifier) = ?", identifier.downcase).exists?
+
+    errors.add(:identifier, :taken, cohort_start: registration_starts_at&.strftime("%b %Y") || identifier)
   end
 
   def set_identifier

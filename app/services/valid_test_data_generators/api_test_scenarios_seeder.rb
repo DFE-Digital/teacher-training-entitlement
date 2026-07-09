@@ -14,6 +14,7 @@ module ValidTestDataGenerators
         super(success:, error:, applications_count:, cohort_year:)
       end
     end
+    CourseRun = Data.define(:course, :cohort, :schedule)
 
     class << self
       def applications_data
@@ -160,10 +161,10 @@ module ValidTestDataGenerators
     end
 
     def test_scenarios_create_data!
-      course_cohorts = cohort_start_dates
-                         .take(4)
-                         .map do |registration_starts_at|
-        course_cohort_setup(
+      course_runs = cohort_start_dates
+                      .take(4)
+                      .map do |registration_starts_at|
+        course_run_setup(
           registration_starts_at:,
           training_starts_now: registration_starts_at.year == cohort_year, # for the cohort_year make training start now to simplify testing
         )
@@ -171,7 +172,7 @@ module ValidTestDataGenerators
 
       applications_data.each do |app_data|
         create_app(
-          course_cohort: course_cohorts[app_data[:cohort_offset]],
+          course_run: course_runs[app_data[:cohort_offset]],
           status: Application::PENDING,
           eligible_for_funding: app_data[:funding_eligible],
           user: create_user(app_data),
@@ -183,13 +184,13 @@ module ValidTestDataGenerators
         end
       end
 
-      statements_setup(course_cohort: course_cohorts.first)
+      statements_setup(course_run: course_runs.first)
     end
 
     def create_data!(registration_starts_at:, number:)
-      course_cohort = course_cohort_setup(registration_starts_at:)
-      statements_setup(course_cohort:)
-      applications_setup(course_cohort:, number:)
+      course_run = course_run_setup(registration_starts_at:)
+      statements_setup(course_run:)
+      applications_setup(course_run:, number:)
     end
 
   private
@@ -289,7 +290,7 @@ module ValidTestDataGenerators
       end
     end
 
-    def course_cohort_setup(registration_starts_at:, training_starts_now: false)
+    def course_run_setup(registration_starts_at:, training_starts_now: false)
       cohort_year = registration_starts_at.year
       term = registration_starts_at.month < 8 ? "autumn" : "spring"
       current_cohort = Cohort.find_by(registration_starts_at:)
@@ -304,6 +305,7 @@ module ValidTestDataGenerators
         training_starts_at:,
         training_ends_at:,
         funding_cap: true,
+        course:,
       }
       if current_cohort
         current_cohort.update!(attrs)
@@ -332,23 +334,13 @@ module ValidTestDataGenerators
         current_schedule = Schedule.create!(identifier:, **attrs)
       end
 
-      cc = CourseCohort.find_by(course:, cohort: current_cohort)
-      if cc
-        cc.update!(schedule: current_schedule)
-      else
-        cc = CourseCohort.create!(
-          course:,
-          cohort: current_cohort,
-          schedule: current_schedule,
-        )
-      end
       current_cohort.cohort_providers.find_or_create_by!(lead_provider:)
 
       delivery_partners.each do |dp|
         dp.delivery_partnerships.find_or_create_by!(lead_provider:, cohort: current_cohort)
       end
 
-      cc
+      CourseRun.new(course:, cohort: current_cohort, schedule: current_schedule)
     end
 
     def institutions_eligible
@@ -366,7 +358,7 @@ module ValidTestDataGenerators
         .first
     end
 
-    def create_app(course_cohort:, status:, eligible_for_funding:, user:)
+    def create_app(course_run:, status:, eligible_for_funding:, user:)
       funded_place = status == Application::PENDING ? nil : eligible_for_funding
       institution = eligible_for_funding ? institutions_eligible : institutions_ineligible
       funding_eligiblity_status_code = eligible_for_funding ? nil : :ineligible_setting
@@ -374,15 +366,15 @@ module ValidTestDataGenerators
 
       application = lead_provider.updateable_applications.find_or_create_by!(
         user:,
-        course: course_cohort.course,
-        cohort: course_cohort.cohort,
+        course: course_run.course,
+        cohort: course_run.cohort,
       )
       application.update!(
         user:,
         lead_provider:,
         institution:,
-        course: course_cohort.course,
-        cohort: course_cohort.cohort,
+        course: course_run.course,
+        cohort: course_run.cohort,
         status:,
         funded_place:,
         eligible_for_funding:,
@@ -436,11 +428,11 @@ module ValidTestDataGenerators
       declaration
     end
 
-    def applications_setup(course_cohort:, number: 5)
+    def applications_setup(course_run:, number: 5)
       # pending
       (number * 3).times do |index|
         create_app(
-          course_cohort:,
+          course_run:,
           status: Application::PENDING,
           eligible_for_funding: index.even?,
           user: create_random_user(with_trn: [true, false].sample),
@@ -450,7 +442,7 @@ module ValidTestDataGenerators
       # accepted
       number.times do |index|
         create_app(
-          course_cohort:,
+          course_run:,
           status: Application::ACCEPTED,
           eligible_for_funding: index.even?,
           user: create_random_user(with_trn: [true, false].sample),
@@ -462,7 +454,7 @@ module ValidTestDataGenerators
       # rejected
       number.times do |index|
         create_app(
-          course_cohort:,
+          course_run:,
           status: Application::REJECTED,
           eligible_for_funding: index.even?,
           user: create_random_user(with_trn: [true, false].sample),
@@ -473,11 +465,11 @@ module ValidTestDataGenerators
 
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
-      if course_cohort.cohort.start_year < Time.zone.now.year
+      if course_run.cohort.start_year < Time.zone.now.year
         # started
         number.times do |index|
           create_app(
-            course_cohort:,
+            course_run:,
             status: Application::STARTED,
             eligible_for_funding: index.even?,
             user: create_random_user,
@@ -491,7 +483,7 @@ module ValidTestDataGenerators
         # completed
         number.times do |index|
           create_app(
-            course_cohort:,
+            course_run:,
             status: Application::COMPLETED,
             eligible_for_funding: index.even?,
             user: create_random_user,
@@ -507,7 +499,7 @@ module ValidTestDataGenerators
         # deferred
         number.times do |index|
           create_app(
-            course_cohort:,
+            course_run:,
             status: Application::DEFERRED,
             eligible_for_funding: index.even?,
             user: create_random_user(with_trn: [true, false].sample),
@@ -525,7 +517,7 @@ module ValidTestDataGenerators
         # withdrawn
         number.times do |index|
           create_app(
-            course_cohort:,
+            course_run:,
             status: Application::WITHDRAWN,
             eligible_for_funding: index.even?,
             user: create_random_user(with_trn: [true, false].sample),
@@ -555,7 +547,7 @@ module ValidTestDataGenerators
       # reassigned
       number.times do |index|
         create_app(
-          course_cohort:,
+          course_run:,
           status: Application::PENDING,
           eligible_for_funding: index.even?,
           user: create_random_user(with_trn: [true, false].sample),
@@ -571,13 +563,13 @@ module ValidTestDataGenerators
       application.change_provider!(to: new_provider)
     end
 
-    def statements_setup(course_cohort:)
-      start_date = course_cohort.schedule.training_starts_at
-      end_date = course_cohort.schedule.training_ends_at
+    def statements_setup(course_run:)
+      start_date = course_run.schedule.training_starts_at
+      end_date = course_run.schedule.training_ends_at
       Statement.find_or_create_by!(
-        cohort: course_cohort.cohort,
+        cohort: course_run.cohort,
         lead_provider: lead_provider,
-        year: course_cohort.cohort.start_year,
+        year: course_run.cohort.start_year,
         month: start_date.month,
       ) do |statement|
         statement.deadline_date = start_date
@@ -589,9 +581,9 @@ module ValidTestDataGenerators
       end
 
       Statement.find_or_create_by!(
-        cohort: course_cohort.cohort,
+        cohort: course_run.cohort,
         lead_provider: lead_provider,
-        year: course_cohort.cohort.start_year,
+        year: course_run.cohort.start_year,
         month: end_date.month,
       ) do |statement|
         statement.deadline_date = end_date

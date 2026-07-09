@@ -108,7 +108,7 @@ private
 
   def check_duplicate_applications
     return unless @wizard.current_step.to_s == "course_start_date"
-    return unless cohort
+    return unless cohort && current_user
 
     active_applications = current_user.applications.active_applications.where(cohort:)
     return if active_applications.empty?

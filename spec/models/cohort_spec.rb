@@ -32,39 +32,37 @@ RSpec.describe Cohort, type: :model do
     it { is_expected.not_to allow_value(nil).for(:funding_cap).with_message("Choose true or false for funding cap") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
 
-    describe "registration_starts_at year should match start_year" do
-      it "adds an error when the registration_starts_at year does not match the start_year" do
-        cohort = Cohort.new(start_year: 2022, registration_starts_at: Date.new(2023, 4, 10))
-
-        cohort.valid?
-        expect(cohort.errors[:registration_starts_at]).to include("year must match the start year")
-      end
-
-      it "does not add an error when the registration_starts_at year matches the start_year" do
-        cohort = Cohort.new(start_year: 2022, registration_starts_at: Date.new(2022, 4, 10))
-
-        cohort.valid?
-        expect(cohort.errors[:registration_starts_at]).not_to include("year must match the start year")
-      end
-    end
-
     describe "start_year" do
-      it { is_expected.to validate_presence_of(:start_year) }
+      it "is set from the registration start date" do
+        cohort = Cohort.new(registration_starts_at: Date.new(2023, 4, 10))
 
-      it {
-        expect(subject)
-          .to(
-            validate_numericality_of(:start_year)
-              .is_greater_than_or_equal_to(2021)
-              .is_less_than(2030),
-          )
-      }
+        cohort.valid?
+        expect(cohort.start_year).to eq(2023)
+      end
     end
 
     describe "#description" do
       it { is_expected.to validate_presence_of(:description) }
       it { is_expected.to validate_uniqueness_of(:description).case_insensitive }
       it { is_expected.to validate_length_of(:description).is_at_least(5).is_at_most(50) }
+    end
+
+    describe "#identifier" do
+      it "adds a helpful error when another cohort has the same registration start month" do
+        registration_starts_at = Date.new(2029, 12, 1)
+        create(:cohort, registration_starts_at:)
+
+        duplicate = described_class.new(
+          description: "Duplicate cohort",
+          registration_starts_at:,
+          registration_ends_at: registration_starts_at + 2.months,
+          training_starts_at: registration_starts_at + 3.months,
+          training_ends_at: registration_starts_at + 9.months,
+          funding_cap: true,
+        )
+
+        expect(duplicate).to have_error(:identifier, :taken, "Cohort starting 'Dec 2029' exists already")
+      end
     end
 
     describe "changing funding_cap when there are applications" do

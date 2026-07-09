@@ -96,15 +96,6 @@ erDiagram
   Declaration }o--|| Declaration : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
-  CourseCohortProvider {
-    integer id
-    integer course_cohort_id
-    datetime created_at
-    integer lead_provider_id
-    datetime updated_at
-  }
-  CourseCohortProvider }o--|| CourseCohort : belongs_to
-  CourseCohortProvider }o--|| LeadProvider : belongs_to
   CourseCohort {
     integer id
     integer cohort_id
@@ -114,9 +105,6 @@ erDiagram
     integer schedule_id
     datetime updated_at
   }
-  CourseCohort }o--|| Course : belongs_to
-  CourseCohort }o--|| Cohort : belongs_to
-  CourseCohort }o--|| Schedule : belongs_to
   Course {
     integer id
     enum course_group
@@ -132,6 +120,7 @@ erDiagram
   }
   Cohort {
     integer id
+    integer course_id
     datetime created_at
     string description
     uuid ecf_id
@@ -140,8 +129,11 @@ erDiagram
     date registration_ends_at
     date registration_starts_at
     integer start_year
+    date training_ends_at
+    date training_starts_at
     datetime updated_at
   }
+  Cohort }o--|| Course : belongs_to
   ApplicationLeadProvider {
     integer id
     integer application_id
@@ -168,7 +160,8 @@ erDiagram
   ApplicationEvent }o--|| LeadProvider : belongs_to
   Application {
     integer id
-    integer course_cohort_id
+    integer cohort_id
+    integer course_id
     datetime created_at
     uuid ecf_id
     boolean eligible_for_funding
@@ -198,9 +191,10 @@ erDiagram
     boolean works_in_nursery
     boolean works_in_school
   }
-  Application }o--|| User : belongs_to
-  Application }o--|| CourseCohort : belongs_to
+  Application }o--|| Cohort : belongs_to
+  Application }o--|| Course : belongs_to
   Application }o--|| Institution : belongs_to
+  Application }o--|| User : belongs_to
   Institution {
     integer id
     string address_1

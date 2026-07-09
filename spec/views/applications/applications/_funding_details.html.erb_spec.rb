@@ -84,9 +84,8 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
              eligible_for_funding: true,
              funding_eligiblity_status_code: "funded",
              status: Application::COMPLETED,
-             course_cohort: create(:course_cohort,
-                                   course: create(:course),
-                                   cohort: application.course_cohort.cohort))
+             course: create(:course),
+             cohort: create(:cohort, :unique))
     end
 
     it "shows the course funding row with ineligible_setting text" do

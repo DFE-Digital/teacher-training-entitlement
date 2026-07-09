@@ -11,7 +11,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   let(:new_button_text)    { "New cohort" }
   let(:edit_button_text)   { "Edit cohort details" }
   let(:delete_button_text) { "Delete cohort" }
-  let(:download_contracts_button_text) { "Download contracts CSV" }
 
   before do
     (2026..2028).each { create(:cohort, start_year: _1, course:) }
@@ -42,7 +41,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       visit new_admin_cohort_path(course_id: course.id)
 
       fill_in "Description", with: "2029 to 2030"
-      fill_in "Start year", with: "2029"
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "2"
@@ -84,7 +82,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       new_description = "2025 to 2026 #{rand(100)}"
       fill_in "Description", with: new_description
-      fill_in "Start year", with: "2025"
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "6"
@@ -111,22 +108,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect { click_on "Confirm" }.to change(Cohort, :count).by(-1)
     end
 
-    scenario "downloading contracts CSV" do
-      LeadProvider.find_each do |lead_provider|
-        statement = create(:statement, cohort:, lead_provider:)
-
-        Course.find_each do |course|
-          create(:contract, statement:, course:, contract_template: create(:contract_template))
-        end
-      end
-
-      navigate_to_cohort
-      click_on download_contracts_button_text
-      csv_file = "#{Capybara.save_path}/#{cohort.start_year}_cohort_contracts.csv"
-      wait_for_file_to_be_created(csv_file)
-      csv = CSV.read(csv_file)
-      expect(csv.count).to eq(ContractTemplate.count + 1)
-    end
   end
 
   context "when logged in as a normal admin" do
@@ -145,10 +126,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(page).not_to have_link(delete_button_text)
     end
 
-    scenario "cannot download contracts CSV" do
-      navigate_to_cohort
-      expect(page).not_to have_link(download_contracts_button_text)
-    end
   end
 
   def navigate_to_cohort

@@ -60,6 +60,15 @@ FactoryBot.define do
       end
     end
 
+    trait :for_cohort_starting_on do
+      transient do
+        registration_starts_at { 1.week.ago.to_date.beginning_of_month }
+      end
+
+      cohort { create(:cohort, registration_starts_at:) }
+      schedule { create(:schedule, cohort:) }
+    end
+
     trait :with_school do
       transient do
         school { nil }
