@@ -64,7 +64,7 @@ RSpec.describe AssuranceReports::Query do
       it { is_expected.to have_attributes participant_id: declaration.application.user.ecf_id }
       it { is_expected.to have_attributes participant_name: declaration.application.user.full_name }
       it { is_expected.to have_attributes trn: declaration.application.user.trn }
-      it { is_expected.to have_attributes application_course_identifier: declaration.course_identifier }
+      it { is_expected.to have_attributes application_course_identifier: declaration.application.reload.course.identifier }
       it { is_expected.to have_attributes eligible_for_funding: declaration.application.eligible_for_funding }
       it { is_expected.to have_attributes funded_place: declaration.application.funded_place }
       it { is_expected.to have_attributes lead_provider_name: declaration.lead_provider.name }

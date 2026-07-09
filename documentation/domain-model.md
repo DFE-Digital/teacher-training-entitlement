@@ -120,7 +120,6 @@ erDiagram
   }
   Cohort {
     integer id
-    integer course_id
     datetime created_at
     string description
     uuid ecf_id
@@ -129,9 +128,10 @@ erDiagram
     date registration_ends_at
     date registration_starts_at
     integer start_year
-    date training_ends_at
-    date training_starts_at
     datetime updated_at
+    integer course_id
+    date training_starts_at
+    date training_ends_at
   }
   Cohort }o--|| Course : belongs_to
   ApplicationLeadProvider {
@@ -160,8 +160,6 @@ erDiagram
   ApplicationEvent }o--|| LeadProvider : belongs_to
   Application {
     integer id
-    integer cohort_id
-    integer course_id
     datetime created_at
     uuid ecf_id
     boolean eligible_for_funding
@@ -190,9 +188,9 @@ erDiagram
     boolean works_in_childcare
     boolean works_in_nursery
     boolean works_in_school
+    integer cohort_id
   }
   Application }o--|| Cohort : belongs_to
-  Application }o--|| Course : belongs_to
   Application }o--|| Institution : belongs_to
   Application }o--|| User : belongs_to
   Institution {

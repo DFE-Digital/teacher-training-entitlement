@@ -162,12 +162,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates 11 applications in primary cohort and 1 in secondary cohort" do
           seeder.call
 
-          course = Course.find_by!(identifier: "tte-early-years")
           cohort_start_dates = seeder.cohort_start_dates.take(4)
           primary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[0])
           secondary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[2])
-          expect(lead_provider.updateable_applications.where(course:, cohort: primary_cohort).count).to eq(11)
-          expect(lead_provider.updateable_applications.where(course:, cohort: secondary_cohort).count).to eq(1)
+          expect(lead_provider.updateable_applications.where(cohort: primary_cohort).count).to eq(11)
+          expect(lead_provider.updateable_applications.where(cohort: secondary_cohort).count).to eq(1)
         end
 
         it "creates 2 statements" do

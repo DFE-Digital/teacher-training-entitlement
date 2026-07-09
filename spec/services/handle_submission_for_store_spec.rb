@@ -103,7 +103,6 @@ RSpec.describe HandleSubmissionForStore do
         expect(last_application.application_lead_providers.first.assigned_at).to be_present
         expect(stable_as_json(last_application)).to match({
           "cohort_id" => cohort.id,
-          "course_id" => course.id,
           "ecf_id" => last_application.ecf_id,
           "eligible_for_funding" => true,
           "funded_place" => nil,
@@ -188,7 +187,6 @@ RSpec.describe HandleSubmissionForStore do
         expect(user.applications.last.lead_provider).to eq(lead_provider)
         expect(stable_as_json(user.applications.last)).to match({
           "cohort_id" => cohort.id,
-          "course_id" => course.id,
           "ecf_id" => user.applications.last.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,
@@ -244,7 +242,6 @@ RSpec.describe HandleSubmissionForStore do
         expect(user.applications.last.lead_provider).to eq(lead_provider)
         expect(stable_as_json(user.applications.last)).to match({
           "cohort_id" => cohort.id,
-          "course_id" => course.id,
           "ecf_id" => user.applications.last.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,
@@ -310,7 +307,6 @@ RSpec.describe HandleSubmissionForStore do
         expect(user.applications.last.lead_provider).to eq(lead_provider)
         expect(stable_as_json(user.applications.last)).to match({
           "cohort_id" => cohort.id,
-          "course_id" => course.id,
           "ecf_id" => user.applications.last.ecf_id,
           "eligible_for_funding" => false,
           "funded_place" => nil,

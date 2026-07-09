@@ -17,9 +17,9 @@ module Statements
 
     def statement_items
       statement.statement_items
-               .joins(declaration: { application: :course })
+               .joins(declaration: { application: { cohort: :course } })
                .merge(Declaration.select("DISTINCT (user_id, declaration_type)"))
-               .where(applications: { course_id: contract.course_id })
+               .where(cohorts: { course_id: contract.course_id })
     end
 
     def billable_declarations_count

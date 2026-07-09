@@ -8,7 +8,7 @@ FactoryBot.define do
     funding_cap { true }
     description { registration_starts_at.strftime("%B %Y") }
     identifier { registration_starts_at.strftime("%Y-%B") }
-    course { Course.reception || create(:course) }
+    course { Course.reception || create(:course, :npd_eirt) }
 
     initialize_with do
       Cohort.find_or_create_by(registration_starts_at:)

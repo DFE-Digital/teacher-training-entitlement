@@ -366,14 +366,12 @@ module ValidTestDataGenerators
 
       application = lead_provider.updateable_applications.find_or_create_by!(
         user:,
-        course: course_run.course,
         cohort: course_run.cohort,
       )
       application.update!(
         user:,
         lead_provider:,
         institution:,
-        course: course_run.course,
         cohort: course_run.cohort,
         status:,
         funded_place:,

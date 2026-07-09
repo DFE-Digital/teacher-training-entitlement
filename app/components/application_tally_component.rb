@@ -8,7 +8,7 @@ class ApplicationTallyComponent < BaseComponent
   end
 
   def rows
-    applications.joins(dimension).group(column).count.sort
+    applications.joins(joins_for_dimension).group(column).count.sort
   end
 
   def total_row
@@ -19,5 +19,11 @@ private
 
   def column
     "#{dimension.to_s.pluralize}.name"
+  end
+
+  def joins_for_dimension
+    return { cohort: :course } if dimension == :course
+
+    dimension
   end
 end

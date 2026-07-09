@@ -117,7 +117,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
 
     deep_compare_application_data(
       "cohort_id" => latest_application.cohort_id,
-      "course_id" => latest_application.course_id,
       "ecf_id" => latest_application.ecf_id,
       "eligible_for_funding" => true,
       "funded_place" => nil,

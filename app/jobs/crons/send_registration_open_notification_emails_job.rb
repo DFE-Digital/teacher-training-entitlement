@@ -37,8 +37,8 @@ private
   def eligible_applications(cohort)
     Application
       .deferred_status
-      .where(course_id: cohort.course_id)
-      .includes(:user, :course)
+      .where(cohort:)
+      .includes(:user, cohort: :course)
   end
 
   def already_notified?(application, cohort)

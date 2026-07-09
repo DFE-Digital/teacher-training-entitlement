@@ -152,7 +152,7 @@ RSpec.describe Declarations::Query do
         end
 
         it "doesn't filter by cohort when none supplied" do
-          condition_string = %("cohort"."start_year" =)
+          condition_string = %("cohorts"."start_year" =)
 
           expect(described_class.new(cohort_start_years: 2021).scope.to_sql).to include(condition_string)
           expect(described_class.new.scope.to_sql).not_to include(condition_string)

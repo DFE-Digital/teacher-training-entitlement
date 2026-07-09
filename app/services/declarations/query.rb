@@ -60,7 +60,7 @@ module Declarations
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
 
-      scope.merge!(Declaration.where(cohort: { start_year: extract_conditions(cohort_start_years) }))
+      scope.merge!(Declaration.joins(:cohort).where(cohorts: { start_year: extract_conditions(cohort_start_years) }))
     end
 
     def where_application_id_is(application_id)
@@ -78,7 +78,7 @@ module Declarations
     def where_course_identifier_in(course_identifier)
       return if ignore?(filter: course_identifier)
 
-      scope.merge!(Declaration.joins(application: :course).where(courses: { identifier: extract_conditions(course_identifier) }))
+      scope.merge!(Declaration.joins(cohort: :course).where(courses: { identifier: extract_conditions(course_identifier) }))
     end
 
     def all_declarations

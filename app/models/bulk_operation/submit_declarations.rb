@@ -31,7 +31,8 @@ private
     course = Course.find_by(identifier: row["course_identifier"])
     application = Application
                     .joins(:application_lead_providers)
-                    .where(user: participant, course:)
+                    .joins(cohort: :course)
+                    .where(user: participant, courses: { id: course })
                     .merge(ApplicationLeadProvider.current.where(lead_provider:))
                     .first
 

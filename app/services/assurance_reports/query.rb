@@ -44,7 +44,8 @@ module AssuranceReports
         JOIN statements s                   ON s.id = si.statement_id
         JOIN lead_providers lp              ON lp.id = d.lead_provider_id
         JOIN applications a                 ON a.id = d.application_id
-        JOIN courses c                      ON c.id = a.course_id
+        JOIN cohorts co                     ON co.id = a.cohort_id
+        JOIN courses c                      ON c.id = co.course_id
         JOIN users u                        ON u.id = a.user_id
         LEFT OUTER JOIN schedules sch       ON sch.cohort_id = a.cohort_id AND sch.course_group = c.course_group
         LEFT OUTER JOIN institutions i      ON i.id = a.institution_id

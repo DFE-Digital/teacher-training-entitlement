@@ -7,20 +7,21 @@ FactoryBot.define do
     status { :pending }
     ecf_id { SecureRandom.uuid }
 
-    course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
-    cohort do
-      next schedule.cohort if schedule
-
-      existing = user&.persisted? &&
-        user.applications.not_rejected
-          .where(course:)
-          .exists?
-      existing ? create(:cohort, :unique, course:) : create(:cohort, :current, course:)
-    end
-
     transient do
+      course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
       lead_provider { nil }
       schedule { nil }
+    end
+
+    cohort do
+      next schedule.cohort if schedule&.cohort
+
+      cohort = create(:cohort, :current, course:)
+      existing = user&.persisted? &&
+        user.applications.not_rejected
+          .where(cohort:)
+          .exists?
+      existing ? create(:cohort, :unique, course:) : cohort
     end
 
     teacher_catchment { cohort.start_year > 2023 ? "england" : nil }
@@ -33,7 +34,6 @@ FactoryBot.define do
     after(:create) do |application, evaluator|
       lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
       create(:application_lead_provider, :current, application:, lead_provider:)
-
       Schedule.find_or_create_by!(cohort: application.cohort, course_group: application.course.course_group) do |schedule|
         schedule.name = "Schedule #{application.cohort.name}"
         schedule.identifier = "schedule-#{application.cohort.id}"
@@ -65,7 +65,7 @@ FactoryBot.define do
         registration_starts_at { 1.week.ago.to_date.beginning_of_month }
       end
 
-      cohort { create(:cohort, registration_starts_at:) }
+      cohort { create(:cohort, registration_starts_at:, course:) }
       schedule { create(:schedule, cohort:) }
     end
 

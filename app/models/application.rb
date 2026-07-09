@@ -8,7 +8,6 @@ class Application < ApplicationRecord
   has_paper_trail meta: { note: :version_note }
 
   belongs_to :cohort
-  belongs_to :course
   belongs_to :institution, optional: true
   belongs_to :user
 
@@ -19,6 +18,7 @@ class Application < ApplicationRecord
   has_many :declarations
   has_many :application_lead_providers
 
+  has_one :course, through: :cohort
   has_one :deferred_event, -> { where(event: DEFERRED).order(created_at: :desc) }, class_name: "StateChange"
   has_one :rejected_event, -> { where(event: REJECTED).order(created_at: :desc) }, class_name: "StateChange"
   has_one :withdrawn_event, -> { where(event: WITHDRAWN).order(created_at: :desc) }, class_name: "StateChange"

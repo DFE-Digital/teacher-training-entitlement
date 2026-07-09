@@ -83,7 +83,7 @@ module Applications
     def where_course_identifier_in(course_identifier)
       return if ignore?(filter: course_identifier)
 
-      scope.merge!(Application.joins(:course).where(courses: { identifier: extract_conditions(course_identifier) }))
+      scope.merge!(Application.joins(cohort: :course).where(courses: { identifier: extract_conditions(course_identifier) }))
     end
 
     def order_by

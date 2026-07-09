@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_09_115100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -123,7 +123,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
 
   create_table "applications", force: :cascade do |t|
     t.bigint "cohort_id"
-    t.bigint "course_id"
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.boolean "eligible_for_funding", default: false, null: false
@@ -153,7 +152,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_073000) do
     t.boolean "works_in_nursery"
     t.boolean "works_in_school"
     t.index ["cohort_id"], name: "index_applications_on_cohort_id"
-    t.index ["course_id"], name: "index_applications_on_course_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["status"], name: "index_applications_on_status"

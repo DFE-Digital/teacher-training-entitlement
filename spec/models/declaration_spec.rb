@@ -666,12 +666,17 @@ RSpec.describe Declaration, type: :model do
     end
 
     describe ".with_course_identifier" do
-      let(:course_identifier) { declaration.application.course.identifier }
-      let(:declaration) { create(:declaration) }
+      let(:course) { create(:course) }
+      let(:cohort) { create(:cohort, :unique, course:) }
+      let(:course_identifier) { course.identifier }
+      let(:declaration) { create(:declaration, course:, application: create(:application, :accepted, course:, cohort:)) }
 
       before do
         Course::IDENTIFIERS.excluding(course_identifier).each do |identifier|
-          create(:declaration, course: Course.find_by(identifier:))
+          other_course = Course.find_by(identifier:) || create(:course, identifier:)
+          other_cohort = create(:cohort, :unique, course: other_course)
+
+          create(:declaration, course: other_course, application: create(:application, :accepted, course: other_course, cohort: other_cohort))
         end
       end
 

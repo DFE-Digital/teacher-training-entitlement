@@ -19,7 +19,8 @@ class Exporters::TadDataRequest
 
     accepted_applications_ids = Declaration.billable.where(declaration_type: "started").where(cohort: @cohort).pluck(:application_id)
     Application
-      .where(id: accepted_applications_ids, course_id:, cohort_id:)
+      .joins(cohort: :course)
+      .where(id: accepted_applications_ids, cohorts: { course_id: }, cohort_id:)
       .includes(:user, :institution, declarations: :participant_outcomes)
   end
 
