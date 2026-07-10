@@ -158,6 +158,21 @@ RSpec.describe "Application endpoints", type: :request do
         end
       end
 
+      context "when filtering by updated_since after the provider changes" do
+        let(:old_lead_provider) { create(:lead_provider) }
+        let(:new_lead_provider) { create(:lead_provider) }
+        let(:application) { create(:application, :pending, lead_provider: old_lead_provider, updated_at: 2.days.ago) }
+
+        it "includes the reassigned application for the old provider" do
+          Applications::ChangeLeadProvider.new(application:, new_provider: new_lead_provider).call
+
+          api_get(path, lead_provider: old_lead_provider, params: { filter: { updated_since: 1.hour.ago.iso8601 } })
+
+          expect(response_ids).to contain_exactly(application.ecf_id)
+          expect(JSON.parse(response.body)["data"].first["attributes"]["status"]).to eq(Application::REASSIGNED)
+        end
+      end
+
       context "with the a provider never assigned to the application" do
         it "cannot see the application" do
           api_get(path, lead_provider: create(:lead_provider))

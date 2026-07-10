@@ -134,7 +134,11 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
 
   def lead_provider=(new_provider)
-    return if new_provider == lead_provider
+    change_provider!(to: new_provider)
+  end
+
+  def change_provider!(to:)
+    return if to == lead_provider
 
     timestamp = Time.zone.now
     application_lead_providers.current.update_all(
@@ -143,10 +147,11 @@ class Application < ApplicationRecord
       unassigned_at: timestamp,
     )
     application_lead_providers.create!(
-      lead_provider: new_provider,
+      lead_provider: to,
       current: true,
       assigned_at: timestamp,
     )
+    touch_later
   end
 
   def assigned_at

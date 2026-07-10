@@ -712,7 +712,7 @@ RSpec.describe Application do
     end
   end
 
-  describe "#lead_provider=" do
+  describe "#change_provider!" do
     let(:lead_provider) { create(:lead_provider) }
     let(:another_lead_provider) { create(:lead_provider) }
     let(:assignment_date) { 1.day.ago }
@@ -727,7 +727,7 @@ RSpec.describe Application do
       expect(application.current_application_lead_provider.assigned_at.to_fs).to eq(assignment_date.to_fs)
       expect(application.current_application_lead_provider.unassigned_at).to be_nil
 
-      application.lead_provider = another_lead_provider
+      application.change_provider!(to: another_lead_provider)
 
       application_lead_providers = application.application_lead_providers.reload
 
@@ -748,9 +748,15 @@ RSpec.describe Application do
       expect(application.reload.lead_provider).to eq(another_lead_provider)
     end
 
+    it "touches the application later" do
+      expect(application).to receive(:touch_later).and_call_original
+
+      application.change_provider!(to: another_lead_provider)
+    end
+
     it "does nothing when setting the same lead provider" do
       expect {
-        application.lead_provider = lead_provider
+        application.change_provider!(to: lead_provider)
       }.not_to change(application.application_lead_providers, :count)
 
       expect(application.reload.current_application_lead_provider.lead_provider).to eq(lead_provider)

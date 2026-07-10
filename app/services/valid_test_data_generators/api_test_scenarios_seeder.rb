@@ -558,7 +558,7 @@ module ValidTestDataGenerators
 
     def change_provider(application:)
       new_provider = LeadProvider.where.not(id: @lead_provider.id).order("RANDOM()").first
-      application.update!(lead_provider: new_provider)
+      application.change_provider!(to: new_provider)
     end
 
     def statements_setup(course_cohort:)
