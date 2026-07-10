@@ -84,7 +84,10 @@ module API
               application: [:user,
                             :institution,
                             { course_cohort: %i[course cohort schedule] }],
-            ).find_by!(application: { ecf_id: })
+            )
+            .where(application: { ecf_id: })
+            .order(current: :desc, updated_at: :desc)
+            .first!
       end
 
       def filter_params

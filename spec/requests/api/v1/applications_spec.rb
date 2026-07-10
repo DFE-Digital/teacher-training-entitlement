@@ -211,6 +211,28 @@ RSpec.describe "Application endpoints", type: :request do
         expect(response).to be_forbidden
       end
     end
+
+    context "when an application is reassigned back to the original provider" do
+      let(:original_lead_provider) { current_lead_provider }
+      let(:intermediate_lead_provider) { create(:lead_provider) }
+      let(:application) { create(:application, :pending, lead_provider: original_lead_provider) }
+      let(:path) { accept_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:attributes) { { funded_place: false } }
+      let(:params) { { data: { attributes: } } }
+
+      before do
+        application.current_application_lead_provider.update!(current: false, unassigned_at: 2.days.ago)
+        create(:application_lead_provider, :unassigned, application:, lead_provider: intermediate_lead_provider)
+        create(:application_lead_provider, :current, application:, lead_provider: original_lead_provider)
+      end
+
+      it "allows the current provider to accept the application" do
+        api_put(path, lead_provider: original_lead_provider, params:)
+
+        expect(response).to have_http_status(:ok)
+        expect(application.reload.status).to eq(Application::ACCEPTED)
+      end
+    end
   end
 
   describe "PUT /api/v1/applications/:ecf_id/reject" do
