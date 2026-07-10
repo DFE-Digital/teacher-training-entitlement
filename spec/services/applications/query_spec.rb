@@ -211,6 +211,22 @@ RSpec.describe Applications::Query do
           end
         end
 
+        context "when lead provider has previous and current assignments for the application" do
+          let(:lead_provider) { current_lead_provider }
+
+          before do
+            create(:application_lead_provider, :unassigned, application:, lead_provider:)
+          end
+
+          it "only includes the application once" do
+            expect(query.applications).to eq([application])
+          end
+
+          it "returns the current assignment" do
+            expect(query.application_lead_providers).to contain_exactly(application.current_application_lead_provider)
+          end
+        end
+
         context "when lead provider is no longer the current provider" do
           let(:lead_provider) { old_lead_provider }
 
@@ -218,6 +234,21 @@ RSpec.describe Applications::Query do
             expect(application.application_lead_providers.map(&:lead_provider_id).sort)
               .to eq([current_lead_provider.id, old_lead_provider.id].sort)
             expect(query.applications).to contain_exactly(application)
+          end
+        end
+
+        context "when lead provider has multiple previous assignments for the application" do
+          let(:lead_provider) { old_lead_provider }
+          let!(:latest_previous_assignment) do
+            create(:application_lead_provider, :unassigned, application:, lead_provider:)
+          end
+
+          it "only includes the application once" do
+            expect(query.applications).to eq([application])
+          end
+
+          it "returns the latest previous assignment" do
+            expect(query.application_lead_providers).to contain_exactly(latest_previous_assignment)
           end
         end
 
