@@ -77,6 +77,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `assigned_at`" do
+      application.assignment = application.current_application_lead_provider
       expect(attributes["assigned_at"]).to eq(application.current_application_lead_provider.assigned_at.rfc3339)
     end
 
