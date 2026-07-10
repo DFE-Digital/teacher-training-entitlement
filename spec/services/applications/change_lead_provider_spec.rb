@@ -25,6 +25,13 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
       expect(application.application_events.last&.reason).to eq("Changed lead provider from #{old_provider.name} to #{new_provider.name}")
     end
 
+    it "touches the application so API consumers can sync the provider change" do
+      application.update!(updated_at: 1.day.ago)
+
+      expect { service.call }
+        .to change { application.reload.updated_at }
+    end
+
     context "when application not pending or accepted" do
       let(:application) { create(:application, :started, lead_provider: old_provider) }
 

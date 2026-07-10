@@ -18,7 +18,7 @@ module Applications
       return unless valid?
 
       Application.transaction do
-        @application.update!(lead_provider: @new_provider)
+        @application.change_provider!(to: @new_provider)
         @application.application_events.create!(
           event: :changed_provider,
           metadata: { reason: }.compact,

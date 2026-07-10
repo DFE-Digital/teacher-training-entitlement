@@ -133,8 +133,8 @@ class Application < ApplicationRecord
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
-  def lead_provider=(new_provider)
-    return if new_provider == lead_provider
+  def change_provider!(to:)
+    return if to == lead_provider
 
     timestamp = Time.zone.now
     application_lead_providers.current.update_all(
@@ -143,10 +143,11 @@ class Application < ApplicationRecord
       unassigned_at: timestamp,
     )
     application_lead_providers.create!(
-      lead_provider: new_provider,
+      lead_provider: to,
       current: true,
       assigned_at: timestamp,
     )
+    touch
   end
 
   def assigned_at
