@@ -752,7 +752,7 @@ RSpec.describe Application do
       application.update!(updated_at: 2.days.ago)
 
       expect { application.change_provider!(to: another_lead_provider) }
-        .to change { application.reload.updated_at }
+        .to(change { application.reload.updated_at })
     end
 
     it "does nothing when setting the same lead provider" do
@@ -764,5 +764,4 @@ RSpec.describe Application do
       expect(application.application_lead_providers.current.count).to eq(1)
     end
   end
-
 end

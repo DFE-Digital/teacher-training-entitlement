@@ -29,7 +29,7 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
       application.update!(updated_at: 1.day.ago)
 
       expect { service.call }
-        .to change { application.reload.updated_at }
+        .to(change { application.reload.updated_at })
     end
 
     context "when application not pending or accepted" do
