@@ -155,14 +155,6 @@ shared:
     - course_group
     - short_code
     - position
-  :course_cohorts:
-    - id
-    - cohort_id
-    - course_id
-    - created_at
-    - ecf_id
-    - schedule_id
-    - updated_at
   :cohorts:
     - id
     - start_year

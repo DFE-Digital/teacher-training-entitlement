@@ -11,7 +11,6 @@ class Cohort < ApplicationRecord
   has_many :delivery_partners, through: :delivery_partnerships
   has_many :cohort_providers, dependent: :destroy
   has_many :lead_providers, through: :cohort_providers
-  # has_many :course_cohorts, dependent: :destroy
   has_many :schedules, dependent: :destroy
 
   validates :start_year,
@@ -30,7 +29,6 @@ class Cohort < ApplicationRecord
   validates :training_starts_at, presence: true, if: -> { new_record? || training_starts_at_was }
   validates :training_ends_at, presence: true, if: -> { new_record? || training_ends_at_was }
   validates :identifier, presence: true
-  validate :registration_starts_at_matches_start_year
   validate :identifier_is_unique
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
@@ -75,17 +73,10 @@ class Cohort < ApplicationRecord
 
 private
 
-  def registration_starts_at_matches_start_year
+  def set_start_year
     return if registration_starts_at.blank?
 
-    errors.add(:registration_starts_at, "year must match the start year") if registration_starts_at.year != start_year
-  end
-
-  def identifier_is_unique
-    return if identifier.blank?
-    return unless self.class.where.not(id:).where("LOWER(identifier) = ?", identifier.downcase).exists?
-
-    errors.add(:identifier, :taken, cohort_start: registration_starts_at&.strftime("%b %Y") || identifier)
+    self.start_year = registration_starts_at.year
   end
 
   def set_identifier
@@ -94,10 +85,11 @@ private
     self.identifier = registration_starts_at.strftime("%Y-%B")
   end
 
-  def set_start_year
-    return if registration_starts_at.blank?
+  def identifier_is_unique
+    return if identifier.blank?
+    return unless self.class.where.not(id:).where("LOWER(identifier) = ?", identifier.downcase).exists?
 
-    self.start_year = registration_starts_at.year
+    errors.add(:identifier, :taken, cohort_start: registration_starts_at&.strftime("%b %Y") || identifier)
   end
 
   def changing_funding_cap_with_dependent_applications

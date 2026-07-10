@@ -11,6 +11,16 @@ class Application < ApplicationRecord
   belongs_to :institution, optional: true
   belongs_to :user
 
+  # Convenience methods to access the institutionable through institution
+  # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
+  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
+
+  def private_childcare_provider_including_disabled
+    return nil unless institution&.private_childcare_provider?
+
+    PrivateChildcareProvider.including_disabled.find_by(id: institution.institutionable_id)
+  end
+
   has_many :participant_id_changes, through: :user
   has_many :application_events
   has_many :state_changes

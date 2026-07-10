@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_09_115100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_10_112300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -233,20 +233,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_115100) do
     t.index ["course_id"], name: "index_contracts_on_course_id"
     t.index ["statement_id", "course_id"], name: "index_contracts_on_statement_id_and_course_id", unique: true
     t.index ["statement_id"], name: "index_contracts_on_statement_id"
-  end
-
-  create_table "course_cohorts", force: :cascade do |t|
-    t.bigint "cohort_id", null: false
-    t.bigint "course_id", null: false
-    t.datetime "created_at", null: false
-    t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
-    t.bigint "schedule_id"
-    t.datetime "updated_at", null: false
-    t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
-    t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
-    t.index ["course_id"], name: "index_course_cohorts_on_course_id"
-    t.index ["ecf_id"], name: "index_course_cohorts_on_ecf_id", unique: true
-    t.index ["schedule_id"], name: "index_course_cohorts_on_schedule_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -629,8 +615,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_115100) do
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"
   add_foreign_key "contracts", "statements"
-  add_foreign_key "course_cohorts", "cohorts"
-  add_foreign_key "course_cohorts", "courses"
   add_foreign_key "declarations", "applications"
   add_foreign_key "declarations", "cohorts"
   add_foreign_key "declarations", "declarations", column: "superseded_by_id"

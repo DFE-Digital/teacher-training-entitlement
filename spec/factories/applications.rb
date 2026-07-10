@@ -35,14 +35,17 @@ FactoryBot.define do
       lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
       create(:application_lead_provider, :current, application:, lead_provider:)
       Schedule.find_or_create_by!(cohort: application.cohort, course_group: application.course.course_group) do |schedule|
-        schedule.name = "Schedule #{application.cohort.name}"
-        schedule.identifier = "schedule-#{application.cohort.id}"
-        schedule.training_starts_at = application.cohort.training_starts_at
-        schedule.training_ends_at = application.cohort.training_ends_at
-        schedule.allowed_declaration_types = Schedule.allowed_declaration_types
-        schedule.policy_descriptor = 1
-        schedule.acceptance_window_start = application.cohort.training_starts_at
-        schedule.acceptance_window_end = application.cohort.training_ends_at
+        cohort = application.cohort
+        schedule.assign_attributes(
+          name: "Schedule #{cohort.name}",
+          identifier: "schedule-#{cohort.id}",
+          training_starts_at: cohort.training_starts_at,
+          training_ends_at: cohort.training_ends_at,
+          allowed_declaration_types: Schedule.allowed_declaration_types,
+          policy_descriptor: 1,
+          acceptance_window_start: cohort.training_starts_at,
+          acceptance_window_end: cohort.training_ends_at,
+        )
       end
     end
 

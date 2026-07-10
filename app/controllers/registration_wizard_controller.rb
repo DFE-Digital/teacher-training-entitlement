@@ -1,9 +1,6 @@
 class RegistrationWizardController < PublicPagesController
   before_action :registration_closed
-<<<<<<< HEAD
   before_action :redirect_to_start_if_signed_out, except: :development_login
-=======
->>>>>>> 96e3ad3d9 (Move registration cohort selection to be driven from course)
   before_action :set_wizard
   before_action :set_form
   before_action :check_duplicate_applications, only: %i[update]
@@ -75,6 +72,13 @@ private
 
     redirect_to root_path if store.except("current_user_id").blank? &&
       !params[:step].in?(RegistrationWizard::VALID_BLANK_STEPS)
+  end
+
+  def redirect_to_start_if_signed_out
+    return if current_user.present?
+    return if params[:step].to_s.in?(%w[start closed])
+
+    redirect_to root_path
   end
 
   def redirect_to_course_start_date

@@ -24,7 +24,7 @@ class Admin::StatementsController < AdminController
       set_preview
     else
       flash[:success] = "#{@statements.count} statements created successfully"
-      redirect_to cohort_path(@cohort)
+      redirect_to admin_course_cohort_path(cohort.course, cohort)
     end
   end
 
@@ -41,12 +41,6 @@ private
 
   def set_cohort
     @cohort = Cohort.find(params[:cohort_id])
-  end
-
-  def cohort_path(cohort)
-    return admin_course_cohort_path(cohort.course, cohort) if cohort.course.present?
-
-    admin_courses_path
   end
 
   def set_preview

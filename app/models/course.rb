@@ -7,7 +7,6 @@ class Course < ApplicationRecord
   has_many :cohorts
   has_many :cohort_providers, through: :cohorts
   has_many :lead_providers, through: :cohort_providers
-  # has_many :schedules, through: :course_cohorts
   has_many :applications, through: :cohorts
 
   scope :displayable, -> { where(display: true).order(:position) }

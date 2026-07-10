@@ -6,7 +6,9 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
   subject { response }
 
   let(:cohort)         { create(:cohort) }
-  let(:invalid_params) { valid_params.deep_merge(cohort: { registration_starts_at: "1066-04-01" }) }
+  let(:course)         { create(:course) }
+  let(:create_params)  { valid_params.deep_merge(cohort: { course_id: course.id }) }
+  let(:invalid_params) { create_params.deep_merge(cohort: { registration_starts_at: "1066-04-01" }) }
 
   let :valid_params do
     {
@@ -31,15 +33,15 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     end
 
     describe "#new" do
-      before { get new_admin_cohort_path }
+      before { get new_admin_cohort_path(course_id: course.id) }
 
       it { is_expected.to have_http_status :success }
     end
 
     describe "#create" do
-      before { post admin_cohorts_path, params: valid_params }
+      before { post admin_cohorts_path, params: create_params }
 
-      it { is_expected.to redirect_to admin_courses_path }
+      it { is_expected.to redirect_to admin_course_cohort_path(course, Cohort.last) }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Cohort created/i)
@@ -83,7 +85,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
     describe "#destroy with confirm" do
       before { delete admin_course_cohort_path(cohort.course, cohort), params: { confirm: "1" } }
 
-      it { is_expected.to redirect_to admin_path }
+      it { is_expected.to redirect_to admin_course_path(cohort.course) }
 
       it "flashes success" do
         expect(flash[:success]).to match(/Cohort deleted/i)

@@ -96,15 +96,6 @@ erDiagram
   Declaration }o--|| Declaration : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
-  CourseCohort {
-    integer id
-    integer cohort_id
-    integer course_id
-    datetime created_at
-    uuid ecf_id
-    integer schedule_id
-    datetime updated_at
-  }
   Course {
     integer id
     enum course_group

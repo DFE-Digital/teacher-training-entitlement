@@ -1,6 +1,6 @@
 class Admin::CohortsController < AdminController
   before_action :ensure_super_admin, except: %i[index show]
-  before_action :cohort, only: %i[show edit update destroy download_contracts]
+  before_action :cohort, only: %i[show edit update destroy]
 
   def index
     @pagy, @cohorts = pagy(Cohort.order_by_latest)
@@ -19,7 +19,7 @@ class Admin::CohortsController < AdminController
     if @cohort.save
       Cohorts::CopyDeliveryPartnersJob.perform_later(@cohort.id)
       flash[:success] = "Cohort created"
-      redirect_to cohort_path(@cohort)
+      redirect_to admin_course_cohort_path(@cohort.course, @cohort)
     else
       render :form, status: :unprocessable_content
     end
@@ -32,7 +32,7 @@ class Admin::CohortsController < AdminController
   def update
     if @cohort.update(cohort_params)
       flash[:success] = "Cohort updated"
-      redirect_to cohort_path(@cohort)
+      redirect_to admin_course_cohort_path(cohort.course, cohort)
     else
       render :form, status: :unprocessable_content
     end
@@ -42,14 +42,14 @@ class Admin::CohortsController < AdminController
     if params[:confirm].present?
       @cohort.destroy!
       flash[:success] = "Cohort deleted"
-      redirect_to admin_path
+      redirect_to admin_course_path(@course)
     else
       render :destroy
     end
   end
 
   def download_contracts
-    send_data Exporters::Contracts.new(cohort: @cohort).call, filename: "#{@cohort.start_year}_cohort_contracts.csv", type: :csv
+    send_data Exporters::Contracts.new(cohort:).call, filename: "#{cohort.identifier}_cohort_contracts.csv", type: :csv
   end
 
 private
@@ -72,12 +72,6 @@ private
 
   def course
     @course ||= Course.find(params[:course_id])
-  end
-
-  def cohort_path(cohort)
-    return admin_course_cohort_path(cohort.course, cohort) if cohort.course.present?
-
-    admin_courses_path
   end
 
   def ensure_super_admin
