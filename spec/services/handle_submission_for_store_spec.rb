@@ -102,6 +102,7 @@ RSpec.describe HandleSubmissionForStore do
         expect(user.applications.reload.count).to eq 1
         last_application = user.applications.last
         expect(last_application.lead_provider).to eq(lead_provider)
+        expect(last_application.application_lead_providers.first.assigned_at).to be_present
         expect(stable_as_json(last_application)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
