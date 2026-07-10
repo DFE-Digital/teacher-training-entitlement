@@ -1,4 +1,6 @@
 class CourseCohort < ApplicationRecord
+  has_paper_trail
+
   belongs_to :course
   belongs_to :cohort
   belongs_to :schedule

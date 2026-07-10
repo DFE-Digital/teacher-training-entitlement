@@ -1,6 +1,8 @@
 class Course < ApplicationRecord
   include CourseGroupable
 
+  has_paper_trail
+
   validates :name, presence: true
   validates :identifier, presence: true, uniqueness: true
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
