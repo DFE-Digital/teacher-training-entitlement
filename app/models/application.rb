@@ -155,11 +155,12 @@ class Application < ApplicationRecord
   end
 
   def assigned_at
-    current_application_lead_provider.assigned_at
+    # assignment is a specific a application_lead_provider record set before render
+    assignment&.assigned_at
   end
 
   def unassigned_at
-    # assignment is a specific previous application_lead_provider record set before render
+    # assignment is a specific a application_lead_provider record set before render
     assignment&.unassigned_at
   end
 
