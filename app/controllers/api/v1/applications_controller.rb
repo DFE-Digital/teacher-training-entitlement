@@ -86,7 +86,7 @@ module API
                             { course_cohort: %i[course cohort schedule] }],
             )
             .where(application: { ecf_id: })
-            .order(current: :desc, updated_at: :desc)
+            .order(current: :desc, updated_at: :desc, id: :desc)
             .first!
       end
 
