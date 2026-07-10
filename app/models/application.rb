@@ -133,6 +133,10 @@ class Application < ApplicationRecord
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
+  def lead_provider=(new_provider)
+    change_provider!(to: new_provider)
+  end
+
   def change_provider!(to:)
     return if to == lead_provider
 
@@ -147,7 +151,7 @@ class Application < ApplicationRecord
       current: true,
       assigned_at: timestamp,
     )
-    touch
+    touch_later
   end
 
   def assigned_at

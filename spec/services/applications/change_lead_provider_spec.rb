@@ -25,11 +25,10 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
       expect(application.application_events.last&.reason).to eq("Changed lead provider from #{old_provider.name} to #{new_provider.name}")
     end
 
-    it "touches the application so API consumers can sync the provider change" do
-      application.update!(updated_at: 1.day.ago)
+    it "touches the application later so API consumers can sync the provider change" do
+      expect(application).to receive(:touch_later).and_call_original
 
-      expect { service.call }
-        .to(change { application.reload.updated_at })
+      service.call
     end
 
     context "when application not pending or accepted" do

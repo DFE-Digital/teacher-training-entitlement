@@ -748,11 +748,10 @@ RSpec.describe Application do
       expect(application.reload.lead_provider).to eq(another_lead_provider)
     end
 
-    it "touches the application" do
-      application.update!(updated_at: 2.days.ago)
+    it "touches the application later" do
+      expect(application).to receive(:touch_later).and_call_original
 
-      expect { application.change_provider!(to: another_lead_provider) }
-        .to(change { application.reload.updated_at })
+      application.change_provider!(to: another_lead_provider)
     end
 
     it "does nothing when setting the same lead provider" do
