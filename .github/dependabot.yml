@@ -14,6 +14,11 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
 
   # JavaScript dependencies (package.json)
   - package-ecosystem: npm
@@ -30,6 +35,11 @@ updates:
       prefix: "chore"
       include: "scope"
     versioning-strategy: increase
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
 
   # Docker dependencies (Dockerfile)
   - package-ecosystem: docker
@@ -46,6 +56,8 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    cooldown:
+      default-days: 7
 
   # GitHub Actions dependencies
   - package-ecosystem: github-actions
@@ -62,3 +74,5 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    cooldown:
+      default-days: 7
