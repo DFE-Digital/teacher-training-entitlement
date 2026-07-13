@@ -1,6 +1,6 @@
 class RegistrationWizardController < PublicPagesController
   before_action :registration_closed
-  before_action :redirect_to_start_if_signed_out
+  before_action :redirect_to_start_if_signed_out, except: :development_login
   before_action :set_wizard
   before_action :set_form
   before_action :check_duplicate_applications, only: %i[update]
