@@ -602,6 +602,7 @@ en:
             code:
               blank: Code can't be blank
               incorrect: Code is not correct. Please try again
+              locked: You have been locked out due to too many failed attempts. Request a new code to try again
         participants/change_trn:
           attributes:
             user:

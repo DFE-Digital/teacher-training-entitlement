@@ -2,8 +2,8 @@ module SessionWizardSteps
   class SignInCode < Base
     attr_accessor :code
 
-    validates :code, presence: true, length: { is: 6 }
-    validate :validate_correct_code
+    validates :code, presence: true, length: { is: 8 }, user_otp_code: true
+    validate :increment_failed_attempts_if_incorrect
 
     def self.permitted_params
       [
@@ -20,17 +20,19 @@ module SessionWizardSteps
     end
     alias_method :user, :admin
 
+    def after_save
+      admin.clear_otp!
+    end
+
   private
 
-    def validate_correct_code
-      if user.blank?
-        errors.add(:code, :incorrect)
-      elsif code == user.otp_hash
-        if user.otp_expires_at < Time.zone.now
-          errors.add(:code, :expired)
-        end
-      else
-        errors.add(:code, :incorrect)
+    def increment_failed_attempts_if_incorrect
+      return unless errors.of_kind?(:code, :incorrect)
+
+      user&.increment_otp_failed_attempts!
+      if user&.otp_locked_out?
+        errors.delete(:code, :incorrect)
+        errors.add(:code, :locked)
       end
     end
   end
