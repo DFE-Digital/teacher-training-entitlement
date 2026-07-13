@@ -2,8 +2,8 @@ module SessionWizardSteps
   class SignInCode < Base
     attr_accessor :code
 
-    validates :code, presence: true, length: { is: 8 }
-    validate :validate_correct_code
+    validates :code, presence: true, length: { is: 8 }, user_otp_code: true
+    validate :increment_failed_attempts_if_incorrect
 
     def self.permitted_params
       [
@@ -26,22 +26,13 @@ module SessionWizardSteps
 
   private
 
-    def validate_correct_code
-      if user.blank?
-        errors.add(:code, :incorrect)
-      elsif user.otp_locked_out?
+    def increment_failed_attempts_if_incorrect
+      return unless errors.of_kind?(:code, :incorrect)
+
+      user&.increment_otp_failed_attempts!
+      if user&.otp_locked_out?
+        errors.delete(:code, :incorrect)
         errors.add(:code, :locked)
-      elsif user.otp&.matches?(code)
-        if user.otp.expired?
-          errors.add(:code, :expired)
-        end
-      else
-        user.increment_otp_failed_attempts!
-        if user.otp_locked_out?
-          errors.add(:code, :locked)
-        else
-          errors.add(:code, :incorrect)
-        end
       end
     end
   end
