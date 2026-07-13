@@ -17,8 +17,8 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
 
       application.assignment = old_application_lead_provider
       expect(application.reload.lead_provider).to eq(new_provider)
-      expect(application.assigned_at).to be_within(5.seconds).of(new_assignment_date)
-      expect(application.unassigned_at).to be_within(5.seconds).of(new_assignment_date)
+      expect(application.assigned_at).to eq(old_application_lead_provider.assigned_at)
+      expect(application.unassigned_at).to eq(old_application_lead_provider.unassigned_at)
       expect(application.status).to eq(Application::PENDING)
       expect(application.application_lead_providers.previous.last.lead_provider).to eq(old_provider)
 

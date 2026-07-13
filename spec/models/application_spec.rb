@@ -712,6 +712,26 @@ RSpec.describe Application do
     end
   end
 
+  describe "auditable field for change provider" do
+    context "when set" do
+      let(:application_lead_provider) { create(:application_lead_provider, :unassigned) }
+
+      before do
+        subject.assignment = application_lead_provider
+      end
+
+      it { expect(subject.assigned_at).to be_present }
+      it { expect(subject.assigned_at).to eq(application_lead_provider.assigned_at) }
+      it { expect(subject.unassigned_at).to be_present }
+      it { expect(subject.unassigned_at).to eq(application_lead_provider.unassigned_at) }
+    end
+
+    context "when omitted" do
+      it { expect(subject.assigned_at).to be_nil }
+      it { expect(subject.unassigned_at).to be_nil }
+    end
+  end
+
   describe "#change_provider!" do
     let(:lead_provider) { create(:lead_provider) }
     let(:another_lead_provider) { create(:lead_provider) }
