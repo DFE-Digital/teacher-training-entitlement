@@ -29,7 +29,7 @@ RSpec.describe "Application endpoints", type: :request do
       end
 
       describe "when viewing as a provider with previous and current assignments" do
-        it "can see the application with a reassigned status" do
+        it "can see the application with a pending status" do
           api_get(api_v1_application_path(application.ecf_id), lead_provider: current_lead_provider)
 
           expect(response).to have_http_status(:ok)
