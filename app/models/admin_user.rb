@@ -10,6 +10,12 @@ class AdminUser < ApplicationRecord
     "#{full_name} (#{email})"
   end
 
+  def otp
+    return unless OTP.valid_code_format?(otp_hash) && otp_expires_at.present?
+
+    OTP.new(code: otp_hash, expires_at: otp_expires_at)
+  end
+
   def otp_locked_out?
     otp_failed_attempts >= MAX_OTP_ATTEMPTS
   end

@@ -8,7 +8,10 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
   describe "#after_save" do
     subject { described_class.new(email:, wizard:).after_save }
 
-    before { freeze_time }
+    before do
+      freeze_time
+      allow(OTP).to receive(:generate).and_return(otp)
+    end
 
     let(:session) { {} }
     let(:store) { {} }
@@ -16,20 +19,19 @@ RSpec.describe SessionWizardSteps::SignIn, type: :model do
     let(:email) { admin.email }
     let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
     let(:wizard) { SessionWizard.new(current_step: :sign_in, store:, session:) }
+    let(:otp) { OTP.generate }
 
-    it "generates a 6-digit OTP code" do
+    it "saves the OTP code and expiration" do
       subject
-      expect(admin.reload.otp_hash).to match(/\A\d{6}\z/)
-    end
-
-    it "sets the OTP expiration time" do
-      expect { subject }.to change { AdminUser.find(admin.id).otp_expires_at }.from(nil).to(10.minutes.from_now)
+      admin.reload
+      expect(admin.otp_hash).to eq(otp.code)
+      expect(admin.otp_expires_at).to eq(otp.expires_at)
     end
 
     it "sends an email with the OTP code" do
       allow(GenericMailer).to receive(:with).and_call_original
       subject
-      expect(GenericMailer).to have_received(:with).with(to: email, code: admin.reload.otp_hash)
+      expect(GenericMailer).to have_received(:with).with(to: email, code: otp.code)
     end
 
     it "catches Notify errors" do

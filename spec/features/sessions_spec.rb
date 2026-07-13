@@ -38,7 +38,7 @@ RSpec.feature "Sessions", type: :feature do
 
     admin.update!(otp_failed_attempts: AdminUser::MAX_OTP_ATTEMPTS - 1)
 
-    page.fill_in "Enter your code", with: "000000"
+    page.fill_in "Enter your code", with: "WRONG123"
     page.click_button "Sign in"
 
     expect(page).to have_content("locked out")

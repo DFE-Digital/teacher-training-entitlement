@@ -26,11 +26,11 @@ RSpec.describe SessionWizardSteps::SignInCode, type: :model do
       it { is_expected.to validate_presence_of(:code) }
     end
 
-    it { is_expected.to validate_length_of(:code).is_equal_to(6) }
+    it { is_expected.to validate_length_of(:code).is_equal_to(8) }
 
     context "when correct code given" do
-      let(:admin) { FactoryBot.create(:admin, otp_hash: "123456", otp_expires_at: 10.minutes.from_now) }
-      let(:code) { "123456" }
+      let(:admin) { FactoryBot.create(:admin, otp_hash: "ABCD1234", otp_expires_at: 10.minutes.from_now) }
+      let(:code) { "ABCD1234" }
 
       it "passes" do
         expect(subject).to be_valid
@@ -38,8 +38,8 @@ RSpec.describe SessionWizardSteps::SignInCode, type: :model do
     end
 
     context "when code expired" do
-      let(:admin) { FactoryBot.create(:admin, otp_hash: "123456", otp_expires_at: 1.minute.ago) }
-      let(:code) { "123456" }
+      let(:admin) { FactoryBot.create(:admin, otp_hash: "ABCD1234", otp_expires_at: 1.minute.ago) }
+      let(:code) { "ABCD1234" }
 
       it "fails" do
         subject.valid?
@@ -48,8 +48,8 @@ RSpec.describe SessionWizardSteps::SignInCode, type: :model do
     end
 
     context "when incorrect code given" do
-      let(:admin) { FactoryBot.create(:admin, otp_hash: "222222", otp_expires_at: 10.minutes.from_now) }
-      let(:code) { "111111" }
+      let(:admin) { FactoryBot.create(:admin, otp_hash: "ABCD1234", otp_expires_at: 10.minutes.from_now) }
+      let(:code) { "WXYZ5678" }
 
       it "fails" do
         subject.valid?
@@ -63,8 +63,8 @@ RSpec.describe SessionWizardSteps::SignInCode, type: :model do
     end
 
     context "when account is locked out" do
-      let(:admin) { FactoryBot.create(:admin, otp_hash: "123456", otp_expires_at: 10.minutes.from_now, otp_failed_attempts: AdminUser::MAX_OTP_ATTEMPTS) }
-      let(:code) { "123456" }
+      let(:admin) { FactoryBot.create(:admin, otp_hash: "ABCD1234", otp_expires_at: 10.minutes.from_now, otp_failed_attempts: AdminUser::MAX_OTP_ATTEMPTS) }
+      let(:code) { "ABCD1234" }
 
       it "fails with locked error even with correct code" do
         subject.valid?
@@ -74,8 +74,8 @@ RSpec.describe SessionWizardSteps::SignInCode, type: :model do
     end
 
     context "when account becomes locked after failed attempt" do
-      let(:admin) { FactoryBot.create(:admin, otp_hash: "123456", otp_expires_at: 10.minutes.from_now, otp_failed_attempts: AdminUser::MAX_OTP_ATTEMPTS - 1) }
-      let(:code) { "000000" }
+      let(:admin) { FactoryBot.create(:admin, otp_hash: "ABCD1234", otp_expires_at: 10.minutes.from_now, otp_failed_attempts: AdminUser::MAX_OTP_ATTEMPTS - 1) }
+      let(:code) { "WXYZ5678" }
 
       it "clears the OTP when locked" do
         subject.valid?

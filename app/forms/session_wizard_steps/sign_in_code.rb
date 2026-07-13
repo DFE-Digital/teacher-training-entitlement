@@ -2,7 +2,7 @@ module SessionWizardSteps
   class SignInCode < Base
     attr_accessor :code
 
-    validates :code, presence: true, length: { is: 6 }
+    validates :code, presence: true, length: { is: 8 }
     validate :validate_correct_code
 
     def self.permitted_params
@@ -31,8 +31,8 @@ module SessionWizardSteps
         errors.add(:code, :incorrect)
       elsif user.otp_locked_out?
         errors.add(:code, :locked)
-      elsif code == user.otp_hash
-        if user.otp_expires_at < Time.zone.now
+      elsif user.otp&.matches?(code)
+        if user.otp.expired?
           errors.add(:code, :expired)
         end
       else
