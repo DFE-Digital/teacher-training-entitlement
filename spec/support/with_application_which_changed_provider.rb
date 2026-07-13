@@ -14,9 +14,9 @@ RSpec.shared_context "with application which changed provider" do
   # | lead_provider                   | current? |
   # |---------------------------------|----------|
   # | current_lead_provider           | false    |
-  # | old_lead_provider          | false    |
-  # | another_old_lead_provider  | false    |
-  # | old_lead_provider          | false    |
+  # | old_lead_provider               | false    |
+  # | another_old_lead_provider       | false    |
+  # | old_lead_provider               | false    |
   # | current_lead_provider           | true     |
   #
   before do

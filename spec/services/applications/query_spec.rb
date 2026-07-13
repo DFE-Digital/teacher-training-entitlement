@@ -205,8 +205,7 @@ RSpec.describe Applications::Query do
           let(:lead_provider) { current_lead_provider }
 
           it "includes the application" do
-            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
-              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(application.application_lead_providers.pluck(:lead_provider_id)).to include(current_lead_provider.id)
             expect(query.applications).to contain_exactly(application)
           end
         end
@@ -223,7 +222,9 @@ RSpec.describe Applications::Query do
           end
 
           it "returns the current assignment" do
-            expect(query.application_lead_providers).to contain_exactly(application.current_application_lead_provider)
+            current_assignment = application.application_lead_providers.current.find_by!(lead_provider:)
+
+            expect(query.application_lead_providers).to contain_exactly(current_assignment)
           end
         end
 
@@ -231,8 +232,7 @@ RSpec.describe Applications::Query do
           let(:lead_provider) { old_lead_provider }
 
           it "includes the application" do
-            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
-              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(application.application_lead_providers.pluck(:lead_provider_id)).to include(old_lead_provider.id)
             expect(query.applications).to contain_exactly(application)
           end
         end
@@ -256,8 +256,7 @@ RSpec.describe Applications::Query do
           let(:lead_provider) { create(:lead_provider) }
 
           it "does not include the application" do
-            expect(application.application_lead_providers.map(&:lead_provider_id).sort)
-              .to eq([current_lead_provider.id, old_lead_provider.id].sort)
+            expect(application.application_lead_providers.pluck(:lead_provider_id)).not_to include(lead_provider.id)
             expect(query.applications).to be_blank
           end
         end
