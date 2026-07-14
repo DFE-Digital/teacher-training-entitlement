@@ -26,4 +26,14 @@ RSpec.describe AdminUser, type: :model do
 
     it { is_expected.to eq("#{admin.full_name} (#{admin.email})") }
   end
+
+  describe "#email downcase" do
+    subject(:email) { user.email }
+
+    let(:user) { build(:admin, email: "SOME@EDUCATION.GOV.UK") }
+
+    before { user.save! }
+
+    it { is_expected.to eq("some@education.gov.uk") }
+  end
 end
