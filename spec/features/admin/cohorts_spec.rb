@@ -107,7 +107,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       expect { click_on "Confirm" }.to change(Cohort, :count).by(-1)
     end
-
   end
 
   context "when logged in as a normal admin" do
@@ -125,7 +124,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       navigate_to_cohort
       expect(page).not_to have_link(delete_button_text)
     end
-
   end
 
   def navigate_to_cohort

@@ -25,7 +25,7 @@ FactoryBot.define do
       lead_provider { nil }
     end
 
-    after(:create) do |course, evaluator|
+    after(:create) do |course, _evaluator|
       if course.cohorts.empty?
         cohort = begin
           Cohort.current

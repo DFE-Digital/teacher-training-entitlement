@@ -205,6 +205,10 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       describe "idempotency (running twice)" do
         before do
+          seeder.call
+        end
+
+        it "runs successfully" do
           expect(seeder.call.success).to be true
         end
 
