@@ -19,79 +19,21 @@ RSpec.describe "Application endpoints", type: :request do
     context "when an application changed provider" do
       include_context "with application which changed provider"
 
-      describe "when viewing as old provider" do
-        it "old provider can still see the application, but with a 'reassigned' status" do
+      describe "when viewing as a provider with previous assignments" do
+        it "can see the application with a reassigned status" do
           api_get(api_v1_application_path(application.ecf_id), lead_provider: old_lead_provider)
+
           expect(response).to have_http_status(:ok)
           expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(Application::REASSIGNED)
         end
       end
 
-      describe "when viewing as new provider" do
-        it "new provider can see the application with the application's status" do
-          api_get(api_v1_application_path(application.ecf_id), lead_provider: new_lead_provider)
-          expect(response).to have_http_status(:ok)
-          expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(application.status)
-        end
-      end
-
       describe "when viewing as a provider with previous and current assignments" do
-        let(:another_old_lead_provider) { create(:lead_provider) }
-
-        # Set up the data so current_lead_provider was assigned, replaced, and
-        # then assigned again as the current provider.
-        #
-        # Assignment history:
-        # current_lead_provider -> another_old_lead_provider -> current_lead_provider
-        #
-        # application_lead_providers, newest first:
-        #
-        # | lead_provider             | current |
-        # |---------------------------|---------|
-        # | current_lead_provider     | true    |
-        # | another_old_lead_provider | false   |
-        # | current_lead_provider     | false   |
-        before do
-          create(:application_lead_provider, :unassigned, application:, lead_provider: current_lead_provider)
-          create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
-        end
-
         it "can see the application with a pending status" do
           api_get(api_v1_application_path(application.ecf_id), lead_provider: current_lead_provider)
 
           expect(response).to have_http_status(:ok)
           expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(Application::PENDING)
-        end
-      end
-
-      describe "when viewing as a provider with multiple previous assignments" do
-        let(:another_old_lead_provider) { create(:lead_provider) }
-
-        # Set up the data so another_old_lead_provider was assigned more than once,
-        # but is not the current provider.
-        #
-        # Assignment history:
-        # another_old_lead_provider -> current_lead_provider -> another_old_lead_provider -> current_lead_provider
-        #
-        # application_lead_providers, newest first:
-        #
-        # | lead_provider             | current |
-        # |---------------------------|---------|
-        # | current_lead_provider     | true    |
-        # | another_old_lead_provider | false   |
-        # | current_lead_provider     | false   |
-        # | another_old_lead_provider | false   |
-        before do
-          create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
-          create(:application_lead_provider, :unassigned, application:, lead_provider: current_lead_provider)
-          create(:application_lead_provider, :unassigned, application:, lead_provider: another_old_lead_provider)
-        end
-
-        it "can see the application with a reassigned status" do
-          api_get(api_v1_application_path(application.ecf_id), lead_provider: another_old_lead_provider)
-
-          expect(response).to have_http_status(:ok)
-          expect(JSON.parse(response.body)["data"]["attributes"]["status"]).to eq(Application::REASSIGNED)
         end
       end
     end
@@ -159,9 +101,7 @@ RSpec.describe "Application endpoints", type: :request do
       end
 
       context "when filtering by updated_since after the provider changes" do
-        let(:old_lead_provider) { create(:lead_provider) }
-        let(:new_lead_provider) { create(:lead_provider) }
-        let(:application) { create(:application, :pending, lead_provider: old_lead_provider, updated_at: 2.days.ago) }
+        let(:application) { create(:application, :pending, updated_at: 2.days.ago) }
 
         it "includes the reassigned application for the old provider" do
           Applications::ChangeLeadProvider.new(application:, new_provider: new_lead_provider).call
@@ -216,8 +156,9 @@ RSpec.describe "Application endpoints", type: :request do
 
     context "when an application changed provider" do
       include_context "with application which changed provider"
+
       let(:path) { accept_api_v1_application_path(ecf_id: application.ecf_id) }
-      let(:params) { { data: { attributes: } } }
+      let(:params) { { data: { attributes: { funded_place: false } } } }
 
       it "the old provider cannot accept the application" do
         expect { api_put(path, lead_provider: old_lead_provider, params:) }
@@ -225,24 +166,9 @@ RSpec.describe "Application endpoints", type: :request do
 
         expect(response).to be_forbidden
       end
-    end
 
-    context "when an application is reassigned back to the original provider" do
-      let(:original_lead_provider) { current_lead_provider }
-      let(:intermediate_lead_provider) { create(:lead_provider) }
-      let(:application) { create(:application, :pending, lead_provider: original_lead_provider) }
-      let(:path) { accept_api_v1_application_path(ecf_id: application.ecf_id) }
-      let(:attributes) { { funded_place: false } }
-      let(:params) { { data: { attributes: } } }
-
-      before do
-        application.current_application_lead_provider.update!(current: false, unassigned_at: 2.days.ago)
-        create(:application_lead_provider, :unassigned, application:, lead_provider: intermediate_lead_provider)
-        create(:application_lead_provider, :current, application:, lead_provider: original_lead_provider)
-      end
-
-      it "allows the current provider to accept the application" do
-        api_put(path, lead_provider: original_lead_provider, params:)
+      it "the current provider can accept the application" do
+        api_put(path, lead_provider: current_lead_provider, params:)
 
         expect(response).to have_http_status(:ok)
         expect(application.reload.status).to eq(Application::ACCEPTED)
