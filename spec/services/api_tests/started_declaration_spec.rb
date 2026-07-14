@@ -46,6 +46,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
         headers: hash_including(
           "Authorization" => "Bearer test-token",
           "Content-Type" => "application/json",
+          "X-With-Server-Date" => declaration_date.utc.iso8601,
         ),
       )
     end
@@ -73,6 +74,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
           headers: hash_including(
             "Authorization" => "Bearer test-token",
             "Content-Type" => "application/json",
+            "X-With-Server-Date" => declaration_date.utc.iso8601,
           ),
         )
       end
@@ -94,6 +96,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
           headers: hash_including(
             "Authorization" => "Bearer test-token",
             "Content-Type" => "application/json",
+            "X-With-Server-Date" => declaration_date.utc.iso8601,
           ),
         )
       end
