@@ -48,8 +48,6 @@ class Application < ApplicationRecord
 
   attr_accessor :version_note, :admin_user, :assignment
 
-  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
-
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validates :user_id,
