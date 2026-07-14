@@ -81,9 +81,10 @@ module API
           current_lead_provider
             .application_lead_providers
             .includes(
-              application: [:user,
-                            :institution,
-                            { course_cohort: %i[course cohort schedule] }],
+              application: %i[user
+                              institution
+                              course
+                              cohort],
             )
             .where(application: { ecf_id: })
             .order(current: :desc, updated_at: :desc, id: :desc)

@@ -24,7 +24,7 @@ class Admin::StatementsController < AdminController
       set_preview
     else
       flash[:success] = "#{@statements.count} statements created successfully"
-      redirect_to admin_course_cohort_path(cohort.course, cohort)
+      redirect_to admin_course_cohort_path(@cohort.course, @cohort)
     end
   end
 
