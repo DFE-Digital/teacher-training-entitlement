@@ -1,6 +1,9 @@
 import accessibleAutocomplete from 'accessible-autocomplete'
 import debounce from 'lodash.debounce'
 
+const MINIMUM_QUERY_LENGTH = 3
+const QUERY_DEBOUNCE_MS = 800
+
 function institutionPicker (options) {
   if (!options.element) { throw new Error('element is not defined') }
   if (!options.id) { throw new Error('id is not defined') }
@@ -22,8 +25,14 @@ async function fetchSource(lookupPath, query) {
   return data;
 }
 
+function normaliseQuery(query) {
+  return query.trim().replace(/\s+/g, ' ')
+}
+
 institutionPicker.enhanceSelectElement = (configurationOptions) => {
   if (!configurationOptions.selectElement) { throw new Error('selectElement is not defined') }
+
+  let previousQuery = ''
 
   configurationOptions.onConfirm = function(object) {
     if (object !== undefined) {
@@ -31,7 +40,7 @@ institutionPicker.enhanceSelectElement = (configurationOptions) => {
     }
   }
 
-  configurationOptions.minLength = 2
+  configurationOptions.minLength = MINIMUM_QUERY_LENGTH
   configurationOptions.defaultValue = configurationOptions.selectElement.dataset.defaultValue || ""
   configurationOptions.displayMenu = "overlay"
 
@@ -53,13 +62,22 @@ institutionPicker.enhanceSelectElement = (configurationOptions) => {
   }
 
   configurationOptions.source = debounce( async ( query, populateResults ) => {
+    const normalisedQuery = normaliseQuery(query)
+
+    if (normalisedQuery.length < MINIMUM_QUERY_LENGTH || normalisedQuery === previousQuery) {
+      populateResults([])
+      return
+    }
+
+    previousQuery = normalisedQuery
+
     try {
-      const res = await fetchSource(configurationOptions.lookupPath, query);
+      const res = await fetchSource(configurationOptions.lookupPath, normalisedQuery);
       populateResults(res);
     } catch (_) {
       populateResults([]);
     }
-  }, 300 )
+  }, QUERY_DEBOUNCE_MS )
 
   if (configurationOptions.name === undefined) configurationOptions.name = ''
 
