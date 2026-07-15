@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Showing Application timestamps in UK local time", type: :feature do
+RSpec.feature "Showing Application timestamps in UK local time", :no_js, type: :feature do
   include Helpers::AdminLogin
 
   let(:winter_timestamp) { Time.utc(Time.zone.now.year, 3, 1, 8, 15) }
@@ -13,18 +13,18 @@ RSpec.feature "Showing Application timestamps in UK local time", type: :feature 
     travel_to(summer_timestamp) { summer_application }
   end
 
-  # scenario "Viewing times in the winter" do
-  #   travel_to(winter_timestamp) do
-  #     sign_in_as create(:admin)
+  scenario "Viewing times in the winter" do
+    travel_to(winter_timestamp) do
+      sign_in_as create(:admin)
 
-  #     visit(admin_applications_path)
+      visit(admin_applications_path)
 
-  #     expect(page).to have_css("h1", text: "Applications")
+      expect(page).to have_css("h1", text: "Applications")
 
-  #     expect(page).to have_css("td", text: "1 Jan #{Time.zone.now.year} 8:15am")
-  #     expect(page).to have_css("td", text: "1 Jul #{Time.zone.now.year} 12:15pm")
-  #   end
-  # end
+      expect(page).to have_css("td", text: "1 Mar #{Time.zone.now.year} 8:15am")
+      expect(page).to have_css("td", text: "1 Jul #{Time.zone.now.year} 12:15pm")
+    end
+  end
 
   scenario "Viewing times in the summer" do
     travel_to(summer_timestamp) do
