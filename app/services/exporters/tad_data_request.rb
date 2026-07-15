@@ -32,7 +32,6 @@ private
       institution = application.institution
       lead_provider = application.lead_provider
       course = application.course
-      schedule = application.schedule
       cohort = application.cohort
       outcomes = application.declarations.map { |declaration|
         declaration.participant_outcomes.map do |outcome|
@@ -48,7 +47,7 @@ private
         institution&.institution_reference_number,
         lead_provider&.name,
         course&.name,
-        schedule&.name,
+        cohort&.identifier,
         cohort&.identifier,
         application.eligible_for_funding,
         application.status,

@@ -3,8 +3,7 @@ require "rails_helper"
 RSpec.describe API::ApplicationSerializer, type: :serializer do
   let(:user) { application.user }
   let(:course) { create(:course, :npd_eirt) }
-  let(:cohort) { create(:cohort, :current) }
-  let(:schedule) { create(:schedule, cohort:) }
+  let(:cohort) { create(:cohort, :current, course:) }
   let(:institution) { create(:institution, :for_school) }
   let(:application) { create(:application, course:, cohort:, institution:) }
   let(:unassigned) { build(:application_lead_provider, :unassigned) }
@@ -28,9 +27,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     subject(:attributes) { v1_json.dig("data", "attributes") }
 
     it "serializes the `schedule_identifier`" do
-      schedule
-
-      expect(attributes["schedule_identifier"]).to eq(schedule.identifier)
+      expect(attributes["schedule_identifier"]).to eq(cohort.identifier)
     end
 
     it "serializes the `funding_choice`" do

@@ -70,8 +70,8 @@
       row.with_value(text: @application.cohort.name)
     end
     sl.with_row do |row|
-      row.with_key(text: "Schedule identifier")
-      row.with_value(text: @application.schedule.try(:identifier))
+      row.with_key(text: "Cohort identifier")
+      row.with_value(text: @application.cohort.identifier)
     end
   end
 %>

@@ -291,7 +291,7 @@ RSpec.describe "Application endpoints", type: :request do
     end
     let(:application_status_trait) { :deferred }
     let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, cohort:) }
-    let(:params) { { data: { attributes: { schedule_id: cohort.ecf_id } } } }
+    let(:params) { { data: { attributes: { cohort_id: cohort.ecf_id } } } }
 
     before do
       api_put(resume_api_v1_application_path(ecf_id: application.ecf_id), params:)
@@ -410,7 +410,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:resource_id) { resource.ecf_id }
     let(:service) { Applications::ChangeSchedule }
     let(:action) { :call }
-    let(:attributes) { { schedule_id: target_cohort.ecf_id } }
+    let(:attributes) { { cohort_id: target_cohort.ecf_id } }
     let(:service_args) { { application: resource, cohort: target_cohort } }
 
     def path(id = nil)

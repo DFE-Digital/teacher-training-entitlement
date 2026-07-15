@@ -229,12 +229,7 @@ private
     return unless cohort
     return if persisted? && !declaration_date_changed?
 
-    training_starts_at = [
-      application.schedule&.training_starts_at,
-      cohort.training_starts_at,
-    ].compact.min
-
-    if declaration_date.to_date < training_starts_at.to_date
+    if declaration_date.to_date < cohort.training_starts_at.to_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
     end
   end

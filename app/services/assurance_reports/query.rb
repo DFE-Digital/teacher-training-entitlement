@@ -22,7 +22,7 @@ module AssuranceReports
           u.full_name                             AS participant_name,
           u.trn                                   AS trn,
           c.identifier                            AS application_course_identifier,
-          sch.identifier                          AS schedule,
+          co.identifier                           AS cohort_identifier,
           a.eligible_for_funding                  AS eligible_for_funding,
           a.funded_place                          AS funded_place,
           lp.name                                 AS lead_provider_name,
@@ -47,7 +47,6 @@ module AssuranceReports
         JOIN cohorts co                     ON co.id = a.cohort_id
         JOIN courses c                      ON c.id = co.course_id
         JOIN users u                        ON u.id = a.user_id
-        LEFT OUTER JOIN schedules sch       ON sch.cohort_id = a.cohort_id AND sch.course_group = c.course_group
         LEFT OUTER JOIN institutions i      ON i.id = a.institution_id
         LEFT OUTER JOIN schools sc          ON sc.id = i.institutionable_id AND i.institutionable_type = 'School'
         LEFT OUTER JOIN (

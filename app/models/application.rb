@@ -130,15 +130,6 @@ class Application < ApplicationRecord
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
-  def schedule
-    schedules = Schedule.where(cohort_id:, course_group: course.course_group)
-
-    schedules.where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..)
-             .order(created_at: :desc, id: :desc)
-             .first ||
-      schedules.order(created_at: :desc, id: :desc).first
-  end
-
   def lead_provider=(new_provider)
     change_provider!(to: new_provider)
   end

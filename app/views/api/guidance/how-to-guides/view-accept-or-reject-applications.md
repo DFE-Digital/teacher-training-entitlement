@@ -73,7 +73,7 @@ See the ['Retrieve multiple applications' endpoint documentation](/api/docs/v1#/
         "teacher_catchment_country": "United Kingdom of Great Britain and Northern Ireland",
         "teacher_catchment_iso_country_code": "GBR",
         "funded_place": null,
-        "schedule_identifier": "tte-reception-autumn",
+        "schedule_identifier": "2026-January",
         "unassigned_at": null,
         "created_at": "2025-09-01T09:00:00.000Z",
         "updated_at": "2025-09-01T09:00:00.000Z"
@@ -230,7 +230,7 @@ When resuming, the provider must select a target cohort. Available cohorts can b
   "data": {
     "type": "application",
     "attributes": {
-      "schedule_id": "23b4a32e-a272-489e-12oe-cb17131457fc"
+      "cohort_id": "23b4a32e-a272-489e-12oe-cb17131457fc"
     }
   }
 }
@@ -254,7 +254,7 @@ This endpoint returns active cohorts. Use it to find a compatible cohort when re
       "type": "schedule",
       "attributes": {
         "course_identifier": "tte-early-years",
-        "schedule_identifier": "tte-reception-spring",
+        "schedule_identifier": "2026-January",
         "cohort": "2026"
       }
     },
@@ -263,7 +263,7 @@ This endpoint returns active cohorts. Use it to find a compatible cohort when re
       "type": "schedule",
       "attributes": {
         "course_identifier": "tte-early-years",
-        "schedule_identifier": "tte-reception-autumn",
+        "schedule_identifier": "2026-July",
         "cohort": "2026"
       }
     }

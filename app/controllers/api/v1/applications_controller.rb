@@ -129,7 +129,7 @@ module API
         @application_action_params ||= params
           .require(:data)
           .require(:attributes)
-          .permit(:funded_place, :reason, :schedule_id)
+          .permit(:funded_place, :reason, :cohort_id)
       rescue ActionController::ParameterMissing
         raise ActionController::BadRequest, I18n.t(:invalid_data_structure)
       end
@@ -144,7 +144,7 @@ module API
 
       def cohort
         @cohort ||= begin
-          cohort_ecf_id = application_action_params[:schedule_id]
+          cohort_ecf_id = application_action_params[:cohort_id]
           current_lead_provider.cohorts.find_by(ecf_id: cohort_ecf_id)
         end
       end

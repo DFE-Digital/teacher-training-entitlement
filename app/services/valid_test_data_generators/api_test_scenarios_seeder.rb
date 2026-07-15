@@ -397,7 +397,7 @@ module ValidTestDataGenerators
     end
 
     def create_started_declaration(application:, declaration_date: nil)
-      date = declaration_date || application.schedule.training_starts_at + 1.day
+      date = declaration_date || application.cohort.training_starts_at + 1.day
       application.declarations.create!(
         declaration_type: :started,
         declaration_date: date,
@@ -409,7 +409,7 @@ module ValidTestDataGenerators
     end
 
     def create_completed_declaration(application:, declaration_date: nil, has_passed: true)
-      date = declaration_date || application.schedule.training_ends_at + 1.day
+      date = declaration_date || application.cohort.training_ends_at + 1.day
       declaration = application.declarations.create!(
         declaration_type: :completed,
         declaration_date: date,

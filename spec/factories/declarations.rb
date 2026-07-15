@@ -18,7 +18,7 @@ FactoryBot.define do
 
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     started
-    declaration_date { application&.schedule&.training_starts_at || cohort&.training_starts_at || Time.zone.today }
+    declaration_date { cohort&.training_starts_at || Time.zone.today }
     submitted
     ecf_id { SecureRandom.uuid }
 
@@ -38,17 +38,6 @@ FactoryBot.define do
       next unless evaluator.change_training_dates
 
       cohort = declaration.cohort
-      schedule = declaration.application&.schedule
-
-      if schedule&.training_starts_at&.future?
-        schedule.update_columns(
-          training_starts_at: 1.month.ago.to_date,
-          training_ends_at: 1.month.from_now.to_date,
-        )
-      end
-
-      declaration.declaration_date = schedule.reload.training_starts_at if schedule
-
       next unless cohort
       next unless cohort.training_starts_at.future?
 

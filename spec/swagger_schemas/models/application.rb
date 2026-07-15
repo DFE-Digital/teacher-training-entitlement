@@ -166,11 +166,10 @@ APPLICATION = {
             example: "2021-05-31T02:22:32.000Z",
           },
           schedule_identifier: {
-            description: "The new schedule of the participant",
+            description: "The cohort identifier of the participant",
             nullable: true,
             type: :string,
-            example: Schedule::IDENTIFIERS.first,
-            enum: Schedule::IDENTIFIERS,
+            example: "2026-January",
           },
         },
       },
@@ -180,10 +179,9 @@ APPLICATION = {
   h[:v2] = h[:v1].deep_dup
   h[:v3] = h[:v2].deep_dup
   h[:v3][:properties][:attributes][:properties][:schedule_identifier] = {
-    description: "The new schedule of the participant",
+    description: "The cohort identifier of the participant",
     nullable: true,
     type: :string,
-    example: Schedule::IDENTIFIERS.first,
-    enum: Schedule::IDENTIFIERS,
+    example: "2026-January",
   }
 }.freeze

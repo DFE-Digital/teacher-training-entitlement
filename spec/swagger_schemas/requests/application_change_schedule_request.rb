@@ -17,11 +17,11 @@ APPLICATION_CHANGE_SCHEDULE_REQUEST = {
         attributes: {
           description: "An application change schedule request attributes",
           type: :object,
-          required: %i[schedule_id],
+          required: %i[cohort_id],
           properties: {
-            schedule_id: {
+            cohort_id: {
               "$ref": "#/components/schemas/IDAttribute",
-              description: "schedule id for a same course as the application is enrolled in",
+              description: "cohort id for a same course as the application is enrolled in",
               required: true,
               nullable: false,
             },

@@ -113,8 +113,7 @@ PARTICIPANT = {
           description: "The new schedule of the participant",
           nullable: true,
           type: :string,
-          example: Schedule::IDENTIFIERS.first,
-          enum: Schedule::IDENTIFIERS,
+          example: "2026-January",
         },
         cohort: {
           description: "Indicates which call-off contract would fund this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Once a provider accepts an application, they may change a participant's cohort up until the point of submitting a started declaration.",

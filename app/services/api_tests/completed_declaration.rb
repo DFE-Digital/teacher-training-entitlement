@@ -33,8 +33,8 @@ module APITests
   private
 
     def declaration_date
-      if application.schedule.training_ends_at < Time.zone.now
-        application.schedule.training_ends_at.in_time_zone("UTC").iso8601
+      if application.cohort.training_ends_at < Time.zone.now
+        application.cohort.training_ends_at.in_time_zone("UTC").iso8601
       else
         (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC").iso8601
       end

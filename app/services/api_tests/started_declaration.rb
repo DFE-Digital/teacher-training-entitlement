@@ -31,7 +31,7 @@ module APITests
   private
 
     def declaration_date
-      application.schedule.training_starts_at.in_time_zone("UTC").iso8601
+      application.cohort.training_starts_at.in_time_zone("UTC").iso8601
     end
 
     def delivery_partner_id
