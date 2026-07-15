@@ -1,18 +1,33 @@
 class Milestone < ApplicationRecord
   has_paper_trail
 
-  ALL_DECLARATION_TYPES = %w[started retained-1 retained-2 completed].freeze
-
   has_many :milestone_statements
   has_many :statements, through: :milestone_statements
-  belongs_to :schedule
+  belongs_to :course_cohort
 
-  validates :declaration_type, inclusion: { in: ->(milestone) { milestone.schedule.allowed_declaration_types } }, if: :schedule
+  validates :declaration_type, inclusion: Declaration::DECLARATION_TYPES
+  validate :acceptance_window_does_not_overlap
 
   scope :in_declaration_type_order, -> { order(:declaration_type) }
+  default_scope { order(:acceptance_window_start_date) }
 
   def statement_date
     statement = statements.first
     Date.new(statement.year, statement.month, 1) if statement
+  end
+
+private
+
+  def acceptance_window_does_not_overlap
+    return if course_cohort_id.blank? || acceptance_window_start_date.blank? || acceptance_window_end_date.blank?
+
+    overlapping_milestone = Milestone
+      .where(course_cohort_id:)
+      .where.not(id:)
+      .where(acceptance_window_start_date: ..acceptance_window_end_date)
+      .where(acceptance_window_end_date: acceptance_window_start_date..)
+      .exists?
+
+    errors.add(:base, :overlapping_acceptance_window) if overlapping_milestone
   end
 end

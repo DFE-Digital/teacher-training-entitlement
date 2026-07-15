@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :milestone do
     declaration_type { :started }
-    association(:schedule)
+    course_cohort
   end
 end
