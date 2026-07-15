@@ -1,5 +1,6 @@
 namespace :admin do
   get "/", to: "dashboards#index"
+  get "/sign-out", to: "/sessions#destroy_admin", as: "sign_out"
 
   concern :cohortable do |options|
     if options.key?(:index)

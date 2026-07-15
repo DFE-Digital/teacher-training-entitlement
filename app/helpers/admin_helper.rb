@@ -9,7 +9,7 @@ module AdminHelper
     [
       *admin_navigation_structure.service_navigation_items,
       {
-        href: sign_out_user_path,
+        href: admin_sign_out_path,
         text: "Sign out",
         classes: "ml-auto",
       },

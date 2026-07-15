@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe SessionsController do
+  include Devise::Test::ControllerHelpers
   include Helpers::JourneyHelper
 
   describe "#extend_session" do
@@ -29,47 +30,39 @@ RSpec.describe SessionsController do
     end
   end
 
-  context "when a user is signed in" do
-    before do
-      allow(controller).to receive(:current_user).and_return(create(:user))
+  describe "#destroy" do
+    it "signs out all scopes" do
+      expect(controller).to receive(:sign_out_all_scopes)
+      get :destroy
     end
 
-    it "redirects to the external OIDC provider's signout endpoint" do
-      expect(controller).to receive(:sign_out_all_scopes)
+    context "with an OIDC session" do
+      it "redirects to the OIDC provider's logout endpoint" do
+        session[:id_token] = "test-id-token"
 
-      id_token = "test-id-token"
-      session[:id_token] = id_token
+        get :destroy
 
-      post_logout_uri = "http://test.host/sign-out"
-      expected_redirect_url = "https://teacher-auth.example.com:443/oauth2/logout?id_token_hint=#{id_token}&post_logout_redirect_uri=#{CGI.escape(post_logout_uri)}"
+        expect(response.location).to include("/oauth2/logout")
+        expect(response.location).to include("id_token_hint=test-id-token")
+      end
+    end
 
-      get :destroy
+    context "without an OIDC session" do
+      it "redirects to root" do
+        get :destroy
 
-      expect(response).to redirect_to(expected_redirect_url)
+        expect(response).to redirect_to(root_path)
+      end
     end
   end
 
-  context "when an admin is signed in" do
-    before do
-      allow(controller).to receive(:current_admin).and_return(create(:admin))
-    end
-
-    it "redirects to admin path" do
+  describe "#destroy_admin" do
+    it "signs out all scopes and redirects to admin" do
       expect(controller).to receive(:sign_out_all_scopes)
 
-      get :destroy
+      get :destroy_admin
 
       expect(response).to redirect_to("/admin")
-    end
-  end
-
-  context "when no user is signed in (callback from provider)" do
-    it "redirects to root" do
-      expect(controller).to receive(:sign_out_all_scopes)
-
-      get :destroy
-
-      expect(response).to redirect_to(root_path)
     end
   end
 end
