@@ -113,6 +113,7 @@ erDiagram
     uuid ecf_id
     integer schedule_id
     datetime updated_at
+    decimal service_fee
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to

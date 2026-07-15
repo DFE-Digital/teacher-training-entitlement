@@ -68,6 +68,8 @@
   - data_changes
   - operation_description
   - updated_at
+  :course_cohorts:
+  - service_fee
   :contract_templates:
   - id
   - created_at

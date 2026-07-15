@@ -13,6 +13,7 @@ RSpec.describe CourseCohort do
 
   describe "validations" do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive }
+    it { is_expected.to validate_numericality_of(:service_fee).is_greater_than_or_equal_to(0).allow_nil }
   end
 
   describe ".next_open_for" do
