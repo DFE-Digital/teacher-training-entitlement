@@ -68,6 +68,8 @@
   - data_changes
   - operation_description
   - updated_at
+  :course_cohort_providers:
+  - allocation
   :course_cohorts:
   - service_fee
   :contract_templates:
