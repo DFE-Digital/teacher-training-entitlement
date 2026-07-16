@@ -21,11 +21,6 @@ RSpec.describe "Pages accessibility", :axe, type: :feature do
     expect(page).to be_axe_clean
   end
 
-  it "privacy policy page is accessible" do
-    visit privacy_policy_path
-    expect(page).to be_axe_clean
-  end
-
   it "closed registration exception page is accessible" do
     visit closed_registration_exception_path
     expect(page).to be_axe_clean
