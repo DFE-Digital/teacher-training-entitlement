@@ -32,7 +32,7 @@ private
       base = Institution.includes(:institutionable).order(:name)
 
       if q.present?
-        name_matches = Institution.search_by_name(q)
+        name_matches = Institution.search(q)
         urn_matches = Institution.where(institution_reference_number: q)
 
         base.where(id: name_matches.select(:id)).or(base.where(id: urn_matches.select(:id)))

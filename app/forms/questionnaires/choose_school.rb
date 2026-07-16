@@ -53,7 +53,7 @@ module Questionnaires
       @possible_institutions ||= Institution
         .where(institutionable_type: %w[School LocalAuthority])
         .open_school_or_non_school
-        .search_by_name(institution_name)
+        .search(institution_name)
         .limit(10)
     end
 

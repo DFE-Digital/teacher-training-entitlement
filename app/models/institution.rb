@@ -27,7 +27,7 @@ class Institution < ApplicationRecord
 
   delegate :in_england?, :identifier, :eligible_establishment?, to: :institutionable
 
-  def self.search_by_name(search_term)
+  def self.search(search_term)
     return none if search_term.blank?
 
     text_matches = base_search(search_term)
