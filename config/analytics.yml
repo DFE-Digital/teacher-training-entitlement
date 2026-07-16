@@ -255,9 +255,12 @@ shared:
   :milestones:
     - id
     - declaration_type
-    - schedule_id
     - created_at
     - updated_at
+    - course_cohort_id
+    - acceptance_window_start_date
+    - acceptance_window_end_date
+    - payment_amount
   :milestone_statements:
     - id
     - milestone_id
