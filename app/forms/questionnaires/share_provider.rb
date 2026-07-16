@@ -11,7 +11,7 @@ module Questionnaires
     end
 
     def questions
-      translations = I18n.t("helpers.hint.registration_wizard.can_share_choices")
+      translations = I18n.t("helpers.hint.registration_wizard.can_share_choices", privacy_notice_url: PRIVACY_NOTICE_URL)
 
       translated_lines = translations.map do |line|
         line.include?("<a href") ? line.html_safe : line
