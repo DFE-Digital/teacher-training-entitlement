@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_095648) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_104855) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -369,10 +369,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_095648) do
     t.string "postcode"
     t.string "postcode_without_spaces"
     t.string "region"
+    t.virtual "search_vector", type: :tsvector, as: "to_tsvector('english'::regconfig, (((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(postcode, ''::character varying))::text) || ' '::text) || (COALESCE(postcode_without_spaces, ''::character varying))::text))", stored: true
     t.string "town"
     t.datetime "updated_at", null: false
     t.index ["institution_reference_number"], name: "index_institutions_on_institution_reference_number"
     t.index ["institutionable_type", "institutionable_id"], name: "idx_on_institutionable_type_institutionable_id_e617e86838", unique: true
+    t.index ["search_vector"], name: "index_institutions_on_search_vector", using: :gin
   end
 
   create_table "lead_providers", force: :cascade do |t|

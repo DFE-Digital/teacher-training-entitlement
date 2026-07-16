@@ -159,3 +159,5 @@
   - created_at
   - key
   - updated_at
+  :institutions:
+  - search_vector

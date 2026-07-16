@@ -155,8 +155,8 @@ School data drives several runtime decisions:
   `School#in_england?` excludes Welsh establishments and overseas LA codes.
   `School#primary_education_phase?` matches primary or middle-deemed-primary
   phases.
-- **Work-setting search** — `Institution.search_by_name` uses `pg_search` across
-  name, address, and LA name fields (with saint/st synonym expansion).
+- **Work-setting search** — `Institution.search` uses `pg_search` across
+  name, postcode, and URN fields (with saint/st synonym expansion).
 - **Funding lookups** — `School#pp50?` checks PP50 eligibility via URN or UKPRN
   hash constants. `School#eyl_disadvantaged?` checks EYL Ofsted URN hashes.
 

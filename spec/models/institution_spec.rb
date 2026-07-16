@@ -10,51 +10,13 @@ RSpec.describe Institution do
       end
     end
 
-    context "when searching by la_name" do
-      before { create(:school, la_name: "Swindon") }
+    context "when searching with a blank term" do
+      before { create(:school, name: "a school") }
 
-      it "returns institutions matching the la_name" do
-        expect(described_class.search_by_name("Swindon").count).to be(1)
-      end
-    end
-
-    context "when searching by address_1" do
-      before { create(:school, address_1: "someplace") }
-
-      it "returns institutions matching the address_1" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by address_2" do
-      before { create(:school, address_2: "someplace") }
-
-      it "returns institutions matching the address_2" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by address_3" do
-      before { create(:school, address_3: "someplace") }
-
-      it "returns institutions matching the address_3" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by town" do
-      before { create(:school, town: "someplace") }
-
-      it "returns institutions matching the town" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by county" do
-      before { create(:school, county: "someplace") }
-
-      it "returns institutions matching the county" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
+      it "returns no results" do
+        expect(described_class.search_by_name("").count).to be(0)
+        expect(described_class.search_by_name(nil).count).to be(0)
+        expect(described_class.search_by_name("   ").count).to be(0)
       end
     end
 
@@ -71,14 +33,6 @@ RSpec.describe Institution do
 
       it "returns institutions matching the postcode without spaces" do
         expect(described_class.search_by_name("AB123CD").count).to be(1)
-      end
-    end
-
-    context "when searching by region" do
-      before { create(:school, region: "someplace") }
-
-      it "returns institutions matching the region" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
       end
     end
 
