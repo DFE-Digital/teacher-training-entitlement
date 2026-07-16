@@ -50,7 +50,29 @@ FactoryBot.define do
 
     trait :with_milestones do
       after :create do |statement|
-        create_list(:milestone_statement, 2, statement:)
+        course_cohort = create(:course_cohort, cohort: statement.cohort)
+        create(
+          :milestone_statement,
+          statement:,
+          milestone: create(
+            :milestone,
+            course_cohort:,
+            declaration_type: "started",
+            acceptance_window_start_date: Date.new(2026, 1, 1),
+            acceptance_window_end_date: Date.new(2026, 1, 31),
+          ),
+        )
+        create(
+          :milestone_statement,
+          statement:,
+          milestone: create(
+            :milestone,
+            course_cohort:,
+            declaration_type: "completed",
+            acceptance_window_start_date: Date.new(2026, 2, 1),
+            acceptance_window_end_date: Date.new(2026, 2, 28),
+          ),
+        )
       end
     end
   end

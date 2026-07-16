@@ -5,7 +5,9 @@ class Milestone < ApplicationRecord
   has_many :statements, through: :milestone_statements
   belongs_to :course_cohort
 
+  validates :acceptance_window_start_date, presence: true
   validates :declaration_type, inclusion: Declaration::DECLARATION_TYPES
+  validates :declaration_type, uniqueness: { scope: :course_cohort_id }, if: :valid_declaration_type?
   validate :acceptance_window_does_not_overlap
 
   scope :in_declaration_type_order, -> { order(:declaration_type) }
@@ -29,5 +31,9 @@ private
       .exists?
 
     errors.add(:base, :overlapping_acceptance_window) if overlapping_milestone
+  end
+
+  def valid_declaration_type?
+    declaration_type.in?(Declaration::DECLARATION_TYPES.map(&:to_s))
   end
 end
