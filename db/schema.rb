@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_115642) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_095648) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -225,6 +225,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_115642) do
     t.bigint "course_cohort_id", null: false
     t.datetime "created_at", null: false
     t.bigint "lead_provider_id", null: false
+    t.integer "recruitment_target"
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "lead_provider_id"], name: "idx_on_course_cohort_id_lead_provider_id_3527d5c43f", unique: true
     t.index ["course_cohort_id"], name: "index_course_cohort_providers_on_course_cohort_id"

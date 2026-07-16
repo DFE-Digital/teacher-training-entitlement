@@ -102,6 +102,7 @@ erDiagram
     datetime created_at
     integer lead_provider_id
     datetime updated_at
+    integer recruitment_target
   }
   CourseCohortProvider }o--|| CourseCohort : belongs_to
   CourseCohortProvider }o--|| LeadProvider : belongs_to
