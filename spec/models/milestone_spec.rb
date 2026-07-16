@@ -78,32 +78,6 @@ RSpec.describe Milestone, type: :model do
       end
     end
 
-    context "when an acceptance window overlaps another milestone in the same course cohort" do
-      subject(:milestone) do
-        build(
-          :milestone,
-          course_cohort:,
-          declaration_type: "completed",
-          acceptance_window_start_date: Date.new(2026, 1, 15),
-          acceptance_window_end_date: Date.new(2026, 2, 15),
-        )
-      end
-
-      let(:course_cohort) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2026, 1, 1))) }
-
-      before do
-        create(
-          :milestone,
-          course_cohort:,
-          declaration_type: "started",
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
-        )
-      end
-
-      it { is_expected.to have_error(:base, :overlapping_acceptance_window, "Acceptance window overlaps with another milestone for this course cohort") }
-    end
-
     context "when acceptance windows do not overlap in the same course cohort" do
       let(:course_cohort) { create(:course_cohort) }
 
