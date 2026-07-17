@@ -10,8 +10,6 @@ class Schedule < ApplicationRecord
 
   has_many :course_cohorts, dependent: :destroy
   has_many :courses, through: :course_cohorts
-  has_many :milestones
-  has_many :statements, through: :milestones
 
   scope :training_live, -> { where(training_starts_at: ..Time.zone.today, training_ends_at: Time.zone.today..) }
 

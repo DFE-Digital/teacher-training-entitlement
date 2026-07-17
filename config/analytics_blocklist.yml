@@ -72,6 +72,7 @@
   - recruitment_target
   :course_cohorts:
   - service_fee
+  - participant_funding
   :contract_templates:
   - id
   - created_at

@@ -9,11 +9,23 @@ RSpec.describe CourseCohort do
     it { is_expected.to belong_to(:schedule) }
     it { is_expected.to have_many(:course_cohort_providers).dependent(:destroy) }
     it { is_expected.to have_many(:lead_providers).through(:course_cohort_providers) }
+    it { is_expected.to have_many(:milestones).dependent(:destroy) }
+    it { is_expected.to have_many(:statements).through(:milestones) }
   end
 
   describe "validations" do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive }
     it { is_expected.to validate_numericality_of(:service_fee).is_greater_than_or_equal_to(0).allow_nil }
+    it { is_expected.to validate_numericality_of(:participant_funding).is_greater_than_or_equal_to(0).allow_nil }
+
+    it "is invalid when participant_funding is less than sum of milestones" do
+      course_cohort = create(:course_cohort, participant_funding: 1000)
+      create(:milestone, course_cohort:, payment_amount: 600)
+
+      course_cohort.participant_funding = 500
+
+      expect(course_cohort).to have_error(:participant_funding, :less_than_milestone_sum)
+    end
   end
 
   describe ".next_open_for" do

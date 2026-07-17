@@ -279,6 +279,8 @@ en:
           attributes:
             course:
               required: A course is required
+            participant_funding:
+              less_than_milestone_sum: must not be less than the sum of milestone payment amounts
             schedule:
               required: A schedule is required
         declaration:
@@ -327,6 +329,8 @@ en:
             declaration_type:
               inclusion: The declaration type should be one of the ones allowed
                 by the schedule
+            payment_amount:
+              exceeds_participant_funding: would cause total milestone payments to exceed participant funding
         participant_outcome:
           attributes:
             ecf_id:
@@ -972,8 +976,8 @@ en:
         - All the information you enter for your NPD registration will be shared with external organisations 
           including auditors, evaluators, relevant bodies and training providers — this allows your provider
           to register you onto their course.
-        - For more information about who we share your data with read our <a href="/privacy-policy"
-          class="govuk-link">privacy notice</a>.
+        - For more information about who we share your data with read our <a href="%{privacy_notice_url}"
+          class="govuk-link" target="_blank" rel="noopener noreferrer">privacy notice</a>.
         - If you do not agree to share your information you will not be able to progress with your NPD course.
         choose_school_html: 
           Search for your workplace by postcode, unique reference number (URN) or name. 
