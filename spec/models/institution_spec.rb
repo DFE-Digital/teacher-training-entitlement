@@ -1,60 +1,22 @@
 require "rails_helper"
 
 RSpec.describe Institution do
-  describe ".search_by_name" do
+  describe ".search" do
     context "when searching by name" do
       before { create(:school, name: "a school") }
 
       it "returns institutions matching the name" do
-        expect(described_class.search_by_name("a school").count).to be(1)
+        expect(described_class.search("a school").count).to be(1)
       end
     end
 
-    context "when searching by la_name" do
-      before { create(:school, la_name: "Swindon") }
+    context "when searching with a blank term" do
+      before { create(:school, name: "a school") }
 
-      it "returns institutions matching the la_name" do
-        expect(described_class.search_by_name("Swindon").count).to be(1)
-      end
-    end
-
-    context "when searching by address_1" do
-      before { create(:school, address_1: "someplace") }
-
-      it "returns institutions matching the address_1" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by address_2" do
-      before { create(:school, address_2: "someplace") }
-
-      it "returns institutions matching the address_2" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by address_3" do
-      before { create(:school, address_3: "someplace") }
-
-      it "returns institutions matching the address_3" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by town" do
-      before { create(:school, town: "someplace") }
-
-      it "returns institutions matching the town" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
-      end
-    end
-
-    context "when searching by county" do
-      before { create(:school, county: "someplace") }
-
-      it "returns institutions matching the county" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
+      it "returns no results" do
+        expect(described_class.search("").count).to be(0)
+        expect(described_class.search(nil).count).to be(0)
+        expect(described_class.search("   ").count).to be(0)
       end
     end
 
@@ -62,7 +24,7 @@ RSpec.describe Institution do
       before { create(:school, postcode: "AB12 3CD") }
 
       it "returns institutions matching the postcode" do
-        expect(described_class.search_by_name("AB12 3CD").count).to be(1)
+        expect(described_class.search("AB12 3CD").count).to be(1)
       end
     end
 
@@ -70,15 +32,7 @@ RSpec.describe Institution do
       before { create(:school, postcode_without_spaces: "AB123CD") }
 
       it "returns institutions matching the postcode without spaces" do
-        expect(described_class.search_by_name("AB123CD").count).to be(1)
-      end
-    end
-
-    context "when searching by region" do
-      before { create(:school, region: "someplace") }
-
-      it "returns institutions matching the region" do
-        expect(described_class.search_by_name("someplace").count).to be(1)
+        expect(described_class.search("AB123CD").count).to be(1)
       end
     end
 
@@ -86,7 +40,7 @@ RSpec.describe Institution do
       before { create(:school, urn: "123456") }
 
       it "returns institutions matching the URN" do
-        expect(described_class.search_by_name("123456").count).to be(1)
+        expect(described_class.search("123456").count).to be(1)
       end
     end
 
@@ -94,19 +48,19 @@ RSpec.describe Institution do
       before { create(:school, name: "andrew's", postcode: "NW5") }
 
       it "can find with apostrophe" do
-        expect(described_class.search_by_name("andrew's").count).to be(1)
+        expect(described_class.search("andrew's").count).to be(1)
       end
 
       it "can find without apostrophe" do
-        expect(described_class.search_by_name("andrews").count).to be(1)
+        expect(described_class.search("andrews").count).to be(1)
       end
 
       it "can find partial match" do
-        expect(described_class.search_by_name("andrew").count).to be(1)
+        expect(described_class.search("andrew").count).to be(1)
       end
 
       it "can return no matches" do
-        expect(described_class.search_by_name("bob").count).to be(0)
+        expect(described_class.search("bob").count).to be(0)
       end
     end
 
@@ -114,15 +68,15 @@ RSpec.describe Institution do
       before { create(:school, name: "mary-anne") }
 
       it "can find with hyphen" do
-        expect(described_class.search_by_name("mary-anne").count).to be(1)
+        expect(described_class.search("mary-anne").count).to be(1)
       end
 
       it "can find without hyphen" do
-        expect(described_class.search_by_name("mary anne").count).to be(1)
+        expect(described_class.search("mary anne").count).to be(1)
       end
 
       it "can find partial match" do
-        expect(described_class.search_by_name("mary").count).to be(1)
+        expect(described_class.search("mary").count).to be(1)
       end
     end
 
@@ -138,15 +92,15 @@ RSpec.describe Institution do
       end
 
       it "can find 'saint' when searching for 'st'" do
-        expect(described_class.search_by_name("st mary")).to include(st_school.institution, saint_school.institution)
+        expect(described_class.search("st mary")).to include(st_school.institution, saint_school.institution)
       end
 
       it "can find 'st' when searching for 'saint'" do
-        expect(described_class.search_by_name("saint mary")).to include(st_school.institution, saint_school.institution)
+        expect(described_class.search("saint mary")).to include(st_school.institution, saint_school.institution)
       end
 
       it "does not return matches where 'st' is not a whole word" do
-        expect(described_class.search_by_name("some first")).not_to include(school_containing_st.institution)
+        expect(described_class.search("some first")).not_to include(school_containing_st.institution)
       end
     end
   end

@@ -3,7 +3,7 @@ class InstitutionsController < PublicPagesController
     institutions = Institution
       .where(institutionable_type: %w[School LocalAuthority])
       .open_school_or_non_school
-      .search_by_name(params[:name])
+      .search(params[:name])
 
     render(json: InstitutionSerializer.render(institutions))
   end

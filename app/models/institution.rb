@@ -16,14 +16,9 @@ class Institution < ApplicationRecord
 
   validates :institution_reference_number, presence: true
 
-  pg_search_scope :base_search_by_name,
-                  against: %i[name address_1 address_2 address_3 town county postcode postcode_without_spaces region],
-                  using: {
-                    tsearch: {
-                      prefix: true,
-                      dictionary: "english",
-                    },
-                  }
+  pg_search_scope :base_search,
+                  against: %i[name postcode postcode_without_spaces],
+                  using: { tsearch: { prefix: true, dictionary: "english", tsvector_column: "search_vector" } }
 
   scope :open_school_or_non_school, lambda {
     open_school_institution_ids = School.open.joins(:institution).select("institutions.id")
@@ -32,26 +27,20 @@ class Institution < ApplicationRecord
 
   delegate :in_england?, :identifier, :eligible_establishment?, to: :institutionable
 
-  def self.search_all_fields(search_term)
-    name_address_matches = base_search_by_name(search_term)
-    la_name_matches = joins(
-      "LEFT JOIN schools ON institutions.institutionable_type = 'School' AND institutions.institutionable_id = schools.id",
-    ).where("schools.la_name ILIKE ?", "%#{search_term}%")
-    urn_matches = where("institution_reference_number ILIKE ?", "%#{search_term}%")
+  def self.search(search_term)
+    return none if search_term.blank?
 
-    where(id: name_address_matches.select(:id))
-      .or(where(id: la_name_matches.select(:id)))
-      .or(where(id: urn_matches.select(:id)))
-  end
+    text_matches = base_search(search_term)
+    urn_matches = where("institution_reference_number ILIKE ?", "#{sanitize_sql_like(search_term)}%")
+    scope = where(id: text_matches.select(:id)).or(where(id: urn_matches.select(:id))).limit(SEARCH_LIMIT)
 
-  def self.search_by_name(search_term)
-    scope = search_all_fields(search_term).limit(SEARCH_LIMIT)
     NAME_SYNONYMS.each do |key, value|
-      next unless search_term&.downcase&.match?(/\b#{key}\b/i)
+      next unless search_term.downcase.match?(/\b#{key}\b/i)
 
       synonym_term = search_term.downcase.gsub(key, value)
-      synonym_scope = search_all_fields(synonym_term).limit(SEARCH_LIMIT)
-      return where(id: scope.select(:id)).or(where(id: synonym_scope.select(:id))).limit(SEARCH_LIMIT)
+      synonym_matches = base_search(synonym_term)
+      synonym_scope = where(id: synonym_matches.select(:id)).limit(SEARCH_LIMIT)
+      return scope.or(synonym_scope).limit(SEARCH_LIMIT)
     end
     scope
   end
