@@ -115,6 +115,7 @@ erDiagram
     integer schedule_id
     decimal service_fee
     datetime updated_at
+    decimal participant_funding
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to

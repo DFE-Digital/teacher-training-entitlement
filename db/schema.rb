@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_095648) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_17_091737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -237,6 +237,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_095648) do
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
+    t.decimal "participant_funding", precision: 10, scale: 2
     t.bigint "schedule_id"
     t.decimal "service_fee"
     t.datetime "updated_at", null: false
