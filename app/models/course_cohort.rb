@@ -13,6 +13,9 @@ class CourseCohort < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }
   validates :service_fee, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :participant_funding, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  validate :participant_funding_not_less_than_milestone_sum
 
   delegate :name, to: :cohort
 
@@ -30,5 +33,16 @@ class CourseCohort < ApplicationRecord
   def application_started_confirmed_by_date
     date = schedule.training_ends_at
     "#{date.month.between?(1, 4) ? 'Spring' : 'Summer'} #{date.year}"
+  end
+
+private
+
+  def participant_funding_not_less_than_milestone_sum
+    return unless participant_funding
+    return unless milestones.any?
+
+    if participant_funding < milestones.sum(:payment_amount)
+      errors.add(:participant_funding, :less_than_milestone_sum)
+    end
   end
 end
