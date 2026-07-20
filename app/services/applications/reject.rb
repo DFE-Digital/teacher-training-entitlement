@@ -8,6 +8,7 @@ module Applications
       registration-expired
       rejected-by-provider
       other-application-in-this-cohort-accepted
+      rejected-by-admin-user
     ].freeze
 
     attribute :application
