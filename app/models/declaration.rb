@@ -129,8 +129,8 @@ class Declaration < ApplicationRecord
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
   validates :milestone_id,
-            uniqueness: { scope: :application_id, conditions: -> { billable_or_changeable } },
-            if: :billable_or_changeable_with_milestone?
+            uniqueness: { scope: :application_id },
+            if: -> { milestone_id.present? }
 
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)
@@ -226,10 +226,6 @@ class Declaration < ApplicationRecord
   end
 
 private
-
-  def billable_or_changeable_with_milestone?
-    milestone_id.present? && state.in?((BILLABLE_STATES + CHANGEABLE_STATES).uniq)
-  end
 
   def validate_declaration_date_within_schedule
     return unless application&.schedule
