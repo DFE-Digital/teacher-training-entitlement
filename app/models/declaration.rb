@@ -16,7 +16,9 @@ class Declaration < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
 
   belongs_to :application
-  belongs_to :cohort
+  # milestone will take over cohort once transition is done
+  belongs_to :cohort, deprecated: true # DEPRECATED
+  belongs_to :milestone, optional: true
   belongs_to :lead_provider
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true

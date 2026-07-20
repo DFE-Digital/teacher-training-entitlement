@@ -11,7 +11,7 @@ FactoryBot.define do
     application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
     lead_provider { application&.lead_provider || create(:lead_provider) }
     cohort { course_cohort.cohort }
-
+    milestone { build(:milestone) }
     delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     started
     declaration_date { application.schedule.training_starts_at + 1.day }

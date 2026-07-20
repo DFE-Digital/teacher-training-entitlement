@@ -135,6 +135,7 @@ shared:
     - superseded_by_id
     - lead_provider_id
     - cohort_id
+    - milestone_id
     - declaration_type
     - declaration_date
     - state

@@ -6,6 +6,7 @@ RSpec.describe Declaration, type: :model do
   describe "associations" do
     it { is_expected.to belong_to(:application) }
     it { is_expected.to belong_to(:cohort) }
+    it { is_expected.to belong_to(:milestone).without_validating_presence }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:superseded_by).optional }
     it { is_expected.to have_many(:participant_outcomes).dependent(:destroy) }
