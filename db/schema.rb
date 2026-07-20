@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_075608) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_093804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -265,6 +265,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_075608) do
 
   create_table "declarations", force: :cascade do |t|
     t.bigint "application_id", null: false
+    t.bigint "clawback_declaration_id"
     t.bigint "cohort_id", null: false
     t.datetime "created_at", null: false
     t.datetime "declaration_date", precision: nil
@@ -273,19 +274,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_075608) do
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "lead_provider_id", null: false
     t.bigint "milestone_id"
+    t.bigint "paid_declaration_id"
     t.bigint "secondary_delivery_partner_id"
     t.enum "state", default: "submitted", null: false, enum_type: "declaration_states"
     t.enum "state_reason", enum_type: "declaration_state_reasons"
     t.bigint "superseded_by_id"
+    t.string "type"
     t.datetime "updated_at", null: false
     t.index ["application_id"], name: "index_declarations_on_application_id"
+    t.index ["clawback_declaration_id"], name: "index_declarations_on_clawback_declaration_id"
     t.index ["cohort_id"], name: "index_declarations_on_cohort_id"
     t.index ["delivery_partner_id"], name: "index_declarations_on_delivery_partner_id"
     t.index ["ecf_id"], name: "index_declarations_on_ecf_id", unique: true
     t.index ["lead_provider_id"], name: "index_declarations_on_lead_provider_id"
     t.index ["milestone_id"], name: "index_declarations_on_milestone_id"
+    t.index ["paid_declaration_id"], name: "index_declarations_on_paid_declaration_id"
     t.index ["secondary_delivery_partner_id"], name: "index_declarations_on_secondary_delivery_partner_id"
     t.index ["superseded_by_id"], name: "index_declarations_on_superseded_by_id"
+    t.index ["type"], name: "index_declarations_on_type"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

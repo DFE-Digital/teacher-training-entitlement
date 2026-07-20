@@ -1,7 +1,7 @@
 class Declaration < ApplicationRecord
   BILLABLE_STATES = %w[eligible payable paid].freeze
   CHANGEABLE_STATES = %w[eligible submitted].freeze
-  UPLIFT_PAID_STATES = %w[paid awaiting_clawback clawed_back].freeze
+  UPLIFT_PAID_STATES = %w[paid].freeze
   COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT = %w[npq-additional-support-offer npq-early-headship-coaching-offer].freeze
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
   DELIVER_PARTNER_REQUIRED_FROM = 2024
@@ -23,6 +23,7 @@ class Declaration < ApplicationRecord
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
+  belongs_to :clawback_declaration, optional: true
   has_many :participant_outcomes, dependent: :destroy
   has_many :statement_items
   has_many :statements, through: :statement_items
@@ -60,8 +61,6 @@ class Declaration < ApplicationRecord
     paid: "paid",
     voided: "voided",
     ineligible: "ineligible",
-    awaiting_clawback: "awaiting_clawback",
-    clawed_back: "clawed_back",
   }, suffix: true
 
   state_machine :state, initial: :submitted do
@@ -79,14 +78,6 @@ class Declaration < ApplicationRecord
 
     event :mark_ineligible do
       transition %i[submitted] => :ineligible
-    end
-
-    event :mark_awaiting_clawback do
-      transition %i[paid] => :awaiting_clawback
-    end
-
-    event :mark_clawed_back do
-      transition %i[awaiting_clawback] => :clawed_back
     end
 
     event :mark_voided do
