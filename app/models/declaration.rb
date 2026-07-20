@@ -6,18 +6,18 @@ class Declaration < ApplicationRecord
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
   DELIVER_PARTNER_REQUIRED_FROM = 2024
   CLAWBACK_STATES = %w[paid awaiting_clawback clawed_back].freeze
-  DECLARATION_TYPES = [
-    STARTED = "started".freeze,
-    RETAINED_1 = "retained-1".freeze,
-    RETAINED_2 = "retained-2".freeze,
-    COMPLETED = "completed".freeze,
-  ].freeze
+  STARTED = Milestone::STARTED
+  RETAINED_1 = Milestone::RETAINED_1
+  RETAINED_2 = Milestone::RETAINED_2
+  COMPLETED = Milestone::COMPLETED
+  DECLARATION_TYPES = Milestone::DECLARATION_TYPES
 
   has_paper_trail ignore: [:updated_at]
 
   belongs_to :application
   belongs_to :cohort
   belongs_to :lead_provider
+  belongs_to :milestone, optional: true
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
@@ -128,6 +128,10 @@ class Declaration < ApplicationRecord
 
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
+  validates :milestone_id,
+            uniqueness: { scope: :application_id, conditions: -> { billable_or_changeable } },
+            if: :billable_or_changeable_with_milestone?
+
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)
       .or(where(secondary_delivery_partner: delivery_partner))
@@ -222,6 +226,10 @@ class Declaration < ApplicationRecord
   end
 
 private
+
+  def billable_or_changeable_with_milestone?
+    milestone_id.present? && state.in?((BILLABLE_STATES + CHANGEABLE_STATES).uniq)
+  end
 
   def validate_declaration_date_within_schedule
     return unless application&.schedule

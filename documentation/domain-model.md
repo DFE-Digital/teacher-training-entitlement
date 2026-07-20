@@ -89,6 +89,7 @@ erDiagram
     enum state_reason
     integer superseded_by_id
     datetime updated_at
+    integer milestone_id
   }
   Declaration }o--|| Application : belongs_to
   Declaration }o--|| Cohort : belongs_to
@@ -101,8 +102,8 @@ erDiagram
     integer course_cohort_id
     datetime created_at
     integer lead_provider_id
-    datetime updated_at
     integer recruitment_target
+    datetime updated_at
   }
   CourseCohortProvider }o--|| CourseCohort : belongs_to
   CourseCohortProvider }o--|| LeadProvider : belongs_to
@@ -112,10 +113,10 @@ erDiagram
     integer course_id
     datetime created_at
     uuid ecf_id
+    decimal participant_funding
     integer schedule_id
     decimal service_fee
     datetime updated_at
-    decimal participant_funding
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to
@@ -218,6 +219,7 @@ erDiagram
     string postcode
     string postcode_without_spaces
     string region
+    tsvector search_vector
     string town
     datetime updated_at
   }

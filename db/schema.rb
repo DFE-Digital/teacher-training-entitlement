@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_17_091737) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -272,11 +272,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_17_091737) do
     t.bigint "delivery_partner_id"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "lead_provider_id", null: false
+    t.bigint "milestone_id"
     t.bigint "secondary_delivery_partner_id"
     t.enum "state", default: "submitted", null: false, enum_type: "declaration_states"
     t.enum "state_reason", enum_type: "declaration_state_reasons"
     t.bigint "superseded_by_id"
     t.datetime "updated_at", null: false
+    t.index ["application_id", "milestone_id"], name: "index_declarations_on_application_id_and_milestone_id", unique: true, where: "(state = ANY (ARRAY['eligible'::declaration_states, 'payable'::declaration_states, 'paid'::declaration_states, 'submitted'::declaration_states]))"
     t.index ["application_id"], name: "index_declarations_on_application_id"
     t.index ["cohort_id"], name: "index_declarations_on_cohort_id"
     t.index ["delivery_partner_id"], name: "index_declarations_on_delivery_partner_id"
