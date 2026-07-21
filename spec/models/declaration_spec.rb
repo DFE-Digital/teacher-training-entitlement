@@ -391,6 +391,16 @@ RSpec.describe Declaration, type: :model do
     end
   end
 
+  describe "#clawback!" do
+    subject(:paid_declaration) { create(:declaration, :paid) }
+
+    before { paid_declaration.clawback! }
+
+    it { expect(paid_declaration.clawback_declaration).to be_present }
+    it { expect(paid_declaration.state).to eq("paid") }
+    it { expect(paid_declaration.clawback_declaration.paid_declaration).to eq(paid_declaration) }
+  end
+
   describe "#uplift_paid?" do
     let(:declaration_type) { :started }
     let(:state) { described_class::UPLIFT_PAID_STATES.sample }

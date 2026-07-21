@@ -9,7 +9,6 @@ module Declarations
     def initialize(declaration:)
       @declaration = declaration
       @application = declaration.application
-      @clawback_declaration = build_clawback_declaration
     end
 
     validate :declaration_not_already_refunded
@@ -21,7 +20,7 @@ module Declarations
       return unless valid?
 
       ApplicationRecord.transaction do
-        @clawback_declaration.save!
+        @declaration.clawback!
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?
@@ -33,22 +32,6 @@ module Declarations
     end
 
   private
-
-    def build_clawback_declaration
-      ClawbackDeclaration.new(
-        paid_declaration: @declaration,
-        application: @declaration.application,
-        milestone: @declaration.milestone,
-        cohort: @declaration.cohort,
-        # statement: Statement.find_next_open_by(@declaration.application.course_cohort),
-        lead_provider: @declaration.lead_provider,
-        delivery_partner: @declaration.delivery_partner,
-        secondary_delivery_partner: @declaration.secondary_delivery_partner,
-        declaration_type: @declaration.declaration_type,
-        declaration_date: @declaration.declaration_date,
-        state: "awaiting_clawback",
-      )
-    end
 
     def application_status_not_completed
       if @declaration.started_declaration_type? && @application.completed_status?
