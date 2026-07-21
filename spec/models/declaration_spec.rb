@@ -550,10 +550,11 @@ RSpec.describe Declaration, type: :model do
 
     describe "declaration states" do
       let(:declarations) { described_class.states.keys.map { |state| create(:declaration, state:) } }
+      let(:voided_paid_declaration) { create(:declaration, :voided_paid) }
 
       describe ".billable" do
         it "returns declarations with billable states" do
-          billable_declarations = declarations.select { |d| %w[eligible payable paid].include?(d.state) }
+          billable_declarations = declarations.select { |d| %w[eligible payable paid].include?(d.state) && d.clawback_declaration.nil? }
 
           expect(described_class.billable).to match_array(billable_declarations)
         end

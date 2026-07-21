@@ -53,6 +53,11 @@ FactoryBot.define do
       state { :voided }
     end
 
+    trait :voided_paid do
+      state { :paid }
+      clawback_declaration
+    end
+
     trait :started do
       declaration_type { :started }
     end

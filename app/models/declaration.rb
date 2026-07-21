@@ -25,7 +25,7 @@ class Declaration < ApplicationRecord
   delegate :identifier, to: :course, prefix: true
   delegate :name, to: :lead_provider, prefix: true
 
-  scope :billable, -> { where(state: BILLABLE_STATES) }
+  scope :billable, -> { where(state: BILLABLE_STATES, clawback_declaration: nil) }
   scope :changeable, -> { where(state: CHANGEABLE_STATES) }
   scope :billable_or_changeable, -> { billable.or(changeable) }
   scope :voidable, -> { where(state: VOIDABLE_STATES) }
