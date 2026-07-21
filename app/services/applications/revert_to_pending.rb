@@ -1,7 +1,5 @@
 module Applications
   class RevertToPending
-    REVERTABLE_DECLARATION_STATES = %w[voided ineligible awaiting_clawback clawed_back].freeze
-
     include ActiveModel::Model
     include ActiveModel::Attributes
 
@@ -29,7 +27,7 @@ module Applications
   private
 
     def application_has_no_unremoveable_declarations
-      if application.declarations.where.not(state: REVERTABLE_DECLARATION_STATES).any?
+      if application.declarations.where.not(state: Declaration::REVERTABLE_STATES).any?
         errors.add :base, :pending_unremoveable_declarations
       end
     end

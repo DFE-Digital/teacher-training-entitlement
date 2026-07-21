@@ -136,7 +136,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
     end
 
     context "when application already has declarations" do
-      Applications::RevertToPending::REVERTABLE_DECLARATION_STATES.each do |declaration_state|
+      Declaration::REVERTABLE_STATES.each do |declaration_state|
         context "with a revertable state: #{declaration_state}" do
           let(:application) { create(:declaration, declaration_state).application }
 
@@ -154,7 +154,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
         end
       end
 
-      Declaration.states.keys.excluding(Applications::RevertToPending::REVERTABLE_DECLARATION_STATES).each do |declaration_state|
+      Declaration.states.keys.excluding(Declaration::REVERTABLE_STATES).each do |declaration_state|
         context "with a state that cannot be reverted: #{declaration_state}" do
           let(:application) { create(:declaration, declaration_state).application }
 

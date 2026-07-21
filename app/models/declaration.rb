@@ -1,4 +1,5 @@
 class Declaration < ApplicationRecord
+  REVERTABLE_STATES = %w[ineligible voided].freeze
   BILLABLE_STATES = %w[eligible payable paid].freeze
   CHANGEABLE_STATES = %w[eligible submitted].freeze
   UPLIFT_PAID_STATES = %w[paid].freeze
@@ -49,10 +50,10 @@ class Declaration < ApplicationRecord
   enum :state, {
     submitted: "submitted",
     eligible: "eligible",
+    ineligible: "ineligible",
+    voided: "voided",
     payable: "payable",
     paid: "paid",
-    voided: "voided",
-    ineligible: "ineligible",
   }, suffix: true
 
   state_machine :state, initial: :submitted do
