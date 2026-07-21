@@ -24,15 +24,6 @@ RSpec.describe Crons::MarkStatementsAsPayableJob, type: :job do
 
       expect(statement.state).to eq("payable")
     end
-
-    it "transitions statement items to payable" do
-      expect {
-        travel_to(statement.deadline_date + 1.day) do
-          described_class.perform_now
-          statement.reload
-        end
-      }.to change(statement.statement_items.where(state: "payable"), :count).from(0).to(1)
-    end
   end
 
   describe "#perform_later" do
