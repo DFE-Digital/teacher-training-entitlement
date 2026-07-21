@@ -5,7 +5,6 @@ class Declaration < ApplicationRecord
   UPLIFT_PAID_STATES = %w[paid].freeze
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
   DELIVER_PARTNER_REQUIRED_FROM = 2024
-  CLAWBACK_STATES = %w[paid awaiting_clawback clawed_back].freeze
 
   has_paper_trail ignore: [:updated_at]
 
@@ -141,10 +140,6 @@ class Declaration < ApplicationRecord
         ELSE 2
       END
     SQL
-  end
-
-  def clawbackable?
-    state.to_s.in?(CLAWBACK_STATES)
   end
 
   def billable_statement

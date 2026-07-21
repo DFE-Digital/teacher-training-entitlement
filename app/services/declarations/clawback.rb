@@ -9,10 +9,10 @@ module Declarations
     def initialize(declaration:)
       @declaration = declaration
       @application = declaration.application
+      @clawback_declaration = build_clawback_declaration
     end
 
     validate :declaration_not_already_refunded
-    validate :output_fee_statement_available
     validate :declaration_is_paid
     validate :application_status_not_completed
     validate :application_updateable
@@ -21,9 +21,7 @@ module Declarations
       return unless valid?
 
       ApplicationRecord.transaction do
-        @declaration.mark_awaiting_clawback!
-        statement_attacher.attach
-
+        @clawback_declaration.save!
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?
@@ -36,8 +34,20 @@ module Declarations
 
   private
 
-    def statement_attacher
-      @statement_attacher ||= StatementAttacher.new(declaration: @declaration)
+    def build_clawback_declaration
+      ClawbackDeclaration.new(
+        paid_declaration: @declaration,
+        application: @declaration.application,
+        milestone: @declaration.milestone,
+        cohort: @declaration.cohort,
+        # statement: Statement.find_next_open_by(@declaration.application.course_cohort),
+        lead_provider: @declaration.lead_provider,
+        delivery_partner: @declaration.delivery_partner,
+        secondary_delivery_partner: @declaration.secondary_delivery_partner,
+        declaration_type: @declaration.declaration_type,
+        declaration_date: @declaration.declaration_date,
+        state: "awaiting_clawback",
+      )
     end
 
     def application_status_not_completed
@@ -51,14 +61,6 @@ module Declarations
       return unless @declaration.statement_items.refundable.exists?
 
       errors.add(:base, :not_already_refunded)
-    end
-
-    def output_fee_statement_available
-      return if statement_attacher.valid?
-
-      statement_attacher.errors.each do |error|
-        errors.add(:base, error.type, **error.options)
-      end
     end
 
     def declaration_is_paid
