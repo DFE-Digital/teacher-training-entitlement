@@ -85,6 +85,7 @@ namespace :admin do
         resource :change_lead_provider, controller: "change_lead_provider", only: %i[show create]
         resource :notes, only: %i[edit update]
         resource :change_cohort, controller: "change_cohort", only: %i[show create]
+        resource :reject, controller: "rejection", only: %i[edit update]
         resource :history, controller: "history", only: %i[show]
         resource :outcome, controller: "outcome", only: %i[show]
       end

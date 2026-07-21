@@ -1,0 +1,22 @@
+<%= govuk_back_link href: admin_application_path(@application) %>
+
+<h1 class="govuk-heading-l">
+  Are you sure you want to reject the application?
+</h1>
+
+<div class="govuk-inset-text">
+  <p class="govuk-body">
+    Application status:
+    <br />
+    <strong><%= @application.status&.humanize %></strong>
+  </p>
+</div>
+
+<%= form_for @application, url: admin_applications_reject_path(@application), method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit "Reject application" %>
+    <%= govuk_link_to t("shared.cancel"), admin_application_path(@application) %>
+  </div>
+<% end %>
