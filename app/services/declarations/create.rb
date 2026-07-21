@@ -70,11 +70,11 @@ module Declarations
     end
 
     def completed_declaration?
-      declaration_type == Declaration::COMPLETED
+      declaration_type == Milestone::COMPLETED
     end
 
     def started_declaration?
-      declaration_type == Declaration::STARTED
+      declaration_type == Milestone::STARTED
     end
 
     def cohort
@@ -205,7 +205,7 @@ module Declarations
 
     def declaration_type_out_of_order
       return if started_declaration?
-      return if completed_declaration? && active_declarations.where(declaration_type: Declaration::STARTED).exists?
+      return if completed_declaration? && active_declarations.where(declaration_type: Milestone::STARTED).exists?
 
       errors.add(:declaration_type, :out_of_order)
     end

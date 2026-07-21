@@ -2,15 +2,9 @@ class Declaration < ApplicationRecord
   BILLABLE_STATES = %w[eligible payable paid].freeze
   CHANGEABLE_STATES = %w[eligible submitted].freeze
   UPLIFT_PAID_STATES = %w[paid awaiting_clawback clawed_back].freeze
-  COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT = %w[npq-additional-support-offer npq-early-headship-coaching-offer].freeze
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
   DELIVER_PARTNER_REQUIRED_FROM = 2024
   CLAWBACK_STATES = %w[paid awaiting_clawback clawed_back].freeze
-  STARTED = Milestone::STARTED
-  RETAINED_1 = Milestone::RETAINED_1
-  RETAINED_2 = Milestone::RETAINED_2
-  COMPLETED = Milestone::COMPLETED
-  DECLARATION_TYPES = Milestone::DECLARATION_TYPES
 
   has_paper_trail ignore: [:updated_at]
 
@@ -37,10 +31,10 @@ class Declaration < ApplicationRecord
   scope :billable_or_voidable, -> { billable.or(voidable) }
   scope :awaiting_clawback, -> { where(state: :awaiting_clawback) }
   scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
-  scope :completed, -> { where(declaration_type: "completed") }
+  scope :completed, -> { where(declaration_type: Milestone::COMPLETED) }
   scope :with_course_identifier, ->(course_identifier) { joins(application: { course_cohort: :course }).where(courses: { identifier: course_identifier }) }
   scope :latest_first, -> { order(created_at: :desc, id: :desc) }
-  scope :started, -> { where(declaration_type: STARTED) }
+  scope :started, -> { where(declaration_type: Milestone::STARTED) }
   scope :not_voided, -> { where.not(state: :voided) }
 
   scope :eligible_for_outcomes, lambda { |lead_provider, course_identifier|
@@ -97,7 +91,7 @@ class Declaration < ApplicationRecord
   end
 
   enum :declaration_type,
-       DECLARATION_TYPES.index_with(&:itself),
+       Milestone::DECLARATION_TYPES.index_with(&:itself),
        suffix: true, validate: true
 
   enum :state_reason, {
@@ -129,8 +123,8 @@ class Declaration < ApplicationRecord
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
   validates :milestone_id,
-            uniqueness: { scope: :application_id },
-            if: -> { milestone_id.present? }
+            uniqueness: { scope: :application_id, conditions: -> { where.not(state: :voided) } },
+            if: -> { milestone_id.present? && !voided? }
 
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)
@@ -140,10 +134,10 @@ class Declaration < ApplicationRecord
   def self.order_by_milestones
     scope = order(Arel.sql(<<~SQL))
       CASE declaration_type
-        WHEN 'completed' THEN 1
-        WHEN 'retained-2' THEN 2
-        WHEN 'retained-1' THEN 3
-        WHEN 'started' THEN 4
+        WHEN '#{Milestone::COMPLETED}' THEN 1
+        WHEN '#{Milestone::RETAINED_2}' THEN 2
+        WHEN '#{Milestone::RETAINED_1}' THEN 3
+        WHEN '#{Milestone::STARTED}' THEN 4
       END
     SQL
     scope.order(Arel.sql(<<~SQL))
@@ -170,8 +164,7 @@ class Declaration < ApplicationRecord
   end
 
   def uplift_paid?
-    applicable_course = !application.course.identifier.in?(COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT)
-    applicable_course && state.in?(UPLIFT_PAID_STATES) && started_declaration_type?
+    state.in?(UPLIFT_PAID_STATES) && started_declaration_type?
   end
 
   def eligible_for_payment?
