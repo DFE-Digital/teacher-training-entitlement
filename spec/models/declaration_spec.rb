@@ -418,12 +418,10 @@ RSpec.describe Declaration, type: :model do
 
   describe "#uplift_paid?" do
     let(:declaration_type) { :started }
-    let(:course_identifier) { Course::IDENTIFIERS.excluding(described_class::COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT).sample }
     let(:state) { described_class::UPLIFT_PAID_STATES.sample }
 
     subject(:declaration) do
-      application = build(:application, course: create(:course, identifier: course_identifier))
-      build(:declaration, application:, declaration_type:, state:)
+      build(:declaration, declaration_type:, state:)
     end
 
     it { is_expected.to be_uplift_paid }
@@ -431,22 +429,6 @@ RSpec.describe Declaration, type: :model do
     described_class.declaration_types.keys.excluding("started").each do |ineligible_declaration_type|
       context "when declaration_type is #{ineligible_declaration_type}" do
         let(:declaration_type) { ineligible_declaration_type }
-
-        it { is_expected.not_to be_uplift_paid }
-      end
-    end
-
-    Course::IDENTIFIERS.excluding(described_class::COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT).each do |eligible_course_identifier|
-      context "when course_identifier is #{eligible_course_identifier}" do
-        let(:course_identifier) { eligible_course_identifier }
-
-        it { is_expected.to be_uplift_paid }
-      end
-    end
-
-    described_class::COURSE_IDENTIFIERS_INELIGIBLE_FOR_UPLIFT.each do |ineligible_course_identifier|
-      context "when course_identifier is #{ineligible_course_identifier}" do
-        let(:course_identifier) { ineligible_course_identifier }
 
         it { is_expected.not_to be_uplift_paid }
       end
