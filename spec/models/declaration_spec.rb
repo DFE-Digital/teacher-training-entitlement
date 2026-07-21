@@ -13,6 +13,7 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to have_many(:statements).through(:statement_items) }
     it { is_expected.to belong_to(:delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:secondary_delivery_partner).without_validating_presence }
+    it { is_expected.to belong_to(:clawback_declaration).without_validating_presence }
 
     context "with delivery partners" do
       subject do
@@ -267,8 +268,6 @@ RSpec.describe Declaration, type: :model do
         paid: "paid",
         voided: "voided",
         ineligible: "ineligible",
-        awaiting_clawback: "awaiting_clawback",
-        clawed_back: "clawed_back",
       ).backed_by_column_of_type(:enum).with_suffix
     }
 
@@ -338,30 +337,6 @@ RSpec.describe Declaration, type: :model do
         let(:state) { :voided }
 
         it { expect { declaration.mark_ineligible! }.to raise_error(StateMachines::InvalidTransition) }
-      end
-    end
-
-    describe ".mark_awaiting_clawback" do
-      let(:state) { :paid }
-
-      it { expect { declaration.mark_awaiting_clawback }.to change(declaration, :state).from("paid").to("awaiting_clawback") }
-
-      context "when not paid" do
-        let(:state) { :payable }
-
-        it { expect { declaration.mark_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }
-      end
-    end
-
-    describe ".mark_clawed_back" do
-      let(:state) { :awaiting_clawback }
-
-      it { expect { declaration.mark_clawed_back }.to change(declaration, :state).from("awaiting_clawback").to("clawed_back") }
-
-      context "when not awaiting_clawback" do
-        let(:state) { :clawed_back }
-
-        it { expect { declaration.mark_clawed_back! }.to raise_error(StateMachines::InvalidTransition) }
       end
     end
 
@@ -700,7 +675,6 @@ RSpec.describe Declaration, type: :model do
       let(:application) { create(:application, :accepted, cohort:, course:) }
 
       before do
-        create(:declaration, :completed, :clawed_back)
         create(:declaration, :completed, :payable)
         create(:declaration, :payable, declaration_type: "started")
         create(:declaration, :payable, declaration_type: "retained-1")
@@ -709,7 +683,7 @@ RSpec.describe Declaration, type: :model do
 
       it "sorts declarations properly" do
         declarations = Declaration.order_by_milestones
-        expected_types = %w[completed completed retained-2 retained-1 started]
+        expected_types = %w[completed retained-2 retained-1 started]
         expect(declarations.pluck(:declaration_type)).to eq expected_types
       end
 
@@ -771,26 +745,6 @@ RSpec.describe Declaration, type: :model do
 
     context "when a declaration has a different type" do
       before { create(:declaration, application:, declaration_type: :completed) }
-
-      it "returns no declarations" do
-        expect(declaration.duplicate_declarations).to be_empty
-      end
-    end
-
-    context "when a declaration has a not billable/submitted state" do
-      before { create(:declaration, application:, state: :clawed_back) }
-
-      it "returns no declarations" do
-        expect(declaration.duplicate_declarations).to be_empty
-      end
-    end
-
-    context "when declarations have been made for a different course", :npq do
-      before do
-        course = create(:course, :npd_eirt)
-        other_application = create(:application, :accepted, course:, cohort:, user: participant)
-        create(:declaration, application: other_application)
-      end
 
       it "returns no declarations" do
         expect(declaration.duplicate_declarations).to be_empty
