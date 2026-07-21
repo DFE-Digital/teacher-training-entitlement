@@ -11,7 +11,7 @@ module Declarations
       @application = declaration.application
     end
 
-    validate :declaration_not_already_refunded
+    validate :declaration_not_clawbacked
     validate :declaration_is_paid
     validate :application_status_not_completed
     validate :application_updateable
@@ -40,8 +40,8 @@ module Declarations
       end
     end
 
-    def declaration_not_already_refunded
-      return unless @declaration.statement_items.refundable.exists?
+    def declaration_not_clawbacked
+      return if @declaration.clawback_declaration.nil?
 
       errors.add(:base, :not_already_refunded)
     end

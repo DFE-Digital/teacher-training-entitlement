@@ -48,17 +48,18 @@ RSpec.describe Declarations::Clawback, type: :model do
       end
 
       context "with a paid declaration" do
-        before { declaration.update!(state: :paid) }
+        context "when paid declaration already clawbacked" do
+          let(:clawback_declaration) { create(:clawback_declaration) }
 
-        StatementItem::REFUNDABLE_STATES.each do |ineligible_state|
-          context "when the declaration already has a #{ineligible_state} statement item" do
-            before do
-              create(:statement_item, declaration:, state: ineligible_state)
-              service.call
-            end
+          before { declaration.update!(state: :paid, clawback_declaration:) }
 
-            it { expect(service).to have_error(:base, :not_already_refunded, "The declaration will or has been be refunded.") }
-          end
+          it { expect(service).to have_error(:base, :not_already_refunded, "The declaration will or has been be refunded.") }
+        end
+
+        context "when paid declaration not clawbacked" do
+          before { declaration.update!(state: :paid) }
+
+          it { expect(service.errors).to be_blank }
         end
       end
     end
