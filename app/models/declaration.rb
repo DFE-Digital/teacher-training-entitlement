@@ -61,14 +61,6 @@ class Declaration < ApplicationRecord
       transition %i[submitted] => :eligible
     end
 
-    event :mark_payable do
-      transition %i[eligible] => :payable
-    end
-
-    event :mark_paid do
-      transition %i[payable] => :paid
-    end
-
     event :mark_ineligible do
       transition %i[submitted] => :ineligible
     end
@@ -79,6 +71,14 @@ class Declaration < ApplicationRecord
 
     event :revert_to_eligible do
       transition %i[payable] => :eligible
+    end
+
+    event :mark_payable do
+      transition %i[eligible] => :payable
+    end
+
+    event :mark_paid do
+      transition %i[payable] => :paid
     end
   end
 

@@ -232,13 +232,29 @@ RSpec.describe Statement, type: :model do
     end
   end
 
-  describe "#mark_as_paid_at!" do
+  describe "#mark_as_frozen!" do
     subject(:statement) { build(:statement, :payable) }
 
-    it "sets marked_as_paid_at" do
-      expect { subject.tap(&:mark_as_paid_at!).reload }
-        .to change(subject, :marked_as_paid_at)
+    it "sets marked_as_paid_at and state" do
+      expect { statement.tap(&:mark_as_frozen!).reload }
+        .to change(statement, :marked_as_paid_at)
+              .and change(statement, :state).from("payable").to("paid")
     end
+
+    it "updates declarations"
+    it "updates clawback declarations"
+  end
+
+  describe "#prepare_to_freeze!" do
+    subject(:statement) { build(:statement, :open) }
+
+    it "updates state" do
+      expect { statement.tap(&:prepare_to_freeze!).reload }
+        .to change(statement, :state).from("open").to("payable")
+    end
+
+    it "updates declarations"
+    it "updates clawback declarations"
   end
 
   describe "#marked_as_paid_with_date?" do

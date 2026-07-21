@@ -42,8 +42,20 @@ class Statement < ApplicationRecord
     end
   end
 
-  def mark_as_paid_at!
-    update!(marked_as_paid_at: Time.zone.now)
+  def mark_as_frozen!
+    transaction do
+      declarations.payable_state.each(&:mark_paid!)
+      # clawback_declarations.awaiting_clawback_state.each(&:mark_clawed_back!)
+      update!(state: :paid, marked_as_paid_at: Time.zone.now)
+    end
+  end
+
+  def prepare_to_freeze!
+    transaction do
+      declarations.eligible_state.each(&:mark_payable!)
+      # clawback_declarations.awaiting_clawback_state.each(&:mark_awaiting_clawback!)
+      mark_payable!
+    end
   end
 
   def marked_as_paid_with_date?

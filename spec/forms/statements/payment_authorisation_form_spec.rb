@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Statements::PaymentAuthorisationForm, type: :model do
   subject(:form) { described_class.new(statement, params) }
 
-  let(:statement) { create :statement }
+  let(:statement) { create(:statement, :payable) }
   let(:params) { { checks_done: true } }
 
   describe "#valid?" do
@@ -37,13 +37,8 @@ RSpec.describe Statements::PaymentAuthorisationForm, type: :model do
   end
 
   describe "#save_form" do
-    it "marks statement as paid" do
-      expect { form.save_form }.to change(statement, :marked_as_paid_at)
-    end
-
-    it "calls the correct service class" do
-      expect(Statements::MarkAsPaidJob).to receive(:perform_later).with(statement_id: statement.id)
-
+    it "freeze statement" do
+      expect(statement).to receive(:mark_as_frozen!)
       form.save_form
     end
   end
