@@ -1,28 +1,23 @@
 module Milestones
   class Create
     include ActiveModel::Model
-    include ActiveModel::Attributes
 
-    attribute :schedule_id, :integer
-    attribute :declaration_type, :string
-    attribute :statement_date, :date
+    def initialize(course_cohort:, **attributes)
+      @milestone_attributes = attributes.with_indifferent_access
+      @course_cohort = course_cohort
+    end
 
-    validates :schedule_id, presence: true
-    validates :declaration_type, presence: true
-    validates :statement_date, presence: true
+    def call
+      @milestone = @course_cohort.milestones.new(@milestone_attributes)
 
-    def create!
+      unless @milestone.valid?
+        @milestone.errors.each { |error| errors.add(error.attribute, error.message) }
+        return
+      end
+
       ActiveRecord::Base.transaction do
-        schedule = Schedule.find(schedule_id)
-        milestone = schedule.milestones.create!(declaration_type: declaration_type)
-
-        LeadProvider.find_each do |lead_provider|
-          statement = lead_provider
-            .statements
-            .with_output_fee
-            .find_by(month: statement_date.month, year: statement_date.year, cohort: schedule.cohort)
-          milestone.milestone_statements.find_or_create_by!(statement:) if statement
-        end
+        @milestone.save!
+        @milestone.attach_statements!
       end
     end
   end

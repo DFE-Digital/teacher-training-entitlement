@@ -429,6 +429,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_090000) do
     t.datetime "created_at", null: false
     t.enum "declaration_type", null: false, enum_type: "declaration_types"
     t.decimal "payment_amount", precision: 10, scale: 2
+    t.date "statement_date"
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "declaration_type"], name: "index_milestones_on_course_cohort_id_and_declaration_type", unique: true
     t.index ["course_cohort_id"], name: "index_milestones_on_course_cohort_id"

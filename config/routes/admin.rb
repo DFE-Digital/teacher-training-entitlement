@@ -93,7 +93,9 @@ namespace :admin do
   end
 
   resources :cohorts do
-    resources :courses, controller: "cohort_courses", only: %i[index show new create]
+    resources :courses, controller: "cohort_courses", only: %i[index show new create] do
+      resources :milestones, controller: "course_cohort_milestones", only: %i[new create edit update]
+    end
     resources :schedules, except: :index do
       resources :milestones, except: :show
     end

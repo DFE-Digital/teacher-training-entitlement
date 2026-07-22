@@ -94,6 +94,10 @@ erDiagram
     integer schedule_id
     decimal service_fee
     datetime updated_at
+    date registration_starts_at
+    date registration_ends_at
+    date training_starts_at
+    date training_ends_at
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to

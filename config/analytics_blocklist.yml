@@ -53,6 +53,8 @@
   - record_type
   :statements:
   - reconcile_amount
+  :milestones:
+  - statement_date
   :legacy_passed_participant_outcomes:
   - id
   - completion_date

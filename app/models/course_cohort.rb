@@ -35,6 +35,25 @@ class CourseCohort < ApplicationRecord
     "#{date.month.between?(1, 4) ? 'Spring' : 'Summer'} #{date.year}"
   end
 
+  def statement_date_options
+    Statement
+      .where(cohort:)
+      .with_output_fee
+      .order(year: :asc, month: :asc)
+      .pluck(:year, :month)
+      .uniq
+      .map do |year, month|
+        OpenStruct.new(
+          year_month: Date.new(year, month),
+          label: Date.new(year, month).to_fs(:govuk_approx),
+        )
+      end
+  end
+
+  def taken_declaration_types(except: nil)
+    milestones.where.not(id: except&.id).pluck(:declaration_type)
+  end
+
 private
 
   def participant_funding_not_less_than_milestone_sum

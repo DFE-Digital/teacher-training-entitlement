@@ -1,26 +1,24 @@
 module Milestones
   class Update
     include ActiveModel::Model
-    include ActiveModel::Attributes
 
-    attribute :milestone_id, :integer
-    attribute :statement_date, :date
+    def initialize(milestone:, **attributes)
+      @milestone = milestone
+      @milestone_attributes = attributes.with_indifferent_access
+    end
 
-    validates :milestone_id, presence: true
-    validates :statement_date, presence: true
+    def call
+      @milestone.assign_attributes(@milestone_attributes)
 
-    def update!
-      milestone = Milestone.find(milestone_id)
+      unless @milestone.valid?
+        @milestone.errors.each { |error| errors.add(error.attribute, error.message) }
+        return
+      end
 
       ActiveRecord::Base.transaction do
-        milestone.milestone_statements.destroy_all
-        LeadProvider.find_each do |lead_provider|
-          statement = lead_provider
-            .statements
-            .with_output_fee
-            .find_by(month: statement_date.month, year: statement_date.year, cohort: milestone.schedule.cohort)
-          milestone.milestone_statements.find_or_create_by!(statement: statement)
-        end
+        @milestone.milestone_statements.destroy_all
+        @milestone.save!
+        @milestone.attach_statements!
       end
     end
   end

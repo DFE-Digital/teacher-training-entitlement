@@ -17,7 +17,7 @@ RSpec.describe Milestone, type: :model do
 
       let(:statement) { create(:statement) }
 
-      it { is_expected.to have_error(:declaration_type, :inclusion, "The declaration type should be one of the ones allowed by the schedule") }
+      it { is_expected.to have_error(:declaration_type, :inclusion, "Please choose a declaration type") }
     end
 
     context "when acceptance window start date is missing" do
@@ -26,12 +26,18 @@ RSpec.describe Milestone, type: :model do
       it { is_expected.to have_error(:acceptance_window_start_date, :blank, "can't be blank") }
     end
 
+    context "when statement date is missing" do
+      subject(:milestone) { build(:milestone, statement_date: nil) }
+
+      it { is_expected.to have_error(:statement_date, :blank, "Please choose a statement date") }
+    end
+
     context "when creating a milestone with a declaration type that already exists for the course cohort" do
       subject(:milestone) do
         build(
           :milestone,
+          :started,
           course_cohort:,
-          declaration_type: "started",
           acceptance_window_start_date: Date.new(2026, 2, 1),
           acceptance_window_end_date: Date.new(2026, 2, 28),
         )
@@ -42,8 +48,8 @@ RSpec.describe Milestone, type: :model do
       before do
         create(
           :milestone,
+          :started,
           course_cohort:,
-          declaration_type: "started",
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
         )
@@ -58,8 +64,8 @@ RSpec.describe Milestone, type: :model do
       before do
         create(
           :milestone,
+          :started,
           course_cohort: create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2026, 2, 1))),
-          declaration_type: "started",
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
         )
@@ -68,8 +74,8 @@ RSpec.describe Milestone, type: :model do
       it "is valid" do
         milestone = build(
           :milestone,
+          :started,
           course_cohort:,
-          declaration_type: "started",
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
         )
@@ -128,8 +134,8 @@ RSpec.describe Milestone, type: :model do
       before do
         create(
           :milestone,
+          :started,
           course_cohort:,
-          declaration_type: "started",
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
         )
@@ -138,8 +144,8 @@ RSpec.describe Milestone, type: :model do
       it "is valid" do
         milestone = build(
           :milestone,
+          :completed,
           course_cohort:,
-          declaration_type: "completed",
           acceptance_window_start_date: Date.new(2026, 2, 1),
           acceptance_window_end_date: Date.new(2026, 2, 28),
         )
@@ -164,8 +170,8 @@ RSpec.describe Milestone, type: :model do
       it "is valid" do
         milestone = build(
           :milestone,
+          :completed,
           course_cohort:,
-          declaration_type: "completed",
           acceptance_window_start_date: Date.new(2026, 1, 15),
           acceptance_window_end_date: Date.new(2026, 2, 15),
         )
@@ -180,7 +186,7 @@ RSpec.describe Milestone, type: :model do
     let(:started) do
       create(
         :milestone,
-        declaration_type: "started",
+        declaration_type: Milestone::STARTED,
         course_cohort:,
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
@@ -189,7 +195,7 @@ RSpec.describe Milestone, type: :model do
     let(:retained_1) do
       create(
         :milestone,
-        declaration_type: "retained-1",
+        declaration_type: Milestone::RETAINED_1,
         course_cohort:,
         acceptance_window_start_date: Date.new(2026, 2, 1),
         acceptance_window_end_date: Date.new(2026, 2, 28),
@@ -198,7 +204,7 @@ RSpec.describe Milestone, type: :model do
     let(:retained_2) do
       create(
         :milestone,
-        declaration_type: "retained-2",
+        declaration_type: Milestone::RETAINED_2,
         course_cohort:,
         acceptance_window_start_date: Date.new(2026, 3, 1),
         acceptance_window_end_date: Date.new(2026, 3, 31),
@@ -207,7 +213,7 @@ RSpec.describe Milestone, type: :model do
     let(:completed) do
       create(
         :milestone,
-        declaration_type: "completed",
+        declaration_type: Milestone::COMPLETED,
         course_cohort:,
         acceptance_window_start_date: Date.new(2026, 4, 1),
         acceptance_window_end_date: Date.new(2026, 4, 30),
@@ -227,13 +233,93 @@ RSpec.describe Milestone, type: :model do
     end
   end
 
+  describe "#editable?" do
+    subject { build(:milestone, acceptance_window_end_date:).editable? }
+
+    context "when the acceptance window ended before today" do
+      let(:acceptance_window_end_date) { 1.day.ago }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when the acceptance window ends today" do
+      let(:acceptance_window_end_date) { Time.zone.today }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when the acceptance window ends after today" do
+      let(:acceptance_window_end_date) { 1.day.from_now }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when the acceptance window end date is missing" do
+      let(:acceptance_window_end_date) { nil }
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
+  describe "#statements_for_statement_date" do
+    subject(:statements_for_statement_date) { milestone.statements_for_statement_date }
+
+    let(:course_cohort) { create(:course_cohort) }
+    let(:cohort) { course_cohort.cohort }
+    let(:milestone) { create(:milestone, course_cohort:, statement_date: Date.new(2026, 2, 1)) }
+    let(:matching_statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: true) }
+    let(:different_month_statement) { create(:statement, cohort:, year: 2026, month: 3, output_fee: true) }
+    let(:non_output_fee_statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: false) }
+    let(:different_cohort_statement) { create(:statement, cohort: create(:cohort, :next), year: 2026, month: 2, output_fee: true) }
+
+    before do
+      matching_statement
+      different_month_statement
+      non_output_fee_statement
+      different_cohort_statement
+    end
+
+    it "returns output fee statements matching the milestone statement date and cohort" do
+      expect(statements_for_statement_date).to include(matching_statement)
+      expect(statements_for_statement_date).not_to include(
+        different_month_statement,
+        non_output_fee_statement,
+        different_cohort_statement,
+      )
+    end
+  end
+
+  describe "#attach_statements!" do
+    subject(:attach_statements) { milestone.attach_statements! }
+
+    let(:course_cohort) { create(:course_cohort) }
+    let(:cohort) { course_cohort.cohort }
+    let(:milestone) { create(:milestone, course_cohort:, statement_date: Date.new(2026, 2, 1)) }
+    let(:statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: true) }
+
+    before do
+      statement
+    end
+
+    it "attaches matching statements to the milestone" do
+      expect { attach_statements }.to change(MilestoneStatement, :count).by(1)
+      expect(milestone.statements).to contain_exactly(statement)
+    end
+
+    it "does not duplicate existing milestone statements" do
+      create(:milestone_statement, milestone:, statement:)
+
+      expect { attach_statements }.not_to change(MilestoneStatement, :count)
+    end
+  end
+
   describe ".all" do
     let(:course_cohort) { create(:course_cohort) }
     let(:january_milestone) do
       create(
         :milestone,
         course_cohort:,
-        declaration_type: "started",
+        declaration_type: Milestone::STARTED,
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
       )
@@ -242,7 +328,7 @@ RSpec.describe Milestone, type: :model do
       create(
         :milestone,
         course_cohort:,
-        declaration_type: "retained-1",
+        declaration_type: Milestone::RETAINED_1,
         acceptance_window_start_date: Date.new(2026, 2, 1),
         acceptance_window_end_date: Date.new(2026, 2, 28),
       )
@@ -251,7 +337,7 @@ RSpec.describe Milestone, type: :model do
       create(
         :milestone,
         course_cohort:,
-        declaration_type: "completed",
+        declaration_type: Milestone::COMPLETED,
         acceptance_window_start_date: Date.new(2026, 3, 1),
         acceptance_window_end_date: Date.new(2026, 3, 31),
       )

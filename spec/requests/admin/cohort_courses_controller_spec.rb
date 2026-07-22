@@ -58,6 +58,25 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       it "links to add or remove providers" do
         expect(response.body).to include(admin_course_course_cohort_provider_path(course, course_cohort))
       end
+
+      it "links to add a milestone" do
+        expect(response.body).to include(new_admin_cohort_course_milestone_path(cohort, course))
+      end
+
+      describe "Showing milestones" do
+        let!(:milestone) do
+          create(:milestone,
+                 course_cohort:,
+                 payment_amount: 123.45)
+        end
+
+        it "shows milestones for the course cohort" do
+          get admin_cohort_course_path(cohort, course)
+
+          expect(response.body).to include("£123.45")
+          expect(response.body).to include(edit_admin_cohort_course_milestone_path(cohort, course, milestone))
+        end
+      end
     end
 
     describe "#new" do

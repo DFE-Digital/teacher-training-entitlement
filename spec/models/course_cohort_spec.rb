@@ -104,4 +104,49 @@ RSpec.describe CourseCohort do
       it { is_expected.to eq("Summer 2026") }
     end
   end
+
+  describe "#statement_date_options" do
+    subject(:statement_date_options) { course_cohort.statement_date_options }
+
+    let(:cohort) { create(:cohort) }
+    let(:course_cohort) { create(:course_cohort, cohort:) }
+    let(:february_2026) { Date.new(2026, 2, 1) }
+    let(:march_2026) { Date.new(2026, 3, 1) }
+
+    before do
+      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 2, output_fee: true)
+      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 2, output_fee: true)
+      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 3, output_fee: true)
+      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 4, output_fee: false)
+    end
+
+    it "returns distinct output fee statement dates for the course cohort's cohort" do
+      expect(statement_date_options.map(&:year_month)).to eq([february_2026, march_2026])
+      expect(statement_date_options.map(&:label)).to eq(["February 2026", "March 2026"])
+    end
+  end
+
+  describe "#taken_declaration_types" do
+    subject(:taken_declaration_types) { course_cohort.taken_declaration_types(except:) }
+
+    let(:course_cohort) { create(:course_cohort) }
+    let(:except) { nil }
+
+    before do
+      create(:milestone, course_cohort:, declaration_type: "started")
+      create(:milestone, course_cohort:, declaration_type: "completed")
+    end
+
+    it "returns the declaration types already used by milestones on the course cohort" do
+      expect(taken_declaration_types).to contain_exactly("started", "completed")
+    end
+
+    context "when excluding a milestone" do
+      let(:except) { course_cohort.milestones.find_by(declaration_type: "started") }
+
+      it "does not include the excluded milestone's declaration type" do
+        expect(taken_declaration_types).to contain_exactly("completed")
+      end
+    end
+  end
 end

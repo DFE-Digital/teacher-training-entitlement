@@ -22,11 +22,11 @@ class Admin::MilestonesController < AdminController
   end
 
   def edit
-    @service = Milestones::Update.new(milestone_id: params[:id])
+    @service = Milestones::Update.new(milestone: @milestone)
   end
 
   def update
-    @service = Milestones::Update.new(milestone_id: params[:id], **params.fetch(:milestones_update, {}).permit(:statement_date))
+    @service = Milestones::Update.new(milestone: @milestone, **params.fetch(:milestones_update, {}).permit(:statement_date))
     if @service.valid?
       @service.update!
       flash[:success] = "Milestone updated"
