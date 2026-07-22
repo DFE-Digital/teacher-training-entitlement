@@ -14,6 +14,7 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to belong_to(:delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:secondary_delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:clawback_declaration).without_validating_presence }
+    it { is_expected.to belong_to(:paid_declaration).without_validating_presence }
 
     context "with delivery partners" do
       subject do

@@ -1,7 +1,7 @@
 # Internal declaration created when voiding a paid declaration
 # paid declaration references clawback declaration
 class ClawbackDeclaration < Declaration
-  belongs_to :paid_declaration, class_name: "Declaration"
+  validates :paid_declaration, presence: true
 
   enum :state, {
     awaiting_clawback: "awaiting_clawback",

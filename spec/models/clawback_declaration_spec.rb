@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe ClawbackDeclaration, type: :model do
   subject(:clawback_declaration) { build(:clawback_declaration) }
 
-  it { is_expected.to belong_to(:paid_declaration) }
+  it { is_expected.to validate_presence_of(:paid_declaration) }
 
   describe "enums" do
     it {

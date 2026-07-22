@@ -16,6 +16,7 @@ class Declaration < ApplicationRecord
   belongs_to :delivery_partner, optional: true
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
   belongs_to :clawback_declaration, optional: true
+  belongs_to :paid_declaration, class_name: "Declaration", optional: true
   has_many :participant_outcomes, dependent: :destroy
   has_many :statement_items
   has_many :statements, through: :statement_items

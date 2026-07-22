@@ -24,7 +24,8 @@ module API
         field(:secondary_delivery_partner_name) { |declaration| declaration.secondary_delivery_partner&.name }
         field(:statement_id) { |declaration| declaration.billable_statement&.ecf_id }
         field(:application_id) { |declaration| declaration.application.ecf_id }
-        field(:clawback_statement_id) { |declaration| declaration.refundable_statement&.ecf_id }
+        field(:clawback_declaration_id) { |declaration| declaration.clawback_declaration&.ecf_id }
+        field(:paid_declaration_id) { |declaration| declaration.paid_declaration&.ecf_id }
         field(:uplift_paid?, name: :uplift_paid)
         field(:lead_provider_name)
         field(:ineligible_for_funding_reason)

@@ -88,6 +88,8 @@ module Declarations
           :cohort,
           :lead_provider,
           :participant_outcomes,
+          :clawback_declaration,
+          :paid_declaration,
           application: [
             :user,
             :course,
