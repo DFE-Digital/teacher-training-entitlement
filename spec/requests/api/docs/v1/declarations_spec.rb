@@ -36,7 +36,8 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :
         base_response_example.tap do |example|
           example[:data][:attributes][:state] = "voided"
           example[:data][:attributes][:has_passed] = nil
-          example[:data][:attributes][:clawback_statement_id] = nil
+          example[:data][:attributes][:clawback_declaration_id] = nil
+          example[:data][:attributes][:paid_declaration_id] = nil
         end
       end
     end

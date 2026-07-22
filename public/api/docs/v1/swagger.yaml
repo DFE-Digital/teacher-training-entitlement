@@ -205,7 +205,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
@@ -519,7 +519,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
@@ -834,14 +834,15 @@ paths:
                         course_identifier: tte-early-years
                         declaration_date: '2021-05-31T02:22:32Z'
                         state: voided
-                        has_passed: 
+                        has_passed:
                         ineligible_for_funding_reason: duplicate_declaration
                         delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
                         delivery_partner_name: Foo education
                         secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
                         secondary_delivery_partner_name: Bar education
                         statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
-                        clawback_statement_id: 
+                        clawback_declaration_id: cd3a12347-7308-4879-942a-c4a70ced400a
+                        paid_declaration_id: cd3a12347-7308-4879-942a-c4a70ced400a
                         uplift_paid: true
                         lead_provider_name: Example Institute
                         created_at: '2021-05-31T02:22:32.000Z'
@@ -1504,7 +1505,7 @@ components:
                 being funded by DfE
               nullable: true
               type: boolean
-              example: 
+              example:
             created_at:
               description: The date the application was created
               type: string
@@ -1885,7 +1886,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was withdrawn
@@ -1928,7 +1929,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was deferred
@@ -2348,7 +2349,7 @@ components:
               description: Whether the participant has failed or passed
               type: boolean
               nullable: true
-              example: 
+              example:
             ineligible_for_funding_reason:
               description: If the declaration is ineligible, the reason why
               type: string
@@ -2389,9 +2390,16 @@ components:
               format: uuid
               example: cd3a12347-7308-4879-942a-c4a70ced400a
               nullable: true
-            clawback_statement_id:
-              description: Unique id of the statement to which the declaration will
-                be clawed back on, if any
+            clawback_declaration_id:
+              description: Unique id of the claw back declaration set when voiding
+                a paid declaration, if any
+              type: string
+              format: uuid
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+              nullable: true
+            paid_declaration_id:
+              description: Unique id of the paid declaration which triggered the claw
+                back, if any
               type: string
               format: uuid
               example: cd3a12347-7308-4879-942a-c4a70ced400a

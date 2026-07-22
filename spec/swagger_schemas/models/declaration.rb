@@ -63,7 +63,7 @@ DECLARATION = {
             type: :string,
             nullable: false,
             example: "submitted",
-            enum: Declaration.states.keys,
+            enum: Declaration.states.keys + ClawbackDeclaration.states.keys,
           },
           has_passed: {
             description: "Whether the participant has failed or passed",
