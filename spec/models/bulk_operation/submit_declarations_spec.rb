@@ -13,6 +13,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:participant) { create(:user) }
 
   let!(:application) { create(:application, :accepted, :for_cohort_starting_on, user: participant, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }
+  let(:started_milestone) { create(:milestone, course_cohort: application.course_cohort, declaration_type: "started") }
 
   describe "validations" do
     context "with valid CSV file" do
@@ -74,6 +75,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
     let(:csv_file) { tempfile(csv) }
 
     before do
+      started_milestone
       create(:contract, statement:, course:)
       create(:delivery_partnership, cohort:, delivery_partner:, lead_provider:)
 

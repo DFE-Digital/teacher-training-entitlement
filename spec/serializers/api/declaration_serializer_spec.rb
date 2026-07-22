@@ -4,7 +4,6 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
   let(:declaration) do
     create(:declaration,
            application:,
-           cohort:,
            delivery_partner:,
            secondary_delivery_partner:)
   end

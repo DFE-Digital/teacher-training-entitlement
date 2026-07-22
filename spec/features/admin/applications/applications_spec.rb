@@ -254,7 +254,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     schedule = create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
     course_cohort = create(:course_cohort, lead_provider: lead_provider, schedule:)
     application = create(:application, :accepted, course_cohort:, lead_provider:)
-    create(:declaration, application:, course: course_cohort.course, cohort: course_cohort.cohort, lead_provider:, declaration_type: "started", declaration_date: schedule.training_starts_at + 1.hour)
+    create(:declaration, application:, lead_provider:, declaration_type: "started", declaration_date: schedule.training_starts_at + 1.hour)
 
     visit admin_application_path(application)
 

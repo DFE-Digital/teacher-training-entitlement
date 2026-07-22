@@ -403,7 +403,7 @@ module ValidTestDataGenerators
         declaration_date: date,
         state: :eligible,
         delivery_partner: application.lead_provider.delivery_partners.sample,
-        cohort: application.cohort,
+        milestone: milestone_for(application:, declaration_type: :started),
         lead_provider: application.lead_provider,
       )
     end
@@ -415,7 +415,7 @@ module ValidTestDataGenerators
         declaration_date: date,
         state: :eligible,
         delivery_partner: application.lead_provider.delivery_partners.sample,
-        cohort: application.cohort,
+        milestone: milestone_for(application:, declaration_type: :completed),
         lead_provider: application.lead_provider,
       )
 
@@ -556,6 +556,13 @@ module ValidTestDataGenerators
       end
     end
 
+    def milestone_for(application:, declaration_type:)
+      application.course_cohort.milestones.find_or_create_by!(declaration_type:) do |milestone|
+        milestone.assign_attributes(acceptance_window_start_date: application.cohort.registration_starts_at,
+                                    acceptance_window_end_date: application.cohort.registration_ends_at)
+      end
+    end
+
     def change_provider(application:)
       new_provider = LeadProvider.where.not(id: @lead_provider.id).order("RANDOM()").first
       application.change_provider!(to: new_provider)
@@ -594,7 +601,7 @@ module ValidTestDataGenerators
 
     def create_payable_statement(declaration)
       declaration.mark_payable!
-      statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
+      statement = provider_statement_for(declaration)
       statement.statement_items.create_or_find_by!(
         declaration:,
         state: declaration.state,
@@ -604,7 +611,7 @@ module ValidTestDataGenerators
     def create_paid_statement(declaration)
       declaration.mark_payable!
       declaration.mark_paid!
-      statement = lead_provider.statements.where(state: :paid, cohort: declaration.cohort).first
+      statement = provider_statement_for(declaration)
       statement.statement_items.create_or_find_by!(
         declaration:,
         state: declaration.state,
@@ -613,11 +620,16 @@ module ValidTestDataGenerators
 
     def create_clawback_statement(declaration)
       declaration.clawback!
-      statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
+      declaration.voided_state!
+      statement = provider_statement_for(declaration)
       statement.statement_items.create_or_find_by!(
         declaration:,
         state: :awaiting_clawback,
       )
+    end
+
+    def provider_statement_for(declaration)
+      lead_provider.statements.where(state: :payable, cohort: declaration.milestone.cohort).first
     end
   end
 end

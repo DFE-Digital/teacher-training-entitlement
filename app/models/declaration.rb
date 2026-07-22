@@ -9,8 +9,8 @@ class Declaration < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
 
   belongs_to :application
-  belongs_to :cohort
   belongs_to :lead_provider
+  belongs_to :cohort, deprecated: true, optional: true
   belongs_to :milestone, optional: true
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
@@ -123,26 +123,6 @@ class Declaration < ApplicationRecord
       .or(where(secondary_delivery_partner: delivery_partner))
   }
 
-  def self.order_by_milestones
-    scope = order(Arel.sql(<<~SQL))
-      CASE declaration_type
-        WHEN '#{Milestone::COMPLETED}' THEN 1
-        WHEN '#{Milestone::RETAINED_2}' THEN 2
-        WHEN '#{Milestone::RETAINED_1}' THEN 3
-        WHEN '#{Milestone::STARTED}' THEN 4
-      END
-    SQL
-    scope.order(Arel.sql(<<~SQL))
-      CASE state
-        WHEN 'submitted' THEN 1
-        WHEN 'eligible' THEN 1
-        WHEN 'payable' THEN 1
-        WHEN 'paid' THEN 1
-        ELSE 2
-      END
-    SQL
-  end
-
   def clawback!
     self.clawback_declaration = ClawbackDeclaration.new(
       paid_declaration: self,
@@ -204,9 +184,9 @@ class Declaration < ApplicationRecord
   end
 
   def available_delivery_partner_ids
-    return [] unless lead_provider && cohort
+    return [] unless lead_provider && milestone&.cohort
 
-    lead_provider.delivery_partners_for_cohort(cohort).map(&:id)
+    lead_provider.delivery_partners_for_cohort(milestone&.cohort).map(&:id)
   end
 
   def delivery_partners
@@ -252,10 +232,10 @@ private
   end
 
   def delivery_partner_required
-    return false unless cohort
+    return false unless milestone&.cohort
     return false unless application_inside_catchment?
     return false if persisted? && !delivery_partner_id_changed?
 
-    cohort.start_year >= DELIVER_PARTNER_REQUIRED_FROM
+    milestone.cohort.start_year >= DELIVER_PARTNER_REQUIRED_FROM
   end
 end

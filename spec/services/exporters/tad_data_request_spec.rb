@@ -30,7 +30,7 @@ RSpec.describe Exporters::TadDataRequest do
   end
 
   before do
-    create(:declaration, :paid, cohort: cohort, application: application)
+    create(:declaration, :paid, application:, course_cohort:)
     application2
   end
 

@@ -8,9 +8,11 @@ class Milestone < ApplicationRecord
 
   has_paper_trail
 
+  has_many :declarations, dependent: :restrict_with_exception
   has_many :milestone_statements
   has_many :statements, through: :milestone_statements
   belongs_to :course_cohort
+  has_one :cohort, through: :course_cohort
 
   validates :acceptance_window_start_date, presence: true
   validates :declaration_type, inclusion: DECLARATION_TYPES

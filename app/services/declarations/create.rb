@@ -15,7 +15,7 @@ module Declarations
 
     validates :application, presence: true
     validates :declaration_type, presence: true
-    validates :declaration_type, inclusion: { in: ->(service) { service.schedule.allowed_declaration_types } }, if: -> { application && declaration_type }
+    validates :declaration_type, inclusion: { in: ->(service) { service.allowed_declaration_types } }, if: -> { application && declaration_type }
     validates :declaration_date, presence: true
     validates :declaration_date, declaration_date: true
     validates :delivery_partner_id, presence: true
@@ -31,6 +31,9 @@ module Declarations
     delegate :lead_provider, :schedule, to: :application
 
     attr_reader :raw_declaration_date, :declaration
+
+    delegate :course_cohort, to: :application
+    delegate :cohort, to: :course_cohort
 
     def call
       return false unless valid?
@@ -77,17 +80,14 @@ module Declarations
       declaration_type == Milestone::STARTED
     end
 
-    def cohort
-      if started_declaration?
-        application.cohort
-      else
-        application
-          .declarations
-          .started_declaration_type
-          .billable_or_changeable
-          .first
-          .cohort
-      end
+    def milestone
+      return if declaration_type.blank?
+
+      @milestone ||= course_cohort.milestones.find_by!(declaration_type:)
+    end
+
+    def allowed_declaration_types
+      course_cohort.milestones.pluck(:declaration_type)
     end
 
   private
@@ -124,7 +124,7 @@ module Declarations
         declaration_type:,
         lead_provider:,
         application:,
-        cohort:,
+        milestone:,
         delivery_partner:,
       }
       params.merge!(secondary_delivery_partner:) if secondary_delivery_partner_id
@@ -142,7 +142,7 @@ module Declarations
 
     def validate_declaration_type_for_schedule
       return if errors.any?
-      return if schedule.allowed_declaration_types.include?(declaration_type)
+      return if allowed_declaration_types.include?(declaration_type)
 
       errors.add(:declaration_type, :mismatch_declaration_type_for_schedule)
     end
@@ -208,6 +208,13 @@ module Declarations
       return if completed_declaration? && active_declarations.where(declaration_type: Milestone::STARTED).exists?
 
       errors.add(:declaration_type, :out_of_order)
+    end
+
+    def started_declaration_milestone
+      active_declarations
+        .started_declaration_type
+        .first
+        .milestone
     end
   end
 end

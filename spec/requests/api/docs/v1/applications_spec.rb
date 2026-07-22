@@ -228,6 +228,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           }
         end
         let(:invalid_attributes) { { declaration_date: nil } }
+
+        before { create(:milestone, :started, course_cohort:) }
       end
     end
 
@@ -264,6 +266,11 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           }
         end
         let(:invalid_attributes) { { declaration_date: nil } }
+
+        before do
+          create(:milestone, :started, course_cohort:)
+          create(:milestone, :completed, course_cohort:)
+        end
       end
     end
   end

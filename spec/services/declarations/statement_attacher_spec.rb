@@ -4,7 +4,9 @@ require "rails_helper"
 
 RSpec.describe Declarations::StatementAttacher, type: :model do
   let(:statement) { create(:statement, :next_output_fee) }
-  let(:declaration) { create(:declaration, :paid, lead_provider: statement.lead_provider, cohort: statement.cohort) }
+  let(:course_cohort) { create(:course_cohort, cohort: statement.cohort) }
+  let(:milestone) { create(:milestone, course_cohort:) }
+  let(:declaration) { create(:declaration, :paid, lead_provider: statement.lead_provider, course_cohort:, milestone:) }
   let(:instance) { described_class.new(declaration:) }
 
   describe "validations" do
@@ -13,7 +15,7 @@ RSpec.describe Declarations::StatementAttacher, type: :model do
     context "when the next output fee statement does not exist" do
       before { statement.update!(output_fee: false) }
 
-      it { expect(instance).to have_error(:declaration, :no_output_fee_statement, "You cannot submit or void declarations for the #{declaration.cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
+      it { expect(instance).to have_error(:declaration, :no_output_fee_statement, "You cannot submit or void declarations for the #{declaration.milestone.cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
     end
 
     context "when the declaration is not in an attachable state" do

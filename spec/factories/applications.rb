@@ -171,12 +171,17 @@ FactoryBot.define do
           )
         end
 
+        milestone = application.course_cohort.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+          record.acceptance_window_start_date = Time.zone.today
+          record.acceptance_window_end_date = 1.month.from_now.to_date
+        end
+
         application.declarations << create(
           :declaration,
           :started,
           application:,
           course_cohort: application.course_cohort,
-          cohort: application.cohort,
+          milestone:,
           declaration_date: application.schedule.reload.training_starts_at + 1.day,
         )
       end

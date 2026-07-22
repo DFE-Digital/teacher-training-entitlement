@@ -86,10 +86,12 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
   describe "#run!" do
     let(:lead_provider) { LeadProvider.first }
     let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+    let(:course_cohort) { create(:course_cohort, cohort:) }
+    let(:milestone) { create(:milestone, course_cohort:) }
     let(:bulk_operation) { create(:backfill_declaration_delivery_partners_bulk_operation, admin: create(:admin)) }
     let(:instance) { described_class.new(bulk_operation:) }
-    let(:declaration_1) { create(:declaration, lead_provider:, cohort:, delivery_partner: nil) }
-    let(:declaration_2) { create(:declaration, lead_provider:, cohort:, delivery_partner: nil) }
+    let(:declaration_1) { create(:declaration, lead_provider:, milestone:, delivery_partner: nil) }
+    let(:declaration_2) { create(:declaration, lead_provider:, milestone:, delivery_partner: nil) }
     let(:delivery_partner_1) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     let(:delivery_partner_2) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
     let(:delivery_partner_3) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
@@ -123,7 +125,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
     end
 
     context "when updating only the secondary delivery partner" do
-      let(:declaration_1) { create(:declaration, lead_provider:, cohort:, delivery_partner: delivery_partner_1) }
+      let(:declaration_1) { create(:declaration, lead_provider:, milestone:, delivery_partner: delivery_partner_1) }
 
       let(:file) do
         tempfile(
@@ -156,7 +158,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
         )
       end
 
-      let(:declaration_1) { create(:declaration, cohort:, delivery_partner: delivery_partner_3) }
+      let(:declaration_1) { create(:declaration, milestone:, delivery_partner: delivery_partner_3) }
 
       it "does not change the delivery partner" do
         expect { run }.not_to(change { declaration_1.reload.delivery_partner })
@@ -173,7 +175,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
         )
       end
 
-      let(:declaration_1) { create(:declaration, cohort:, delivery_partner: delivery_partner_1, secondary_delivery_partner: delivery_partner_2) }
+      let(:declaration_1) { create(:declaration, milestone:, delivery_partner: delivery_partner_1, secondary_delivery_partner: delivery_partner_2) }
 
       it "does not change the delivery partner" do
         expect { run }.not_to(change { declaration_1.reload.secondary_delivery_partner })

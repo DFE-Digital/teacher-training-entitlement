@@ -18,6 +18,8 @@ RSpec.describe Declarations::Create, type: :model do
   let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
   let(:declaration_date) { schedule.training_starts_at + 1.hour }
   let(:course_cohort) { create(:course_cohort, schedule:) }
+  let!(:started_milestone) { create(:milestone, :started, course_cohort:) }
+  let!(:completed_milestone) { create(:milestone, :completed, course_cohort:) }
   let(:lead_provider) { create(:lead_provider) }
   let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
   let(:has_passed) { true }
@@ -60,7 +62,7 @@ RSpec.describe Declarations::Create, type: :model do
         it { expect(declaration.application).to eq(application) }
         it { expect(declaration.declaration_date).to eq(declaration_date) }
         it { expect(declaration.lead_provider).to eq(application.lead_provider) }
-        it { expect(declaration.cohort).to eq(application.cohort) }
+        it { expect(declaration.milestone).to eq(started_milestone) }
         it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
         it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
 
@@ -171,7 +173,8 @@ RSpec.describe Declarations::Create, type: :model do
         let(:resume_cohort) { create(:cohort, :next) }
         let(:course_cohort) { create(:course_cohort, cohort: resume_cohort) }
         let(:started_declaration) { application.declarations.started_declaration_type.first }
-        let(:started_cohort) { started_declaration.cohort }
+        let(:started_cohort) { resume_cohort }
+        let!(:completed_milestone) { create(:milestone, :completed, course_cohort: started_milestone.course_cohort) }
         let(:delivery_partner_id) do
           create(:delivery_partner,
                  lead_providers: {
@@ -191,9 +194,9 @@ RSpec.describe Declarations::Create, type: :model do
           application.update!(course_cohort:)
         end
 
-        it "uses the started declaration cohort" do
+        it "uses the correct milestone" do
           expect { service.call }.to change(Declaration, :count).by(1)
-          expect(service.declaration.cohort).to eq(started_declaration.cohort)
+          expect(service.declaration.milestone).to eq(completed_milestone)
         end
       end
     end
