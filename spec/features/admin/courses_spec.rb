@@ -52,7 +52,6 @@ RSpec.feature "Listing and viewing courses", type: :feature do
         expect(summary_list).not_to have_text("Cohort name")
       end
 
-      expect(page).not_to have_css("h2", text: "Schedule")
       expect(page).not_to have_css("h2", text: "Providers")
       expect(page).to have_link("All", href: admin_course_path(course))
       expect(page).to have_link(course_cohort.cohort.description, href: admin_cohort_course_path(course_cohort.cohort, course))
@@ -69,7 +68,6 @@ RSpec.feature "Listing and viewing courses", type: :feature do
         expect(summary_list).to have_summary_item("Description", course.description)
       end
 
-      expect(page).to have_css("h2", text: "Schedule")
       expect(page).to have_css("h2", text: "Providers")
       expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
     end

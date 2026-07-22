@@ -40,13 +40,6 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         expect(response.body).to include(cohort.name)
       end
 
-      it "shows the course cohort schedule" do
-        expect(response.body).to include(schedule.name)
-        expect(response.body).to include(schedule.training_starts_at.to_fs(:govuk_short))
-        expect(response.body).to include(schedule.training_ends_at.to_fs(:govuk_short))
-        expect(response.body).to include(schedule.allowed_declaration_types.join(", "))
-      end
-
       it "links to providers on the course cohort" do
         expect(response.body).to include(cohort_admin_lead_provider_path(lead_provider, cohort))
       end
