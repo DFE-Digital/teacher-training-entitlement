@@ -74,29 +74,6 @@ erDiagram
     string name
     datetime updated_at
   }
-  Declaration {
-    integer id
-    integer application_id
-    integer cohort_id
-    datetime created_at
-    datetime declaration_date
-    enum declaration_type
-    integer delivery_partner_id
-    uuid ecf_id
-    integer lead_provider_id
-    integer secondary_delivery_partner_id
-    enum state
-    enum state_reason
-    integer superseded_by_id
-    datetime updated_at
-    integer milestone_id
-  }
-  Declaration }o--|| Application : belongs_to
-  Declaration }o--|| Cohort : belongs_to
-  Declaration }o--|| LeadProvider : belongs_to
-  Declaration }o--|| Declaration : belongs_to
-  Declaration }o--|| DeliveryPartner : belongs_to
-  Declaration }o--|| DeliveryPartner : belongs_to
   CourseCohortProvider {
     integer id
     integer course_cohort_id
@@ -146,6 +123,32 @@ erDiagram
     integer start_year
     datetime updated_at
   }
+  Declaration {
+    integer id
+    integer application_id
+    integer clawback_declaration_id
+    integer cohort_id
+    datetime created_at
+    datetime declaration_date
+    enum declaration_type
+    integer delivery_partner_id
+    uuid ecf_id
+    integer lead_provider_id
+    integer milestone_id
+    integer paid_declaration_id
+    integer secondary_delivery_partner_id
+    enum state
+    enum state_reason
+    integer superseded_by_id
+    string type
+    datetime updated_at
+  }
+  Declaration }o--|| Application : belongs_to
+  Declaration }o--|| Cohort : belongs_to
+  Declaration }o--|| LeadProvider : belongs_to
+  Declaration }o--|| Declaration : belongs_to
+  Declaration }o--|| DeliveryPartner : belongs_to
+  Declaration }o--|| DeliveryPartner : belongs_to
   ApplicationLeadProvider {
     integer id
     integer application_id
