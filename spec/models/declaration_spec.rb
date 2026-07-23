@@ -7,10 +7,9 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to belong_to(:application) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:milestone).without_validating_presence }
+    it { is_expected.to belong_to(:statement) }
     it { is_expected.to belong_to(:superseded_by).optional }
     it { is_expected.to have_many(:participant_outcomes).dependent(:destroy) }
-    it { is_expected.to have_many(:statement_items) }
-    it { is_expected.to have_many(:statements).through(:statement_items) }
     it { is_expected.to belong_to(:delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:secondary_delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:clawback_declaration).without_validating_presence }
@@ -258,13 +257,6 @@ RSpec.describe Declaration, type: :model do
       before { subject.declaration_date = subject.application.schedule.training_starts_at }
 
       it { is_expected.to be_valid }
-    end
-
-    context "when declaration has two or fewer statement items" do
-      it "is valid" do
-        create_list(:statement_item, 2, declaration: subject)
-        expect(subject).to be_valid
-      end
     end
 
     context "when declaration has more than two statement items" do

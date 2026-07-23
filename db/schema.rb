@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
   create_enum "statement_item_states", ["eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "statement_states", ["open", "payable", "paid"]
+  create_enum "statements_frequency_types", ["monthly"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -295,6 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.bigint "secondary_delivery_partner_id"
     t.enum "state", default: "submitted", null: false, enum_type: "declaration_states"
     t.enum "state_reason", enum_type: "declaration_state_reasons"
+    t.bigint "statement_id"
     t.bigint "superseded_by_id"
     t.string "type"
     t.datetime "updated_at", null: false
@@ -308,6 +310,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.index ["lead_provider_id"], name: "index_declarations_on_lead_provider_id"
     t.index ["paid_declaration_id"], name: "index_declarations_on_paid_declaration_id"
     t.index ["secondary_delivery_partner_id"], name: "index_declarations_on_secondary_delivery_partner_id"
+    t.index ["statement_id"], name: "index_declarations_on_statement_id"
     t.index ["superseded_by_id"], name: "index_declarations_on_superseded_by_id"
     t.index ["type"], name: "index_declarations_on_type"
   end
@@ -579,22 +582,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   end
 
   create_table "statements", force: :cascade do |t|
-    t.bigint "cohort_id", null: false
     t.datetime "created_at", null: false
     t.date "deadline_date"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
+    t.enum "frequency", enum_type: "statements_frequency_types"
     t.bigint "lead_provider_id", null: false
     t.datetime "marked_as_paid_at"
-    t.integer "month", null: false
     t.boolean "output_fee", default: true, null: false
     t.date "payment_date"
     t.decimal "reconcile_amount", precision: 8, scale: 2
+    t.date "start_date"
     t.enum "state", default: "open", null: false, enum_type: "statement_states"
     t.datetime "updated_at", null: false
-    t.integer "year", null: false
-    t.index ["cohort_id"], name: "index_statements_on_cohort_id"
     t.index ["ecf_id"], name: "index_statements_on_ecf_id", unique: true
-    t.index ["lead_provider_id", "cohort_id", "year", "month"], name: "idx_on_lead_provider_id_cohort_id_year_month_2dece26c47", unique: true
+    t.index ["lead_provider_id", "start_date", "frequency"], name: "index_statements_on_lead_provider_id_start_date_frequency", unique: true
     t.index ["lead_provider_id"], name: "index_statements_on_lead_provider_id"
   end
 
@@ -682,6 +683,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   add_foreign_key "schedules", "cohorts"
   add_foreign_key "statement_items", "declarations"
   add_foreign_key "statement_items", "statements"
-  add_foreign_key "statements", "cohorts"
   add_foreign_key "statements", "lead_providers"
 end

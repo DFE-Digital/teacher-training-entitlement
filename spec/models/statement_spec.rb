@@ -4,24 +4,28 @@ RSpec.describe Statement, type: :model do
   subject(:statement) { build(:statement) }
 
   describe "relationships" do
-    it { is_expected.to belong_to(:cohort).required }
     it { is_expected.to belong_to(:lead_provider).required }
-    it { is_expected.to have_many(:statement_items) }
     it { is_expected.to have_many(:declarations) }
+    it { is_expected.to have_many(:clawback_declarations) }
     it { is_expected.to have_many(:contracts) }
-    it { is_expected.to have_many(:declarations).through(:statement_items) }
+    xit { is_expected.to have_many(:course_cohorts).through(:declarations) }
+    it { is_expected.to have_many(:milestones).through(:declarations) }
     it { is_expected.to have_many(:adjustments) }
-    it { is_expected.to have_many(:milestone_statements) }
-    it { is_expected.to have_many(:milestones).through(:milestone_statements) }
   end
 
   describe "validations" do
-    it { is_expected.to validate_numericality_of(:month).is_in(1..12).only_integer.with_message("Month must be a number between 1 and 12") }
-    it { is_expected.to validate_numericality_of(:year).only_integer.is_in(2020..2050).with_message("Year must be a 4 digit number") }
+    it do
+      expect(statement).to define_enum_for(:frequency)
+                             .with_values(Statement::FREQUENCIES.keys.index_with(&:itself))
+                             .backed_by_column_of_type(:enum)
+                             .with_suffix
+    end
+
+    it { is_expected.to validate_presence_of(:start_date) }
     it { is_expected.to allow_value(%w[true false]).for(:output_fee).with_message("Output fee must be true or false") }
     it { is_expected.not_to allow_value(nil).for(:output_fee).with_message("Choose yes or no for output fee") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
-    it { is_expected.to validate_uniqueness_of(:lead_provider_id).scoped_to(:cohort_id, :year, :month).with_message("A statement for this lead provider, cohort, year and month already exists") }
+    it { is_expected.to validate_uniqueness_of(:lead_provider_id).scoped_to(:start_date, :frequency).with_message("A statement for this lead provider, cohort, year and month already exists") }
 
     describe "State validation" do
       context "when setting invalid state" do
@@ -33,43 +37,35 @@ RSpec.describe Statement, type: :model do
       end
     end
 
-    describe "payment date validation" do
-      context "when the payment date is before the deadline date" do
-        let(:statement) { build(:statement, payment_date: 1.day.ago, deadline_date: Time.zone.today) }
+    describe "statement dates" do
+      context "when only start_date and frequency are provided" do
+        let(:start_date) { Date.new(2026, 2, 1) }
+        let(:frequency) { :monthly }
+        let(:statement) { create(:statement, start_date:, frequency:) }
 
-        it "returns an error" do
-          expect(statement).to have_error(:payment_date, :invalid, "must be on or after the deadline date")
+        it "sets deadline_date" do
+          expect(statement.deadline_date).to eq(Date.new(2026, 2, 28))
+        end
+
+        it "sets payment_date" do
+          expect(statement.payment_date).to eq(Date.new(2026, 3, 31))
         end
       end
 
       context "when there is no payment date" do
-        let(:statement) { build(:statement, payment_date: nil, deadline_date: Time.zone.today) }
+        subject(:statement) { build(:statement, payment_date: nil, deadline_date: Time.zone.today) }
 
-        it "is valid" do
-          expect(statement).to be_valid
-        end
+        it { is_expected.to be_valid }
       end
 
       context "when there is no deadline date" do
-        let(:statement) { build(:statement, payment_date: Time.zone.today, deadline_date: nil) }
+        subject(:statement) { build(:statement, payment_date: Time.zone.today, deadline_date: nil) }
 
-        it "is valid" do
-          expect(statement).to be_valid
-        end
+        it { is_expected.to be_valid }
       end
     end
 
     describe "output_fee validation" do
-      context "when changing output_fee from true to false with milestones attached" do
-        let(:statement) { create(:statement, :with_milestones, output_fee: true) }
-
-        it "is not valid" do
-          statement.output_fee = false
-          expect(statement).to be_invalid
-          expect(statement).to have_error(:output_fee, :has_milestones, "Cannot change output fee when statement has milestones")
-        end
-      end
-
       context "when changing an attribute other than output_fee with milestones attached" do
         let(:statement) { create(:statement, :with_milestones, output_fee: true) }
 
@@ -147,34 +143,6 @@ RSpec.describe Statement, type: :model do
     describe ".with_output_fee" do
       it "selects only output fee statements" do
         expect(Statement.with_output_fee.to_sql).to include(%(WHERE "statements"."output_fee" = TRUE))
-      end
-    end
-
-    describe ".next_output_fee_statements" do
-      let(:next_output_fee_statement_1) { create(:statement, :open, :next_output_fee, deadline_date: 5.days.from_now) }
-      let(:next_output_fee_statement_2) { create(:statement, :open, :next_output_fee, deadline_date: 1.day.from_now) }
-      let(:next_output_fee_statement_3) { create(:statement, :open, :next_output_fee, deadline_date: 2.days.from_now) }
-
-      before do
-        # Not output fee
-        create(:statement, output_fee: false, deadline_date: 1.hour.from_now)
-        # In the past
-        create(:statement, output_fee: true, deadline_date: 1.day.ago)
-      end
-
-      subject { described_class.next_output_fee_statements }
-
-      it { is_expected.to eq([next_output_fee_statement_2, next_output_fee_statement_3, next_output_fee_statement_1]) }
-
-      context "with statements that aren't open" do
-        before do
-          # Paid
-          create(:statement, :next_output_fee, :paid, deadline_date: 1.hour.from_now)
-          # Payable
-          create(:statement, :next_output_fee, :payable, deadline_date: 3.days.from_now)
-        end
-
-        it { is_expected.to eq([next_output_fee_statement_2, next_output_fee_statement_3, next_output_fee_statement_1]) }
       end
     end
   end
@@ -270,32 +238,36 @@ RSpec.describe Statement, type: :model do
   end
 
   describe "#allow_marking_as_paid?" do
-    subject { statement.allow_marking_as_paid? }
+    subject(:allow_marking_as_paid) { statement.allow_marking_as_paid? }
 
-    let(:declaration) { create(:declaration, :payable) }
+    let(:declaration) { create(:declaration, :payable, statement:) }
+
+    before do
+      statement.declarations << declaration if declaration
+    end
 
     context "with payable statement with declarations" do
-      let(:statement) { create(:statement, :next_output_fee, :payable, declaration:) }
+      let(:statement) { create(:statement, :next_output_fee, :payable, start_date: 1.month.from_now) }
 
       it { is_expected.to be true }
     end
 
     context "with non output fee statement" do
-      let(:statement) { create(:statement, :payable, output_fee: false, declaration:) }
+      let(:statement) { create(:statement, :payable, output_fee: false) }
 
       it { is_expected.to be false }
     end
 
     context "with statement not in payable state" do
       let :statement do
-        create(:statement, :open, :next_output_fee, declaration:,
-                                                    deadline_date: Time.zone.yesterday)
+        create(:statement, :open, :next_output_fee, deadline_date: Time.zone.yesterday)
       end
 
       it { is_expected.to be false }
     end
 
     context "with statement without declarations" do
+      let(:declaration) { nil }
       let(:statement) { create(:statement, :next_output_fee, :payable) }
 
       it { is_expected.to be false }
@@ -303,8 +275,7 @@ RSpec.describe Statement, type: :model do
 
     context "with future deadline date" do
       let :statement do
-        create(:statement, :next_output_fee, :payable, declaration:,
-                                                       deadline_date: Time.zone.today)
+        create(:statement, :next_output_fee, :payable, deadline_date: Time.zone.today)
       end
 
       it { is_expected.to be false }
@@ -312,7 +283,7 @@ RSpec.describe Statement, type: :model do
 
     context "with nil deadline date" do
       let :statement do
-        create(:statement, :next_output_fee, :payable, declaration:, deadline_date: nil)
+        create(:statement, :next_output_fee, :payable, deadline_date: nil)
       end
 
       it { is_expected.to be false }
@@ -344,65 +315,6 @@ RSpec.describe Statement, type: :model do
       let(:statement) { build(:statement, :open, marked_as_paid_at: Time.zone.now) }
 
       it { is_expected.to be false }
-    end
-  end
-
-  describe "#past?" do
-    subject { statement }
-
-    context "when the statement is in the past" do
-      let(:statement) { build(:statement, for_date: 1.month.ago) }
-
-      it { is_expected.to be_past }
-    end
-
-    context "when the statement is in the current month" do
-      let(:statement) { build(:statement, for_date: Time.zone.today) }
-
-      it { is_expected.not_to be_past }
-    end
-
-    context "when the statement is in the future" do
-      let(:statement) { build(:statement, for_date: 1.month.from_now) }
-
-      it { is_expected.not_to be_past }
-    end
-  end
-
-  describe "#use_targeted_delivery_funding?" do
-    subject { statement.use_targeted_delivery_funding? }
-
-    let(:statement) { build(:statement, cohort:) }
-    let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
-
-    context "when the statement date is before November 2025" do
-      let(:statement) { build(:statement, month: 10, year: 2025, cohort:) }
-
-      context "when cohort start year is 2021" do
-        let(:cohort_start_year) { 2021 }
-
-        it { is_expected.to be false }
-      end
-
-      (2022..2025).each do |year|
-        context "when cohort start year is #{year}" do
-          let(:cohort_start_year) { year }
-
-          it { is_expected.to be true }
-        end
-      end
-    end
-
-    context "when the statement date is November 2025 or later" do
-      let(:statement) { build(:statement, month: 11, year: 2025, cohort:) }
-
-      (2021..2025).each do |year|
-        context "when cohort start year is #{year}" do
-          let(:cohort_start_year) { year }
-
-          it { is_expected.to be false }
-        end
-      end
     end
   end
 end

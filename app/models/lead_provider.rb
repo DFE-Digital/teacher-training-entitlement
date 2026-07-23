@@ -18,10 +18,6 @@ class LeadProvider < ApplicationRecord
 
   scope :alphabetical, -> { order(name: :asc) }
 
-  def next_output_fee_statement(cohort)
-    statements.next_output_fee_statements.where(cohort:).first
-  end
-
   def delivery_partners_for_cohort(cohort)
     delivery_partners.where(delivery_partnerships: { cohort: })
   end
