@@ -106,7 +106,6 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
         expect(started_radio["disabled"]).to be_nil
         expect(completed_radio["disabled"]).to eq("disabled")
       end
-
     end
 
     describe "#update" do
