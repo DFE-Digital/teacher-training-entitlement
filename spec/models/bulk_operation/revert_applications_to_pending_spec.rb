@@ -45,7 +45,7 @@ RSpec.describe BulkOperation::RevertApplicationsToPending do
       it_behaves_like "changes to pending", "rejected"
     end
 
-    Applications::RevertToPending::REVERTABLE_DECLARATION_STATES.each do |state|
+    Declaration::REVERTABLE_STATES.each do |state|
       context "when the application has #{state} declarations" do
         let(:declaration) { create(:declaration, state) }
 
@@ -87,7 +87,7 @@ RSpec.describe BulkOperation::RevertApplicationsToPending do
       it { expect(run[application_ecf_id]).to eq("Not found") }
     end
 
-    Declaration.states.keys.excluding(Applications::RevertToPending::REVERTABLE_DECLARATION_STATES).each do |state|
+    Declaration.states.keys.excluding(Declaration::REVERTABLE_STATES).each do |state|
       context "when the application has #{state} declarations" do
         let(:declaration) { create(:declaration, state) }
         let(:application) { declaration.application }

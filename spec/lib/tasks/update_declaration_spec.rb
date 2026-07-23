@@ -12,7 +12,10 @@ RSpec.describe "update_declaration" do
 
     it "sets the application to awaiting_clawback" do
       run_task
-      expect(declaration.reload.state).to eq "awaiting_clawback"
+      declaration.reload
+      expect(declaration.state).to eq "paid"
+      expect(declaration.clawback_declaration).to be_present
+      expect(declaration.clawback_declaration.paid_declaration).to eq declaration
     end
   end
 

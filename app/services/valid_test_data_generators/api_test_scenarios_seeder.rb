@@ -612,7 +612,7 @@ module ValidTestDataGenerators
     end
 
     def create_clawback_statement(declaration)
-      declaration.voided_state!
+      declaration.clawback!
       statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
       statement.statement_items.create_or_find_by!(
         declaration:,

@@ -1,10 +1,10 @@
 class Declaration < ApplicationRecord
+  REVERTABLE_STATES = %w[ineligible voided].freeze
   BILLABLE_STATES = %w[eligible payable paid].freeze
   CHANGEABLE_STATES = %w[eligible submitted].freeze
-  UPLIFT_PAID_STATES = %w[paid awaiting_clawback clawed_back].freeze
+  UPLIFT_PAID_STATES = %w[paid].freeze
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
   DELIVER_PARTNER_REQUIRED_FROM = 2024
-  CLAWBACK_STATES = %w[paid awaiting_clawback clawed_back].freeze
 
   has_paper_trail ignore: [:updated_at]
 
@@ -15,6 +15,8 @@ class Declaration < ApplicationRecord
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
+  belongs_to :clawback_declaration, optional: true
+  belongs_to :paid_declaration, class_name: "Declaration", optional: true
   has_many :participant_outcomes, dependent: :destroy
   has_many :statement_items
   has_many :statements, through: :statement_items
@@ -24,7 +26,7 @@ class Declaration < ApplicationRecord
   delegate :identifier, to: :course, prefix: true
   delegate :name, to: :lead_provider, prefix: true
 
-  scope :billable, -> { where(state: BILLABLE_STATES) }
+  scope :billable, -> { where(state: BILLABLE_STATES, clawback_declaration: nil) }
   scope :changeable, -> { where(state: CHANGEABLE_STATES) }
   scope :billable_or_changeable, -> { billable.or(changeable) }
   scope :voidable, -> { where(state: VOIDABLE_STATES) }
@@ -48,12 +50,10 @@ class Declaration < ApplicationRecord
   enum :state, {
     submitted: "submitted",
     eligible: "eligible",
+    ineligible: "ineligible",
+    voided: "voided",
     payable: "payable",
     paid: "paid",
-    voided: "voided",
-    ineligible: "ineligible",
-    awaiting_clawback: "awaiting_clawback",
-    clawed_back: "clawed_back",
   }, suffix: true
 
   state_machine :state, initial: :submitted do
@@ -61,24 +61,8 @@ class Declaration < ApplicationRecord
       transition %i[submitted] => :eligible
     end
 
-    event :mark_payable do
-      transition %i[eligible] => :payable
-    end
-
-    event :mark_paid do
-      transition %i[payable] => :paid
-    end
-
     event :mark_ineligible do
       transition %i[submitted] => :ineligible
-    end
-
-    event :mark_awaiting_clawback do
-      transition %i[paid] => :awaiting_clawback
-    end
-
-    event :mark_clawed_back do
-      transition %i[awaiting_clawback] => :clawed_back
     end
 
     event :mark_voided do
@@ -87,6 +71,14 @@ class Declaration < ApplicationRecord
 
     event :revert_to_eligible do
       transition %i[payable] => :eligible
+    end
+
+    event :mark_payable do
+      transition %i[eligible] => :payable
+    end
+
+    event :mark_paid do
+      transition %i[payable] => :paid
     end
   end
 
@@ -151,8 +143,21 @@ class Declaration < ApplicationRecord
     SQL
   end
 
-  def clawbackable?
-    state.to_s.in?(CLAWBACK_STATES)
+  def clawback!
+    self.clawback_declaration = ClawbackDeclaration.new(
+      paid_declaration: self,
+      application: application,
+      milestone: milestone,
+      cohort: cohort,
+      # statement: Statement.open.find_or_create_by(contract: @declaration.milestone.contract),
+      lead_provider: lead_provider,
+      delivery_partner: delivery_partner,
+      secondary_delivery_partner: secondary_delivery_partner,
+      declaration_type: declaration_type,
+      declaration_date: declaration_date,
+      state: "awaiting_clawback",
+    )
+    save!
   end
 
   def billable_statement

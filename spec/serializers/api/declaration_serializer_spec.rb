@@ -163,33 +163,35 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
         expect(attributes["ineligible_for_funding_reason"]).to eq(declaration.ineligible_for_funding_reason)
       end
 
+      it "serializes the `clawback_declaration_id`" do
+        expect(attributes["clawback_declaration_id"]).to be_nil
+      end
+
+      it "serializes the `paid_declaration_id`" do
+        expect(attributes["paid_declaration_id"]).to be_nil
+      end
+
+      context "when paid declaration is clawed back" do
+        let(:declaration) { create(:declaration, :voided_paid) }
+
+        it "serializes the `clawback_declaration_id`" do
+          expect(attributes["clawback_declaration_id"]).to eq(declaration.clawback_declaration.ecf_id)
+          expect(attributes["paid_declaration_id"]).to be_nil
+        end
+      end
+
+      context "when it is a clawback_declaration" do
+        let(:declaration) { create(:clawback_declaration) }
+
+        it "serializes the `clawback_declaration_id`" do
+          expect(attributes["clawback_declaration_id"]).to be_nil
+          expect(attributes["paid_declaration_id"]).to eq(declaration.paid_declaration.ecf_id)
+        end
+      end
+
       context "when there is no billable statement item" do
         it "serializes the `statement_id`" do
           expect(attributes["statement_id"]).to be_nil
-        end
-      end
-
-      context "when there is a billable statement item" do
-        let(:billable_statement_item) { create(:statement_item, :payable) }
-        let(:declaration) { billable_statement_item.declaration }
-
-        it "serializes the `statement_id`" do
-          expect(attributes["statement_id"]).to eq(billable_statement_item.statement.ecf_id)
-        end
-      end
-
-      context "when there is no refundable statement item" do
-        it "serializes the `clawback_statement_id`" do
-          expect(attributes["clawback_statement_id"]).to be_nil
-        end
-      end
-
-      context "when there is a refundable statement item" do
-        let(:refundable_statement_item) { create(:statement_item, :clawed_back) }
-        let(:declaration) { refundable_statement_item.declaration }
-
-        it "serializes the `clawback_statement_id`" do
-          expect(attributes["clawback_statement_id"]).to eq(refundable_statement_item.statement.ecf_id)
         end
       end
 

@@ -11,8 +11,7 @@ module Declarations
       @application = declaration.application
     end
 
-    validate :declaration_not_already_refunded
-    validate :output_fee_statement_available
+    validate :declaration_not_clawbacked
     validate :declaration_is_paid
     validate :application_status_not_completed
     validate :application_updateable
@@ -21,9 +20,7 @@ module Declarations
       return unless valid?
 
       ApplicationRecord.transaction do
-        @declaration.mark_awaiting_clawback!
-        statement_attacher.attach
-
+        @declaration.clawback!
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?
@@ -36,10 +33,6 @@ module Declarations
 
   private
 
-    def statement_attacher
-      @statement_attacher ||= StatementAttacher.new(declaration: @declaration)
-    end
-
     def application_status_not_completed
       if @declaration.started_declaration_type? && @application.completed_status?
 
@@ -47,18 +40,10 @@ module Declarations
       end
     end
 
-    def declaration_not_already_refunded
-      return unless @declaration.statement_items.refundable.exists?
+    def declaration_not_clawbacked
+      return if @declaration.clawback_declaration.nil?
 
       errors.add(:base, :not_already_refunded)
-    end
-
-    def output_fee_statement_available
-      return if statement_attacher.valid?
-
-      statement_attacher.errors.each do |error|
-        errors.add(:base, error.type, **error.options)
-      end
     end
 
     def declaration_is_paid

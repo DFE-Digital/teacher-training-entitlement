@@ -63,7 +63,7 @@ DECLARATION = {
             type: :string,
             nullable: false,
             example: "submitted",
-            enum: Declaration.states.keys,
+            enum: Declaration.states.keys + ClawbackDeclaration.states.keys,
           },
           has_passed: {
             description: "Whether the participant has failed or passed",
@@ -115,8 +115,15 @@ DECLARATION = {
             example: "cd3a12347-7308-4879-942a-c4a70ced400a",
             nullable: true,
           },
-          clawback_statement_id: {
-            description: "Unique id of the statement to which the declaration will be clawed back on, if any",
+          clawback_declaration_id: {
+            description: "Unique id of the claw back declaration set when voiding a paid declaration, if any",
+            type: "string",
+            format: "uuid",
+            example: "cd3a12347-7308-4879-942a-c4a70ced400a",
+            nullable: true,
+          },
+          paid_declaration_id: {
+            description: "Unique id of the paid declaration which triggered the claw back, if any",
             type: "string",
             format: "uuid",
             example: "cd3a12347-7308-4879-942a-c4a70ced400a",

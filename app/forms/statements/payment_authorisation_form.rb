@@ -19,9 +19,7 @@ module Statements
     def save_form
       return false unless valid?
 
-      if statement.mark_as_paid_at!
-        Statements::MarkAsPaidJob.perform_later(statement_id: statement.id)
-      end
+      statement.mark_as_frozen!
     end
   end
 end

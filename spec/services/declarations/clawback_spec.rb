@@ -47,41 +47,19 @@ RSpec.describe Declarations::Clawback, type: :model do
         }
       end
 
-      Declaration::CLAWBACK_STATES.each do |state|
-        context "with a #{state} declaration" do
+      context "with a paid declaration" do
+        context "when paid declaration already clawbacked" do
+          let(:clawback_declaration) { create(:clawback_declaration) }
+
+          before { declaration.update!(state: :paid, clawback_declaration:) }
+
+          it { expect(service).to have_error(:base, :not_already_refunded, "The declaration will or has been be refunded.") }
+        end
+
+        context "when paid declaration not clawbacked" do
           before { declaration.update!(state: :paid) }
 
-          StatementItem::REFUNDABLE_STATES.each do |ineligible_state|
-            context "when the declaration already has a #{ineligible_state} statement item" do
-              before do
-                create(:statement_item, declaration:, state: ineligible_state)
-                service.call
-              end
-
-              it { expect(service).to have_error(:base, :not_already_refunded, "The declaration will or has been be refunded.") }
-            end
-          end
-
-          context "when there is no output fee statement" do
-            before { statement.update!(output_fee: false) }
-
-            it { expect(service).to have_error(:base, :no_output_fee_statement, "You cannot submit or void declarations for the #{declaration.cohort.start_year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
-          end
-        end
-      end
-
-      Declaration::CLAWBACK_STATES.excluding("paid").each do |state|
-        context "when the declaration is #{state}" do
-          let(:declaration_state) { state }
-
-          it { expect(service).to have_error(:base, :must_be_paid, "The declaration must be paid before it can be clawed back.") }
-
-          context "when there are other declaration errors" do
-            before { create(:statement_item, declaration:, state: StatementItem::REFUNDABLE_STATES.sample) }
-
-            it { expect(service).to have_error(:base) }
-            it { expect(service).not_to have_error(:base, :must_be_paid) }
-          end
+          it { expect(service.errors).to be_blank }
         end
       end
     end

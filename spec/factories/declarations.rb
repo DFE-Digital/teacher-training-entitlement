@@ -20,12 +20,6 @@ FactoryBot.define do
 
     after(:create) do |declaration, evaluator|
       if evaluator.statement && declaration.state != "submitted"
-        if declaration.state.in? %w[awaiting_clawback clawed_back]
-          raise ArgumentError, "Declaration state #{declaration.state} also requires paid_statement" if evaluator.paid_statement.nil?
-
-          create(:statement_item, declaration:, state: "paid", statement: evaluator.paid_statement)
-        end
-
         create(:statement_item, declaration:, state: declaration.state, statement: evaluator.statement)
       end
     end
@@ -59,6 +53,11 @@ FactoryBot.define do
       state { :voided }
     end
 
+    trait :voided_paid do
+      state { :paid }
+      clawback_declaration
+    end
+
     trait :started do
       declaration_type { :started }
     end
@@ -69,10 +68,6 @@ FactoryBot.define do
 
     trait :from_ecf do
       ecf_id { SecureRandom.uuid }
-    end
-
-    trait :awaiting_clawback do
-      state { :awaiting_clawback }
     end
 
     trait :billable_or_voidable do
