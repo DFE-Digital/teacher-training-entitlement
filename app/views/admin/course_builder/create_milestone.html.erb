@@ -1,0 +1,30 @@
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_courses_path) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Create milestone</h1>
+
+    <%= form_with model: @wizard.current_step,
+                  url: @wizard.current_step_path,
+                  scope: @wizard.current_step_name,
+                  method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+
+      <%= f.govuk_collection_radio_buttons(
+            :declaration_type,
+            Milestone::DECLARATION_TYPES,
+            :to_s,
+            :to_s,
+            legend: { text: "Declaration type" },
+          ) %>
+      <%= f.govuk_text_field :acceptance_window_start_date, type: "date", label: { text: "Acceptance window start date" } %>
+      <%= f.govuk_text_field :acceptance_window_end_date, type: "date", label: { text: "Acceptance window end date" } %>
+      <%= f.govuk_text_field :payment_amount, label: { text: "Payment amount" } %>
+
+      <div class="govuk-button-group">
+        <%= f.govuk_submit "Add another milestone", name: "next_step", value: "create_another" %>
+        <%= f.govuk_submit "Continue to check answers", name: "next_step", value: "check_answers", secondary: true %>
+      </div>
+    <% end %>
+  </div>
+</div>

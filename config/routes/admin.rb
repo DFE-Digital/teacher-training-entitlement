@@ -28,6 +28,10 @@ namespace :admin do
     end
   end
 
+  get "course-builder", to: redirect("/admin/course-builder/create-cohort")
+  get "course-builder/:step", to: "course_builder#show", as: :course_builder_step
+  patch "course-builder/:step", to: "course_builder#update"
+
   namespace :registration_closed, path: "registration-closed" do
     resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
       member do

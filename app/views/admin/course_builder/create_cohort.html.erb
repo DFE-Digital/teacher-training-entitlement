@@ -1,0 +1,21 @@
+<%= govuk_back_link href: admin_courses_path %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Create cohort</h1>
+
+    <%= form_with model: @wizard.current_step,
+                  url: @wizard.current_step_path,
+                  scope: @wizard.current_step_name,
+                  method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+
+      <%= f.govuk_text_field :description, label: { text: "Description" } %>
+      <%= f.govuk_text_field :registration_starts_at, type: "date", label: { text: "Registration starts at" } %>
+      <%= f.govuk_text_field :registration_ends_at, type: "date", label: { text: "Registration ends at" } %>
+      <%= f.govuk_check_box :funding_cap, 1, 0, multiple: false, label: { text: "Funding cap" } %>
+
+      <%= f.govuk_submit "Continue" %>
+    <% end %>
+  </div>
+</div>

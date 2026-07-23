@@ -71,8 +71,12 @@
   :course_cohort_providers:
   - recruitment_target
   :course_cohorts:
-  - service_fee
   - participant_funding
+  - service_fee
+  - registration_starts_at
+  - registration_ends_at
+  - training_starts_at
+  - training_ends_at
   :contract_templates:
   - id
   - created_at
@@ -128,6 +132,8 @@
   - updated_at
   :applications:
   - raw_application_data
+  :institutions:
+  - search_vector
   :users:
   - archived_email
   - date_of_birth
@@ -160,5 +166,3 @@
   - created_at
   - key
   - updated_at
-  :institutions:
-  - search_vector

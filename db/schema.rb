@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_100100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_23_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -238,8 +238,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_100100) do
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.decimal "participant_funding", precision: 10, scale: 2
+    t.date "registration_ends_at"
+    t.date "registration_starts_at"
     t.bigint "schedule_id"
     t.decimal "service_fee"
+    t.date "training_ends_at"
+    t.date "training_starts_at"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
@@ -266,7 +270,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_100100) do
   create_table "declarations", force: :cascade do |t|
     t.bigint "application_id", null: false
     t.bigint "clawback_declaration_id"
-    t.bigint "cohort_id", null: false
+    t.bigint "cohort_id"
     t.datetime "created_at", null: false
     t.datetime "declaration_date", precision: nil
     t.enum "declaration_type", enum_type: "declaration_types"

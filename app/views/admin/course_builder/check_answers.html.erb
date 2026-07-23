@@ -1,0 +1,43 @@
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_courses_path) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Check answers</h1>
+
+    <% @wizard.raw_data.fetch(:steps, {}).except(:create_milestone, :check_answers).each do |step_name, step_data| %>
+      <h2 class="govuk-heading-m"><%= step_name.to_s.humanize %></h2>
+
+      <%=
+        govuk_summary_list do |summary_list|
+          step_data.each do |key, value|
+            summary_list.with_row do |row|
+              row.with_key(text: key.to_s.humanize)
+              row.with_value(text: value.presence || "-")
+            end
+          end
+        end
+      %>
+    <% end %>
+
+    <h2 class="govuk-heading-m">Milestones</h2>
+
+    <% @wizard.milestones.each.with_index(1) do |milestone, index| %>
+      <h3 class="govuk-heading-s">Milestone <%= index %></h3>
+
+      <%=
+        govuk_summary_list do |summary_list|
+          milestone.each do |key, value|
+            summary_list.with_row do |row|
+              row.with_key(text: key.to_s.humanize)
+              row.with_value(text: value.presence || "-")
+            end
+          end
+        end
+      %>
+    <% end %>
+
+    <%= form_with url: @wizard.current_step_path, method: :patch do |f| %>
+      <%= f.govuk_submit "Finish" %>
+    <% end %>
+  </div>
+</div>
