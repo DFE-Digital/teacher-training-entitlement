@@ -96,9 +96,7 @@ namespace :admin do
     resources :courses, controller: "cohort_courses", only: %i[index show new create] do
       resources :milestones, controller: "course_cohort_milestones", only: %i[new create edit update]
     end
-    resources :schedules, except: :index do
-      resources :milestones, except: :show
-    end
+    resources :schedules, except: :index
     resources :statements, only: %i[new create show]
     member { get :download_contracts, path: "download-contracts" }
   end

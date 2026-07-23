@@ -56,7 +56,6 @@
           row.with_cell(text: "Acceptance window start")
           row.with_cell(text: "Acceptance window end")
           row.with_cell(text: "Payment amount")
-          row.with_cell(text: "Statement date")
           row.with_cell(text: "")
         end
       end
@@ -68,7 +67,6 @@
             row.with_cell(text: milestone.acceptance_window_start_date&.to_fs(:govuk) || "-")
             row.with_cell(text: milestone.acceptance_window_end_date&.to_fs(:govuk) || "-")
             row.with_cell(text: milestone.payment_amount ? number_to_currency(milestone.payment_amount, unit: "£") : "-")
-            row.with_cell(text: milestone.statement_date&.to_fs(:govuk_approx) || "-")
             row.with_cell do
               if current_admin.super_admin? && milestone.editable?
                 govuk_button_link_to("Edit", edit_admin_cohort_course_milestone_path(@cohort, @course, milestone), class: "govuk-!-margin-bottom-0")

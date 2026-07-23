@@ -19,16 +19,6 @@
 
   <%= f.govuk_date_field :acceptance_window_end_date, legend: { text: "Acceptance window end" } %>
 
-  <%= f.govuk_collection_select(
-    :statement_date,
-    form.statement_date_options,
-    :year_month,
-    :label,
-    options: { include_blank: "- select date -" },
-    label: { text: "Select statement date to associate with milestone", size: "m" },
-    hint: { text: "Statements for all providers with the selected date will be associated with this milestone." }
-  ) %>
-
   <%= f.govuk_text_field :payment_amount, label: { text: "Payment amount" }, prefix_text: "£", class: "govuk-input--width-10" %>
 
   <div class="govuk-button-group">

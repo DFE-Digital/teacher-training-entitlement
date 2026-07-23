@@ -12,16 +12,13 @@ class Admin::CourseCohortMilestonesController < AdminController
 
   def create
     @form = build_form(form_params)
-    service = Milestones::Create.new(course_cohort: @course_cohort,
-                                     **@form.attributes.symbolize_keys)
+    @milestone = @course_cohort.milestones.new(@form.attributes.symbolize_keys)
 
-    service.call
-
-    if service.errors.blank?
+    if @milestone.save
       flash[:success] = "Milestone created"
       redirect_to admin_cohort_course_path(@cohort, @course)
     else
-      service.errors.each { |error| @form.errors.add(error.attribute, error.message) }
+      copy_errors_to_form
       render :new, status: :unprocessable_content
     end
   end
@@ -32,14 +29,13 @@ class Admin::CourseCohortMilestonesController < AdminController
 
   def update
     @form = build_form(form_params)
-    service = Milestones::Update.new(milestone: @milestone, **@form.attributes.symbolize_keys)
-    service.call
+    @milestone.assign_attributes(@form.attributes.symbolize_keys)
 
-    if service.errors.blank?
+    if @milestone.save
       flash[:success] = "Milestone updated"
       redirect_to admin_cohort_course_path(@cohort, @course)
     else
-      service.errors.each { |error| @form.errors.add(error.attribute, error.message) }
+      copy_errors_to_form
       render :edit, status: :unprocessable_content
     end
   end
@@ -61,7 +57,6 @@ private
     Admin::CourseCohortMilestones::Form.new(
       attributes,
       taken_declaration_types: @course_cohort.taken_declaration_types(except: @milestone),
-      statement_date_options: @course_cohort.statement_date_options,
     )
   end
 
@@ -77,5 +72,9 @@ private
 
     flash[:error] = "You must be a super admin to change milestones"
     redirect_to admin_cohort_course_path(@cohort, @course)
+  end
+
+  def copy_errors_to_form
+    @milestone.errors.each { |error| @form.errors.add(error.attribute, error.message) }
   end
 end

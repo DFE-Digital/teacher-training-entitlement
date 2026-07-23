@@ -331,8 +331,6 @@ en:
             payment_amount:
               exceeds_participant_funding: would cause total milestone payments to exceed participant funding
               inclusion: Please choose a declaration type
-            statement_date:
-              blank: Please choose a statement date
         participant_outcome:
           attributes:
             ecf_id:

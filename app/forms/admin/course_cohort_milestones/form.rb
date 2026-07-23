@@ -5,7 +5,6 @@ module Admin
       include ActiveModel::Attributes
 
       DATE_ATTRIBUTE_KEYS = %i[
-        statement_date
         acceptance_window_start_date
         acceptance_window_end_date
       ].freeze
@@ -20,16 +19,14 @@ module Admin
         DATE_ATTRIBUTE_KEYS.flat_map { |attribute| [:"#{attribute}(1i)", :"#{attribute}(2i)", :"#{attribute}(3i)"] }
       ).freeze
 
-      attribute :statement_date, :date
       attribute :declaration_type, :string
       attribute :payment_amount, :decimal
       attribute :acceptance_window_start_date, :date
       attribute :acceptance_window_end_date, :date
 
-      attr_reader :statement_date_options, :taken_declaration_types
+      attr_reader :taken_declaration_types
 
-      def initialize(attributes = {}, statement_date_options: [], taken_declaration_types: [])
-        @statement_date_options = statement_date_options
+      def initialize(attributes = {}, taken_declaration_types: [])
         @taken_declaration_types = taken_declaration_types
 
         attributes = attributes.with_indifferent_access

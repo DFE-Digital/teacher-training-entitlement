@@ -6,7 +6,6 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
 
     let(:attributes) do
       {
-        statement_date: "2026-05-01",
         declaration_type: "started",
         payment_amount: "123.45",
         "acceptance_window_start_date(1i)": "2026",
@@ -19,15 +18,10 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
       }
     end
 
-    it "maps the statement date" do
-      expect(form.statement_date).to eq(Date.new(2026, 5, 1))
-    end
-
     it "maps the milestone attributes" do
       expect(form).to have_attributes(
         declaration_type: "started",
         payment_amount: BigDecimal("123.45"),
-        statement_date: Date.new(2026, 5, 1),
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
       )
@@ -35,7 +29,6 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
 
     it "exposes normalized attributes" do
       expect(form.attributes.symbolize_keys).to include(
-        statement_date: Date.new(2026, 5, 1),
         declaration_type: "started",
         payment_amount: BigDecimal("123.45"),
       )
@@ -46,7 +39,6 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
 
       it "builds an empty form" do
         expect(form.attributes.symbolize_keys).to eq(
-          statement_date: nil,
           declaration_type: nil,
           payment_amount: nil,
           acceptance_window_start_date: nil,
@@ -66,7 +58,6 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
         :milestone,
         declaration_type: "started",
         payment_amount: BigDecimal("123.45"),
-        statement_date: Date.new(2026, 5, 1),
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
       )
@@ -74,7 +65,6 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
 
     it "maps milestone attributes onto the form" do
       expect(form).to have_attributes(
-        statement_date: Date.new(2026, 5, 1),
         declaration_type: "started",
         payment_amount: BigDecimal("123.45"),
         acceptance_window_start_date: Date.new(2026, 1, 1),

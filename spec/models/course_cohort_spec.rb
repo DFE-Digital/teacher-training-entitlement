@@ -105,27 +105,6 @@ RSpec.describe CourseCohort do
     end
   end
 
-  describe "#statement_date_options" do
-    subject(:statement_date_options) { course_cohort.statement_date_options }
-
-    let(:cohort) { create(:cohort) }
-    let(:course_cohort) { create(:course_cohort, cohort:) }
-    let(:february_2026) { Date.new(2026, 2, 1) }
-    let(:march_2026) { Date.new(2026, 3, 1) }
-
-    before do
-      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 2, output_fee: true)
-      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 2, output_fee: true)
-      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 3, output_fee: true)
-      create(:statement, cohort:, lead_provider: create(:lead_provider), year: 2026, month: 4, output_fee: false)
-    end
-
-    it "returns distinct output fee statement dates for the course cohort's cohort" do
-      expect(statement_date_options.map(&:year_month)).to eq([february_2026, march_2026])
-      expect(statement_date_options.map(&:label)).to eq(["February 2026", "March 2026"])
-    end
-  end
-
   describe "#taken_declaration_types" do
     subject(:taken_declaration_types) { course_cohort.taken_declaration_types(except:) }
 

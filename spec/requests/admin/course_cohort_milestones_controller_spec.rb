@@ -9,11 +9,9 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
   let(:course_cohort) { create(:course_cohort, cohort:) }
   let(:course) { course_cohort.course }
   let(:milestone) { create(:milestone, course_cohort:, declaration_type: "started") }
-  let!(:statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: true) }
   let(:valid_create_params) do
     {
       form: {
-        statement_date: Date.new(2026, 2, 1).to_s,
         declaration_type: "started",
         "acceptance_window_start_date(1i)": "2026",
         "acceptance_window_start_date(2i)": "1",
@@ -77,14 +75,7 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
           payment_amount: BigDecimal("123.45"),
-          statement_date: Date.new(2026, 2, 1),
         )
-      end
-
-      it "associates the milestone with output fee statements for the selected statement date" do
-        post admin_cohort_course_milestones_path(cohort, course), params: valid_create_params
-
-        expect(Milestone.last.statements).to contain_exactly(statement)
       end
 
       context "when the params are invalid" do
@@ -116,16 +107,6 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
         expect(completed_radio["disabled"]).to eq("disabled")
       end
 
-      it "shows each statement date once" do
-        create(:statement, cohort:, year: 2026, month: 2, output_fee: true)
-
-        get edit_admin_cohort_course_milestone_path(cohort, course, milestone)
-
-        html = Nokogiri::HTML(response.body)
-        options = html.css('select[name="form[statement_date]"] option').map(&:text)
-
-        expect(options.count("February 2026")).to eq(1)
-      end
     end
 
     describe "#update" do
@@ -140,17 +121,7 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
           payment_amount: BigDecimal("123.45"),
-          statement_date: Date.new(2026, 2, 1),
         )
-      end
-
-      it "replaces the milestone statements with output fee statements for the selected statement date" do
-        previous_statement = create(:statement, cohort:, year: 2026, month: 1, output_fee: true)
-        create(:milestone_statement, milestone:, statement: previous_statement)
-
-        patch admin_cohort_course_milestone_path(cohort, course, milestone), params: valid_update_params
-
-        expect(milestone.reload.statements).to contain_exactly(statement)
       end
 
       context "when the params are invalid" do

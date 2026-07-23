@@ -26,12 +26,6 @@ RSpec.describe Milestone, type: :model do
       it { is_expected.to have_error(:acceptance_window_start_date, :blank, "can't be blank") }
     end
 
-    context "when statement date is missing" do
-      subject(:milestone) { build(:milestone, statement_date: nil) }
-
-      it { is_expected.to have_error(:statement_date, :blank, "Please choose a statement date") }
-    end
-
     context "when creating a milestone with a declaration type that already exists for the course cohort" do
       subject(:milestone) do
         build(
@@ -258,58 +252,6 @@ RSpec.describe Milestone, type: :model do
       let(:acceptance_window_end_date) { nil }
 
       it { is_expected.to be_truthy }
-    end
-  end
-
-  describe "#statements_for_statement_date" do
-    subject(:statements_for_statement_date) { milestone.statements_for_statement_date }
-
-    let(:course_cohort) { create(:course_cohort) }
-    let(:cohort) { course_cohort.cohort }
-    let(:milestone) { create(:milestone, course_cohort:, statement_date: Date.new(2026, 2, 1)) }
-    let(:matching_statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: true) }
-    let(:different_month_statement) { create(:statement, cohort:, year: 2026, month: 3, output_fee: true) }
-    let(:non_output_fee_statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: false) }
-    let(:different_cohort_statement) { create(:statement, cohort: create(:cohort, :next), year: 2026, month: 2, output_fee: true) }
-
-    before do
-      matching_statement
-      different_month_statement
-      non_output_fee_statement
-      different_cohort_statement
-    end
-
-    it "returns output fee statements matching the milestone statement date and cohort" do
-      expect(statements_for_statement_date).to include(matching_statement)
-      expect(statements_for_statement_date).not_to include(
-        different_month_statement,
-        non_output_fee_statement,
-        different_cohort_statement,
-      )
-    end
-  end
-
-  describe "#attach_statements!" do
-    subject(:attach_statements) { milestone.attach_statements! }
-
-    let(:course_cohort) { create(:course_cohort) }
-    let(:cohort) { course_cohort.cohort }
-    let(:milestone) { create(:milestone, course_cohort:, statement_date: Date.new(2026, 2, 1)) }
-    let(:statement) { create(:statement, cohort:, year: 2026, month: 2, output_fee: true) }
-
-    before do
-      statement
-    end
-
-    it "attaches matching statements to the milestone" do
-      expect { attach_statements }.to change(MilestoneStatement, :count).by(1)
-      expect(milestone.statements).to contain_exactly(statement)
-    end
-
-    it "does not duplicate existing milestone statements" do
-      create(:milestone_statement, milestone:, statement:)
-
-      expect { attach_statements }.not_to change(MilestoneStatement, :count)
     end
   end
 

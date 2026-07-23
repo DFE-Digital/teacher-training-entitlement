@@ -17,7 +17,6 @@ class Milestone < ApplicationRecord
   validates :acceptance_window_start_date, presence: true
   validates :declaration_type, inclusion: DECLARATION_TYPES
   validates :declaration_type, uniqueness: { scope: :course_cohort_id }, if: :valid_declaration_type?
-  validates :statement_date, presence: true
 
   validate :milestone_sum_within_participant_funding
 
@@ -30,20 +29,6 @@ class Milestone < ApplicationRecord
 
   def editable?
     acceptance_window_end_date.nil? || acceptance_window_end_date >= Time.zone.today
-  end
-
-  def attach_statements!
-    statements_for_statement_date.find_each do |statement|
-      milestone_statements.find_or_create_by!(statement:)
-    end
-  end
-
-  def statements_for_statement_date
-    return Statement.none if statement_date.blank?
-
-    Statement
-      .with_output_fee
-      .where(cohort: course_cohort.cohort, month: statement_date.month, year: statement_date.year)
   end
 
 private
