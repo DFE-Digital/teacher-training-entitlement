@@ -40,6 +40,29 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         expect(response.body).to include(cohort.name)
       end
 
+      it "shows the course cohort schedule" do
+        expect(response.body).to include(schedule.name)
+        expect(response.body).to include(schedule.training_starts_at.to_fs(:govuk_short))
+        expect(response.body).to include(schedule.training_ends_at.to_fs(:govuk_short))
+        expect(response.body).to include(schedule.allowed_declaration_types.join(", "))
+      end
+
+      it "shows the course cohort participant funding and service fee" do
+        course_cohort.update!(participant_funding: 1000, service_fee: 250)
+
+        get admin_cohort_course_path(cohort, course_cohort.course)
+
+        expect(response.body).to include("Course Cohort")
+        expect(response.body).to include("Participant funding")
+        expect(response.body).to include("Service fee")
+        expect(response.body).to include("£1,000.00")
+        expect(response.body).to include("£250.00")
+      end
+
+      it "links to edit the course cohort" do
+        expect(response.body).to include(edit_admin_cohort_course_path(cohort, course))
+      end
+
       it "links to providers on the course cohort" do
         expect(response.body).to include(cohort_admin_lead_provider_path(lead_provider, cohort))
       end
@@ -106,6 +129,52 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
       it { is_expected.to have_http_status :unprocessable_content }
     end
+
+    describe "#edit" do
+      before { get edit_admin_cohort_course_path(cohort, course_cohort.course) }
+
+      it { is_expected.to have_http_status :success }
+
+      it "shows the course cohort finance fields" do
+        expect(response.body).to include("Participant funding")
+        expect(response.body).to include("Service fee")
+      end
+    end
+
+    describe "#update" do
+      before do
+        patch admin_cohort_course_path(cohort, course_cohort.course),
+              params: {
+                course_cohort: {
+                  participant_funding: "1000.50",
+                  service_fee: "250.25",
+                },
+              }
+      end
+
+      it { is_expected.to redirect_to admin_cohort_course_path(cohort, course) }
+
+      it "updates the course cohort finance fields" do
+        expect(course_cohort.reload).to have_attributes(
+          participant_funding: BigDecimal("1000.50"),
+          service_fee: BigDecimal("250.25"),
+        )
+      end
+    end
+
+    describe "#update with invalid params" do
+      before do
+        patch admin_cohort_course_path(cohort, course_cohort.course),
+              params: {
+                course_cohort: {
+                  participant_funding: "-1",
+                  service_fee: "-1",
+                },
+              }
+      end
+
+      it { is_expected.to have_http_status :unprocessable_content }
+    end
   end
 
   context "when logged in as normal admin" do
@@ -123,6 +192,10 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       before { get admin_cohort_course_path(cohort, course_cohort.course) }
 
       it { is_expected.to have_http_status :success }
+
+      it "does not link to edit the course cohort" do
+        expect(response.body).not_to include(edit_admin_cohort_course_path(cohort, course))
+      end
     end
 
     describe "#new" do
@@ -131,8 +204,20 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       it_behaves_like "inaccessible to normal admins"
     end
 
+    describe "#edit" do
+      before { get edit_admin_cohort_course_path(cohort, course_cohort.course) }
+
+      it_behaves_like "inaccessible to normal admins"
+    end
+
     describe "#create" do
       before { post admin_cohort_courses_path(cohort), params: valid_params }
+
+      it_behaves_like "inaccessible to normal admins"
+    end
+
+    describe "#update" do
+      before { patch admin_cohort_course_path(cohort, course_cohort.course), params: { course_cohort: { service_fee: "250" } } }
 
       it_behaves_like "inaccessible to normal admins"
     end

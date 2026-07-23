@@ -1,0 +1,36 @@
+<%= govuk_back_link href: admin_cohort_course_path(@cohort, @course) %>
+
+<h1 class="govuk-heading-l">Edit course cohort</h1>
+
+<%=
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
+      row.with_key(text: "Course")
+      row.with_value(text: @course.name)
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Cohort")
+      row.with_value(text: @cohort.name)
+    end
+  end
+%>
+
+<%= form_with model: @course_cohort, url: admin_cohort_course_path(@cohort, @course), method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <%= f.govuk_text_field :participant_funding,
+                         label: { text: "Participant funding" },
+                         class: "govuk-input--width-10",
+                         inputmode: "decimal" %>
+
+  <%= f.govuk_text_field :service_fee,
+                         label: { text: "Service fee" },
+                         class: "govuk-input--width-10",
+                         inputmode: "decimal" %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit "Save course cohort" %>
+    <%= govuk_link_to("Cancel", admin_cohort_course_path(@cohort, @course), class: "govuk-link--no-visited-state") %>
+  </div>
+<% end %>

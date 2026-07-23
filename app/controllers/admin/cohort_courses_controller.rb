@@ -1,6 +1,6 @@
 class Admin::CohortCoursesController < AdminController
   before_action :ensure_super_admin, except: :show
-  before_action :course_cohort, only: :show
+  before_action :course_cohort, only: %i[show edit update]
 
   def show
     @cohorts = Cohort.where(id: @course.course_cohorts.select(:cohort_id)).order_by_latest
@@ -9,6 +9,8 @@ class Admin::CohortCoursesController < AdminController
       .group(:lead_provider_id)
       .count
   end
+
+  def edit; end
 
   def new
     @course_cohort = cohort.course_cohorts.new
@@ -27,10 +29,23 @@ class Admin::CohortCoursesController < AdminController
     end
   end
 
+  def update
+    if @course_cohort.update(course_cohort_finance_params)
+      flash[:success] = "Course cohort updated"
+      redirect_to admin_cohort_course_path(cohort, @course)
+    else
+      render :edit, status: :unprocessable_content
+    end
+  end
+
 private
 
   def course_cohort_params
     params.require(:course_cohort).permit(:course_id, :schedule_id)
+  end
+
+  def course_cohort_finance_params
+    params.require(:course_cohort).permit(:participant_funding, :service_fee)
   end
 
   def course_cohort
