@@ -1,12 +1,13 @@
 FactoryBot.define do
   factory :clawback_declaration do
-    milestone
-    cohort
-    declaration_date { milestone.acceptance_window_start_date }
-    declaration_type { milestone.declaration_type }
-    application { create(:application, :with_declaration) }
-    paid_declaration { application.declarations.first }
-    delivery_partner { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    lead_provider { application&.lead_provider || create(:lead_provider) }
+    paid_declaration { create(:declaration, :paid) }
+    application { paid_declaration.application }
+    milestone { paid_declaration.milestone }
+    cohort { paid_declaration.cohort }
+    declaration_date { paid_declaration.declaration_date }
+    declaration_type { paid_declaration.declaration_type }
+    delivery_partner { paid_declaration.delivery_partner }
+    secondary_delivery_partner { paid_declaration.secondary_delivery_partner }
+    lead_provider { paid_declaration.lead_provider }
   end
 end

@@ -126,6 +126,7 @@ erDiagram
   Declaration {
     integer id
     integer application_id
+    integer clawback_declaration_id
     integer cohort_id
     datetime created_at
     datetime declaration_date
@@ -134,10 +135,12 @@ erDiagram
     uuid ecf_id
     integer lead_provider_id
     integer milestone_id
+    integer paid_declaration_id
     integer secondary_delivery_partner_id
     enum state
     enum state_reason
     integer superseded_by_id
+    string type
     datetime updated_at
   }
   Declaration }o--|| Application : belongs_to

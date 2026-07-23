@@ -61,7 +61,8 @@ FactoryBot.define do
 
     trait :voided_paid do
       state { :paid }
-      clawback_declaration
+
+      after(:create, &:clawback!)
     end
 
     trait :started do

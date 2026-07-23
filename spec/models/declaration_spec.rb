@@ -50,6 +50,24 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to validate_presence_of(:declaration_date) }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
 
+    describe "milestone uniqueness" do
+      let(:existing_declaration) { create(:declaration, :submitted) }
+
+      it "is invalid when another unique declaration state exists for the same application and milestone" do
+        declaration = build(:declaration, :submitted, application: existing_declaration.application, milestone: existing_declaration.milestone)
+
+        expect(declaration).to have_error(:milestone_id, :taken)
+      end
+
+      it "allows clawback declarations to use the same milestone as the paid declaration" do
+        existing_declaration.update!(state: :paid)
+
+        clawback_declaration = build(:clawback_declaration, paid_declaration: existing_declaration)
+
+        expect(clawback_declaration).to be_valid
+      end
+    end
+
     context "with delivery_partners" do
       before { delivery_partner && old_cohort_partner }
 

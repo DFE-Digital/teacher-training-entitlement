@@ -1,6 +1,7 @@
 class Declaration < ApplicationRecord
   REVERTABLE_STATES = %w[ineligible voided].freeze
   BILLABLE_STATES = %w[eligible payable paid].freeze
+  UNIQUE_MILESTONE_STATES = (BILLABLE_STATES + %w[submitted]).freeze
   CHANGEABLE_STATES = %w[eligible submitted].freeze
   UPLIFT_PAID_STATES = %w[paid].freeze
   VOIDABLE_STATES = %w[submitted eligible payable ineligible].freeze
@@ -115,8 +116,8 @@ class Declaration < ApplicationRecord
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
   validates :milestone_id,
-            uniqueness: { scope: :application_id, conditions: -> { where.not(state: :voided) } },
-            if: -> { milestone_id.present? && !voided? }
+            uniqueness: { scope: :application_id, conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
+            if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
 
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)
