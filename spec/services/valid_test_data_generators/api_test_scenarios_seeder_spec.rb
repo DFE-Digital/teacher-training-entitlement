@@ -160,6 +160,18 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(CourseCohort.find_by(course:, cohort: secondary_cohort)).to be_present
         end
 
+        it "creates schedules and assigns them to the course cohorts" do
+          seeder.call
+
+          course = Course.find_by!(identifier: "tte-early-years")
+          cohort_start_dates = seeder.cohort_start_dates.take(4)
+          course_cohorts = CourseCohort.joins(:cohort).where(course:, cohorts: { registration_starts_at: cohort_start_dates })
+          allowed_declaration_types = course_cohorts.map { |course_cohort| course_cohort.schedule.allowed_declaration_types }
+
+          expect(course_cohorts.map(&:schedule)).to all(be_present)
+          expect(allowed_declaration_types).to all(eq(%w[started completed]))
+        end
+
         it "creates 11 applications in primary course_cohort and 1 in secondary course_cohort" do
           seeder.call
 

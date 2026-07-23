@@ -291,6 +291,7 @@ module ValidTestDataGenerators
 
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       cohort_year = registration_starts_at.year
+      term = registration_starts_at.month < 8 ? "autumn" : "spring"
       current_cohort = Cohort.find_by(registration_starts_at:)
 
       attrs = {
@@ -306,12 +307,23 @@ module ValidTestDataGenerators
 
       training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
       training_ends_at = training_starts_at + 6.months
+      schedule = create_or_update_schedule!(
+        cohort: current_cohort,
+        term:,
+        training_starts_at:,
+        training_ends_at:,
+      )
 
       cc = CourseCohort.find_by(course:, cohort: current_cohort)
-      cc ||= CourseCohort.create!(
-        course:,
-        cohort: current_cohort,
-      )
+      if cc
+        cc.update!(schedule:)
+      else
+        cc = CourseCohort.create!(
+          course:,
+          cohort: current_cohort,
+          schedule:,
+        )
+      end
 
       create_or_update_milestone!(
         course_cohort: cc,
@@ -334,6 +346,25 @@ module ValidTestDataGenerators
       end
 
       cc
+    end
+
+    def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
+      identifier = "tte-reception-#{term}"
+      attrs = {
+        cohort:,
+        name: "TTE Reception #{term}",
+        course_group: course.course_group,
+        training_starts_at:,
+        training_ends_at:,
+        allowed_declaration_types: %w[started completed],
+        policy_descriptor: 1,
+        acceptance_window_start: training_starts_at,
+        acceptance_window_end: training_starts_at + 2.months,
+      }
+
+      schedule = Schedule.find_or_initialize_by(identifier:, cohort:)
+      schedule.update!(attrs)
+      schedule
     end
 
     def institutions_eligible
