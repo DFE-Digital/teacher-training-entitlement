@@ -104,4 +104,28 @@ RSpec.describe CourseCohort do
       it { is_expected.to eq("Summer 2026") }
     end
   end
+
+  describe "#taken_declaration_types" do
+    subject(:taken_declaration_types) { course_cohort.taken_declaration_types(except:) }
+
+    let(:course_cohort) { create(:course_cohort) }
+    let(:except) { nil }
+
+    before do
+      create(:milestone, course_cohort:, declaration_type: "started")
+      create(:milestone, course_cohort:, declaration_type: "completed")
+    end
+
+    it "returns the declaration types already used by milestones on the course cohort" do
+      expect(taken_declaration_types).to contain_exactly("started", "completed")
+    end
+
+    context "when excluding a milestone" do
+      let(:except) { course_cohort.milestones.find_by(declaration_type: "started") }
+
+      it "does not include the excluded milestone's declaration type" do
+        expect(taken_declaration_types).to contain_exactly("completed")
+      end
+    end
+  end
 end

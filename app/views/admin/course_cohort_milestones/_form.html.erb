@@ -1,0 +1,28 @@
+<%= form_with model: form, scope: :form, url:, method: form_method do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <%= f.govuk_radio_buttons_fieldset :declaration_type, legend: { text: "Select declaration type", size: "m" } do %>
+    <% Milestone::DECLARATION_TYPES.each.with_index do |declaration_type, index| %>
+      <% declaration_type_taken = form.declaration_type_taken?(declaration_type) %>
+      <%= f.govuk_radio_button(
+            :declaration_type,
+            declaration_type,
+            label: { text: declaration_type },
+            hint: { text: declaration_type_taken ? "Already added" : nil },
+            disabled: declaration_type_taken,
+            link_errors: index.zero?,
+          ) %>
+    <% end %>
+  <% end %>
+
+  <%= f.govuk_date_field :acceptance_window_start_date, legend: { text: "Acceptance window start" } %>
+
+  <%= f.govuk_date_field :acceptance_window_end_date, legend: { text: "Acceptance window end" } %>
+
+  <%= f.govuk_text_field :payment_amount, label: { text: "Payment amount" }, prefix_text: "£", class: "govuk-input--width-10" %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit submit_text %>
+    <%= govuk_link_to("Cancel", admin_cohort_course_path(cohort, course), class: "govuk-link--no-visited-state") %>
+  </div>
+<% end %>

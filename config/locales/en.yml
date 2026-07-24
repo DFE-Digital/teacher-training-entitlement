@@ -327,10 +327,10 @@ en:
         milestone:
           attributes:
             declaration_type:
-              inclusion: The declaration type should be one of the ones allowed
-                by the schedule
+              inclusion: Please choose a declaration type
             payment_amount:
               exceeds_participant_funding: would cause total milestone payments to exceed participant funding
+              inclusion: Please choose a declaration type
         participant_outcome:
           attributes:
             ecf_id:
@@ -527,12 +527,6 @@ en:
           attributes:
             declaration_type:
               blank: Please choose a declaration type
-            statement_date:
-              blank: Please choose a statement date
-        milestones/update:
-          attributes:
-            statement_date:
-              blank: Please choose a statement date
         questionnaires/share_provider:
           attributes:
             can_share_choices:

@@ -27,9 +27,8 @@ class Milestone < ApplicationRecord
        DECLARATION_TYPES.index_with(&:itself),
        suffix: true, validate: true
 
-  def statement_date
-    statement = statements.first
-    Date.new(statement.year, statement.month, 1) if statement
+  def editable?
+    acceptance_window_end_date.nil? || acceptance_window_end_date >= Time.zone.today
   end
 
 private

@@ -1,0 +1,13 @@
+<%= govuk_back_link href: admin_cohort_course_path(@cohort, @course) %>
+
+<h1 class="govuk-heading-l">Edit Milestone</h1>
+
+<%= render "header" %>
+
+<%= render "form",
+           form: @form,
+           url: admin_cohort_course_milestone_path(@cohort, @course, @milestone),
+           form_method: :patch,
+           submit_text: "Update milestone",
+           cohort: @cohort,
+           course: @course %>

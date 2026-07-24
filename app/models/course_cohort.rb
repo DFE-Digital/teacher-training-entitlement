@@ -35,6 +35,10 @@ class CourseCohort < ApplicationRecord
     "#{date.month.between?(1, 4) ? 'Spring' : 'Summer'} #{date.year}"
   end
 
+  def taken_declaration_types(except: nil)
+    milestones.where.not(id: except&.id).pluck(:declaration_type)
+  end
+
 private
 
   def participant_funding_not_less_than_milestone_sum

@@ -40,13 +40,6 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         expect(response.body).to include(cohort.name)
       end
 
-      it "shows the course cohort schedule" do
-        expect(response.body).to include(schedule.name)
-        expect(response.body).to include(schedule.training_starts_at.to_fs(:govuk_short))
-        expect(response.body).to include(schedule.training_ends_at.to_fs(:govuk_short))
-        expect(response.body).to include(schedule.allowed_declaration_types.join(", "))
-      end
-
       it "links to providers on the course cohort" do
         expect(response.body).to include(cohort_admin_lead_provider_path(lead_provider, cohort))
       end
@@ -57,6 +50,25 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
       it "links to add or remove providers" do
         expect(response.body).to include(admin_course_course_cohort_provider_path(course, course_cohort))
+      end
+
+      it "links to add a milestone" do
+        expect(response.body).to include(new_admin_cohort_course_milestone_path(cohort, course))
+      end
+
+      describe "Showing milestones" do
+        let!(:milestone) do
+          create(:milestone,
+                 course_cohort:,
+                 payment_amount: 123.45)
+        end
+
+        it "shows milestones for the course cohort" do
+          get admin_cohort_course_path(cohort, course)
+
+          expect(response.body).to include("£123.45")
+          expect(response.body).to include(edit_admin_cohort_course_milestone_path(cohort, course, milestone))
+        end
       end
     end
 

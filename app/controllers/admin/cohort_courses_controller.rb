@@ -34,7 +34,7 @@ private
   end
 
   def course_cohort
-    @course_cohort ||= cohort.course_cohorts.includes(:course, :lead_providers).find_by!(course_id: params[:id]).tap do |course_cohort|
+    @course_cohort ||= cohort.course_cohorts.includes(:course, :lead_providers, milestones: :statements).find_by!(course_id: params[:id]).tap do |course_cohort|
       @course = course_cohort.course
     end
   end

@@ -205,7 +205,7 @@ module Declarations
 
     def declaration_type_out_of_order
       return if started_declaration?
-      return if completed_declaration? && active_declarations.where(declaration_type: Milestone::STARTED).exists?
+      return if completed_declaration? && active_declarations.started.exists?
 
       errors.add(:declaration_type, :out_of_order)
     end
