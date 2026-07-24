@@ -3,10 +3,11 @@
 require "rails_helper"
 
 RSpec.describe Declarations::Void, type: :model do
-  let(:application) { create(:application, :started) }
   let(:statement) { create(:statement, :next_output_fee) }
+  let(:course_cohort) { create(:course_cohort, cohort: statement.cohort) }
+  let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: statement.lead_provider) }
   let(:declaration_trait) { :started }
-  let(:declaration) { create(:declaration, declaration_trait, application:, lead_provider: statement.lead_provider, cohort: statement.cohort) }
+  let(:declaration) { create(:declaration, declaration_trait, application:, lead_provider: statement.lead_provider, course_cohort:) }
 
   subject(:service) { described_class.new(declaration:) }
 
@@ -14,7 +15,7 @@ RSpec.describe Declarations::Void, type: :model do
     context "when voiding the declaration" do
       context "when the application has been completed and the declaration is started" do
         let(:declaration_trait) { :started }
-        let(:application) { create(:application, :completed) }
+        let(:application) { create(:application, status: Application::COMPLETED, course_cohort:, lead_provider: statement.lead_provider) }
 
         it do
           expect(service).to have_error(:base, :application_status_completed,
@@ -27,7 +28,7 @@ RSpec.describe Declarations::Void, type: :model do
 
       context "when the application has been completed and the declaration is also completed" do
         let(:declaration_trait) { :completed }
-        let(:application) { create(:application, :started) }
+        let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: statement.lead_provider) }
 
         it do
           expect(service).to have_error(:base, :not_voidable_to_started_status,
@@ -37,7 +38,7 @@ RSpec.describe Declarations::Void, type: :model do
 
       context "when the application has been completed and the declaration is completed" do
         let(:declaration_trait) { :completed }
-        let(:application) { create(:application, :completed) }
+        let(:application) { create(:application, status: Application::COMPLETED, course_cohort:, lead_provider: statement.lead_provider) }
 
         it {
           service.call
@@ -98,7 +99,7 @@ RSpec.describe Declarations::Void, type: :model do
 
     context "when voiding a completed declaration" do
       let(:declaration_trait) { :completed }
-      let(:application) { create(:application, :completed) }
+      let(:application) { create(:application, status: Application::COMPLETED, course_cohort:, lead_provider: statement.lead_provider) }
 
       it "creates exactly one state change" do
         expect { subject.call }.to change { application.state_changes.count }.by(1)

@@ -29,13 +29,13 @@ module Declarations
     def next_output_fee_statement
       return unless declaration
 
-      @next_output_fee_statement ||= declaration.lead_provider.next_output_fee_statement(declaration.cohort)
+      @next_output_fee_statement ||= declaration.lead_provider.next_output_fee_statement(declaration.milestone.cohort)
     end
 
     def next_output_fee_statement_exists
       return unless declaration
 
-      errors.add(:declaration, :no_output_fee_statement, cohort: declaration.cohort.start_year) unless next_output_fee_statement
+      errors.add(:declaration, :no_output_fee_statement, cohort: declaration.milestone.cohort.start_year) unless next_output_fee_statement
     end
 
     def declaration_has_attachable_state

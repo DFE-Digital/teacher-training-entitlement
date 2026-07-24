@@ -62,7 +62,7 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v1/swagger.yaml", type: :
       let(:delivery_partner_id) { new_delivery_partner.ecf_id }
       let(:secondary_delivery_partner_id) { new_secondary_delivery_partner.ecf_id }
 
-      let(:resource) { create(:declaration, lead_provider: lead_provider, cohort:, application:) }
+      let(:resource) { create(:declaration, lead_provider: lead_provider, application:) }
       let(:resource_id) { resource.ecf_id }
 
       let(:service_args) { { declaration: resource, delivery_partner_id:, secondary_delivery_partner_id: } }

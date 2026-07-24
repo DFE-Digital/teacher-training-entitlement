@@ -16,7 +16,6 @@ RSpec.describe Declarations::ChangeDeliveryPartner, type: :model do
     create(:declaration,
            application:,
            lead_provider:,
-           cohort:,
            delivery_partner:,
            secondary_delivery_partner:)
   end

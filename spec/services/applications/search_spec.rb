@@ -7,11 +7,19 @@ RSpec.describe Applications::Search do
 
   let(:user)         { build(:user, preferred_name: "Rasmus Lerdorf") }
   let(:application)  { create(:application, user:) }
-  let(:declarations) { create_list(:declaration, 2, application:) }
+  let(:started_milestone) { create(:milestone, :started) }
+  let(:completed_milestone) { create(:milestone, :completed) }
+  let(:declarations) do
+    [
+      create(:declaration, application:, declaration_type: :started, milestone: started_milestone),
+      create(:declaration, application:, declaration_type: :completed, milestone: completed_milestone),
+    ]
+  end
 
   before do
     a = create(:application, user: create(:user, full_name: "Jane Doe"))
-    create_list(:declaration, 2, application: a)
+    create(:declaration, application: a, declaration_type: :started, milestone: started_milestone)
+    create(:declaration, application: a, declaration_type: :completed, milestone: completed_milestone)
   end
 
   shared_examples "a search returning matching applications" do

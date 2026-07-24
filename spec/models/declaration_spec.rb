@@ -5,8 +5,8 @@ RSpec.describe Declaration, type: :model do
 
   describe "associations" do
     it { is_expected.to belong_to(:application) }
-    it { is_expected.to belong_to(:cohort) }
     it { is_expected.to belong_to(:lead_provider) }
+    it { is_expected.to belong_to(:milestone).without_validating_presence }
     it { is_expected.to belong_to(:superseded_by).optional }
     it { is_expected.to have_many(:participant_outcomes).dependent(:destroy) }
     it { is_expected.to have_many(:statement_items) }
@@ -20,7 +20,7 @@ RSpec.describe Declaration, type: :model do
       subject do
         create(:declaration, application:,
                              lead_provider:,
-                             cohort:,
+                             milestone:,
                              delivery_partner: primary_partner,
                              secondary_delivery_partner: secondary_partner)
       end
@@ -28,6 +28,7 @@ RSpec.describe Declaration, type: :model do
       let(:application) { create(:application, :accepted) }
       let(:lead_provider) { application.lead_provider }
       let(:cohort) { application.cohort }
+      let(:milestone) { create(:milestone, course_cohort: application.course_cohort) }
       let(:primary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
       let(:secondary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
 
@@ -36,7 +37,7 @@ RSpec.describe Declaration, type: :model do
       it { is_expected.to have_attributes delivery_partners: [primary_partner, secondary_partner] }
 
       context "without secondary partner" do
-        subject { create(:declaration, application:, cohort:, lead_provider:, delivery_partner: primary_partner) }
+        subject { create(:declaration, application:, milestone:, lead_provider:, delivery_partner: primary_partner) }
 
         it { is_expected.to have_attributes delivery_partners: [primary_partner] }
       end
@@ -48,6 +49,24 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(described_class.declaration_types.values) }
     it { is_expected.to validate_presence_of(:declaration_date) }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
+
+    describe "milestone uniqueness" do
+      let(:existing_declaration) { create(:declaration, :submitted) }
+
+      it "is invalid when another unique declaration state exists for the same application and milestone" do
+        declaration = build(:declaration, :submitted, application: existing_declaration.application, milestone: existing_declaration.milestone)
+
+        expect(declaration).to have_error(:milestone_id, :taken)
+      end
+
+      it "allows clawback declarations to use the same milestone as the paid declaration" do
+        existing_declaration.update!(state: :paid)
+
+        clawback_declaration = build(:clawback_declaration, paid_declaration: existing_declaration)
+
+        expect(clawback_declaration).to be_valid
+      end
+    end
 
     context "with delivery_partners" do
       before { delivery_partner && old_cohort_partner }
@@ -77,8 +96,10 @@ RSpec.describe Declaration, type: :model do
       end
 
       describe "skipping validation for certain cases" do
-        let(:declaration) { build(:declaration, cohort:, delivery_partner: nil) }
+        let(:declaration) { build(:declaration, milestone:, delivery_partner: nil) }
         let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
+        let(:course_cohort) { create(:course_cohort, cohort:) }
+        let(:milestone) { create(:milestone, course_cohort:) }
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
 
         context "with earlier cohort" do
@@ -96,7 +117,7 @@ RSpec.describe Declaration, type: :model do
         end
 
         context "without cohort set" do
-          let(:cohort) { nil }
+          let(:declaration) { build(:declaration, delivery_partner: nil, milestone: nil) }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner_id) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
@@ -104,7 +125,7 @@ RSpec.describe Declaration, type: :model do
 
         context "when changing declaration state" do
           subject do
-            create(:declaration, :with_delivery_partner, cohort:)
+            create(:declaration, :with_delivery_partner, milestone:)
               .tap(&:mark_eligible!)
               .reload
           end
@@ -114,7 +135,7 @@ RSpec.describe Declaration, type: :model do
 
         context "with application from another country" do
           subject do
-            build(:declaration, cohort:, application:, delivery_partner: DeliveryPartner.first)
+            build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
           end
 
           let :application do
@@ -131,7 +152,7 @@ RSpec.describe Declaration, type: :model do
 
         context "with application from a non-english home nation" do
           subject do
-            build(:declaration, cohort:, application:, delivery_partner: DeliveryPartner.first)
+            build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
           end
 
           let(:application) { build(:application, teacher_catchment: "wales") }
@@ -146,8 +167,10 @@ RSpec.describe Declaration, type: :model do
       context "with existing declarations" do
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
         let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
+        let(:course_cohort) { create(:course_cohort, cohort:) }
+        let(:milestone) { create(:milestone, course_cohort:) }
 
-        subject(:declaration) { create(:declaration, cohort:) }
+        subject(:declaration) { create(:declaration, milestone:) }
 
         before do
           declaration
@@ -663,7 +686,7 @@ RSpec.describe Declaration, type: :model do
       end
 
       let(:declaration_as_primary) do
-        create :declaration, lead_provider:, application:, delivery_partner:, cohort: application.cohort
+        create :declaration, lead_provider:, application:, delivery_partner:, milestone: create(:milestone, course_cohort:)
       end
 
       it { is_expected.to include declaration_as_primary }
@@ -674,34 +697,12 @@ RSpec.describe Declaration, type: :model do
         let :declaration_as_secondary do
           create :declaration, lead_provider:,
                                application:,
-                               cohort: application.cohort,
+                               milestone: create(:milestone, course_cohort:),
                                delivery_partner:,
                                secondary_delivery_partner:
         end
 
         it { is_expected.to include declaration_as_secondary }
-      end
-    end
-
-    describe ".order_by_milestone" do
-      let(:application) { create(:application, :accepted, cohort:, course:) }
-
-      before do
-        create(:declaration, :completed, :payable)
-        create(:declaration, :payable, declaration_type: "started")
-        create(:declaration, :payable, declaration_type: "retained-1")
-        create(:declaration, :payable, declaration_type: "retained-2")
-      end
-
-      it "sorts declarations properly" do
-        declarations = Declaration.order_by_milestones
-        expected_types = %w[completed retained-2 retained-1 started]
-        expect(declarations.pluck(:declaration_type)).to eq expected_types
-      end
-
-      it "considers state when sorting" do
-        declarations = Declaration.order_by_milestones
-        expect(declarations.first.state).to eq("payable")
       end
     end
   end
@@ -748,7 +749,11 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when a declaration has been superseded by another" do
-      before { create(:declaration, application:, superseded_by: declaration) }
+      before do
+        other_user = create(:user, trn: participant.trn)
+        other_application = create(:application, :accepted, cohort:, course:, user: other_user)
+        create(:declaration, application: other_application, declaration_type: declaration.declaration_type, milestone: declaration.milestone, superseded_by: declaration)
+      end
 
       it "returns no declarations" do
         expect(declaration.duplicate_declarations).to be_empty
@@ -756,7 +761,10 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when a declaration has a different type" do
-      before { create(:declaration, application:, declaration_type: :completed) }
+      before do
+        completed_milestone = create(:milestone, :completed, course_cohort: application.course_cohort)
+        create(:declaration, :completed, application:, milestone: completed_milestone)
+      end
 
       it "returns no declarations" do
         expect(declaration.duplicate_declarations).to be_empty
@@ -780,8 +788,10 @@ RSpec.describe Declaration, type: :model do
       }
     end
 
-    let(:declaration) { build(:declaration, lead_provider:, cohort: twenty_three) }
     let(:twenty_three) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+    let(:course_cohort) { create(:course_cohort, cohort: twenty_three) }
+    let(:milestone) { create(:milestone, course_cohort:) }
+    let(:declaration) { build(:declaration, lead_provider:, milestone:) }
     let(:twenty_three_partner) { create(:delivery_partner) }
     let(:twenty_four_partner) { create(:delivery_partner) }
 
@@ -794,10 +804,10 @@ RSpec.describe Declaration, type: :model do
       it { is_expected.to be_empty }
     end
 
-    context "without cohort" do
+    context "without milestone" do
       before { allow(lead_provider).to receive(:delivery_partners_for_cohort) }
 
-      let(:declaration) { build(:declaration, delivery_partner: nil, lead_provider:, cohort: nil) }
+      let(:declaration) { build(:declaration, delivery_partner: nil, lead_provider:, milestone: nil) }
 
       it { is_expected.to be_empty }
 

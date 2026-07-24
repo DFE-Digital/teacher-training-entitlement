@@ -41,9 +41,11 @@ RSpec.describe Declarations::Query do
         let(:other_lead_provider) { create(:lead_provider) }
 
         let(:application) { create(:application, lead_provider: current_lead_provider) }
+        let(:started_milestone) { create(:milestone, :started, course_cohort: application.course_cohort) }
+        let(:completed_milestone) { create(:milestone, :completed, course_cohort: application.course_cohort) }
 
-        let!(:declaration_before_transfer) { create(:declaration, lead_provider: previous_lead_provider, application:) }
-        let!(:declaration_after_transfer)  { create(:declaration, lead_provider: current_lead_provider, application:) }
+        let!(:declaration_before_transfer) { create(:declaration, :started, lead_provider: previous_lead_provider, application:, milestone: started_milestone) }
+        let!(:declaration_after_transfer)  { create(:declaration, :completed, lead_provider: current_lead_provider, application:, milestone: completed_milestone) }
 
         before do
           create(:declaration, lead_provider: other_lead_provider)
@@ -128,18 +130,24 @@ RSpec.describe Declarations::Query do
         let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
         let(:cohort_2025) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
 
+        def create_declaration_for_cohort(cohort)
+          course_cohort = create(:course_cohort, cohort:)
+          milestone = create(:milestone, course_cohort:)
+          create(:declaration, course_cohort:, milestone:)
+        end
+
         it "filters by cohort" do
-          create(:declaration, cohort: cohort_2023)
-          declaration = create(:declaration, cohort: cohort_2024)
+          create_declaration_for_cohort(cohort_2023)
+          declaration = create_declaration_for_cohort(cohort_2024)
           query = described_class.new(cohort_start_years: "2024")
 
           expect(query.declarations).to contain_exactly(declaration)
         end
 
         it "filters by multiple cohorts" do
-          declaration1 = create(:declaration, cohort: cohort_2023)
-          declaration2 = create(:declaration, cohort: cohort_2024)
-          create(:declaration, cohort: cohort_2025)
+          declaration1 = create_declaration_for_cohort(cohort_2023)
+          declaration2 = create_declaration_for_cohort(cohort_2024)
+          create_declaration_for_cohort(cohort_2025)
           query = described_class.new(cohort_start_years: "2023,2024")
 
           expect(query.declarations).to contain_exactly(declaration1, declaration2)
@@ -152,7 +160,7 @@ RSpec.describe Declarations::Query do
         end
 
         it "doesn't filter by cohort when none supplied" do
-          condition_string = %("cohort"."start_year" =)
+          condition_string = %("cohorts"."start_year" =)
 
           expect(described_class.new(cohort_start_years: 2021).scope.to_sql).to include(condition_string)
           expect(described_class.new.scope.to_sql).not_to include(condition_string)

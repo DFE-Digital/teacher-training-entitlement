@@ -18,13 +18,17 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
     end
 
     scenario "viewing declaration details" do
-      started_declaration = create(:declaration, :from_ecf, :with_secondary_delivery_partner, application:)
+      started_milestone = create(:milestone, :started, course_cohort: application.course_cohort)
+      completed_milestone = create(:milestone, :completed, course_cohort: application.course_cohort)
+      payable_milestone = create(:milestone, declaration_type: Milestone::RETAINED_1, course_cohort: application.course_cohort)
 
-      completed_declaration = create(:declaration, :completed, application:)
+      started_declaration = create(:declaration, :from_ecf, :with_secondary_delivery_partner, application:, milestone: started_milestone)
+
+      completed_declaration = create(:declaration, :completed, application:, milestone: completed_milestone)
       completed_declaration.mark_eligible!
 
       payable_statement = create(:statement, :payable)
-      payable_declaration = create(:declaration, :payable, application:, statement: payable_statement)
+      payable_declaration = create(:declaration, :payable, application:, declaration_type: Milestone::RETAINED_1, milestone: payable_milestone, statement: payable_statement)
       paid_statement = create(:statement, :paid, declaration: payable_declaration)
 
       visit(admin_application_path(application))
@@ -41,7 +45,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", started_declaration.ecf_id)
           expect(summary_list).to have_summary_item("Declaration date", started_declaration.declaration_date.to_fs(:govuk_short))
-          expect(summary_list).to have_summary_item("Declaration cohort", started_declaration.cohort.name)
+          expect(summary_list).to have_summary_item("Declaration cohort", started_declaration.milestone.cohort.name)
           expect(summary_list).to have_summary_item("Provider", started_declaration.lead_provider.name)
           expect(summary_list).to have_summary_item("Delivery partner", started_declaration.delivery_partner.name)
           expect(summary_list).to have_summary_item("Secondary delivery partner", started_declaration.secondary_delivery_partner.name)
@@ -57,7 +61,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", "-")
           expect(summary_list).to have_summary_item("Declaration date", completed_declaration.declaration_date.to_fs(:govuk_short))
-          expect(summary_list).to have_summary_item("Declaration cohort", completed_declaration.cohort.name)
+          expect(summary_list).to have_summary_item("Declaration cohort", completed_declaration.milestone.cohort.name)
           expect(summary_list).to have_summary_item("Provider", completed_declaration.lead_provider.name)
           expect(summary_list).to have_summary_item("Delivery partner", completed_declaration.delivery_partner.name)
           expect(summary_list).to have_summary_item("Secondary delivery partner", "")

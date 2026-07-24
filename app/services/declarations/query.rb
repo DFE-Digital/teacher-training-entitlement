@@ -60,7 +60,11 @@ module Declarations
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
 
-      scope.merge!(Declaration.where(cohort: { start_year: extract_conditions(cohort_start_years) }))
+      scope.merge!(
+        Declaration
+          .joins(milestone: { course_cohort: :cohort })
+          .where(cohorts: { start_year: extract_conditions(cohort_start_years) }),
+      )
     end
 
     def where_application_id_is(application_id)
@@ -85,19 +89,21 @@ module Declarations
       Declaration
         .distinct
         .includes(
-          :cohort,
           :lead_provider,
           :participant_outcomes,
           :clawback_declaration,
           :paid_declaration,
-          application: [
-            :user,
-            :course,
-            { application_lead_providers: [:lead_provider], course_cohort: [:course] },
-          ],
-          statement_items: %i[
-            statement
-          ],
+          {
+            milestone: { course_cohort: :cohort },
+            application: [
+              :user,
+              :course,
+              { application_lead_providers: [:lead_provider], course_cohort: [:course] },
+            ],
+            statement_items: %i[
+              statement
+            ],
+          },
         )
     end
   end

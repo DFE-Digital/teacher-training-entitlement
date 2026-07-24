@@ -17,7 +17,11 @@ class Exporters::TadDataRequest
     course_id = @courses.pluck(:id)
     schedule_id = @schedules.pluck(:id)
 
-    accepted_applications_ids = Declaration.billable.where(declaration_type: "started").where(cohort: @cohort).pluck(:application_id)
+    accepted_applications_ids = Declaration
+      .billable
+      .joins(milestone: { course_cohort: :cohort })
+      .where(declaration_type: "started", cohorts: { id: @cohort.id })
+      .pluck(:application_id)
     Application
       .joins(:course_cohort)
       .where(id: accepted_applications_ids, course_cohorts: { schedule_id:, course_id: })

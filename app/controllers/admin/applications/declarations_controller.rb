@@ -6,12 +6,12 @@ module Admin
 
         @declarations = @application.declarations
                           .includes(:lead_provider,
-                                    :cohort,
                                     :participant_outcomes,
                                     :statements,
                                     :delivery_partner,
                                     :secondary_delivery_partner,
-                                    :versions)
+                                    :versions,
+                                    milestone: { course_cohort: :cohort })
                           .order(created_at: :asc, id: :asc)
       end
     end

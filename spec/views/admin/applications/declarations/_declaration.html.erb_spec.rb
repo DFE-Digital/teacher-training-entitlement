@@ -7,7 +7,7 @@ RSpec.describe "admin/applications/declarations/_declaration.html.erb", type: :v
 
   it { is_expected.to have_summary_item("Declaration ID", declaration.ecf_id) }
   it { is_expected.to have_summary_item("Declaration date", declaration.declaration_date.to_fs(:govuk_short)) }
-  it { is_expected.to have_summary_item("Declaration cohort", declaration.cohort.start_year) }
+  it { is_expected.to have_summary_item("Declaration cohort", declaration.milestone&.cohort&.start_year) }
   it { is_expected.to have_summary_item("Provider", declaration.lead_provider.name) }
   it { is_expected.to have_summary_item("Delivery partner", "-") }
   it { is_expected.to have_summary_item("Secondary delivery partner", "-") }

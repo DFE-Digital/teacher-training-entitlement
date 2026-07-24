@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe APITests::VoidDeclaration, type: :model do
   subject(:service) { described_class.new(declaration:) }
 
-  let(:application) { create(:application, :started, lead_provider:) }
-  let(:declaration) { create(:declaration, :started, application:, lead_provider:) }
+  let(:application) { create(:application, status: Application::STARTED, lead_provider:) }
+  let(:declaration) { create(:declaration, :started, application:, course_cohort: application.course_cohort, lead_provider:) }
   let(:lead_provider) { create(:lead_provider) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
 
@@ -31,7 +31,7 @@ RSpec.describe APITests::VoidDeclaration, type: :model do
     context "when a declaration is not provided" do
       subject(:service) { described_class.new }
 
-      let(:declaration) { create(:declaration, :started, application:, lead_provider:) }
+      let(:declaration) { create(:declaration, :started, application:, course_cohort: application.course_cohort, lead_provider:) }
 
       it "uses the most recent declaration" do
         declaration

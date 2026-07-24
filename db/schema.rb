@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_100100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -266,7 +266,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_100100) do
   create_table "declarations", force: :cascade do |t|
     t.bigint "application_id", null: false
     t.bigint "clawback_declaration_id"
-    t.bigint "cohort_id", null: false
+    t.bigint "cohort_id"
     t.datetime "created_at", null: false
     t.datetime "declaration_date", precision: nil
     t.enum "declaration_type", enum_type: "declaration_types"

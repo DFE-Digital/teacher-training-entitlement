@@ -305,38 +305,40 @@ module ValidTestDataGenerators
         current_cohort = Cohort.create!(**attrs)
       end
 
-      name = "TTE Reception #{term}"
-      identifier = "tte-reception-#{term}"
       training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
-      attrs = {
+      training_ends_at = training_starts_at + 6.months
+      schedule = create_or_update_schedule!(
         cohort: current_cohort,
-        name:,
-        course_group: course.course_group,
-        training_starts_at: training_starts_at,
-        training_ends_at: training_starts_at + 6.months,
-        allowed_declaration_types: %w[started completed],
-        policy_descriptor: 1,
-        acceptance_window_start: training_starts_at,
-        acceptance_window_end: training_starts_at + 2.months,
-      }
-
-      current_schedule = Schedule.find_by(identifier:, cohort: current_cohort)
-      if current_schedule
-        current_schedule.update!(attrs)
-      else
-        current_schedule = Schedule.create!(identifier:, **attrs)
-      end
+        term:,
+        training_starts_at:,
+        training_ends_at:,
+      )
 
       cc = CourseCohort.find_by(course:, cohort: current_cohort)
       if cc
-        cc.update!(schedule: current_schedule)
+        cc.update!(schedule:)
       else
         cc = CourseCohort.create!(
           course:,
           cohort: current_cohort,
-          schedule: current_schedule,
+          schedule:,
         )
       end
+
+      create_or_update_milestone!(
+        course_cohort: cc,
+        declaration_type: Milestone::STARTED,
+        acceptance_window_start_date: training_starts_at,
+        acceptance_window_end_date: training_starts_at + 2.months,
+      )
+
+      create_or_update_milestone!(
+        course_cohort: cc,
+        declaration_type: Milestone::COMPLETED,
+        acceptance_window_start_date: training_ends_at,
+        acceptance_window_end_date: training_ends_at + 2.months,
+      )
+
       cc.course_cohort_providers.find_or_create_by!(lead_provider:)
 
       delivery_partners.each do |dp|
@@ -344,6 +346,25 @@ module ValidTestDataGenerators
       end
 
       cc
+    end
+
+    def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
+      identifier = "tte-reception-#{term}"
+      attrs = {
+        cohort:,
+        name: "TTE Reception #{term}",
+        course_group: course.course_group,
+        training_starts_at:,
+        training_ends_at:,
+        allowed_declaration_types: %w[started completed],
+        policy_descriptor: 1,
+        acceptance_window_start: training_starts_at,
+        acceptance_window_end: training_starts_at + 2.months,
+      }
+
+      schedule = Schedule.find_or_initialize_by(identifier:, cohort:)
+      schedule.update!(attrs)
+      schedule
     end
 
     def institutions_eligible
@@ -397,25 +418,27 @@ module ValidTestDataGenerators
     end
 
     def create_started_declaration(application:, declaration_date: nil)
-      date = declaration_date || application.schedule.training_starts_at + 1.day
+      milestone = milestone_for(application:, declaration_type: :started)
+      date = declaration_date || milestone.acceptance_window_start_date + 1.day
       application.declarations.create!(
         declaration_type: :started,
         declaration_date: date,
         state: :eligible,
         delivery_partner: application.lead_provider.delivery_partners.sample,
-        cohort: application.cohort,
+        milestone:,
         lead_provider: application.lead_provider,
       )
     end
 
     def create_completed_declaration(application:, declaration_date: nil, has_passed: true)
-      date = declaration_date || application.schedule.training_ends_at + 1.day
+      milestone = milestone_for(application:, declaration_type: :completed)
+      date = declaration_date || milestone.acceptance_window_start_date + 1.day
       declaration = application.declarations.create!(
         declaration_type: :completed,
         declaration_date: date,
         state: :eligible,
         delivery_partner: application.lead_provider.delivery_partners.sample,
-        cohort: application.cohort,
+        milestone:,
         lead_provider: application.lead_provider,
       )
 
@@ -556,14 +579,30 @@ module ValidTestDataGenerators
       end
     end
 
+    def milestone_for(application:, declaration_type:)
+      application.course_cohort.milestones.find_or_create_by!(declaration_type:) do |milestone|
+        milestone.assign_attributes(acceptance_window_start_date: application.cohort.registration_starts_at,
+                                    acceptance_window_end_date: application.cohort.registration_ends_at)
+      end
+    end
+
+    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:)
+      milestone = course_cohort.milestones.find_or_initialize_by(declaration_type:)
+      milestone.update!(
+        acceptance_window_start_date:,
+        acceptance_window_end_date:,
+      )
+      milestone
+    end
+
     def change_provider(application:)
       new_provider = LeadProvider.where.not(id: @lead_provider.id).order("RANDOM()").first
       application.change_provider!(to: new_provider)
     end
 
     def statements_setup(course_cohort:)
-      start_date = course_cohort.schedule.training_starts_at
-      end_date = course_cohort.schedule.training_ends_at
+      start_date = course_cohort.milestones.find_by!(declaration_type: Milestone::STARTED).acceptance_window_start_date
+      end_date = course_cohort.milestones.find_by!(declaration_type: Milestone::COMPLETED).acceptance_window_start_date
       Statement.find_or_create_by!(
         cohort: course_cohort.cohort,
         lead_provider: lead_provider,
@@ -594,7 +633,7 @@ module ValidTestDataGenerators
 
     def create_payable_statement(declaration)
       declaration.mark_payable!
-      statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
+      statement = provider_statement_for(declaration)
       statement.statement_items.create_or_find_by!(
         declaration:,
         state: declaration.state,
@@ -604,7 +643,7 @@ module ValidTestDataGenerators
     def create_paid_statement(declaration)
       declaration.mark_payable!
       declaration.mark_paid!
-      statement = lead_provider.statements.where(state: :paid, cohort: declaration.cohort).first
+      statement = provider_statement_for(declaration)
       statement.statement_items.create_or_find_by!(
         declaration:,
         state: declaration.state,
@@ -613,11 +652,16 @@ module ValidTestDataGenerators
 
     def create_clawback_statement(declaration)
       declaration.clawback!
-      statement = lead_provider.statements.where(state: :payable, cohort: declaration.cohort).first
+      declaration.voided_state!
+      statement = provider_statement_for(declaration)
       statement.statement_items.create_or_find_by!(
         declaration:,
         state: :awaiting_clawback,
       )
+    end
+
+    def provider_statement_for(declaration)
+      lead_provider.statements.where(state: :payable, cohort: declaration.milestone.cohort).first
     end
   end
 end
