@@ -13,7 +13,7 @@
     "babel-loader": "^10.1.1",
     "file-loader": "^6.2.0",
     "govuk-country-and-territory-autocomplete": "^2.0.0",
-    "govuk-frontend": "^6.3.0",
+    "govuk-frontend": "^6.4.0",
     "hmrc-frontend": "^7.23.0",
     "mermaid": "^11.16.0",
     "rails-ujs": "^5.2.8",
