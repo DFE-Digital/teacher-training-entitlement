@@ -4,6 +4,7 @@ class Admin::CohortCoursesController < AdminController
 
   def show
     @cohorts = Cohort.where(id: @course.course_cohorts.select(:cohort_id)).order_by_latest
+    @course_cohort_providers = @course_cohort.course_cohort_providers.includes(:lead_provider).joins(:lead_provider).order("lead_providers.name")
     @delivery_partner_counts = DeliveryPartnership
       .where(cohort:, lead_provider_id: @course_cohort.lead_provider_ids)
       .group(:lead_provider_id)

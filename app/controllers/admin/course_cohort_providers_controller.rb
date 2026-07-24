@@ -1,37 +1,29 @@
 module Admin
   class CourseCohortProvidersController < AdminController
-    before_action :course
-    before_action :course_cohort
+    before_action :set_course_cohort_models
     before_action :ensure_super_admin
-    before_action :lead_providers
 
-    def show; end
+    def edit; end
 
     def update
-      if @course_cohort.update(course_cohort_params)
-        flash[:success] = "Course providers updated"
+      if @course_cohort_provider.update(course_cohort_provider_params)
+        flash[:success] = "Course provider updated"
         redirect_to admin_cohort_course_path(@course_cohort.cohort, @course)
       else
-        render :show, status: :unprocessable_content
+        render :edit, status: :unprocessable_content
       end
     end
 
   private
 
-    def course
-      @course ||= Course.find(params[:course_id])
+    def set_course_cohort_models
+      @course = Course.find(params[:course_id])
+      @course_cohort_provider = @course.course_cohort_providers.find(params[:id])
+      @course_cohort = @course_cohort_provider.course_cohort
     end
 
-    def course_cohort
-      @course_cohort ||= @course.course_cohorts.find(params[:id])
-    end
-
-    def course_cohort_params
-      params.require(:course_cohort).permit(lead_provider_ids: [])
-    end
-
-    def lead_providers
-      @lead_providers ||= LeadProvider.order(:name)
+    def course_cohort_provider_params
+      params.require(:course_cohort_provider).permit(:recruitment_target)
     end
 
     def ensure_super_admin

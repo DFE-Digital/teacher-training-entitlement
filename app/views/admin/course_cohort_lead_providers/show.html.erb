@@ -21,7 +21,7 @@
   end
 %>
 
-<%= form_with model: @course_cohort, url: admin_course_course_cohort_provider_path(@course, @course_cohort), method: :patch do |f| %>
+<%= form_with model: @course_cohort, url: admin_course_course_cohort_lead_provider_path(@course, @course_cohort), method: :patch do |f| %>
   <%= f.govuk_error_summary %>
 
   <%= f.govuk_collection_check_boxes(

@@ -84,23 +84,31 @@
 <h2 class="govuk-heading-m">Providers</h2>
 
 <% if current_admin.super_admin? %>
-  <%= govuk_button_link_to("Add/Remove providers", admin_course_course_cohort_provider_path(@course, @course_cohort)) %>
+  <%= govuk_button_link_to("Add/Remove providers", admin_course_course_cohort_lead_provider_path(@course, @course_cohort)) %>
 <% end %>
 
 <%=
   govuk_table do |table|
     table.with_head do |head|
       head.with_row do |row|
-        row.with_cell(text: "Provider")
-        row.with_cell(text: "Delivery partners")
+        row.with_cell(text: "Provider", html_attributes: { class: "govuk-!-width-one-half" })
+        row.with_cell(text: "Recruitment target", numeric: true)
+        row.with_cell(text: "Partners")
+        row.with_cell(text: "Actions") if current_admin.super_admin?
       end
     end
 
     table.with_body do |body|
-      @course_cohort.lead_providers.order(:name).each do |provider|
+      @course_cohort_providers.each do |course_cohort_provider|
+        provider = course_cohort_provider.lead_provider
+
         body.with_row do |row|
-          row.with_cell(text: govuk_link_to(provider.name, cohort_admin_lead_provider_path(provider, @cohort)))
-          row.with_cell(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "delivery partner"))
+          row.with_cell(text: govuk_link_to(provider.name, cohort_admin_lead_provider_path(provider, @cohort)), html_attributes: { class: "govuk-!-width-one-half" })
+          row.with_cell(text: course_cohort_provider.recruitment_target || "-", numeric: true)
+          row.with_cell(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "partner"))
+          if current_admin.super_admin?
+            row.with_cell(text: govuk_button_link_to("Edit", edit_admin_course_course_cohort_provider_path(@course, course_cohort_provider), class: "govuk-!-margin-bottom-0"))
+          end
         end
       end
     end

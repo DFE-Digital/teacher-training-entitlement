@@ -45,11 +45,25 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       end
 
       it "shows the number of delivery partners for the provider and cohort" do
-        expect(response.body).to include("2 delivery partners")
+        expect(response.body).to include("2 partners")
+      end
+
+      it "shows the recruitment target for the provider on the course cohort" do
+        course_cohort.course_cohort_providers.find_by!(lead_provider:).update!(recruitment_target: 42)
+
+        get admin_cohort_course_path(cohort, course_cohort.course)
+
+        expect(response.body).to include("42")
+      end
+
+      it "links to edit the course cohort provider" do
+        course_cohort_provider = course_cohort.course_cohort_providers.find_by!(lead_provider:)
+
+        expect(response.body).to include(edit_admin_course_course_cohort_provider_path(course, course_cohort_provider))
       end
 
       it "links to add or remove providers" do
-        expect(response.body).to include(admin_course_course_cohort_provider_path(course, course_cohort))
+        expect(response.body).to include(admin_course_course_cohort_lead_provider_path(course, course_cohort))
       end
 
       it "links to add a milestone" do
@@ -123,6 +137,12 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       before { get admin_cohort_course_path(cohort, course_cohort.course) }
 
       it { is_expected.to have_http_status :success }
+
+      it "does not link to edit the course cohort provider" do
+        course_cohort_provider = course_cohort.course_cohort_providers.find_by!(lead_provider:)
+
+        expect(response.body).not_to include(edit_admin_course_course_cohort_provider_path(course, course_cohort_provider))
+      end
     end
 
     describe "#new" do

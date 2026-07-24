@@ -1,0 +1,36 @@
+<%= govuk_back_link href: admin_cohort_course_path(@course_cohort.cohort, @course) %>
+
+<h1 class="govuk-heading-l">Edit course provider</h1>
+
+<%=
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
+      row.with_key(text: "Course")
+      row.with_value(text: @course.name)
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Cohort")
+      row.with_value(text: @course_cohort.cohort.name)
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Provider")
+      row.with_value(text: @course_cohort_provider.lead_provider.name)
+    end
+  end
+%>
+
+<%= form_with model: @course_cohort_provider, url: admin_course_course_cohort_provider_path(@course, @course_cohort_provider), method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <%= f.govuk_text_field :recruitment_target,
+                         label: { text: "Recruitment target" },
+                         class: "govuk-input--width-5",
+                         inputmode: "numeric" %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit "Save course provider" %>
+    <%= govuk_link_to("Cancel", admin_cohort_course_path(@course_cohort.cohort, @course), class: "govuk-link--no-visited-state") %>
+  </div>
+<% end %>
