@@ -6,7 +6,8 @@ RSpec.describe CourseCohort do
   describe "relationships" do
     it { is_expected.to belong_to(:course) }
     it { is_expected.to belong_to(:cohort) }
-    it { is_expected.to belong_to(:schedule) }
+    it { is_expected.to belong_to(:policy_period) }
+    it { is_expected.to belong_to(:schedule).optional }
     it { is_expected.to have_many(:course_cohort_providers).dependent(:destroy) }
     it { is_expected.to have_many(:lead_providers).through(:course_cohort_providers) }
     it { is_expected.to have_many(:milestones).dependent(:destroy) }

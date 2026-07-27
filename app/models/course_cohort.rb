@@ -1,6 +1,7 @@
 class CourseCohort < ApplicationRecord
   belongs_to :course
   belongs_to :cohort
+  belongs_to :policy_period, optional: true
   belongs_to :schedule, optional: true
 
   has_many :course_cohort_providers, dependent: :destroy

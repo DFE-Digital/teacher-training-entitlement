@@ -13,6 +13,15 @@ module Admin
 
         validates :participant_funding, :service_fee, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
+        def initialize(attributes = {})
+          super
+
+          self.registration_starts_at ||= cohort_step.registration_starts_at
+          self.registration_ends_at ||= cohort_step.registration_ends_at
+          self.training_starts_at ||= registration_ends_at&.advance(months: 1)
+          self.training_ends_at ||= registration_ends_at&.advance(months: 3)
+        end
+
         def self.permitted_params
           %i[
             participant_funding
@@ -22,6 +31,12 @@ module Admin
             training_starts_at
             training_ends_at
           ]
+        end
+
+      private
+
+        def cohort_step
+          wizard.step(:create_cohort)
         end
       end
     end

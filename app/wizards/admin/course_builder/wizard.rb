@@ -5,8 +5,9 @@ module Admin
 
       def steps_processor
         @steps_processor ||= DfE::Wizard::StepsProcessor::Linear.draw(self) do |linear|
-          linear.add_step :create_cohort, Steps::CreateCohort
           linear.add_step :choose_course, Steps::ChooseCourse
+          linear.add_step :create_policy_period, Steps::CreatePolicyPeriod
+          linear.add_step :create_cohort, Steps::CreateCohort
           linear.add_step :create_course_cohort, Steps::CreateCourseCohort
           linear.add_step :create_milestone, Steps::CreateMilestone
           linear.add_step :check_answers, Steps::CheckAnswers, exit: true
@@ -24,6 +25,10 @@ module Admin
 
       def milestones
         Array(state_store.read.with_indifferent_access[:milestones])
+      end
+
+      def course_cohorts
+        Array(state_store.read.with_indifferent_access[:course_cohorts])
       end
     end
   end

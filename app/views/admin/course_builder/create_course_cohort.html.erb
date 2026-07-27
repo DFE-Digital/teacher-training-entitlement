@@ -17,7 +17,10 @@
       <%= f.govuk_text_field :participant_funding, label: { text: "Participant funding" } %>
       <%= f.govuk_text_field :service_fee, label: { text: "Service fee" } %>
 
-      <%= f.govuk_submit "Finish" %>
+      <div class="govuk-button-group">
+        <%= f.govuk_submit "Continue" %>
+        <%= f.govuk_submit "Create another course cohort", name: "next_step", value: "create_another", secondary: true %>
+      </div>
     <% end %>
   </div>
 </div>

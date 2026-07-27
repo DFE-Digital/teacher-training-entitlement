@@ -53,6 +53,12 @@
   - record_type
   :statements:
   - reconcile_amount
+  :policy_periods:
+  - id
+  - start_date
+  - end_date
+  - created_at
+  - updated_at
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -72,11 +78,12 @@
   - recruitment_target
   :course_cohorts:
   - participant_funding
-  - service_fee
-  - registration_starts_at
   - registration_ends_at
-  - training_starts_at
+  - registration_starts_at
+  - service_fee
   - training_ends_at
+  - training_starts_at
+  - policy_period_id
   :contract_templates:
   - id
   - created_at

@@ -41,38 +41,6 @@
   end
 %>
 
-<h2 class="govuk-heading-m">Schedule</h2>
-
-<% if current_admin.super_admin? %>
-  <%= govuk_button_link_to("New schedule", new_admin_cohort_schedule_path(@cohort)) %>
-<% end %>
-
-<%=
-  govuk_summary_list do |summary_list|
-    schedule = @course_cohort.schedule
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Name")
-      row.with_value(text: govuk_link_to(schedule.name, admin_cohort_schedule_path(@cohort, schedule)))
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Training starts")
-      row.with_value(text: schedule.training_starts_at.to_fs(:govuk_short))
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Training ends")
-      row.with_value(text: schedule.training_ends_at.to_fs(:govuk_short))
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Declaration types")
-      row.with_value(text: schedule.allowed_declaration_types.join(', '))
-    end
-  end
-%>
-
 <h2 class="govuk-heading-m">Providers</h2>
 
 <% if current_admin.super_admin? %>

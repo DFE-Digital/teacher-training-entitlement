@@ -47,7 +47,7 @@ private
   end
 
   def current_step
-    @current_step ||= params.fetch(:step, "create-cohort").underscore.to_sym
+    @current_step ||= params.fetch(:step, "choose-course").underscore.to_sym
   end
 
   def current_step_template
@@ -59,6 +59,8 @@ private
   end
 
   def redirect_to_next_step
+    return redirect_to_create_another_course_cohort if adding_another_course_cohort?
+
     persist_milestone_step
 
     if adding_another_milestone?
@@ -69,6 +71,17 @@ private
       flash[:success] = "Course builder saved"
       redirect_to admin_courses_path
     end
+  end
+
+  def adding_another_course_cohort?
+    current_step == :create_course_cohort && params[:next_step] == "create_another"
+  end
+
+  def redirect_to_create_another_course_cohort
+    persist_course_cohort_step
+    reset_course_cohort_steps
+
+    redirect_to @wizard.current_step_path
   end
 
   def adding_another_milestone?
@@ -112,21 +125,41 @@ private
     )
   end
 
+  def persist_course_cohort_step
+    @wizard.write_state(course_cohorts: @wizard.course_cohorts + [current_course_cohort_attributes])
+  end
+
+  def reset_course_cohort_steps
+    @wizard.write_state(
+      participant_funding: nil,
+      service_fee: nil,
+      registration_starts_at: nil,
+      registration_ends_at: nil,
+      training_starts_at: nil,
+      training_ends_at: nil,
+    )
+  end
+
   def render_not_found
     render status: :not_found, formats: [:html], template: "errors/not_found"
   end
 
   def create_records
     ActiveRecord::Base.transaction do
+      policy_period = PolicyPeriod.create!(policy_period_attributes)
       cohort = Cohort.create!(cohort_attributes)
-      course = Course.find(course_id)
-      course_cohort = CourseCohort.create!(course:, cohort:, **course_cohort_attributes)
+      course_cohorts = all_course_cohort_attributes.map do |attributes|
+        course = Course.find(attributes.fetch(:course_id))
+        course_cohort = CourseCohort.create!(course:, cohort:, policy_period:, **attributes.fetch(:attributes))
 
-      milestone_attributes.each do |attributes|
-        course_cohort.milestones.create!(attributes)
+        milestone_attributes.each do |milestone|
+          course_cohort.milestones.create!(milestone)
+        end
+
+        course_cohort
       end
 
-      course_cohort
+      course_cohorts.first
     end
   end
 
@@ -139,8 +172,33 @@ private
     )
   end
 
+  def all_course_cohort_attributes
+    (@wizard.course_cohorts + [current_course_cohort_attributes])
+      .map(&:with_indifferent_access)
+      .reject { |attributes| attributes[:course_id].blank? || course_cohort_attributes_blank?(attributes.fetch(:attributes, {})) }
+      .uniq { |attributes| attributes[:course_id].to_s }
+  end
+
+  def course_cohort_attributes_blank?(attributes)
+    attributes.values.all?(&:blank?)
+  end
+
+  def current_course_cohort_attributes
+    {
+      course_id:,
+      attributes: course_cohort_attributes,
+    }
+  end
+
   def course_id
     step_data(:choose_course).fetch(:course_id)
+  end
+
+  def policy_period_attributes
+    step_data(:create_policy_period).slice(
+      :start_date,
+      :end_date,
+    )
   end
 
   def course_cohort_attributes

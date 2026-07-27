@@ -1,0 +1,19 @@
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_courses_path) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Create policy period</h1>
+
+    <%= form_with model: @wizard.current_step,
+                  url: @wizard.current_step_path,
+                  scope: @wizard.current_step_name,
+                  method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+
+      <%= f.govuk_text_field :start_date, type: "date", label: { text: "Start date" } %>
+      <%= f.govuk_text_field :end_date, type: "date", label: { text: "End date" } %>
+
+      <%= f.govuk_submit "Continue" %>
+    <% end %>
+  </div>
+</div>

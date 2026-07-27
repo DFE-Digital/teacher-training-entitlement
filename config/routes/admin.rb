@@ -28,7 +28,7 @@ namespace :admin do
     end
   end
 
-  get "course-builder", to: redirect("/admin/course-builder/create-cohort")
+  get "course-builder", to: redirect("/admin/course-builder/choose-course")
   get "course-builder/:step", to: "course_builder#show", as: :course_builder_step
   patch "course-builder/:step", to: "course_builder#update"
 

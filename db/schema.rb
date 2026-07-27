@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_23_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -238,6 +238,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_120000) do
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.decimal "participant_funding", precision: 10, scale: 2
+    t.bigint "policy_period_id"
     t.date "registration_ends_at"
     t.date "registration_starts_at"
     t.bigint "schedule_id"
@@ -249,6 +250,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_120000) do
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
     t.index ["course_id"], name: "index_course_cohorts_on_course_id"
     t.index ["ecf_id"], name: "index_course_cohorts_on_ecf_id", unique: true
+    t.index ["policy_period_id"], name: "index_course_cohorts_on_policy_period_id"
     t.index ["schedule_id"], name: "index_course_cohorts_on_schedule_id"
   end
 
@@ -480,6 +482,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_120000) do
     t.index ["ecf_id"], name: "index_participant_outcomes_on_ecf_id", unique: true
   end
 
+  create_table "policy_periods", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "end_date", null: false
+    t.date "start_date", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "private_childcare_providers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "disabled_at"
@@ -648,6 +657,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_120000) do
   add_foreign_key "course_cohort_providers", "lead_providers"
   add_foreign_key "course_cohorts", "cohorts"
   add_foreign_key "course_cohorts", "courses"
+  add_foreign_key "course_cohorts", "policy_periods", validate: false
   add_foreign_key "declarations", "applications"
   add_foreign_key "declarations", "cohorts"
   add_foreign_key "declarations", "declarations", column: "superseded_by_id"
