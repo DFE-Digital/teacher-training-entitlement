@@ -9,5 +9,6 @@ FactoryBot.define do
     delivery_partner { paid_declaration.delivery_partner }
     secondary_delivery_partner { paid_declaration.secondary_delivery_partner }
     lead_provider { paid_declaration.lead_provider }
+    statement { Statement.current_for(lead_provider:) || create(:statement, lead_provider:) }
   end
 end

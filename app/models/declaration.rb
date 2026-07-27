@@ -142,14 +142,6 @@ class Declaration < ApplicationRecord
     save!
   end
 
-  def billable_statement
-    statement_items.find(&:billable?)&.statement
-  end
-
-  def refundable_statement
-    statement_items.find(&:refundable?)&.statement
-  end
-
   def uplift_paid?
     state.in?(UPLIFT_PAID_STATES) && started_declaration_type?
   end
@@ -167,22 +159,6 @@ class Declaration < ApplicationRecord
     else
       state_reason
     end
-  end
-
-  def duplicate_declarations
-    self
-      .class
-      .billable_or_changeable
-      .joins(application: [:user, { course_cohort: :course }])
-      .where(user: { trn: application.user.trn })
-      .where.not(user: { trn: nil })
-      .where.not(user: { id: application.user_id })
-      .where.not(id:)
-      .where(
-        declaration_type:,
-        superseded_by_id: nil,
-        courses: { id: application.course.rebranded_alternative_courses },
-      )
   end
 
   def available_delivery_partner_ids

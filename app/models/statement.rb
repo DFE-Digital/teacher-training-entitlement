@@ -47,6 +47,10 @@ class Statement < ApplicationRecord
     end
   end
 
+  def self.current_for(lead_provider:)
+    find_by(state: "open", frequency: "monthly", lead_provider:)
+  end
+
   def mark_as_frozen!
     transaction do
       declarations.payable_state.each(&:mark_paid!)
