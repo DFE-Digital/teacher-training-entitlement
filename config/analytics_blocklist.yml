@@ -55,10 +55,11 @@
   - reconcile_amount
   :policy_periods:
   - id
-  - start_date
-  - end_date
   - created_at
+  - end_date
+  - start_date
   - updated_at
+  - name
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -75,15 +76,16 @@
   - operation_description
   - updated_at
   :course_cohort_providers:
+  - contract_id
   - recruitment_target
   :course_cohorts:
   - participant_funding
+  - policy_period_id
   - registration_ends_at
   - registration_starts_at
   - service_fee
   - training_ends_at
   - training_starts_at
-  - policy_period_id
   :contract_templates:
   - id
   - created_at
@@ -105,6 +107,7 @@
   - created_at
   - statement_id
   - updated_at
+  - lead_provider_id
   :closed_registration_users:
   - id
   - created_at

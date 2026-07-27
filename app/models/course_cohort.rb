@@ -5,6 +5,7 @@ class CourseCohort < ApplicationRecord
   belongs_to :schedule, optional: true
 
   has_many :course_cohort_providers, dependent: :destroy
+  has_many :contracts, through: :course_cohort_providers
   has_many :lead_providers, through: :course_cohort_providers
 
   has_many :applications
@@ -12,7 +13,6 @@ class CourseCohort < ApplicationRecord
   has_many :statements, through: :milestones
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
-  validates :course_id, uniqueness: { scope: :cohort_id }
   validates :service_fee, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :participant_funding, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 

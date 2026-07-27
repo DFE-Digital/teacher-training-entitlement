@@ -1,0 +1,27 @@
+<h1 class="govuk-heading-l">Policy periods</h1>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Name")
+        row.with_cell(text: "Start date")
+        row.with_cell(text: "End date")
+        row.with_cell(text: "Course cohorts")
+      end
+    end
+
+    table.with_body do |body|
+      @policy_periods.each do |policy_period|
+        body.with_row do |row|
+          row.with_cell(text: govuk_link_to(policy_period.name, admin_policy_period_path(policy_period)))
+          row.with_cell(text: policy_period.start_date.to_fs(:govuk))
+          row.with_cell(text: policy_period.end_date.to_fs(:govuk))
+          row.with_cell(text: policy_period.course_cohorts.size)
+        end
+      end
+    end
+  end
+%>
+
+<%= govuk_pagination(pagy: @pagy) %>

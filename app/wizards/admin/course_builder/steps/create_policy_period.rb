@@ -4,10 +4,11 @@ module Admin
       class CreatePolicyPeriod
         include DfE::Wizard::Step
 
+        attribute :name, :string
         attribute :start_date, :date, default: -> { Admin::CourseBuilder::Steps::CreatePolicyPeriod.default_start_date }
         attribute :end_date, :date, default: -> { Admin::CourseBuilder::Steps::CreatePolicyPeriod.default_end_date }
 
-        validates :start_date, :end_date, presence: true
+        validates :name, :start_date, :end_date, presence: true
 
         def self.default_start_date
           Time.zone.today.next_month.beginning_of_month
@@ -19,6 +20,7 @@ module Admin
 
         def self.permitted_params
           %i[
+            name
             start_date
             end_date
           ]

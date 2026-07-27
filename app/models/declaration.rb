@@ -12,6 +12,7 @@ class Declaration < ApplicationRecord
   belongs_to :cohort
   belongs_to :lead_provider
   belongs_to :milestone, optional: true
+  belongs_to :statement, optional: true
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true

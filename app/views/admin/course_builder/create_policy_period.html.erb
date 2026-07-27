@@ -10,6 +10,7 @@
                   method: :patch do |f| %>
       <%= f.govuk_error_summary %>
 
+      <%= f.govuk_text_field :name, label: { text: "Name" } %>
       <%= f.govuk_text_field :start_date, type: "date", label: { text: "Start date" } %>
       <%= f.govuk_text_field :end_date, type: "date", label: { text: "End date" } %>
 

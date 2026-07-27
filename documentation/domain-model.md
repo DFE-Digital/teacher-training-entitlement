@@ -81,6 +81,7 @@ erDiagram
     integer lead_provider_id
     integer recruitment_target
     datetime updated_at
+    integer contract_id
   }
   CourseCohortProvider }o--|| CourseCohort : belongs_to
   CourseCohortProvider }o--|| LeadProvider : belongs_to
@@ -147,6 +148,7 @@ erDiagram
     integer superseded_by_id
     string type
     datetime updated_at
+    integer statement_id
   }
   Declaration }o--|| Application : belongs_to
   Declaration }o--|| Cohort : belongs_to

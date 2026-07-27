@@ -1,5 +1,6 @@
 class LeadProvider < ApplicationRecord
   has_many :statements
+  has_many :contracts
   has_many :course_cohort_providers
   has_many :course_cohorts, through: :course_cohort_providers
   has_many :courses, through: :course_cohorts

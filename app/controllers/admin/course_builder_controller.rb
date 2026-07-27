@@ -196,6 +196,7 @@ private
 
   def policy_period_attributes
     step_data(:create_policy_period).slice(
+      :name,
       :start_date,
       :end_date,
     )

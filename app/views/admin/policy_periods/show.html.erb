@@ -1,0 +1,249 @@
+<% content_for :head do %>
+  <%= nonced_javascript_include_tag "mermaid", defer: true %>
+<% end %>
+
+<h1 class="govuk-heading-l">Policy period <%= @policy_period.name %></h1>
+
+<%=
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
+      row.with_key(text: "Name")
+      row.with_value(text: @policy_period.name)
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Start date")
+      row.with_value(text: @policy_period.start_date.to_fs(:govuk))
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "End date")
+      row.with_value(text: @policy_period.end_date.to_fs(:govuk))
+    end
+  end
+%>
+
+<h2 class="govuk-heading-m">Policy period relationship view</h2>
+
+<div class="mermaid">
+  <%= h([
+    "erDiagram",
+    "  PolicyPeriod ||--o{ CourseCohort : has_many",
+    "  Course ||--o{ CourseCohort : has_many",
+    "  CourseCohort ||--o{ Milestone : has_many",
+    "  Milestone ||--o{ Declaration : has_many",
+    "  Statement ||--o{ Declaration : has_many",
+    "  CourseCohort ||--o{ CourseCohortProvider : has_many",
+    "  PolicyPeriod {",
+    "    string name",
+    "    date start_date",
+    "    date end_date",
+    "  }",
+    "  Course {",
+    "    string name",
+    "    string identifier",
+    "  }",
+    "  CourseCohort {",
+    "    date registration_starts_at",
+    "    date registration_ends_at",
+    "    date training_starts_at",
+    "    date training_ends_at",
+    "  }",
+    "  Milestone {",
+    "    string declaration_type",
+    "    date acceptance_window_start_date",
+    "    date acceptance_window_end_date",
+    "    decimal payment_amount",
+    "  }",
+    "  Declaration {",
+    "    integer statement_id",
+    "    string declaration_type",
+    "    string state",
+    "    date declaration_date",
+    "  }",
+    "  Statement {",
+    "    integer lead_provider_id",
+    "    integer cohort_id",
+    "    integer year",
+    "    integer month",
+    "  }",
+    "  CourseCohortProvider {",
+    "    integer course_cohort_id",
+    "    integer lead_provider_id",
+    "  }",
+  ].join("\n")) %>
+</div>
+
+<h2 class="govuk-heading-m">Contract relationship view</h2>
+
+<div class="mermaid">
+  <%= h([
+    "erDiagram",
+    "  LeadProvider ||--o{ Contract : has_many",
+    "  LeadProvider ||--o{ Statement : has_many",
+    "  Statement ||--o{ Contract : has_many",
+    "  LeadProvider ||--o{ CourseCohortProvider : has_many",
+    "  LeadProvider ||--o{ Declaration : has_many",
+    "  CourseCohort ||--o{ CourseCohortProvider : has_many",
+    "  CourseCohort ||--o{ Milestone : has_many",
+    "  Milestone ||--o{ Declaration : has_many",
+    "  Statement ||--o{ Declaration : has_many",
+    "  Contract ||--o{ CourseCohortProvider : has_many",
+    "  LeadProvider {",
+    "    string name",
+    "  }",
+    "  Contract {",
+    "    integer lead_provider_id",
+    "  }",
+    "  CourseCohort {",
+    "    date registration_starts_at",
+    "    date registration_ends_at",
+    "    date training_starts_at",
+    "    date training_ends_at",
+    "  }",
+    "  Milestone {",
+    "    string declaration_type",
+    "    date acceptance_window_start_date",
+    "    date acceptance_window_end_date",
+    "    decimal payment_amount",
+    "  }",
+  "  Declaration {",
+    "    integer lead_provider_id",
+    "    integer milestone_id",
+    "    integer statement_id",
+    "    string declaration_type",
+    "    string state",
+    "    date declaration_date",
+  "  }",
+    "  Statement {",
+    "    integer lead_provider_id",
+    "    integer cohort_id",
+    "    integer year",
+    "    integer month",
+    "  }",
+    "  CourseCohortProvider {",
+    "    integer contract_id",
+    "    integer course_cohort_id",
+    "    integer lead_provider_id",
+    "  }",
+  ].join("\n")) %>
+</div>
+
+<h2 class="govuk-heading-m">Policy period data view</h2>
+
+<%
+  format_date = ->(date) { date&.to_fs(:govuk) || "-" }
+  mermaid_label = lambda do |*lines|
+    lines.flatten.compact.map do |line|
+      line.to_s.gsub('"', "'").gsub(/\s+/, " ").strip
+    end.join("<br/>")
+  end
+
+  mermaid_lines = [
+    "flowchart TD",
+    "  policy_period[\"#{mermaid_label.call('PolicyPeriod', @policy_period.name, "#{format_date.call(@policy_period.start_date)} to #{format_date.call(@policy_period.end_date)}")}\"]",
+    "  class policy_period policyPeriod",
+  ]
+
+  @course_cohorts.each.with_index(1) do |(course, course_cohorts), course_index|
+    course_id = "course_#{course_index}"
+
+    mermaid_lines << "  #{course_id}[\"#{mermaid_label.call('Course', course.name)}\"]"
+    mermaid_lines << "  policy_period --> #{course_id}"
+    mermaid_lines << "  class #{course_id} course"
+
+    course_cohorts.each.with_index(1) do |course_cohort, course_cohort_index|
+      course_cohort_id = "#{course_id}_course_cohort_#{course_cohort_index}"
+
+      mermaid_lines << "  #{course_cohort_id}[\"#{mermaid_label.call(
+        'CourseCohort',
+        course_cohort.name,
+        course_cohort.cohort.description,
+        "Registration: #{format_date.call(course_cohort.registration_starts_at)} to #{format_date.call(course_cohort.registration_ends_at)}",
+        "Training: #{format_date.call(course_cohort.training_starts_at)} to #{format_date.call(course_cohort.training_ends_at)}",
+      )}\"]"
+      mermaid_lines << "  #{course_id} --> #{course_cohort_id}"
+      mermaid_lines << "  class #{course_cohort_id} courseCohort"
+
+      course_cohort.milestones.each.with_index(1) do |milestone, milestone_index|
+        milestone_id = "#{course_cohort_id}_milestone_#{milestone_index}"
+
+        mermaid_lines << "  #{milestone_id}[\"#{mermaid_label.call(
+          'Milestone',
+          milestone.declaration_type.humanize,
+          "Acceptance: #{format_date.call(milestone.acceptance_window_start_date)} to #{format_date.call(milestone.acceptance_window_end_date)}",
+          "Payment: #{milestone.payment_amount ? number_to_currency(milestone.payment_amount) : '-'}",
+        )}\"]"
+        mermaid_lines << "  #{course_cohort_id} --> #{milestone_id}"
+        mermaid_lines << "  class #{milestone_id} milestone"
+      end
+    end
+  end
+
+  mermaid_lines += [
+    "  classDef policyPeriod fill:#1d70b8,color:#ffffff,stroke:#003078,stroke-width:2px",
+    "  classDef course fill:#f3f2f1,color:#0b0c0c,stroke:#505a5f,stroke-width:1px",
+    "  classDef courseCohort fill:#ffffff,color:#0b0c0c,stroke:#1d70b8,stroke-width:2px",
+    "  classDef milestone fill:#fff7bf,color:#0b0c0c,stroke:#ffdd00,stroke-width:2px",
+  ]
+%>
+
+<div class="mermaid">
+  <%= h(mermaid_lines.join("\n")) %>
+</div>
+
+<h2 class="govuk-heading-m">Contract view</h2>
+
+<%
+  contract_mermaid_lines = [
+    "flowchart TD",
+  ]
+
+  @contracts.each.with_index(1) do |contract, contract_index|
+    contract_id = "contract_#{contract_index}"
+
+    contract_mermaid_lines << "  #{contract_id}[\"#{mermaid_label.call('Contract', contract.lead_provider.name)}\"]"
+    contract_mermaid_lines << "  class #{contract_id} contract"
+
+    contract
+      .course_cohorts
+      .select { |course_cohort| course_cohort.policy_period_id == @policy_period.id }
+      .sort_by { |course_cohort| [course_cohort.course.name, course_cohort.training_starts_at || Date.new(9999, 12, 31)] }
+      .each.with_index(1) do |course_cohort, course_cohort_index|
+        course_cohort_id = "#{contract_id}_course_cohort_#{course_cohort_index}"
+
+        contract_mermaid_lines << "  #{course_cohort_id}[\"#{mermaid_label.call(
+          'CourseCohort',
+          course_cohort.course.name,
+          course_cohort.cohort.description,
+          "Registration: #{format_date.call(course_cohort.registration_starts_at)} to #{format_date.call(course_cohort.registration_ends_at)}",
+          "Training: #{format_date.call(course_cohort.training_starts_at)} to #{format_date.call(course_cohort.training_ends_at)}",
+        )}\"]"
+        contract_mermaid_lines << "  #{contract_id} --> #{course_cohort_id}"
+        contract_mermaid_lines << "  class #{course_cohort_id} courseCohort"
+
+        course_cohort.milestones.each.with_index(1) do |milestone, milestone_index|
+          milestone_id = "#{course_cohort_id}_milestone_#{milestone_index}"
+
+          contract_mermaid_lines << "  #{milestone_id}[\"#{mermaid_label.call(
+            'Milestone',
+            milestone.declaration_type.humanize,
+            "Acceptance: #{format_date.call(milestone.acceptance_window_start_date)} to #{format_date.call(milestone.acceptance_window_end_date)}",
+            "Payment: #{milestone.payment_amount ? number_to_currency(milestone.payment_amount) : '-'}",
+          )}\"]"
+          contract_mermaid_lines << "  #{course_cohort_id} --> #{milestone_id}"
+          contract_mermaid_lines << "  class #{milestone_id} milestone"
+        end
+      end
+  end
+
+  contract_mermaid_lines += [
+    "  classDef contract fill:#e8f1f8,color:#0b0c0c,stroke:#5694ca,stroke-width:2px",
+    "  classDef courseCohort fill:#ffffff,color:#0b0c0c,stroke:#1d70b8,stroke-width:2px",
+    "  classDef milestone fill:#fff7bf,color:#0b0c0c,stroke:#ffdd00,stroke-width:2px",
+  ]
+%>
+
+<div class="mermaid">
+  <%= h(contract_mermaid_lines.join("\n")) %>
+</div>

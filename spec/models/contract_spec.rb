@@ -11,8 +11,11 @@ RSpec.describe Contract, type: :model do
 
   describe "relationships" do
     it { is_expected.to belong_to(:statement) }
+    it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:course) }
     it { is_expected.to belong_to(:contract_template) }
+    it { is_expected.to have_many(:course_cohort_providers).dependent(:nullify) }
+    it { is_expected.to have_many(:course_cohorts).through(:course_cohort_providers) }
   end
 
   describe "validations" do

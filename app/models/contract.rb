@@ -1,9 +1,13 @@
 class Contract < ApplicationRecord
   has_paper_trail
 
-  belongs_to :statement
-  belongs_to :course
-  belongs_to :contract_template
+  belongs_to :statement, optional: true
+  belongs_to :lead_provider
+  belongs_to :course, optional: true
+  belongs_to :contract_template, optional: true
+
+  has_many :course_cohort_providers, dependent: :nullify
+  has_many :course_cohorts, through: :course_cohort_providers
 
   delegate :monthly_service_fee,
            :number_of_payment_periods,
@@ -15,7 +19,6 @@ class Contract < ApplicationRecord
            :targeted_delivery_funding_per_participant,
            to: :contract_template
 
-  validates :course_id, uniqueness: { scope: :statement_id, message: "Contract for this statement and course already exists" }
   validate :changing_contract_template_when_payable
   validate :changing_contract_template_when_paid
 

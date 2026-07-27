@@ -105,10 +105,11 @@ module Statements
     end
 
     def contract_attributes_for(contract_row)
+      lead_provider = lead_provider_for(contract_row)
       course = course_for(contract_row)
       contract_template = contract_template_for(contract_row, course.course_group)
 
-      { contract_template:, course: }
+      { contract_template:, course:, lead_provider: }
     end
 
     def lead_provider_for(contract_row)

@@ -19,6 +19,7 @@ namespace :admin do
   resources :features, only: %i[index show update]
   resources :admins, only: %i[index new create destroy]
   resources :super_admins, only: %i[update]
+  resources :policy_periods, only: %i[index show], path: "policy-periods"
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
   resources :glossary, only: %i[index]
@@ -161,6 +162,10 @@ namespace :admin do
         end
       end
     end
+  end
+
+  namespace :npd2 do
+    resources :statements, only: %i[index]
   end
 
   resources :lead_providers, only: %i[index show edit update], path: "providers" do

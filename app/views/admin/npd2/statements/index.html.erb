@@ -1,0 +1,56 @@
+<h1 class="govuk-heading-l">NPD2 statements</h1>
+
+<%= form_with url: admin_npd2_statements_path, method: :get do |f| %>
+  <%= f.govuk_select(
+        :lead_provider_id,
+        options_from_collection_for_select(@lead_providers, :id, :name, @lead_provider&.id),
+        options: { include_blank: "Select a lead provider" },
+        label: { text: "Lead provider", size: "s" },
+      ) %>
+
+  <%= f.govuk_submit "Filter" %>
+<% end %>
+
+<% if @lead_provider %>
+  <h2 class="govuk-heading-m">Contracts for <%= @lead_provider.name %></h2>
+
+  <% if @contracts.any? %>
+    <%=
+      govuk_table do |table|
+        table.with_head do |head|
+          head.with_row do |row|
+            row.with_cell(text: "Contract")
+            row.with_cell(text: "Course cohorts")
+          end
+        end
+
+        table.with_body do |body|
+          @contracts.each do |contract|
+            body.with_row do |row|
+              row.with_cell(text: "Contract ##{contract.id}")
+              row.with_cell do
+                if contract.course_cohorts.any?
+                  tag.ul(class: "govuk-list govuk-list--bullet") do
+                    safe_join(
+                      contract.course_cohorts.map do |course_cohort|
+                        tag.li([
+                          course_cohort.course.name,
+                          course_cohort.cohort.name,
+                          "#{course_cohort.training_starts_at&.to_fs(:govuk) || '-'} to #{course_cohort.training_ends_at&.to_fs(:govuk) || '-'}",
+                        ].join(" - "))
+                      end,
+                    )
+                  end
+                else
+                  "No course cohorts"
+                end
+              end
+            end
+          end
+        end
+      end
+    %>
+  <% else %>
+    <p class="govuk-body">No contracts found for this lead provider.</p>
+  <% end %>
+<% end %>

@@ -6,7 +6,8 @@ class Statement < ApplicationRecord
   belongs_to :lead_provider
   has_many :statement_items
   has_many :contracts
-  has_many :declarations, through: :statement_items
+  has_many :statement_item_declarations, through: :statement_items, source: :declaration
+  has_many :declarations
   has_many :adjustments
   has_many :milestone_statements
   has_many :milestones, through: :milestone_statements
