@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_107000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_108000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -214,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_107000) do
     t.bigint "course_id"
     t.datetime "created_at", null: false
     t.bigint "lead_provider_id"
+    t.string "name"
     t.bigint "statement_id"
     t.datetime "updated_at", null: false
     t.index ["contract_template_id"], name: "index_contracts_on_contract_template_id"
@@ -580,6 +581,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_107000) do
 
   create_table "statements", force: :cascade do |t|
     t.bigint "cohort_id", null: false
+    t.bigint "contract_id"
     t.datetime "created_at", null: false
     t.date "deadline_date"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
@@ -593,6 +595,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_107000) do
     t.datetime "updated_at", null: false
     t.integer "year", null: false
     t.index ["cohort_id"], name: "index_statements_on_cohort_id"
+    t.index ["contract_id"], name: "index_statements_on_contract_id"
     t.index ["ecf_id"], name: "index_statements_on_ecf_id", unique: true
     t.index ["lead_provider_id", "cohort_id", "year", "month"], name: "idx_on_lead_provider_id_cohort_id_year_month_2dece26c47", unique: true
     t.index ["lead_provider_id"], name: "index_statements_on_lead_provider_id"

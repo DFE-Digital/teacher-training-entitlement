@@ -2,15 +2,18 @@ class Statement < ApplicationRecord
   has_paper_trail meta: { note: :version_note }
   attr_accessor :version_note
 
-  belongs_to :cohort
   belongs_to :lead_provider
-  has_many :statement_items
-  has_many :contracts
-  has_many :statement_item_declarations, through: :statement_items, source: :declaration
-  has_many :declarations
-  has_many :adjustments
-  has_many :milestone_statements
-  has_many :milestones, through: :milestone_statements
+  belongs_to :contract, optional: true
+
+  # TODO: Delete these relationships
+  belongs_to :cohort, deprecated: true
+  has_many :statement_items, deprecated: true
+  has_many :contracts, deprecated: true
+  has_many :statement_item_declarations, through: :statement_items, source: :declaration, deprecated: true
+  has_many :declarations, deprecated: true
+  has_many :adjustments, deprecated: true
+  has_many :milestone_statements, deprecated: true
+  has_many :milestones, through: :milestone_statements, deprecated: true
 
   validates :output_fee, inclusion: { in: [true, false] }
   validates :month, numericality: { in: 1..12, only_integer: true }

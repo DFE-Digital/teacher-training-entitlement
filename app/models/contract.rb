@@ -1,13 +1,14 @@
 class Contract < ApplicationRecord
   has_paper_trail
 
-  belongs_to :statement, optional: true
   belongs_to :lead_provider
-  belongs_to :course, optional: true
-  belongs_to :contract_template, optional: true
-
-  has_many :course_cohort_providers, dependent: :nullify
+  has_many :course_cohort_providers
   has_many :course_cohorts, through: :course_cohort_providers
+
+  # TODO: Delete these relationships
+  belongs_to :statement, optional: true, deprecated: true
+  belongs_to :course, optional: true, deprecated: true
+  belongs_to :contract_template, optional: true, deprecated: true
 
   delegate :monthly_service_fee,
            :number_of_payment_periods,

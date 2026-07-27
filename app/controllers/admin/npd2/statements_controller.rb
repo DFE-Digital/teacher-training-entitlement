@@ -5,6 +5,16 @@ class Admin::Npd2::StatementsController < AdminController
     @contracts = contracts_for(@lead_provider)
   end
 
+  def create
+    @contract = Contract.includes(course_cohorts: %i[course cohort]).find(params[:contract_id])
+    @course_cohorts = @contract.course_cohorts
+    @milestones = Milestone.where(course_cohort: @course_cohorts).includes(course_cohort: %i[course cohort])
+    @declarations = Declaration
+      .where(milestone: @milestones)
+      .includes(:lead_provider, :delivery_partner, { milestone: { course_cohort: %i[course cohort] } }, application: :user)
+      .order(:declaration_date, :id)
+  end
+
 private
 
   def contracts_for(lead_provider)

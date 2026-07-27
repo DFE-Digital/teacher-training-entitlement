@@ -1,0 +1,76 @@
+<h1 class="govuk-heading-l">Generated statement</h1>
+
+<p class="govuk-body">
+  Contract #<%= @contract.id %><%= " - #{@contract.name}" if @contract.name.present? %>
+</p>
+
+<h2 class="govuk-heading-m">Course cohorts</h2>
+
+<% if @course_cohorts.any? %>
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Course")
+          row.with_cell(text: "Cohort")
+          row.with_cell(text: "Training dates")
+        end
+      end
+
+      table.with_body do |body|
+        @course_cohorts.each do |course_cohort|
+          body.with_row do |row|
+            row.with_cell(text: course_cohort.course.name)
+            row.with_cell(text: course_cohort.cohort.name)
+            row.with_cell(text: "#{course_cohort.training_starts_at&.to_fs(:govuk) || '-'} to #{course_cohort.training_ends_at&.to_fs(:govuk) || '-'}")
+          end
+        end
+      end
+    end
+  %>
+<% else %>
+  <p class="govuk-body">No course cohorts are linked to this contract.</p>
+<% end %>
+
+<h2 class="govuk-heading-m">Declarations</h2>
+
+<% if @declarations.any? %>
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Declaration")
+          row.with_cell(text: "Declaration date")
+          row.with_cell(text: "Milestone")
+          row.with_cell(text: "Participant")
+          row.with_cell(text: "Cohort")
+          row.with_cell(text: "Training starts")
+          row.with_cell(text: "Training ends")
+          row.with_cell(text: "State")
+        end
+      end
+
+      table.with_body do |body|
+        @declarations.each do |declaration|
+          milestone = declaration.milestone
+          course_cohort = milestone.course_cohort
+
+          body.with_row do |row|
+            row.with_cell(text: "Declaration ##{declaration.id}")
+            row.with_cell(text: declaration.declaration_date.strftime('%d %B %Y'))
+            row.with_cell(text: milestone.declaration_type.humanize)
+            row.with_cell(text: declaration.application.user.full_name)
+            row.with_cell(text: course_cohort.name)
+            row.with_cell(text: "#{course_cohort.training_starts_at.strftime('%B %Y')}")
+            row.with_cell(text: "#{course_cohort.training_ends_at.strftime('%B %Y')}")
+            row.with_cell(text: declaration.state.humanize)
+          end
+        end
+      end
+    end
+  %>
+<% else %>
+  <p class="govuk-body">No declarations found for this contract.</p>
+<% end %>
+
+<%= govuk_button_link_to "Back", admin_npd2_statements_path(lead_provider_id: @contract.lead_provider_id), secondary: true %>

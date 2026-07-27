@@ -53,6 +53,7 @@
   - record_type
   :statements:
   - reconcile_amount
+  - contract_id
   :policy_periods:
   - id
   - created_at
@@ -76,8 +77,8 @@
   - operation_description
   - updated_at
   :course_cohort_providers:
-  - contract_id
   - recruitment_target
+  - contract_id
   :course_cohorts:
   - participant_funding
   - policy_period_id
@@ -108,11 +109,14 @@
   - statement_id
   - updated_at
   - lead_provider_id
+  - name
   :closed_registration_users:
   - id
   - created_at
   - email
   - updated_at
+  :declarations:
+  - statement_id
   :application_lead_providers:
   - created_at
   - updated_at

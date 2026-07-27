@@ -1,5 +1,5 @@
 module ValidTestDataGenerators
-  class PittDataSeeder
+  class NpdDataSeeder
     def run
       StatementItem.delete_all
       ParticipantOutcome.delete_all
@@ -68,7 +68,7 @@ module ValidTestDataGenerators
                           course_cohort: cc)
 
         lead_providers.each do |lead_provider|
-          contract = Contract.where(lead_provider:, course:).last || Contract.create!(lead_provider:, course:)
+          contract = Contract.where(lead_provider:, course:).last || Contract.create!(lead_provider:, course:, name: "#{policy_period.name} contract")
 
           CourseCohortProvider.create!(course_cohort: cc, lead_provider:, contract:)
         end
@@ -120,7 +120,7 @@ module ValidTestDataGenerators
     end
 
     def create_declaration(application:, milestone:, delivery_partner:)
-      FactoryBot.create(
+      d = FactoryBot.create(
         :declaration,
         application:,
         course_cohort: application.course_cohort,
@@ -128,8 +128,9 @@ module ValidTestDataGenerators
         milestone:,
         delivery_partner:,
         declaration_type: milestone.declaration_type,
-        declaration_date: [milestone.acceptance_window_start_date, Time.zone.today - 1.day].min,
+        declaration_date: Time.zone.today,
       )
+      d.update_column(:declaration_date, milestone.acceptance_window_start_date + rand(1..30).day)
     end
   end
 end

@@ -165,7 +165,7 @@ namespace :admin do
   end
 
   namespace :npd2 do
-    resources :statements, only: %i[index]
+    resources :statements, only: %i[index create]
   end
 
   resources :lead_providers, only: %i[index show edit update], path: "providers" do
