@@ -25,7 +25,7 @@ module Admin
         ("Provider" if show_lead_provider),
         "Cohort",
         "Statement date",
-        "Status",
+        "Payment status",
         "Payment run",
         "Actions",
       ].compact

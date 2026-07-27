@@ -32,11 +32,12 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     expect(rendered).to have_selector("form[method=get][action='/admin/finance/statements']")
   end
 
-  it "has dropdown with status" do
+  it "has dropdown with payment status" do
     expect(rendered).to have_selector(payment_status_selector)
     expect(rendered).to have_selector("#{payment_status_selector} option[value='']", text: "All")
+    expect(rendered).to have_selector("#{payment_status_selector} option[value='open']", text: "Open")
+    expect(rendered).to have_selector("#{payment_status_selector} option[value='payable']", text: "Payable")
     expect(rendered).to have_selector("#{payment_status_selector} option[value='paid']", text: "Paid")
-    expect(rendered).to have_selector("#{payment_status_selector} option[value='unpaid']", text: "Unpaid")
   end
 
   it "has dropdown with lead providers" do
