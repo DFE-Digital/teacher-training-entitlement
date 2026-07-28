@@ -2091,10 +2091,10 @@ hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-hmrc-frontend@^7.23.0:
-  version "7.23.0"
-  resolved "https://registry.npmjs.org/hmrc-frontend/-/hmrc-frontend-7.23.0.tgz"
-  integrity sha512-1KPktClNVWPJ5qqFR+q2XUUQaCJ9dko7wsErZbA1kHd65bobnYyUOx0KQ5gJlDvM3/InnDvpw/zxe9vo392T6w==
+hmrc-frontend@^7.24.0:
+  version "7.24.0"
+  resolved "https://registry.yarnpkg.com/hmrc-frontend/-/hmrc-frontend-7.24.0.tgz#470858a362e3e985e6f216c5294d4780f943710c"
+  integrity sha512-TkFO+srrN8A0ouAt1twzFsZQXNuGd9WlMDMxwOfaBmEGTKVFFkDgJOjiBs6VTSmv9pI6f62nNmD461T4IutWHQ==
   dependencies:
     accessible-autocomplete "^3.0.1"
     govuk-frontend "^6.2.0"
