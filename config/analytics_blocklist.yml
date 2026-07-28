@@ -101,6 +101,12 @@
   - special_course
   - targeted_delivery_funding_per_participant
   - updated_at
+  :contract_policy_periods:
+  - id
+  - contract_id
+  - policy_period_id
+  - created_at
+  - updated_at
   :contracts:
   - id
   - contract_template_id

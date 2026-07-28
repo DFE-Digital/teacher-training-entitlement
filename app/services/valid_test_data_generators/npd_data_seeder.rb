@@ -68,7 +68,11 @@ module ValidTestDataGenerators
                           course_cohort: cc)
 
         lead_providers.each do |lead_provider|
-          contract = Contract.where(lead_provider:, course:).last || Contract.create!(lead_provider:, course:, name: "#{policy_period.name} contract")
+          contract = Contract.where(lead_provider:, course:).last
+          if contract.nil?
+            contract = Contract.create!(lead_provider:, course:, name: "#{policy_period.name} contract")
+            ContractPolicyPeriod.create!(contract:, policy_period:)
+          end
 
           CourseCohortProvider.create!(course_cohort: cc, lead_provider:, contract:)
         end

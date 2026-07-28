@@ -1,0 +1,194 @@
+<% content_for :head do %>
+  <%= nonced_javascript_include_tag "mermaid", defer: true %>
+<% end %>
+
+<h2 class="govuk-heading-m">Conceptual domain split between API/applications/declarations and the finance/contract side.</h2>
+
+<p class="govuk-body">
+  A declaration allows us to record the progress of participants through the course.
+  A declaration is made on an application which gives us the course cohort, and valid milestones for that course cohort.
+</p>
+
+<p class="govuk-body">
+  A policy period allows us to define a broader period (such as AY 26/27, or a funding period from 2026 to 2029)
+  A policy period can have many contracts per lead provider, or one contract can span multiple policy periods.
+</p>
+<p class="govuk-body">
+  A course cohort provider is the link between what providers are linked to which course/cohorts and which contract.
+  A contract can cover a single course cohort, or many.  
+
+</p>
+
+<p class="govuk-body">
+  Statements for a contract because a contract is linked to a course cohort provider, which 
+  describes which course cohorts a statement should be generated for.
+  Flexible time period billing cycles can be catered for because a contract/course/cohort link
+  allows declarations to be discovered via the milestones linked to a course cohort.
+</p>
+
+<h2 class="govuk-heading-m">Conceptual wall view</h2>
+
+<div class="mermaid">
+  <%= h([
+    "flowchart LR",
+    "  subgraph application_domain[\"Application / course delivery\"]",
+    "    direction TB",
+    "    PolicyPeriod[\"PolicyPeriod\"]",
+    "    Course[\"Course\"]",
+    "    CourseCohort[\"CourseCohort\"]",
+    "    Application[\"Application\"]",
+    "    Milestone[\"Milestone<br/>started / completed\"]",
+    "    PolicyPeriod --> CourseCohort",
+    "    Course --> CourseCohort",
+    "    CourseCohort --> Application",
+    "    CourseCohort --> Milestone",
+    "  end",
+    "  subgraph boundary[\"Conceptual wall\"]",
+    "    direction TB",
+    "    Declaration[\"Declaration:<br/>the boundary between<br/>API & Finance\"]",
+    "  end",
+    "  subgraph finance_domain[\"Finance / payment\"]",
+    "    direction TB",
+    "    LeadProvider[\"LeadProvider\"]",
+    "    Contract[\"Contract\"]",
+    "    ContractPolicyPeriod[\"ContractPolicyPeriod\"]",
+    "    CourseCohortProvider[\"CourseCohortProvider\"]",
+    "    FinanceMilestone[\"Milestone<br/>payment trigger\"]",
+    "    Statement[\"Statement\"]",
+    "    LeadProvider --> Contract",
+    "    ContractPolicyPeriod --> Contract",
+    "    Contract --> CourseCohortProvider",
+    "    CourseCohortProvider --> FinanceMilestone",
+    "    Contract --> Statement",
+    "  end",
+    "  Application --> Declaration",
+    "  Milestone --> Declaration",
+    "  PolicyPeriod --> ContractPolicyPeriod",
+    "  CourseCohort --> CourseCohortProvider",
+    "  Declaration --> FinanceMilestone",
+    "  Declaration --> Statement",
+    "  classDef delivery fill:#e8f1f8,color:#0b0c0c,stroke:#1d70b8,stroke-width:2px",
+    "  classDef finance fill:#f3f2f1,color:#0b0c0c,stroke:#505a5f,stroke-width:2px",
+    "  classDef bridge fill:#fff7bf,color:#0b0c0c,stroke:#ffdd00,stroke-width:3px",
+    "  class PolicyPeriod,Course,CourseCohort,Application,Milestone delivery",
+    "  class LeadProvider,Contract,ContractPolicyPeriod,CourseCohortProvider,FinanceMilestone,Statement finance",
+    "  class Declaration bridge",
+  ].join("\n")) %>
+</div>
+
+<h2 class="govuk-heading-m">Policy period relationship view</h2>
+
+<div class="mermaid">
+  <%= h([
+    "erDiagram",
+    "  PolicyPeriod ||--o{ CourseCohort : has_many",
+    "  Course ||--o{ CourseCohort : has_many",
+    "  CourseCohort ||--o{ Milestone : has_many",
+    "  Milestone ||--o{ Declaration : has_many",
+    "  Application ||--o{ Declaration : has_many",
+    "  CourseCohort ||--o{ CourseCohortProvider : has_many",
+    "  PolicyPeriod {",
+    "    string name",
+    "    date start_date",
+    "    date end_date",
+    "  }",
+    "  Course {",
+    "    string name",
+    "    string identifier",
+    "  }",
+    "  CourseCohort {",
+    "    date registration_starts_at",
+    "    date registration_ends_at",
+    "    date training_starts_at",
+    "    date training_ends_at",
+    "  }",
+    "  Milestone {",
+    "    string declaration_type",
+    "    date acceptance_window_start_date",
+    "    date acceptance_window_end_date",
+    "    decimal payment_amount",
+    "  }",
+    "  Declaration {",
+    "    integer statement_id",
+    "    string declaration_type",
+    "    string state",
+    "    date declaration_date",
+    "  }",
+    "  Statement {",
+    "    integer lead_provider_id",
+    "    integer cohort_id",
+    "    integer year",
+    "    integer month",
+    "  }",
+    "  CourseCohortProvider {",
+    "    integer course_cohort_id",
+    "    integer lead_provider_id",
+    "  }",
+  ].join("\n")) %>
+</div>
+
+<h2 class="govuk-heading-m">Contract relationship view</h2>
+
+<div class="mermaid">
+  <%= h([
+    "erDiagram",
+    "  Contract ||--o{ Statement : has_many",
+    "  Contract ||--o{ ContractPolicyPeriod : has_many",
+    "  PolicyPeriod ||--o{ ContractPolicyPeriod : has_many",
+    "  LeadProvider ||--o{ Contract : has_many",
+    "  LeadProvider ||--o{ Statement : has_many",
+    "  LeadProvider ||--o{ CourseCohortProvider : has_many",
+    "  LeadProvider ||--o{ Declaration : has_many",
+    "  CourseCohort ||--o{ CourseCohortProvider : has_many",
+    "  CourseCohort ||--o{ Milestone : has_many",
+    "  Milestone ||--o{ Declaration : has_many",
+    "  Statement ||--o{ Declaration : has_many",
+    "  Contract ||--o{ CourseCohortProvider : has_many",
+    "  LeadProvider {",
+    "    string name",
+    "  }",
+    "  Contract {",
+    "    integer lead_provider_id",
+    "  }",
+    "  PolicyPeriod {",
+    "    string name",
+    "    date start_date",
+    "    date end_date",
+    "  }",
+    "  ContractPolicyPeriod {",
+    "    integer contract_id",
+    "    integer policy_period_id",
+    "  }",
+    "  CourseCohort {",
+    "    date registration_starts_at",
+    "    date registration_ends_at",
+    "    date training_starts_at",
+    "    date training_ends_at",
+    "  }",
+    "  Milestone {",
+    "    string declaration_type",
+    "    date acceptance_window_start_date",
+    "    date acceptance_window_end_date",
+    "    decimal payment_amount",
+    "  }",
+    "  Declaration {",
+    "    integer lead_provider_id",
+    "    integer milestone_id",
+    "    integer statement_id",
+    "    string declaration_type",
+    "    string state",
+    "    date declaration_date",
+    "  }",
+    "  Statement {",
+    "    integer lead_provider_id",
+    "    integer cohort_id",
+    "    integer year",
+    "    integer month",
+    "  }",
+    "  CourseCohortProvider {",
+    "    integer contract_id",
+    "    integer course_cohort_id",
+    "    integer lead_provider_id",
+    "  }",
+  ].join("\n")) %>
+</div>

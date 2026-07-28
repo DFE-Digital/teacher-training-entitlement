@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_108000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_109000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -191,6 +191,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_108000) do
     t.index ["ecf_id"], name: "index_cohorts_on_ecf_id", unique: true
     t.index ["identifier"], name: "index_cohorts_on_identifier", unique: true
     t.index ["start_year"], name: "index_cohorts_on_start_year"
+  end
+
+  create_table "contract_policy_periods", force: :cascade do |t|
+    t.bigint "contract_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "policy_period_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_id", "policy_period_id"], name: "idx_on_contract_id_policy_period_id_218e1e979b", unique: true
+    t.index ["contract_id"], name: "index_contract_policy_periods_on_contract_id"
+    t.index ["policy_period_id"], name: "index_contract_policy_periods_on_policy_period_id"
   end
 
   create_table "contract_templates", force: :cascade do |t|
@@ -658,6 +668,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_108000) do
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "users"
+  add_foreign_key "contract_policy_periods", "contracts"
+  add_foreign_key "contract_policy_periods", "policy_periods"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"
   add_foreign_key "contracts", "lead_providers", validate: false

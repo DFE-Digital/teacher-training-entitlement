@@ -2,6 +2,8 @@ class Contract < ApplicationRecord
   has_paper_trail
 
   belongs_to :lead_provider
+  has_many :contract_policy_periods, dependent: :destroy
+  has_many :policy_periods, through: :contract_policy_periods
   has_many :course_cohort_providers
   has_many :course_cohorts, through: :course_cohort_providers
 

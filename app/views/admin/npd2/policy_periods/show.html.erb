@@ -23,156 +23,6 @@
   end
 %>
 
-<h2 class="govuk-heading-m">Policy period relationship view</h2>
-
-<div class="mermaid">
-  <%= h([
-    "erDiagram",
-    "  PolicyPeriod ||--o{ CourseCohort : has_many",
-    "  Course ||--o{ CourseCohort : has_many",
-    "  CourseCohort ||--o{ Milestone : has_many",
-    "  Milestone ||--o{ Declaration : has_many",
-    "  Application ||--o{ Declaration : has_many",
-    "  CourseCohort ||--o{ CourseCohortProvider : has_many",
-    "  PolicyPeriod {",
-    "    string name",
-    "    date start_date",
-    "    date end_date",
-    "  }",
-    "  Course {",
-    "    string name",
-    "    string identifier",
-    "  }",
-    "  CourseCohort {",
-    "    date registration_starts_at",
-    "    date registration_ends_at",
-    "    date training_starts_at",
-    "    date training_ends_at",
-    "  }",
-    "  Milestone {",
-    "    string declaration_type",
-    "    date acceptance_window_start_date",
-    "    date acceptance_window_end_date",
-    "    decimal payment_amount",
-    "  }",
-    "  Declaration {",
-    "    integer statement_id",
-    "    string declaration_type",
-    "    string state",
-    "    date declaration_date",
-    "  }",
-    "  Statement {",
-    "    integer lead_provider_id",
-    "    integer cohort_id",
-    "    integer year",
-    "    integer month",
-    "  }",
-    "  CourseCohortProvider {",
-    "    integer course_cohort_id",
-    "    integer lead_provider_id",
-    "  }",
-  ].join("\n")) %>
-</div>
-
-<h2 class="govuk-heading-m">Contract relationship view</h2>
-
-<div class="mermaid">
-  <%= h([
-    "erDiagram",
-    "  Contract ||--o{ Statement : has_many",
-    "  LeadProvider ||--o{ Contract : has_many",
-    "  LeadProvider ||--o{ Statement : has_many",
-    "  LeadProvider ||--o{ CourseCohortProvider : has_many",
-    "  LeadProvider ||--o{ Declaration : has_many",
-    "  CourseCohort ||--o{ CourseCohortProvider : has_many",
-    "  CourseCohort ||--o{ Milestone : has_many",
-    "  Milestone ||--o{ Declaration : has_many",
-    "  Statement ||--o{ Declaration : has_many",
-    "  Contract ||--o{ CourseCohortProvider : has_many",
-    "  LeadProvider {",
-    "    string name",
-    "  }",
-    "  Contract {",
-    "    integer lead_provider_id",
-    "  }",
-    "  CourseCohort {",
-    "    date registration_starts_at",
-    "    date registration_ends_at",
-    "    date training_starts_at",
-    "    date training_ends_at",
-    "  }",
-    "  Milestone {",
-    "    string declaration_type",
-    "    date acceptance_window_start_date",
-    "    date acceptance_window_end_date",
-    "    decimal payment_amount",
-    "  }",
-    "  Declaration {",
-    "    integer lead_provider_id",
-    "    integer milestone_id",
-    "    integer statement_id",
-    "    string declaration_type",
-    "    string state",
-    "    date declaration_date",
-    "  }",
-    "  Statement {",
-    "    integer lead_provider_id",
-    "    integer cohort_id",
-    "    integer year",
-    "    integer month",
-    "  }",
-    "  CourseCohortProvider {",
-    "    integer contract_id",
-    "    integer course_cohort_id",
-    "    integer lead_provider_id",
-    "  }",
-  ].join("\n")) %>
-</div>
-
-<h2 class="govuk-heading-m">Conceptual wall view</h2>
-
-<div class="mermaid">
-  <%= h([
-    "flowchart LR",
-    "  subgraph application_domain[\"Application / course delivery\"]",
-    "    direction TB",
-    "    PolicyPeriod[\"PolicyPeriod\"]",
-    "    Course[\"Course\"]",
-    "    CourseCohort[\"CourseCohort\"]",
-    "    Application[\"Application\"]",
-    "    Milestone[\"Milestone<br/>started / completed\"]",
-    "    PolicyPeriod --> CourseCohort",
-    "    Course --> CourseCohort",
-    "    CourseCohort --> Application",
-    "    CourseCohort --> Milestone",
-    "  end",
-    "  subgraph boundary[\"Conceptual wall\"]",
-    "    direction TB",
-    "    Declaration[\"Declaration<br/>the boundary event<br/>participant started / completed\"]",
-    "  end",
-    "  subgraph finance_domain[\"Finance / payment\"]",
-    "    direction TB",
-    "    LeadProvider[\"LeadProvider\"]",
-    "    Contract[\"Contract\"]",
-    "    CourseCohortProvider[\"CourseCohortProvider\"]",
-    "    Statement[\"Statement\"]",
-    "    LeadProvider --> Contract",
-    "    Contract --> CourseCohortProvider",
-    "    Contract --> Statement",
-    "  end",
-    "  Application --> Declaration",
-    "  Milestone --> Declaration",
-    "  CourseCohort --> CourseCohortProvider",
-    "  Declaration --> Statement",
-    "  classDef delivery fill:#e8f1f8,color:#0b0c0c,stroke:#1d70b8,stroke-width:2px",
-    "  classDef finance fill:#f3f2f1,color:#0b0c0c,stroke:#505a5f,stroke-width:2px",
-    "  classDef bridge fill:#fff7bf,color:#0b0c0c,stroke:#ffdd00,stroke-width:3px",
-    "  class PolicyPeriod,Course,CourseCohort,Application,Milestone delivery",
-    "  class LeadProvider,Contract,CourseCohortProvider,Statement finance",
-    "  class Declaration bridge",
-  ].join("\n")) %>
-</div>
-
 <h2 class="govuk-heading-m">Policy period data view</h2>
 
 <%
@@ -249,6 +99,18 @@
     contract_mermaid_lines << "  #{contract_id}[\"#{mermaid_label.call('Contract', contract.lead_provider.name)}\"]"
     contract_mermaid_lines << "  class #{contract_id} contract"
 
+    contract.policy_periods.order(:start_date).each.with_index(1) do |policy_period, policy_period_index|
+      policy_period_id = "#{contract_id}_policy_period_#{policy_period_index}"
+
+      contract_mermaid_lines << "  #{policy_period_id}[\"#{mermaid_label.call(
+        'PolicyPeriod',
+        policy_period.name,
+        "#{format_date.call(policy_period.start_date)} to #{format_date.call(policy_period.end_date)}",
+      )}\"]"
+      contract_mermaid_lines << "  #{policy_period_id} --> #{contract_id}"
+      contract_mermaid_lines << "  class #{policy_period_id} policyPeriod"
+    end
+
     contract
       .course_cohorts
       .select { |course_cohort| course_cohort.policy_period_id == @policy_period.id }
@@ -282,6 +144,7 @@
   end
 
   contract_mermaid_lines += [
+    "  classDef policyPeriod fill:#1d70b8,color:#ffffff,stroke:#003078,stroke-width:2px",
     "  classDef contract fill:#e8f1f8,color:#0b0c0c,stroke:#5694ca,stroke-width:2px",
     "  classDef courseCohort fill:#ffffff,color:#0b0c0c,stroke:#1d70b8,stroke-width:2px",
     "  classDef milestone fill:#fff7bf,color:#0b0c0c,stroke:#ffdd00,stroke-width:2px",
