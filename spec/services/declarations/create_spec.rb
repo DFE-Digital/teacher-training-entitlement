@@ -29,6 +29,7 @@ RSpec.describe Declarations::Create, type: :model do
   let(:secondary_delivery_partner_id) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
   end
+  let!(:statement) { create(:statement, lead_provider:) }
 
   RSpec.shared_examples "does not update the application" do
     it do
@@ -69,6 +70,7 @@ RSpec.describe Declarations::Create, type: :model do
           it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
           it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
           it { expect(declaration.value).to eq(started_milestone.payment_amount) }
+          it { expect(declaration.statement).to eq(statement) }
         end
 
         it "sets the application to started" do
@@ -87,7 +89,13 @@ RSpec.describe Declarations::Create, type: :model do
         expect { service.call }.not_to change(ParticipantOutcome, :count)
       end
 
-      it "creates a statement when none exists"
+      context "when no statement exist" do
+        let(:statement) { nil }
+
+        before { service.call }
+
+        it { expect(service.declaration.statement).to be_present }
+      end
 
       context "when secondary delivery partner omitted" do
         let(:secondary_delivery_partner_id) { nil }
@@ -163,7 +171,13 @@ RSpec.describe Declarations::Create, type: :model do
       it { expect { service.call }.to change(Declaration, :count).by(1) }
       it { expect { service.call }.to change(ParticipantOutcome, :count).by(1) }
 
-      it "creates a statement when none exists"
+      context "when no statement exist" do
+        let(:statement) { nil }
+
+        before { service.call }
+
+        it { expect(service.declaration.statement).to be_present }
+      end
 
       context "when application has a voided completed declaration" do
         before do

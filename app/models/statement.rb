@@ -29,9 +29,38 @@ class Statement < ApplicationRecord
   scope :unpaid, -> { with_state(%w[open payable]) }
   scope :paid, -> { with_state("paid") }
 
+  scope :current, ->(frequency: :monthly) {
+    where(state: :open, frequency:, start_date: Date.current.beginning_of_month)
+  }
+  scope :clawback, ->(frequency: :monthly) {
+    where(
+      state: :open,
+      frequency:,
+      start_date: Date.current.beginning_of_month.next_month,
+    )
+  }
+
   enum :frequency, FREQUENCIES.keys.index_with(&:itself), suffix: true
 
   before_save :set_deadline_and_payment_date, if: -> { start_date_changed? }
+
+  def self.create_current!(lead_provider:, frequency: :monthly)
+    create!(
+      state: :open,
+      frequency:,
+      start_date: Date.current.beginning_of_month,
+      lead_provider:,
+    )
+  end
+
+  def self.create_clawback!(lead_provider:, frequency: :monthly)
+    create!(
+      state: :open,
+      frequency:,
+      start_date: Date.current.beginning_of_month.next_month,
+      lead_provider:,
+    )
+  end
 
   state_machine :state, initial: :open do
     state :open
@@ -45,10 +74,6 @@ class Statement < ApplicationRecord
     event :mark_paid do
       transition [:payable] => :paid
     end
-  end
-
-  def self.current_for(lead_provider:)
-    find_by(state: "open", frequency: "monthly", lead_provider:)
   end
 
   def mark_as_frozen!

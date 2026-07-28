@@ -125,13 +125,17 @@ class Declaration < ApplicationRecord
       .or(where(secondary_delivery_partner: delivery_partner))
   }
 
+  def clawback_statement
+    Statement.clawback.find_by(lead_provider:) || Statement.create_clawback!(lead_provider:)
+  end
+
   def clawback!
     self.clawback_declaration = ClawbackDeclaration.new(
       paid_declaration: self,
       application: application,
       milestone: milestone,
       cohort: cohort,
-      # statement: Statement.open.find_or_create_by(contract: @declaration.milestone.contract),
+      statement: clawback_statement,
       lead_provider: lead_provider,
       delivery_partner: delivery_partner,
       secondary_delivery_partner: secondary_delivery_partner,
