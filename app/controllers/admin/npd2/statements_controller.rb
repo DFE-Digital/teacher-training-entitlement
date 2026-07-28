@@ -6,13 +6,16 @@ class Admin::Npd2::StatementsController < AdminController
   end
 
   def create
+    @from_date = date_param(:from_date)
+    @to_date = date_param(:to_date)
     @contract = Contract.includes(course_cohorts: %i[course cohort]).find(params[:contract_id])
-    @course_cohorts = @contract.course_cohorts
+    @course_cohorts = filter_course_cohorts(@contract.course_cohorts.includes(:course, :cohort))
     @milestones = Milestone.where(course_cohort: @course_cohorts).includes(course_cohort: %i[course cohort])
-    @declarations = Declaration
+    @declarations = filter_declarations(
+      Declaration
       .where(milestone: @milestones)
-      .includes(:lead_provider, :delivery_partner, { milestone: { course_cohort: %i[course cohort] } }, application: :user)
-      .order(:declaration_date, :id)
+      .includes(:lead_provider, :delivery_partner, { milestone: { course_cohort: %i[course cohort] } }, application: :user),
+    ).order(:declaration_date, :id)
   end
 
 private
@@ -24,5 +27,30 @@ private
       .contracts
       .includes(course_cohorts: %i[course cohort])
       .order(:id)
+  end
+
+  def filter_declarations(scope)
+    scope = scope.where(declaration_date: @from_date.beginning_of_day..) if @from_date
+    scope = scope.where(declaration_date: ..@to_date.end_of_day) if @to_date
+    scope
+  end
+
+  def filter_course_cohorts(scope)
+    scope = scope.where(training_ends_at: @from_date.beginning_of_day..) if @from_date
+    scope = scope.where(training_starts_at: ..@to_date.end_of_day) if @to_date
+    scope
+  end
+
+  def date_param(name)
+    direct_date_param(name)
+  rescue Date::Error
+    nil
+  end
+
+  def direct_date_param(name)
+    value = params[name]
+    return if value.blank?
+
+    Date.parse(value)
   end
 end

@@ -6,27 +6,35 @@
 
 <p class="govuk-body">
   A declaration allows us to record the progress of participants through the course.
+  <br/>
   A declaration is made on an application which gives us the course cohort, and valid milestones for that course cohort.
 </p>
 
 <p class="govuk-body">
   A policy period allows us to define a broader period (such as AY 26/27, or a funding period from 2026 to 2029)
+  <br/>
   A policy period can have many contracts per lead provider, or one contract can span multiple policy periods.
 </p>
 <p class="govuk-body">
   A course cohort provider is the link between what providers are linked to which course/cohorts and which contract.
+  <br/>
   A contract can cover a single course cohort, or many.  
-
 </p>
 
 <p class="govuk-body">
-  Statements for a contract because a contract is linked to a course cohort provider, which 
+  When generating statements a contract is linked to a course cohort provider, which 
   describes which course cohorts a statement should be generated for.
+  <br/>
   Flexible time period billing cycles can be catered for because a contract/course/cohort link
   allows declarations to be discovered via the milestones linked to a course cohort.
 </p>
 
-<h2 class="govuk-heading-m">Conceptual wall view</h2>
+<p class="govuk-body">
+  <a href="/admin/npd2/policy-periods">Link to policy period view showing what courses/cohorts/milestones are configured</a>
+  <br/>
+  <a href="/admin/npd2/statements">Link to statement view - allows generation of statements</a>
+</p>
+<h2 class="govuk-heading-m">Conceptual model view - split between API side and Finance side</h2>
 
 <div class="mermaid">
   <%= h([
@@ -53,7 +61,7 @@
     "    Contract[\"Contract\"]",
     "    ContractPolicyPeriod[\"ContractPolicyPeriod\"]",
     "    CourseCohortProvider[\"CourseCohortProvider\"]",
-    "    FinanceMilestone[\"Milestone<br/>payment trigger\"]",
+    "    FinanceMilestone[\"Milestone\"]",
     "    Statement[\"Statement\"]",
     "    LeadProvider --> Contract",
     "    ContractPolicyPeriod --> Contract",
@@ -76,7 +84,7 @@
   ].join("\n")) %>
 </div>
 
-<h2 class="govuk-heading-m">Policy period relationship view</h2>
+<h2 class="govuk-heading-m">API model view</h2>
 
 <div class="mermaid">
   <%= h([
@@ -127,7 +135,7 @@
   ].join("\n")) %>
 </div>
 
-<h2 class="govuk-heading-m">Contract relationship view</h2>
+<h2 class="govuk-heading-m">Finance model view</h2>
 
 <div class="mermaid">
   <%= h([

@@ -165,7 +165,6 @@ namespace :admin do
 
   namespace :npd2 do
     root to: "home#index"
-    resources :contracts, only: %i[index]
     resources :policy_periods, only: %i[index show], path: "policy-periods"
     resources :statements, only: %i[index create]
   end

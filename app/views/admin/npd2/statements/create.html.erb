@@ -4,6 +4,14 @@
   Contract #<%= @contract.id %><%= " - #{@contract.name}" if @contract.name.present? %>
 </p>
 
+<% if @from_date || @to_date %>
+  <p class="govuk-body">
+    Including course cohorts with training dates and declarations made
+    <%= "from #{@from_date.to_fs(:govuk)}" if @from_date %>
+    <%= "to #{@to_date.to_fs(:govuk)}" if @to_date %>.
+  </p>
+<% end %>
+
 <h2 class="govuk-heading-m">Course cohorts</h2>
 
 <% if @course_cohorts.any? %>
@@ -73,4 +81,6 @@
   <p class="govuk-body">No declarations found for this contract.</p>
 <% end %>
 
-<%= govuk_button_link_to "Back", admin_npd2_statements_path(lead_provider_id: @contract.lead_provider_id), secondary: true %>
+<%= govuk_button_link_to "Back",
+                         admin_npd2_statements_path(lead_provider_id: @contract.lead_provider_id),
+                         secondary: true %>

@@ -50,6 +50,16 @@
                 form_with url: admin_npd2_statements_path, method: :post do |f|
                   safe_join([
                     f.hidden_field(:contract_id, value: contract.id),
+                    f.govuk_text_field(
+                      :from_date,
+                      label: { text: "Declarations from", size: "s" },
+                      hint: { text: "e.g, #{contract.course_cohorts.first.training_starts_at.to_date.strftime('%d-%m-%Y')}" },
+                    ),
+                    f.govuk_text_field(
+                      :to_date,
+                      label: { text: "Declarations to", size: "s" },
+                      hint: { text: "e.g, #{contract.course_cohorts.first.training_starts_at.to_date.advance(weeks: 4).strftime('%d-%m-%Y')}" },
+                    ),
                     f.govuk_submit("Generate statement", secondary: false),
                   ])
                 end
