@@ -3,8 +3,7 @@
 class Admin::Finance::Statements::AssuranceReportsController < AdminController
   def show
     @statement = Statement.find(params[:id])
-    @declarations = AssuranceReports::Query.new(@statement).declarations
-    @serializer = AssuranceReports::CsvSerializer.new(@declarations, @statement)
+    @serializer = AssuranceReports::CsvSerializer.new(@statement)
 
     respond_to do |format|
       format.csv do
