@@ -89,7 +89,7 @@ module Applications
     end
 
     def order_by
-      sort_order(sort:, model: Application, default: { created_at: :asc })
+      sort_order(sort:, model: Application, default: "applications.updated_at ASC")
     end
 
     def alternative_courses

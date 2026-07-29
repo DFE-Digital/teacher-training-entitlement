@@ -27,7 +27,7 @@ RSpec.describe Applications::Query do
       expect(query.applications).to contain_exactly(application1, application2)
     end
 
-    it "orders applications by created_at in ascending order" do
+    it "orders applications by updated_at in ascending order" do
       application1 = create(:application, lead_provider:)
       application2 = travel_to(1.hour.ago) { create(:application, lead_provider:) }
       application3 = travel_to(1.minute.ago) { create(:application, lead_provider:) }
@@ -47,6 +47,31 @@ RSpec.describe Applications::Query do
             application.user.update!(updated_at: 2.days.ago)
 
             expect(query.applications).to contain_exactly(application)
+          end
+        end
+
+        describe "ordering" do
+          let(:updated_since) { 5.hours.ago }
+
+          it "orders results by updated_at asc" do
+            updated_one_hour_ago = travel_to(4.days.ago) { create(:application, lead_provider:) }
+            updated_one_hour_ago.update!(updated_at: 1.hour.ago)
+
+            updated_three_hours_ago = travel_to(2.days.ago) { create(:application, lead_provider:) }
+            updated_three_hours_ago.update!(updated_at: 3.hours.ago)
+
+            updated_four_hours_ago = travel_to(1.day.ago) { create(:application, lead_provider:) }
+            updated_four_hours_ago.update!(updated_at: 4.hours.ago)
+
+            updated_two_hours_ago = create(:application, lead_provider:)
+            updated_two_hours_ago.update!(updated_at: 2.hours.ago)
+
+            expect(query.applications).to eq([
+              updated_four_hours_ago,
+              updated_three_hours_ago,
+              updated_two_hours_ago,
+              updated_one_hour_ago,
+            ])
           end
         end
       end
