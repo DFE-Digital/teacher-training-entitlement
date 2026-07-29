@@ -29,6 +29,12 @@ RSpec.describe API::StatementSerializer, type: :serializer do
       expect(attributes["start_date"]).to eq("2023-07-01")
     end
 
+    it "serializes the `frequency`" do
+      statement.frequency = "monthly"
+
+      expect(attributes["frequency"]).to eq("monthly")
+    end
+
     it "serializes the `deadline`" do
       statement.deadline_date = Date.new(2023, 7, 1)
 

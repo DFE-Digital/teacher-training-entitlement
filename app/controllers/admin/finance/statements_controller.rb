@@ -7,8 +7,6 @@ class Admin::Finance::StatementsController < AdminController
     scope = Statement.includes(:lead_provider)
                      .where(statement_params)
 
-    redirect_to action: :show, id: scope.first.id and return if scope.one? && params[:statement].present?
-
     if scope.none?
       flash.now[:error] = "No statements matched all the filters, showing all statement periods instead"
       scope

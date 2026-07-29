@@ -5,7 +5,6 @@ class MilestoneStatement < ApplicationRecord
   belongs_to :statement
 
   validate :statement_must_be_output_fee_true
-  validate :unique_statement_date_per_milestone, unless: :skip_statement_date_validation
 
   attr_accessor :skip_statement_date_validation
 

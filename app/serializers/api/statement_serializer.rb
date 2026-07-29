@@ -4,6 +4,7 @@ module API
       exclude :id
 
       field(:start_date, datetime_format: "%Y-%m-%d")
+      field :frequency
       field :deadline_date, name: :cut_off_date, datetime_format: "%Y-%m-%d"
       field :payment_date, datetime_format: "%Y-%m-%d"
       field(:paid?, name: :paid)

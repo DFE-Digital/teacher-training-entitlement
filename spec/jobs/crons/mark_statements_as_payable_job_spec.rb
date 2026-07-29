@@ -7,10 +7,8 @@ RSpec.describe Crons::MarkStatementsAsPayableJob, type: :job do
 
   before do
     ActiveJob::Base.queue_adapter.enqueued_jobs.clear
-    declaration = create(:declaration, :submitted_or_eligible, lead_provider:, application:)
-    create(:statement_item, :eligible, statement:, declaration:)
-    voided_declaration = create(:declaration, :voided, lead_provider:)
-    create(:statement_item, :voided, statement:, declaration: voided_declaration)
+    create(:declaration, :submitted_or_eligible, lead_provider:, application:, statement:)
+    create(:declaration, :voided, lead_provider:, statement:)
   end
 
   describe "#perform" do
