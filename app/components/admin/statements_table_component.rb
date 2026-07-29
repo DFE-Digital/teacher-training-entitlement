@@ -23,7 +23,6 @@ module Admin
     def head
       [
         ("Provider" if show_lead_provider),
-        "Cohort",
         "Statement date",
         "Payment status",
         "Payment run",
@@ -35,7 +34,6 @@ module Admin
       statements.map do |statement|
         [
           lead_provider_link(statement.lead_provider),
-          cohort_link(statement),
           helpers.statement_name(statement),
           statement_tag(statement),
           payment_run_tag(statement),

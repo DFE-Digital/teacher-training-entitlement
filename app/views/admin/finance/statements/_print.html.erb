@@ -16,18 +16,6 @@
 <%=
   govuk_summary_list(card: { title: "Overview" }) do |sl|
     sl.with_row do |row|
-      row.with_key(text: "Cohort")
-      row.with_value(text: @statement.cohort.name)
-    end
-
-    if internal_dfe_use
-      sl.with_row do |row|
-        row.with_key(text: "Cohort description")
-        row.with_value(text: @statement.cohort.description)
-      end
-    end
-
-    sl.with_row do |row|
       row.with_key(text: "Output payment date")
       row.with_value(text: @statement.payment_date.to_fs(:govuk))
     end

@@ -39,9 +39,8 @@ module Admin
     end
 
     def statements
-      scope = Statement.order(:year, :month)
+      scope = Statement.all
       scope = scope.where(lead_provider_id:) if lead_provider_id.present?
-      scope = scope.where(cohort_id:) if cohort_id.present?
 
       options = [["All", ""]] + scope.map { [statement_name(_1), statement_period(_1)] }
       options.map { StatementOption.new(*_1) }.uniq(&:value)

@@ -4,15 +4,14 @@ class Admin::Finance::StatementsController < AdminController
   def index
     params[:output_fee] = "true" unless params.key?(:output_fee)
 
-    scope = Statement.includes(:lead_provider, :cohort)
+    scope = Statement.includes(:lead_provider)
                      .where(statement_params)
-                     .order(payment_date: :asc)
 
     redirect_to action: :show, id: scope.first.id and return if scope.one? && params[:statement].present?
 
     if scope.none?
       flash.now[:error] = "No statements matched all the filters, showing all statement periods instead"
-      scope = scope.unscope(where: %i[year month])
+      scope
     end
 
     @pagy, @statements = pagy(scope)
@@ -55,7 +54,7 @@ private
   def extract_period(params)
     return unless (period = params.delete(:statement))
 
-    params[:year], params[:month] = period.split("-")
+    params[:start_date], params[:deadline_date] = period.split("-")
   end
 
   def extract_state(params)
