@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Statements::BulkCreator do
+RSpec.describe Statements::BulkCreator, :npq do
   include Helpers::StatementsHelper
 
   let(:cohort)            { create(:cohort) }

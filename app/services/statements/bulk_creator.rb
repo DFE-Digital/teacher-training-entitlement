@@ -63,7 +63,7 @@ module Statements
 
       statement_parser.valid_rows.each.with_index(2) do |statement, line_number|
         lead_providers.each do |lead_provider|
-          next unless Statement.exists?(cohort:, lead_provider:, year: statement.year, month: statement.month)
+          next unless Statement.exists?(lead_provider:, start_date: statement.start_date, frequency: statement.frequency)
 
           errors.add(:statements_csv, "Statement already exists on line #{line_number}")
           break
