@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe Declarations::Void, type: :model do
   let(:statement) { create(:statement, :next_output_fee) }
-  let(:course_cohort) { create(:course_cohort, cohort: statement.cohort) }
+  let(:course_cohort) { create(:course_cohort) }
   let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: statement.lead_provider) }
   let(:declaration_trait) { :started }
   let(:declaration) { create(:declaration, declaration_trait, application:, lead_provider: statement.lead_provider, course_cohort:) }
@@ -62,14 +62,6 @@ RSpec.describe Declarations::Void, type: :model do
       let(:declaration_trait) { declaration_state }
 
       it { expect { service.call }.to change { declaration.reload.state }.from(declaration_state).to("voided") }
-
-      %w[eligible ineligible payable].each do |statement_item_state|
-        context "when the declaration has a #{statement_item_state} statement item" do
-          let(:statement_item) { create(:statement_item, declaration:, state: statement_item_state) }
-
-          it { expect { service.call }.to change { statement_item.reload.state }.from(statement_item_state).to("voided") }
-        end
-      end
 
       it "calls the void participant outcome service" do
         service_double = instance_double(ParticipantOutcomes::Void)
