@@ -11,7 +11,6 @@ class Statement < ApplicationRecord
   has_many :clawback_declarations, -> { where(type: "ClawbackDeclaration") },
            class_name: "ClawbackDeclaration"
   has_many :milestones, through: :declarations
-  has_many :course_cohorts, through: :declarations
   has_many :contracts
   has_many :adjustments
 
