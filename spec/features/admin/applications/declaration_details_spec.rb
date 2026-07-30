@@ -77,7 +77,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item(
             "Statement",
-            payable_statement.start_date.to_fs(:govuk_approx)
+            payable_statement.start_date.to_fs(:govuk_approx),
           )
         end
       end

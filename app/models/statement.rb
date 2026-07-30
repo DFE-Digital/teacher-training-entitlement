@@ -29,10 +29,10 @@ class Statement < ApplicationRecord
   scope :unpaid, -> { with_state(%w[open payable]) }
   scope :paid, -> { with_state("paid") }
 
-  scope :current, ->(frequency: :monthly) {
+  scope :current, lambda { |frequency: :monthly|
     where(state: :open, frequency:, start_date: Date.current.beginning_of_month)
   }
-  scope :clawback, ->(frequency: :monthly) {
+  scope :clawback, lambda { |frequency: :monthly|
     where(
       state: :open,
       frequency:,
