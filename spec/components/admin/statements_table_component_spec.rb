@@ -7,9 +7,9 @@ RSpec.describe Admin::StatementsTableComponent, type: :component do
 
   let(:statements) { FactoryBot.create_list(:statement, 3) }
   let(:show_lead_provider) { true }
-  let(:expected_columns) { %w[Provider Cohort Status] }
+  let(:expected_columns) { ["Provider", "Cohort", "Payment status"] }
 
-  it "renders a table with Course provider, Cohort and Status columns" do
+  it "renders a table with Provider, Cohort and Payment status columns" do
     expected_columns.each do |heading|
       expect(rendered_content).to have_css("th", text: heading)
     end

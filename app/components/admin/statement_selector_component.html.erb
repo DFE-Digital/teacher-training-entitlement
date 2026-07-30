@@ -5,11 +5,11 @@
     <% unless format_for_sidebar %>
       <div class="<%= grid_column_class %>">
         <%= f.govuk_collection_select :payment_status,
-          ['Paid', 'Unpaid'],
+          ['Open', 'Payable', 'Paid'],
           :downcase,
           :to_s,
           options: { selected: payment_status, include_blank: 'All' },
-          label: { text: "Status", size: "s" }
+          label: { text: "Payment status", size: "s" }
         %>
       </div>
     <% end %>

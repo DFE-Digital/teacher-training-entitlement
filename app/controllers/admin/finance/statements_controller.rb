@@ -62,7 +62,8 @@ private
     return unless (payment_status = params.delete(:payment_status))
 
     params[:state] = {
-      "unpaid" => %w[open payable],
+      "open" => %w[open],
+      "payable" => %w[payable],
       "paid" => %w[paid],
     }.fetch(payment_status, [])
   end
