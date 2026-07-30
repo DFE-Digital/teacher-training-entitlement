@@ -8,7 +8,7 @@ RSpec.describe Statement, type: :model do
     it { is_expected.to have_many(:declarations) }
     it { is_expected.to have_many(:clawback_declarations) }
     it { is_expected.to have_many(:contracts) }
-    xit { is_expected.to have_many(:course_cohorts).through(:declarations) }
+    it { is_expected.to have_many(:course_cohorts).through(:declarations) }
     it { is_expected.to have_many(:milestones).through(:declarations) }
     it { is_expected.to have_many(:adjustments) }
   end

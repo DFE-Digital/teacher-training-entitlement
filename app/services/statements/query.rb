@@ -5,7 +5,7 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, cohort_start_years: :ignore, updated_since: :ignore, state: :ignore, output_fee: true)
+    def initialize(lead_provider: :ignore, cohort_start_years: :ignore, updated_since: :ignore, state: :ignore, output_fee: true) # rubocop:disable Lint/UnusedMethodArgument
       @scope = Statement.distinct.includes(:lead_provider)
 
       where_lead_provider_is(lead_provider)

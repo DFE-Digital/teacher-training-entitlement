@@ -12,8 +12,8 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, :revisit, type: :component
   let(:contract) { create(:contract, course:, statement:) }
 
   before do
-    create :schedule, :tte_reception_autumn, cohort:
-    create :schedule, :tte_reception_spring, cohort:
+    create :schedule, :tte_reception_autumn, cohort: cohort
+    create :schedule, :tte_reception_spring, cohort: cohort
 
     create_list(:declaration, 2, :eligible, declaration_type: "started", course:, statement:)
     create_list(:declaration, 3, :eligible, declaration_type: "retained-1", course:, statement:)
