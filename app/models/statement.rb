@@ -50,6 +50,7 @@ class Statement < ApplicationRecord
       frequency:,
       start_date: Date.current.beginning_of_month,
       lead_provider:,
+      ecf_id: SecureRandom.uuid,
     )
   end
 
@@ -59,6 +60,7 @@ class Statement < ApplicationRecord
       frequency:,
       start_date: Date.current.beginning_of_month.next_month,
       lead_provider:,
+      ecf_id: SecureRandom.uuid,
     )
   end
 
