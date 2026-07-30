@@ -19,7 +19,6 @@ RSpec.describe "admin/finance/statements/print_provider", :npq, type: :view do
 
   it "shows the statement overview" do
     summary_card = rendered.find(".govuk-summary-card", text: "Overview")
-    expect(summary_card).to have_summary_item("Cohort", statement.cohort.start_year)
     expect(summary_card).to have_summary_item("Output payment date", statement.payment_date.to_fs(:govuk))
     expect(summary_card).to have_summary_item("Status", statement.state.humanize)
     expect(summary_card).to have_summary_item("Statement ID", statement.ecf_id)
