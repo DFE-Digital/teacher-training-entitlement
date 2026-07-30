@@ -52,7 +52,7 @@ private
   def extract_period(params)
     return unless (period = params.delete(:statement))
 
-    params[:start_date], params[:deadline_date] = period.split("-")
+    params[:start_date], params[:frequency] = period.split("::")
   end
 
   def extract_state(params)

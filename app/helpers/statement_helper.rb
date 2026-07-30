@@ -9,4 +9,8 @@ module StatementHelper
       statement.deadline_date&.to_fs(:govuk_short),
     ].join("-")
   end
+
+  def statement_options_value(statement)
+    [statement.start_date.to_fs(:succint), statement.frequency].join("::")
+  end
 end

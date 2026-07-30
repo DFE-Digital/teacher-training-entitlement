@@ -63,7 +63,7 @@ module Statements
 
       statement_parser.valid_rows.each.with_index(2) do |statement, line_number|
         lead_providers.each do |lead_provider|
-          next unless Statement.exists?(lead_provider:, start_date: statement.start_date, frequency: statement.frequency)
+          next unless Statement.exists?(lead_provider:, start_date: statement.start_date, frequency: :monthly)
 
           errors.add(:statements_csv, "Statement already exists on line #{line_number}")
           break
@@ -101,7 +101,7 @@ module Statements
     def statement_attributes_for(statement_row, contract_row)
       lead_provider = lead_provider_for(contract_row)
 
-      statement_row.attributes.merge(cohort:, lead_provider:, reconcile_amount: 0)
+      statement_row.attributes.merge(lead_provider:, reconcile_amount: 0, frequency: :monthly)
     end
 
     def contract_attributes_for(contract_row)

@@ -35,16 +35,6 @@
         options: { selected: lead_provider_id, include_blank: "All" }
       %>
     </div>
-
-    <div class="<%= grid_column_class %>">
-      <%= f.govuk_collection_select :cohort_id,
-        cohorts,
-        :id,
-        :name,
-        label: { text: "Cohort", size: "s" },
-        options: { selected: cohort_id, include_blank: "All" }
-      %>
-    </div>
   </div>
 
   <% unless format_for_sidebar %>

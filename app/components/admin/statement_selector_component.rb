@@ -6,11 +6,11 @@ module Admin
 
     include StatementHelper
 
-    attr_reader :cohort_id, :format_for_sidebar, :lead_provider_id, :selection
+    attr_reader :format_for_sidebar, :lead_provider_id, :selection
 
     def initialize(selection, format_for_sidebar: false)
       @selection = selection
-      @lead_provider_id, @cohort_id = selection.values_at(:lead_provider_id, :cohort_id)
+      @lead_provider_id = selection[:lead_provider_id]
       @format_for_sidebar = format_for_sidebar
     end
 
@@ -34,15 +34,11 @@ module Admin
       LeadProvider.all.alphabetical
     end
 
-    def cohorts
-      Cohort.order_by_oldest
-    end
-
     def statements
       scope = Statement.all
       scope = scope.where(lead_provider_id:) if lead_provider_id.present?
 
-      options = [["All", ""]] + scope.map { [statement_name(_1), statement_period(_1)] }
+      options = [["All", ""]] + scope.map { [statement_name(_1), statement_options_value(_1)] }
       options.map { StatementOption.new(*_1) }.uniq(&:value)
     end
 
