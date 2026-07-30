@@ -57,10 +57,6 @@ module Admin
       helpers.govuk_link_to(lead_provider.name, admin_lead_provider_path(lead_provider), **metadata_link_arguments)
     end
 
-    def cohort_link(statement)
-      helpers.govuk_link_to(statement.cohort.description, "#", **metadata_link_arguments)
-    end
-
     def statement_tag(statement)
       helpers.govuk_tag(
         text: statement.state.capitalize,
