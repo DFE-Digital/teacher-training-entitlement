@@ -5,14 +5,15 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, :revisit, type: :component
 
   let(:component) { described_class.new(contract:) }
   let(:calculator) { ::Statements::CourseCalculator.new(contract:) }
+  let(:cohort) { create(:cohort) }
   let(:statement) { create(:statement) }
   let(:paid_statement) { create(:statement, :paid) }
   let(:course) { create(:course, :npd_eirt) }
   let(:contract) { create(:contract, course:, statement:) }
 
   before do
-    create :schedule, :tte_reception_autumn, cohort: statement.cohort
-    create :schedule, :tte_reception_spring, cohort: statement.cohort
+    create :schedule, :tte_reception_autumn, cohort:
+    create :schedule, :tte_reception_spring, cohort:
 
     create_list(:declaration, 2, :eligible, declaration_type: "started", course:, statement:)
     create_list(:declaration, 3, :eligible, declaration_type: "retained-1", course:, statement:)
