@@ -21,7 +21,13 @@ FactoryBot.define do
     submitted
     ecf_id { SecureRandom.uuid }
     value { 100 }
-    statement { Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:) }
+    statement do
+      if lead_provider && LeadProvider.exists?(lead_provider.id)
+        Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:)
+      else
+        build(:statement)
+      end
+    end
 
     trait :submitted_or_eligible do
       state do
