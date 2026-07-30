@@ -16,22 +16,20 @@ RSpec.describe "admin/finance/statements/show", type: :view do
   context "when the user is a super admin" do
     let(:admin_user) { create(:admin, super_admin: true) }
 
-    context "when the statement is in the current month" do
-      let(:statement) { build(:statement, for_date: Time.zone.today) }
+    context "when the statement is current" do
+      let(:statement) { create(:statement) }
 
       it { is_expected.to have_link("Change", href: admin_finance_change_per_participant_path(contract), visible: :all) }
     end
 
     context "when the statement is in the past" do
-      let(:statement) { build(:statement, for_date: 1.month.ago) }
+      let(:statement) { create(:statement, :payable) }
 
       it { is_expected.not_to have_link("Change", href: admin_finance_change_per_participant_path(contract), visible: :all) }
     end
 
     context "when the statement is paid" do
-      let(:statement) { build(:statement, for_date: Time.zone.today) }
-
-      before { statement.update!(state: "paid") }
+      let(:statement) { create(:statement, state: "paid", marked_as_paid_at: 1.week.ago) }
 
       it { is_expected.not_to have_link("Change", href: admin_finance_change_per_participant_path(contract), visible: :all) }
     end
@@ -40,7 +38,7 @@ RSpec.describe "admin/finance/statements/show", type: :view do
   context "when the user is not a super admin" do
     let(:admin_user) { create(:admin) }
 
-    let(:statement) { build(:statement, for_date: Time.zone.today) }
+    let(:statement) { create(:statement) }
 
     it { is_expected.not_to have_link("Change", href: admin_finance_change_per_participant_path(contract), visible: :all) }
   end
