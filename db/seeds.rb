@@ -49,5 +49,8 @@ ApplicationRecord.descendants.each(&:reset_column_information)
   Rails.logger.info("seeding #{seed_file}")
   ApplicationRecord.transaction do
     load_base_file(seed_file)
+  rescue StandardError => e
+    Rails.logger.error("Seed error #{seed_file}: #{e.message}")
+    raise
   end
 end
