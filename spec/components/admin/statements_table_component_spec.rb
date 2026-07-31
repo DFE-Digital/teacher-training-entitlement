@@ -7,7 +7,7 @@ RSpec.describe Admin::StatementsTableComponent, type: :component do
 
   let(:statements) { FactoryBot.create_list(:statement, 3) }
   let(:show_lead_provider) { true }
-  let(:expected_columns) { ["Provider", "Statement date", "Status", "Payment run", "Actions"] }
+  let(:expected_columns) { ["Provider", "Statement date", "Payment status", "Payment run", "Actions"] }
 
   it "renders a table with the expected columns" do
     expected_columns.each do |heading|
