@@ -4,4 +4,5 @@ class CourseCohortProvider < ApplicationRecord
 
   validates :course_cohort_id, uniqueness: { scope: :lead_provider_id }
   validates :recruitment_target, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :teacher_funding, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 end
