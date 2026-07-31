@@ -205,7 +205,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
@@ -519,7 +519,7 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place: 
+                        funded_place:
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
@@ -834,15 +834,15 @@ paths:
                         course_identifier: tte-early-years
                         declaration_date: '2021-05-31T02:22:32Z'
                         state: voided
-                        has_passed: 
+                        has_passed:
                         ineligible_for_funding_reason: duplicate_declaration
                         delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
                         delivery_partner_name: Foo education
                         secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
                         secondary_delivery_partner_name: Bar education
                         statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
-                        clawback_declaration_id: 
-                        paid_declaration_id: 
+                        clawback_declaration_id:
+                        paid_declaration_id:
                         uplift_paid: true
                         lead_provider_name: Example Institute
                         created_at: '2021-05-31T02:22:32.000Z'
@@ -1505,7 +1505,7 @@ components:
                 being funded by DfE
               nullable: true
               type: boolean
-              example: 
+              example:
             created_at:
               description: The date the application was created
               type: string
@@ -1886,7 +1886,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was withdrawn
@@ -1929,7 +1929,7 @@ components:
                     required:
                     - reason
                     - date
-                    example: 
+                    example:
                     properties:
                       reason:
                         description: The reason a participant was deferred
@@ -2145,22 +2145,16 @@ components:
           - statement
         attributes:
           properties:
-            month:
-              description: The month which appears on the statement in the DfE portal.
+            start_date:
+              description: Statement start date
               type: string
               nullable: false
               example: May
-            year:
-              description: The calendar year which appears on the statement in the
-                dfe portal.
+            frequency:
+              description: Statement duration
               type: string
               nullable: false
               example: '2022'
-            cohort:
-              description: The cohort - 2021 or 2022 - which the statement funds.
-              type: string
-              nullable: false
-              example: '2021'
             cut_off_date:
               description: The milestone cut off or review point for the statement.
               type: string
@@ -2351,7 +2345,7 @@ components:
               description: Whether the participant has failed or passed
               type: boolean
               nullable: true
-              example: 
+              example:
             ineligible_for_funding_reason:
               description: If the declaration is ineligible, the reason why
               type: string
