@@ -254,9 +254,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
-    t.decimal "participant_funding", precision: 10, scale: 2
     t.bigint "schedule_id"
-    t.decimal "service_fee"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
@@ -298,6 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.bigint "superseded_by_id"
     t.string "type"
     t.datetime "updated_at", null: false
+    t.decimal "value"
     t.index ["application_id", "milestone_id"], name: "index_declarations_on_application_id_and_milestone_id", unique: true, where: "(state = ANY (ARRAY['eligible'::declaration_states, 'payable'::declaration_states, 'paid'::declaration_states, 'submitted'::declaration_states]))"
     t.index ["application_id"], name: "index_declarations_on_application_id"
     t.index ["clawback_declaration_id"], name: "index_declarations_on_clawback_declaration_id"

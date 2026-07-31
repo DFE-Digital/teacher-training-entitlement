@@ -71,9 +71,6 @@
   :course_cohort_providers:
   - recruitment_target
   - teacher_funding
-  :course_cohorts:
-  - service_fee
-  - participant_funding
   :contract_templates:
   - id
   - created_at
@@ -100,6 +97,8 @@
   - service_fee
   - teacher_funding
   - updated_at
+  :declarations:
+  - value
   :contracts:
   - id
   - contract_template_id

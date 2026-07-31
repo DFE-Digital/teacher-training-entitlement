@@ -22,5 +22,13 @@ class AddContractualStores < ActiveRecord::Migration[8.1]
     # the combination of contract-year and course_cohort_provider aka contract
     # captures all the contractual data for a lead_provider / course
     add_column :course_cohort_providers, :teacher_funding, :decimal
+
+    # lock in declaration computed contract.teacher_funding * milestone.percentage
+    add_column :declarations, :value, :decimal
+
+    safety_assured do
+      remove_column :course_cohorts, :service_fee, :decimal
+      remove_column :course_cohorts, :participant_funding, :decimal
+    end
   end
 end

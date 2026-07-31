@@ -78,50 +78,6 @@ RSpec.describe Milestone, type: :model do
       end
     end
 
-    describe "participant_funding validation" do
-      let(:course_cohort) { create(:course_cohort, participant_funding:) }
-
-      before { create(:milestone, course_cohort:, payment_amount: 600) }
-
-      context "when sum would exceed participant_funding" do
-        let(:participant_funding) { 1000 }
-
-        it "is invalid when adding a milestone" do
-          milestone = build(:milestone, :completed, course_cohort:, payment_amount: 500)
-
-          expect(milestone).to have_error(:payment_amount, :exceeds_participant_funding)
-        end
-
-        it "is invalid when updating an existing milestone" do
-          milestone = create(:milestone, :completed, course_cohort:, payment_amount: 300)
-
-          milestone.payment_amount = 500
-
-          expect(milestone).to have_error(:payment_amount, :exceeds_participant_funding)
-        end
-      end
-
-      context "when sum equals participant_funding" do
-        let(:participant_funding) { 1000 }
-
-        it "is valid" do
-          milestone = build(:milestone, :completed, course_cohort:, payment_amount: 400)
-
-          expect(milestone).to be_valid
-        end
-      end
-
-      context "when participant_funding is nil" do
-        let(:participant_funding) { nil }
-
-        it "is valid" do
-          milestone = build(:milestone, :completed, course_cohort:, payment_amount: 500)
-
-          expect(milestone).to be_valid
-        end
-      end
-    end
-
     context "when acceptance windows do not overlap in the same course cohort" do
       let(:course_cohort) { create(:course_cohort) }
 
