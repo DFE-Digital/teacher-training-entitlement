@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -209,6 +209,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_090000) do
     t.index ["ecf_id"], name: "index_contract_templates_on_ecf_id", unique: true
   end
 
+  create_table "contract_years", force: :cascade do |t|
+    t.integer "academic_year"
+    t.bigint "course_id", null: false
+    t.string "course_url"
+    t.datetime "created_at", null: false
+    t.bigint "lead_provider_id", null: false
+    t.integer "recruitment_target"
+    t.string "secondary_form_url"
+    t.decimal "service_fee"
+    t.decimal "teacher_funding"
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_contract_years_on_course_id"
+    t.index ["lead_provider_id", "course_id", "academic_year"], name: "idx_on_lead_provider_id_course_id_academic_year_c921fdb2b9", unique: true
+    t.index ["lead_provider_id"], name: "index_contract_years_on_lead_provider_id"
+  end
+
   create_table "contracts", force: :cascade do |t|
     t.bigint "contract_template_id", null: false
     t.bigint "course_id", null: false
@@ -226,6 +242,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_090000) do
     t.datetime "created_at", null: false
     t.bigint "lead_provider_id", null: false
     t.integer "recruitment_target"
+    t.decimal "teacher_funding"
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "lead_provider_id"], name: "idx_on_course_cohort_id_lead_provider_id_3527d5c43f", unique: true
     t.index ["course_cohort_id"], name: "index_course_cohort_providers_on_course_cohort_id"
@@ -637,6 +654,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_090000) do
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "users"
+  add_foreign_key "contract_years", "courses"
+  add_foreign_key "contract_years", "lead_providers"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"
   add_foreign_key "contracts", "statements"
