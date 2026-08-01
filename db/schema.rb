@@ -214,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.bigint "course_id", null: false
     t.string "course_url"
     t.datetime "created_at", null: false
+    t.string "email"
     t.bigint "lead_provider_id", null: false
     t.integer "recruitment_target"
     t.string "secondary_form_url"
@@ -250,6 +251,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   end
 
   create_table "course_cohorts", force: :cascade do |t|
+    t.integer "academic_year"
     t.bigint "cohort_id", null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false

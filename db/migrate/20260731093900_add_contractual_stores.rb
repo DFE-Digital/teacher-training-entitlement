@@ -12,6 +12,7 @@ class AddContractualStores < ActiveRecord::Migration[8.1]
       t.decimal :teacher_funding
       t.string :secondary_form_url
       t.string :course_url
+      t.string :email
       t.timestamps
 
       t.index %i[lead_provider_id course_id academic_year], unique: true
@@ -22,6 +23,9 @@ class AddContractualStores < ActiveRecord::Migration[8.1]
     # the combination of contract-year and course_cohort_provider aka contract
     # captures all the contractual data for a lead_provider / course
     add_column :course_cohort_providers, :teacher_funding, :decimal
+
+    # track wich academic year the course cohort belongs
+    add_column :course_cohorts, :academic_year, :integer
 
     # lock in declaration computed contract.teacher_funding * milestone.percentage
     add_column :declarations, :value, :decimal
