@@ -15,7 +15,9 @@ class Statement < ApplicationRecord
   has_many :adjustments
 
   validates :start_date, presence: true
+  # rubocop:disable Rails/UniqueValidationWithoutIndex -- index added in follow-up migration after data backfill
   validates :lead_provider_id, uniqueness: { scope: %i[start_date frequency], message: "Statement for this lead provider start_date frequency already exists" }
+  # rubocop:enable Rails/UniqueValidationWithoutIndex
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validates :output_fee, inclusion: { in: [true, false] }
