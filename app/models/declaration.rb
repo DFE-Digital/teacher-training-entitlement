@@ -120,7 +120,7 @@ class Declaration < ApplicationRecord
             uniqueness: { scope: :application_id, conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
 
-  validates :value, numericality: { greater_than: 0.01 }, allow_nil: true
+  validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)

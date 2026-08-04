@@ -1,6 +1,6 @@
 # Finance — Overview
 
-The finance domain is set to give some flexible to create contract that suits DfE needs for a course. This domain allows values to be set as contract of overall while keeping the ability to 
+The finance domain is set to give some flexibility to create contract that suits DfE needs for a course. This domain allows values to be set as contract of overall while keeping the ability to 
 set some changes per academic year along with some control at the course cohort level.
 
 To determine the value of a contractual field you merge:
@@ -22,7 +22,7 @@ The computation is a merge operation:
 ### Default contract
 
 The contract is setup in with the `ContractYear` with the academic_year field left null.
-Whatever value are set at this level will apply to the statement calculation unless a field is amended at lower level (ie Acadamic year level and or course cohort level)
+Whatever value are set at this level will apply to the statement calculation unless a field is amended at lower level (ie Academic year level and or course cohort level)
 
 Example:
 we can set a Lead provider a set recruitment_target 100 year on year for all their course cohorts
