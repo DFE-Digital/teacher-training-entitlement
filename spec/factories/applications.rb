@@ -179,6 +179,7 @@ FactoryBot.define do
         application.declarations << create(
           :declaration,
           :started,
+          :eligible,
           application:,
           course_cohort: application.course_cohort,
           milestone:,

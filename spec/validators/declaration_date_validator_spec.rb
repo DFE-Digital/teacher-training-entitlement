@@ -10,6 +10,7 @@ RSpec.describe DeclarationDateValidator do
       include ActiveModel::Attributes
 
       attribute :declaration_date, :datetime
+      attribute :application
       attr_reader :raw_declaration_date
 
       validates :declaration_date, declaration_date: true
@@ -17,10 +18,6 @@ RSpec.describe DeclarationDateValidator do
       def declaration_date=(raw_date)
         self.raw_declaration_date = raw_date
         super
-      end
-
-      def schedule
-        Schedule.new
       end
 
     private
@@ -32,8 +29,9 @@ RSpec.describe DeclarationDateValidator do
   let(:declaration_date) { Date.new(2022, 1, 30) }
   let(:schedule_training_starts_at) { declaration_date - 1.day }
   let(:schedule_training_ends_at) { declaration_date + 1.day }
+  let(:application) { create(:application) }
 
-  subject { model_class.new(declaration_date: declaration_date.rfc3339) }
+  subject { model_class.new(declaration_date: declaration_date.rfc3339, application:) }
 
   before do
     allow_any_instance_of(Schedule).to receive(:training_starts_at).and_return(schedule_training_starts_at)
@@ -43,7 +41,7 @@ RSpec.describe DeclarationDateValidator do
   describe "#declaration_date" do
     describe "the declaration date has the right format" do
       context "when the declaration date is empty" do
-        subject { model_class.new(declaration_date: "") }
+        subject { model_class.new(declaration_date: "", application:) }
 
         it "does not errors when the declaration date is blank" do
           expect(subject).to be_valid

@@ -23,6 +23,7 @@ FactoryBot.define do
     declaration_date { application.schedule.training_starts_at + 1.day }
     submitted
     ecf_id { SecureRandom.uuid }
+    value { 100 }
 
     after(:create) do |declaration, evaluator|
       if evaluator.statement && declaration.state != "submitted"

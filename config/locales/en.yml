@@ -674,6 +674,7 @@ en:
                 recognised.
               out_of_order: A completed declaration cannot be submitted before
                 a started declaration.
+              started_declaration_first: A started declaration is required before any other declaration_type
             has_passed:
               invalid: Enter 'true' or 'false' in the '#/%{parameterized_attribute}'
                 field to indicate whether this participant has passed or failed their

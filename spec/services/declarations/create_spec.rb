@@ -113,7 +113,7 @@ RSpec.describe Declarations::Create, type: :model do
       context "when application receives `completed declaration` before `started declaration`" do
         let(:declaration_type) { "completed" }
 
-        it { is_expected.to validate_param(:declaration_type).with_message("A completed declaration cannot be submitted before a started declaration.") }
+        it { is_expected.to validate_param(:declaration_type).with_message("A started declaration is required before any other declaration_type") }
       end
 
       context "when application already has a started declaration" do
