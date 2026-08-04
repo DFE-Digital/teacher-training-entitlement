@@ -11,15 +11,15 @@ module Statements
     end
 
     def total_output_payment
-      course_calulators.sum(&:output_payment_subtotal)
+      course_calculators.sum(&:output_payment_subtotal)
     end
 
     def total_service_fees
-      course_calulators.sum(&:monthly_service_fees)
+      course_calculators.sum(&:monthly_service_fees)
     end
 
     def clawback_payments
-      course_calulators.sum(&:clawback_payment)
+      course_calculators.sum(&:clawback_payment)
     end
 
     def total_clawbacks
@@ -35,25 +35,57 @@ module Statements
     end
 
     def total_starts
-      course_calulators.sum { _1.billable_declarations_count_for_declaration_type("started") }
+      course_calculators.sum { _1.billable_declarations_count_for_declaration_type("started") }
     end
 
     def total_retained
-      course_calulators.sum { _1.billable_declarations_count_for_declaration_type("retained") }
+      course_calculators.sum { _1.billable_declarations_count_for_declaration_type("retained") }
     end
 
     def total_completed
-      course_calulators.sum { _1.billable_declarations_count_for_declaration_type("completed") }
+      course_calculators.sum { _1.billable_declarations_count_for_declaration_type("completed") }
     end
 
     def total_voided
       statement.declarations.where(state: "voided").count
     end
 
+    def expected_starts
+      course_calculators.sum(&:recruitment_target)
+    end
+
+    def expected_completed
+      total_starts
+    end
+
+    def outstanding_starts
+      [expected_starts - total_starts, 0].max
+    end
+
+    def outstanding_completed
+      [expected_completed - total_completed, 0].max
+    end
+
+    def expected_output_payment
+      course_calculators.sum(&:expected_output_payment_subtotal)
+    end
+
+    def total_declarations
+      total_starts + total_completed
+    end
+
+    def expected_total
+      expected_starts + expected_completed
+    end
+
+    def outstanding_total
+      outstanding_starts + outstanding_completed
+    end
+
   private
 
-    def course_calulators
-      @course_calulators ||= contracts.map { CourseCalculator.new(contract: _1) }
+    def course_calculators
+      @course_calculators ||= contracts.map { CourseCalculator.new(contract: _1) }
     end
 
     def contracts
