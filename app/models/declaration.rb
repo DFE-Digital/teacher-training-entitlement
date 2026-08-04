@@ -210,13 +210,14 @@ class Declaration < ApplicationRecord
 private
 
   def validate_declaration_date_within_schedule
-    return unless application&.schedule
-    return unless declaration_date
+    return unless application && declaration_date.present?
+
+    milestone = application.milestones.find_by(declaration_type: declaration_type)
+    return if milestone.acceptance_window_start_date <= declaration_date
+
     return if persisted? && !declaration_date_changed?
 
-    if declaration_date < application.schedule.training_starts_at
-      errors.add(:declaration_date, :declaration_before_schedule_start)
-    end
+    errors.add(:declaration_date, :declaration_before_schedule_start)
   end
 
   def validate_declaration_date_not_in_the_future

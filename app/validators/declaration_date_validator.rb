@@ -28,8 +28,10 @@ private
   end
 
   def declaration_within_schedule(record)
-    return unless record.application.schedule && record.declaration_date.present?
-    return unless record.declaration_date < record.application.schedule.training_starts_at.beginning_of_day
+    return unless record.application && record.declaration_date.present?
+
+    milestone = record.application.milestones.find_by(declaration_type: record.declaration_type)
+    return if milestone.acceptance_window_start_date <= record.declaration_date
 
     record.errors.add(:declaration_date, :declaration_before_schedule_start)
   end
