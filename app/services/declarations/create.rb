@@ -103,6 +103,8 @@ module Declarations
     end
 
     def value
+      return unless application.funded_place # only funded application have a value
+
       amount = nil
       amount = milestone.payment_amount if milestone&.payment_amount
       # with a milestone percentage approach
