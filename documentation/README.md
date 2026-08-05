@@ -21,6 +21,10 @@ This directory is organised by domain.
 - [`overview.md`](admin/overview.md) — role model, feature flag page, cohort/course management
 - [`authentication.md`](admin/authentication.md) — OTP-based sign-in wizard, session handling
 
+## Finance domain
+
+- [`README.md`](finance/README.md) - contractual architecture
+
 ## Deployment
 
 - [`overview.md`](deployment/overview.md) — architecture, CI/CD pipeline, environments

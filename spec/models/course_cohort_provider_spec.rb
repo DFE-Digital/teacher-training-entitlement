@@ -10,5 +10,6 @@ RSpec.describe CourseCohortProvider do
 
   describe "validations" do
     it { is_expected.to validate_numericality_of(:recruitment_target).only_integer.is_greater_than_or_equal_to(0).allow_nil }
+    it { is_expected.to validate_numericality_of(:teacher_funding).is_greater_than_or_equal_to(0).allow_nil }
   end
 end

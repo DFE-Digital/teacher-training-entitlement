@@ -70,9 +70,7 @@
   - updated_at
   :course_cohort_providers:
   - recruitment_target
-  :course_cohorts:
-  - service_fee
-  - participant_funding
+  - teacher_funding
   :contract_templates:
   - id
   - created_at
@@ -87,6 +85,21 @@
   - special_course
   - targeted_delivery_funding_per_participant
   - updated_at
+  :contract_years:
+  - id
+  - academic_year
+  - course_id
+  - course_url
+  - created_at
+  - lead_provider_id
+  - email
+  - recruitment_target
+  - secondary_form_url
+  - service_fee
+  - teacher_funding
+  - updated_at
+  :declarations:
+  - value
   :contracts:
   - id
   - contract_template_id

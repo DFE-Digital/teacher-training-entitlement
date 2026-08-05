@@ -15,12 +15,12 @@ module Declarations
 
     validates :application, presence: true
     validates :declaration_type, presence: true
+    validate :declaration_type_out_of_order
     validates :declaration_type, inclusion: { in: ->(service) { service.allowed_declaration_types } }, if: -> { application && declaration_type }
     validates :declaration_date, presence: true
     validates :declaration_date, declaration_date: true
     validates :delivery_partner_id, presence: true
     validate :application_is_declarable, if: -> { application }
-    validate :declaration_type_out_of_order
     validate :validate_has_passed_field, if: :completed_declaration?
     validate :no_duplicate_billable_declaration
     validate :delivery_partner_exists, if: :delivery_partner_id
@@ -28,17 +28,18 @@ module Declarations
     validate :declaration_valid
     validate :application_updateable
 
-    delegate :lead_provider, :schedule, to: :application
+    delegate :lead_provider, to: :application
 
     attr_reader :raw_declaration_date, :declaration
-
-    delegate :course_cohort, to: :application
-    delegate :cohort, to: :course_cohort
 
     def call
       return false unless valid?
 
       ApplicationRecord.transaction do
+        # DeclarationUplift.upsert_all qualifying_uplift_incentives.map { |qui|
+        # { declaration_id:, uplift_id:, value: qui.value }
+        # } if qualifying_uplfit_incentives.any?
+
         @declaration = application.declarations.create!(declaration_parameters_for_create)
         @declaration.mark_eligible!
 
@@ -80,6 +81,15 @@ module Declarations
       declaration_type == Milestone::STARTED
     end
 
+    def course_cohort
+      @course_cohort ||= if started_declaration?
+                           application.course_cohort
+                         else
+                           # all declarations for an application belong to the same course_cohort
+                           application.started_declaration&.course_cohort
+                         end
+    end
+
     def milestone
       return if declaration_type.blank?
 
@@ -87,7 +97,21 @@ module Declarations
     end
 
     def allowed_declaration_types
+      return [] unless course_cohort
+
       course_cohort.milestones.pluck(:declaration_type)
+    end
+
+    def value
+      return unless application.funded_place # only funded application have a value
+
+      amount = nil
+      amount = milestone.payment_amount if milestone&.payment_amount
+      # with a milestone percentage approach
+      # amount = lead_provider.contract(course_cohort:).teacher_funding * milestone.percentage if milestone.percentage
+      # for uplift incentives
+      # amount += qualifying_uplfit_incentives.sum(&:value)
+      amount
     end
 
   private
@@ -126,6 +150,7 @@ module Declarations
         application:,
         milestone:,
         delivery_partner:,
+        value:,
       }
       params.merge!(secondary_delivery_partner:) if secondary_delivery_partner_id
       params
@@ -135,7 +160,7 @@ module Declarations
       return if errors.any?
       return if existing_declaration&.submitted_state?
       return if existing_declaration.nil? && !application.fundable?
-      return if lead_provider.next_output_fee_statement(cohort).present?
+      return if lead_provider.next_output_fee_statement(course_cohort.cohort).present?
 
       errors.add(:cohort, :no_output_fee_statement, cohort: cohort.start_year)
     end
@@ -205,16 +230,13 @@ module Declarations
 
     def declaration_type_out_of_order
       return if started_declaration?
-      return if completed_declaration? && active_declarations.started.exists?
+      return if completed_declaration? && application.started_declaration
 
-      errors.add(:declaration_type, :out_of_order)
-    end
-
-    def started_declaration_milestone
-      active_declarations
-        .started_declaration_type
-        .first
-        .milestone
+      if application.started_declaration.nil?
+        errors.add(:declaration_type, :started_declaration_first)
+      else
+        errors.add(:declaration_type, :out_of_order)
+      end
     end
   end
 end

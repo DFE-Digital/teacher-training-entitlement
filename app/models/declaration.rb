@@ -18,6 +18,7 @@ class Declaration < ApplicationRecord
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
   belongs_to :clawback_declaration, optional: true
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
+  has_one :course_cohort, through: :milestone
   has_many :participant_outcomes, dependent: :destroy
   has_many :statement_items
   has_many :statements, through: :statement_items
@@ -118,6 +119,8 @@ class Declaration < ApplicationRecord
   validates :milestone_id,
             uniqueness: { scope: :application_id, conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
+
+  validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)

@@ -58,17 +58,28 @@ RSpec.describe Declarations::Create, type: :model do
 
         before { service.call }
 
-        it { expect(declaration.declaration_type).to eq(declaration_type) }
-        it { expect(declaration.application).to eq(application) }
-        it { expect(declaration.declaration_date).to eq(declaration_date) }
-        it { expect(declaration.lead_provider).to eq(application.lead_provider) }
-        it { expect(declaration.milestone).to eq(started_milestone) }
-        it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
-        it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
+        context "when the application is DfE funded" do
+          let(:application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
+
+          it { expect(declaration.declaration_type).to eq(declaration_type) }
+          it { expect(declaration.application).to eq(application) }
+          it { expect(declaration.declaration_date).to eq(declaration_date) }
+          it { expect(declaration.lead_provider).to eq(application.lead_provider) }
+          it { expect(declaration.milestone).to eq(started_milestone) }
+          it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
+          it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
+          it { expect(declaration.value).to eq(started_milestone.payment_amount) }
+        end
 
         it "sets the application to started" do
           expect(application.reload).to be_started_status
           expect(application.state_changes.last&.event).to eq(Application::STARTED)
+        end
+
+        context "when the application is not DfE funded" do
+          let(:application) { create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
+
+          it { expect(declaration.value).to be_nil }
         end
       end
 
@@ -113,7 +124,7 @@ RSpec.describe Declarations::Create, type: :model do
       context "when application receives `completed declaration` before `started declaration`" do
         let(:declaration_type) { "completed" }
 
-        it { is_expected.to validate_param(:declaration_type).with_message("A completed declaration cannot be submitted before a started declaration.") }
+        it { is_expected.to validate_param(:declaration_type).with_message("A started declaration is required before any other declaration_type") }
       end
 
       context "when application already has a started declaration" do

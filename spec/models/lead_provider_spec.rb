@@ -58,4 +58,21 @@ RSpec.describe LeadProvider do
     it { is_expected.not_to include twenty_four_partner }
     it { is_expected.not_to include unrelated_partner }
   end
+
+  describe "#contract" do
+    subject(:lead_provider) { create(:lead_provider) }
+
+    let(:course_cohort_one) { create(:course_cohort, course: create(:course), lead_provider:) }
+    let(:course_cohort_two) { create(:course_cohort, course: create(:course), lead_provider:) }
+
+    before do
+      create(:contract_year, :generic, lead_provider:, course: course_cohort_one.course, recruitment_target: 100)
+      create(:contract_year, :generic, lead_provider:, course: course_cohort_two.course, recruitment_target: 200)
+    end
+
+    it "returns the contract for each course cohort" do
+      expect(lead_provider.contract(course_cohort: course_cohort_one).recruitment_target).to eq(100)
+      expect(lead_provider.contract(course_cohort: course_cohort_two).recruitment_target).to eq(200)
+    end
+  end
 end

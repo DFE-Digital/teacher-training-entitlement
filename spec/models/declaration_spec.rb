@@ -45,6 +45,7 @@ RSpec.describe Declaration, type: :model do
   end
 
   describe "validations" do
+    it { is_expected.to validate_numericality_of(:value).is_greater_than_or_equal_to(0).allow_nil }
     it { is_expected.to validate_presence_of(:declaration_type) }
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(described_class.declaration_types.values) }
     it { is_expected.to validate_presence_of(:declaration_date) }
