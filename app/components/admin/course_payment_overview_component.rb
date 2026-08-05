@@ -16,55 +16,23 @@ module Admin
       contract.course.name
     end
 
-    def counts
-      allowed_declaration_types.inject({}) { |m, dt|
-        m.merge(dt.titleize => declaration_count_for_declaration_type(dt))
-      }.merge({
-        t(".total_declarations") => billable_declarations_count,
-        t(".total_not_eligible_for_funding") => not_eligible_declarations_count,
-      })
-    end
-
-    def line_items
+    def funded_rows
+      started = funded_billable_count_for_type("started")
+      completed = funded_billable_count_for_type("completed")
       [
-        output_payment_row,
-        *refundable_declaration_rows,
-        monthly_service_fees_row,
-      ].compact
-    end
-
-  private
-
-    def output_payment_row
-      [
-        t(".output_payment"),
-        billable_declarations_count,
-        output_payment_per_participant,
-        output_payment_subtotal,
+        [t(".started"), started, output_payment_per_participant, started * output_payment_per_participant],
+        [t(".completed"), completed, output_payment_per_participant, completed * output_payment_per_participant],
+        [t(".total"), started + completed, nil, (started + completed) * output_payment_per_participant],
       ]
     end
 
-    def refundable_declaration_rows
-      return [] unless refundable_declarations_count.positive?
-
-      refundable_declarations_by_type_count.map do |type, count|
-        [
-          "Clawbacks - #{type.humanize}",
-          count,
-          -output_payment_per_participant,
-          -(count * output_payment_per_participant),
-        ]
-      end
-    end
-
-    def monthly_service_fees_row
-      return if monthly_service_fees.zero?
-
+    def self_funded_rows
+      started = self_funded_billable_count_for_type("started")
+      completed = self_funded_billable_count_for_type("completed")
       [
-        t(".service_fee"),
-        recruitment_target,
-        service_fees_per_participant,
-        monthly_service_fees,
+        [t(".started"), started],
+        [t(".completed"), completed],
+        [t(".total"), started + completed],
       ]
     end
   end

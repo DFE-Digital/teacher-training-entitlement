@@ -81,7 +81,7 @@
 
     <%= govuk_accordion do |accordion|
       @contracts.each do |contract|
-        accordion.with_section(heading_text: contract.course.name) { render Admin::CoursePaymentOverviewComponent.new(contract:) }
+        accordion.with_section(heading_text: contract.course.name, expanded: true) { render Admin::CoursePaymentOverviewComponent.new(contract:) }
       end
     end %>
 
