@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :contract_template do
     service_fee_percentage { 40 }
     output_payment_percentage { 60 }
-    per_participant { 800.00 }
+    per_participant { 650.00 }
     number_of_payment_periods { 3 }
     recruitment_target { 72 }
     service_fee_installments { 19 }
