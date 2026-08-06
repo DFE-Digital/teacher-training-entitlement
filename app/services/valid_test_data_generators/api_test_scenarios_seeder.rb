@@ -319,12 +319,13 @@ module ValidTestDataGenerators
 
       cc = CourseCohort.find_by(course:, cohort: current_cohort)
       if cc
-        cc.update!(schedule:)
+        cc.update!(schedule:, academic_year:)
       else
         cc = CourseCohort.create!(
           course:,
           cohort: current_cohort,
           schedule:,
+          academic_year:,
         )
       end
 
@@ -352,9 +353,21 @@ module ValidTestDataGenerators
     end
 
     def create_or_update_lead_provider_contract(course_cohort:, lead_provider:)
-      # TODO: Add recruitment_target, service_fee, teacher_funding
-      # Add contract_year for this academic_year
-      course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
+      lead_provider_contract = course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
+      recruitment_target = [50, 100, 150, 200].sample
+      teacher_funding = [600, 700, 800].sample
+      lead_provider_contract.update!(recruitment_target:)
+
+      attrs = {
+        recruitment_target: recruitment_target * 2,
+        teacher_funding:,
+      }
+      contract_year = ContractYear.find_by(lead_provider:, academic_year:, course: course_cohort.course)
+      if contract_year
+        contract_year.update!(attrs)
+      else
+        ContractYear.create!(attrs.merge(lead_provider:, academic_year:, course: course_cohort.course))
+      end
     end
 
     def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
