@@ -24,6 +24,17 @@ module ValidTestDataGenerators
         @custom_email_templates ||= load_custom_email_templates
       end
 
+      def to_dns_name(name, max_length: 63)
+        name.to_s
+          .parameterize # Convert to lowercase, replace spaces/special chars with hyphens
+          .gsub(/[^a-z0-9-]/, "")         # Remove any remaining invalid characters
+          .gsub(/-+/, "-")                # Collapse multiple hyphens
+          .sub(/^-/, "")                  # Remove leading hyphen
+          .sub(/-$/, "")                  # Remove trailing hyphen
+          .slice(0, max_length)           # Truncate to max length
+          .sub(/-$/, "")                  # Remove trailing hyphen again if truncation created one
+      end
+
     private
 
       def load_applications_data
@@ -61,7 +72,7 @@ module ValidTestDataGenerators
         "#{prefix}+#{user_id}@#{domain}"
       else
         # Fall back to original logic
-        email.gsub("example", to_dns_name(@lead_provider.name))
+        email.gsub("example", self.class.to_dns_name(@lead_provider.name))
       end
     end
 
@@ -197,17 +208,6 @@ module ValidTestDataGenerators
 
   private
 
-    def to_dns_name(name, max_length: 63)
-      name.to_s
-        .parameterize # Convert to lowercase, replace spaces/special chars with hyphens
-        .gsub(/[^a-z0-9-]/, "")         # Remove any remaining invalid characters
-        .gsub(/-+/, "-")                # Collapse multiple hyphens
-        .sub(/^-/, "")                  # Remove leading hyphen
-        .sub(/-$/, "")                  # Remove trailing hyphen
-        .slice(0, max_length)           # Truncate to max length
-        .sub(/-$/, "")                  # Remove trailing hyphen again if truncation created one
-    end
-
     def applications_data
       self.class.applications_data
     end
@@ -220,7 +220,7 @@ module ValidTestDataGenerators
       name = Faker::Name.unique.name
       email_part = name.tr(" '.", "").downcase
 
-      email = "#{email_part}@#{to_dns_name(@lead_provider.name)}.com"
+      email = "#{email_part}@#{self.class.to_dns_name(@lead_provider.name)}.com"
 
       user = User.find_or_create_by!(email:) do |u|
         u.ecf_id = SecureRandom.uuid
