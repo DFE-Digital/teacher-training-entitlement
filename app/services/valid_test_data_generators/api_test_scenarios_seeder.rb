@@ -100,14 +100,14 @@ module ValidTestDataGenerators
     end
 
     def custom_data(nb_cohort:, nb_app_per_state:)
-      cohort_start_dates
+      registration_periods
         .take(nb_cohort)
         .each do |registration_starts_at|
         create_data!(registration_starts_at:, number: nb_app_per_state)
       end
     end
 
-    def cohort_start_dates
+    def registration_periods
       Enumerator.new do |yielder|
         year = cohort_year
         loop do
@@ -177,7 +177,7 @@ module ValidTestDataGenerators
     end
 
     def test_scenarios_create_data!
-      course_cohorts = cohort_start_dates
+      course_cohorts = registration_periods
                          .take(4)
                          .map do |registration_starts_at|
         course_cohort_setup(
