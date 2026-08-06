@@ -84,16 +84,6 @@ locals {
   #access_external_domain = try(local.environment_variables["ACCESS_EXTERNAL_DOMAIN"], local.access_domain)
 
   postgres_ssl_mode = var.enable_postgres_ssl ? "require" : "disable"
-
-  redis = {
-    legacy = {
-      cache_url = module.redis-cache.url
-    }
-    managed = {
-      cache_url = module.redis-managed-cache.url
-    }
-  }
-  selected_redis = local.redis[var.redis_mode]
 }
 
 variable "enable_logit" { default = true }
@@ -170,17 +160,3 @@ variable "gcp_table_deletion_protection" {
   default     = true
   nullable    = false
 }
-
-variable "redis_managed_cache_sku_name" { default = "Balanced_B1" }
-
-variable "redis_managed_queue_sku_name" { default = "Balanced_B1" }
-
-variable "redis_mode" {
- description = "Whether to use Cache for Redis or Managed Redis"
- type        = string
- default     = "legacy" # or "managed"
- validation {
-   condition     = contains(["managed", "legacy"], var.redis_mode)
-   error_message = "redis_mode must be either 'legacy' (Cache for Redis) or 'managed' (Managed Redis)."
-   }
- }

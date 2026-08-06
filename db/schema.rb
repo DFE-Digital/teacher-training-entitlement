@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_082559) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
   create_enum "statement_item_states", ["eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "statement_states", ["open", "payable", "paid"]
+  create_enum "statements_frequency_types", ["monthly"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -209,23 +210,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.index ["ecf_id"], name: "index_contract_templates_on_ecf_id", unique: true
   end
 
-  create_table "contract_years", force: :cascade do |t|
-    t.integer "academic_year"
-    t.bigint "course_id", null: false
-    t.string "course_url"
-    t.datetime "created_at", null: false
-    t.string "email"
-    t.bigint "lead_provider_id", null: false
-    t.integer "recruitment_target"
-    t.string "secondary_form_url"
-    t.decimal "service_fee"
-    t.decimal "teacher_funding"
-    t.datetime "updated_at", null: false
-    t.index ["course_id"], name: "index_contract_years_on_course_id"
-    t.index ["lead_provider_id", "course_id", "academic_year"], name: "idx_on_lead_provider_id_course_id_academic_year_c921fdb2b9", unique: true
-    t.index ["lead_provider_id"], name: "index_contract_years_on_lead_provider_id"
-  end
-
   create_table "contracts", force: :cascade do |t|
     t.bigint "contract_template_id", null: false
     t.bigint "course_id", null: false
@@ -243,7 +227,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.datetime "created_at", null: false
     t.bigint "lead_provider_id", null: false
     t.integer "recruitment_target"
-    t.decimal "teacher_funding"
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "lead_provider_id"], name: "idx_on_course_cohort_id_lead_provider_id_3527d5c43f", unique: true
     t.index ["course_cohort_id"], name: "index_course_cohort_providers_on_course_cohort_id"
@@ -251,12 +234,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   end
 
   create_table "course_cohorts", force: :cascade do |t|
-    t.integer "academic_year"
     t.bigint "cohort_id", null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
+    t.decimal "participant_funding", precision: 10, scale: 2
     t.bigint "schedule_id"
+    t.decimal "service_fee"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
@@ -295,10 +279,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.bigint "secondary_delivery_partner_id"
     t.enum "state", default: "submitted", null: false, enum_type: "declaration_states"
     t.enum "state_reason", enum_type: "declaration_state_reasons"
+    t.bigint "statement_id"
     t.bigint "superseded_by_id"
     t.string "type"
     t.datetime "updated_at", null: false
-    t.decimal "value"
     t.index ["application_id", "milestone_id"], name: "index_declarations_on_application_id_and_milestone_id", unique: true, where: "(state = ANY (ARRAY['eligible'::declaration_states, 'payable'::declaration_states, 'paid'::declaration_states, 'submitted'::declaration_states]))"
     t.index ["application_id"], name: "index_declarations_on_application_id"
     t.index ["clawback_declaration_id"], name: "index_declarations_on_clawback_declaration_id"
@@ -308,6 +292,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
     t.index ["lead_provider_id"], name: "index_declarations_on_lead_provider_id"
     t.index ["paid_declaration_id"], name: "index_declarations_on_paid_declaration_id"
     t.index ["secondary_delivery_partner_id"], name: "index_declarations_on_secondary_delivery_partner_id"
+    t.index ["statement_id"], name: "index_declarations_on_statement_id"
     t.index ["superseded_by_id"], name: "index_declarations_on_superseded_by_id"
     t.index ["type"], name: "index_declarations_on_type"
   end
@@ -579,19 +564,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   end
 
   create_table "statements", force: :cascade do |t|
-    t.bigint "cohort_id", null: false
+    t.bigint "cohort_id"
     t.datetime "created_at", null: false
     t.date "deadline_date"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
+    t.enum "frequency", enum_type: "statements_frequency_types"
     t.bigint "lead_provider_id", null: false
     t.datetime "marked_as_paid_at"
-    t.integer "month", null: false
+    t.integer "month"
     t.boolean "output_fee", default: true, null: false
     t.date "payment_date"
     t.decimal "reconcile_amount", precision: 8, scale: 2
+    t.date "start_date"
     t.enum "state", default: "open", null: false, enum_type: "statement_states"
     t.datetime "updated_at", null: false
-    t.integer "year", null: false
+    t.integer "year"
     t.index ["cohort_id"], name: "index_statements_on_cohort_id"
     t.index ["ecf_id"], name: "index_statements_on_ecf_id", unique: true
     t.index ["lead_provider_id", "cohort_id", "year", "month"], name: "idx_on_lead_provider_id_cohort_id_year_month_2dece26c47", unique: true
@@ -655,8 +642,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
   add_foreign_key "applications", "users"
-  add_foreign_key "contract_years", "courses"
-  add_foreign_key "contract_years", "lead_providers"
   add_foreign_key "contracts", "contract_templates"
   add_foreign_key "contracts", "courses"
   add_foreign_key "contracts", "statements"

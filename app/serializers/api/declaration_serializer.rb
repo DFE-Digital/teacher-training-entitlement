@@ -22,7 +22,7 @@ module API
         field(:delivery_partner_name) { |declaration| declaration.delivery_partner&.name }
         field(:secondary_delivery_partner_id) { |declaration| declaration.secondary_delivery_partner&.ecf_id }
         field(:secondary_delivery_partner_name) { |declaration| declaration.secondary_delivery_partner&.name }
-        field(:statement_id) { |declaration| declaration.billable_statement&.ecf_id }
+        field(:statement_id) { |declaration| declaration.statement&.ecf_id }
         field(:application_id) { |declaration| declaration.application.ecf_id }
         field(:clawback_declaration_id) { |declaration| declaration.clawback_declaration&.ecf_id }
         field(:paid_declaration_id) { |declaration| declaration.paid_declaration&.ecf_id }

@@ -125,14 +125,6 @@ namespace :admin do
   resources :users, only: %i[index show]
 
   namespace :finance do
-    resources :contracts, only: [] do
-      member do
-        resource :change_per_participant, controller: "contracts/change_per_participant", only: %i[show create] do
-          post :confirmed, on: :member
-        end
-      end
-    end
-
     resources :statements, only: %i[index show] do
       resources :adjustments, controller: "statements/adjustments" do
         collection do

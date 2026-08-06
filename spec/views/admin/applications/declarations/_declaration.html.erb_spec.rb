@@ -13,7 +13,7 @@ RSpec.describe "admin/applications/declarations/_declaration.html.erb", type: :v
   it { is_expected.to have_summary_item("Secondary delivery partner", "-") }
   it { is_expected.to have_summary_item("Created at", declaration.created_at.to_fs(:govuk_short)) }
   it { is_expected.to have_summary_item("Updated at", declaration.updated_at.to_fs(:govuk_short)) }
-  it { is_expected.to have_summary_item("Statements", "") }
+  it { is_expected.to have_summary_item("Statement", declaration.statement.start_date.to_fs(:govuk_approx)) }
 
   context "with delivery partners" do
     let(:declaration) { build_stubbed(:declaration, delivery_partner: build_stubbed(:delivery_partner), secondary_delivery_partner: build_stubbed(:delivery_partner)) }

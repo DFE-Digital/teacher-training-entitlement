@@ -10,12 +10,11 @@ shared:
     - ecf_id
   :statements:
     - id
-    - month
-    - year
     - deadline_date
     - payment_date
     - output_fee
-    - cohort_id
+    - start_date
+    - frequency
     - lead_provider_id
     - marked_as_paid_at
     - state
@@ -131,6 +130,7 @@ shared:
   :declarations:
     - id
     - ecf_id
+    - statement_id
     - type
     - application_id
     - superseded_by_id
@@ -161,7 +161,6 @@ shared:
     - position
   :course_cohorts:
     - id
-    - academic_year
     - cohort_id
     - course_id
     - created_at

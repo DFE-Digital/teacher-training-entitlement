@@ -41,13 +41,17 @@ ApplicationRecord.descendants.each(&:reset_column_information)
   "add_schools.rb",
   "add_lead_providers.rb",
   "add_users.rb",
-  "add_contracts.rb",
   "add_test_data.rb",
   "add_api_tokens.rb",
   "process_statements.rb",
+  "add_contracts.rb",
+  "add_course_finance_sample_data.rb",
 ].each do |seed_file|
   Rails.logger.info("seeding #{seed_file}")
   ApplicationRecord.transaction do
     load_base_file(seed_file)
+  rescue StandardError => e
+    Rails.logger.error("Seed error #{seed_file}: #{e.message}")
+    raise
   end
 end

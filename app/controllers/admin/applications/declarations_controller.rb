@@ -7,7 +7,6 @@ module Admin
         @declarations = @application.declarations
                           .includes(:lead_provider,
                                     :participant_outcomes,
-                                    :statements,
                                     :delivery_partner,
                                     :secondary_delivery_partner,
                                     :versions,

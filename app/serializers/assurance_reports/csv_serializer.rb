@@ -5,21 +5,22 @@ require "csv"
 class AssuranceReports::CsvSerializer
   include StatementHelper
 
-  def initialize(scope, statement)
-    self.scope = scope
-    self.statement = statement
+  def initialize(statement)
+    @statement = statement
+    @lead_provider_name = statement.lead_provider.name
+    @period = statement_period(statement)
   end
 
   def filename
-    "TTE-Declarations-#{lead_provider.name.gsub(/\W/, '')}-Cohort#{cohort.name}-#{statement_name(statement).gsub(/\W/, '')}.csv"
+    "TTE-Declarations-#{@lead_provider_name.gsub(/\W/, "")}-#{@period.gsub(/\W/, '')}.csv"
   end
 
   def serialize
     CSV.generate do |csv|
       csv << csv_headers
 
-      scope.each do |record|
-        csv << to_row(record)
+      @statement.declarations.each do |record|
+        csv << to_row(record, @statement.ecf_id)
       end
     end
   end
@@ -43,38 +44,47 @@ class AssuranceReports::CsvSerializer
       "Declaration Type",
       "Declaration Date",
       "Declaration Created At",
-      "Statement Name",
+      "Statement Period",
       "Statement ID",
-    ].compact
+    ]
   end
 
 private
 
-  attr_accessor :scope, :statement
-
-  delegate :cohort, :lead_provider, to: :statement
-
-  def to_row(record)
+  def to_row(declaration, statement_id)
+    application = declaration.application
+    user = application.user
     [
-      record.participant_id,
-      record.participant_name,
-      record.trn,
-      record.application_course_identifier,
-      record.schedule,
-      record.eligible_for_funding,
-      record.funded_place,
-      record.lead_provider_name,
-      record.school_urn,
-      record.school_name,
-      record.status,
-      record.status_reason,
-      record.declaration_id,
-      record.declaration_status,
-      record.declaration_type,
-      record.declaration_date.iso8601,
-      record.declaration_created_at.iso8601,
-      statement_name(statement),
-      record.statement_id,
+      user.ecf_id,
+      user.full_name,
+      user.trn,
+      application.course.identifier,
+      application.course_cohort.schedule.identifier,
+      application.eligible_for_funding,
+      application.funded_place,
+      @lead_provider_name,
+      application.institution.institution_reference_number,
+      application.institution.name,
+      application.status,
+      state_change_reason(application),
+      declaration.ecf_id,
+      declaration.state,
+      declaration.declaration_type,
+      declaration.declaration_date.iso8601,
+      declaration.created_at.iso8601,
+      @period,
+      statement_id,
     ]
+  end
+
+  def state_change_reason(application)
+    event = application
+              .state_changes
+              .order(created_at: :desc)
+              .first
+
+    return unless event
+
+    event.metadata.fetch("reason", nil)
   end
 end

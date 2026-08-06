@@ -29,6 +29,7 @@ RSpec.describe Declarations::Create, type: :model do
   let(:secondary_delivery_partner_id) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
   end
+  let!(:statement) { create(:statement, lead_provider:) }
 
   RSpec.shared_examples "does not update the application" do
     it do
@@ -58,28 +59,18 @@ RSpec.describe Declarations::Create, type: :model do
 
         before { service.call }
 
-        context "when the application is DfE funded" do
-          let(:application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-
-          it { expect(declaration.declaration_type).to eq(declaration_type) }
-          it { expect(declaration.application).to eq(application) }
-          it { expect(declaration.declaration_date).to eq(declaration_date) }
-          it { expect(declaration.lead_provider).to eq(application.lead_provider) }
-          it { expect(declaration.milestone).to eq(started_milestone) }
-          it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
-          it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
-          it { expect(declaration.value).to eq(started_milestone.payment_amount) }
-        end
+        it { expect(declaration.declaration_type).to eq(declaration_type) }
+        it { expect(declaration.application).to eq(application) }
+        it { expect(declaration.declaration_date).to eq(declaration_date) }
+        it { expect(declaration.lead_provider).to eq(application.lead_provider) }
+        it { expect(declaration.milestone).to eq(started_milestone) }
+        it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
+        it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
+        it { expect(declaration.statement).to eq(statement) }
 
         it "sets the application to started" do
           expect(application.reload).to be_started_status
           expect(application.state_changes.last&.event).to eq(Application::STARTED)
-        end
-
-        context "when the application is not DfE funded" do
-          let(:application) { create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
-
-          it { expect(declaration.value).to be_nil }
         end
       end
 
@@ -87,7 +78,13 @@ RSpec.describe Declarations::Create, type: :model do
         expect { service.call }.not_to change(ParticipantOutcome, :count)
       end
 
-      it "creates a statement when none exists"
+      context "when no statement exist" do
+        let(:statement) { nil }
+
+        before { service.call }
+
+        it { expect(service.declaration.statement).to be_present }
+      end
 
       context "when secondary delivery partner omitted" do
         let(:secondary_delivery_partner_id) { nil }
@@ -124,7 +121,7 @@ RSpec.describe Declarations::Create, type: :model do
       context "when application receives `completed declaration` before `started declaration`" do
         let(:declaration_type) { "completed" }
 
-        it { is_expected.to validate_param(:declaration_type).with_message("A started declaration is required before any other declaration_type") }
+        it { is_expected.to validate_param(:declaration_type).with_message("A completed declaration cannot be submitted before a started declaration.") }
       end
 
       context "when application already has a started declaration" do
@@ -163,7 +160,13 @@ RSpec.describe Declarations::Create, type: :model do
       it { expect { service.call }.to change(Declaration, :count).by(1) }
       it { expect { service.call }.to change(ParticipantOutcome, :count).by(1) }
 
-      it "creates a statement when none exists"
+      context "when no statement exist" do
+        let(:statement) { nil }
+
+        before { service.call }
+
+        it { expect(service.declaration.statement).to be_present }
+      end
 
       context "when application has a voided completed declaration" do
         before do

@@ -3,10 +3,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
     <p class="govuk-body govuk-!-margin-bottom-2">
-      <strong>Cohort:</strong>
-      <%= @statement.cohort.description %>
-    </p>
-    <p class="govuk-body govuk-!-margin-bottom-2">
       <strong>Output payment date:</strong>
       <%= @statement.payment_date.to_fs(:govuk) %>
       &nbsp;<%= govuk_link_to "Change", admin_finance_statements_change_payment_date_path(@statement) %>
@@ -85,7 +81,7 @@
 
     <%= govuk_accordion do |accordion|
       @contracts.each do |contract|
-        accordion.with_section(heading_text: contract.course.name) { render Admin::CoursePaymentOverviewComponent.new(contract:) }
+        accordion.with_section(heading_text: contract.course.name, expanded: true) { render Admin::CoursePaymentOverviewComponent.new(contract:) }
       end
     end %>
 

@@ -79,9 +79,9 @@ RSpec.describe "Declaration endpoints", type: :request do
 
     context "when declaration should be voided" do
       let(:statement) { create(:statement, :next_output_fee, lead_provider: current_lead_provider) }
-      let(:course_cohort) { create(:course_cohort, cohort: statement.cohort) }
+      let(:course_cohort) { create(:course_cohort) }
       let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: current_lead_provider) }
-      let(:declaration) { create(:declaration, :paid, application:, course_cohort:, lead_provider: current_lead_provider) }
+      let(:declaration) { create(:declaration, :paid, application:, course_cohort:, statement:, lead_provider: current_lead_provider) }
 
       before do
         api_put(void_api_v1_declaration_path(ecf_id: declaration.ecf_id), params:)

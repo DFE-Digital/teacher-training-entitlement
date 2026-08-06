@@ -2,7 +2,6 @@ FactoryBot.define do
   factory :course_cohort do
     association :course, factory: :"tte-early-years"
     cohort
-    academic_year { Date.current.year }
 
     schedule do
       CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)

@@ -1,39 +1,23 @@
 FactoryBot.define do
   factory :statement do
-    transient do
-      declaration {}
-      sequence(:months_from_start_of_2021) { |n| (n - 1) % 48 }
-      for_date { nil }
-    end
-
-    after :create do |statement, evaluator|
-      if evaluator.declaration
-        evaluator.declaration.mark_eligible! if evaluator.declaration.submitted?
-
-        create(:statement_item, declaration: evaluator.declaration,
-                                state: evaluator.declaration.state,
-                                statement:)
-      end
-    end
-
-    month { for_date&.month || (months_from_start_of_2021 % 12 + 1) }
-    year { for_date&.year || (2021 + months_from_start_of_2021 / 12) }
-    deadline_date { Faker::Date.forward(days: 30) }
+    start_date { Date.current.beginning_of_month }
+    frequency { Statement::FREQUENCIES.keys.first }
+    deadline_date { start_date + Statement::FREQUENCIES.fetch(frequency) - 1.day }
     payment_date { deadline_date ? deadline_date + 3.days : Faker::Date.forward(days: 30) }
-    cohort { create(:cohort, :current) }
-    lead_provider { declaration&.lead_provider || build(:lead_provider) }
+    lead_provider
     reconcile_amount { Faker::Number.decimal(l_digits: 3, r_digits: 2) }
     state { "open" }
     ecf_id { SecureRandom.uuid }
     output_fee { true }
 
     trait :next_output_fee do
-      deadline_date { 1.day.from_now }
+      start_date { 1.month.from_now }
       output_fee { true }
     end
 
     trait :paid do
       state { "paid" }
+      start_date { 2.months.ago }
       marked_as_paid_at { 1.week.ago }
     end
 
@@ -41,7 +25,7 @@ FactoryBot.define do
 
     trait :payable do
       state { "payable" }
-      deadline_date { Time.zone.yesterday }
+      start_date { 1.month.ago }
     end
 
     trait :with_existing_lead_provider do
@@ -50,29 +34,7 @@ FactoryBot.define do
 
     trait :with_milestones do
       after :create do |statement|
-        course_cohort = create(:course_cohort, cohort: statement.cohort)
-        create(
-          :milestone_statement,
-          statement:,
-          milestone: create(
-            :milestone,
-            course_cohort:,
-            declaration_type: "started",
-            acceptance_window_start_date: Date.new(2026, 1, 1),
-            acceptance_window_end_date: Date.new(2026, 1, 31),
-          ),
-        )
-        create(
-          :milestone_statement,
-          statement:,
-          milestone: create(
-            :milestone,
-            course_cohort:,
-            declaration_type: "completed",
-            acceptance_window_start_date: Date.new(2026, 2, 1),
-            acceptance_window_end_date: Date.new(2026, 2, 28),
-          ),
-        )
+        create(:declaration, :started, statement: statement, lead_provider: statement.lead_provider)
       end
     end
   end

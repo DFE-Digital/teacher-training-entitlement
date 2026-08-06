@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe Declarations::Clawback, type: :model do
   let(:statement) { create(:statement, :next_output_fee) }
-  let(:course_cohort) { create(:course_cohort, cohort: statement.cohort) }
+  let(:course_cohort) { create(:course_cohort) }
   let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: statement.lead_provider) }
   let(:declaration_type) { :started }
   let(:declaration_state) { :submitted }

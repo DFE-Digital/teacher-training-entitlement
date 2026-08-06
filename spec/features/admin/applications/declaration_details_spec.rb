@@ -28,8 +28,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
       completed_declaration.mark_eligible!
 
       payable_statement = create(:statement, :payable)
-      payable_declaration = create(:declaration, :payable, application:, declaration_type: Milestone::RETAINED_1, milestone: payable_milestone, statement: payable_statement)
-      paid_statement = create(:statement, :paid, declaration: payable_declaration)
+      create(:declaration, :payable, application:, declaration_type: Milestone::RETAINED_1, milestone: payable_milestone, statement: payable_statement)
 
       visit(admin_application_path(application))
       click_link "Declaration details"
@@ -51,7 +50,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
           expect(summary_list).to have_summary_item("Secondary delivery partner", started_declaration.secondary_delivery_partner.name)
           expect(summary_list).to have_summary_item("Created at", started_declaration.created_at.to_fs(:govuk_short))
           expect(summary_list).to have_summary_item("Updated at", started_declaration.updated_at.to_fs(:govuk_short))
-          expect(summary_list).to have_summary_item("Statements", "")
+          expect(summary_list).to have_summary_item("Statement", "")
         end
       end
 
@@ -67,7 +66,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
           expect(summary_list).to have_summary_item("Secondary delivery partner", "")
           expect(summary_list).to have_summary_item("Created at", completed_declaration.created_at.to_fs(:govuk_short))
           expect(summary_list).to have_summary_item("Updated at", completed_declaration.updated_at.to_fs(:govuk_short))
-          expect(summary_list).to have_summary_item("Statements", "")
+          expect(summary_list).to have_summary_item("Statement", "")
         end
 
         expect(summary_card).to have_css(".moj-timeline__item", text: /Submitted\s+#{completed_declaration.created_at.to_fs(:govuk_short)}/)
@@ -77,20 +76,14 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
       within(summary_cards[2]) do
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item(
-            "Statements",
-            "#{Date::MONTHNAMES[payable_statement.month]} #{payable_statement.year}" \
-            "\n" \
-            "#{Date::MONTHNAMES[paid_statement.month]} #{paid_statement.year}",
+            "Statement",
+            payable_statement.start_date.to_fs(:govuk_approx),
           )
         end
       end
 
-      click_link("#{Date::MONTHNAMES[payable_statement.month]} #{payable_statement.year}")
+      click_link(payable_statement.start_date.to_fs(:govuk_approx))
       expect(page).to have_current_path(admin_finance_statement_path(payable_statement))
-
-      visit(admin_application_declarations_path(application))
-      click_link("#{Date::MONTHNAMES[paid_statement.month]} #{paid_statement.year}")
-      expect(page).to have_current_path(admin_finance_statement_path(paid_statement))
     end
   end
 end

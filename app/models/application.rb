@@ -40,8 +40,6 @@ class Application < ApplicationRecord
   has_one :lead_provider, through: :current_application_lead_provider
   has_one :previous_application_lead_provider, -> { where(current: false).order(created_at: :desc) }, class_name: "ApplicationLeadProvider"
   has_one :previous_provider, through: :previous_application_lead_provider, source: :lead_provider
-  has_one :started_declaration, -> { billable_or_changeable.where(declaration_type: Milestone::STARTED) }, class_name: "Declaration"
-  has_one :completed_declaration, -> { billable_or_changable.where(declaration_type: Milestone::COMPLETED) }, class_name: "Declaration"
 
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }

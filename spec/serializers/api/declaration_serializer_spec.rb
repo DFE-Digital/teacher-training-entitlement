@@ -188,12 +188,6 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
         end
       end
 
-      context "when there is no billable statement item" do
-        it "serializes the `statement_id`" do
-          expect(attributes["statement_id"]).to be_nil
-        end
-      end
-
       it "serializes the `lead_provider_name`" do
         expect(attributes["lead_provider_name"]).to eq(declaration.lead_provider.name)
       end

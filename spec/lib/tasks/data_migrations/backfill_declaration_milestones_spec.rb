@@ -59,6 +59,7 @@ RSpec.describe "data_migrations:backfill_declaration_milestones" do
 
   def create_legacy_declaration(declaration_type:)
     lead_provider = application.lead_provider
+    statement = Statement.find_or_create_by!(lead_provider:, start_date: Date.current.beginning_of_month, frequency: :monthly)
 
     Declaration.create!(
       application:,
@@ -66,6 +67,7 @@ RSpec.describe "data_migrations:backfill_declaration_milestones" do
       declaration_date: application.schedule.training_starts_at + 1.day,
       declaration_type:,
       lead_provider:,
+      statement:,
       state: :submitted,
     )
   end

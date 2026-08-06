@@ -1,24 +1,27 @@
 class Statement < ApplicationRecord
+  FREQUENCIES = {
+    "monthly" => 1.month,
+  }.with_indifferent_access.freeze
+
   has_paper_trail meta: { note: :version_note }
   attr_accessor :version_note
 
-  belongs_to :cohort
   belongs_to :lead_provider
-  has_many :statement_items
+  has_many :declarations
+  has_many :clawback_declarations, -> { where(type: "ClawbackDeclaration") },
+           class_name: "ClawbackDeclaration"
+  has_many :milestones, through: :declarations
   has_many :contracts
-  has_many :declarations, through: :statement_items
   has_many :adjustments
-  has_many :milestone_statements
-  has_many :milestones, through: :milestone_statements
 
-  validates :output_fee, inclusion: { in: [true, false] }
-  validates :month, numericality: { in: 1..12, only_integer: true }
-  validates :year, numericality: { in: 2020..2050, only_integer: true }
-  validates :lead_provider_id, uniqueness: { scope: %i[cohort_id year month], message: "Statement for this lead provider, cohort, year and month already exists" }
+  validates :start_date, presence: true
+  # rubocop:disable Rails/UniqueValidationWithoutIndex -- index added in follow-up migration after data backfill
+  validates :lead_provider_id, uniqueness: { scope: %i[start_date frequency], message: "Statement for this lead provider start_date frequency already exists" }
+  # rubocop:enable Rails/UniqueValidationWithoutIndex
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
+  validates :output_fee, inclusion: { in: [true, false] }
   validate :payment_date_on_or_after_deadline_date
-  validate :no_milestones_associated, if: :output_fee_changed?
   validate :changing_attributes_when_payable, on: :update
   validate :changing_attributes_when_paid, on: :update
 
@@ -26,7 +29,41 @@ class Statement < ApplicationRecord
   scope :with_state, ->(*state) { where(state:) }
   scope :unpaid, -> { with_state(%w[open payable]) }
   scope :paid, -> { with_state("paid") }
-  scope :next_output_fee_statements, -> { with_state("open").with_output_fee.order(:deadline_date).where("deadline_date >= ?", Date.current) }
+
+  scope :current, lambda { |frequency: :monthly|
+    where(state: :open, frequency:, start_date: Date.current.beginning_of_month)
+  }
+  scope :clawback, lambda { |frequency: :monthly|
+    where(
+      state: :open,
+      frequency:,
+      start_date: Date.current.beginning_of_month.next_month,
+    )
+  }
+
+  enum :frequency, FREQUENCIES.keys.index_with(&:itself), suffix: true
+
+  before_save :set_deadline_and_payment_date, if: -> { start_date_changed? }
+
+  def self.create_current!(lead_provider:, frequency: :monthly)
+    create!(
+      state: :open,
+      frequency:,
+      start_date: Date.current.beginning_of_month,
+      lead_provider:,
+      ecf_id: SecureRandom.uuid,
+    )
+  end
+
+  def self.create_clawback!(lead_provider:, frequency: :monthly)
+    create!(
+      state: :open,
+      frequency:,
+      start_date: Date.current.beginning_of_month.next_month,
+      lead_provider:,
+      ecf_id: SecureRandom.uuid,
+    )
+  end
 
   state_machine :state, initial: :open do
     state :open
@@ -45,7 +82,7 @@ class Statement < ApplicationRecord
   def mark_as_frozen!
     transaction do
       declarations.payable_state.each(&:mark_paid!)
-      # clawback_declarations.awaiting_clawback_state.each(&:mark_clawed_back!)
+      clawback_declarations.awaiting_clawback_state.each(&:mark_clawed_back!)
       update!(state: :paid, marked_as_paid_at: Time.zone.now)
     end
   end
@@ -53,7 +90,7 @@ class Statement < ApplicationRecord
   def prepare_to_freeze!
     transaction do
       declarations.eligible_state.each(&:mark_payable!)
-      # clawback_declarations.awaiting_clawback_state.each(&:mark_awaiting_clawback!)
+      clawback_declarations.awaiting_clawback_state.each(&:mark_awaiting_clawback!)
       mark_payable!
     end
   end
@@ -65,7 +102,7 @@ class Statement < ApplicationRecord
   def allow_marking_as_paid?
     output_fee &&
       payable? &&
-      !!deadline_date&.past? &&
+      (current? || future?) &&
       !marked_as_paid_at? &&
       declarations.any?
   end
@@ -74,27 +111,27 @@ class Statement < ApplicationRecord
     payable? && marked_as_paid_at?
   end
 
-  def use_targeted_delivery_funding?
-    Date.new(year, month) <= Date.new(2025, 10) && cohort.start_year >= 2022
+  def future?
+    deadline_date > Date.current
   end
 
-  def past?
-    Date.new(year, month) < Date.current.beginning_of_month
+  def current?
+    start_date <= Date.current && Date.current <= deadline_date
   end
 
 private
+
+  def set_deadline_and_payment_date
+    self.deadline_date = start_date + FREQUENCIES.fetch(frequency) - 1.day
+    # payment are supposed to be made within a month
+    self.payment_date = start_date + FREQUENCIES.fetch(frequency) + 1.month - 1.day
+  end
 
   def payment_date_on_or_after_deadline_date
     return unless deadline_date && payment_date
     return unless payment_date < deadline_date
 
     errors.add :payment_date, :invalid
-  end
-
-  def no_milestones_associated
-    return unless milestone_statements.exists?
-
-    errors.add :output_fee, :has_milestones
   end
 
   def changing_attributes_when_payable

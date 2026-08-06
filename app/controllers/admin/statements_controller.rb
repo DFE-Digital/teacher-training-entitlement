@@ -45,7 +45,7 @@ private
 
   def set_preview
     @preview = {
-      statements: @statements.uniq { [_1.year, _1.month] },
+      statements: @statements.uniq(&:start_date),
       contracts: @statements.group_by { _1.lead_provider.name }.transform_values { _1.first.contracts },
       lead_providers_count: @statements.uniq(&:lead_provider).count,
     }

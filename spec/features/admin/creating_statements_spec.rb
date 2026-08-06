@@ -43,9 +43,9 @@ RSpec.feature "Creating statements", type: :feature do
 
       find("summary", text: "Statement dates").click
       expect(page).to have_table rows: [
-        ["February 2025", "25 Dec 2024", "26 Jan 2025", "Yes"],
-        ["March 2025", "26 Jan 2025", "27 Feb 2025", "No"],
-        ["April 2025", "24 Feb 2025", "25 Mar 2025", "No"],
+        ["February 2025", "28 Feb 2025", "31 Mar 2025", "Yes"],
+        ["March 2025", "31 Mar 2025", "30 Apr 2025", "No"],
+        ["April 2025", "30 Apr 2025", "31 May 2025", "No"],
       ]
 
       find("summary", text: "1 contract for #{LeadProvider.first.name} statements").click

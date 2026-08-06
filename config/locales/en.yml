@@ -279,6 +279,8 @@ en:
           attributes:
             course:
               required: A course is required
+            participant_funding:
+              less_than_milestone_sum: must not be less than the sum of milestone payment amounts
             schedule:
               required: A schedule is required
         declaration:
@@ -327,6 +329,7 @@ en:
             declaration_type:
               inclusion: Please choose a declaration type
             payment_amount:
+              exceeds_participant_funding: would cause total milestone payments to exceed participant funding
               inclusion: Please choose a declaration type
         participant_outcome:
           attributes:
@@ -674,7 +677,6 @@ en:
                 recognised.
               out_of_order: A completed declaration cannot be submitted before
                 a started declaration.
-              started_declaration_first: A started declaration is required before any other declaration_type
             has_passed:
               invalid: Enter 'true' or 'false' in the '#/%{parameterized_attribute}'
                 field to indicate whether this participant has passed or failed their

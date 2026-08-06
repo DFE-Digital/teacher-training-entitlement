@@ -5,28 +5,25 @@ require "rails_helper"
 RSpec.describe Admin::StatementSelectorComponent, type: :component do
   include StatementHelper
 
-  let(:lead_provider) { create :lead_provider }
-  let!(:statement) { create(:statement, lead_provider:) }
-  let!(:statement_other_cohort) { create(:statement, lead_provider:, cohort: other_cohort) }
-  let!(:statement_other_lead_provider) { create(:statement, lead_provider: create(:lead_provider)) }
-  let(:other_cohort) { create(:cohort, :previous) }
-  let(:cohort) { statement.cohort }
+  subject(:rendered) { render_inline instance }
+
   let(:instance) { described_class.new(statement_params) }
+  let(:lead_provider) { create :lead_provider }
   let(:lead_provider_param) { nil }
-  let(:cohort_param) { nil }
   let(:statement_param) { nil }
   let(:payment_status_param) { nil }
   let(:output_fee_param) { nil }
-  let(:rendered) { render_inline instance }
-  let(:payment_status_selector) { "select#payment-status-field" }
-
   let(:statement_params) do
     { lead_provider_id: lead_provider_param,
-      cohort_id: cohort_param,
       payment_status: payment_status_param,
       statement: statement_param,
       output_fee: output_fee_param }
   end
+  let(:payment_status_selector) { "select#payment-status-field" }
+
+  let!(:statement) { create(:statement, lead_provider:) }
+  let!(:statement_other_cohort) { create(:statement, lead_provider:, start_date: 2.months.ago.beginning_of_month) }
+  let!(:statement_other_lead_provider) { create(:statement, lead_provider: create(:lead_provider), start_date: 3.months.ago) }
 
   it "has a form that GETs to correct action" do
     expect(rendered).to have_selector("form[method=get][action='/admin/finance/statements']")
@@ -45,44 +42,20 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     expect(rendered).to have_selector("select#lead-provider-id-field option[value='#{lead_provider.id}']", text: lead_provider.name)
   end
 
-  it "has dropdown with cohorts" do
-    expect(rendered).to have_selector("select#cohort-id-field")
-    expect(rendered).to have_selector("select#cohort-id-field option[value='#{cohort.id}']", text: cohort.name)
-  end
-
   it "has dropdown with statement dates" do
     expect(rendered).to have_selector("select#statement-field")
-    expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement)}']", text: statement_name(statement))
-    expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
-    expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
+    expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement)}']", text: statement_name(statement))
+    expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
+    expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
   end
 
   context "when a lead provider has been selected" do
     let(:lead_provider_param) { lead_provider.id }
 
     it "only shows statements for that lead provider" do
-      expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement)}']", text: statement_name(statement))
-      expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
-      expect(rendered).not_to have_selector("select#statement-field option[value='#{statement_period(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
-    end
-
-    context "and a cohort has been selected" do
-      let(:cohort_param) { other_cohort.id }
-
-      it "only shows statements for that lead provider and cohort" do
-        expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
-        expect(rendered).not_to have_selector("select#statement-field option[value='#{statement_period(statement)}']", text: statement_name(statement))
-      end
-    end
-  end
-
-  context "when a cohort has been selected" do
-    let(:cohort_param) { cohort.id }
-
-    it "only shows statements for that cohort" do
-      expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement)}']", text: statement_name(statement))
-      expect(rendered).to have_selector("select#statement-field option[value='#{statement_period(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
-      expect(rendered).not_to have_selector("select#statement-field option[value='#{statement_period(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
+      expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement)}']", text: statement_name(statement))
+      expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
+      expect(rendered).not_to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
     end
   end
 
@@ -98,7 +71,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
   end
 
   context "when the statement param is present" do
-    let(:statement_param) { statement_period(statement) }
+    let(:statement_param) { statement_options_value(statement) }
 
     it "defaults to selected statement" do
       expect(rendered).to have_selector("select#statement-field option[selected]", text: statement_name(statement), visible: :all)
@@ -110,14 +83,6 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
 
     it "defaults to selected lead provider" do
       expect(rendered).to have_selector("select#lead-provider-id-field option[selected]", text: statement.lead_provider.name, visible: :all)
-    end
-  end
-
-  context "when the cohort param is present" do
-    let(:cohort_param) { cohort.id }
-
-    it "defaults to selected cohort" do
-      expect(rendered).to have_selector("select#cohort-id-field option[selected]", text: statement.cohort.name, visible: :all)
     end
   end
 
@@ -140,7 +105,6 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
   context "when the output fee param is not present (initial page load)" do
     let(:statement_params) do
       { lead_provider_id: lead_provider_param,
-        cohort_id: cohort_param,
         payment_status: payment_status_param,
         statement: statement_param }
     end
@@ -166,7 +130,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     end
 
     it "uses a single-column layout" do
-      expect(rendered).to have_selector(".govuk-grid-column-full", count: 3)
+      expect(rendered).to have_selector(".govuk-grid-column-full", count: 2)
       expect(rendered).not_to have_selector(".govuk-grid-column-one-half")
     end
 

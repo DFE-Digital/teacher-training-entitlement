@@ -3,31 +3,28 @@
 require "rails_helper"
 
 RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
-  subject(:instance) { described_class.new(data, statement) }
+  subject(:instance) { described_class.new(statement) }
 
   before { declaration }
 
-  let(:data)          { AssuranceReports::Query.new(statement).declarations }
   let(:lead_provider) { create(:lead_provider) }
-  let(:statement)     { create(:statement, lead_provider:, cohort:) }
-  let(:cohort)        { create(:cohort, :current) }
-
-  let :application do
-    create(:application, :accepted, :eligible_for_funded_place, lead_provider:, cohort:)
-  end
-
-  let :declaration do
-    travel_to(statement.deadline_date) do
-      create(:declaration, lead_provider:, application:) do |declaration|
-        create(:statement_item, statement:, declaration:)
-      end
-    end
+  let(:statement)     { create(:statement, lead_provider:) }
+  let(:declaration) { create(:declaration, statement:) }
+  let(:period) do
+    [
+      statement.start_date.to_fs(:govuk_short),
+      statement.deadline_date.to_fs(:govuk_short),
+    ].join("-")
   end
 
   describe "#filename" do
     subject { instance.filename }
 
-    it { is_expected.to match(%r{TTE-Declarations-\w+-Cohort#{statement.cohort.name}-\w+\.csv}) }
+    let(:name) do
+      statement.lead_provider.name.gsub(/\W/, "")
+    end
+
+    it { is_expected.to match(%r{TTE-Declarations-#{name}-#{period.gsub(/\W/, "")}\.csv}) }
   end
 
   describe "#serialize" do
@@ -55,7 +52,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           "Declaration Type",
           "Declaration Date",
           "Declaration Created At",
-          "Statement Name",
+          "Statement Period",
           "Statement ID",
         ]
       end
@@ -84,11 +81,11 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           status,
           status_reason,
           declaration.ecf_id,
-          statement.statement_items.first.state,
+          declaration.state,
           declaration.declaration_type,
           declaration.declaration_date.iso8601,
           declaration.created_at.iso8601,
-          Date.new(statement.year, statement.month).strftime("%B %Y"),
+          period,
           statement.ecf_id,
         ]
       end

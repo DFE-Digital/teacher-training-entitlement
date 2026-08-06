@@ -17,23 +17,17 @@ STATEMENT = {
       },
       attributes: {
         properties: {
-          month: {
-            description: "The month which appears on the statement in the DfE portal.",
+          start_date: {
+            description: "Statement start date",
             type: :string,
             nullable: false,
             example: "May",
           },
-          year: {
-            description: "The calendar year which appears on the statement in the dfe portal.",
+          frequency: {
+            description: "Statement duration",
             type: :string,
             nullable: false,
             example: "2022",
-          },
-          cohort: {
-            description: "The cohort - 2021 or 2022 - which the statement funds.",
-            type: :string,
-            nullable: false,
-            example: "2021",
           },
           cut_off_date: {
             description: "The milestone cut off or review point for the statement.",

@@ -129,19 +129,25 @@ module ValidTestDataGenerators
           # Find statements through statement_items
           statement_ids = StatementItem.where(declaration_id: declaration_ids).pluck(:statement_id).uniq
 
-          # Delete participant outcomes associated with declarations
-          ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
-
-          # Delete statement items
-          StatementItem.where(declaration_id: declaration_ids).delete_all
-
           # Delete statements and their associated records
           if statement_ids.any?
+            # Delete statement items
+            StatementItem.where(declaration_id: declaration_ids).delete_all
             Adjustment.where(statement_id: statement_ids).delete_all
             MilestoneStatement.where(statement_id: statement_ids).delete_all
             Contract.where(statement_id: statement_ids).delete_all
             Statement.where(id: statement_ids).delete_all
           end
+
+          statement_ids = Declaration.where(application: applications_to_delete).pluck(:statement_id)
+          if statement_ids.any?
+            # case when declaration are attach directly to statement
+            Adjustment.where(statement_id: statement_ids).delete_all
+            Statement.where(id: statement_ids).delete_all
+          end
+
+          # Delete participant outcomes associated with declarations
+          ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
         end
 
         # Delete declarations and application events
@@ -182,13 +188,10 @@ module ValidTestDataGenerators
           end
         end
       end
-
-      statements_setup(course_cohort: course_cohorts.first)
     end
 
     def create_data!(registration_starts_at:, number:)
       course_cohort = course_cohort_setup(registration_starts_at:)
-      statements_setup(course_cohort:)
       applications_setup(course_cohort:, number:)
     end
 
@@ -417,7 +420,7 @@ module ValidTestDataGenerators
       application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
-    def create_started_declaration(application:, declaration_date: nil)
+    def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
       application.declarations.create!(
@@ -427,10 +430,11 @@ module ValidTestDataGenerators
         delivery_partner: application.lead_provider.delivery_partners.sample,
         milestone:,
         lead_provider: application.lead_provider,
+        statement:,
       )
     end
 
-    def create_completed_declaration(application:, declaration_date: nil, has_passed: true)
+    def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
       declaration = application.declarations.create!(
@@ -440,6 +444,7 @@ module ValidTestDataGenerators
         delivery_partner: application.lead_provider.delivery_partners.sample,
         milestone:,
         lead_provider: application.lead_provider,
+        statement:,
       )
 
       if has_passed
@@ -487,6 +492,20 @@ module ValidTestDataGenerators
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
       if course_cohort.cohort.start_year < Time.zone.now.year
+        # create the open statement for started applicatons
+        paid_statement = create_open_statement(
+          start_date: course_cohort
+                        .milestones
+                        .find_by!(declaration_type: Milestone::STARTED)
+                        .acceptance_window_start_date,
+        )
+        open_statement = create_open_statement(
+          start_date: course_cohort
+                        .milestones
+                        .find_by!(declaration_type: Milestone::COMPLETED)
+                        .acceptance_window_start_date,
+        )
+
         # started
         number.times do |index|
           create_app(
@@ -496,7 +515,7 @@ module ValidTestDataGenerators
             user: create_random_user,
           ).tap do |application|
             create_state_change(application:, event: Application::ACCEPTED)
-            create_started_declaration(application:).tap { create_payable_statement(_1) }
+            create_started_declaration(application:, statement: paid_statement)
             create_state_change(application:, event: Application::STARTED)
           end
         end
@@ -510,9 +529,10 @@ module ValidTestDataGenerators
             user: create_random_user,
           ).tap do |application|
             create_state_change(application:, event: Application::ACCEPTED)
-            create_started_declaration(application:).tap { create_paid_statement(_1) }
+            create_started_declaration(application:, statement: paid_statement)
             create_state_change(application:, event: Application::STARTED)
-            create_completed_declaration(application:, has_passed: index.even?).tap { create_payable_statement(_1) }
+            # TODO: add voided and clawback declarations
+            create_completed_declaration(application:, statement: open_statement, has_passed: index.even?)
             create_state_change(application:, event: Application::COMPLETED)
           end
         end
@@ -526,11 +546,9 @@ module ValidTestDataGenerators
             user: create_random_user(with_trn: [true, false].sample),
           ).tap do |application|
             create_state_change(application:, event: Application::ACCEPTED)
-            declaration = create_started_declaration(application:).tap { create_paid_statement(_1) }
+            create_started_declaration(application:, statement: paid_statement)
             create_state_change(application:, event: Application::STARTED)
-            create_clawback_statement(declaration)
-            create_started_declaration(application:).tap { create_payable_statement(_1) }
-            create_state_change(application:, event: Application::STARTED)
+
             create_state_change(application:, event: Application::DEFERRED)
           end
         end
@@ -547,12 +565,14 @@ module ValidTestDataGenerators
             when index % 5
               # auto withdrawn
               create_state_change(application:, event: Application::ACCEPTED)
+              create_started_declaration(application:, statement: paid_statement)
               create_state_change(application:, event: Application::STARTED)
               create_state_change(application:, event: Application::DEFERRED)
 
             when index % 3
               # withdraw after started acceptance
               create_state_change(application:, event: Application::ACCEPTED)
+              create_started_declaration(application:, statement: paid_statement)
               create_state_change(application:, event: Application::STARTED)
 
             when index % 2
@@ -563,6 +583,10 @@ module ValidTestDataGenerators
             create_state_change(application:, event: Application::WITHDRAWN)
           end
         end
+
+        # finalize paid statement
+        paid_statement.prepare_to_freeze!
+        paid_statement.mark_as_frozen!
       end
 
       # reassigned
@@ -600,68 +624,15 @@ module ValidTestDataGenerators
       application.change_provider!(to: new_provider)
     end
 
-    def statements_setup(course_cohort:)
-      start_date = course_cohort.milestones.find_by!(declaration_type: Milestone::STARTED).acceptance_window_start_date
-      end_date = course_cohort.milestones.find_by!(declaration_type: Milestone::COMPLETED).acceptance_window_start_date
+    def create_open_statement(start_date:)
       Statement.find_or_create_by!(
-        cohort: course_cohort.cohort,
         lead_provider: lead_provider,
-        year: course_cohort.cohort.start_year,
-        month: start_date.month,
+        start_date:,
+        frequency: :monthly,
       ) do |statement|
-        statement.deadline_date = start_date
-        statement.payment_date = start_date + 1.month
-        statement.output_fee = true
-        statement.state = "paid"
-        statement.marked_as_paid_at = start_date + 1.month
+        statement.state = "open"
         statement.ecf_id = SecureRandom.uuid
       end
-
-      Statement.find_or_create_by!(
-        cohort: course_cohort.cohort,
-        lead_provider: lead_provider,
-        year: course_cohort.cohort.start_year,
-        month: end_date.month,
-      ) do |statement|
-        statement.deadline_date = end_date
-        statement.payment_date = end_date + 1.month
-        statement.output_fee = true
-        statement.state = "payable"
-        statement.ecf_id = SecureRandom.uuid
-      end
-    end
-
-    def create_payable_statement(declaration)
-      declaration.mark_payable!
-      statement = provider_statement_for(declaration)
-      statement.statement_items.create_or_find_by!(
-        declaration:,
-        state: declaration.state,
-      )
-    end
-
-    def create_paid_statement(declaration)
-      declaration.mark_payable!
-      declaration.mark_paid!
-      statement = provider_statement_for(declaration)
-      statement.statement_items.create_or_find_by!(
-        declaration:,
-        state: declaration.state,
-      )
-    end
-
-    def create_clawback_statement(declaration)
-      declaration.clawback!
-      declaration.voided_state!
-      statement = provider_statement_for(declaration)
-      statement.statement_items.create_or_find_by!(
-        declaration:,
-        state: :awaiting_clawback,
-      )
-    end
-
-    def provider_statement_for(declaration)
-      lead_provider.statements.where(state: :payable, cohort: declaration.milestone.cohort).first
     end
   end
 end

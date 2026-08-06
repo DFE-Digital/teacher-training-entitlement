@@ -100,9 +100,6 @@ module Declarations
               :course,
               { application_lead_providers: [:lead_provider], course_cohort: [:course] },
             ],
-            statement_items: %i[
-              statement
-            ],
           },
         )
     end

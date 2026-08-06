@@ -10,66 +10,88 @@
     </div>
   </div>
   <div class="govuk-summary-card__content">
-    <div id="payment-deadline-warning">
-      <%= helpers.govuk_warning_text(text: "The output payment deadline is #{statement.deadline_date.to_fs(:govuk)}") %>
-    </div>
+    <h3 class="govuk-heading-s">Funded declarations</h3>
 
-    <%=
-      helpers.govuk_summary_list do |summary_list|
-        summary_list.with_row do |row|
-          row.with_key { "Starts" }
-          row.with_value { calculator.total_starts.to_s }
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Retained" }
-          row.with_value { calculator.total_retained.to_s }
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Completed" }
-          row.with_value { calculator.total_completed.to_s }
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Voids" }
-          row.with_value { calculator.total_voided.to_s }
-          row.with_action(text: "View Voids", href: admin_finance_voided_index_path(statement)) if link_to_voids
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Output payment" }
-          row.with_value { number_to_currency(calculator.total_output_payment) }
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Output payment deadline" }
-          row.with_value { statement.deadline_date.to_fs(:govuk) }
-          row.with_action(text: "Change", href: admin_finance_statements_change_deadline_date_path(statement))
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Clawbacks" }
-          row.with_value { -number_to_currency(calculator.total_clawbacks) }
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Adjustments" }
-          row.with_value { number_to_currency(calculator.total_adjustments) }
-        end
-
-        unless calculator.total_service_fees.zero?
-          summary_list.with_row do |row|
-            row.with_key { "Service fee" }
-            row.with_value { number_to_currency(calculator.total_service_fees) }
-          end
-        end
-
-        summary_list.with_row do |row|
-          row.with_key { "Total net VAT" }
-          row.with_value { tag.strong number_to_currency(calculator.total_payment) }
+    <%= helpers.govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Declaration type")
+          row.with_cell(text: "Expected", numeric: true)
+          row.with_cell(text: "Received", numeric: true)
+          row.with_cell(text: "Outstanding", numeric: true)
         end
       end
-    %>
+
+      table.with_body do |body|
+        body.with_row do |row|
+          row.with_cell { label_with_hint("Starts", "(number in contract for this cohort)") }
+          row.with_cell(text: expected_starts, numeric: true)
+          row.with_cell(text: total_starts, numeric: true)
+          row.with_cell(text: outstanding_starts, numeric: true)
+        end
+
+        body.with_row do |row|
+          row.with_cell { label_with_hint("Completed", "(based on number of received starts)") }
+          row.with_cell(text: expected_completed, numeric: true)
+          row.with_cell(text: total_completed, numeric: true)
+          row.with_cell(text: outstanding_completed, numeric: true)
+        end
+
+        body.with_row do |row|
+          row.with_cell(text: tag.strong("Total"))
+          row.with_cell(text: tag.strong(expected_total), numeric: true)
+          row.with_cell(text: tag.strong(total_declarations), numeric: true)
+          row.with_cell(text: tag.strong(outstanding_total), numeric: true)
+        end
+      end
+    end %>
+
+    <h3 class="govuk-heading-s">Payment details</h3>
+
+    <%= helpers.govuk_summary_list do |summary_list|
+      summary_list.with_row do |row|
+        row.with_key { "Expected output payment" }
+        row.with_value { number_to_currency(expected_output_payment) }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { label_with_hint("Output payment", "This payment takes into account late declarations and voids") }
+        row.with_value { number_to_currency(total_output_payment) }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Declaration deadline" }
+        row.with_value { statement.deadline_date.to_fs(:govuk) }
+        row.with_action(text: "Change", href: admin_finance_statements_change_deadline_date_path(statement))
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Voids" }
+        row.with_value { total_voided.to_s }
+        row.with_action(text: "View Voids", href: admin_finance_voided_index_path(statement)) if link_to_voids
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { label_with_hint("Clawbacks", "The total value of voids") }
+        row.with_value { number_to_currency(-total_clawbacks) }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Manual adjustments" }
+        row.with_value { number_to_currency(total_adjustments) }
+      end
+
+      unless total_service_fees.zero?
+        summary_list.with_row do |row|
+          row.with_key { "Service fee" }
+          row.with_value { number_to_currency(total_service_fees) }
+        end
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Total net VAT" }
+        row.with_value { tag.strong number_to_currency(total_payment) }
+      end
+    end %>
   </div>
 </div>

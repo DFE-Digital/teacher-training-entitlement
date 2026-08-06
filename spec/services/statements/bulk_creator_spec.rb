@@ -16,16 +16,16 @@ RSpec.describe Statements::BulkCreator do
   it { is_expected.to be_valid }
 
   context "when dry run is false" do
-    it "creates statements and contracts" do
+    it "creates statements and contracts", :npq do
       expect { subject.call(dry_run: false) }
         .to change(Statement, :count).by(6)
         .and change(ContractTemplate, :count).by(2)
         .and change(Contract, :count).by(6)
 
       [
-        { lead_provider: LeadProvider.first, cohort:, year: 2025, month: 2, deadline_date: Date.new(2024, 12, 25), payment_date: Date.new(2025, 1, 26), output_fee: true },
-        { lead_provider: LeadProvider.first, cohort:, year: 2025, month: 3, deadline_date: Date.new(2025, 1, 26), payment_date: Date.new(2025, 2, 27), output_fee: false },
-        { lead_provider: LeadProvider.first, cohort:, year: 2025, month: 4, deadline_date: Date.new(2025, 2, 24), payment_date: Date.new(2025, 3, 25), output_fee: false },
+        { lead_provider: LeadProvider.first, start_date: Date.new(2025, 2, 1), deadline_date: Date.new(2024, 12, 25), payment_date: Date.new(2025, 1, 26), output_fee: true },
+        { lead_provider: LeadProvider.first, start_date: Date.new(2025, 3, 1), deadline_date: Date.new(2025, 1, 26), payment_date: Date.new(2025, 2, 27), output_fee: false },
+        { lead_provider: LeadProvider.first, start_date: Date.new(2025, 4, 1), deadline_date: Date.new(2025, 2, 24), payment_date: Date.new(2025, 3, 25), output_fee: false },
       ].each do |attrs|
         statement = Statement.find_by(attrs)
         expect(statement).to be_present
@@ -55,9 +55,9 @@ RSpec.describe Statements::BulkCreator do
       end
 
       [
-        { lead_provider: LeadProvider.last, cohort:, year: 2025, month: 2, deadline_date: "2024-12-25", payment_date: "2025-01-26", output_fee: true },
-        { lead_provider: LeadProvider.last, cohort:, year: 2025, month: 3, deadline_date: "2025-01-26", payment_date: "2025-02-27", output_fee: false },
-        { lead_provider: LeadProvider.last, cohort:, year: 2025, month: 4, deadline_date: "2025-02-24", payment_date: "2025-03-25", output_fee: false },
+        { lead_provider: LeadProvider.last, start_date: "2025-2-1", deadline_date: "2024-12-25", payment_date: "2025-01-26", output_fee: true },
+        { lead_provider: LeadProvider.last, start_date: "2025-3-1", deadline_date: "2025-01-26", payment_date: "2025-02-27", output_fee: false },
+        { lead_provider: LeadProvider.last, start_date: "2025-4-1", deadline_date: "2025-02-24", payment_date: "2025-03-25", output_fee: false },
       ].each do |attrs|
         statement = Statement.find_by(attrs)
         expect(statement).to be_present
@@ -81,9 +81,9 @@ RSpec.describe Statements::BulkCreator do
     context "with duplicate statement rows" do
       let(:statements_csv) do
         tempfile <<~CSV
-          year,month,deadline_date,payment_date,output_fee
-          2025,2,2024-12-25,2025-01-26,true
-          2025,2,2024-12-25,2025-01-26,true
+          start_date,deadline_date,payment_date,output_fee
+          2025-02-01,2024-12-25,2025-01-26,true
+          2025-02-01,2024-12-25,2025-01-26,true
         CSV
       end
 
@@ -92,7 +92,7 @@ RSpec.describe Statements::BulkCreator do
     end
 
     context "when a statement already exists" do
-      before { Statement.create!(cohort:, lead_provider: LeadProvider.last, year: 2025, month: 4) }
+      before { Statement.create!(lead_provider: LeadProvider.last, start_date: Date.new(2025, 4, 1), frequency: :monthly) }
 
       it { is_expected.to have_error :statements_csv, "Statement already exists on line 4" }
     end
@@ -106,8 +106,8 @@ RSpec.describe Statements::BulkCreator do
     context "with missing headers" do
       let(:statements_csv) do
         tempfile <<~CSV
-          year,month,deadline_date
-          2024,1,2024-12-25
+          start_date,deadline_date
+          2024-01-01,2024-12-25
         CSV
       end
 
@@ -117,7 +117,7 @@ RSpec.describe Statements::BulkCreator do
     context "with no rows" do
       let(:statements_csv) do
         tempfile <<~CSV
-          year,month,deadline_date,payment_date,output_fee
+          start_date,deadline_date,payment_date,output_fee
         CSV
       end
 
@@ -127,42 +127,40 @@ RSpec.describe Statements::BulkCreator do
     context "with invalid year" do
       let(:statements_csv) do
         tempfile <<~CSV
-          year,month,deadline_date,payment_date,output_fee
-          1,2,2024-12-25,2025-01-26,true
-          foo,3,2025-01-26,2025-02-27,false
-          ,4,2025-02-26,2025-03-27,false
+          start_date,deadline_date,payment_date,output_fee
+          foo-03-01,2025-01-26,2025-02-27,false
+          -04-01,2025-02-26,2025-03-27,false
         CSV
       end
 
-      it { is_expected.to have_error :statements_csv, "Year must be between 2020 and 2040 on line 2" }
-      it { is_expected.to have_error :statements_csv, "Year must be between 2020 and 2040 on line 3" }
-      it { is_expected.to have_error :statements_csv, "Year must be between 2020 and 2040 on line 4" }
+      it { is_expected.to have_error :statements_csv, "Start date can't be blank on line 2" }
+      it { is_expected.to have_error :statements_csv, "Start date can't be blank on line 3" }
     end
 
     context "with invalid month" do
       let(:statements_csv) do
         tempfile <<~CSV
-          year,month,deadline_date,payment_date,output_fee
-          2024,0,2024-12-25,2025-01-26,true
-          2024,13,2024-12-25,2025-01-26,true
-          2024,foo,2024-12-25,2025-01-26,true
-          2024,,2024-12-25,2025-01-26,true
+          start_date,deadline_date,payment_date,output_fee
+          2024-0-1,2024-12-25,2025-01-26,true
+          2024-13-1,2024-12-25,2025-01-26,true
+          2024-foo-1,2024-12-25,2025-01-26,true
+          2024--1,2024-12-25,2025-01-26,true
         CSV
       end
 
-      it { is_expected.to have_error :statements_csv, "Month must be between 1 and 12 on line 2" }
-      it { is_expected.to have_error :statements_csv, "Month must be between 1 and 12 on line 3" }
-      it { is_expected.to have_error :statements_csv, "Month must be between 1 and 12 on line 4" }
-      it { is_expected.to have_error :statements_csv, "Month must be between 1 and 12 on line 5" }
+      it { is_expected.to have_error :statements_csv, "Start date can't be blank on line 2" }
+      it { is_expected.to have_error :statements_csv, "Start date can't be blank on line 3" }
+      it { is_expected.to have_error :statements_csv, "Start date can't be blank on line 4" }
+      it { is_expected.to have_error :statements_csv, "Start date can't be blank on line 5" }
     end
 
     context "with invalid dates" do
       let(:statements_csv) do
         tempfile <<~CSV
-          year,month,deadline_date,payment_date,output_fee
-          2025,2,foo,2024-12-01,true
-          2025,3,2025-01-01,2024-12-99,true
-          2025,4,2025-01-01,,true
+          start_date,deadline_date,payment_date,output_fee
+          2025-02-01,foo,2024-12-01,true
+          2025-03-01,2025-01-01,2024-12-99,true
+          2025-04-01,2025-01-01,,true
         CSV
       end
 

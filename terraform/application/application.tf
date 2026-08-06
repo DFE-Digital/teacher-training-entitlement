@@ -34,7 +34,7 @@ module "application_configuration" {
   )
   secret_variables = {
     DATABASE_URL             = module.postgres.url
-    REDIS_CACHE_URL          = var.deploy_redis_cache ? local.selected_redis.cache_url : ""
+    REDIS_CACHE_URL          = var.deploy_redis_cache ? module.redis-cache.url : ""
     AZURE_STORAGE_ACCESS_KEY = module.storage_account.primary_access_key
     GOOGLE_CLOUD_CREDENTIALS = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].google_cloud_credentials : null
   }

@@ -43,6 +43,9 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         end
         expect(reassigned_applications.size).to eq(2)
         expect(applications.keys).to match_array(Application::STATUSES)
+
+        statements = Statement.where(lead_provider: lead_provider)
+        expect(statements.pluck(:state)).to match_array(%w[paid open])
       end
     end
 
@@ -186,17 +189,6 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(lead_provider.updateable_applications.where(course_cohort: secondary_course_cohort).count).to eq(1)
         end
 
-        it "creates 2 statements" do
-          expect { seeder.call }.to change(Statement, :count).by(2)
-        end
-
-        it "creates statements with correct states" do
-          seeder.call
-
-          statements = Statement.where(lead_provider: lead_provider)
-          expect(statements.pluck(:state)).to match_array(%w[paid payable])
-        end
-
         it "creates started and completed milestones for both course cohorts" do
           seeder.call
 
@@ -282,13 +274,6 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           cohort_start_dates = seeder.cohort_start_dates.take(4)
           expect(Cohort.find_by(registration_starts_at: cohort_start_dates[0])).to be_present
           expect(Cohort.find_by(registration_starts_at: cohort_start_dates[2])).to be_present
-        end
-
-        it "creates statements for the specified year" do
-          seeder.call
-
-          statements = Statement.where(lead_provider: lead_provider, year: 2027)
-          expect(statements.count).to eq(2)
         end
       end
     end

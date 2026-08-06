@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe API::StatementSerializer, type: :serializer do
   let(:cohort) { build(:cohort) }
-  let(:statement) { build(:statement, cohort:) }
+  let(:statement) { build(:statement) }
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(statement)) }
@@ -23,22 +23,16 @@ RSpec.describe API::StatementSerializer, type: :serializer do
   describe "nested attributes" do
     subject(:attributes) { JSON.parse(described_class.render(statement))["attributes"] }
 
-    it "serializes the `cohort start year`" do
-      cohort.start_year = 2025
+    it "serializes the `start_date`" do
+      statement.start_date = Date.new(2023, 7, 1)
 
-      expect(attributes["cohort"]).to eq("2025")
+      expect(attributes["start_date"]).to eq("2023-07-01")
     end
 
-    it "serializes the `month`" do
-      statement.month = 7
+    it "serializes the `frequency`" do
+      statement.frequency = "monthly"
 
-      expect(attributes["month"]).to eq("July")
-    end
-
-    it "serializes the `year`" do
-      statement.year = 2023
-
-      expect(attributes["year"]).to eq("2023")
+      expect(attributes["frequency"]).to eq("monthly")
     end
 
     it "serializes the `deadline`" do
