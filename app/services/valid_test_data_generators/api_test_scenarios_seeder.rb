@@ -450,6 +450,7 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
+        value: milestone.payment_amount,
       )
     end
 
@@ -464,6 +465,7 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
+        value: milestone.payment_amount,
       )
 
       if has_passed
