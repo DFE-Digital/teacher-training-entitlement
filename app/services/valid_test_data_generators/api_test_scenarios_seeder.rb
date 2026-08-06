@@ -342,13 +342,19 @@ module ValidTestDataGenerators
         acceptance_window_end_date: training_ends_at + 2.months,
       )
 
-      cc.course_cohort_providers.find_or_create_by!(lead_provider:)
+      create_or_update_lead_provider_contract(course_cohort: cc, lead_provider:)
 
       delivery_partners.each do |dp|
         dp.delivery_partnerships.find_or_create_by!(lead_provider:, cohort: current_cohort)
       end
 
       cc
+    end
+
+    def create_or_update_lead_provider_contract(course_cohort:, lead_provider:)
+      # TODO: Add recruitment_target, service_fee, teacher_funding
+      # Add contract_year for this academic_year
+      course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
     end
 
     def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
