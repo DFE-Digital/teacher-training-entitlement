@@ -93,6 +93,7 @@ module Declarations
           :participant_outcomes,
           :clawback_declaration,
           :paid_declaration,
+          :statement,
           {
             milestone: { course_cohort: :cohort },
             application: [
