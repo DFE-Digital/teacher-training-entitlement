@@ -3,9 +3,9 @@
 require "rails_helper"
 
 RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
-  let(:seeder) { described_class.new(lead_provider:, cohort_year:) }
+  let(:seeder) { described_class.new(lead_provider:, academic_year:) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:cohort_year) { 2026 }
+  let(:academic_year) { 2026 }
 
   before do
     create_list(:institution, 2, :for_school)
@@ -23,7 +23,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
     context "when creating historical data" do
       before { custom_data }
 
-      let(:cohort_year) { Time.zone.now.year - 1 }
+      let(:academic_year) { Time.zone.now.year - 1 }
       let(:applications) { lead_provider.applications.group_by(&:status) }
       let(:reassigned_applications) do
         ApplicationLeadProvider
@@ -52,7 +52,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
     context "when creating present/future data" do
       before { custom_data }
 
-      let(:cohort_year) { Time.zone.now.year }
+      let(:academic_year) { Time.zone.now.year }
       let(:applications) { lead_provider.applications.group_by(&:status) }
       let(:reassigned_applications) do
         ApplicationLeadProvider
@@ -102,7 +102,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(outcome.error).to be_nil
           expect(outcome.success).to be true
           expect(outcome.applications_count).to eq(13)
-          expect(outcome.cohort_year).to eq(cohort_year)
+          expect(outcome.academic_year).to eq(academic_year)
         end
 
         it "creates 12 applications" do
@@ -265,8 +265,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         end
       end
 
-      describe "with different cohort year" do
-        let(:cohort_year) { 2027 }
+      describe "with different academic year" do
+        let(:academic_year) { 2027 }
 
         it "creates cohorts for the specified year" do
           seeder.call

@@ -21,7 +21,7 @@ RSpec.describe CustomDataSeederJob, type: :job do
     before do
       allow(ValidTestDataGenerators::APITestScenariosSeeder)
         .to receive(:new)
-              .with(lead_provider:, cohort_year: start_year)
+              .with(lead_provider:, academic_year: start_year)
               .and_return(seeder)
     end
 

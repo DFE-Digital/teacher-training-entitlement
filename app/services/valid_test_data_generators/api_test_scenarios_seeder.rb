@@ -7,11 +7,11 @@ module ValidTestDataGenerators
   # NOTE: for change provider feature, the application label APP-006 should
   # marked as unassigned and be read-only
   class APITestScenariosSeeder
-    attr_reader :lead_provider, :cohort_year, :logger
+    attr_reader :lead_provider, :academic_year, :logger
 
-    Outcome = Data.define(:success, :error, :applications_count, :cohort_year) do
-      def initialize(success:, error: nil, applications_count: nil, cohort_year: nil)
-        super(success:, error:, applications_count:, cohort_year:)
+    Outcome = Data.define(:success, :error, :applications_count, :academic_year) do
+      def initialize(success:, error: nil, applications_count: nil, academic_year: nil)
+        super(success:, error:, applications_count:, academic_year:)
       end
     end
 
@@ -53,12 +53,12 @@ module ValidTestDataGenerators
     def initialize(lead_provider:,
                    course_identifier: "tte-early-years",
                    schedule_identifier: "tte-reception-autumn",
-                   cohort_year: Date.current.year,
+                   academic_year: Date.current.year,
                    logger: Rails.logger)
       @lead_provider = lead_provider
       @course_identifier = course_identifier
       @schedule_identifier = schedule_identifier
-      @cohort_year = cohort_year.to_i
+      @academic_year = academic_year.to_i
       @logger = logger
     end
 
@@ -89,7 +89,7 @@ module ValidTestDataGenerators
       Outcome[
         success: true,
         applications_count: applications_data.size,
-        cohort_year: cohort_year,
+        academic_year: academic_year,
         ]
     rescue StandardError => e
       logger.error "APITestScenariosSeeder failed: #{e.message}"
@@ -109,7 +109,7 @@ module ValidTestDataGenerators
 
     def registration_periods
       Enumerator.new do |yielder|
-        year = cohort_year
+        year = academic_year
         loop do
           yielder << Date.new(year, 7, 1) # autumn schedule
           yielder << Date.new(year, 9, 1) # spring schedule
@@ -182,7 +182,7 @@ module ValidTestDataGenerators
                          .map do |registration_starts_at|
         course_cohort_setup(
           registration_starts_at:,
-          training_starts_now: registration_starts_at.year == cohort_year, # for the cohort_year make training start now to simplify testing
+          training_starts_now: registration_starts_at.year == academic_year, # for the academic_year make training start now to simplify testing
         )
       end
 
@@ -293,12 +293,12 @@ module ValidTestDataGenerators
     end
 
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
-      cohort_year = registration_starts_at.year
+      academic_year = registration_starts_at.year
       term = registration_starts_at.month < 8 ? "autumn" : "spring"
       current_cohort = Cohort.find_by(registration_starts_at:)
 
       attrs = {
-        description: "#{registration_starts_at.strftime('%B')} #{cohort_year}",
+        description: "#{registration_starts_at.strftime('%B')} #{academic_year}",
         registration_starts_at:,
         funding_cap: true,
       }
