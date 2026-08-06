@@ -307,7 +307,7 @@ module ValidTestDataGenerators
         current_cohort = Cohort.create!(**attrs)
       end
 
-      training_starts_at = training_starts_now ? 2.day.ago : registration_starts_at + 2.months
+      training_starts_at = training_starts_now ? 2.days.ago : registration_starts_at + 2.months
       training_ends_at = training_starts_at + 6.months
       schedule = create_or_update_schedule!(
         cohort: current_cohort,
