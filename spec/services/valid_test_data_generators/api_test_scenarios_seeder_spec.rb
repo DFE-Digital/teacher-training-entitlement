@@ -146,18 +146,18 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates 2 cohorts" do
           expect { seeder.call }.to change(Cohort, :count).by_at_least(2)
 
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[0])).to be_present
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[2])).to be_present
+          registration_periods = seeder.registration_periods.take(4)
+          expect(Cohort.find_by(registration_starts_at: registration_periods[0])).to be_present
+          expect(Cohort.find_by(registration_starts_at: registration_periods[2])).to be_present
         end
 
         it "creates 2 course_cohorts" do
           seeder.call
 
           course = Course.find_by!(identifier: "tte-early-years")
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          primary_cohort = Cohort.find_by(registration_starts_at: cohort_start_dates[0])
-          secondary_cohort = Cohort.find_by(registration_starts_at: cohort_start_dates[2])
+          registration_periods = seeder.registration_periods.take(4)
+          primary_cohort = Cohort.find_by(registration_starts_at: registration_periods[0])
+          secondary_cohort = Cohort.find_by(registration_starts_at: registration_periods[2])
 
           expect(CourseCohort.find_by(course:, cohort: primary_cohort)).to be_present
           expect(CourseCohort.find_by(course:, cohort: secondary_cohort)).to be_present
@@ -167,8 +167,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           seeder.call
 
           course = Course.find_by!(identifier: "tte-early-years")
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          course_cohorts = CourseCohort.joins(:cohort).where(course:, cohorts: { registration_starts_at: cohort_start_dates })
+          registration_periods = seeder.registration_periods.take(4)
+          course_cohorts = CourseCohort.joins(:cohort).where(course:, cohorts: { registration_starts_at: registration_periods })
           allowed_declaration_types = course_cohorts.map { |course_cohort| course_cohort.schedule.allowed_declaration_types }
 
           expect(course_cohorts.map(&:schedule)).to all(be_present)
@@ -179,9 +179,9 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           seeder.call
 
           course = Course.find_by!(identifier: "tte-early-years")
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          primary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[0])
-          secondary_cohort = Cohort.find_by!(registration_starts_at: cohort_start_dates[2])
+          registration_periods = seeder.registration_periods.take(4)
+          primary_cohort = Cohort.find_by!(registration_starts_at: registration_periods[0])
+          secondary_cohort = Cohort.find_by!(registration_starts_at: registration_periods[2])
           primary_course_cohort = CourseCohort.find_by!(course:, cohort: primary_cohort)
           secondary_course_cohort = CourseCohort.find_by!(course:, cohort: secondary_cohort)
 
@@ -193,8 +193,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           seeder.call
 
           course = Course.find_by!(identifier: "tte-early-years")
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          course_cohorts = CourseCohort.joins(:cohort).where(course:, cohorts: { registration_starts_at: cohort_start_dates })
+          registration_periods = seeder.registration_periods.take(4)
+          course_cohorts = CourseCohort.joins(:cohort).where(course:, cohorts: { registration_starts_at: registration_periods })
 
           expect(course_cohorts).to all(
             have_attributes(
@@ -271,9 +271,9 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates cohorts for the specified year" do
           seeder.call
 
-          cohort_start_dates = seeder.cohort_start_dates.take(4)
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[0])).to be_present
-          expect(Cohort.find_by(registration_starts_at: cohort_start_dates[2])).to be_present
+          registration_periods = seeder.registration_periods.take(4)
+          expect(Cohort.find_by(registration_starts_at: registration_periods[0])).to be_present
+          expect(Cohort.find_by(registration_starts_at: registration_periods[2])).to be_present
         end
       end
     end
