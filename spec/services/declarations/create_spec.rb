@@ -16,10 +16,10 @@ RSpec.describe Declarations::Create, type: :model do
     }
   end
   let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-  let(:declaration_date) { schedule.training_starts_at + 1.hour }
+  let(:declaration_date) { started_milestone.acceptance_window_start_date + 1.hour }
   let(:course_cohort) { create(:course_cohort, schedule:) }
-  let!(:started_milestone) { create(:milestone, :started, course_cohort:) }
-  let!(:completed_milestone) { create(:milestone, :completed, course_cohort:) }
+  let!(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 2.days.ago) }
+  let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, acceptance_window_start_date: 1.day.ago) }
   let(:lead_provider) { create(:lead_provider) }
   let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
   let(:has_passed) { true }
@@ -132,7 +132,7 @@ RSpec.describe Declarations::Create, type: :model do
       context "when application receives `completed declaration` before `started declaration`" do
         let(:declaration_type) { "completed" }
 
-        it { is_expected.to validate_param(:declaration_type).with_message("A started declaration is required before any other declaration_type") }
+        it { is_expected.to have_error(:declaration_type, :out_of_order) }
       end
 
       context "when application already has a started declaration" do
@@ -141,8 +141,8 @@ RSpec.describe Declarations::Create, type: :model do
         it { is_expected.to validate_param(:base).with_message("A declaration has already been submitted that will be, or has been, paid for this event") }
       end
 
-      context "when application declaration-date is before schedule.training_start date" do
-        let(:declaration_date) { schedule.training_starts_at - 1.hour }
+      context "when declaration_date is before milestone acceptance_window_start_date" do
+        let(:declaration_date) { started_milestone.acceptance_window_start_date - 1.hour }
 
         it { is_expected.to validate_param(:declaration_date).with_message("Enter a '#/declaration_date' that's on or after the schedule start.") }
       end
@@ -163,6 +163,7 @@ RSpec.describe Declarations::Create, type: :model do
 
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
+    let(:declaration_date) { completed_milestone.acceptance_window_start_date + 1.hour }
     let!(:application) do
       create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
     end
@@ -249,6 +250,12 @@ RSpec.describe Declarations::Create, type: :model do
 
         it { is_expected.to validate_presence_of(:has_passed).with_message(error_message) }
       end
+
+      context "when no started declaration exists" do
+        let!(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+
+        it { is_expected.to have_error(:declaration_type, :out_of_order) }
+      end
     end
   end
 
@@ -310,6 +317,29 @@ RSpec.describe Declarations::Create, type: :model do
         it { is_expected.to validate_inclusion_of(:declaration_type).in_array(%w[started completed]).with_message("The entered '#/declaration_type' is not recognised.") }
 
         it_behaves_like "does not update the application"
+      end
+    end
+
+    context "when declaration_type is out of order" do
+      let(:declaration_type) { "retained-1" }
+      let(:declaration_date) { retained_milestone.acceptance_window_start_date + 1.hour }
+      let!(:retained_milestone) do
+        create(:milestone, declaration_type: "retained-1", course_cohort:,
+                           acceptance_window_start_date: started_milestone.acceptance_window_start_date + 1.day)
+      end
+
+      context "when previous milestone has no declaration" do
+        it { is_expected.to have_error(:declaration_type, :out_of_order) }
+
+        it_behaves_like "does not update the application"
+      end
+
+      context "when previous milestone has a billable declaration" do
+        before do
+          application.declarations << create(:declaration, :eligible, declaration_type: "started", application:, milestone: started_milestone)
+        end
+
+        it { is_expected.to be_valid }
       end
     end
   end

@@ -117,7 +117,7 @@ RSpec.describe Declaration, type: :model do
         end
 
         context "without cohort set" do
-          let(:declaration) { build(:declaration, delivery_partner: nil, milestone: nil) }
+          let(:declaration) { build(:declaration, delivery_partner: nil, milestone: nil, declaration_date: 1.day.ago) }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner_id) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
@@ -217,11 +217,9 @@ RSpec.describe Declaration, type: :model do
       end
     end
 
-    context "when declaration_date is before the schedule start" do
-      let(:declaration_date) { application.schedule.training_starts_at.prev_week }
-
+    context "when declaration_date is before the acceptance window start" do
       context "when declaration is being created" do
-        before { subject.declaration_date = subject.application.schedule.training_starts_at.prev_week }
+        before { subject.declaration_date = subject.milestone.acceptance_window_start_date - 1.week }
 
         it "has a meaningful error" do
           expect(subject).to be_invalid
@@ -235,26 +233,50 @@ RSpec.describe Declaration, type: :model do
 
         let(:application) { create(:application, :accepted, user:, course:) }
 
-        subject { build(:declaration, course:, user:, application:, declaration_date:).tap { |d| d.save!(validate: false) } }
+        subject { build(:declaration, course:, user:, application:).tap { |d| d.save!(validate: false) } }
 
         context "when declaration_date is not changed" do
           it { is_expected.to be_valid }
         end
 
         context "when declaration_date is going to be changed" do
-          let(:declaration_date) { application.schedule.training_starts_at.next_week }
-          let(:new_declaration_date) { application.schedule.training_starts_at.prev_week }
-
           it "is not valid" do
-            subject.declaration_date = new_declaration_date
+            subject.declaration_date = subject.milestone.acceptance_window_start_date - 1.week
             expect(subject).not_to be_valid
           end
         end
       end
     end
 
-    context "when declaration_date is at the schedule start" do
-      before { subject.declaration_date = subject.application.schedule.training_starts_at }
+    context "when declaration_date is at the acceptance window start" do
+      before { subject.declaration_date = subject.milestone.acceptance_window_start_date }
+
+      it { is_expected.to be_valid }
+    end
+
+    context "when declaration_date is after the acceptance window end" do
+      before { subject.declaration_date = subject.milestone.acceptance_window_end_date + 1.day }
+
+      it "has a meaningful error" do
+        expect(subject).to be_invalid
+        expect(subject).to have_error(:declaration_date, :declaration_after_schedule_end, "Enter a '#/declaration_date' that's on or before the schedule end.")
+      end
+    end
+
+    context "when declaration_date is at the acceptance window end" do
+      before do
+        subject.milestone.update!(acceptance_window_end_date: 1.day.ago)
+        subject.declaration_date = subject.milestone.acceptance_window_end_date
+      end
+
+      it { is_expected.to be_valid }
+    end
+
+    context "when milestone has no acceptance_window_end_date" do
+      before do
+        subject.milestone.update!(acceptance_window_end_date: nil)
+        subject.declaration_date = subject.milestone.acceptance_window_start_date + 1.day
+      end
 
       it { is_expected.to be_valid }
     end
@@ -695,7 +717,7 @@ RSpec.describe Declaration, type: :model do
     context "without milestone" do
       before { allow(lead_provider).to receive(:delivery_partners_for_cohort) }
 
-      let(:declaration) { build(:declaration, delivery_partner: nil, lead_provider:, milestone: nil) }
+      let(:declaration) { build(:declaration, delivery_partner: nil, lead_provider:, milestone: nil, declaration_date: 1.day.ago) }
 
       it { is_expected.to be_empty }
 

@@ -13,7 +13,10 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:participant) { create(:user) }
 
   let!(:application) { create(:application, :accepted, :for_cohort_starting_on, user: participant, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }
-  let(:started_milestone) { create(:milestone, course_cohort: application.course_cohort, declaration_type: "started") }
+  let(:started_milestone) do
+    create(:milestone, course_cohort: application.course_cohort, declaration_type: "started",
+                       acceptance_window_start_date: schedule.training_starts_at)
+  end
 
   describe "validations" do
     context "with valid CSV file" do

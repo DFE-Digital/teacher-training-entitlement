@@ -92,7 +92,7 @@ class Declaration < ApplicationRecord
   }, suffix: true
 
   validates :declaration_date, :declaration_type, presence: true
-  validate :validate_declaration_date_within_schedule
+  validate :validate_declaration_date_within_acceptance_window
   validate :validate_declaration_date_not_in_the_future
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
@@ -186,13 +186,18 @@ class Declaration < ApplicationRecord
 
 private
 
-  def validate_declaration_date_within_schedule
-    return unless application&.schedule
-    return unless declaration_date
+  def validate_declaration_date_within_acceptance_window
+    return unless application && declaration_date.present?
     return if persisted? && !declaration_date_changed?
+    return if errors[:declaration_type].any?
 
-    if declaration_date < application.schedule.training_starts_at
+    milestone = application.milestones.find_by(declaration_type:)
+    return unless milestone
+
+    if declaration_date < milestone.acceptance_window_start_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
+    elsif milestone.acceptance_window_end_date && declaration_date > milestone.acceptance_window_end_date
+      errors.add(:declaration_date, :declaration_after_schedule_end)
     end
   end
 

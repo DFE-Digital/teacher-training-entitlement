@@ -11,13 +11,13 @@ FactoryBot.define do
     lead_provider { application&.lead_provider || create(:lead_provider) }
     milestone do
       (application&.course_cohort || course_cohort).milestones.find_or_create_by!(declaration_type:) do |record|
-        record.assign_attributes(acceptance_window_start_date: Time.zone.today,
+        record.assign_attributes(acceptance_window_start_date: 1.week.ago.to_date,
                                  acceptance_window_end_date: 1.month.from_now.to_date)
       end
     end
     declaration_type { Milestone::STARTED }
     delivery_partner { create(:delivery_partner, lead_providers: { milestone.cohort => lead_provider }) }
-    declaration_date { application.schedule.training_starts_at + 1.day }
+    declaration_date { milestone.acceptance_window_start_date + 1.day }
     submitted
     ecf_id { SecureRandom.uuid }
     value { 100 }
