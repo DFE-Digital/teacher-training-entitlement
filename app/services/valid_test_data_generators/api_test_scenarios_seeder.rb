@@ -38,13 +38,13 @@ module ValidTestDataGenerators
     private
 
       def load_applications_data
-        config_path = Rails.root.join("config/api_test_scenarios.yml")
+        config_path = Rails.root.join("db/seeds/api_test_scenarios.yml")
         config = YAML.load_file(config_path)
         config["applications"].map(&:deep_symbolize_keys)
       end
 
       def load_custom_email_templates
-        config_path = Rails.root.join("config/api_test_scenarios.yml")
+        config_path = Rails.root.join("db/seeds/api_test_scenarios.yml")
         config = YAML.load_file(config_path)
         config["custom_email_templates"] || {}
       end
