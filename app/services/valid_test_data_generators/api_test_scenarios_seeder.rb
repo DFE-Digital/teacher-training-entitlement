@@ -307,7 +307,7 @@ module ValidTestDataGenerators
         current_cohort = Cohort.create!(**attrs)
       end
 
-      training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
+      training_starts_at = training_starts_now ? 2.day.ago : registration_starts_at + 2.months
       training_ends_at = training_starts_at + 6.months
       schedule = create_or_update_schedule!(
         cohort: current_cohort,
@@ -336,10 +336,15 @@ module ValidTestDataGenerators
         payment_amount: 60,
       )
 
+      start_date = if training_starts_now
+                     training_starts_at + 1.day # to keep the milestone ordering
+                   else
+                     training_ends_at
+                   end
       create_or_update_milestone!(
         course_cohort: cc,
         declaration_type: Milestone::COMPLETED,
-        acceptance_window_start_date: training_ends_at,
+        acceptance_window_start_date: start_date,
         acceptance_window_end_date: training_ends_at + 2.months,
         payment_amount: 40,
       )
