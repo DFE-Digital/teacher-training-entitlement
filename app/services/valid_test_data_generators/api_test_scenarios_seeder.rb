@@ -180,10 +180,9 @@ module ValidTestDataGenerators
       course_cohorts = registration_periods
                          .take(4)
                          .map do |registration_starts_at|
-        course_cohort_setup(
-          registration_starts_at:,
-          training_starts_now: registration_starts_at.year == academic_year, # for the academic_year make training start now to simplify testing
-        )
+        # for the academic_year make training start now to simplify testing
+        training_starts_now = registration_starts_at.year == academic_year
+        course_cohort_setup(registration_starts_at:, training_starts_now:)
       end
 
       applications_data.each do |app_data|
@@ -334,6 +333,7 @@ module ValidTestDataGenerators
         declaration_type: Milestone::STARTED,
         acceptance_window_start_date: training_starts_at,
         acceptance_window_end_date: training_starts_at + 2.months,
+        payment_amount: 60,
       )
 
       create_or_update_milestone!(
@@ -341,6 +341,7 @@ module ValidTestDataGenerators
         declaration_type: Milestone::COMPLETED,
         acceptance_window_start_date: training_ends_at,
         acceptance_window_end_date: training_ends_at + 2.months,
+        payment_amount: 40,
       )
 
       create_or_update_lead_provider_contract(course_cohort: cc, lead_provider:)
@@ -356,18 +357,25 @@ module ValidTestDataGenerators
       lead_provider_contract = course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
       recruitment_target = [50, 100, 150, 200].sample
       teacher_funding = [600, 700, 800].sample
-      lead_provider_contract.update!(recruitment_target:)
 
-      attrs = {
-        recruitment_target: recruitment_target * 2,
-        teacher_funding:,
-      }
       contract_year = ContractYear.find_by(lead_provider:, academic_year:, course: course_cohort.course)
       if contract_year
-        contract_year.update!(attrs)
+        contract_year.update!(
+          teacher_funding:,
+          # so that sum of course_cohorts recruitment_target do not exceed academic year limit
+          recruitment_target: contract_year.recruitment_target + recruitment_target,
+        )
       else
-        ContractYear.create!(attrs.merge(lead_provider:, academic_year:, course: course_cohort.course))
+        ContractYear.create!(
+          lead_provider:,
+          academic_year:,
+          course: course_cohort.course,
+          teacher_funding:,
+          recruitment_target:,
+        )
       end
+
+      lead_provider_contract.update!(recruitment_target:)
     end
 
     def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
@@ -631,11 +639,12 @@ module ValidTestDataGenerators
       end
     end
 
-    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:)
+    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_amount:)
       milestone = course_cohort.milestones.find_or_initialize_by(declaration_type:)
       milestone.update!(
         acceptance_window_start_date:,
         acceptance_window_end_date:,
+        payment_amount:,
       )
       milestone
     end
