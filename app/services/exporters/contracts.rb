@@ -31,10 +31,11 @@ private
 
   def query
     ContractTemplate
-      .joins(contracts: [{ statement: :lead_provider }, :course])
-      .where(statements: { cohort:, output_fee: true })
-      .where("MAKE_DATE(statements.year, statements.month, 1) <= DATE_TRUNC('month', CURRENT_DATE)")
-      .order(:lead_provider_name, :course_identifier, "statements.year desc", "statements.month desc")
+      .joins(contracts: [{ statement: :lead_provider }, { course: :course_cohorts }])
+      .where(course_cohorts: { cohort_id: cohort.id })
+      .where(statements: { output_fee: true })
+      .where("statements.start_date <= DATE_TRUNC('month', CURRENT_DATE)")
+      .order(:lead_provider_name, :course_identifier, "statements.start_date desc")
       .select(
         "DISTINCT ON (lead_provider_name, course_identifier) lead_providers.name AS lead_provider_name",
         "courses.identifier AS course_identifier",

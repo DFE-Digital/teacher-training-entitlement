@@ -3,10 +3,7 @@ FactoryBot.define do
     transient do
       user { create(:user) }
       course { nil }
-      course_cohort do
-        course.present? ? create(:course_cohort, course:) : create(:course_cohort)
-      end
-      statement { nil }
+      course_cohort { course ? create(:course_cohort, course:) : create(:course_cohort) }
       paid_statement { nil }
     end
 
@@ -24,10 +21,11 @@ FactoryBot.define do
     submitted
     ecf_id { SecureRandom.uuid }
     value { 100 }
-
-    after(:create) do |declaration, evaluator|
-      if evaluator.statement && declaration.state != "submitted"
-        create(:statement_item, declaration:, state: declaration.state, statement: evaluator.statement)
+    statement do
+      if lead_provider && LeadProvider.exists?(lead_provider.id)
+        Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:)
+      else
+        build(:statement)
       end
     end
 

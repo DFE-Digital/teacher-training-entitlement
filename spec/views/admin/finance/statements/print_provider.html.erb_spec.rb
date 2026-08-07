@@ -1,12 +1,12 @@
 require "rails_helper"
 
-RSpec.describe "admin/finance/statements/print_provider", type: :view do
+RSpec.describe "admin/finance/statements/print_provider", :npq, type: :view do
   subject { render }
 
   let(:rendered) { Capybara.string(subject) }
   let(:contract) { create(:contract, course: create(:course, :npd_eirt), statement:) }
   let(:special_contract) { create(:contract, contract_template: create(:contract_template, special_course: true), statement:) }
-  let(:statement) { build(:statement, month: Time.zone.today.month, year: Time.zone.today.year) }
+  let(:statement) { build(:statement) }
   let(:admin_user) { create(:admin) }
 
   before do
@@ -19,7 +19,6 @@ RSpec.describe "admin/finance/statements/print_provider", type: :view do
 
   it "shows the statement overview" do
     summary_card = rendered.find(".govuk-summary-card", text: "Overview")
-    expect(summary_card).to have_summary_item("Cohort", statement.cohort.start_year)
     expect(summary_card).to have_summary_item("Output payment date", statement.payment_date.to_fs(:govuk))
     expect(summary_card).to have_summary_item("Status", statement.state.humanize)
     expect(summary_card).to have_summary_item("Statement ID", statement.ecf_id)

@@ -7,10 +7,9 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to belong_to(:application) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:milestone).without_validating_presence }
+    it { is_expected.to belong_to(:statement) }
     it { is_expected.to belong_to(:superseded_by).optional }
     it { is_expected.to have_many(:participant_outcomes).dependent(:destroy) }
-    it { is_expected.to have_many(:statement_items) }
-    it { is_expected.to have_many(:statements).through(:statement_items) }
     it { is_expected.to belong_to(:delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:secondary_delivery_partner).without_validating_presence }
     it { is_expected.to belong_to(:clawback_declaration).without_validating_presence }
@@ -259,22 +258,6 @@ RSpec.describe Declaration, type: :model do
 
       it { is_expected.to be_valid }
     end
-
-    context "when declaration has two or fewer statement items" do
-      it "is valid" do
-        create_list(:statement_item, 2, declaration: subject)
-        expect(subject).to be_valid
-      end
-    end
-
-    context "when declaration has more than two statement items" do
-      it "is not valid" do
-        create_list(:statement_item, 3, declaration: subject)
-
-        expect(subject).not_to be_valid
-        expect(subject).to have_error(:statement_items, :more_than_two_statement_items, "There cannot be more than two items per declaration")
-      end
-    end
   end
 
   describe "delegations" do
@@ -509,36 +492,6 @@ RSpec.describe Declaration, type: :model do
     end
   end
 
-  describe "#billable_statement" do
-    let(:statement_item) { create(:statement_item, state: :payable) }
-    let(:declaration) { statement_item.declaration }
-
-    subject { declaration.billable_statement }
-
-    it { is_expected.to eq(statement_item.statement) }
-
-    context "when there are no billable statement items" do
-      let(:statement_item) { create(:statement_item, state: :awaiting_clawback) }
-
-      it { is_expected.to be_nil }
-    end
-  end
-
-  describe "#refundable_statement" do
-    let(:statement_item) { create(:statement_item, state: :awaiting_clawback) }
-    let(:declaration) { statement_item.declaration }
-
-    subject { declaration.refundable_statement }
-
-    it { is_expected.to eq(statement_item.statement) }
-
-    context "when there are no refundable statement items" do
-      let(:statement_item) { create(:statement_item, state: :payable) }
-
-      it { is_expected.to be_nil }
-    end
-  end
-
   describe "scopes" do
     describe ".latest_first" do
       let!(:latest_declaration) { create(:declaration) }
@@ -584,7 +537,9 @@ RSpec.describe Declaration, type: :model do
     end
 
     describe "declaration states" do
-      let(:declarations) { described_class.states.keys.map { |state| create(:declaration, state:) } }
+      let(:declarations) do
+        described_class.states.keys.map { |state| create(:declaration, application: create(:application), state:) }
+      end
       let(:voided_paid_declaration) { create(:declaration, :voided_paid) }
 
       describe ".billable" do
@@ -648,12 +603,6 @@ RSpec.describe Declaration, type: :model do
     describe ".completed" do
       let(:completed_declaration) { create(:declaration, :completed) }
 
-      before do
-        described_class.declaration_types.keys.excluding("completed").each do |declaration_type|
-          create(:declaration, declaration_type:)
-        end
-      end
-
       it { expect(described_class.completed).to contain_exactly(completed_declaration) }
     end
 
@@ -708,71 +657,6 @@ RSpec.describe Declaration, type: :model do
     end
   end
 
-  describe "#duplicate_declarations" do
-    let(:cohort) { create(:cohort, :current) }
-    let(:course) { create(:course, :npd_eirt) }
-    let(:schedule) { create(:schedule, :npq_leadership_autumn, cohort:) }
-    let(:application) { create(:application, :accepted, cohort:, course:) }
-    let(:participant) { application.user }
-    let!(:declaration) { create(:declaration, application:) }
-
-    context "when a user exists with the same TRN" do
-      let(:other_user) { create(:user, trn: participant.trn) }
-
-      context "when declarations have been made for a user with the same trn" do
-        context "when declarations have been made for the same course" do
-          let(:other_application) { create(:application, :accepted, cohort:, course:, user: other_user) }
-          let!(:other_declaration) { create(:declaration, application: other_application) }
-
-          it "returns those declarations" do
-            expect(declaration.duplicate_declarations).to eq([other_declaration])
-          end
-        end
-
-        context "when declarations have been made for a different course", :npq do
-          before do
-            course = create(:course, :npd_eirt)
-            other_application = create(:application, :accepted, course:, cohort:, user: other_user)
-            create(:declaration, application: other_application)
-          end
-
-          it "returns no declarations" do
-            expect(declaration.duplicate_declarations).to be_empty
-          end
-        end
-      end
-
-      context "when no declaration has been made for a user with the same trn" do
-        it "returns no declarations" do
-          expect(declaration.duplicate_declarations).to be_empty
-        end
-      end
-    end
-
-    context "when a declaration has been superseded by another" do
-      before do
-        other_user = create(:user, trn: participant.trn)
-        other_application = create(:application, :accepted, cohort:, course:, user: other_user)
-        create(:declaration, application: other_application, declaration_type: declaration.declaration_type, milestone: declaration.milestone, superseded_by: declaration)
-      end
-
-      it "returns no declarations" do
-        expect(declaration.duplicate_declarations).to be_empty
-      end
-    end
-
-    context "when a declaration has a different type" do
-      before do
-        completed_milestone = create(:milestone, :completed, course_cohort: application.course_cohort)
-        create(:declaration, :completed, application:, milestone: completed_milestone)
-      end
-
-      it "returns no declarations" do
-        expect(declaration.duplicate_declarations).to be_empty
-      end
-    end
-  end
-
   describe "paper_trail" do
     it "enables paper trail" do
       expect(Declaration.new).to be_versioned
@@ -800,7 +684,9 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.not_to include twenty_four_partner.id }
 
     context "without delivery_partner" do
-      let(:lead_provider) { nil }
+      let(:lead_provider) { create(:lead_provider, delivery_partners: {}) }
+      # we need to override the delivery_partner as the factory create one and associates it with the lead_provider
+      let(:declaration) { build(:declaration, lead_provider:, milestone:, delivery_partner: nil) }
 
       it { is_expected.to be_empty }
     end

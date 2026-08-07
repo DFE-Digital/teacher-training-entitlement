@@ -9,6 +9,7 @@ class Declaration < ApplicationRecord
 
   has_paper_trail ignore: [:updated_at]
 
+  belongs_to :statement
   belongs_to :application
   belongs_to :lead_provider
   belongs_to :cohort, deprecated: true, optional: true
@@ -20,8 +21,6 @@ class Declaration < ApplicationRecord
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
   has_one :course_cohort, through: :milestone
   has_many :participant_outcomes, dependent: :destroy
-  has_many :statement_items
-  has_many :statements, through: :statement_items
 
   delegate :course, :user, to: :application
   delegate :inside_catchment?, to: :application, prefix: true, allow_nil: true
@@ -96,7 +95,6 @@ class Declaration < ApplicationRecord
   validate :validate_declaration_date_within_schedule
   validate :validate_declaration_date_not_in_the_future
   validates :ecf_id, uniqueness: { case_sensitive: false }
-  validate :validate_max_statement_items_count
 
   validates :delivery_partner_id, presence: true, if: :delivery_partner_required
   validates :delivery_partner_id, absence: { message: :overseas },
@@ -127,13 +125,17 @@ class Declaration < ApplicationRecord
       .or(where(secondary_delivery_partner: delivery_partner))
   }
 
+  def clawback_statement
+    Statement.clawback.find_by(lead_provider:) || Statement.create_clawback!(lead_provider:)
+  end
+
   def clawback!
     self.clawback_declaration = ClawbackDeclaration.new(
       paid_declaration: self,
       application: application,
       milestone: milestone,
       cohort: cohort,
-      # statement: Statement.open.find_or_create_by(contract: @declaration.milestone.contract),
+      statement: clawback_statement,
       lead_provider: lead_provider,
       delivery_partner: delivery_partner,
       secondary_delivery_partner: secondary_delivery_partner,
@@ -142,14 +144,6 @@ class Declaration < ApplicationRecord
       state: "awaiting_clawback",
     )
     save!
-  end
-
-  def billable_statement
-    statement_items.find(&:billable?)&.statement
-  end
-
-  def refundable_statement
-    statement_items.find(&:refundable?)&.statement
   end
 
   def uplift_paid?
@@ -169,22 +163,6 @@ class Declaration < ApplicationRecord
     else
       state_reason
     end
-  end
-
-  def duplicate_declarations
-    self
-      .class
-      .billable_or_changeable
-      .joins(application: [:user, { course_cohort: :course }])
-      .where(user: { trn: application.user.trn })
-      .where.not(user: { trn: nil })
-      .where.not(user: { id: application.user_id })
-      .where.not(id:)
-      .where(
-        declaration_type:,
-        superseded_by_id: nil,
-        courses: { id: application.course.rebranded_alternative_courses },
-      )
   end
 
   def available_delivery_partner_ids
@@ -221,12 +199,6 @@ private
 
   def validate_declaration_date_not_in_the_future
     errors.add(:declaration_date, :future_declaration_date) if declaration_date&.future?
-  end
-
-  def validate_max_statement_items_count
-    if statement_items.count > 2
-      errors.add(:statement_items, :more_than_two_statement_items)
-    end
   end
 
   def delivery_partners_are_not_the_same

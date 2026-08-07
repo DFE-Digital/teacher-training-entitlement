@@ -19,15 +19,13 @@ module Admin
       if @current_cohort
         applications_scope.merge!(Application.where(course_cohorts: { cohort: @current_cohort }))
         @pagy_applications, @applications = pagy(applications_scope, items: 25)
-
         @pagy_delivery_partners, @delivery_partners = pagy(@lead_provider.delivery_partners_for_cohort(@current_cohort))
-
-        @pagy_statements, @statements = pagy(@lead_provider.statements.where(cohort: @current_cohort))
       else
         @pagy_applications, @applications = pagy(applications_scope, items: 25)
         @pagy_delivery_partners, @delivery_partners = pagy(@lead_provider.delivery_partners.distinct)
-        @pagy_statements, @statements = pagy(@lead_provider.statements)
       end
+
+      @pagy_statements, @statements = pagy(@lead_provider.statements)
     end
 
     def edit

@@ -230,15 +230,6 @@ ValidTestDataGenerators::PendingApplicationsPopulater.populate(
 )
 ```
 
-### StatementsPopulater
-
-Creates monthly statements with correct states (paid, payable) for a given
-lead provider and cohort.
-
-```ruby
-ValidTestDataGenerators::StatementsPopulater.populate(lead_provider: lp, cohort:)
-```
-
 ### SandboxSharedData
 
 Creates consistent, repeatable test users per lead provider from a YAML

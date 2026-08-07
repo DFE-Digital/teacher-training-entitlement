@@ -5,8 +5,6 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
   include_context "with authorization for api doc request"
 
   let(:course) { create(:course, :npd_eirt) }
-  let(:cohort) { create(:cohort, :current) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:user) { create(:user) }
   let(:application_status_trait) { :accepted }
   let(:application) do
@@ -19,16 +17,13 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
            :with_participant_id_change,
            lead_provider:,
            course:,
-           schedule:,
-           registration_starts_at: cohort.registration_starts_at,
            user:,
            funded_place: true)
   end
   let!(:participant) { application.user }
 
   before do
-    statement = create(:statement, cohort:, lead_provider:)
-    create(:contract, statement:, course:)
+    application.schedule.update!(identifier: "tte-reception-autumn")
   end
 
   it_behaves_like "an API index endpoint documentation",

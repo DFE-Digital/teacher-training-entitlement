@@ -7,9 +7,9 @@ RSpec.describe Admin::StatementsTableComponent, type: :component do
 
   let(:statements) { FactoryBot.create_list(:statement, 3) }
   let(:show_lead_provider) { true }
-  let(:expected_columns) { ["Provider", "Cohort", "Payment status"] }
+  let(:expected_columns) { ["Provider", "Statement date", "Payment status", "Payment run", "Actions"] }
 
-  it "renders a table with Provider, Cohort and Payment status columns" do
+  it "renders a table with the expected columns" do
     expected_columns.each do |heading|
       expect(rendered_content).to have_css("th", text: heading)
     end
@@ -17,7 +17,7 @@ RSpec.describe Admin::StatementsTableComponent, type: :component do
 
   it "renders a link to each statement page" do
     statements.each do |statement|
-      expect(page).to have_link(statement.id.to_s, href: "/admin/finance/statements/#{statement.id}")
+      expect(page).to have_link("View", href: "/admin/finance/statements/#{statement.id}")
     end
   end
 

@@ -9,7 +9,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:lead_provider) { create(:lead_provider) }
   let(:delivery_partner) { create(:delivery_partner) }
   let(:schedule) { create(:schedule, cohort:, course_group: course.course_group, allowed_declaration_types: %w[started]) }
-  let(:statement) { create(:statement, cohort:, lead_provider:) }
+  let(:statement) { create(:statement, lead_provider:) }
   let(:participant) { create(:user) }
 
   let!(:application) { create(:application, :accepted, :for_cohort_starting_on, user: participant, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }

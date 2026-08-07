@@ -34,7 +34,7 @@ class Admin::APITestScenariosController < AdminController
     # this job will create 2 cohorts (autumn, spring) per year; starting from 2 year ago
     CustomDataSeederJob.perform_later(
       lead_provider: LeadProvider.find_by!(id: params[:lead_provider_id]),
-      start_year: params[:start_year] || Time.zone.now.year - 2,
+      academic_year: params[:start_year] || Time.zone.now.year - 2,
       nb_cohort: params[:nb_cohort] || 6,
       nb_app_per_state: params[:nb_app_per_state] || 20,
     )

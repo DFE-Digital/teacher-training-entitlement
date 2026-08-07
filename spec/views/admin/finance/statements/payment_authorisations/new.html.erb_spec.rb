@@ -8,7 +8,7 @@ RSpec.describe "admin/finance/statements/payment_authorisations/new", type: :vie
     assign(:payment_authorisation_form, auth_form)
   end
 
-  let(:statement) { build_stubbed(:statement, month: 3, year: 2024) }
+  let(:statement) { build_stubbed(:statement, start_date: Date.new(2024, 3, 1)) }
   let(:component) { Admin::StatementDetailsComponent.new(statement:, link_to_voids: false) }
   let(:auth_form) { Statements::PaymentAuthorisationForm.new(statement, {}) }
   let(:form_path) { admin_finance_payment_authorisation_path(statement) }

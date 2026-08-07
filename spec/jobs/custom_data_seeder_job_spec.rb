@@ -4,14 +4,14 @@ RSpec.describe CustomDataSeederJob, type: :job do
   subject(:job) do
     described_class.perform_now(
       lead_provider:,
-      start_year:,
+      academic_year:,
       nb_cohort:,
       nb_app_per_state:,
     )
   end
 
   let(:lead_provider) { create(:lead_provider) }
-  let(:start_year) { Time.zone.now.year }
+  let(:academic_year) { Time.zone.now.year }
   let(:nb_cohort) { 1 }
   let(:nb_app_per_state) { 2 }
 
@@ -21,7 +21,7 @@ RSpec.describe CustomDataSeederJob, type: :job do
     before do
       allow(ValidTestDataGenerators::APITestScenariosSeeder)
         .to receive(:new)
-              .with(lead_provider:, cohort_year: start_year)
+              .with(lead_provider:, academic_year: academic_year)
               .and_return(seeder)
     end
 

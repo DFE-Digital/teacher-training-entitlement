@@ -7,11 +7,11 @@ module ValidTestDataGenerators
   # NOTE: for change provider feature, the application label APP-006 should
   # marked as unassigned and be read-only
   class APITestScenariosSeeder
-    attr_reader :lead_provider, :cohort_year, :logger
+    attr_reader :lead_provider, :academic_year, :logger
 
-    Outcome = Data.define(:success, :error, :applications_count, :cohort_year) do
-      def initialize(success:, error: nil, applications_count: nil, cohort_year: nil)
-        super(success:, error:, applications_count:, cohort_year:)
+    Outcome = Data.define(:success, :error, :applications_count, :academic_year) do
+      def initialize(success:, error: nil, applications_count: nil, academic_year: nil)
+        super(success:, error:, applications_count:, academic_year:)
       end
     end
 
@@ -24,16 +24,27 @@ module ValidTestDataGenerators
         @custom_email_templates ||= load_custom_email_templates
       end
 
+      def to_dns_name(name, max_length: 63)
+        name.to_s
+          .parameterize # Convert to lowercase, replace spaces/special chars with hyphens
+          .gsub(/[^a-z0-9-]/, "")         # Remove any remaining invalid characters
+          .gsub(/-+/, "-")                # Collapse multiple hyphens
+          .sub(/^-/, "")                  # Remove leading hyphen
+          .sub(/-$/, "")                  # Remove trailing hyphen
+          .slice(0, max_length)           # Truncate to max length
+          .sub(/-$/, "")                  # Remove trailing hyphen again if truncation created one
+      end
+
     private
 
       def load_applications_data
-        config_path = Rails.root.join("config/api_test_scenarios.yml")
+        config_path = Rails.root.join("db/seeds/api_test_scenarios.yml")
         config = YAML.load_file(config_path)
         config["applications"].map(&:deep_symbolize_keys)
       end
 
       def load_custom_email_templates
-        config_path = Rails.root.join("config/api_test_scenarios.yml")
+        config_path = Rails.root.join("db/seeds/api_test_scenarios.yml")
         config = YAML.load_file(config_path)
         config["custom_email_templates"] || {}
       end
@@ -42,12 +53,12 @@ module ValidTestDataGenerators
     def initialize(lead_provider:,
                    course_identifier: "tte-early-years",
                    schedule_identifier: "tte-reception-autumn",
-                   cohort_year: Date.current.year,
+                   academic_year: Date.current.year,
                    logger: Rails.logger)
       @lead_provider = lead_provider
       @course_identifier = course_identifier
       @schedule_identifier = schedule_identifier
-      @cohort_year = cohort_year.to_i
+      @academic_year = academic_year.to_i
       @logger = logger
     end
 
@@ -61,7 +72,7 @@ module ValidTestDataGenerators
         "#{prefix}+#{user_id}@#{domain}"
       else
         # Fall back to original logic
-        email.gsub("example", to_dns_name(@lead_provider.name))
+        email.gsub("example", self.class.to_dns_name(@lead_provider.name))
       end
     end
 
@@ -78,7 +89,7 @@ module ValidTestDataGenerators
       Outcome[
         success: true,
         applications_count: applications_data.size,
-        cohort_year: cohort_year,
+        academic_year: academic_year,
         ]
     rescue StandardError => e
       logger.error "APITestScenariosSeeder failed: #{e.message}"
@@ -89,16 +100,16 @@ module ValidTestDataGenerators
     end
 
     def custom_data(nb_cohort:, nb_app_per_state:)
-      cohort_start_dates
+      registration_periods
         .take(nb_cohort)
         .each do |registration_starts_at|
         create_data!(registration_starts_at:, number: nb_app_per_state)
       end
     end
 
-    def cohort_start_dates
+    def registration_periods
       Enumerator.new do |yielder|
-        year = cohort_year
+        year = academic_year
         loop do
           yielder << Date.new(year, 7, 1) # autumn schedule
           yielder << Date.new(year, 9, 1) # spring schedule
@@ -129,19 +140,25 @@ module ValidTestDataGenerators
           # Find statements through statement_items
           statement_ids = StatementItem.where(declaration_id: declaration_ids).pluck(:statement_id).uniq
 
-          # Delete participant outcomes associated with declarations
-          ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
-
-          # Delete statement items
-          StatementItem.where(declaration_id: declaration_ids).delete_all
-
           # Delete statements and their associated records
           if statement_ids.any?
+            # Delete statement items
+            StatementItem.where(declaration_id: declaration_ids).delete_all
             Adjustment.where(statement_id: statement_ids).delete_all
             MilestoneStatement.where(statement_id: statement_ids).delete_all
             Contract.where(statement_id: statement_ids).delete_all
             Statement.where(id: statement_ids).delete_all
           end
+
+          statement_ids = Declaration.where(application: applications_to_delete).pluck(:statement_id)
+          if statement_ids.any?
+            # case when declaration are attach directly to statement
+            Adjustment.where(statement_id: statement_ids).delete_all
+            Statement.where(id: statement_ids).delete_all
+          end
+
+          # Delete participant outcomes associated with declarations
+          ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
         end
 
         # Delete declarations and application events
@@ -160,13 +177,12 @@ module ValidTestDataGenerators
     end
 
     def test_scenarios_create_data!
-      course_cohorts = cohort_start_dates
+      course_cohorts = registration_periods
                          .take(4)
                          .map do |registration_starts_at|
-        course_cohort_setup(
-          registration_starts_at:,
-          training_starts_now: registration_starts_at.year == cohort_year, # for the cohort_year make training start now to simplify testing
-        )
+        # for the academic_year make training start now to simplify testing
+        training_starts_now = registration_starts_at.year == academic_year
+        course_cohort_setup(registration_starts_at:, training_starts_now:)
       end
 
       applications_data.each do |app_data|
@@ -182,28 +198,14 @@ module ValidTestDataGenerators
           end
         end
       end
-
-      statements_setup(course_cohort: course_cohorts.first)
     end
 
     def create_data!(registration_starts_at:, number:)
       course_cohort = course_cohort_setup(registration_starts_at:)
-      statements_setup(course_cohort:)
       applications_setup(course_cohort:, number:)
     end
 
   private
-
-    def to_dns_name(name, max_length: 63)
-      name.to_s
-        .parameterize # Convert to lowercase, replace spaces/special chars with hyphens
-        .gsub(/[^a-z0-9-]/, "")         # Remove any remaining invalid characters
-        .gsub(/-+/, "-")                # Collapse multiple hyphens
-        .sub(/^-/, "")                  # Remove leading hyphen
-        .sub(/-$/, "")                  # Remove trailing hyphen
-        .slice(0, max_length)           # Truncate to max length
-        .sub(/-$/, "")                  # Remove trailing hyphen again if truncation created one
-    end
 
     def applications_data
       self.class.applications_data
@@ -217,7 +219,7 @@ module ValidTestDataGenerators
       name = Faker::Name.unique.name
       email_part = name.tr(" '.", "").downcase
 
-      email = "#{email_part}@#{to_dns_name(@lead_provider.name)}.com"
+      email = "#{email_part}@#{self.class.to_dns_name(@lead_provider.name)}.com"
 
       user = User.find_or_create_by!(email:) do |u|
         u.ecf_id = SecureRandom.uuid
@@ -290,12 +292,12 @@ module ValidTestDataGenerators
     end
 
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
-      cohort_year = registration_starts_at.year
+      academic_year = registration_starts_at.year
       term = registration_starts_at.month < 8 ? "autumn" : "spring"
       current_cohort = Cohort.find_by(registration_starts_at:)
 
       attrs = {
-        description: "#{registration_starts_at.strftime('%B')} #{cohort_year}",
+        description: "#{registration_starts_at.strftime('%B')} #{academic_year}",
         registration_starts_at:,
         funding_cap: true,
       }
@@ -305,7 +307,7 @@ module ValidTestDataGenerators
         current_cohort = Cohort.create!(**attrs)
       end
 
-      training_starts_at = training_starts_now ? 1.day.ago : registration_starts_at + 2.months
+      training_starts_at = training_starts_now ? 2.days.ago : registration_starts_at + 2.months
       training_ends_at = training_starts_at + 6.months
       schedule = create_or_update_schedule!(
         cohort: current_cohort,
@@ -316,12 +318,13 @@ module ValidTestDataGenerators
 
       cc = CourseCohort.find_by(course:, cohort: current_cohort)
       if cc
-        cc.update!(schedule:)
+        cc.update!(schedule:, academic_year:)
       else
         cc = CourseCohort.create!(
           course:,
           cohort: current_cohort,
           schedule:,
+          academic_year:,
         )
       end
 
@@ -330,22 +333,54 @@ module ValidTestDataGenerators
         declaration_type: Milestone::STARTED,
         acceptance_window_start_date: training_starts_at,
         acceptance_window_end_date: training_starts_at + 2.months,
+        payment_amount: 60,
       )
 
+      start_date = if training_starts_now
+                     training_starts_at + 1.day # to keep the milestone ordering
+                   else
+                     training_ends_at
+                   end
       create_or_update_milestone!(
         course_cohort: cc,
         declaration_type: Milestone::COMPLETED,
-        acceptance_window_start_date: training_ends_at,
+        acceptance_window_start_date: start_date,
         acceptance_window_end_date: training_ends_at + 2.months,
+        payment_amount: 40,
       )
 
-      cc.course_cohort_providers.find_or_create_by!(lead_provider:)
+      create_or_update_lead_provider_contract(course_cohort: cc, lead_provider:)
 
       delivery_partners.each do |dp|
         dp.delivery_partnerships.find_or_create_by!(lead_provider:, cohort: current_cohort)
       end
 
       cc
+    end
+
+    def create_or_update_lead_provider_contract(course_cohort:, lead_provider:)
+      lead_provider_contract = course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
+      recruitment_target = [50, 100, 150, 200].sample
+      teacher_funding = [600, 700, 800].sample
+
+      contract_year = ContractYear.find_by(lead_provider:, academic_year:, course: course_cohort.course)
+      if contract_year
+        contract_year.update!(
+          teacher_funding:,
+          # so that sum of course_cohorts recruitment_target do not exceed academic year limit
+          recruitment_target: contract_year.recruitment_target + recruitment_target,
+        )
+      else
+        ContractYear.create!(
+          lead_provider:,
+          academic_year:,
+          course: course_cohort.course,
+          teacher_funding:,
+          recruitment_target:,
+        )
+      end
+
+      lead_provider_contract.update!(recruitment_target:)
     end
 
     def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
@@ -417,7 +452,7 @@ module ValidTestDataGenerators
       application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
-    def create_started_declaration(application:, declaration_date: nil)
+    def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
       application.declarations.create!(
@@ -427,10 +462,12 @@ module ValidTestDataGenerators
         delivery_partner: application.lead_provider.delivery_partners.sample,
         milestone:,
         lead_provider: application.lead_provider,
+        statement:,
+        value: milestone.payment_amount,
       )
     end
 
-    def create_completed_declaration(application:, declaration_date: nil, has_passed: true)
+    def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
       declaration = application.declarations.create!(
@@ -440,6 +477,8 @@ module ValidTestDataGenerators
         delivery_partner: application.lead_provider.delivery_partners.sample,
         milestone:,
         lead_provider: application.lead_provider,
+        statement:,
+        value: milestone.payment_amount,
       )
 
       if has_passed
@@ -487,6 +526,20 @@ module ValidTestDataGenerators
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
       if course_cohort.cohort.start_year < Time.zone.now.year
+        # create the open statement for started applicatons
+        paid_statement = create_open_statement(
+          start_date: course_cohort
+                        .milestones
+                        .find_by!(declaration_type: Milestone::STARTED)
+                        .acceptance_window_start_date,
+        )
+        open_statement = create_open_statement(
+          start_date: course_cohort
+                        .milestones
+                        .find_by!(declaration_type: Milestone::COMPLETED)
+                        .acceptance_window_start_date,
+        )
+
         # started
         number.times do |index|
           create_app(
@@ -496,7 +549,7 @@ module ValidTestDataGenerators
             user: create_random_user,
           ).tap do |application|
             create_state_change(application:, event: Application::ACCEPTED)
-            create_started_declaration(application:).tap { create_payable_statement(_1) }
+            create_started_declaration(application:, statement: paid_statement)
             create_state_change(application:, event: Application::STARTED)
           end
         end
@@ -510,9 +563,10 @@ module ValidTestDataGenerators
             user: create_random_user,
           ).tap do |application|
             create_state_change(application:, event: Application::ACCEPTED)
-            create_started_declaration(application:).tap { create_paid_statement(_1) }
+            create_started_declaration(application:, statement: paid_statement)
             create_state_change(application:, event: Application::STARTED)
-            create_completed_declaration(application:, has_passed: index.even?).tap { create_payable_statement(_1) }
+            # TODO: add voided and clawback declarations
+            create_completed_declaration(application:, statement: open_statement, has_passed: index.even?)
             create_state_change(application:, event: Application::COMPLETED)
           end
         end
@@ -526,11 +580,9 @@ module ValidTestDataGenerators
             user: create_random_user(with_trn: [true, false].sample),
           ).tap do |application|
             create_state_change(application:, event: Application::ACCEPTED)
-            declaration = create_started_declaration(application:).tap { create_paid_statement(_1) }
+            create_started_declaration(application:, statement: paid_statement)
             create_state_change(application:, event: Application::STARTED)
-            create_clawback_statement(declaration)
-            create_started_declaration(application:).tap { create_payable_statement(_1) }
-            create_state_change(application:, event: Application::STARTED)
+
             create_state_change(application:, event: Application::DEFERRED)
           end
         end
@@ -547,12 +599,14 @@ module ValidTestDataGenerators
             when index % 5
               # auto withdrawn
               create_state_change(application:, event: Application::ACCEPTED)
+              create_started_declaration(application:, statement: paid_statement)
               create_state_change(application:, event: Application::STARTED)
               create_state_change(application:, event: Application::DEFERRED)
 
             when index % 3
               # withdraw after started acceptance
               create_state_change(application:, event: Application::ACCEPTED)
+              create_started_declaration(application:, statement: paid_statement)
               create_state_change(application:, event: Application::STARTED)
 
             when index % 2
@@ -563,6 +617,10 @@ module ValidTestDataGenerators
             create_state_change(application:, event: Application::WITHDRAWN)
           end
         end
+
+        # finalize paid statement
+        paid_statement.prepare_to_freeze!
+        paid_statement.mark_as_frozen!
       end
 
       # reassigned
@@ -586,11 +644,12 @@ module ValidTestDataGenerators
       end
     end
 
-    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:)
+    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_amount:)
       milestone = course_cohort.milestones.find_or_initialize_by(declaration_type:)
       milestone.update!(
         acceptance_window_start_date:,
         acceptance_window_end_date:,
+        payment_amount:,
       )
       milestone
     end
@@ -600,68 +659,15 @@ module ValidTestDataGenerators
       application.change_provider!(to: new_provider)
     end
 
-    def statements_setup(course_cohort:)
-      start_date = course_cohort.milestones.find_by!(declaration_type: Milestone::STARTED).acceptance_window_start_date
-      end_date = course_cohort.milestones.find_by!(declaration_type: Milestone::COMPLETED).acceptance_window_start_date
+    def create_open_statement(start_date:)
       Statement.find_or_create_by!(
-        cohort: course_cohort.cohort,
         lead_provider: lead_provider,
-        year: course_cohort.cohort.start_year,
-        month: start_date.month,
+        start_date:,
+        frequency: :monthly,
       ) do |statement|
-        statement.deadline_date = start_date
-        statement.payment_date = start_date + 1.month
-        statement.output_fee = true
-        statement.state = "paid"
-        statement.marked_as_paid_at = start_date + 1.month
+        statement.state = "open"
         statement.ecf_id = SecureRandom.uuid
       end
-
-      Statement.find_or_create_by!(
-        cohort: course_cohort.cohort,
-        lead_provider: lead_provider,
-        year: course_cohort.cohort.start_year,
-        month: end_date.month,
-      ) do |statement|
-        statement.deadline_date = end_date
-        statement.payment_date = end_date + 1.month
-        statement.output_fee = true
-        statement.state = "payable"
-        statement.ecf_id = SecureRandom.uuid
-      end
-    end
-
-    def create_payable_statement(declaration)
-      declaration.mark_payable!
-      statement = provider_statement_for(declaration)
-      statement.statement_items.create_or_find_by!(
-        declaration:,
-        state: declaration.state,
-      )
-    end
-
-    def create_paid_statement(declaration)
-      declaration.mark_payable!
-      declaration.mark_paid!
-      statement = provider_statement_for(declaration)
-      statement.statement_items.create_or_find_by!(
-        declaration:,
-        state: declaration.state,
-      )
-    end
-
-    def create_clawback_statement(declaration)
-      declaration.clawback!
-      declaration.voided_state!
-      statement = provider_statement_for(declaration)
-      statement.statement_items.create_or_find_by!(
-        declaration:,
-        state: :awaiting_clawback,
-      )
-    end
-
-    def provider_statement_for(declaration)
-      lead_provider.statements.where(state: :payable, cohort: declaration.milestone.cohort).first
     end
   end
 end

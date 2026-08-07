@@ -26,15 +26,13 @@ RSpec.feature "Statement", :revisit, type: :feature do
   scenario "see details" do
     visit(admin_finance_statement_path(statement))
 
-    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{Date::MONTHNAMES[statement.month]} #{statement.year}")
+    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
 
     find("span", text: "Statement ID").click
     within("#statement-id") do
       expect(page).to have_content(statement.ecf_id)
     end
 
-    start_year = statement.cohort.start_year
-    expect(page).to have_content("Cohort: #{start_year} to #{start_year.next}")
     expect(page).to have_content("Output payment date: #{statement.payment_date.to_fs(:govuk)}")
     expect(page).to have_content("Status: #{statement.state.humanize}")
     expect(page).to have_content("Payment run: Yes")

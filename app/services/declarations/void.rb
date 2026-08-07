@@ -20,7 +20,6 @@ module Declarations
 
       ApplicationRecord.transaction do
         @declaration.mark_voided!
-        @declaration.statement_items.with_state(:eligible, :ineligible, :payable).first&.mark_voided!
 
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 

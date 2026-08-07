@@ -47,11 +47,9 @@
       end
 
       sl.with_row do |row|
-        row.with_key(text: "Statements")
+        row.with_key(text: "Statement")
         row.with_value do
-          safe_join(declaration.statements.map do |statement|
-            tag.div govuk_link_to(statement_name(statement), admin_finance_statement_path(statement))
-          end)
+          tag.div govuk_link_to(statement_name(declaration.statement), admin_finance_statement_path(declaration.statement))
         end
       end
     end %>

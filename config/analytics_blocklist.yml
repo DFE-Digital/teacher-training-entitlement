@@ -52,7 +52,10 @@
   - record_id
   - record_type
   :statements:
+  - cohort_id
+  - month
   - reconcile_amount
+  - year
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -141,6 +144,8 @@
   - updated_at
   :applications:
   - raw_application_data
+  :institutions:
+  - search_vector
   :users:
   - archived_email
   - date_of_birth
@@ -173,5 +178,3 @@
   - created_at
   - key
   - updated_at
-  :institutions:
-  - search_vector

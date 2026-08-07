@@ -15,7 +15,6 @@ namespace :lead_providers do
       Array.wrap(cohort || Cohort.where(start_year: ..Cohort.current.start_year)).each do |c|
         ValidTestDataGenerators::ApplicationsPopulater.populate(lead_provider: lp, cohort: c, number_of_participants: args[:number_of_participants]&.to_i || 100)
         ValidTestDataGenerators::PendingApplicationsPopulater.populate(lead_provider: lp, cohort: c, number_of_participants: args[:number_of_participants]&.to_i || 100)
-        ValidTestDataGenerators::StatementsPopulater.populate(lead_provider: lp, cohort: c)
         ValidTestDataGenerators::SandboxSharedData.populate(lead_provider: lp, cohort: c)
       end
     end

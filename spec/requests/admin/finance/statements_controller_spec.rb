@@ -9,9 +9,9 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
 
   let!(:statements) do
     [
-      create(:statement, cohort:, lead_provider:, year: 2024, month: 10),
-      create(:statement, cohort:, lead_provider:, year: 2024, month: 11),
-      create(:statement, cohort:, lead_provider:, year: 2024, month: 12, output_fee: false),
+      create(:statement, lead_provider:, start_date: Date.new(2024, 10, 1)),
+      create(:statement, lead_provider:, start_date: Date.new(2024, 11, 1)),
+      create(:statement, lead_provider:, start_date: Date.new(2024, 12, 1), output_fee: false),
     ]
   end
 
@@ -36,25 +36,10 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
       end
     end
 
-    context "with params matching one statement" do
-      let(:params) do
-        {
-          lead_provider_id: statement.lead_provider_id,
-          cohort_id: statement.cohort_id,
-          statement: "#{statement.year}-#{statement.month}",
-        }
-      end
-
-      let(:expected_path) { admin_finance_statement_path(statement) }
-
-      it { is_expected.to redirect_to(expected_path) }
-    end
-
     context "with params matching multiple statements" do
       let(:params) do
         {
           lead_provider_id: statement.lead_provider_id,
-          cohort_id: statement.cohort_id,
         }
       end
 
@@ -107,7 +92,6 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
       let(:params) do
         {
           lead_provider_id: statement.lead_provider_id,
-          cohort_id: statement.cohort_id,
           statement: "2000-01",
         }
       end

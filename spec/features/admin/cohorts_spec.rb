@@ -108,8 +108,10 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     end
 
     scenario "downloading contracts CSV" do
-      LeadProvider.find_each do |lead_provider|
-        statement = create(:statement, cohort:, lead_provider:)
+      Course.find_each { |course| create(:course_cohort, course:, cohort:) }
+
+      LeadProvider.find_each.with_index do |lead_provider, index|
+        statement = create(:statement, lead_provider:, start_date: index.months.ago.beginning_of_month)
 
         Course.find_each do |course|
           create(:contract, statement:, course:, contract_template: create(:contract_template))

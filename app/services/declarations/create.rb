@@ -46,8 +46,6 @@ module Declarations
         if started_declaration?
           application_started!
         elsif completed_declaration?
-          # [TODO]: Define when to raise statement for TTE
-          # StatementAttacher.new(@declaration:).attach
           create_participant_outcome!
           application_completed!
         end
@@ -142,6 +140,10 @@ module Declarations
       @secondary_delivery_partner ||= DeliveryPartner.find_by!(ecf_id: secondary_delivery_partner_id)
     end
 
+    def statement
+      Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:)
+    end
+
     def declaration_parameters_for_create
       params = {
         declaration_date:,
@@ -151,6 +153,7 @@ module Declarations
         milestone:,
         delivery_partner:,
         value:,
+        statement:,
       }
       params.merge!(secondary_delivery_partner:) if secondary_delivery_partner_id
       params

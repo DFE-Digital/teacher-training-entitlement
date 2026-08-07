@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MilestoneStatement, type: :model do
+RSpec.describe MilestoneStatement, :npq, type: :model do
   describe "paper_trail" do
     it { is_expected.to be_versioned }
   end
