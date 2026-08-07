@@ -45,6 +45,7 @@ class Statement < ApplicationRecord
   enum :frequency, FREQUENCIES.keys.index_with(&:itself), suffix: true
 
   before_save :set_deadline_and_payment_date, if: -> { start_date_changed? }
+  before_save :set_academic_year, if: -> { start_date_changed? }
 
   def self.create_current!(lead_provider:, frequency: :monthly)
     create!(
@@ -121,6 +122,10 @@ class Statement < ApplicationRecord
   end
 
 private
+
+  def set_academic_year
+    self.academic_year = start_date.year - (start_date.month < 9 ? 1 : 0)
+  end
 
   def set_deadline_and_payment_date
     self.deadline_date = start_date + FREQUENCIES.fetch(frequency) - 1.day

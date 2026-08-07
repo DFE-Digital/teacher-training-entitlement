@@ -50,6 +50,18 @@ RSpec.describe Statement, type: :model do
         it "sets payment_date" do
           expect(statement.payment_date).to eq(Date.new(2026, 3, 31))
         end
+
+        it "sets academic_year" do
+          expect(statement.academic_year).to eq(2025)
+        end
+
+        context "when start_date is before dec" do
+          let(:start_date) { Date.new(2025, 9, 1) }
+
+          it "sets academic_year" do
+            expect(statement.academic_year).to eq(2025)
+          end
+        end
       end
 
       context "when there is no payment date" do
