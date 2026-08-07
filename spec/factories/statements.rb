@@ -9,6 +9,7 @@ FactoryBot.define do
     state { "open" }
     ecf_id { SecureRandom.uuid }
     output_fee { true }
+    academic_year { Date.current.year }
 
     trait :next_output_fee do
       start_date { 1.month.from_now }

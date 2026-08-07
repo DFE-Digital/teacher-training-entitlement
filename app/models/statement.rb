@@ -24,6 +24,7 @@ class Statement < ApplicationRecord
   validate :payment_date_on_or_after_deadline_date
   validate :changing_attributes_when_payable, on: :update
   validate :changing_attributes_when_paid, on: :update
+  validates :academic_year, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
   scope :with_output_fee, ->(output_fee: true) { where(output_fee:) }
   scope :with_state, ->(*state) { where(state:) }

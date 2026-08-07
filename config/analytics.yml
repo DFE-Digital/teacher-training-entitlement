@@ -10,6 +10,7 @@ shared:
     - ecf_id
   :statements:
     - id
+    - academic_year
     - deadline_date
     - payment_date
     - output_fee

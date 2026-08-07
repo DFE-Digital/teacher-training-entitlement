@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_120800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -582,6 +582,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_31_093900) do
   end
 
   create_table "statements", force: :cascade do |t|
+    t.integer "academic_year"
     t.bigint "cohort_id"
     t.datetime "created_at", null: false
     t.date "deadline_date"
