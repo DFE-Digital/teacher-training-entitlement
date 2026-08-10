@@ -94,7 +94,6 @@ RSpec.describe DeliveryPartner, type: :model do
   describe "relationships" do
     it { is_expected.to have_many(:delivery_partnerships) }
     it { is_expected.to have_many(:lead_providers).through(:delivery_partnerships) }
-    it { is_expected.to have_many(:cohorts).through(:delivery_partnerships) }
     it { is_expected.to have_many(:course_cohorts).through(:delivery_partnerships) }
   end
 
@@ -112,16 +111,13 @@ RSpec.describe DeliveryPartner, type: :model do
   describe "#course_cohorts_for_lead_provider" do
     subject { delivery_partner.course_cohorts_for_lead_provider(lead_provider) }
 
-    let(:delivery_partner) do
-      create(:delivery_partner, lead_providers: {
-        course_cohort => lead_provider,
-        other_course_cohort => other_lead_provider,
-      })
-    end
-    let(:lead_provider) { create(:lead_provider) }
-    let(:other_lead_provider) { create(:lead_provider) }
-    let(:course_cohort) { create(:course_cohort) }
-    let(:other_course_cohort) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2024, 5, 1))) }
+    let(:delivery_partner) { create :delivery_partner, lead_providers: { course_cohort => lead_provider, other_course_cohort => other_lead_provider } }
+    let(:lead_provider) { create :lead_provider }
+    let(:other_lead_provider) { create :lead_provider }
+    let(:cohort) { create :cohort }
+    let(:other_cohort) { create :cohort, registration_starts_at: Date.new(2024, 5, 1) }
+    let(:course_cohort) { create(:course_cohort, cohort:) }
+    let(:other_course_cohort) { create(:course_cohort, cohort: other_cohort) }
 
     it { is_expected.to eq [course_cohort] }
   end

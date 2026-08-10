@@ -2,8 +2,6 @@ class Cohort < ApplicationRecord
   before_validation :set_start_year
   before_validation :set_identifier
 
-  has_many :delivery_partnerships, dependent: :destroy
-  has_many :delivery_partners, through: :delivery_partnerships
   has_many :course_cohorts, dependent: :destroy
   has_many :courses, through: :course_cohorts
   has_many :schedules, through: :course_cohorts

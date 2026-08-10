@@ -6,7 +6,6 @@ class DeliveryPartner < ApplicationRecord
 
   has_many :delivery_partnerships
   has_many :lead_providers, through: :delivery_partnerships
-  has_many :cohorts, through: :delivery_partnerships
   has_many :course_cohorts, through: :delivery_partnerships
 
   accepts_nested_attributes_for :delivery_partnerships, allow_destroy: true
@@ -32,7 +31,6 @@ class DeliveryPartner < ApplicationRecord
     delivery_partnerships
       .select { |delivery_partnership| delivery_partnership.lead_provider_id == lead_provider.id }
       .map(&:course_cohort)
-      .compact
       .uniq
   end
 end

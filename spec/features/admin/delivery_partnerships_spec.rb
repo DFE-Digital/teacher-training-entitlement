@@ -98,7 +98,6 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
       create(:delivery_partnership,
              delivery_partner:,
              lead_provider:,
-             cohort:,
              course_cohort: first_course_cohort)
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
@@ -111,7 +110,6 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
 
       expect(page).to have_current_path(admin_delivery_partners_path)
       expect(delivery_partner.course_cohorts.reload).to contain_exactly(first_course_cohort, second_course_cohort)
-      expect(delivery_partner.delivery_partnerships.find_by(course_cohort: second_course_cohort).cohort_id).to be_nil
     end
 
     scenario "assigning a course cohort when another delivery partner has a similar name" do

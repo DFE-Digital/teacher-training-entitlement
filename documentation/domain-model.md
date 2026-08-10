@@ -49,7 +49,6 @@ erDiagram
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
-  DeliveryPartnership }o--|| Cohort : belongs_to
   DeliveryPartnership }o--|| CourseCohort : belongs_to
   DeliveryPartner {
     integer id
