@@ -2339,6 +2339,7 @@ components:
               - voided
               - payable
               - paid
+              - submitted
               - awaiting_clawback
               - clawed_back
             has_passed:
