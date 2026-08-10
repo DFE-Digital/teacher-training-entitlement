@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_120800) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_10_142408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -301,7 +301,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_120800) do
     t.string "type"
     t.datetime "updated_at", null: false
     t.decimal "value"
-    t.index ["application_id", "milestone_id"], name: "index_declarations_on_application_id_and_milestone_id", unique: true, where: "(state = ANY (ARRAY['eligible'::declaration_states, 'payable'::declaration_states, 'paid'::declaration_states, 'submitted'::declaration_states]))"
+    t.index ["application_id", "milestone_id", "type"], name: "index_declarations_on_application_id_and_milestone_id", unique: true, where: "(state = ANY (ARRAY['eligible'::declaration_states, 'payable'::declaration_states, 'paid'::declaration_states, 'submitted'::declaration_states]))"
     t.index ["application_id"], name: "index_declarations_on_application_id"
     t.index ["clawback_declaration_id"], name: "index_declarations_on_clawback_declaration_id"
     t.index ["cohort_id"], name: "index_declarations_on_cohort_id"

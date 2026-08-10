@@ -9,6 +9,7 @@ RSpec.describe ClawbackDeclaration, type: :model do
     it {
       expect(subject).to define_enum_for(:state)
                            .with_values(
+                             submitted: "submitted",
                              awaiting_clawback: "awaiting_clawback",
                              clawed_back: "clawed_back",
                            ).backed_by_column_of_type(:enum).with_suffix
@@ -17,6 +18,18 @@ RSpec.describe ClawbackDeclaration, type: :model do
 
   describe "state transition" do
     let(:clawback_declaration) { create(:clawback_declaration, state:) }
+
+    describe ".mark_awaiting_clawback" do
+      let(:state) { :submitted }
+
+      it { expect { clawback_declaration.mark_awaiting_clawback }.to change(clawback_declaration, :state).from("submitted").to("awaiting_clawback") }
+
+      context "when not submitted" do
+        let(:state) { :awaiting_clawback }
+
+        it { expect { clawback_declaration.mark_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+    end
 
     describe ".mark_clawed_back" do
       let(:state) { :awaiting_clawback }
