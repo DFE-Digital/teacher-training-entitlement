@@ -583,24 +583,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_120800) do
 
   create_table "statements", force: :cascade do |t|
     t.integer "academic_year"
-    t.bigint "cohort_id"
     t.datetime "created_at", null: false
     t.date "deadline_date"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.enum "frequency", enum_type: "statements_frequency_types"
     t.bigint "lead_provider_id", null: false
     t.datetime "marked_as_paid_at"
-    t.integer "month"
     t.boolean "output_fee", default: true, null: false
     t.date "payment_date"
     t.decimal "reconcile_amount", precision: 8, scale: 2
     t.date "start_date"
     t.enum "state", default: "open", null: false, enum_type: "statement_states"
     t.datetime "updated_at", null: false
-    t.integer "year"
-    t.index ["cohort_id"], name: "index_statements_on_cohort_id"
     t.index ["ecf_id"], name: "index_statements_on_ecf_id", unique: true
-    t.index ["lead_provider_id", "cohort_id", "year", "month"], name: "idx_on_lead_provider_id_cohort_id_year_month_2dece26c47", unique: true
+    t.index ["lead_provider_id", "start_date", "frequency"], name: "index_statements_on_lead_provider_id_start_date_frequency", unique: true
     t.index ["lead_provider_id"], name: "index_statements_on_lead_provider_id"
   end
 
@@ -688,6 +684,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_120800) do
   add_foreign_key "schedules", "cohorts"
   add_foreign_key "statement_items", "declarations"
   add_foreign_key "statement_items", "statements"
-  add_foreign_key "statements", "cohorts"
   add_foreign_key "statements", "lead_providers"
 end
