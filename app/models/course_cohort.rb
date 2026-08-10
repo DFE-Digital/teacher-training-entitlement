@@ -12,6 +12,7 @@ class CourseCohort < ApplicationRecord
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }
+  validates :academic_year, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
   delegate :name, to: :cohort
 

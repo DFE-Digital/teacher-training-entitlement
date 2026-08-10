@@ -20,6 +20,7 @@ RSpec.describe Statement, type: :model do
                              .with_suffix
     end
 
+    it { is_expected.to validate_numericality_of(:academic_year).only_integer.is_greater_than_or_equal_to(0).allow_nil }
     it { is_expected.to validate_presence_of(:start_date) }
     it { is_expected.to allow_value(%w[true false]).for(:output_fee).with_message("Output fee must be true or false") }
     it { is_expected.not_to allow_value(nil).for(:output_fee).with_message("Choose yes or no for output fee") }
@@ -48,6 +49,18 @@ RSpec.describe Statement, type: :model do
 
         it "sets payment_date" do
           expect(statement.payment_date).to eq(Date.new(2026, 3, 31))
+        end
+
+        it "sets academic_year" do
+          expect(statement.academic_year).to eq(2025)
+        end
+
+        context "when start_date is before dec" do
+          let(:start_date) { Date.new(2025, 9, 1) }
+
+          it "sets academic_year" do
+            expect(statement.academic_year).to eq(2025)
+          end
         end
       end
 

@@ -13,7 +13,7 @@ namespace :data_migrations do
         next
       end
 
-      statement.update_columns(start_date: Date.new(statement[:year], statement[:month], 1), frequency: "monthly") unless dry_run
+      statement.update_columns(start_date: Date.new(statement[:year], statement[:month], 1), frequency: "monthly", academic_year: statement[:year]) unless dry_run
       updated_statement_count += 1
     end
 
