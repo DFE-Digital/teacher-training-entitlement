@@ -24,14 +24,14 @@
 
       table.with_body do |body|
         body.with_row do |row|
-          row.with_cell { label_with_hint("Starts", "(number in contract for this cohort)") }
+          row.with_cell(text: "Starts")
           row.with_cell(text: expected_starts, numeric: true)
           row.with_cell(text: total_starts, numeric: true)
           row.with_cell(text: outstanding_starts, numeric: true)
         end
 
         body.with_row do |row|
-          row.with_cell { label_with_hint("Completed", "(based on number of received starts)") }
+          row.with_cell(text: "Completed")
           row.with_cell(text: expected_completed, numeric: true)
           row.with_cell(text: total_completed, numeric: true)
           row.with_cell(text: outstanding_completed, numeric: true)

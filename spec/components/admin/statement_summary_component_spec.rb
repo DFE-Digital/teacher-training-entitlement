@@ -51,19 +51,17 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
     expect(declarations_table).to have_text("Outstanding")
   end
 
-  it "shows starts row with helper text" do
+  it "shows starts row" do
     subject
     expect(declarations_table).to have_text("Starts")
-    expect(declarations_table).to have_text("(number in contract for this cohort)")
     expect(declarations_table).to have_text(calculator.expected_starts.to_s)
     expect(declarations_table).to have_text(calculator.total_starts.to_s)
     expect(declarations_table).to have_text(calculator.outstanding_starts.to_s)
   end
 
-  it "shows completed row with helper text" do
+  it "shows completed row" do
     subject
     expect(declarations_table).to have_text("Completed")
-    expect(declarations_table).to have_text("(based on number of received starts)")
     expect(declarations_table).to have_text(calculator.expected_completed.to_s)
     expect(declarations_table).to have_text(calculator.total_completed.to_s)
     expect(declarations_table).to have_text(calculator.outstanding_completed.to_s)
