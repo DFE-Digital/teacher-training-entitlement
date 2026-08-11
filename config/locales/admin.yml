@@ -50,9 +50,13 @@ en:
 
           '
     course_payment_overview_component:
+      funded: Funded
+      self_funded: Self-funded
+      started: Started
+      completed: Completed
       course_total: Course total
       output_payment: Output payment
-      users: Users
+      participants: Participants
       payment_per_participant: Payment per participant
       payment_type: Payment type
       service_fee: Service fee

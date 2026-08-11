@@ -3,40 +3,46 @@
     <h2 class="govuk-summary-card__title"><%= course_name %></h2>
   </div>
   <div class="govuk-summary-card__content">
+    <h3 class="govuk-heading-s"><%= t(".funded") %></h3>
     <%= helpers.govuk_table do |table|
       table.with_head do |head|
         head.with_row do |row|
           row.with_cell(text: t(".payment_type"))
-          row.with_cell(text: t(".users"), numeric: true)
+          row.with_cell(text: t(".participants"), numeric: true)
           row.with_cell(text: t(".payment_per_participant"), numeric: true)
           row.with_cell(text: t(".total"), numeric: true)
         end
       end
 
       table.with_body do |body|
-        line_items.each do |line_item|
+        funded_rows.each do |item|
           body.with_row do |row|
-            row.with_cell(text: line_item[0])
-            row.with_cell(text: line_item[1], numeric: true)
-            row.with_cell(text: number_to_currency(line_item[2]), numeric: true)
-            row.with_cell(text: number_to_currency(line_item[3]), numeric: true)
+            row.with_cell(text: item[0])
+            row.with_cell(text: item[1], numeric: true)
+            row.with_cell(text: item[2] ? number_to_currency(item[2]) : "", numeric: true)
+            row.with_cell(text: number_to_currency(item[3]), numeric: true)
           end
         end
       end
     end %>
 
-    <%= helpers.govuk_summary_list do |summary_list|
-      counts.each do |label, count|
-        summary_list.with_row do |row|
-          row.with_key { label }
-          row.with_value { count.to_s }
+    <h3 class="govuk-heading-s"><%= t(".self_funded") %></h3>
+    <%= helpers.govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: t(".payment_type"))
+          row.with_cell(text: t(".participants"), numeric: true)
         end
       end
-      summary_list.with_row do |row|
-        row.with_key { t(".course_total") }
-        row.with_value { tag.strong number_to_currency(course_total) }
+
+      table.with_body do |body|
+        self_funded_rows.each do |item|
+          body.with_row do |row|
+            row.with_cell(text: item[0])
+            row.with_cell(text: item[1], numeric: true)
+          end
+        end
       end
     end %>
-
   </div>
 </div>

@@ -77,6 +77,22 @@ module Statements
       declaration_count_by_type.fetch(declaration_type, 0)
     end
 
+    def funded_billable_count_for_type(declaration_type)
+      course_declarations.billable
+                         .joins(:application)
+                         .where(applications: { funded_place: true })
+                         .where(declaration_type:)
+                         .count
+    end
+
+    def self_funded_billable_count_for_type(declaration_type)
+      course_declarations.billable
+                         .joins(:application)
+                         .where(applications: { funded_place: [false, nil] })
+                         .where(declaration_type:)
+                         .count
+    end
+
     def output_payment
       @output_payment ||= Statements::OutputPaymentCalculator.call(
         contract:,
