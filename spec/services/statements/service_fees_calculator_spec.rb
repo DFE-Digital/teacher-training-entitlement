@@ -5,7 +5,8 @@ require "rails_helper"
 RSpec.describe Statements::ServiceFeesCalculator do
   subject { described_class.call(contract:) }
 
-  let(:contract) { create :contract }
+  let(:contract_template) { create(:contract_template, per_participant: 800) }
+  let(:contract) { create(:contract, contract_template:) }
 
   let(:expected_result) do
     {
