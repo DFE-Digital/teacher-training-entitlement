@@ -380,4 +380,52 @@ RSpec.describe Statements::SummaryCalculator, :revisit do
       end
     end
   end
+
+  describe "#expected_starts" do
+    it "returns sum of recruitment_target across contracts" do
+      expect(subject.expected_starts).to eq(contract.recruitment_target)
+    end
+  end
+
+  describe "#expected_completed" do
+    it "equals total_starts" do
+      expect(subject.expected_completed).to eq(subject.total_starts)
+    end
+  end
+
+  describe "#outstanding_starts" do
+    it "returns expected minus received, minimum zero" do
+      expect(subject.outstanding_starts).to eq([subject.expected_starts - subject.total_starts, 0].max)
+    end
+  end
+
+  describe "#outstanding_completed" do
+    it "returns expected minus received, minimum zero" do
+      expect(subject.outstanding_completed).to eq([subject.expected_completed - subject.total_completed, 0].max)
+    end
+  end
+
+  describe "#expected_output_payment" do
+    it "returns sum of expected output payments from course calculators" do
+      expect(subject.expected_output_payment).to be_present
+    end
+  end
+
+  describe "#total_declarations" do
+    it "returns sum of starts and completed" do
+      expect(subject.total_declarations).to eq(subject.total_starts + subject.total_completed)
+    end
+  end
+
+  describe "#expected_total" do
+    it "returns sum of expected starts and expected completed" do
+      expect(subject.expected_total).to eq(subject.expected_starts + subject.expected_completed)
+    end
+  end
+
+  describe "#outstanding_total" do
+    it "returns sum of outstanding starts and outstanding completed" do
+      expect(subject.outstanding_total).to eq(subject.outstanding_starts + subject.outstanding_completed)
+    end
+  end
 end

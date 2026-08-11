@@ -9,42 +9,39 @@ module Statements
              :statement,
              to: :contract
 
-    delegate :cohort, to: :statement
-
     def initialize(contract:)
       @contract = contract
     end
 
-    def statement_items
-      statement.statement_items
-               .joins(declaration: { application: :course_cohort })
-               .merge(Declaration.select("DISTINCT (user_id, declaration_type)"))
+    def course_declarations
+      statement.declarations
+               .joins(application: :course_cohort)
                .where(course_cohorts: { course_id: contract.course_id })
     end
 
     def billable_declarations_count
-      statement_items.billable.count
+      course_declarations.billable.count
     end
 
     def refundable_declarations_count
-      statement_items.refundable.count
+      course_declarations.joins(:clawback_declaration).count
     end
 
     def not_eligible_declarations_count
-      statement_items.not_eligible.count
+      course_declarations.where(state: %w[ineligible voided]).count
     end
 
     def refundable_declarations_by_type_count
-      statement_items.refundable.group(:declaration_type).count
+      course_declarations.joins(:clawback_declaration).group(:declaration_type).count
     end
 
     def billable_declarations_count_for_declaration_type(declaration_type)
-      scope = statement_items.billable
+      scope = course_declarations.billable
 
       scope = if declaration_type == "retained"
-                scope.where(declaration: { declaration_type: %w[retained-1 retained-2] })
+                scope.where(declaration_type: %w[retained-1 retained-2])
               else
-                scope.where(declaration: { declaration_type: })
+                scope.where(declaration_type:)
               end
 
       scope.count
@@ -61,8 +58,16 @@ module Statements
       output_payment[:subtotal]
     end
 
+    def expected_output_payment_subtotal
+      expected_output_payment[:subtotal]
+    end
+
     def allowed_declaration_types
-      Schedule.where(cohort:, course_group: course.course_group)
+      cohort_ids = course_declarations.joins(application: :course_cohort)
+                                       .pluck("course_cohorts.cohort_id")
+                                       .uniq
+
+      Schedule.where(cohort_id: cohort_ids, course_group: course.course_group)
               .flat_map(&:allowed_declaration_types)
               .uniq
               .sort_by { Schedule::DECLARATION_TYPES.index(_1) }
@@ -120,7 +125,14 @@ module Statements
     end
 
     def declaration_count_by_type
-      @declaration_count_by_type ||= statement_items.billable.group(:declaration_type).count
+      @declaration_count_by_type ||= course_declarations.billable.group(:declaration_type).count
+    end
+
+    def expected_output_payment
+      @expected_output_payment ||= Statements::OutputPaymentCalculator.call(
+        contract:,
+        total_participants: recruitment_target,
+      )
     end
   end
 end
