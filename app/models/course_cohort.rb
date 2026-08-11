@@ -5,6 +5,8 @@ class CourseCohort < ApplicationRecord
 
   has_many :course_cohort_providers, dependent: :destroy
   has_many :lead_providers, through: :course_cohort_providers
+  has_many :delivery_partnerships, dependent: :destroy
+  has_many :delivery_partners, through: :delivery_partnerships
 
   has_many :applications
   has_many :milestones, dependent: :destroy
