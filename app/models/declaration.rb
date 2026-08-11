@@ -168,9 +168,9 @@ class Declaration < ApplicationRecord
   end
 
   def available_delivery_partner_ids
-    return [] unless lead_provider && milestone&.cohort
+    return [] unless lead_provider && milestone&.course_cohort
 
-    lead_provider.delivery_partners_for_cohort(milestone&.cohort).map(&:id)
+    lead_provider.delivery_partners_for_course_cohort(course_cohort: milestone.course_cohort).map(&:id)
   end
 
   def delivery_partners

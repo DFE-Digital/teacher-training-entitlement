@@ -100,10 +100,10 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
       delivery_partner = create(:delivery_partner)
 
       schedule = create(:schedule, cohort: cohort, course_group: course.course_group, allowed_declaration_types: %w[started])
-      create(:application, :accepted, user: participant, cohort: cohort, course: course, lead_provider: lead_provider, schedule: schedule)
+      application = create(:application, :accepted, user: participant, cohort: cohort, course: course, lead_provider: lead_provider, schedule: schedule)
 
       # Create required partnerships
-      create(:delivery_partnership, cohort: cohort, delivery_partner: delivery_partner, lead_provider: lead_provider)
+      create(:delivery_partnership, cohort:, course_cohort: application.course_cohort, delivery_partner: delivery_partner, lead_provider: lead_provider)
 
       mixed_csv_content = <<~CSV
         participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed

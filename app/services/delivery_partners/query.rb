@@ -34,7 +34,7 @@ module DeliveryPartners
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
 
-      scope.merge!(DeliveryPartner.where(delivery_partnerships: { cohorts: { start_year: extract_conditions(cohort_start_years) } }))
+      scope.merge!(DeliveryPartner.where(cohorts: { start_year: extract_conditions(cohort_start_years) }))
     end
 
     def order_by
@@ -42,7 +42,9 @@ module DeliveryPartners
     end
 
     def all_delivery_partners
-      DeliveryPartner.distinct.joins(delivery_partnerships: %i[cohort lead_provider]).includes(delivery_partnerships: %i[cohort])
+      DeliveryPartner.distinct
+                     .joins(delivery_partnerships: [{ course_cohort: :cohort }, :lead_provider])
+                     .includes(delivery_partnerships: { course_cohort: :cohort })
     end
   end
 end

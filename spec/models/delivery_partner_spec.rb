@@ -109,15 +109,20 @@ RSpec.describe DeliveryPartner, type: :model do
     end
   end
 
-  describe "#cohorts_for_lead_provider" do
-    subject { delivery_partner.cohorts_for_lead_provider(lead_provider) }
+  describe "#course_cohorts_for_lead_provider" do
+    subject { delivery_partner.course_cohorts_for_lead_provider(lead_provider) }
 
-    let(:delivery_partner) { create :delivery_partner, lead_providers: { cohort => lead_provider, other_cohort => other_lead_provider } }
-    let(:lead_provider) { create :lead_provider }
-    let(:other_lead_provider) { create :lead_provider }
-    let(:cohort) { create :cohort }
-    let(:other_cohort) { create :cohort, registration_starts_at: Date.new(2024, 5, 1) }
+    let(:delivery_partner) do
+      create(:delivery_partner, lead_providers: {
+        course_cohort => lead_provider,
+        other_course_cohort => other_lead_provider,
+      })
+    end
+    let(:lead_provider) { create(:lead_provider) }
+    let(:other_lead_provider) { create(:lead_provider) }
+    let(:course_cohort) { create(:course_cohort) }
+    let(:other_course_cohort) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2024, 5, 1))) }
 
-    it { is_expected.to eq [cohort] }
+    it { is_expected.to eq [course_cohort] }
   end
 end

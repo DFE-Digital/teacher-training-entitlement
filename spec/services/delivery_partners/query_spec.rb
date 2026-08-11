@@ -62,8 +62,9 @@ RSpec.describe DeliveryPartners::Query do
       end
 
       before do
+        course_cohort = create(:course_cohort, cohort: cohort_21_2, lead_provider: lead_provider_1)
         create(:delivery_partnership, delivery_partner: delivery_partner_1,
-                                      cohort: cohort_21_2,
+                                      course_cohort:,
                                       lead_provider: lead_provider_1)
       end
 

@@ -9,8 +9,8 @@ module API
       view :v1 do
         field(:name)
         field(:cohort) do |object, options|
-          object.cohorts_for_lead_provider(options[:lead_provider])
-                .map(&:start_year)
+          object.course_cohorts_for_lead_provider(options[:lead_provider])
+                .map { |course_cohort| course_cohort.cohort.start_year }
                 .uniq
                 .sort
         end
