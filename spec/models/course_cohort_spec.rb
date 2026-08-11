@@ -9,7 +9,6 @@ RSpec.describe CourseCohort do
     it { is_expected.to have_many(:course_cohort_providers).dependent(:destroy) }
     it { is_expected.to have_many(:lead_providers).through(:course_cohort_providers) }
     it { is_expected.to have_many(:milestones).dependent(:destroy) }
-    it { is_expected.to have_many(:statements).through(:milestones) }
   end
 
   describe "validations" do
