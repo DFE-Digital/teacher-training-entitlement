@@ -80,19 +80,19 @@ erDiagram
     datetime created_at
     integer lead_provider_id
     integer recruitment_target
+    decimal teacher_funding
     datetime updated_at
   }
   CourseCohortProvider }o--|| CourseCohort : belongs_to
   CourseCohortProvider }o--|| LeadProvider : belongs_to
   CourseCohort {
     integer id
+    integer academic_year
     integer cohort_id
     integer course_id
     datetime created_at
     uuid ecf_id
-    decimal participant_funding
     integer schedule_id
-    decimal service_fee
     datetime updated_at
   }
   CourseCohort }o--|| Course : belongs_to
@@ -139,10 +139,11 @@ erDiagram
     integer secondary_delivery_partner_id
     enum state
     enum state_reason
+    integer statement_id
     integer superseded_by_id
     string type
     datetime updated_at
-    integer statement_id
+    decimal value
   }
   Declaration }o--|| Application : belongs_to
   Declaration }o--|| LeadProvider : belongs_to

@@ -8,17 +8,17 @@ RSpec.feature "Statement", :revisit, type: :feature do
 
   let(:statement) { create(:statement) }
 
-  let!(:contracts) do
-    [
-      create(:contract, course: create(:course, :npd_eirt), statement:),
-    ]
+  let!(:course_cohort) do
+    create(:course_cohort, course: create(:course, :npd_eirt))
   end
 
   before do
-    schedule_1 = create(:schedule, :tte_reception_autumn)
+    create(:milestone, declaration_type: "started", course_cohort:)
+    create(:milestone, declaration_type: "completed", course_cohort:)
 
-    create(:milestone, declaration_type: "started", schedule: schedule_1, statements: [statement])
-    create(:milestone, declaration_type: "completed", schedule: schedule_1, statements: [statement])
+    application = create(:application, :accepted, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider)
+    create(:declaration, state: :eligible, application:, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider, statement:)
+    create(:course_cohort_provider, course_cohort:, lead_provider: statement.lead_provider, recruitment_target: 100, teacher_funding: 900)
 
     sign_in_as(create(:admin))
   end
@@ -34,42 +34,19 @@ RSpec.feature "Statement", :revisit, type: :feature do
     end
 
     expect(page).to have_content("Output payment date: #{statement.payment_date.to_fs(:govuk)}")
-    expect(page).to have_content("Status: #{statement.state.humanize}")
+    expect(page).to have_content("Payment status: #{statement.state.humanize}")
     expect(page).to have_content("Payment run: Yes")
-    expect(page).to have_content("Milestones: started, completed")
+    expect(page).to have_content("Milestones: started")
 
     component = Admin::StatementSummaryComponent.new(statement:)
     expect(page).to have_component(component)
 
     expect(page).to have_link("Download declarations (CSV)", href: admin_finance_assurance_report_path(statement, format: :csv))
 
-    contracts.each do |contract|
-      component = Admin::CoursePaymentOverviewComponent.new(contract:)
-      expect(page).to have_component(component)
-    end
+    component = Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement:)
+    expect(page).to have_component(component)
 
     expect(page).not_to have_text("Standalone payments")
-  end
-
-  scenario "see special course details" do
-    contract = contracts.last
-    contract.contract_template.update! special_course: true
-
-    visit admin_finance_statement_path(statement)
-
-    within "#special-contracts-warning" do
-      expect(page).to have_content("#{contract.course.name} has standalone payments")
-      expect(page).to have_link("View payments for this course", href: "#standalone_payments")
-    end
-
-    within "h4#standalone_payments" do
-      expect(page).to have_content("Standalone payments")
-    end
-
-    within "h4#standalone_payments + .govuk-summary-card" do
-      component = Admin::CoursePaymentOverviewComponent.new(contract:)
-      expect(page).to have_component(component)
-    end
   end
 
   scenario "see the contract information for all courses of a statement" do
@@ -77,11 +54,7 @@ RSpec.feature "Statement", :revisit, type: :feature do
     find("span", text: "Contract Information").click
 
     within all(".govuk-details__text", visible: false).last do
-      contracts.each do |contract|
-        expect(page).to have_content(contract.course.name)
-        expect(page).to have_content(contract.recruitment_target)
-        expect(page).to have_content(number_to_currency(contract.per_participant))
-      end
+      expect(page).to have_content(course_cohort.course.name)
     end
   end
 

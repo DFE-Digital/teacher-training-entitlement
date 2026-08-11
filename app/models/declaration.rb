@@ -20,6 +20,7 @@ class Declaration < ApplicationRecord
   belongs_to :clawback_declaration, optional: true
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
   has_one :course_cohort, through: :milestone
+  has_one :application_course_cohort, through: :application, source: :course_cohort
   has_many :participant_outcomes, dependent: :destroy
 
   delegate :course, :user, to: :application

@@ -9,11 +9,12 @@ govuk_table do |table|
   end
 
   table.with_body do |body|
-    @contracts.each do |contract|
+    @course_cohorts.each do |course_cohort|
+      computed_contract = @statement.lead_provider.contract(course_cohort:)
       body.with_row do |row|
-        row.with_cell(text: contract.course.name)
-        row.with_cell(text: contract.contract_template.recruitment_target)
-        row.with_cell(text: number_to_currency(contract.contract_template.per_participant))
+        row.with_cell(text: course_cohort.course.name)
+        row.with_cell(text: computed_contract.recruitment_target)
+        row.with_cell(text: number_to_currency(computed_contract.teacher_funding))
       end
     end
   end

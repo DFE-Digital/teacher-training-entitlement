@@ -5,7 +5,7 @@ module Admin
     attr_reader :calculator, :link_to_voids, :statement
 
     def initialize(statement:, link_to_voids: true)
-      @calculator = ::Statements::SummaryCalculator.new(statement:)
+      @calculator = ::Statements::Calculate.new(statement:)
       @link_to_voids = link_to_voids
       @statement = statement
     end

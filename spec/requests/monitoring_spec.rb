@@ -44,7 +44,6 @@ RSpec.describe "Monitoring" do
 
     context "when the database is not populated" do
       before do
-        Contract.destroy_all
         Course.destroy_all
       end
 

@@ -30,16 +30,8 @@ class Admin::Finance::StatementsController < AdminController
 private
 
   def set_statements_and_contracts
-    scope = Statement.includes(contracts: %i[
-      contract_template
-      course
-    ])
-
-    @statement = scope.find(params[:id])
-    @calculator = Statements::SummaryCalculator.new(statement: @statement)
-    contracts = @statement.contracts.joins(:contract_template, :course).order(identifier: :asc)
-    @contracts = contracts.where(contract_template: { special_course: false })
-    @special_contracts = contracts.where(contract_template: { special_course: true })
+    @statement = Statement.find(params[:id])
+    @course_cohorts = @statement.course_cohorts.includes(:course).to_a.uniq.sort_by { |cc| cc.course.identifier }
   end
 
   def statement_params

@@ -1,19 +1,20 @@
 module Admin
   class CoursePaymentOverviewComponent < BaseComponent
-    attr_reader :contract
+    attr_reader :course_cohort, :statement
 
     delegate_missing_to :calculator
 
-    def initialize(contract:)
-      @contract = contract
+    def initialize(course_cohort:, statement:)
+      @course_cohort = course_cohort
+      @statement = statement
     end
 
     def calculator
-      @calculator ||= ::Statements::CourseCalculator.new(contract:)
+      @calculator ||= ::Statements::Calculate.new(statement:)
     end
 
     def course_name
-      contract.course.name
+      course_cohort.course.name
     end
 
     def funded_rows

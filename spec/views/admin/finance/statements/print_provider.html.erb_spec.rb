@@ -4,16 +4,16 @@ RSpec.describe "admin/finance/statements/print_provider", :npq, type: :view do
   subject { render }
 
   let(:rendered) { Capybara.string(subject) }
-  let(:contract) { create(:contract, course: create(:course, :npd_eirt), statement:) }
-  let(:special_contract) { create(:contract, contract_template: create(:contract_template, special_course: true), statement:) }
-  let(:statement) { build(:statement) }
+  let(:statement) { create(:statement, :open) }
   let(:admin_user) { create(:admin) }
+  let(:course) { create(:course, :npd_eirt) }
+  let(:lead_provider) { statement.lead_provider }
+  let(:course_cohort) { create(:course_cohort, course:) }
 
   before do
-    contract
+    create(:course_cohort_provider, course_cohort:, lead_provider:, recruitment_target: 100, teacher_funding: 900)
     assign(:statement, statement)
-    assign(:special_contracts, [special_contract])
-    assign(:contracts, [contract])
+    assign(:course_cohorts, [course_cohort])
     without_partial_double_verification { allow(view).to receive(:current_admin).and_return(admin_user) }
   end
 
@@ -33,16 +33,16 @@ RSpec.describe "admin/finance/statements/print_provider", :npq, type: :view do
   end
 
   it "shows the course finance details" do
-    expect(subject).to have_component(Admin::CoursePaymentOverviewComponent.new(contract:))
+    expect(subject).to have_component(Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement:))
   end
 
-  it "shows the standalone payments details" do
-    expect(subject).to have_component(Admin::CoursePaymentOverviewComponent.new(contract: special_contract))
+  it "shows the course finance details heading" do
+    expect(rendered).to have_css "h2", text: course.name
   end
 
   it "shows the contract finance details" do
     expect(rendered).to have_table rows: [
-      [contract.course.name, contract.contract_template.recruitment_target, number_to_currency(contract.contract_template.per_participant), ""],
+      [course.name, 100, number_to_currency(900)],
     ]
   end
 end
