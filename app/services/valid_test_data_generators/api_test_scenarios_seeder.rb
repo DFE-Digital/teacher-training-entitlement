@@ -137,23 +137,11 @@ module ValidTestDataGenerators
         declaration_ids = Declaration.where(application: applications_to_delete).pluck(:id)
 
         if declaration_ids.any?
-          # Find statements through statement_items
-          statement_ids = StatementItem.where(declaration_id: declaration_ids).pluck(:statement_id).uniq
-
-          # Delete statements and their associated records
+          statement_ids = Declaration.where(application: applications_to_delete).pluck(:statement_id).uniq
           if statement_ids.any?
-            # Delete statement items
-            StatementItem.where(declaration_id: declaration_ids).delete_all
             Adjustment.where(statement_id: statement_ids).delete_all
             MilestoneStatement.where(statement_id: statement_ids).delete_all
             Contract.where(statement_id: statement_ids).delete_all
-            Statement.where(id: statement_ids).delete_all
-          end
-
-          statement_ids = Declaration.where(application: applications_to_delete).pluck(:statement_id)
-          if statement_ids.any?
-            # case when declaration are attach directly to statement
-            Adjustment.where(statement_id: statement_ids).delete_all
             Statement.where(id: statement_ids).delete_all
           end
 

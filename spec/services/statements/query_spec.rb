@@ -25,13 +25,6 @@ RSpec.describe Statements::Query do
       let!(:statement1) { create(:statement) }
       let!(:statement2) { create(:statement) }
 
-      before do
-        create(:statement_item, statement: statement1)
-        create(:statement_item, statement: statement1)
-        create(:contract, course: create(:course, :npd_eirt), statement: statement1)
-        create(:contract, course: create(:course), statement: statement1)
-      end
-
       it "does not return duplicate statements" do
         query = described_class.new
         expect(query.statements).to contain_exactly(statement1, statement2)
