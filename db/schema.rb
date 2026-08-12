@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_10_142408) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -31,7 +31,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_10_142408) do
   create_enum "kind_of_nurseries", ["local_authority_maintained_nursery", "preschool_class_as_part_of_school", "private_nursery", "another_early_years_setting", "childminder"]
   create_enum "outcome_states", ["passed", "failed", "voided"]
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
-  create_enum "statement_item_states", ["eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "statements_frequency_types", ["monthly"]
 
@@ -569,18 +568,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_10_142408) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
-  create_table "statement_items", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "declaration_id"
-    t.uuid "ecf_id"
-    t.enum "state", default: "eligible", null: false, enum_type: "statement_item_states"
-    t.bigint "statement_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["declaration_id"], name: "index_statement_items_on_declaration_id"
-    t.index ["ecf_id"], name: "index_statement_items_on_ecf_id", unique: true
-    t.index ["statement_id"], name: "index_statement_items_on_statement_id"
-  end
-
   create_table "statements", force: :cascade do |t|
     t.integer "academic_year"
     t.datetime "created_at", null: false
@@ -682,7 +669,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_10_142408) do
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"
   add_foreign_key "schedules", "cohorts"
-  add_foreign_key "statement_items", "declarations"
-  add_foreign_key "statement_items", "statements"
   add_foreign_key "statements", "lead_providers"
 end

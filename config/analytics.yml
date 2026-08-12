@@ -1,13 +1,5 @@
 ---
 shared:
-  :statement_items:
-    - id
-    - statement_id
-    - state
-    - created_at
-    - updated_at
-    - declaration_id
-    - ecf_id
   :statements:
     - id
     - academic_year

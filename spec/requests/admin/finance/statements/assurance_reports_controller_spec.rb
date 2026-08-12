@@ -22,9 +22,7 @@ RSpec.describe Admin::Finance::Statements::AssuranceReportsController, type: :re
 
     let :declaration do
       travel_to(statement.deadline_date) do
-        create(:declaration, lead_provider:) do |declaration|
-          create(:statement_item, statement:, declaration:)
-        end
+        create(:declaration, statement:, lead_provider:)
       end
     end
 

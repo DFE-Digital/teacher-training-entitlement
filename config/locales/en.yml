@@ -314,9 +314,6 @@ en:
                 be specified for Applications from outside of England
               duplicate_delivery_partner: The property '#/secondary_delivery_partner_id'
                 cannot have the same value as the property '#/delivery_partner_id'
-            statement_items:
-              more_than_two_statement_items: There cannot be more than two
-                items per declaration
         lead_provider:
           attributes:
             ecf_id:
@@ -380,11 +377,6 @@ en:
               taken: ECF ID must be unique
             payment_date:
               invalid: must be on or after the deadline date
-        statement_item:
-          attributes:
-            ecf_id:
-              blank: Enter an ECF ID
-              taken: ECF ID must be unique
         user:
           attributes:
             full_name:

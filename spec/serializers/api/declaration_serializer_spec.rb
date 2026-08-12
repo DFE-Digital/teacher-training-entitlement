@@ -59,32 +59,6 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
           expect(attributes["updated_at"]).to eq(declaration.updated_at.rfc3339)
         end
 
-        context "when declaration.updated_at is not the latest" do
-          let(:old_datetime) { Time.utc(2023, 5, 5, 5, 0, 0) }
-          let(:latest_datetime) { Time.utc(2024, 8, 8, 8, 0, 0) }
-
-          before do
-            travel_to(old_datetime) do
-              declaration
-              create(:participant_outcome, declaration:)
-            end
-          end
-
-          context "when a linked statement item is moved to another statement" do
-            let!(:statement_item) { create(:statement_item, declaration:) }
-
-            before do
-              travel_to(latest_datetime) do
-                statement_item.update!(statement: create(:statement))
-              end
-            end
-
-            it "returns the updated declaration's `updated_at`" do
-              expect(attributes["updated_at"]).to eq(latest_datetime.rfc3339)
-            end
-          end
-        end
-
         it "serializes the `state`" do
           expect(attributes["state"]).to eq(declaration.state)
         end
