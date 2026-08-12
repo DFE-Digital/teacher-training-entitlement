@@ -320,8 +320,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_delivery_partnerships_on_cohort_id"
     t.index ["course_cohort_id"], name: "index_delivery_partnerships_on_course_cohort_id"
-    t.index ["delivery_partner_id", "lead_provider_id", "course_cohort_id"], name: "idx_delivery_partnerships_on_partner_provider_course_cohort", unique: true
     t.index ["delivery_partner_id", "lead_provider_id", "cohort_id"], name: "idx_on_delivery_partner_id_lead_provider_id_cohort__10d5da32cd", unique: true
+    t.index ["delivery_partner_id", "lead_provider_id", "course_cohort_id"], name: "idx_delivery_partnerships_on_partner_provider_course_cohort", unique: true
     t.index ["delivery_partner_id"], name: "index_delivery_partnerships_on_delivery_partner_id"
     t.index ["lead_provider_id"], name: "index_delivery_partnerships_on_lead_provider_id"
   end
@@ -622,7 +622,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
   add_foreign_key "declarations", "delivery_partners", column: "secondary_delivery_partner_id"
   add_foreign_key "declarations", "lead_providers"
   add_foreign_key "delivery_partnerships", "cohorts"
-  add_foreign_key "delivery_partnerships", "course_cohorts"
+  add_foreign_key "delivery_partnerships", "course_cohorts", validate: false
   add_foreign_key "delivery_partnerships", "delivery_partners"
   add_foreign_key "delivery_partnerships", "lead_providers"
   add_foreign_key "milestones", "course_cohorts"
