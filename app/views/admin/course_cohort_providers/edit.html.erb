@@ -18,16 +18,47 @@
       row.with_key(text: "Provider")
       row.with_value(text: @course_cohort_provider.lead_provider.name)
     end
-  end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Academic Year")
+      row.with_value(text: @course_cohort.academic_year)
+    end
+end
 %>
+
+<% if @course_cohort_provider.contract_year %>
+  <h2 class="govuk-heading-m">Contract year defaults</h2>
+
+  <%=
+    govuk_summary_list do |summary_list|
+      summary_list.with_row do |row|
+        row.with_key(text: "Recruitment target")
+        row.with_value(text: @course_cohort_provider.contract_year.recruitment_target || "-")
+      end
+
+      summary_list.with_row do |row|
+        row.with_key(text: "Teacher funding")
+        row.with_value(text: @course_cohort_provider.contract_year.teacher_funding ? number_to_currency(@course_cohort_provider.contract_year.teacher_funding, unit: "£") : "-")
+      end
+    end
+  %>
+<% end %>
 
 <%= form_with model: @course_cohort_provider, url: admin_course_course_cohort_provider_path(@course, @course_cohort_provider), method: :patch do |f| %>
   <%= f.govuk_error_summary %>
 
   <%= f.govuk_text_field :recruitment_target,
                          label: { text: "Recruitment target" },
+                         hint: { text: "Optional course cohort override." },
                          class: "govuk-input--width-5",
                          inputmode: "numeric" %>
+
+  <%= f.govuk_text_field :teacher_funding,
+                         label: { text: "Teacher funding" },
+                         hint: { text: "Optional course cohort override." },
+                         prefix_text: "£",
+                         class: "govuk-input--width-5",
+                         inputmode: "decimal" %>
 
   <div class="govuk-button-group">
     <%= f.govuk_submit "Save course provider" %>

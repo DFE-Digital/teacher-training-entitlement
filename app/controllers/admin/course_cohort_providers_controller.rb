@@ -23,7 +23,7 @@ module Admin
     end
 
     def course_cohort_provider_params
-      params.require(:course_cohort_provider).permit(:recruitment_target)
+      params.require(:course_cohort_provider).permit(:recruitment_target, :teacher_funding)
     end
 
     def ensure_super_admin
