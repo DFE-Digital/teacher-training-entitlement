@@ -115,7 +115,7 @@ class Declaration < ApplicationRecord
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
   validates :milestone_id,
-            uniqueness: { scope: :application_id, conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
+            uniqueness: { scope: %i[application_id type], conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
 
   validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
@@ -141,7 +141,6 @@ class Declaration < ApplicationRecord
       secondary_delivery_partner: secondary_delivery_partner,
       declaration_type: declaration_type,
       declaration_date: declaration_date,
-      state: "awaiting_clawback",
     )
     save!
   end

@@ -90,7 +90,7 @@ class Statement < ApplicationRecord
   def prepare_to_freeze!
     transaction do
       declarations.eligible_state.each(&:mark_payable!)
-      clawback_declarations.awaiting_clawback_state.each(&:mark_awaiting_clawback!)
+      clawback_declarations.submitted_state.each(&:mark_awaiting_clawback!)
       mark_payable!
     end
   end
