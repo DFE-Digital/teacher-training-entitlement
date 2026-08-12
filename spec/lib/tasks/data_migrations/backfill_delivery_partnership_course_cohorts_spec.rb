@@ -36,6 +36,22 @@ RSpec.describe "data_migrations:backfill_delivery_partnership_course_cohorts" do
     expect { run_task }.not_to(change { delivery_partnership.reload.course_cohort })
   end
 
+  it "removes a legacy partnership when the course cohort partnership already exists" do
+    existing_partnership = build(
+      :delivery_partnership,
+      delivery_partner: delivery_partnership.delivery_partner,
+      lead_provider:,
+      cohort: nil,
+      course_cohort:,
+    )
+    existing_partnership.save!(validate: false)
+
+    expect { run_task }.to change(DeliveryPartnership, :count).by(-1)
+
+    expect(DeliveryPartnership.exists?(existing_partnership.id)).to be true
+    expect(DeliveryPartnership.exists?(delivery_partnership.id)).to be false
+  end
+
   it "does not update records during a dry run" do
     course_cohort
     delivery_partnership

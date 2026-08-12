@@ -3,6 +3,7 @@ namespace :data_migrations do
   task :backfill_delivery_partnership_course_cohorts, [:dry_run] => :environment do |_task, args|
     dry_run = ActiveModel::Type::Boolean.new.cast(args[:dry_run])
     updated_count = 0
+    duplicate_count = 0
     skipped_count = 0
 
     DeliveryPartnership.where(course_cohort_id: nil).find_each do |delivery_partnership|
@@ -18,13 +19,27 @@ namespace :data_migrations do
         next
       end
 
-      delivery_partnership.update_column(:course_cohort_id, matching_course_cohorts.pick(:id)) unless dry_run
+      course_cohort_id = matching_course_cohorts.pick(:id)
+      duplicate = DeliveryPartnership.exists?(
+        delivery_partner_id: delivery_partnership.delivery_partner_id,
+        lead_provider_id: delivery_partnership.lead_provider_id,
+        course_cohort_id:,
+      )
+
+      if duplicate
+        delivery_partnership.delete unless dry_run
+        duplicate_count += 1
+        next
+      end
+
+      delivery_partnership.update_column(:course_cohort_id, course_cohort_id) unless dry_run
       updated_count += 1
     end
 
     unless Rails.env.test?
       puts "DRY RUN: no records were changed" if dry_run
       puts "Updated #{updated_count} delivery partnerships"
+      puts "Removed #{duplicate_count} duplicate delivery partnerships"
       puts "Skipped #{skipped_count} delivery partnerships"
     end
   end
