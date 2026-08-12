@@ -7,6 +7,8 @@ class RemoveCohortFromDeliveryPartnerships < ActiveRecord::Migration[8.1]
     unbackfilled = select_value("SELECT COUNT(*) FROM delivery_partnerships WHERE course_cohort_id IS NULL").to_i
     raise "Cannot remove cohort_id: #{unbackfilled} delivery partnerships have not been backfilled" if unbackfilled.positive?
 
+    validate_foreign_key :delivery_partnerships, :course_cohorts
+
     add_check_constraint :delivery_partnerships,
                          "course_cohort_id IS NOT NULL",
                          name: "delivery_partnerships_course_cohort_id_null",
