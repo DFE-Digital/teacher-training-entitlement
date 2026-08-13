@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -193,22 +193,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
     t.index ["start_year"], name: "index_cohorts_on_start_year"
   end
 
-  create_table "contract_templates", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.uuid "ecf_id"
-    t.decimal "monthly_service_fee", default: "0.0"
-    t.integer "number_of_payment_periods"
-    t.integer "output_payment_percentage", default: 60, null: false
-    t.decimal "per_participant", null: false
-    t.integer "recruitment_target", null: false
-    t.integer "service_fee_installments", null: false
-    t.integer "service_fee_percentage", default: 40, null: false
-    t.boolean "special_course", default: false, null: false
-    t.decimal "targeted_delivery_funding_per_participant", default: "100.0"
-    t.datetime "updated_at", null: false
-    t.index ["ecf_id"], name: "index_contract_templates_on_ecf_id", unique: true
-  end
-
   create_table "contract_years", force: :cascade do |t|
     t.integer "academic_year"
     t.bigint "course_id", null: false
@@ -224,18 +208,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
     t.index ["course_id"], name: "index_contract_years_on_course_id"
     t.index ["lead_provider_id", "course_id", "academic_year"], name: "idx_on_lead_provider_id_course_id_academic_year_c921fdb2b9", unique: true
     t.index ["lead_provider_id"], name: "index_contract_years_on_lead_provider_id"
-  end
-
-  create_table "contracts", force: :cascade do |t|
-    t.bigint "contract_template_id", null: false
-    t.bigint "course_id", null: false
-    t.datetime "created_at", null: false
-    t.bigint "statement_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["contract_template_id"], name: "index_contracts_on_contract_template_id"
-    t.index ["course_id"], name: "index_contracts_on_course_id"
-    t.index ["statement_id", "course_id"], name: "index_contracts_on_statement_id_and_course_id", unique: true
-    t.index ["statement_id"], name: "index_contracts_on_statement_id"
   end
 
   create_table "course_cohort_providers", force: :cascade do |t|
@@ -636,9 +608,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
   add_foreign_key "applications", "users"
   add_foreign_key "contract_years", "courses"
   add_foreign_key "contract_years", "lead_providers"
-  add_foreign_key "contracts", "contract_templates"
-  add_foreign_key "contracts", "courses"
-  add_foreign_key "contracts", "statements"
   add_foreign_key "course_cohort_providers", "course_cohorts"
   add_foreign_key "course_cohort_providers", "lead_providers"
   add_foreign_key "course_cohorts", "cohorts"

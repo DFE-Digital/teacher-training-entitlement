@@ -48,15 +48,6 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <% if @special_contracts.any? %>
-          <div id="special-contracts-warning">
-            <%= govuk_warning_text(icon_fallback_text: "Warning") do %>
-              <%= @special_contracts.map { _1.course.name }.to_sentence %> has standalone payments.
-              <br/>
-              <%= govuk_link_to "View payments for this course", "#standalone_payments" %>
-            <% end %>
-          </div>
-        <% end %>
         <% if @statement.allow_marking_as_paid? %>
           <%= govuk_button_link_to t("admin.finance.statements.payment_authorisations.new.button"), new_admin_finance_payment_authorisation_path(@statement) %>
         <% end %>
@@ -80,17 +71,10 @@
     <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h1>
 
     <%= govuk_accordion do |accordion|
-      @contracts.each do |contract|
-        accordion.with_section(heading_text: contract.course.name, expanded: true) { render Admin::CoursePaymentOverviewComponent.new(contract:) }
+      @course_cohorts.each do |course_cohort|
+        accordion.with_section(heading_text: course_cohort.course.name, expanded: true) { render Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement: @statement) }
       end
     end %>
-
-    <% if @special_contracts.any? %>
-      <h4 id="standalone_payments" class="govuk-heading-l govuk-!-margin-top-9 govuk-!-margin-bottom-7">Standalone payments</h4>
-      <% @special_contracts.each do |contract| %>
-        <%= render Admin::CoursePaymentOverviewComponent.new(contract:) %>
-      <% end %>
-    <% end %>
 
     <%= govuk_details(summary_text: "Contract Information", id: "contract-information") do
       render partial: "contract_information"

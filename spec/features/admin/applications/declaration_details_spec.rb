@@ -3,7 +3,14 @@ require "rails_helper"
 RSpec.feature "Application declaration details", :versioning, type: :feature do
   include Helpers::AdminLogin
 
-  let(:application) { create(:application) }
+  let(:course_cohort_provider) { create(:course_cohort_provider) }
+  let(:lead_provider) { course_cohort_provider.lead_provider }
+  let(:course_cohort) { course_cohort_provider.course_cohort }
+  let(:application) { create(:application, lead_provider:, course_cohort:) }
+  let(:payable_statement) { create(:statement, :payable, lead_provider:) }
+  let(:started_milestone) { create(:milestone, :started, course_cohort:) }
+  let(:completed_milestone) { create(:milestone, :completed, course_cohort:) }
+  let(:payable_milestone) { create(:milestone, declaration_type: Milestone::RETAINED_1, course_cohort:) }
 
   context "when not logged in" do
     scenario "viewing declaration details" do
@@ -13,23 +20,16 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
   end
 
   context "when logged in as an admin" do
+    let!(:started_declaration) { create(:declaration, :started, application:, statement: payable_statement, milestone: started_milestone) }
+    let!(:completed_declaration) { create(:declaration, :completed, :submitted, application:, statement: payable_statement, milestone: completed_milestone) }
+
     before do
+      completed_declaration.mark_eligible!
+      create(:declaration, :payable, application:, declaration_type: Milestone::RETAINED_1, milestone: payable_milestone, statement: payable_statement)
       sign_in_as(create(:admin))
     end
 
     scenario "viewing declaration details" do
-      started_milestone = create(:milestone, :started, course_cohort: application.course_cohort)
-      completed_milestone = create(:milestone, :completed, course_cohort: application.course_cohort)
-      payable_milestone = create(:milestone, declaration_type: Milestone::RETAINED_1, course_cohort: application.course_cohort)
-
-      started_declaration = create(:declaration, :from_ecf, :with_secondary_delivery_partner, application:, milestone: started_milestone)
-
-      completed_declaration = create(:declaration, :completed, application:, milestone: completed_milestone)
-      completed_declaration.mark_eligible!
-
-      payable_statement = create(:statement, :payable)
-      create(:declaration, :payable, application:, declaration_type: Milestone::RETAINED_1, milestone: payable_milestone, statement: payable_statement)
-
       visit(admin_application_path(application))
       click_link "Declaration details"
 
@@ -47,7 +47,6 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
           expect(summary_list).to have_summary_item("Declaration cohort", started_declaration.milestone.cohort.name)
           expect(summary_list).to have_summary_item("Provider", started_declaration.lead_provider.name)
           expect(summary_list).to have_summary_item("Delivery partner", started_declaration.delivery_partner.name)
-          expect(summary_list).to have_summary_item("Secondary delivery partner", started_declaration.secondary_delivery_partner.name)
           expect(summary_list).to have_summary_item("Created at", started_declaration.created_at.to_fs(:govuk_short))
           expect(summary_list).to have_summary_item("Updated at", started_declaration.updated_at.to_fs(:govuk_short))
           expect(summary_list).to have_summary_item("Statement", "")
@@ -82,7 +81,9 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
         end
       end
 
-      click_link(payable_statement.start_date.to_fs(:govuk_approx))
+      within(summary_cards[0]) do
+        click_link(payable_statement.start_date.to_fs(:govuk_approx))
+      end
       expect(page).to have_current_path(admin_finance_statement_path(payable_statement))
     end
   end

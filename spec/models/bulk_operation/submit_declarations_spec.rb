@@ -79,7 +79,6 @@ RSpec.describe BulkOperation::SubmitDeclarations do
 
     before do
       started_milestone
-      create(:contract, statement:, course:)
       create(:delivery_partnership, cohort:, delivery_partner:, lead_provider:)
 
       bulk_operation.file.attach(csv_file.open)

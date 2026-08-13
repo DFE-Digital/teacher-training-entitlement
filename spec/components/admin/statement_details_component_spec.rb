@@ -23,7 +23,7 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
   end
 
   before do
-    allow(::Statements::SummaryCalculator).to receive(:new).and_return(calculator)
+    allow(::Statements::Calculate).to receive(:new).and_return(calculator)
   end
 
   it { is_expected.to have_text t(".totals") }

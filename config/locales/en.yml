@@ -729,45 +729,11 @@ en:
           attributes:
             application:
               <<: *application
-        contracts/change_per_participant:
-          attributes:
-            contract:
-              does_not_belong_to_statement: The contract does not belong to
-                the specified statement
-              statement_paid: The statement for this contract is already paid
-                and cannot be changed
-            per_participant:
-              blank: Enter the new amount
-              greater_than_or_equal_to: Amount must be a positive number
-              not_a_number: Amount must be a number, without commas, or the
-                £ symbol
         statements/payment_authorisation_form:
           attributes:
             checks_done:
               accepted: Confirm all necessary assurance checks have been done
                 before authorising this statement for payment
-        statements/bulk_creator:
-          attributes:
-            statements_csv_id:
-              blank: must be provided
-            contracts_csv_id:
-              blank: must be provided
-        statements/bulk_creator/contract_row:
-          attributes:
-            lead_provider_name:
-              inclusion: is not recognised
-            course_identifier:
-              inclusion: is not recognised
-        statements/bulk_creator/statement_row:
-          attributes:
-            year:
-              inclusion: must be between 2020 and 2040
-            month:
-              inclusion: must be between 1 and 12
-            deadline_date:
-              blank: must be a date (e.g. YYYY-MM-DD)
-            payment_date:
-              blank: must be a date (e.g. YYYY-MM-DD)
         statements/change_deadline_date:
           attributes:
             deadline_date:

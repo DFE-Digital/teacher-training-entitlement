@@ -21,9 +21,7 @@ module Helpers
         delivery_partner = create(:delivery_partner)
         schedule = create(:schedule, cohort:, course_group: course.course_group, allowed_declaration_types: %w[started completed], training_starts_at: Date.yesterday)
 
-        # Create required contracts and partnerships
-        statement = create(:statement, cohort:, lead_provider:)
-        create(:contract, statement:, course:)
+        # Create required partnerships
         create(:delivery_partnership, cohort:, delivery_partner:, lead_provider:)
 
         participant1 = create(:user)

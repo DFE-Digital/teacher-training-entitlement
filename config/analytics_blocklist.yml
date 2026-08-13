@@ -74,20 +74,6 @@
   :course_cohort_providers:
   - recruitment_target
   - teacher_funding
-  :contract_templates:
-  - id
-  - created_at
-  - ecf_id
-  - monthly_service_fee
-  - number_of_payment_periods
-  - output_payment_percentage
-  - per_participant
-  - recruitment_target
-  - service_fee_installments
-  - service_fee_percentage
-  - special_course
-  - targeted_delivery_funding_per_participant
-  - updated_at
   :contract_years:
   - id
   - academic_year
@@ -103,13 +89,6 @@
   - updated_at
   :declarations:
   - value
-  :contracts:
-  - id
-  - contract_template_id
-  - course_id
-  - created_at
-  - statement_id
-  - updated_at
   :closed_registration_users:
   - id
   - created_at

@@ -147,12 +147,6 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
 
       it_behaves_like "inaccessible to normal admins"
     end
-
-    describe "#download_contracts" do
-      before { get download_contracts_admin_cohort_path(cohort) }
-
-      it_behaves_like "inaccessible to normal admins", error_message: "You must be a super admin to download contracts"
-    end
   end
 
   context "when not logged in" do
@@ -194,12 +188,6 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
 
     describe "#destroy" do
       before { delete admin_cohort_path(cohort) }
-
-      it { is_expected.to redirect_to sign_in_path }
-    end
-
-    describe "#download_contracts" do
-      before { get download_contracts_admin_cohort_path(cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
