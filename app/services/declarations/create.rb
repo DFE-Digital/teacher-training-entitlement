@@ -80,6 +80,8 @@ module Declarations
     end
 
     def course_cohort
+      return unless application
+
       @course_cohort ||= if started_declaration?
                            application.course_cohort
                          else
@@ -90,6 +92,8 @@ module Declarations
 
     def milestone
       return if declaration_type.blank?
+      return unless course_cohort
+      return unless declaration_type.in?(allowed_declaration_types)
 
       @milestone ||= course_cohort.milestones.find_by!(declaration_type:)
     end
@@ -232,14 +236,22 @@ module Declarations
     end
 
     def declaration_type_out_of_order
-      return if started_declaration?
-      return if completed_declaration? && application.started_declaration
-
-      if application.started_declaration.nil?
-        errors.add(:declaration_type, :started_declaration_first)
-      else
+      if !started_declaration? && application&.started_declaration.blank?
         errors.add(:declaration_type, :out_of_order)
+        return
       end
+
+      return unless milestone
+
+      previous_milestones = course_cohort.milestones
+        .where("acceptance_window_start_date < ?", milestone.acceptance_window_start_date)
+
+      return if previous_milestones.none?
+
+      existing_types = application.declarations.billable_or_changeable.pluck(:declaration_type)
+      return if previous_milestones.all? { |m| m.declaration_type.in?(existing_types) }
+
+      errors.add(:declaration_type, :out_of_order)
     end
   end
 end

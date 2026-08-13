@@ -10,7 +10,6 @@ RSpec.describe DeclarationDateValidator do
       include ActiveModel::Attributes
 
       attribute :declaration_date, :datetime
-      attribute :application
       attr_reader :raw_declaration_date
 
       validates :declaration_date, declaration_date: true
@@ -27,25 +26,23 @@ RSpec.describe DeclarationDateValidator do
   end
 
   let(:declaration_date) { Date.new(2022, 1, 30) }
-  let(:schedule_training_starts_at) { declaration_date - 1.day }
-  let(:schedule_training_ends_at) { declaration_date + 1.day }
-  let(:application) { create(:application) }
 
-  subject { model_class.new(declaration_date: declaration_date.rfc3339, application:) }
-
-  before do
-    allow_any_instance_of(Schedule).to receive(:training_starts_at).and_return(schedule_training_starts_at)
-    allow_any_instance_of(Schedule).to receive(:training_ends_at).and_return(schedule_training_ends_at)
-  end
+  subject { model_class.new(declaration_date: declaration_date.rfc3339) }
 
   describe "#declaration_date" do
     describe "the declaration date has the right format" do
       context "when the declaration date is empty" do
-        subject { model_class.new(declaration_date: "", application:) }
+        subject { model_class.new(declaration_date: "") }
 
-        it "does not errors when the declaration date is blank" do
+        it "does not error when the declaration date is blank" do
           expect(subject).to be_valid
         end
+      end
+
+      context "when declaration date format is valid RFC3339" do
+        subject { model_class.new(declaration_date: "2021-06-21T08:46:29Z") }
+
+        it { is_expected.to be_valid }
       end
 
       context "when declaration date format is invalid" do
@@ -83,31 +80,6 @@ RSpec.describe DeclarationDateValidator do
           expect(subject.errors.first).to have_attributes(attribute: :declaration_date, type: :invalid)
         end
       end
-    end
-
-    context "when declaration_date is before the schedule start" do
-      let(:schedule_training_starts_at) { declaration_date + 1.day }
-
-      it "has a meaningful error", :aggregate_failures do
-        expect(subject).to be_invalid
-        expect(subject.errors.first).to have_attributes(attribute: :declaration_date, type: :declaration_before_schedule_start)
-      end
-    end
-
-    context "when declaration_date is at the schedule start" do
-      let(:schedule_training_starts_at) { declaration_date }
-
-      it { is_expected.to be_valid }
-    end
-
-    context "when declaration_date is in the middle of schedule" do
-      it { is_expected.to be_valid }
-    end
-
-    context "when declaration_date is at the schedule end" do
-      let(:schedule_training_ends_at) { declaration_date }
-
-      it { is_expected.to be_valid }
     end
   end
 end

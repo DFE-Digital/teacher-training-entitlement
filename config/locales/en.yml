@@ -288,6 +288,8 @@ en:
               invalid: Enter a valid RFC3339 '#/%{parameterized_attribute}'.
               declaration_before_schedule_start: Enter a '#/%{parameterized_attribute}'
                 that's on or after the schedule start.
+              declaration_after_schedule_end: Enter a '#/%{parameterized_attribute}'
+                that's on or before the schedule end.
               future_declaration_date: The '#/%{parameterized_attribute}' value
                 cannot be a future date. Check the date and try again.
             declaration_type:
@@ -656,6 +658,8 @@ en:
               invalid: Enter a valid RFC3339 '#/%{parameterized_attribute}'.
               declaration_before_schedule_start: Enter a '#/%{parameterized_attribute}'
                 that's on or after the schedule start.
+              declaration_after_schedule_end: Enter a '#/%{parameterized_attribute}'
+                that's on or before the schedule end.
               future_declaration_date: The '#/%{parameterized_attribute}' value
                 cannot be a future date. Check the date and try again.
             declaration_type:
@@ -664,9 +668,8 @@ en:
                 does not exist for this schedule.
               inclusion: The entered '#/%{parameterized_attribute}' is not
                 recognised.
-              out_of_order: A completed declaration cannot be submitted before
-                a started declaration.
-              started_declaration_first: A started declaration is required before any other declaration_type
+              out_of_order: Declarations must be submitted in milestone order.
+                Submit all prior milestone declarations first.
             has_passed:
               invalid: Enter 'true' or 'false' in the '#/%{parameterized_attribute}'
                 field to indicate whether this participant has passed or failed their
