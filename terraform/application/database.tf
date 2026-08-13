@@ -11,7 +11,7 @@ module "postgres" {
   use_azure                   = var.deploy_azure_backing_services
   azure_enable_monitoring     = var.enable_monitoring
   azure_enable_backup_storage = var.enable_postgres_backup_storage
-  server_version              = "16"
+  server_version              = var.server_version
   azure_extensions            = ["btree_gin", "citext", "fuzzystrmatch", "pg_trgm"]
   azure_maintenance_window    = var.azure_maintenance_window
   azure_enable_high_availability = var.postgres_enable_high_availability
