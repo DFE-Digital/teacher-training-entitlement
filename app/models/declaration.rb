@@ -194,9 +194,11 @@ private
     milestone = application.milestones.find_by(declaration_type:)
     return unless milestone
 
-    if declaration_date < milestone.acceptance_window_start_date
+    unless declaration_date >= milestone.acceptance_window_start_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
-    elsif milestone.acceptance_window_end_date && declaration_date > milestone.acceptance_window_end_date
+    end
+
+    if milestone.acceptance_window_end_date && declaration_date > milestone.acceptance_window_end_date
       errors.add(:declaration_date, :declaration_after_schedule_end)
     end
   end
