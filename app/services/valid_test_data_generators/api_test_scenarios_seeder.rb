@@ -140,7 +140,6 @@ module ValidTestDataGenerators
           statement_ids = Declaration.where(application: applications_to_delete).pluck(:statement_id).uniq
           if statement_ids.any?
             Adjustment.where(statement_id: statement_ids).delete_all
-            MilestoneStatement.where(statement_id: statement_ids).delete_all
             Contract.where(statement_id: statement_ids).delete_all
             Statement.where(id: statement_ids).delete_all
           end

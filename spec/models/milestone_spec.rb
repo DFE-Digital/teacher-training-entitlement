@@ -6,16 +6,12 @@ RSpec.describe Milestone, type: :model do
   end
 
   describe "associations" do
-    it { is_expected.to have_many(:milestone_statements) }
-    it { is_expected.to have_many(:statements).through(:milestone_statements) }
     it { is_expected.to belong_to(:course_cohort) }
   end
 
   describe "validations" do
     context "when creating a milestone for an invalid declaration type" do
-      subject(:milestone) { build(:milestone, declaration_type: "invalid", statements: [statement]) }
-
-      let(:statement) { create(:statement) }
+      subject(:milestone) { build(:milestone, declaration_type: "invalid") }
 
       it { is_expected.to have_error(:declaration_type, :inclusion, "Please choose a declaration type") }
     end

@@ -8,7 +8,6 @@ class CourseCohort < ApplicationRecord
 
   has_many :applications
   has_many :milestones, dependent: :destroy
-  has_many :statements, through: :milestones
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }

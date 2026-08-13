@@ -432,16 +432,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "milestone_statements", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "milestone_id", null: false
-    t.bigint "statement_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["milestone_id", "statement_id"], name: "index_milestone_statements_on_milestone_id_and_statement_id", unique: true
-    t.index ["milestone_id"], name: "index_milestone_statements_on_milestone_id"
-    t.index ["statement_id"], name: "index_milestone_statements_on_statement_id"
-  end
-
   create_table "milestones", force: :cascade do |t|
     t.date "acceptance_window_end_date"
     t.date "acceptance_window_start_date"
@@ -662,8 +652,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_133237) do
   add_foreign_key "delivery_partnerships", "cohorts"
   add_foreign_key "delivery_partnerships", "delivery_partners"
   add_foreign_key "delivery_partnerships", "lead_providers"
-  add_foreign_key "milestone_statements", "milestones"
-  add_foreign_key "milestone_statements", "statements"
   add_foreign_key "milestones", "course_cohorts"
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
