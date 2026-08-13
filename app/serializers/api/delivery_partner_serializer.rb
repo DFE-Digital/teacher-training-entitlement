@@ -10,7 +10,7 @@ module API
         field(:name)
         field(:cohort) do |object, options|
           object.course_cohorts_for_lead_provider(options[:lead_provider])
-                .map { |course_cohort| course_cohort.cohort.start_year }
+                .map(&:academic_year)
                 .uniq
                 .sort
         end

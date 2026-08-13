@@ -33,9 +33,11 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
     context "when filtering by cohort" do
       let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
       let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
-      let!(:delivery_partner_2023) { create(:delivery_partner, lead_providers: { cohort_2023 => current_lead_provider }) }
+      let(:course_cohort_2023) { create(:course_cohort, cohort: cohort_2023, academic_year: cohort_2023.start_year) }
+      let(:course_cohort_2024) { create(:course_cohort, cohort: cohort_2024, academic_year: cohort_2024.start_year) }
+      let!(:delivery_partner_2023) { create(:delivery_partner, lead_providers: { course_cohort_2023 => current_lead_provider }) }
 
-      before { create(:delivery_partner, lead_providers: { cohort_2024 => current_lead_provider }) }
+      before { create(:delivery_partner, lead_providers: { course_cohort_2024 => current_lead_provider }) }
 
       it "returns delivery partners for the specified cohort" do
         api_get(path, params: { filter: { cohort: "2023" } })

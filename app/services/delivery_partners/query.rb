@@ -34,7 +34,7 @@ module DeliveryPartners
     def where_cohort_start_year_in(cohort_start_years)
       return if ignore?(filter: cohort_start_years)
 
-      scope.merge!(DeliveryPartner.where(cohorts: { start_year: extract_conditions(cohort_start_years) }))
+      scope.merge!(DeliveryPartner.where(course_cohorts: { academic_year: extract_conditions(cohort_start_years) }))
     end
 
     def order_by

@@ -7,15 +7,18 @@ RSpec.describe DeliveryPartners::Query do
   let(:cohort_22) { create :cohort, registration_starts_at: Date.new(2022, 4, 1) }
   let(:cohort_23) { create :cohort, registration_starts_at: Date.new(2023, 4, 1) }
   let(:cohort_21_2) { create :cohort, registration_starts_at: Date.new(2021, 10, 1) }
+  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, academic_year: cohort_21.start_year) }
+  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, academic_year: cohort_22.start_year) }
+  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, academic_year: cohort_23.start_year) }
   let(:sort) { nil }
 
   subject(:query) { described_class.new(lead_provider: lead_provider_1, sort: sort) }
 
   describe "#delivery_partners" do
-    let!(:delivery_partner_1) { create :delivery_partner, name: "z", lead_providers: { cohort_21 => lead_provider_1 }, created_at: 2.minutes.ago }
-    let!(:delivery_partner_2) { create :delivery_partner, name: "a", lead_providers: { cohort_21 => lead_provider_1, cohort_22 => lead_provider_1 }, created_at: 1.minute.ago }
-    let!(:delivery_partner_other_lead_provider) { create :delivery_partner, lead_providers: { cohort_21 => lead_provider_2 }, created_at: 1.minute.ago }
-    let!(:delivery_partner_an_hour_ago) { create :delivery_partner, name: "c", lead_providers: { cohort_23 => lead_provider_1 }, created_at: 1.hour.ago }
+    let!(:delivery_partner_1) { create :delivery_partner, name: "z", lead_providers: { course_cohort_21 => lead_provider_1 }, created_at: 2.minutes.ago }
+    let!(:delivery_partner_2) { create :delivery_partner, name: "a", lead_providers: { course_cohort_21 => lead_provider_1, course_cohort_22 => lead_provider_1 }, created_at: 1.minute.ago }
+    let!(:delivery_partner_other_lead_provider) { create :delivery_partner, lead_providers: { course_cohort_21 => lead_provider_2 }, created_at: 1.minute.ago }
+    let!(:delivery_partner_an_hour_ago) { create :delivery_partner, name: "c", lead_providers: { course_cohort_23 => lead_provider_1 }, created_at: 1.hour.ago }
 
     it "returns delivery partners for the specified lead provider, ordered by name" do
       expect(query.delivery_partners).to eq([delivery_partner_2, delivery_partner_an_hour_ago, delivery_partner_1])
@@ -62,7 +65,7 @@ RSpec.describe DeliveryPartners::Query do
       end
 
       before do
-        course_cohort = create(:course_cohort, cohort: cohort_21_2, lead_provider: lead_provider_1)
+        course_cohort = create(:course_cohort, cohort: cohort_21_2, academic_year: cohort_21_2.start_year, lead_provider: lead_provider_1)
         create(:delivery_partnership, delivery_partner: delivery_partner_1,
                                       course_cohort:,
                                       lead_provider: lead_provider_1)
@@ -92,9 +95,9 @@ RSpec.describe DeliveryPartners::Query do
     let!(:delivery_partner) do
       create(:delivery_partner,
              lead_providers: {
-               cohort_21 => lead_provider_1,
-               cohort_22 => lead_provider_1,
-               cohort_23 => lead_provider_2,
+               course_cohort_21 => lead_provider_1,
+               course_cohort_22 => lead_provider_1,
+               course_cohort_23 => lead_provider_2,
              })
     end
 
@@ -115,7 +118,7 @@ RSpec.describe DeliveryPartners::Query do
     end
 
     context "when a `lead_provider` is specified" do
-      let!(:other_delivery_partner) { create(:delivery_partner, lead_providers: { cohort_23 => lead_provider_2 }) }
+      let!(:other_delivery_partner) { create(:delivery_partner, lead_providers: { course_cohort_23 => lead_provider_2 }) }
 
       subject(:query) { described_class.new(lead_provider: lead_provider_1) }
 
