@@ -86,7 +86,7 @@ module Declarations
                            application.course_cohort
                          else
                            # all declarations for an application belong to the same course_cohort
-                           application.started_declaration&.course_cohort || application.course_cohort
+                           application.started_declaration&.course_cohort
                          end
     end
 
@@ -236,6 +236,11 @@ module Declarations
     end
 
     def declaration_type_out_of_order
+      if !started_declaration? && application&.started_declaration.blank?
+        errors.add(:declaration_type, :out_of_order)
+        return
+      end
+
       return unless milestone
 
       previous_milestones = course_cohort.milestones
