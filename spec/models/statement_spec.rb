@@ -213,28 +213,45 @@ RSpec.describe Statement, type: :model do
   end
 
   describe "#mark_as_frozen!" do
-    subject(:statement) { build(:statement, :payable) }
+    subject(:statement) { create(:statement, :payable) }
+
+    let!(:declaration) { create(:declaration, :payable, statement:) }
+    let!(:clawback_declaration) { create(:clawback_declaration, state: :awaiting_clawback, statement:) }
+
+    before { statement.mark_as_frozen! }
 
     it "sets marked_as_paid_at and state" do
-      expect { statement.tap(&:mark_as_frozen!).reload }
-        .to change(statement, :marked_as_paid_at)
-              .and change(statement, :state).from("payable").to("paid")
+      expect(statement).to be_paid
     end
 
-    it "updates declarations"
-    it "updates clawback declarations"
+    it "updates declarations" do
+      expect(declaration.reload).to be_paid
+    end
+
+    it "updates clawback declarations" do
+      expect(clawback_declaration.reload).to be_clawed_back
+    end
   end
 
   describe "#prepare_to_freeze!" do
-    subject(:statement) { build(:statement, :open) }
+    subject(:statement) { create(:statement, :open) }
+
+    let!(:declaration) { create(:declaration, :eligible, statement:) }
+    let!(:clawback_declaration) { create(:clawback_declaration, state: :awaiting_clawback, statement:) }
+
+    before { statement.prepare_to_freeze! }
 
     it "updates state" do
-      expect { statement.tap(&:prepare_to_freeze!).reload }
-        .to change(statement, :state).from("open").to("payable")
+      expect(statement).to be_payable
     end
 
-    it "updates declarations"
-    it "updates clawback declarations"
+    it "updates declarations" do
+      expect(declaration.reload).to be_payable
+    end
+
+    it "updates clawback declarations" do
+      expect(clawback_declaration.reload).to be_awaiting_clawback
+    end
   end
 
   describe "#marked_as_paid_with_date?" do
@@ -259,7 +276,9 @@ RSpec.describe Statement, type: :model do
     end
 
     context "with payable statement with declarations" do
-      let(:statement) { create(:statement, :next_output_fee, :payable, start_date: 1.month.from_now) }
+      let(:statement) do
+        create(:statement, :next_output_fee, :payable).tap { |s| s.start_date = 1.month.from_now }
+      end
 
       it { is_expected.to be true }
     end
@@ -287,7 +306,7 @@ RSpec.describe Statement, type: :model do
 
     context "with future deadline date" do
       let :statement do
-        create(:statement, :next_output_fee, :payable, deadline_date: Time.zone.today)
+        create(:statement, :next_output_fee, :payable).tap { |s| s.deadline_date = 1.day.from_now }
       end
 
       it { is_expected.to be false }
@@ -295,7 +314,7 @@ RSpec.describe Statement, type: :model do
 
     context "with nil deadline date" do
       let :statement do
-        create(:statement, :next_output_fee, :payable, deadline_date: nil)
+        create(:statement, :next_output_fee, :payable).tap { |s| s.deadline_date = nil }
       end
 
       it { is_expected.to be false }

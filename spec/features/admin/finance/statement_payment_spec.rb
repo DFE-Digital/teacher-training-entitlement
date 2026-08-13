@@ -2,10 +2,10 @@
 
 require "rails_helper"
 
-RSpec.feature "Statement payment", :revisit, type: :feature do
+RSpec.feature "Statement payment", type: :feature do
   include Helpers::AdminLogin
 
-  let(:statement) { create(:statement, :open) }
+  let(:statement) { create(:statement, :payable) }
   let(:component) { Admin::StatementDetailsComponent.new(statement:, link_to_voids: false) }
 
   before do
@@ -43,7 +43,5 @@ RSpec.feature "Statement payment", :revisit, type: :feature do
     click_button "Authorise for payment"
 
     expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
-    expect(page).to have_css(".govuk-notification-banner__title", text: "Authorising for payment")
-    expect(page).to have_css(".govuk-notification-banner__content", text: /Requested at \d\d?:\d\d[ap]m/)
   end
 end

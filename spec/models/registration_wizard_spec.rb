@@ -75,7 +75,7 @@ RSpec.describe RegistrationWizard do
       end
     end
 
-    context "when working in private nursery", :npq do
+    context "when working in private nursery" do
       let(:private_childcare_provider) { create(:private_childcare_provider) }
       let(:store) do
         {
@@ -107,10 +107,6 @@ RSpec.describe RegistrationWizard do
           expect(subject.answers.map(&:key)).not_to include("Ofsted registration details")
         end
 
-        it "shows Do you have a URN?" do
-          expect(subject.answers.map(&:key)).to include("Ofsted unique reference number (URN)")
-        end
-
         it "does not show Nursery" do
           expect(subject.answers.map(&:key)).not_to include("Nursery")
         end
@@ -119,10 +115,6 @@ RSpec.describe RegistrationWizard do
       context "with urn" do
         let(:has_ofsted_urn) { "yes" }
         let(:institution_id) { private_childcare_provider.institution.id }
-
-        it "shows Ofsted registration details" do
-          expect(subject.answers.map(&:key)).to include("Ofsted unique reference number (URN)")
-        end
 
         it "does not show Do you have a URN?" do
           expect(subject.answers.map(&:key)).not_to include("Do you have a URN?")

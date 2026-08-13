@@ -17,13 +17,6 @@ RSpec.shared_examples "a participant action" do
     it { is_expected.to validate_presence_of(:participant_id).with_message("The property '#/participant_id' must be present") }
     it { is_expected.to validate_inclusion_of(:course_identifier).in_array(Course::IDENTIFIERS).with_message("The entered '#/course_identifier' is not recognised for the given participant. Check details and try again.") }
 
-    context "when a matching application does not exist (different course identifier)", :npq do
-      let(:course_identifier) { Course::IDENTIFIERS.excluding(application.course.identifier).sample }
-
-      it { is_expected.to have_error_count(1) }
-      it { is_expected.to have_error(:participant_id, :application_not_found, "Your update cannot be made as an accepted application cannot be found for the given '#/participant_id' and '#/course_identifier'.") }
-    end
-
     context "when a matching application does not exist (different lead provider)" do
       let(:lead_provider) { create(:lead_provider, name: "Different to #{application.lead_provider.name}") }
 

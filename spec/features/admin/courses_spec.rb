@@ -7,7 +7,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
   let(:admin_user) { create(:admin) }
 
   before do
-    create(:course, :npd_eirt)
+    create_list(:course, 10)
     sign_in_as(admin_user)
   end
 
@@ -20,12 +20,10 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_css("h1", text: "Courses")
       expect(page).to have_link(course.name, href: admin_course_path(course))
       expect(page).to have_css(".x-govuk-sub-navigation")
-
-      # Not enough courses for pagination to kick in
-      # expect(page).to have_css(".govuk-pagination__item--current", text: 1)
+      expect(page).to have_css(".govuk-pagination__item--current", text: 1)
     end
 
-    scenario "navigating to the second page of courses", :npq do
+    scenario "navigating to the second page of courses" do
       visit(admin_courses_path)
 
       click_on("Next")
