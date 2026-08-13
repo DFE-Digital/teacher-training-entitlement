@@ -184,3 +184,9 @@ variable "redis_mode" {
    error_message = "redis_mode must be either 'legacy' (Cache for Redis) or 'managed' (Managed Redis)."
    }
  }
+
+ variable "server_version" {
+   description = "Sets version of Postgres DB to use"
+   type        = string
+   default     = "16"
+ }
