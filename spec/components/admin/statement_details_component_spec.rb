@@ -39,5 +39,4 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
 
     it { is_expected.not_to have_link t(".view", href: admin_finance_voided_index_path(statement)) }
   end
-
 end
