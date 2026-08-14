@@ -90,7 +90,7 @@ module Statements
     end
 
     def course_cohorts_with_milestone(declaration_type)
-      statement.milestones.includes(:course_cohort).where(declaration_type:).map(&:course_cohort).uniq
+      statement.course_cohorts.joins(:milestones).where(milestones: { declaration_type: }).distinct
     end
 
     def provider_applications(course_cohort)
