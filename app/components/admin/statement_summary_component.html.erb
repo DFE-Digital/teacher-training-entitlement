@@ -81,13 +81,6 @@
         row.with_value { number_to_currency(total_adjustments) }
       end
 
-      unless total_service_fees.zero?
-        summary_list.with_row do |row|
-          row.with_key { "Service fee" }
-          row.with_value { number_to_currency(total_service_fees) }
-        end
-      end
-
       summary_list.with_row do |row|
         row.with_key { "Total net VAT" }
         row.with_value { tag.strong number_to_currency(total_payment) }

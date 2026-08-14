@@ -20,7 +20,6 @@ module Admin
              :total_voided,
              :total_clawbacks,
              :total_adjustments,
-             :total_service_fees,
              :total_payment,
              to: :calculator
 

@@ -14,7 +14,6 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
 
   let(:calculator) do
     OpenStruct.new(
-      total_service_fees: 0,
       total_output_payment: 100.12,
       expected_output_payment: 200.00,
       total_clawbacks: 50.34,
@@ -104,21 +103,6 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
     subject(:rendered) { render_inline described_class.new(statement:, link_to_voids: false) }
 
     it { is_expected.not_to have_link "View Voids", href: admin_finance_voided_index_path(statement) }
-  end
-
-  context "without total service fees" do
-    it { is_expected.not_to have_text "Service fee" }
-  end
-
-  context "with total service fees" do
-    before do
-      allow(calculator).to receive(:total_service_fees).and_return(123)
-      subject
-    end
-
-    it "shows total service fees" do
-      expect(summary_list).to have_summary_item("Service fee", number_to_currency(123))
-    end
   end
 
   it "does not show retained row" do

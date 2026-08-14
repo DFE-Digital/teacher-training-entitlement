@@ -13,13 +13,6 @@
         <span class="float-right"><%= number_to_currency(-@calculator.total_clawbacks) %></span>
       </p>
 
-      <% unless @calculator.total_service_fees.zero? %>
-        <p class="govuk-body-s govuk-!-margin-bottom-2">
-          <%= t(".service_fee") %>
-          <span class="float-right"><%= number_to_currency(@calculator.total_service_fees) %></span>
-        </p>
-      <% end %>
-
       <hr>
 
       <p class="govuk-body-s govuk-!-margin-bottom-2">

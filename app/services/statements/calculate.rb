@@ -65,8 +65,6 @@ module Statements
       statement.adjustments.sum(&:amount)
     end
 
-    def total_service_fees = 0
-
     def total_payment
       total_output_payment - total_clawbacks + total_adjustments + statement.reconcile_amount.to_f
     end

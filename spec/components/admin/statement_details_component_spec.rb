@@ -11,7 +11,6 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
 
   let(:calculator) do
     OpenStruct.new(
-      total_service_fees: 0,
       total_output_payment: 100.12,
       total_clawbacks: 50.34,
       total_payment: 49.78,
@@ -41,15 +40,4 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
     it { is_expected.not_to have_link t(".view", href: admin_finance_voided_index_path(statement)) }
   end
 
-  context "without total service fees" do
-    it { is_expected.not_to have_text t(".service_fee") }
-  end
-
-  context "with total service fees" do
-    before do
-      allow(calculator).to receive(:total_service_fees).and_return(123)
-    end
-
-    it { is_expected.to have_text(/#{t('.service_fee')}\s+£#{calculator.total_service_fees}/) }
-  end
 end
