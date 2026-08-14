@@ -126,4 +126,71 @@ RSpec.describe Statements::Calculate do
       expect(subject.outstanding_total).to eq(1)
     end
   end
+
+  describe "#total_output_payment" do
+    it "sums billable declaration values" do
+      create(:declaration, :eligible, application:, statement:, value: 100)
+      create(:declaration, :eligible, application: create(:application, :accepted, course_cohort:, lead_provider:), statement:, value: 50)
+
+      expect(subject.total_output_payment).to eq(150.0)
+    end
+
+    it "returns zero when no declarations" do
+      expect(subject.total_output_payment).to eq(0.0)
+    end
+  end
+
+  describe "#total_clawbacks" do
+    it "sums clawback declaration values" do
+      create(:clawback_declaration, statement:, value: 100)
+      create(:clawback_declaration, statement:, value: 60)
+
+      expect(subject.total_clawbacks).to eq(160.0)
+    end
+
+    it "returns zero when no clawbacks" do
+      expect(subject.total_clawbacks).to eq(0.0)
+    end
+  end
+
+  describe "#total_adjustments" do
+    it "sums adjustment amounts" do
+      create(:adjustment, statement:, amount: 100)
+      create(:adjustment, statement:, amount: 200)
+
+      expect(subject.total_adjustments).to eq(300)
+    end
+  end
+
+  describe "#total_voided" do
+    it "counts voided declarations" do
+      create(:declaration, :voided, application:, statement:)
+
+      expect(subject.total_voided).to eq(1)
+    end
+  end
+
+  describe "#expected_output_payment" do
+    it "sums recruitment_target × teacher_funding from ComputedContract" do
+      course_cohort.course_cohort_providers.create!(lead_provider:, recruitment_target: 10, teacher_funding: 100)
+      create(:declaration, :eligible, declaration_type: "started", application:, statement:)
+
+      expect(subject.expected_output_payment).to eq(1000)
+    end
+
+    it "returns zero when no course_cohort_providers" do
+      expect(subject.expected_output_payment).to eq(0)
+    end
+  end
+
+  describe "#total_payment" do
+    it "calculates total as output - clawbacks + adjustments + reconcile" do
+      create(:declaration, :eligible, application:, statement:, value: 500)
+      create(:clawback_declaration, statement:, value: 100)
+      create(:adjustment, statement:, amount: 50)
+      statement.update!(reconcile_amount: 25)
+
+      expect(subject.total_payment).to eq(475.0)
+    end
+  end
 end

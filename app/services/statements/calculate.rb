@@ -42,13 +42,35 @@ module Statements
       outstanding_starts + outstanding_completed
     end
 
-    def expected_output_payment = 0
-    def total_output_payment = 0
-    def total_voided = 0
-    def total_clawbacks = 0
-    def total_adjustments = 0
+    def expected_output_payment
+      lead_provider_course_cohorts.sum do |course_cohort|
+        computed = ComputedContract.draw(lead_provider: statement.lead_provider, course_cohort:)
+        (computed.recruitment_target || 0) * (computed.teacher_funding || 0)
+      end
+    end
+
+    def total_output_payment
+      billable_declarations.sum(:value).to_f
+    end
+
+    def total_voided
+      declarations.where(state: "voided").count
+    end
+
+    def total_clawbacks
+      statement.clawback_declarations.sum(:value).to_f.abs
+    end
+
+    def total_adjustments
+      statement.adjustments.sum(&:amount)
+    end
+
     def total_service_fees = 0
-    def total_payment = 0
+
+    def total_payment
+      total_output_payment - total_clawbacks + total_adjustments + statement.reconcile_amount.to_f
+    end
+
     def total_retained = 0
 
     def funded_billable_count_for_type(_declaration_type) = 0
@@ -75,6 +97,13 @@ module Statements
       course_cohort.applications
         .joins(:current_application_lead_provider)
         .where(application_lead_providers: { lead_provider_id: statement.lead_provider_id })
+    end
+
+    def lead_provider_course_cohorts
+      statement.course_cohorts
+        .joins(:course_cohort_providers)
+        .where(course_cohort_providers: { lead_provider_id: statement.lead_provider_id })
+        .distinct
     end
   end
 end
