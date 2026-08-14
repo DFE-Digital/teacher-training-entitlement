@@ -172,13 +172,6 @@ module Declarations
       errors.add(:cohort, :no_output_fee_statement, cohort: cohort.start_year)
     end
 
-    def validate_declaration_type_for_schedule
-      return if errors.any?
-      return if allowed_declaration_types.include?(declaration_type)
-
-      errors.add(:declaration_type, :mismatch_declaration_type_for_schedule)
-    end
-
     def no_duplicate_billable_declaration
       return if errors.any?
       return unless active_declarations.where(declaration_type:).exists?

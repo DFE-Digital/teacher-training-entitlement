@@ -15,28 +15,10 @@
     )
   %>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third">
-      <%=
-        f.govuk_collection_select(
-          :schedule_id,
-          @schedules,
-          :id,
-          :name_and_start_date,
-          options: { include_blank: true },
-          label: { text: "Schedule" },
-        )
-      %>
-    </div>
-
-    <div class="govuk-grid-column-one-third govuk-!-padding-top-6">
-      <%= link_to "New schedule",
-                  new_admin_cohort_schedule_path(@cohort),
-                  class: "govuk-button",
-                  target: "_blank",
-                  rel: "noopener" %>
-    </div>
-  </div>
+  <%= f.govuk_date_field :registration_starts_at, legend: { text: "Registration starts at" } %>
+  <%= f.govuk_date_field :registration_ends_at, legend: { text: "Registration ends at" } %>
+  <%= f.govuk_date_field :training_starts_at, legend: { text: "Training starts at" } %>
+  <%= f.govuk_date_field :training_ends_at, legend: { text: "Training ends at" } %>
 
   <%= f.govuk_submit "Add course" %>
 <% end %>

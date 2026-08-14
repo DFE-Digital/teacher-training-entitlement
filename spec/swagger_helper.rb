@@ -53,7 +53,6 @@ RSpec.configure do |config|
           ListDeclarationsFilter: LIST_DECLARATIONS_FILTER[version],
           ListParticipantOutcomesFilter: LIST_PARTICIPANT_OUTCOMES_FILTER,
           ListStatementsFilter: LIST_STATEMENTS_FILTER[version],
-          ListSchedulesFilter: LIST_SCHEDULES_FILTER[version],
 
           UnauthorisedResponse: UNAUTHORISED_RESPONSE,
           NotFoundResponse: NOT_FOUND_RESPONSE,
@@ -99,10 +98,6 @@ RSpec.configure do |config|
           # DeclarationRetainedRequest: DECLARATION_RETAINED_REQUEST,
           DeclarationCompletedRequest: DECLARATION_COMPLETED_REQUEST,
           DeclarationChangeDeliveryPartnerRequest: DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST,
-
-          Schedule: SCHEDULE[version],
-          ScheduleResponse: SCHEDULE_RESPONSE[version],
-          SchedulesResponse: SCHEDULES_RESPONSE[version],
         }.compact,
       },
     }

@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "update_application", :revisit do
-  include_context "with default schedules"
-
   let(:cohort) do
     create(:cohort, :without_funding_cap, registration_starts_at: 1.year.ago)
   end

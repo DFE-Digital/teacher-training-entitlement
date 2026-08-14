@@ -94,13 +94,9 @@ govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
     row.with_value(text: @application.funding_eligiblity_status_code.presence || "-")
   end
   sl.with_row do |row|
-    row.with_key(text: "Schedule cohort")
+    row.with_key(text: "Cohort")
     row.with_value(text: @application.cohort&.name)
     row.with_action(text: "Change", href: admin_applications_change_cohort_path(@application))
-  end
-  sl.with_row do |row|
-    row.with_key(text: "Schedule identifier")
-    row.with_value(text: @application.schedule&.identifier || "-" )
   end
   sl.with_row do |row|
     row.with_key(text: "Funding choice")

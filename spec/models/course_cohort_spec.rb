@@ -77,8 +77,10 @@ RSpec.describe CourseCohort do
   describe "#application_started_confirmed_by_date" do
     subject(:confirmed_by_date) { course_cohort.application_started_confirmed_by_date }
 
-    let(:course_cohort) do
-      create(:course_cohort, schedule: create(:schedule, training_ends_at:, change_training_dates: false))
+    let(:course_cohort) { create(:course_cohort) }
+
+    before do
+      create(:milestone, :started, course_cohort:, acceptance_window_end_date: training_ends_at)
     end
 
     context "when training ends between January and April" do

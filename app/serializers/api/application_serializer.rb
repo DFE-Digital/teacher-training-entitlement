@@ -27,7 +27,7 @@ module API
         field(:teacher_catchment_country)
         field(:teacher_catchment_iso_country_code)
         field(:funded_place)
-        field(:schedule_identifier) { |a| a.schedule&.identifier }
+        field(:schedule_identifier) { |a| a.course_cohort.ecf_id }
         field(:assigned_at)
         field(:unassigned_at)
         field(:created_at)

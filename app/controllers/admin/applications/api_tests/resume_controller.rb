@@ -3,7 +3,7 @@ module Admin
     module APITests
       class ResumeController < APITestsController
         def create
-          course_cohort = CourseCohort.includes([:schedule]).find_by_id(params[:course_cohort_id])
+          course_cohort = CourseCohort.find_by_id(params[:course_cohort_id])
 
           @response = ::APITests::ResumeApplication.new(application: @application, course_cohort:).call
         end

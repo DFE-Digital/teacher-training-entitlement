@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -228,13 +228,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
-    t.bigint "schedule_id"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
     t.index ["course_id"], name: "index_course_cohorts_on_course_id"
     t.index ["ecf_id"], name: "index_course_cohorts_on_ecf_id", unique: true
-    t.index ["schedule_id"], name: "index_course_cohorts_on_schedule_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -483,25 +481,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "schedules", force: :cascade do |t|
-    t.date "acceptance_window_end"
-    t.date "acceptance_window_start"
-    t.enum "allowed_declaration_types", default: ["started", "retained-1", "retained-2", "completed"], array: true, enum_type: "declaration_types"
-    t.bigint "cohort_id", null: false
-    t.enum "course_group", enum_type: "course_group"
-    t.datetime "created_at", null: false
-    t.uuid "ecf_id"
-    t.string "identifier", null: false
-    t.string "name", null: false
-    t.integer "policy_descriptor"
-    t.date "training_ends_at"
-    t.date "training_starts_at"
-    t.datetime "updated_at", null: false
-    t.index ["cohort_id"], name: "index_schedules_on_cohort_id"
-    t.index ["ecf_id"], name: "index_schedules_on_ecf_id", unique: true
-    t.index ["identifier", "cohort_id"], name: "index_schedules_on_identifier_and_cohort_id", unique: true
-  end
-
   create_table "schools", force: :cascade do |t|
     t.date "close_date"
     t.datetime "created_at", null: false
@@ -625,6 +604,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"
-  add_foreign_key "schedules", "cohorts"
   add_foreign_key "statements", "lead_providers"
 end

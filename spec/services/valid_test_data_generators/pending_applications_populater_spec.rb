@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe ValidTestDataGenerators::PendingApplicationsPopulater, :revisit, :with_default_schedules do
+RSpec.describe ValidTestDataGenerators::PendingApplicationsPopulater, :revisit do
   let(:lead_provider) { create(:lead_provider) }
   let(:cohort) { create(:cohort, :current) }
 

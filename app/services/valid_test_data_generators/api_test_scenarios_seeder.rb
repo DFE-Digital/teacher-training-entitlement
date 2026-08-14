@@ -52,12 +52,10 @@ module ValidTestDataGenerators
 
     def initialize(lead_provider:,
                    course_identifier: "tte-early-years",
-                   schedule_identifier: "tte-reception-autumn",
                    academic_year: Date.current.year,
                    logger: Rails.logger)
       @lead_provider = lead_provider
       @course_identifier = course_identifier
-      @schedule_identifier = schedule_identifier
       @academic_year = academic_year.to_i
       @logger = logger
     end
@@ -111,8 +109,8 @@ module ValidTestDataGenerators
       Enumerator.new do |yielder|
         year = academic_year
         loop do
-          yielder << Date.new(year, 7, 1) # autumn schedule
-          yielder << Date.new(year, 9, 1) # spring schedule
+          yielder << Date.new(year, 7, 1) # autumn cohort
+          yielder << Date.new(year, 9, 1) # spring cohort
           year += 1
         end
       end
@@ -279,7 +277,6 @@ module ValidTestDataGenerators
 
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       academic_year = registration_starts_at.year
-      term = registration_starts_at.month < 8 ? "autumn" : "spring"
       current_cohort = Cohort.find_by(registration_starts_at:)
 
       attrs = {
@@ -293,23 +290,16 @@ module ValidTestDataGenerators
         current_cohort = Cohort.create!(**attrs)
       end
 
-      training_starts_at = training_starts_now ? 2.days.ago : registration_starts_at + 2.months
-      training_ends_at = training_starts_at + 6.months
-      schedule = create_or_update_schedule!(
-        cohort: current_cohort,
-        term:,
-        training_starts_at:,
-        training_ends_at:,
-      )
+      acceptance_window_start_date = training_starts_now ? 2.days.ago : registration_starts_at + 2.months
+      acceptance_window_end_date = acceptance_window_start_date + 6.months
 
       cc = CourseCohort.find_by(course:, cohort: current_cohort)
       if cc
-        cc.update!(schedule:, academic_year:)
+        cc.update!(academic_year:)
       else
         cc = CourseCohort.create!(
           course:,
           cohort: current_cohort,
-          schedule:,
           academic_year:,
         )
       end
@@ -317,21 +307,21 @@ module ValidTestDataGenerators
       create_or_update_milestone!(
         course_cohort: cc,
         declaration_type: Milestone::STARTED,
-        acceptance_window_start_date: training_starts_at,
-        acceptance_window_end_date: training_starts_at + 2.months,
+        acceptance_window_start_date: acceptance_window_start_date,
+        acceptance_window_end_date: acceptance_window_start_date + 2.months,
         payment_amount: 60,
       )
 
       start_date = if training_starts_now
-                     training_starts_at + 1.day # to keep the milestone ordering
+                     acceptance_window_start_date + 1.day # to keep the milestone ordering
                    else
-                     training_ends_at
+                     acceptance_window_end_date
                    end
       create_or_update_milestone!(
         course_cohort: cc,
         declaration_type: Milestone::COMPLETED,
         acceptance_window_start_date: start_date,
-        acceptance_window_end_date: training_ends_at + 2.months,
+        acceptance_window_end_date: acceptance_window_end_date + 2.months,
         payment_amount: 40,
       )
 
@@ -367,25 +357,6 @@ module ValidTestDataGenerators
       end
 
       lead_provider_contract.update!(recruitment_target:)
-    end
-
-    def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
-      identifier = "tte-reception-#{term}"
-      attrs = {
-        cohort:,
-        name: "TTE Reception #{term}",
-        course_group: course.course_group,
-        training_starts_at:,
-        training_ends_at:,
-        allowed_declaration_types: %w[started completed],
-        policy_descriptor: 1,
-        acceptance_window_start: training_starts_at,
-        acceptance_window_end: training_starts_at + 2.months,
-      }
-
-      schedule = Schedule.find_or_initialize_by(identifier:, cohort:)
-      schedule.update!(attrs)
-      schedule
     end
 
     def institutions_eligible

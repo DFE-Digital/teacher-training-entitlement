@@ -22,8 +22,8 @@ module ValidTestDataGenerators
 
     def create_participant(school:, user:)
       course = courses.sample
-      schedule = Schedule.where(cohort:, course_group: course.course_group).sample
-      create_application(user, school, course, schedule)
+      course_cohort = CourseCohort.find_or_create_by!(cohort:, course:)
+      create_application(user, school, course, course_cohort)
     end
   end
 end

@@ -74,21 +74,6 @@ class UpdateApplicationRakeTask
         logger.info("Application #{application.ecf_id} cohort changed from #{cohort_before_update} to #{application.cohort.identifier}")
       end
 
-      desc "Change the schedule on an application"
-      task :update_schedule, %i[application_ecf_id new_schedule_identifier] => :versioned_environment do |_t, args|
-        find_application(args.application_ecf_id)
-
-        raise "Cannot change schedule for an application with declarations" if application.declarations.any?
-
-        current_schedule = application.schedule
-
-        new_schedule = Schedule.find_by(identifier: args.new_schedule_identifier, cohort: application.cohort)
-        raise "Schedule not found: #{args.new_schedule_identifier}" unless new_schedule
-
-        application.update!(schedule: new_schedule)
-        logger.info("Application #{application.ecf_id} schedule changed from '#{current_schedule&.identifier}' to '#{new_schedule.identifier}'")
-      end
-
       desc "Update Participant on an application (and move declarations)"
       task :update_participant, %i[application_ecf_id new_participant_ecf_id] => :environment do |_t, args|
         find_application(args.application_ecf_id)

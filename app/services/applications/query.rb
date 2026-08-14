@@ -15,11 +15,10 @@ module Applications
                    application: [:user,
                                  :course,
                                  :cohort,
-                                 :schedule,
                                  :institution,
                                  :rejected_event,
                                  :current_application_lead_provider,
-                                 { course_cohort: %i[course cohort schedule] }],
+                                 { course_cohort: %i[course cohort] }],
                  )
                  .preload(application: { institution: :institutionable })
       @sort = sort

@@ -294,7 +294,6 @@ en:
                 cannot be a future date. Check the date and try again.
             declaration_type:
               blank: Enter a '#/%{parameterized_attribute}'.
-              mismatch_declaration_type_for_schedule: The property '#/%{parameterized_attribute}'
                 does not exist for this schedule.
               inclusion: The entered '#/%{parameterized_attribute}' is not
                 recognised.
@@ -416,17 +415,17 @@ en:
               application_status: The application status is not resumable
               cohort_not_in_training: Selected schedule is not currently in training
               cohort_missing: Cohort for the selected schedule cannot be found
-              incompatible_schedule: Selected schedule is for a different course than
+              incompatible_course_cohort: Selected course cohort is for a different course than
                 the application
             application:
               <<: *application
-        applications/change_schedule:
+        applications/change_course_cohort:
           attributes:
             base:
               cohort_in_training: Selected schedule training has already started
             application:
               <<: *application
-              incompatible_schedule: Selected schedule is for a different course than
+              incompatible_course_cohort: Selected course cohort is for a different course than
                 the application
               application_has_started_training: The application has already started
                 its training
@@ -664,7 +663,6 @@ en:
                 cannot be a future date. Check the date and try again.
             declaration_type:
               blank: Enter a '#/%{parameterized_attribute}'.
-              mismatch_declaration_type_for_schedule: The property '#/%{parameterized_attribute}'
                 does not exist for this schedule.
               inclusion: The entered '#/%{parameterized_attribute}' is not
                 recognised.

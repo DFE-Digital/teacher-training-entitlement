@@ -54,12 +54,12 @@ module ValidTestDataGenerators
 
     def create_participant(user:, school:)
       course = courses.sample
-      schedule = Schedule.where(cohort:, course_group: course.course_group).sample
-      application = create_application(user, school, course, schedule)
+      course_cohort = CourseCohort.find_or_create_by!(cohort:, course:)
+      application = create_application(user, school, course, course_cohort)
 
       return if Faker::Boolean.boolean(true_ratio: 0.3)
 
-      current_date = schedule.training_starts_at + rand(5.days).seconds
+      current_date = course_cohort.training_starts_at + rand(5.days).seconds
 
       travel_to(current_date) do
         accept_application(application)
@@ -86,7 +86,7 @@ module ValidTestDataGenerators
                         trn_lookup_status: "Found")
     end
 
-    def create_application(user, school, course, schedule)
+    def create_application(user, school, course, course_cohort)
       FactoryBot.create(:application,
                         :pending,
                         :with_random_work_setting,
@@ -95,7 +95,7 @@ module ValidTestDataGenerators
                         user:,
                         cohort:,
                         course:,
-                        schedule:,
+                        course_cohort:,
                         eligible_for_funding: Faker::Boolean.boolean)
     end
 

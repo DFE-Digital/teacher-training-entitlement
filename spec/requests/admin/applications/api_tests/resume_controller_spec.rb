@@ -8,7 +8,7 @@ RSpec.describe Admin::Applications::APITests::ResumeController, type: :request d
   subject { response }
 
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:, schedule: create(:schedule)) }
+  let(:course_cohort) { create(:course_cohort, lead_provider:) }
   let(:application) { create(:application, :deferred, course_cohort:, lead_provider:) }
 
   before { sign_in_as_admin(super_admin: true) }

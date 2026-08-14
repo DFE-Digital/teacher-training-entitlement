@@ -5,16 +5,14 @@ RSpec.describe "Participant Outcomes endpoint", :npq, openapi_spec: "v1/swagger.
   include_context "with authorization for api doc request"
 
   let(:course) { create(:course, :npd_eirt) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
+  let(:course_cohort) { create(:course_cohort, course:, cohort:) }
   let(:application) do
     create(
       :application,
       :accepted,
-      course:,
+      course_cohort:,
       lead_provider:,
-      cohort:,
-      schedule:,
     )
   end
   let(:participant) { application.user }

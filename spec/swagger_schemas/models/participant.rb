@@ -110,11 +110,11 @@ PARTICIPANT = {
           enum: Course::IDENTIFIERS,
         },
         schedule_identifier: {
-          description: "The new schedule of the participant",
+          description: "The course cohort identifier for the participant",
           nullable: true,
           type: :string,
-          example: Schedule::IDENTIFIERS.first,
-          enum: Schedule::IDENTIFIERS,
+          format: :uuid,
+          example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
         },
         cohort: {
           description: "Indicates which call-off contract would fund this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Once a provider accepts an application, they may change a participant's cohort up until the point of submitting a started declaration.",

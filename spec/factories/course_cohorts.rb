@@ -4,10 +4,6 @@ FactoryBot.define do
     cohort
     academic_year { Date.current.year }
 
-    schedule do
-      CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
-    end
-
     initialize_with do
       CourseCohort.find_or_initialize_by(course:, cohort:)
     end

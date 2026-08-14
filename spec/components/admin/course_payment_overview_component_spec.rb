@@ -26,8 +26,6 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
 
   before do
     allow(::Statements::Calculate).to receive(:new).and_return(calculator)
-    create(:schedule, :tte_reception_autumn, cohort:)
-    create(:schedule, :tte_reception_spring, cohort:)
   end
 
   it { is_expected.to have_css "h2", text: course.name }

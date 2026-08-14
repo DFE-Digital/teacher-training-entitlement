@@ -26,11 +26,11 @@ ENROLMENT_CSV = {
         enum: Course::IDENTIFIERS,
       },
       schedule_identifier: {
-        description: "The schedule currently applied to this enrolment",
+        description: "The course cohort identifier currently applied to this enrolment",
         nullable: true,
         type: :string,
-        example: Schedule::IDENTIFIERS.first,
-        enum: Schedule::IDENTIFIERS,
+        example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
+        format: "uuid",
       },
       cohort: {
         description: "The value indicates which call-off contract funds this participant’s training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Providers may change an NPQ participant’s cohort up until the point of submitting a started declaration.",

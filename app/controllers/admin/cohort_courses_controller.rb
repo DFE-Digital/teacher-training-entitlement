@@ -30,7 +30,7 @@ class Admin::CohortCoursesController < AdminController
 private
 
   def course_cohort_params
-    params.require(:course_cohort).permit(:course_id, :schedule_id)
+    params.require(:course_cohort).permit(:course_id, :registration_starts_at, :registration_ends_at, :training_starts_at, :training_ends_at)
   end
 
   def course_cohort
@@ -45,7 +45,6 @@ private
 
   def load_form_options
     @courses = Course.where.not(id: cohort.course_cohorts.select(:course_id)).order(:name)
-    @schedules = Schedule.order(training_starts_at: :desc)
   end
 
   def ensure_super_admin
