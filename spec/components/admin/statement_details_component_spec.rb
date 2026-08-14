@@ -16,7 +16,6 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
       total_clawbacks: 50.34,
       total_payment: 49.78,
       total_starts: 1,
-      total_retained: 2,
       total_completed: 3,
       total_voided: 4,
     )
@@ -32,7 +31,6 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
   it { is_expected.to have_text(/#{t('.total_net_vat')}\s+£#{calculator.total_payment}/) }
   it { is_expected.to have_text(/#{t('.cut_off_date')}\s+#{statement.deadline_date.to_fs(:govuk)}/) }
   it { is_expected.to have_text(/#{t('.total_starts')}\s+#{calculator.total_starts}/) }
-  it { is_expected.to have_text(/#{t('.total_retained')}\s+#{calculator.total_retained}/) }
   it { is_expected.to have_text(/#{t('.total_completed')}\s+#{calculator.total_completed}/) }
   it { is_expected.to have_text(/#{t('.total_voids')}\s+#{calculator.total_voided}/) }
   it { is_expected.to have_link t(".view", href: admin_finance_voided_index_path(statement)) }

@@ -71,12 +71,6 @@ module Statements
       total_output_payment - total_clawbacks + total_adjustments + statement.reconcile_amount.to_f
     end
 
-    def total_retained = 0
-
-    def funded_billable_count_for_type(_declaration_type) = 0
-    def self_funded_billable_count_for_type(_declaration_type) = 0
-    def output_payment_per_participant = 0
-
   private
 
     attr_reader :statement
