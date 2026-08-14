@@ -1,40 +1,22 @@
 module Admin
   class CoursePaymentOverviewComponent < BaseComponent
-    attr_reader :course_cohort, :statement
+    attr_reader :statement, :course_cohort
 
-    delegate_missing_to :calculator
+    delegate :funded_rows, :self_funded_rows, to: :calculator
 
-    def initialize(course_cohort:, statement:)
-      @course_cohort = course_cohort
+    def initialize(statement:, course_cohort:)
       @statement = statement
-    end
-
-    def calculator
-      @calculator ||= ::Statements::Calculate.new(statement:)
+      @course_cohort = course_cohort
     end
 
     def course_name
       course_cohort.course.name
     end
 
-    def funded_rows
-      started = funded_billable_count_for_type("started")
-      completed = funded_billable_count_for_type("completed")
-      [
-        [t(".started"), started, output_payment_per_participant, started * output_payment_per_participant],
-        [t(".completed"), completed, output_payment_per_participant, completed * output_payment_per_participant],
-        [t(".total"), started + completed, nil, (started + completed) * output_payment_per_participant],
-      ]
-    end
+  private
 
-    def self_funded_rows
-      started = self_funded_billable_count_for_type("started")
-      completed = self_funded_billable_count_for_type("completed")
-      [
-        [t(".started"), started],
-        [t(".completed"), completed],
-        [t(".total"), started + completed],
-      ]
+    def calculator
+      @calculator ||= Statements::CourseCohortCalculator.new(statement:, course_cohort:)
     end
   end
 end
