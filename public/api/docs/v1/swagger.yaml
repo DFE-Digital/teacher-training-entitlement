@@ -127,7 +127,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -210,7 +210,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -275,7 +275,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -358,7 +358,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -441,7 +441,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -524,7 +524,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -607,7 +607,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -1052,39 +1052,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
-  "/api/v1/schedules":
-    get:
-      summary: Retrieve multiple Lead providers available schedule details
-      tags:
-      - Schedules
-      security:
-      - api_key: []
-      parameters:
-      - name: filter
-        in: query
-        required: false
-        schema:
-          "$ref": "#/components/schemas/ListSchedulesFilter"
-        style: deepObject
-      - name: page
-        in: query
-        required: false
-        schema:
-          "$ref": "#/components/schemas/PaginationFilter"
-        style: deepObject
-      responses:
-        '200':
-          description: A list of Lead providers available schedule details
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/SchedulesResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
   "/api/v1/statements":
     get:
       summary: Retrieve financial statements
@@ -1273,15 +1240,6 @@ components:
             and time (ISO 8601 date format)
           type: string
           example: '2021-05-13T11:21:55Z'
-    ListSchedulesFilter:
-      description: Filter schedules to return more specific results
-      type: object
-      properties:
-        cohort:
-          description: Return schedules associated to the specified cohort or cohorts.
-            This is a comma delimited string of years.
-          type: string
-          example: '2025,2026'
     UnauthorisedResponse:
       description: Authorization information is missing or invalid.
       type: object
@@ -1531,13 +1489,11 @@ components:
               format: date-time
               example: '2021-05-31T02:22:32.000Z'
             schedule_identifier:
-              description: The new schedule of the participant
+              description: The course cohort identifier for the participant
               nullable: true
               type: string
-              example: tte-reception-autumn
-              enum:
-              - tte-reception-autumn
-              - tte-reception-spring
+              format: uuid
+              example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
     ApplicationAcceptRequest:
       description: An application acceptance request
       type: object
@@ -1819,13 +1775,11 @@ components:
                     enum:
                     - tte-early-years
                   schedule_identifier:
-                    description: The new schedule of the participant
+                    description: The course cohort identifier for the participant
                     nullable: true
                     type: string
-                    example: tte-reception-autumn
-                    enum:
-                    - tte-reception-autumn
-                    - tte-reception-spring
+                    format: uuid
+                    example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
                   cohort:
                     description: Indicates which call-off contract would fund this
                       participant's training. 2021 indicates a participant that has
@@ -2605,59 +2559,3 @@ components:
                 example:
                   delivery_partner_id: db3a7848-7308-4879-942a-c4a70ced400a
                   secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
-    Schedule:
-      description: A single schedule
-      type: object
-      required:
-      - id
-      - type
-      - attributes
-      properties:
-        id:
-          "$ref": "#/components/schemas/IDAttribute"
-        type:
-          description: The data type
-          type: string
-          example: schedule
-          enum:
-          - schedule
-        attributes:
-          properties:
-            course_identifier:
-              description: The course this application relates to
-              type: string
-              nullable: false
-              example: tte-early-years
-              enum:
-              - tte-early-years
-            schedule_identifier:
-              description: The new schedule of the participant
-              nullable: true
-              type: string
-              example: tte-reception-autumn
-              enum:
-              - tte-reception-autumn
-              - tte-reception-spring
-            cohort:
-              description: The starting years of the cohorts the delivery partner
-                is valid for
-              type: string
-              example: '2025'
-    ScheduleResponse:
-      description: A single schedule
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          "$ref": "#/components/schemas/Schedule"
-    SchedulesResponse:
-      description: A list of schedules
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Schedule"
