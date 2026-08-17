@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :request do
+RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   subject { response }
@@ -84,7 +84,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, :revisit, type: :req
       it { is_expected.to have_http_status :success }
     end
 
-    describe "#destroy with confirm" do
+    describe "#destroy with confirm", :revisit do
       before { delete admin_cohort_path(cohort), params: { confirm: "1" } }
 
       it { is_expected.to redirect_to admin_cohorts_path }

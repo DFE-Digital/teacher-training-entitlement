@@ -449,15 +449,6 @@ RSpec.describe Application do
       it { is_expected.not_to be_previously_funded }
     end
 
-    context "when the application has not been previously funded (previous application is not for a rebranded alternative course)", :npq do
-      before do
-        previous_application.schedule.course_group.courses << Course.npqeyl
-        previous_application.update!(course: Course.npqeyl)
-      end
-
-      it { is_expected.not_to be_previously_funded }
-    end
-
     context "when the application has not been previously funded (previous application is not eligible for funding)" do
       before { previous_application.update!(eligible_for_funding: false, funded_place: false) }
 

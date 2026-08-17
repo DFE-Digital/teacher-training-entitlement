@@ -102,13 +102,19 @@ class Statement < ApplicationRecord
   def allow_marking_as_paid?
     output_fee &&
       payable? &&
-      (current? || future?) &&
-      !marked_as_paid_at? &&
+      deadline_date_past? &&
+      marked_as_paid_at.blank? &&
       declarations.any?
   end
 
   def authorising_for_payment?
     payable? && marked_as_paid_at?
+  end
+
+  def deadline_date_past?
+    return false if deadline_date.blank?
+
+    deadline_date <= Date.current
   end
 
   def future?

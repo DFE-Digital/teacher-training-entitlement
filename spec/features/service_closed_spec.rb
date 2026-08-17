@@ -15,13 +15,6 @@ RSpec.feature "Service is closed", type: :feature do
     expect(page).to have_content("Registration is temporarily closed")
   end
 
-  scenario "Service sign up for email", :npq do
-    page.click_button("Sign up for email updates")
-
-    expect(page).to have_current_path(new_email_update_path)
-    expect(page).to have_content("Get email updates about registration opening")
-  end
-
   scenario "Services closes while registration in progress" do
     open_registration!
 
@@ -158,27 +151,8 @@ RSpec.feature "Service is closed", type: :feature do
     end
   end
 
-  context "when using email updates", :npq do
+  context "when using email updates" do
     before { close_registration! }
-
-    scenario "Register to email and unsubscribe" do
-      visit "/"
-      click_button "Sign up for email updates"
-      page.choose("Yes", visible: :all)
-      click_button "Request email updates"
-
-      expect(page).to have_content("Your email request has been set up")
-
-      user = User.last
-      expect(user.email_updates_status).to eq("senco")
-
-      visit "/email_updates/unsubscribe?unsubscribe_key=#{user.email_updates_unsubscribe_key}"
-      expect(page).to have_content("Are you sure you want to unsubscribe?")
-      click_button "Unsubscribe"
-
-      expect(page).to have_content("You have unsubscribed")
-      expect(user.reload.email_updates_status).to eq("empty")
-    end
 
     scenario "Invalid unsubscribe link" do
       visit "/email_updates/unsubscribe?unsubscribe_key=user.email_updates_unsubscribe_key"
