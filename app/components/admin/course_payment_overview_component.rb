@@ -13,6 +13,10 @@ module Admin
       course_cohort.course.name
     end
 
+    def contract
+      @statement.lead_provider.contract(course_cohort: @course_cohort)
+    end
+
   private
 
     def calculator

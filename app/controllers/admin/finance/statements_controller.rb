@@ -1,5 +1,5 @@
 class Admin::Finance::StatementsController < AdminController
-  before_action :set_statements_and_contracts, only: %i[show print_provider print_dfe_user]
+  before_action :set_statement, only: %i[show print_provider print_dfe_user]
 
   def index
     params[:output_fee] = "true" unless params.key?(:output_fee)
@@ -29,9 +29,14 @@ class Admin::Finance::StatementsController < AdminController
 
 private
 
-  def set_statements_and_contracts
-    @statement = Statement.find(params[:id])
-    @course_cohorts = @statement.course_cohorts.includes(:course).to_a.uniq.sort_by { |cc| cc.course.identifier }
+  def set_statement
+    @statement = Statement
+                   .includes(
+                     :declarations,
+                     :milestones,
+                     :course_cohorts,
+                   )
+                   .find(params[:id])
   end
 
   def statement_params
