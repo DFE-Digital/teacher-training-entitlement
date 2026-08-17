@@ -85,12 +85,12 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
     if User.last.applications.count == 1
       navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Excellence in reception teaching")
+        expect(page).to have_text("NPD excellence in reception teaching")
       end
     else
       navigate_to_page(path: "/applications", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("Excellence in reception teaching")
+        expect(page).to have_text("NPD excellence in reception teaching")
       end
     end
 
