@@ -10,7 +10,7 @@ class Statement < ApplicationRecord
   has_many :declarations
   has_many :clawback_declarations, -> { where(type: "ClawbackDeclaration") },
            class_name: "ClawbackDeclaration"
-  has_many :milestones, -> { distinct }, through: :declarations
+  has_many :milestones, through: :declarations
   has_many :course_cohorts, -> { distinct }, through: :declarations, source: :application_course_cohort
   has_many :adjustments
 

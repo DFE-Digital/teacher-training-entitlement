@@ -23,25 +23,13 @@
       end
 
       table.with_body do |body|
-        body.with_row do |row|
-          row.with_cell(text: "Starts")
-          row.with_cell(text: expected_starts, numeric: true)
-          row.with_cell(text: total_starts, numeric: true)
-          row.with_cell(text: outstanding_starts, numeric: true)
-        end
-
-        body.with_row do |row|
-          row.with_cell(text: "Completed")
-          row.with_cell(text: expected_completed, numeric: true)
-          row.with_cell(text: total_completed, numeric: true)
-          row.with_cell(text: outstanding_completed, numeric: true)
-        end
-
-        body.with_row do |row|
-          row.with_cell(text: tag.strong("Total"))
-          row.with_cell(text: tag.strong(expected_total), numeric: true)
-          row.with_cell(text: tag.strong(total_declarations), numeric: true)
-          row.with_cell(text: tag.strong(outstanding_total), numeric: true)
+        summary_rows.each do |summary_row|
+          body.with_row do |row|
+            row.with_cell(text: summary_row[:declaration_type])
+            row.with_cell(text: summary_row[:expected], numeric: true)
+            row.with_cell(text: summary_row[:total], numeric: true)
+            row.with_cell(text: summary_row[:outstanding], numeric: true)
+          end
         end
       end
     end %>
@@ -73,7 +61,7 @@
 
       summary_list.with_row do |row|
         row.with_key { label_with_hint("Clawbacks", "The total value of voids") }
-        row.with_value { number_to_currency(-total_clawbacks) }
+        row.with_value { number_to_currency(total_clawbacks) }
       end
 
       summary_list.with_row do |row|

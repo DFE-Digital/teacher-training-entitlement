@@ -6,15 +6,7 @@ module Admin
 
     attr_reader :calculator, :link_to_voids, :statement
 
-    delegate :expected_starts,
-             :expected_completed,
-             :expected_total,
-             :outstanding_starts,
-             :outstanding_completed,
-             :outstanding_total,
-             :total_starts,
-             :total_completed,
-             :total_declarations,
+    delegate :summary_rows,
              :expected_output_payment,
              :total_output_payment,
              :total_voided,
