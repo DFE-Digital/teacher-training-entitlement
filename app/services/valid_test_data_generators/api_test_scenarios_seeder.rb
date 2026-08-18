@@ -111,8 +111,8 @@ module ValidTestDataGenerators
       Enumerator.new do |yielder|
         year = academic_year
         loop do
-          yielder << Date.new(year, 7, 1) # autumn schedule
-          yielder << Date.new(year, 9, 1) # spring schedule
+          yielder << Date.new(year, 7, 1) # for autumn term
+          yielder << Date.new(year, 9, 1) # for spring term
           year += 1
         end
       end
@@ -438,6 +438,12 @@ module ValidTestDataGenerators
       application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
+    def declaration_value(milestone)
+      # TODO: rename milestone.payment_amount to miletstone.payment_percentage
+      contract = lead_provider.contract(course_cohort: milestone.course_cohort)
+      contract.teacher_funding * (1 + milestone.payment_amount / 100)
+    end
+
     def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
@@ -449,7 +455,7 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
-        value: milestone.payment_amount,
+        value: declaration_value(milestone),
       )
     end
 
@@ -464,7 +470,7 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
-        value: milestone.payment_amount,
+        value: declaration_value(milestone),
       )
 
       if has_passed

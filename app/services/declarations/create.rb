@@ -98,6 +98,10 @@ module Declarations
       @milestone ||= course_cohort.milestones.find_by!(declaration_type:)
     end
 
+    def contract
+      @contract ||= lead_provider.contract(course_cohort:)
+    end
+
     def allowed_declaration_types
       return [] unless course_cohort
 
@@ -108,9 +112,11 @@ module Declarations
       return unless application.funded_place # only funded application have a value
 
       amount = nil
-      amount = milestone.payment_amount if milestone&.payment_amount
-      # with a milestone percentage approach
-      # amount = lead_provider.contract(course_cohort:).teacher_funding * milestone.percentage if milestone.percentage
+      # TODO: rename payment_amount to payment_percentage
+      if milestone&.payment_amount
+        percentage = 1 + milestone.payment_amount / 100
+        amount = contract.teacher_funding * percentage
+      end
       # for uplift incentives
       # amount += qualifying_uplfit_incentives.sum(&:value)
       amount
