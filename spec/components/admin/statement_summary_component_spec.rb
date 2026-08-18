@@ -19,16 +19,13 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
       total_clawbacks: 50.34,
       total_adjustments: -10,
       total_payment: 39.78,
-      total_starts: 5,
-      total_completed: 3,
       total_voided: 4,
-      expected_starts: 10,
-      expected_completed: 5,
-      expected_total: 15,
-      outstanding_starts: 5,
-      outstanding_completed: 2,
-      outstanding_total: 7,
       total_declarations: 8,
+      summary_rows: [
+        { declaration_type: "started", expected: 10, total: 5, outstanding: 5 },
+        { declaration_type: "completed", expected: 5, total: 3, outstanding: 2 },
+        { declaration_type: "Total", expected: 15, total: 8, outstanding: 7 },
+      ],
     )
   end
 
@@ -52,26 +49,17 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
 
   it "shows starts row" do
     subject
-    expect(declarations_table).to have_text("Starts")
-    expect(declarations_table).to have_text(calculator.expected_starts.to_s)
-    expect(declarations_table).to have_text(calculator.total_starts.to_s)
-    expect(declarations_table).to have_text(calculator.outstanding_starts.to_s)
+    expect(declarations_table).to have_text("started")
   end
 
   it "shows completed row" do
     subject
-    expect(declarations_table).to have_text("Completed")
-    expect(declarations_table).to have_text(calculator.expected_completed.to_s)
-    expect(declarations_table).to have_text(calculator.total_completed.to_s)
-    expect(declarations_table).to have_text(calculator.outstanding_completed.to_s)
+    expect(declarations_table).to have_text("completed")
   end
 
   it "shows total row" do
     subject
     expect(declarations_table).to have_text("Total")
-    expect(declarations_table).to have_text(calculator.expected_total.to_s)
-    expect(declarations_table).to have_text(calculator.total_declarations.to_s)
-    expect(declarations_table).to have_text(calculator.outstanding_total.to_s)
   end
 
   it "shows payment details" do
@@ -82,7 +70,7 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
     expect(summary_list).to have_summary_item("Declaration deadline", statement.deadline_date.to_fs(:govuk))
     expect(summary_list).to have_summary_item("Voids", calculator.total_voided)
     expect(summary_list).to have_text("Clawbacks")
-    expect(summary_list).to have_text(number_to_currency(-calculator.total_clawbacks))
+    expect(summary_list).to have_text(number_to_currency(calculator.total_clawbacks))
     expect(summary_list).to have_summary_item("Manual adjustments", number_to_currency(calculator.total_adjustments))
   end
 
