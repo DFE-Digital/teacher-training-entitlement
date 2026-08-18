@@ -7,6 +7,8 @@ module Statements
       @cache = {}
     end
 
+    attr_reader :cache
+
     def summary_rows
       return @summary_rows if @summary_rows
 
@@ -23,6 +25,7 @@ module Statements
     end
 
     def expected_output_payment
+      summary_rows # to ensure total_expected is set
       lead_provider_course_cohorts.sum do |course_cohort|
         contract = statement.lead_provider.contract(course_cohort:)
         total_expected * contract.teacher_funding
@@ -61,18 +64,48 @@ module Statements
       return @cache[key] if @cache[key]
 
       @cache[key] = yield if block_given?
+      @cache[key]
     end
 
     def started?(declaration_type)
       declaration_type == Milestone::STARTED
     end
 
+    def provider_applications(course_cohort)
+      course_cohort.applications
+        .joins(:current_application_lead_provider)
+        .where(application_lead_providers: { lead_provider_id: statement.lead_provider_id })
+    end
+
+    def previous_declarations(course_cohort:, declaration_type:)
+      milestone = course_cohort.milestones.find_by(declaration_type:)
+      previous_statments = Statement
+                             .includes(:declarations)
+                             .where(lead_provider: statement.lead_provider)
+                             .where.not(id: statement.id)
+                             .where(declarations: { milestone: })
+                             .all
+
+      previous_statments.sum do |statement|
+        statement.declarations.where(milestone:).count
+      end
+    end
+
+    def expected_declarations(course_cohort:, declaration_type:)
+      scope = provider_applications(course_cohort)
+      if started?(declaration_type)
+        scope.where(status: [Application::ACCEPTED, Application::STARTED, Application::COMPLETED])
+      else
+        scope.where(status: [Application::STARTED, Application::COMPLETED])
+      end
+
+      scope.count - previous_declarations(course_cohort:, declaration_type:)
+    end
+
     def expected_for(declaration_type)
       cached(:"expected_for_#{declaration_type}") do
-        course_cohorts_with_milestone(declaration_type).sum do |cc|
-          provider_applications(cc).tap { |scope|
-            started?(declaration_type) ? scope.has_been_accepted : scope.has_been_started
-          }.count
+        course_cohorts_with_milestone(declaration_type).sum do |course_cohort|
+          expected_declarations(course_cohort:, declaration_type:)
         end
       end
     end
@@ -83,8 +116,8 @@ module Statements
       end
     end
 
-    def outstanding_for(milestone)
-      expected_for(milestone) - total_for(milestone)
+    def outstanding_for(declaration_type)
+      expected_for(declaration_type) - total_for(declaration_type)
     end
 
     def total_row(summary_rows)
@@ -108,12 +141,6 @@ module Statements
 
     def course_cohorts_with_milestone(declaration_type)
       statement.course_cohorts.joins(:milestones).where(milestones: { declaration_type: }).distinct
-    end
-
-    def provider_applications(course_cohort)
-      course_cohort.applications
-        .joins(:current_application_lead_provider)
-        .where(application_lead_providers: { lead_provider_id: statement.lead_provider_id })
     end
 
     def lead_provider_course_cohorts
