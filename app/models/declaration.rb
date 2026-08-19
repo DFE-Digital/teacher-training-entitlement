@@ -143,6 +143,7 @@ class Declaration < ApplicationRecord
       declaration_type: declaration_type,
       declaration_date: declaration_date,
       value: value ? value * -1 : nil,
+      state: :awaiting_clawback,
     )
     save!
   end
