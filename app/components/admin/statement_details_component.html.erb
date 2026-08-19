@@ -30,11 +30,11 @@
   <div class="govuk-grid-row govuk-!-margin-top-3">
     <div class="govuk-grid-column-one-quarter">
       <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_starts") %></p>
-      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.total_starts %></p>
+      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.started_row&.fetch(:total) %></p>
     </div>
     <div class="govuk-grid-column-one-quarter">
       <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_completed") %></p>
-      <div class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.total_completed %></div>
+      <div class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.completed_row&.fetch(:total) %></div>
     </div>
 
     <div class="govuk-grid-column-one-quarter">

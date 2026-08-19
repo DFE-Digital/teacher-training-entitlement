@@ -20,8 +20,20 @@ module Statements
           outstanding: outstanding_for(declaration_type),
         }
       end
-      @summary_rows << total_row(@summary_rows)
+      @summary_rows << summarize(@summary_rows)
       @summary_rows
+    end
+
+    def started_row
+      summary_rows.detect { _1[:declaration_type] == Milestone::STARTED }
+    end
+
+    def completed_row
+      summary_rows.detect { _1[:declaration_type] == Milestone::COMPLETED }
+    end
+
+    def total_row
+      summary_rows.detect { _1[:declaration_type] == "Total" }
     end
 
     def expected_output_payment
@@ -120,7 +132,7 @@ module Statements
       expected_for(declaration_type) - total_for(declaration_type)
     end
 
-    def total_row(summary_rows)
+    def summarize(summary_rows)
       cached(:total_row) do
         {
           declaration_type: "Total",
@@ -132,7 +144,7 @@ module Statements
     end
 
     def total_expected
-      cached(:total_row)&.fetch(:expected)
+      total_row&.fetch(:expected) || 0
     end
 
     def billable_declarations
