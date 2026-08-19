@@ -366,7 +366,7 @@ module ValidTestDataGenerators
         )
       end
 
-      lead_provider_contract.update!(recruitment_target:)
+      lead_provider_contract.update!(recruitment_target:, teacher_funding:)
     end
 
     def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
