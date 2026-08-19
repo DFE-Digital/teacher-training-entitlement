@@ -73,6 +73,7 @@ module Statements
     def received_for(milestone, funded_place:)
       statement
         .declarations
+        .billable
         .joins(:application)
         .where(milestone:, application: { funded_place: })
         .count
@@ -112,7 +113,7 @@ module Statements
                              .all
 
       previous_statments.sum do |statement|
-        statement.declarations.where(milestone:).count
+        statement.declarations.billable.where(milestone:).count
       end
     end
   end
