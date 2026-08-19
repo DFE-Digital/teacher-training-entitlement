@@ -1,26 +1,16 @@
 module Admin
   class CoursePaymentOverviewComponent < BaseComponent
-    attr_reader :statement, :course_cohort
+    attr_reader :statement, :calculator
 
-    delegate :funded_rows, :self_funded_rows, to: :calculator
+    delegate :funded_rows,
+             :self_funded_rows,
+             :contract,
+             :course_name,
+             to: :calculator
 
-    def initialize(statement:, course_cohort:)
+    def initialize(statement:, course_cohort_calculator:)
       @statement = statement
-      @course_cohort = course_cohort
-    end
-
-    def course_name
-      course_cohort.course.name
-    end
-
-    def contract
-      @statement.lead_provider.contract(course_cohort: @course_cohort)
-    end
-
-  private
-
-    def calculator
-      @calculator ||= Statements::CourseCohortCalculator.new(statement:, course_cohort:)
+      @calculator = course_cohort_calculator
     end
   end
 end

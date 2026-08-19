@@ -114,7 +114,7 @@ module Declarations
       amount = nil
       # TODO: rename payment_amount to payment_percentage
       if milestone&.payment_amount
-        percentage = 1 + milestone.payment_amount / 100
+        percentage = milestone.payment_amount / 100
         amount = contract.teacher_funding * percentage
       end
       # for uplift incentives

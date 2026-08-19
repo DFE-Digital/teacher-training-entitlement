@@ -1,0 +1,68 @@
+<div class="govuk-summary-card">
+  <div class="govuk-summary-card__title-wrapper">
+    <h2 class="govuk-summary-card__title"><%= course_name %></h2>
+  </div>
+  <div class="govuk-summary-card__content">
+    <h3 class="govuk-heading-s"><%= t(".funded") %></h3>
+    <%= govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: t(".payment_type"))
+          row.with_cell(text: t(".participants"), numeric: true)
+          row.with_cell(text: t(".payment_per_participant"), numeric: true)
+          row.with_cell(text: t(".total"), numeric: true)
+        end
+      end
+
+      table.with_body do |body|
+        funded_rows.each do |item|
+          body.with_row do |row|
+            row.with_cell(text: item[:declaration_type])
+            row.with_cell(text: item[:received], numeric: true)
+            row.with_cell(text: item[:value] ? number_to_currency(item[:value]) : "", numeric: true)
+            row.with_cell(text: number_to_currency(item[:received_value]), numeric: true)
+          end
+        end
+      end
+    end %>
+
+    <h3 class="govuk-heading-s"><%= t(".self_funded") %></h3>
+    <%= govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: t(".payment_type"))
+          row.with_cell(text: t(".participants"), numeric: true)
+        end
+      end
+
+      table.with_body do |body|
+        self_funded_rows.each do |item|
+          body.with_row do |row|
+            row.with_cell(text: item[:declaration_type])
+            row.with_cell(text: item[:received], numeric: true)
+          end
+        end
+      end
+    end %>
+  </div>
+</div>
+
+<%= govuk_details(summary_text: "Contract Information", id: "contract-information") do
+  govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Course")
+        row.with_cell(text: "Recruitment target")
+        row.with_cell(text: "Teacher funding")
+      end
+    end
+
+    table.with_body do |body|
+      body.with_row do |row|
+        row.with_cell(text: course_name)
+        row.with_cell(text: contract.recruitment_target)
+        row.with_cell(text: number_to_currency(contract.teacher_funding))
+      end
+    end
+  end 
+end %>

@@ -28,15 +28,12 @@
   </div>
 
   <div class="govuk-grid-row govuk-!-margin-top-3">
+    <% @calculator.declaration_types.each do |declaration_type| %>
     <div class="govuk-grid-column-one-quarter">
-      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_starts") %></p>
-      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.started_row&.fetch(:total) %></p>
+      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total", declaration_type:) %></p>
+      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.get_funded(:received, declaration_type:) %></p>
     </div>
-    <div class="govuk-grid-column-one-quarter">
-      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_completed") %></p>
-      <div class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.completed_row&.fetch(:total) %></div>
-    </div>
-
+    <% end %>
     <div class="govuk-grid-column-one-quarter">
       <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_voids") %></p>
       <p class="govuk-heading-m govuk-!-padding-top-0 govuk-!-margin-bottom-0"><%= @calculator.total_voided %></p>

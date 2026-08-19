@@ -4,10 +4,13 @@ module Statements
   class Calculate
     def initialize(statement:)
       @statement = statement
-      @cache = {}
     end
 
-    attr_reader :cache
+    def course_cohorts
+      @course_cohorts ||= statement.course_cohorts.map do |course_cohort|
+        CourseCohortCalculator.new(statement: @statement, course_cohort:)
+      end
+    end
 
     def summary_rows
       return @summary_rows if @summary_rows
@@ -15,32 +18,24 @@ module Statements
       @summary_rows = declaration_types.map do |declaration_type|
         {
           declaration_type:,
-          expected: expected_for(declaration_type),
-          total: total_for(declaration_type),
-          outstanding: outstanding_for(declaration_type),
+          expected: course_cohorts.sum { |ccc| ccc.get_funded(:expected, declaration_type:) },
+          received: course_cohorts.sum { |ccc| ccc.get_funded(:received, declaration_type:) },
+          outstanding: course_cohorts.sum { |ccc| ccc.get_funded(:outstanding, declaration_type:) },
         }
       end
+
       @summary_rows << summarize(@summary_rows)
       @summary_rows
     end
 
-    def started_row
-      summary_rows.detect { _1[:declaration_type] == Milestone::STARTED }
-    end
-
-    def completed_row
-      summary_rows.detect { _1[:declaration_type] == Milestone::COMPLETED }
-    end
-
-    def total_row
-      summary_rows.detect { _1[:declaration_type] == "Total" }
+    def get_funded(key, declaration_type:)
+      row = summary_rows.detect { _1[:declaration_type] == declaration_type }
+      Integer(row&.fetch(key))
     end
 
     def expected_output_payment
-      summary_rows # to ensure total_expected is set
-      lead_provider_course_cohorts.sum do |course_cohort|
-        contract = statement.lead_provider.contract(course_cohort:)
-        total_expected * contract.teacher_funding
+      @expected_output_payment ||= course_cohorts.sum do |ccc|
+        ccc.funded.sum { |row| row[:expected_value] }
       end
     end
 
@@ -64,102 +59,25 @@ module Statements
       total_output_payment + total_clawbacks + total_adjustments + statement.reconcile_amount.to_f
     end
 
+    def declaration_types
+      course_cohorts.flat_map { |ccc| ccc.funded.map { |row| row[:declaration_type] } }.uniq
+    end
+
   private
 
     attr_reader :statement
-
-    def declaration_types
-      statement.milestones.pluck(:declaration_type).uniq
-    end
-
-    def cached(key)
-      return @cache[key] if @cache[key]
-
-      @cache[key] = yield if block_given?
-      @cache[key]
-    end
-
-    def started?(declaration_type)
-      declaration_type == Milestone::STARTED
-    end
-
-    def provider_applications(course_cohort)
-      course_cohort.applications
-        .joins(:current_application_lead_provider)
-        .where(application_lead_providers: { lead_provider_id: statement.lead_provider_id })
-    end
-
-    def previous_declarations(course_cohort:, declaration_type:)
-      milestone = course_cohort.milestones.find_by(declaration_type:)
-      previous_statments = Statement
-                             .includes(:declarations)
-                             .where(lead_provider: statement.lead_provider)
-                             .where.not(id: statement.id)
-                             .where(declarations: { milestone: })
-                             .all
-
-      previous_statments.sum do |statement|
-        statement.declarations.where(milestone:).count
-      end
-    end
-
-    def expected_declarations(course_cohort:, declaration_type:)
-      scope = provider_applications(course_cohort)
-      if started?(declaration_type)
-        scope.where(status: [Application::ACCEPTED, Application::STARTED, Application::COMPLETED])
-      else
-        scope.where(status: [Application::STARTED, Application::COMPLETED])
-      end
-
-      scope.count - previous_declarations(course_cohort:, declaration_type:)
-    end
-
-    def expected_for(declaration_type)
-      cached(:"expected_for_#{declaration_type}") do
-        course_cohorts_with_milestone(declaration_type).sum do |course_cohort|
-          expected_declarations(course_cohort:, declaration_type:)
-        end
-      end
-    end
-
-    def total_for(declaration_type)
-      cached(:"total_for_#{declaration_type}") do
-        billable_declarations.where(declaration_type:).count
-      end
-    end
-
-    def outstanding_for(declaration_type)
-      expected_for(declaration_type) - total_for(declaration_type)
-    end
-
-    def summarize(summary_rows)
-      cached(:total_row) do
-        {
-          declaration_type: "Total",
-          expected: summary_rows.sum { |row| row[:expected] },
-          total: summary_rows.sum { |row| row[:total] },
-          outstanding: summary_rows.sum { |row| row[:outstanding] },
-        }
-      end
-    end
-
-    def total_expected
-      total_row&.fetch(:expected) || 0
-    end
 
     def billable_declarations
       statement.declarations.billable
     end
 
-    def course_cohorts_with_milestone(declaration_type)
-      statement.course_cohorts.joins(:milestones).where(milestones: { declaration_type: }).distinct
-    end
-
-    def lead_provider_course_cohorts
-      statement.course_cohorts
-        .joins(:course_cohort_providers)
-        .where(course_cohort_providers: { lead_provider_id: statement.lead_provider_id })
-        .distinct
+    def summarize(rows)
+      {
+        declaration_type: "Total",
+        expected: rows.sum { |row| row[:expected] },
+        received: rows.sum { |row| row[:received] },
+        outstanding: rows.sum { |row| row[:outstanding] },
+      }
     end
   end
 end

@@ -80,10 +80,8 @@ RSpec.describe Statements::Calculate do
 
       it do
         expect(started_row).to eq(expected_started_row)
-        expect(subject.started_row).to eq(expected_started_row)
         expect(completed_row).to be_nil
         expect(total_row).to eq(expected_total_row)
-        expect(subject.total_row).to eq(expected_total_row)
         expect(summary_rows.map { _1[:declaration_type] }).to contain_exactly(Milestone::STARTED, "Total")
         expect(subject.expected_output_payment).to eq(expected_output_payment)
       end
@@ -184,7 +182,6 @@ RSpec.describe Statements::Calculate do
       it do
         expect(started_row).to eq(expected_started_row)
         expect(completed_row).to eq(expected_completed_row)
-        expect(subject.completed_row).to eq(expected_completed_row)
         expect(total_row).to eq(expected_total_row)
         expect(summary_rows.map { _1[:declaration_type] }).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED, "Total")
         expect(subject.expected_output_payment).to eq(expected_output_payment)

@@ -17,7 +17,7 @@
     </p>
     <p class="govuk-body govuk-!-margin-bottom-2">
       <strong>Milestones:</strong>
-      <%= @statement.milestones.map(&:declaration_type).join(", ") %>
+      <%= @statement.declarations.map(&:declaration_type).uniq.join(", ") %>
     </p>
     <%= govuk_details(summary_text: "Statement ID", id: "statement-id") do
           @statement.ecf_id
@@ -33,7 +33,7 @@
       Calculations may have minor rounding discrepancies. Contact your contract manager for clarification.
     </div>
 
-    <%= render Admin::StatementSummaryComponent.new(statement: @statement) %>
+    <%= render Admin::StatementSummaryComponent.new(statement: @statement, calculator: @calculator) %>
 
     <div class="govuk-inset-text noprint">
       <p> Save a copy of this statement for: </p>
@@ -70,15 +70,8 @@
 
     <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h1>
 
-    <% @statement.course_cohorts.each do |course_cohort| %>
-      <% course_name = course_cohort.course.name %>
-      <% contract = @statement.lead_provider.contract(course_cohort:) %>
-      <%= govuk_accordion do |accordion|
-        accordion.with_section(heading_text: course_name, expanded: true) { render Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement: @statement) }
-      end %>
-      <%= govuk_details(summary_text: "Contract Information", id: "contract-information") do
-        render partial: "contract_information", locals: { course_name:, contract: }
-     end %>
+    <% @calculator.course_cohorts.each do |ccc| %>
+      <%= render Admin::CoursePaymentOverviewComponent.new(statement: @statement, course_cohort_calculator: ccc) %>
     <% end %>
   </div>
 </div>

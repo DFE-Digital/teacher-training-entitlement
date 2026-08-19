@@ -15,8 +15,8 @@ module Admin
              :total_payment,
              to: :calculator
 
-    def initialize(statement:, link_to_voids: true)
-      @calculator = ::Statements::Calculate.new(statement:)
+    def initialize(calculator:, statement:, link_to_voids: true)
+      @calculator = calculator
       @link_to_voids = link_to_voids
       @statement = statement
     end

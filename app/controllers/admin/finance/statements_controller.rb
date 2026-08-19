@@ -17,6 +17,7 @@ class Admin::Finance::StatementsController < AdminController
 
   def show
     show_authorising_statement_message(@statement)
+    @calculator = Statements::Calculate.new(statement: @statement)
   end
 
   def print_provider

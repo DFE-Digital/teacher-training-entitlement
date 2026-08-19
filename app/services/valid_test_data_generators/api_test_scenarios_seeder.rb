@@ -441,12 +441,13 @@ module ValidTestDataGenerators
     def declaration_value(milestone)
       # TODO: rename milestone.payment_amount to miletstone.payment_percentage
       contract = lead_provider.contract(course_cohort: milestone.course_cohort)
-      contract.teacher_funding * (1 + milestone.payment_amount / 100)
+      contract.teacher_funding * (milestone.payment_amount / 100)
     end
 
     def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
+      value = application.funded_place ? declaration_value(milestone) : nil
       application.declarations.create!(
         declaration_type: :started,
         declaration_date: date,
@@ -455,13 +456,14 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
-        value: declaration_value(milestone),
+        value:,
       )
     end
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
+      value = application.funded_place ? declaration_value(milestone) : nil
       declaration = application.declarations.create!(
         declaration_type: :completed,
         declaration_date: date,
@@ -470,7 +472,7 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
-        value: declaration_value(milestone),
+        value:,
       )
 
       if has_passed
