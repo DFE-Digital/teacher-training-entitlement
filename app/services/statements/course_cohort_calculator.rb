@@ -12,7 +12,7 @@ module Statements
     attr_reader :contract, :course_name
 
     def funded
-      @funded ||= milestones.map { |milestone| calculate_row(milestone, funded_place: true) }
+      @funded ||= milestones.map { |milestone| calculate_row(milestone, funded_place: [true]) }
     end
 
     def self_funded
@@ -21,7 +21,7 @@ module Statements
 
     def get_funded(key, declaration_type:)
       funded_row = funded.detect { _1[:declaration_type] == declaration_type }
-      Integer(funded_row&.fetch(key))
+      funded_row&.fetch(key)
     end
 
     def funded_rows
@@ -45,18 +45,29 @@ module Statements
     attr_reader :statement, :lead_provider, :course_cohort, :milestones
 
     def calculate_row(milestone, funded_place:)
-      expected = expected_for(milestone, funded_place:)
       received = received_for(milestone, funded_place:)
-      value = value_for(milestone)
-      {
-        declaration_type: milestone.declaration_type,
-        expected:,
-        received:,
-        outstanding: expected - received,
-        value:,
-        expected_value: (value ? expected * value : nil),
-        received_value: (value ? received * value : nil),
-      }
+      if funded_place.all?
+        expected = expected_for(milestone, funded_place:)
+        value = value_for(milestone)
+        {
+          declaration_type: milestone.declaration_type,
+          expected:,
+          received:,
+          outstanding: expected - received,
+          value:,
+          expected_value: expected * value,
+          received_value: received * value,
+        }
+      else
+        {
+          declaration_type: milestone.declaration_type,
+          expected: 0,
+          received:,
+          outstanding: 0,
+          expected_value: 0,
+          received_value: 0,
+        }
+      end
     end
 
     def summarize(rows)
@@ -86,6 +97,8 @@ module Statements
     end
 
     def expected_for(milestone, funded_place:)
+      return 0 if statement.deadline_date <= milestone.acceptance_window_start_date
+
       scope = provider_applications(funded_place:)
       if milestone.started_declaration_type?
         scope.where(status: [Application::ACCEPTED, Application::STARTED, Application::COMPLETED])
@@ -113,7 +126,7 @@ module Statements
                              .all
 
       previous_statments.sum do |statement|
-        statement.declarations.billable.where(milestone:).count
+        statement.declarations.joins(:application).billable.where(milestone:, application: { funded_place: [true] }).count
       end
     end
   end
