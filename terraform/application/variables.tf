@@ -188,5 +188,5 @@ variable "redis_mode" {
  variable "server_version" {
    description = "Sets version of Postgres DB to use"
    type        = string
-   default     = "16"
+   default     = "17"
  }
