@@ -5,235 +5,116 @@ RSpec.describe Statements::Calculate do
 
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { create(:statement, lead_provider:) }
-  let!(:started_milestone) { create(:milestone, :started) }
-  let!(:course_cohort) { started_milestone.course_cohort }
-  let!(:completed_milestone) { create(:milestone, :completed, course_cohort:) }
+
+  describe "#course_cohorts" do
+    subject(:course_cohorts) { described_class.new(statement:).course_cohorts }
+
+    let(:application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
+    let(:milestone) { create(:milestone, :started, payment_amount: 60) }
+    let!(:course_cohort) do
+      cc = milestone.course_cohort
+      create(:course_cohort_provider, course_cohort: cc, lead_provider:, teacher_funding: 100, recruitment_target: 20)
+      cc
+    end
+
+    before do
+      application.update!(status: Application::STARTED)
+      create(:declaration, :eligible, :started, application:, statement:, milestone:, lead_provider:, value: 60)
+    end
+
+    it "returns array of CourseCohortCalculator" do
+      expect(course_cohorts.first).to be_a(Statements::CourseCohortCalculator)
+    end
+  end
 
   describe "#summary_rows" do
-    let(:summary_rows) { calculate.summary_rows }
-    let(:total_rejected) { 1 }
-    let(:total_accepted) { 13 }
-
-    let(:started_row) do
-      summary_rows.detect { _1[:declaration_type] == Milestone::STARTED }
-    end
-    let(:completed_row) do
-      summary_rows.detect { _1[:declaration_type] == Milestone::COMPLETED }
-    end
-    let(:total_row) do
-      summary_rows.detect { _1[:declaration_type] == "Total" }
+    before do
+      allow(ccc_one).to receive(:funded).and_return(ccc_one_funded)
+      allow(ccc_two).to receive(:funded).and_return(ccc_two_funded)
+      allow(calculate).to receive(:course_cohorts).and_return(course_cohort_calculators) # rubocop:disable RSpec/SubjectStub
     end
 
-    let(:accepted_applications) do
-      create_list(:application, total_accepted, :accepted, course_cohort:, lead_provider:)
+    let(:ccp) { create(:course_cohort_provider, lead_provider:) }
+    let(:course_cohort_calculators) { [ccc_one, ccc_two] }
+    let(:ccc_one) do
+      Statements::CourseCohortCalculator.new(statement:, course_cohort: ccp.course_cohort)
     end
-    let(:rejected_applications) do
-      create_list(:application, total_rejected, :rejected, course_cohort:, lead_provider:)
-    end
-
-    let!(:contract) do
-      course_cohort
-        .course_cohort_providers
-        .create!(lead_provider:, recruitment_target: 10, teacher_funding: 100)
+    let(:ccc_two) do
+      Statements::CourseCohortCalculator.new(statement:, course_cohort: ccp.course_cohort)
     end
 
-    let(:expected_output_payment) do
-      expected_total_row[:expected] * contract.teacher_funding
-    end
-
-    def started_declaration_received!(application:, statement:, milestone:)
-      application.update!(status: Application::STARTED)
-      create(:declaration, :started, :eligible, statement:, application:, milestone:)
-    end
-
-    def completed_declaration_received!(application:, statement:, milestone:)
-      application.update!(status: Application::COMPLETED)
-      create(:declaration, :completed, :eligible, statement:, application:, milestone:)
-    end
-
-    context "with only started declarations" do
-      before do
-        statement
-        accepted_applications.take(total_started).each do |application|
-          started_declaration_received!(application:, statement:, milestone: started_milestone)
-        end
-      end
-
-      let(:total_started) { 4 }
-      let(:expected_started_row) do
+    let(:ccc_one_funded) do
+      [
         {
           declaration_type: Milestone::STARTED,
-          expected: total_accepted,
-          total: total_started,
-          outstanding: total_accepted - total_started,
-        }
-      end
-
-      let(:expected_total_row) do
-        {
-          declaration_type: "Total",
-          expected: total_accepted,
-          total: total_started,
-          outstanding: total_accepted - total_started,
-        }
-      end
-
-      it do
-        expect(started_row).to eq(expected_started_row)
-        expect(completed_row).to be_nil
-        expect(total_row).to eq(expected_total_row)
-        expect(summary_rows.map { _1[:declaration_type] }).to contain_exactly(Milestone::STARTED, "Total")
-        expect(subject.expected_output_payment).to eq(expected_output_payment)
-      end
-    end
-
-    context "with only started declarations and some applications were started in a previous statement" do
-      before do
-        previous_statement = create(:statement, :payable, lead_provider:)
-        started_applications = accepted_applications.take(previous_total_started).map do |application|
-          started_declaration_received!(application:, statement: previous_statement, milestone: started_milestone)
-          application
-        end
-
-        statement
-        (accepted_applications - started_applications).take(total_started).map do |application|
-          started_declaration_received!(application:, statement:, milestone: started_milestone)
-        end
-      end
-
-      let(:previous_total_started) { 4 }
-      let(:total_started) { 8 }
-      let(:expected_started_row) do
-        {
-          declaration_type: Milestone::STARTED,
-          expected: total_accepted - previous_total_started,
-          total: total_started,
-          outstanding: (total_accepted - previous_total_started) - total_started,
-        }
-      end
-
-      let(:expected_total_row) do
-        {
-          declaration_type: "Total",
-          expected: total_accepted - previous_total_started,
-          total: total_started,
-          outstanding: (total_accepted - previous_total_started) - total_started,
-        }
-      end
-
-      it do
-        expect(started_row).to eq(expected_started_row)
-        expect(completed_row).to be_nil
-        expect(total_row).to eq(expected_total_row)
-        expect(summary_rows.map { _1[:declaration_type] }).to contain_exactly(Milestone::STARTED, "Total")
-        expect(subject.expected_output_payment).to eq(expected_output_payment)
-      end
-    end
-
-    context "with started and completed declarations and some applications were started in a previous statement" do
-      before do
-        previous_statement = create(:statement, :payable, lead_provider:)
-        started_applications = accepted_applications.take(previous_total_started).map do |application|
-          started_declaration_received!(application:, statement: previous_statement, milestone: started_milestone)
-          application
-        end
-
-        statement
-        (accepted_applications - started_applications).take(total_started).each do |application|
-          started_declaration_received!(application:, statement:, milestone: started_milestone)
-        end
-
-        started_applications.take(total_completed).each do |application|
-          completed_declaration_received!(application:, statement:, milestone: completed_milestone)
-        end
-      end
-
-      let(:previous_total_started) { 12 }
-      let(:total_started) { 1 }
-      let(:total_completed) { 3 }
-
-      let(:expected_started_row) do
-        {
-          declaration_type: Milestone::STARTED,
-          expected: total_accepted - previous_total_started,
-          total: total_started,
-          outstanding: (total_accepted - previous_total_started) - total_started,
-        }
-      end
-
-      let(:expected_completed_row) do
+          expected: 1,
+          received: 1,
+          outstanding: 0,
+          value: 10,
+          expected_value: 10,
+          received_value: 10,
+        },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: total_accepted,
-          total: total_completed,
-          outstanding: total_accepted - total_completed,
-        }
-      end
-
-      let(:expected_total_row) do
-        {
-          declaration_type: "Total",
-          expected: expected_started_row[:expected] + expected_completed_row[:expected],
-          total: total_started + total_completed,
-          outstanding: expected_started_row[:outstanding] + expected_completed_row[:outstanding],
-        }
-      end
-
-      it do
-        expect(started_row).to eq(expected_started_row)
-        expect(completed_row).to eq(expected_completed_row)
-        expect(total_row).to eq(expected_total_row)
-        expect(summary_rows.map { _1[:declaration_type] }).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED, "Total")
-        expect(subject.expected_output_payment).to eq(expected_output_payment)
-      end
+          expected: 4,
+          received: 3,
+          outstanding: 1,
+          value: 10,
+          expected_value: 40,
+          received_value: 30,
+        },
+      ]
     end
 
-    context "with only completed declarations" do
-      before do
-        previous_statement = create(:statement, :payable, lead_provider:)
-        started_applications = accepted_applications.take(total_started).map do |application|
-          started_declaration_received!(application:, statement: previous_statement, milestone: started_milestone)
-          application
-        end
-        previous_completed = started_applications.take(previous_total_completed).map do |application|
-          completed_declaration_received!(application:, statement: previous_statement, milestone: completed_milestone)
-          application
-        end
-
-        statement
-        (started_applications - previous_completed).take(total_completed).each do |application|
-          completed_declaration_received!(application:, statement:, milestone: completed_milestone)
-        end
-      end
-
-      let(:total_started) { 13 }
-      let(:previous_total_completed) { 3 }
-      let(:total_completed) { 10 }
-
-      let(:expected_completed_row) do
+    let(:ccc_two_funded) do
+      [
+        {
+          declaration_type: Milestone::STARTED,
+          expected: 3,
+          received: 1,
+          outstanding: 2,
+          value: 10,
+          expected_value: 10,
+          received_value: 10,
+        },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: total_started - previous_total_completed,
-          total: total_completed,
-          outstanding: (total_started - previous_total_completed) - total_completed,
-        }
-      end
+          expected: 5,
+          received: 5,
+          outstanding: 0,
+          value: 10,
+          expected_value: 40,
+          received_value: 30,
+        },
+      ]
+    end
 
-      let(:expected_total_row) do
+    let(:expected_rows) do
+      [
+        {
+          declaration_type: Milestone::STARTED,
+          expected: 4,
+          received: 2,
+          outstanding: 2,
+        },
+        {
+          declaration_type: Milestone::COMPLETED,
+          expected: 9,
+          received: 8,
+          outstanding: 1,
+        },
         {
           declaration_type: "Total",
-          expected: total_started - previous_total_completed,
-          total: total_completed,
-          outstanding: (total_started - previous_total_completed) - total_completed,
-        }
-      end
+          expected: 13,
+          received: 10,
+          outstanding: 3,
+        },
+      ]
+    end
 
-      it do
-        expect(started_row).to be_nil
-        expect(completed_row).to eq(expected_completed_row)
-        expect(total_row).to eq(expected_total_row)
-        expect(summary_rows.map { _1[:declaration_type] }).to contain_exactly(Milestone::COMPLETED, "Total")
-        expect(subject.expected_output_payment).to eq(expected_output_payment)
+    it "sum across course_cohorts for funded applications" do
+      calculate.summary_rows.zip(expected_rows).each do |row, expected_row|
+        expect(row).to eq(expected_row)
       end
     end
   end

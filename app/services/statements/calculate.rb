@@ -30,7 +30,7 @@ module Statements
 
     def get_funded(key, declaration_type:)
       row = summary_rows.detect { _1[:declaration_type] == declaration_type }
-      Integer(row&.fetch(key))
+      row&.fetch(key)
     end
 
     def expected_output_payment
