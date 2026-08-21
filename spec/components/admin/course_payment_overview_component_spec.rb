@@ -3,31 +3,67 @@ require "rails_helper"
 RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
   subject(:rendered) { render_inline component }
 
-  let(:component) { described_class.new(statement:, course_cohort:) }
-  let(:cohort) { create(:cohort, :with_funding_cap) }
+  let(:component) { described_class.new(statement:, course_cohort_calculator:) }
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { create(:statement, lead_provider:) }
-  let(:course) { create(:course, :npd_eirt) }
-  let(:course_cohort) { create(:course_cohort, course:, cohort:) }
+  let(:course_cohort_provider) { create(:course_cohort_provider, lead_provider:, teacher_funding: 100) }
+  let(:course_cohort) { course_cohort_provider.course_cohort }
+  let(:course) { course_cohort.course }
+  let(:course_cohort_calculator) { Statements::CourseCohortCalculator.new(statement:, course_cohort:) }
+
+  let(:funded) do
+    [
+      {
+        declaration_type: Milestone::STARTED,
+        expected: 1,
+        received: 3,
+        outstanding: 0,
+        value: 10,
+        expected_value: 10,
+        received_value: 10,
+      },
+      {
+        declaration_type: Milestone::COMPLETED,
+        expected: 4,
+        received: 1,
+        outstanding: 1,
+        value: 10,
+        expected_value: 40,
+        received_value: 30,
+      },
+    ]
+  end
+
+  let(:self_funded) do
+    [
+      {
+        declaration_type: Milestone::STARTED,
+        expected: 0,
+        received: 5,
+        outstanding: 0,
+        value: 0,
+        expected_value: 0,
+        received_value: 0,
+      },
+      {
+        declaration_type: Milestone::COMPLETED,
+        expected: 0,
+        received: 2,
+        outstanding: 0,
+        value: 0,
+        expected_value: 0,
+        received_value: 0,
+      },
+    ]
+  end
 
   before do
-    create(:schedule, :tte_reception_autumn, cohort:)
-    create(:schedule, :tte_reception_spring, cohort:)
+    allow(course_cohort_calculator).to receive_messages(funded:, self_funded:)
   end
 
   it { is_expected.to have_css "h2", text: course.name }
 
   describe "funded table" do
-    before do
-      2.times do
-        app = create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)
-        create(:declaration, declaration_type: "started", state: :eligible, application: app, lead_provider:, statement:, value: 60)
-      end
-      completed_app = create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)
-      create(:declaration, declaration_type: "started", state: :eligible, application: completed_app, lead_provider:, statement:, value: 60)
-      create(:declaration, declaration_type: "completed", state: :eligible, application: completed_app, lead_provider:, statement:, value: 60)
-    end
-
     it "has correct headings" do
       expect(rendered).to have_css "h3", text: "Funded"
       expect(rendered).to have_css "thead th", text: t(".payment_type")
@@ -65,40 +101,28 @@ RSpec.describe Admin::CoursePaymentOverviewComponent, type: :component do
   end
 
   describe "self-funded table" do
-    before do
-      3.times do
-        app = create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:)
-        create(:declaration, declaration_type: "started", state: :eligible, application: app, lead_provider:, statement:)
-      end
-      2.times do
-        app = create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:)
-        create(:declaration, declaration_type: "started", state: :eligible, application: app, lead_provider:, statement:)
-        create(:declaration, declaration_type: "completed", state: :eligible, application: app, lead_provider:, statement:)
-      end
-    end
-
     it "has correct headings" do
       expect(rendered).to have_css "h3", text: "Self-funded"
     end
 
     it "shows started row" do
-      self_funded_table = rendered.css("table").last
+      self_funded_table = rendered.css("table")[1]
       expect(self_funded_table.text).to include(t(".started"))
       expect(self_funded_table.css("tbody tr:nth-child(1) td:nth-child(2)").text).to eq("5")
     end
 
     it "shows completed row" do
-      self_funded_table = rendered.css("table").last
+      self_funded_table = rendered.css("table")[1]
       expect(self_funded_table.css("tbody tr:nth-child(2) td:nth-child(2)").text).to eq("2")
     end
 
     it "shows total row" do
-      self_funded_table = rendered.css("table").last
+      self_funded_table = rendered.css("table")[1]
       expect(self_funded_table.css("tbody tr:nth-child(3) td:nth-child(2)").text).to eq("7")
     end
 
     it "does not have payment per participant column" do
-      self_funded_table = rendered.css("table").last
+      self_funded_table = rendered.css("table")[1]
       expect(self_funded_table.css("th").map(&:text)).not_to include(t(".payment_per_participant"))
     end
   end

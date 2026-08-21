@@ -55,8 +55,8 @@ module Statements
           received:,
           outstanding: expected - received,
           value:,
-          expected_value: expected * value,
-          received_value: received * value,
+          expected_value: (value ? expected * value : nil),
+          received_value: (value ? received * value : nil),
         }
       else
         {
@@ -76,8 +76,8 @@ module Statements
         expected: rows.sum { |row| row[:expected] },
         received: rows.sum { |row| row[:received] },
         outstanding: rows.sum { |row| row[:outstanding] },
-        expected_value: rows.sum { |row| row[:expected_value] },
-        received_value: rows.sum { |row| row[:received_value] },
+        expected_value: rows.sum { |row| row[:expected_value] || 0 },
+        received_value: rows.sum { |row| row[:received_value] || 0 },
       }
     end
 

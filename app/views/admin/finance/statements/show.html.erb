@@ -54,8 +54,8 @@
       </div>
     </div>
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Manual adjustments</h1>
-    <h2 class="govuk-heading-m">Additional adjustments</h2>
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-5">Manual adjustments</h2>
+    <h3 class="govuk-heading-m">Additional adjustments</h3>
 
     <%= render Admin::AdjustmentsTableComponent.new(adjustments: @statement.adjustments, show_total: true) %>
 
@@ -68,8 +68,7 @@
       </div>
     <% end %>
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h1>
-
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h2>
     <% @calculator.course_cohorts.each do |ccc| %>
       <%= render Admin::CoursePaymentOverviewComponent.new(statement: @statement, course_cohort_calculator: ccc) %>
     <% end %>

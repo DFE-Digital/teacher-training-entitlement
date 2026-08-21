@@ -6,7 +6,7 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::NumberHelper
 
-  subject(:rendered) { render_inline described_class.new(statement:) }
+  subject(:rendered) { render_inline described_class.new(statement:, calculator:) }
 
   let(:statement) { create(:statement) }
   let(:summary_list) { page.find(".govuk-summary-list") }
@@ -49,12 +49,12 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
 
   it "shows starts row" do
     subject
-    expect(declarations_table).to have_text("started")
+    expect(declarations_table).to have_text("Started")
   end
 
   it "shows completed row" do
     subject
-    expect(declarations_table).to have_text("completed")
+    expect(declarations_table).to have_text("Completed")
   end
 
   it "shows total row" do
@@ -88,7 +88,7 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
   it { is_expected.to have_link "Change", href: admin_finance_statements_change_deadline_date_path(statement) }
 
   context "when link_to_voids is false" do
-    subject(:rendered) { render_inline described_class.new(statement:, link_to_voids: false) }
+    subject(:rendered) { render_inline described_class.new(statement:, calculator:, link_to_voids: false) }
 
     it { is_expected.not_to have_link "View Voids", href: admin_finance_voided_index_path(statement) }
   end

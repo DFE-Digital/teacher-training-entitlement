@@ -35,7 +35,7 @@ module Statements
 
     def expected_output_payment
       @expected_output_payment ||= course_cohorts.sum do |ccc|
-        ccc.funded.sum { |row| row[:expected_value] }
+        ccc.funded.sum { |row| row[:expected_value] || 0 }
       end
     end
 

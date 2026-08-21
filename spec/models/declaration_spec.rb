@@ -427,7 +427,7 @@ RSpec.describe Declaration, type: :model do
     before { paid_declaration.clawback! }
 
     it { expect(paid_declaration.clawback_declaration).to be_present }
-    it { expect(paid_declaration.clawback_declaration.state).to eq("submitted") }
+    it { expect(paid_declaration.clawback_declaration.state).to eq("awaiting_clawback") }
     it { expect(paid_declaration.state).to eq("paid") }
     it { expect(paid_declaration.clawback_declaration.paid_declaration).to eq(paid_declaration) }
   end

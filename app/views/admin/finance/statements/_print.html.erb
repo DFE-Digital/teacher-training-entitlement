@@ -46,7 +46,7 @@
   end
 %>
 
-<%= render Admin::StatementSummaryComponent.new(statement: @statement) %>
+<%= render Admin::StatementSummaryComponent.new(statement: @statement, calculator: @calculator) %>
 
 <div class="avoid-page-break">
   <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Manual adjustments</h1>
@@ -54,17 +54,7 @@
 
   <%= render Admin::AdjustmentsTableComponent.new(adjustments: @statement.adjustments, show_total: true) %>
 </div>
-
-<h1 class="govuk-heading-l govuk-!-margin-bottom-5 avoid-page-break-after">Course finance details</h1>
-
-<% @course_cohorts.each do |course_cohort| %>
-  <div class="avoid-page-break">
-    <h2 class="govuk-heading-m"><%= course_cohort.course.name %></h2>
-    <%= render Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement: @statement) %>
-  </div>
+<h2 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h2>
+<% @calculator.course_cohorts.each do |ccc| %>
+  <%= render Admin::CoursePaymentOverviewComponent.new(statement: @statement, course_cohort_calculator: ccc) %>
 <% end %>
-
-<div class="avoid-page-break">
-  <h2 class="govuk-heading-m">Contract Information</h2>
-  <%= render partial: "contract_information", locals: { start_open: true } %>
-</div>

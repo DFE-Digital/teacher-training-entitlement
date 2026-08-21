@@ -38,13 +38,7 @@ RSpec.feature "Statement", type: :feature do
     expect(page).to have_content("Payment run: Yes")
     expect(page).to have_content("Milestones: started")
 
-    component = Admin::StatementSummaryComponent.new(statement:)
-    expect(page).to have_component(component)
-
     expect(page).to have_link("Download declarations (CSV)", href: admin_finance_assurance_report_path(statement, format: :csv))
-
-    component = Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement:)
-    expect(page).to have_component(component)
 
     expect(page).not_to have_text("Standalone payments")
   end

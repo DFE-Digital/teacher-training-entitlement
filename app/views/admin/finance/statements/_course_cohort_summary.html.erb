@@ -17,7 +17,7 @@
       table.with_body do |body|
         funded_rows.each do |item|
           body.with_row do |row|
-            row.with_cell(text: item[:declaration_type])
+            row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(text: item[:received], numeric: true)
             row.with_cell(text: item[:value] ? number_to_currency(item[:value]) : "", numeric: true)
             row.with_cell(text: number_to_currency(item[:received_value]), numeric: true)
@@ -38,7 +38,7 @@
       table.with_body do |body|
         self_funded_rows.each do |item|
           body.with_row do |row|
-            row.with_cell(text: item[:declaration_type])
+            row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(text: item[:received], numeric: true)
           end
         end
