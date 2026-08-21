@@ -1,5 +1,0 @@
-<%= helpers.govuk_accordion do |accordion|
-  accordion.with_section(heading_text: course_name, expanded: true) do
-    render "admin/finance/statements/course_cohort_summary", funded_rows:, self_funded_rows:, course_name:, contract:
-  end
-end%>

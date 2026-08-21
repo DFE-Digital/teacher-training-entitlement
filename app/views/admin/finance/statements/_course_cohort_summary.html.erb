@@ -1,6 +1,6 @@
 <div class="govuk-summary-card">
   <div class="govuk-summary-card__title-wrapper">
-    <h2 class="govuk-summary-card__title"><%= course_name %></h2>
+    <h2 class="govuk-summary-card__title"><%= calculator.course_name %></h2>
   </div>
   <div class="govuk-summary-card__content">
     <h3 class="govuk-heading-s"><%= t(".funded") %></h3>
@@ -15,7 +15,7 @@
       end
 
       table.with_body do |body|
-        funded_rows.each do |item|
+        calculator.funded_rows.each do |item|
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(text: item[:received], numeric: true)
@@ -36,7 +36,7 @@
       end
 
       table.with_body do |body|
-        self_funded_rows.each do |item|
+        calculator.self_funded_rows.each do |item|
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(text: item[:received], numeric: true)
@@ -59,10 +59,11 @@
 
     table.with_body do |body|
       body.with_row do |row|
-        row.with_cell(text: course_name)
-        row.with_cell(text: contract.recruitment_target)
-        row.with_cell(text: number_to_currency(contract.teacher_funding))
+        row.with_cell(text: calculator.course_name)
+        row.with_cell(text: calculator.contract.recruitment_target)
+        row.with_cell(text: number_to_currency(calculator.contract.teacher_funding))
       end
     end
   end 
 end %>
+

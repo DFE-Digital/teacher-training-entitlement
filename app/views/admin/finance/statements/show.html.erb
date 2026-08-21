@@ -69,8 +69,12 @@
     <% end %>
 
     <h2 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h2>
-    <% @calculator.course_cohorts.each do |ccc| %>
-      <%= render Admin::CoursePaymentOverviewComponent.new(statement: @statement, course_cohort_calculator: ccc) %>
+    <% @calculator.course_cohorts.each do |calculator| %>
+      <%= govuk_accordion do |accordion|
+        accordion.with_section(heading_text: calculator.course_name, expanded: true) do
+          render "course_cohort_summary", calculator:
+        end
+      end%>
     <% end %>
   </div>
 </div>
