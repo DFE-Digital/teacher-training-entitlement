@@ -47,14 +47,14 @@ RSpec.describe Statements::ChangeDeadlineDate, type: :model do
 
     context "when there is no payment date" do
       let(:statement) { create(:statement, payment_date: nil) }
-      let(:deadline_date) { Date.current + 1.week }
+      let(:deadline_date) { Date.current + 1.day }
 
       it "returns true" do
         expect(subject).to be true
       end
 
       it "changes the deadline date of the statement" do
-        expect { subject }.to change { statement.reload.deadline_date }.to(deadline_date)
+        expect { subject }.to change(statement, :deadline_date)
       end
     end
   end

@@ -17,7 +17,7 @@ module Statements
     def change
       return false if invalid?
 
-      statement.update(deadline_date:) # rubocop:disable Rails/SaveBang - return value is used by caller
+      statement.update!(deadline_date:)
     end
 
   private
