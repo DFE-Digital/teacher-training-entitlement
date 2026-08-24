@@ -20,7 +20,7 @@
     "sass": "^1.102.0",
     "svg-pan-zoom": "^3.6.2",
     "swagger-ui-dist": "^5.32.12",
-    "webpack": "^5.109.0",
+    "webpack": "^5.109.2",
     "webpack-cli": "^7.2.2"
   },
   "resolutions": {
