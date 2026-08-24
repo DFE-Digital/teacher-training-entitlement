@@ -2,6 +2,7 @@ class DeliveryPartnership < ApplicationRecord
   belongs_to :delivery_partner
   belongs_to :lead_provider
   belongs_to :cohort
+  belongs_to :course_cohort, optional: true
 
   validates :delivery_partner_id, presence: true
   validates :lead_provider_id, presence: true

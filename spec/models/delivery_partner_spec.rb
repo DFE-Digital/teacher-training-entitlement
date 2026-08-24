@@ -95,6 +95,7 @@ RSpec.describe DeliveryPartner, type: :model do
     it { is_expected.to have_many(:delivery_partnerships) }
     it { is_expected.to have_many(:lead_providers).through(:delivery_partnerships) }
     it { is_expected.to have_many(:cohorts).through(:delivery_partnerships) }
+    it { is_expected.to have_many(:course_cohorts).through(:delivery_partnerships) }
   end
 
   describe "validations" do

@@ -118,6 +118,7 @@ shared:
     - delivery_partner_id
     - lead_provider_id
     - cohort_id
+    - course_cohort_id
     - created_at
     - updated_at
   :declarations:

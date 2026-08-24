@@ -5,6 +5,7 @@ RSpec.describe DeliveryPartnership, type: :model do
     it { is_expected.to belong_to :delivery_partner }
     it { is_expected.to belong_to :lead_provider }
     it { is_expected.to belong_to :cohort }
+    it { is_expected.to belong_to(:course_cohort).optional }
   end
 
   describe "validations" do
