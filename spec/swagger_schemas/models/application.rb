@@ -166,11 +166,11 @@ APPLICATION = {
             example: "2021-05-31T02:22:32.000Z",
           },
           schedule_identifier: {
-            description: "The new schedule of the participant",
+            description: "The course cohort identifier for the participant",
             nullable: true,
             type: :string,
-            example: Schedule::IDENTIFIERS.first,
-            enum: Schedule::IDENTIFIERS,
+            format: :uuid,
+            example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
           },
         },
       },
@@ -180,10 +180,10 @@ APPLICATION = {
   h[:v2] = h[:v1].deep_dup
   h[:v3] = h[:v2].deep_dup
   h[:v3][:properties][:attributes][:properties][:schedule_identifier] = {
-    description: "The new schedule of the participant",
+    description: "The course cohort identifier for the participant",
     nullable: true,
     type: :string,
-    example: Schedule::IDENTIFIERS.first,
-    enum: Schedule::IDENTIFIERS,
+    format: :uuid,
+    example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
   }
 }.freeze
