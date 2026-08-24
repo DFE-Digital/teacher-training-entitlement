@@ -13,13 +13,6 @@
         <span class="float-right"><%= number_to_currency(-@calculator.total_clawbacks) %></span>
       </p>
 
-      <% unless @calculator.total_service_fees.zero? %>
-        <p class="govuk-body-s govuk-!-margin-bottom-2">
-          <%= t(".service_fee") %>
-          <span class="float-right"><%= number_to_currency(@calculator.total_service_fees) %></span>
-        </p>
-      <% end %>
-
       <hr>
 
       <p class="govuk-body-s govuk-!-margin-bottom-2">
@@ -35,19 +28,12 @@
   </div>
 
   <div class="govuk-grid-row govuk-!-margin-top-3">
+    <% @calculator.declaration_types.each do |declaration_type| %>
     <div class="govuk-grid-column-one-quarter">
-      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_starts") %></p>
-      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.total_starts %></p>
+      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total", declaration_type:) %></p>
+      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.get_funded(:received, declaration_type:) %></p>
     </div>
-    <div class="govuk-grid-column-one-quarter">
-      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_retained") %></p>
-      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.total_retained %></p>
-    </div>
-    <div class="govuk-grid-column-one-quarter">
-      <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_completed") %></p>
-      <div class="govuk-heading-m govuk-!-padding-top-0"><%= @calculator.total_completed %></div>
-    </div>
-
+    <% end %>
     <div class="govuk-grid-column-one-quarter">
       <p class="govuk-body-s govuk-!-margin-bottom-0"><%= t(".total_voids") %></p>
       <p class="govuk-heading-m govuk-!-padding-top-0 govuk-!-margin-bottom-0"><%= @calculator.total_voided %></p>

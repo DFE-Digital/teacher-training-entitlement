@@ -2,6 +2,7 @@
 # paid declaration references clawback declaration
 class ClawbackDeclaration < Declaration
   validates :paid_declaration, presence: true
+  validates :value, numericality: { lesser_than_or_equal_to: 0 }, allow_nil: true
 
   enum :state, {
     submitted: "submitted",

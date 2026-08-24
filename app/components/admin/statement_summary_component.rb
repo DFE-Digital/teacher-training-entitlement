@@ -6,26 +6,17 @@ module Admin
 
     attr_reader :calculator, :link_to_voids, :statement
 
-    delegate :expected_starts,
-             :expected_completed,
-             :expected_total,
-             :outstanding_starts,
-             :outstanding_completed,
-             :outstanding_total,
-             :total_starts,
-             :total_completed,
-             :total_declarations,
+    delegate :summary_rows,
              :expected_output_payment,
              :total_output_payment,
              :total_voided,
              :total_clawbacks,
              :total_adjustments,
-             :total_service_fees,
              :total_payment,
              to: :calculator
 
-    def initialize(statement:, link_to_voids: true)
-      @calculator = ::Statements::Calculate.new(statement:)
+    def initialize(calculator:, statement:, link_to_voids: true)
+      @calculator = calculator
       @link_to_voids = link_to_voids
       @statement = statement
     end

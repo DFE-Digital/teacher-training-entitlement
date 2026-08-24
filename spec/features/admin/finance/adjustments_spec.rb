@@ -78,7 +78,7 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
       expect(page).to have_text("£100.12")
       expect(page).to have_text("Second adjustment")
       expect(page).to have_text("£200.23")
-      within(:xpath, "//h2[text()='Additional adjustments']/following-sibling::table") do |table|
+      within(:xpath, "//h3[text()='Additional adjustments']/following-sibling::table") do |table|
         expect(table).to have_text("Total")
         expect(table).to have_text("£300.35")
       end

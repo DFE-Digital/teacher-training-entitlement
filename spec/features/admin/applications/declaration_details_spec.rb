@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.feature "Application declaration details", :versioning, type: :feature do
   include Helpers::AdminLogin
 
-  let(:course_cohort_provider) { create(:course_cohort_provider) }
+  let(:course_cohort_provider) { create(:course_cohort_provider, teacher_funding: 650) }
   let(:lead_provider) { course_cohort_provider.lead_provider }
   let(:course_cohort) { course_cohort_provider.course_cohort }
   let(:application) { create(:application, lead_provider:, course_cohort:) }
@@ -20,8 +20,8 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
   end
 
   context "when logged in as an admin" do
-    let!(:started_declaration) { create(:declaration, :started, application:, statement: payable_statement, milestone: started_milestone) }
-    let!(:completed_declaration) { create(:declaration, :completed, :submitted, application:, statement: payable_statement, milestone: completed_milestone) }
+    let!(:started_declaration) { create(:declaration, :eligible, :started, application:, statement: payable_statement, milestone: started_milestone) }
+    let!(:completed_declaration) { create(:declaration, :eligible, :completed, :submitted, application:, statement: payable_statement, milestone: completed_milestone) }
 
     before do
       completed_declaration.mark_eligible!
@@ -39,7 +39,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
       expect(summary_cards).to have_attributes(length: 3)
 
       within(summary_cards[0]) do |summary_card|
-        expect(summary_card).to have_css(".govuk-summary-card__title", text: "Started (Submitted)")
+        expect(summary_card).to have_css(".govuk-summary-card__title", text: "Started (Eligible)")
 
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", started_declaration.ecf_id)

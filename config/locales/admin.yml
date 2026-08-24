@@ -70,10 +70,8 @@ en:
       output_payment: Output payment
       service_fee: Service fee
       targeted_delivery_funding: Targeted delivery funding
-      total_completed: Total completed
       total_net_vat: Total net VAT
-      total_retained: Total retained
-      total_starts: Total starts
+      total: "Total %{declaration_type}"
       total_voids: Total voids
       totals: Totals
       view: View
@@ -86,6 +84,21 @@ en:
       total: Total
     finance:
       statements:
+        course_cohort_summary:
+          funded: Funded
+          self_funded: Self-funded
+          started: Started
+          completed: Completed
+          course_total: Course total
+          output_payment: Output payment
+          participants: Participants
+          payment_per_participant: Payment per participant
+          payment_type: Payment type
+          service_fee: Service fee
+          targeted_delivery_funding: Targeted delivery funding
+          total_declarations: Total declarations
+          total_not_eligible_for_funding: Total not eligible for funding
+          total: Total
         payment_authorisations:
           new:
             button: Authorise for payment

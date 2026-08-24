@@ -17,7 +17,7 @@
     </p>
     <p class="govuk-body govuk-!-margin-bottom-2">
       <strong>Milestones:</strong>
-      <%= @statement.milestones.reorder(nil).distinct.pluck(:declaration_type).join(", ") %>
+      <%= @statement.declarations.map(&:declaration_type).uniq.join(", ") %>
     </p>
     <%= govuk_details(summary_text: "Statement ID", id: "statement-id") do
           @statement.ecf_id
@@ -33,7 +33,7 @@
       Calculations may have minor rounding discrepancies. Contact your contract manager for clarification.
     </div>
 
-    <%= render Admin::StatementSummaryComponent.new(statement: @statement) %>
+    <%= render Admin::StatementSummaryComponent.new(statement: @statement, calculator: @calculator) %>
 
     <div class="govuk-inset-text noprint">
       <p> Save a copy of this statement for: </p>
@@ -54,8 +54,8 @@
       </div>
     </div>
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Manual adjustments</h1>
-    <h2 class="govuk-heading-m">Additional adjustments</h2>
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-5">Manual adjustments</h2>
+    <h3 class="govuk-heading-m">Additional adjustments</h3>
 
     <%= render Admin::AdjustmentsTableComponent.new(adjustments: @statement.adjustments, show_total: true) %>
 
@@ -68,16 +68,13 @@
       </div>
     <% end %>
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h1>
-
-    <%= govuk_accordion do |accordion|
-      @course_cohorts.each do |course_cohort|
-        accordion.with_section(heading_text: course_cohort.course.name, expanded: true) { render Admin::CoursePaymentOverviewComponent.new(course_cohort:, statement: @statement) }
-      end
-    end %>
-
-    <%= govuk_details(summary_text: "Contract Information", id: "contract-information") do
-      render partial: "contract_information"
-    end %>
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-5">Course finance details</h2>
+    <% @calculator.course_cohorts.each do |calculator| %>
+      <%= govuk_accordion do |accordion|
+        accordion.with_section(heading_text: calculator.course_name, expanded: true) do
+          render "course_cohort_summary", calculator:
+        end
+      end%>
+    <% end %>
   </div>
 </div>

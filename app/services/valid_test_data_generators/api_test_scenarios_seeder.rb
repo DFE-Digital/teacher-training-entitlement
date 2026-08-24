@@ -111,8 +111,8 @@ module ValidTestDataGenerators
       Enumerator.new do |yielder|
         year = academic_year
         loop do
-          yielder << Date.new(year, 7, 1) # autumn schedule
-          yielder << Date.new(year, 9, 1) # spring schedule
+          yielder << Date.new(year, 7, 1) # for autumn term
+          yielder << Date.new(year, 9, 1) # for spring term
           year += 1
         end
       end
@@ -366,7 +366,7 @@ module ValidTestDataGenerators
         )
       end
 
-      lead_provider_contract.update!(recruitment_target:)
+      lead_provider_contract.update!(recruitment_target:, teacher_funding:)
     end
 
     def create_or_update_schedule!(cohort:, term:, training_starts_at:, training_ends_at:)
@@ -438,9 +438,16 @@ module ValidTestDataGenerators
       application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
+    def declaration_value(milestone)
+      # TODO: rename milestone.payment_amount to miletstone.payment_percentage
+      contract = lead_provider.contract(course_cohort: milestone.course_cohort)
+      contract.teacher_funding * (milestone.payment_amount / 100)
+    end
+
     def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
+      value = application.funded_place ? declaration_value(milestone) : nil
       application.declarations.create!(
         declaration_type: :started,
         declaration_date: date,
@@ -449,13 +456,14 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
-        value: milestone.payment_amount,
+        value:,
       )
     end
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
+      value = application.funded_place ? declaration_value(milestone) : nil
       declaration = application.declarations.create!(
         declaration_type: :completed,
         declaration_date: date,
@@ -464,7 +472,7 @@ module ValidTestDataGenerators
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
-        value: milestone.payment_amount,
+        value:,
       )
 
       if has_passed

@@ -5,6 +5,7 @@ FactoryBot.define do
       course { nil }
       course_cohort { course ? create(:course_cohort, course:) : create(:course_cohort) }
       paid_statement { nil }
+      contract { nil }
     end
 
     application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
@@ -20,7 +21,11 @@ FactoryBot.define do
     declaration_date { milestone.acceptance_window_start_date + 1.day }
     submitted
     ecf_id { SecureRandom.uuid }
-    value { 100 }
+    value do
+      if application.funded_place && milestone.payment_amount
+        (contract&.teacher_funding || 100) * (milestone.payment_amount / 100)
+      end
+    end
     statement do
       if lead_provider && LeadProvider.exists?(lead_provider.id)
         Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:)

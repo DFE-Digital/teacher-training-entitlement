@@ -119,7 +119,7 @@ class Declaration < ApplicationRecord
             uniqueness: { scope: %i[application_id type], conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
 
-  validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true, if: -> { type.blank? }
 
   scope :for_delivery_partners, lambda { |delivery_partner|
     where(delivery_partner: delivery_partner)
@@ -142,6 +142,8 @@ class Declaration < ApplicationRecord
       secondary_delivery_partner: secondary_delivery_partner,
       declaration_type: declaration_type,
       declaration_date: declaration_date,
+      value: value ? value * -1 : nil,
+      state: :awaiting_clawback,
     )
     save!
   end
