@@ -9,7 +9,7 @@ RSpec.describe APITests::CompletedDeclaration, type: :model do
   let(:delivery_partner) { create(:delivery_partner) }
   let(:has_passed) { "true" }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
-  # let(:declaration_date) { (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC") }
+  let(:completed_milestone) { create(:milestone, :completed, course_cohort: application.course_cohort) }
   let(:declaration_date) { (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC") }
 
   let(:expected_body) do

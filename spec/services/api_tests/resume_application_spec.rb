@@ -5,8 +5,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
 
   let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:, schedule:) }
-  let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+  let(:course_cohort) { create(:course_cohort, lead_provider:) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
 
   let(:expected_body) do
@@ -25,6 +24,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
   end
 
   before do
+    create(:milestone, :started, course_cohort:, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now)
     stub_const("LEAD_PROVIDER_CONFIG", lead_provider.name => { token: "test-token" }) if lead_provider
     allow(HTTParty).to receive(:put).and_return(api_response)
   end
@@ -88,7 +88,11 @@ RSpec.describe APITests::ResumeApplication, type: :model do
       subject(:service) { described_class.new(application:) }
 
       let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
-      let(:schedule) { create(:schedule, training_starts_at: 3.days.ago, training_ends_at: 1.day.ago) }
+
+      before do
+        course_cohort.milestones.destroy_all
+        create(:milestone, :started, course_cohort:, acceptance_window_start_date: 3.days.ago, acceptance_window_end_date: 1.day.ago)
+      end
 
       it "raises an error" do
         expect { service.call }
