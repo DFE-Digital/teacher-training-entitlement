@@ -28,8 +28,8 @@ COURSE_COHORT = {
             description: "The new schedule of the participant",
             nullable: true,
             type: :string,
-            example: CourseCohort.term_identifiers.values.first,
-            enum: CourseCohort.term_identifiers.values,
+            example: CourseCohort::TERM_IDENTIFIERS.keys.first,
+            enum: CourseCohort::TERM_IDENTIFIERS.keys,
           },
           cohort: {
             description: "The requested academic years",
