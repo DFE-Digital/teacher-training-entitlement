@@ -1,7 +1,7 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe "Delivery Partners endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
+RSpec.describe "Course cohort endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
   it_behaves_like "an API index endpoint documentation",

@@ -1,5 +1,5 @@
 module API
-  class ScheduleSerializer < Blueprinter::Base
+  class CourseCohortSerializer < Blueprinter::Base
     identifier :ecf_id, name: :id
     field(:type) { "schedule" }
 
@@ -7,8 +7,8 @@ module API
       exclude :id
 
       field(:course_identifier) { |cc| cc.course.identifier }
-      field(:schedule_identifier) { |cc| cc.schedule.identifier }
-      field(:cohort) { |cc| cc.cohort.start_year.to_s }
+      field(:term_identifier, name: :schedule_identifier)
+      field(:academic_year, name: :cohort)
     end
 
     view :v1 do
