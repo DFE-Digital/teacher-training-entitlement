@@ -8,7 +8,7 @@ RSpec.describe "Course cohort endpoint", openapi_spec: "v1/swagger.yaml", type: 
                   "/api/v1/schedules",
                   "Schedules",
                   "Lead providers available schedule details",
-                  "#/components/schemas/ListSchedulesFilter",
-                  "#/components/schemas/SchedulesResponse",
+                  "#/components/schemas/ListCourseCohortsFilter",
+                  "#/components/schemas/CourseCohortsResponse",
                   false
 end

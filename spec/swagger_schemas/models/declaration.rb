@@ -43,7 +43,7 @@ DECLARATION = {
             type: :string,
             nullable: false,
             example: "started",
-            enum: Schedule::DECLARATION_TYPES,
+            enum: Milestone::DECLARATION_TYPES,
           },
           course_identifier: {
             description: "The course this application relates to",
