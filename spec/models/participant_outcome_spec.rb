@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe ParticipantOutcome, type: :model do
   let(:application) { create(:application, :accepted) }
-  let(:declaration_date) { application.schedule.training_starts_at + 1.day }
+  let!(:started_milestone) { create(:milestone, :started, course_cohort: application.course_cohort) }
+  let(:declaration_date) { started_milestone.acceptance_window_start_date + 1.day }
   let!(:declaration) do
     travel_to declaration_date do
       create(:declaration, :completed, application:, declaration_date:)

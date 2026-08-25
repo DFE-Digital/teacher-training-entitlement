@@ -3,11 +3,7 @@ FactoryBot.define do
     association :course, factory: :"tte-early-years"
     cohort
     academic_year { Date.current.year }
-
-    schedule do
-      CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
-    end
-
+    term_identifier { :autumn }
     initialize_with do
       CourseCohort.find_or_initialize_by(course:, cohort:)
     end

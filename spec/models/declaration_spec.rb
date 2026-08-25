@@ -646,10 +646,8 @@ RSpec.describe Declaration, type: :model do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
       let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-      let(:declaration_date) { schedule.training_starts_at + 1.hour }
-      let(:course_cohort) { create(:course_cohort, schedule:) }
+      let(:course_cohort) { create(:course_cohort) }
       let(:lead_provider) { create(:lead_provider) }
-      let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
 
       let(:delivery_partner) do
         create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })

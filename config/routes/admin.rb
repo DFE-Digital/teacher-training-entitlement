@@ -96,7 +96,6 @@ namespace :admin do
     resources :courses, controller: "cohort_courses", only: %i[index show new create] do
       resources :milestones, controller: "course_cohort_milestones", only: %i[new create edit update]
     end
-    resources :schedules, except: :index
   end
 
   resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do

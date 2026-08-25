@@ -11,6 +11,8 @@ RSpec.describe CourseCohort do
     it { is_expected.to have_many(:delivery_partnerships).dependent(:destroy) }
     it { is_expected.to have_many(:delivery_partners).through(:delivery_partnerships) }
     it { is_expected.to have_many(:milestones).dependent(:destroy) }
+    it { is_expected.to have_one(:started_milestone) }
+    it { is_expected.to have_one(:completed_milestone) }
   end
 
   describe "validations" do
@@ -76,26 +78,6 @@ RSpec.describe CourseCohort do
     end
   end
 
-  describe "#application_started_confirmed_by_date" do
-    subject(:confirmed_by_date) { course_cohort.application_started_confirmed_by_date }
-
-    let(:course_cohort) do
-      create(:course_cohort, schedule: create(:schedule, training_ends_at:, change_training_dates: false))
-    end
-
-    context "when training ends between January and April" do
-      let(:training_ends_at) { Date.new(2026, 4, 30) }
-
-      it { is_expected.to eq("Spring 2026") }
-    end
-
-    context "when training ends after April" do
-      let(:training_ends_at) { Date.new(2026, 8, 1) }
-
-      it { is_expected.to eq("Summer 2026") }
-    end
-  end
-
   describe "#taken_declaration_types" do
     subject(:taken_declaration_types) { course_cohort.taken_declaration_types(except:) }
 
@@ -116,6 +98,34 @@ RSpec.describe CourseCohort do
 
       it "does not include the excluded milestone's declaration type" do
         expect(taken_declaration_types).to contain_exactly("completed")
+      end
+    end
+  end
+
+  describe "term_identifier" do
+    subject(:term_identifier) { described_class.school_term(start_date) }
+
+    context "with start_date between sept and dec" do
+      [9, 10, 11, 12].each do |month|
+        let(:start_date) { Date.new(2026, month, 1) }
+
+        it { is_expected.to eq(:autumn) }
+      end
+    end
+
+    context "with start_date between jan and apr" do
+      [1, 2, 3, 4].each do |month|
+        let(:start_date) { Date.new(2026, month, 1) }
+
+        it { is_expected.to eq(:spring) }
+      end
+    end
+
+    context "with start_date between may and aug" do
+      [5, 6, 7, 8].each do |month|
+        let(:start_date) { Date.new(2026, month, 1) }
+
+        it { is_expected.to eq(:summer) }
       end
     end
   end

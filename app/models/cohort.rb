@@ -4,7 +4,6 @@ class Cohort < ApplicationRecord
 
   has_many :course_cohorts, dependent: :destroy
   has_many :courses, through: :course_cohorts
-  has_many :schedules, through: :course_cohorts
 
   validates :start_year,
             presence: true,
