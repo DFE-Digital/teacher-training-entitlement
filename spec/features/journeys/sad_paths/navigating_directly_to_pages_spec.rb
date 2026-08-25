@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Sad journeys", :no_js, :npq, :with_default_schedules, type: :feature do
+RSpec.feature "Sad journeys", :no_js, :npq, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
   include ApplicationHelper

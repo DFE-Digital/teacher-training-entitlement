@@ -83,7 +83,6 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     it { is_expected.to have_summary_item "Course", application.course.name }
     it { is_expected.to have_summary_item "Unique reference number (URN)", "" }
     it { is_expected.to have_summary_item "UK Provider Reference Number (UKPRN)", "" }
-    it { is_expected.to have_summary_item "Schedule identifier", "-" }
   end
 
   describe "Links for actions" do

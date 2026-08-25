@@ -6,8 +6,7 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
   let(:admin) { create(:admin, super_admin: true) }
   let(:cohort) { create(:cohort) }
   let(:course) { create(:course) }
-  let(:schedule) { create(:schedule, cohort:) }
-  let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:) }
+  let(:course_cohort) { create(:course_cohort, cohort:, course:) }
   let(:editable_milestone) do
     create(
       :milestone,
