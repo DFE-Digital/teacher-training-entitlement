@@ -23,7 +23,6 @@ class CourseCohort < ApplicationRecord
   validates :course_id, uniqueness: { scope: :cohort_id }
   validates :academic_year, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
-  delegate :name, to: :cohort
   delegate :registration_starts_at, :registration_ends_at, to: :cohort, prefix: true
 
   def self.next_open_for(course:)
@@ -42,6 +41,10 @@ class CourseCohort < ApplicationRecord
 
     month = date.month
     TERM_IDENTIFIERS.find { |_term, months| months.include?(month) }&.first
+  end
+
+  def name
+    [academic_year, term_identifier].join("-")
   end
 
   def training_live?

@@ -25,8 +25,8 @@ module Admin
 
       @application = Application
                    .includes(:institution, :user,
-                             application_lead_providers: { lead_provider: { course_cohorts: [:schedule] } },
-                             course_cohort: %i[course cohort schedule])
+                             application_lead_providers: { lead_provider: :course_cohorts },
+                             course_cohort: %i[course cohort])
                    .find(params[:id])
     end
 
