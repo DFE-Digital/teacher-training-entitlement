@@ -16,9 +16,10 @@ class Admin::CohortCoursesController < AdminController
   end
 
   def create
-    @course_cohort = cohort.course_cohorts.new(course_cohort_params)
-
-    if @course_cohort.save
+    service = CourseCohorts::Create.new(course_cohort_params)
+    service.call
+    if service.errors.blank?
+      @course_cohort = service.course_cohort
       flash[:success] = "Course added to cohort"
       redirect_to admin_cohort_course_path(cohort, @course_cohort.course)
     else
@@ -30,7 +31,9 @@ class Admin::CohortCoursesController < AdminController
 private
 
   def course_cohort_params
-    params.require(:course_cohort).permit(:course_id)
+    params.require(:course_cohort)
+      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, :lead_providers)
+      .merge(cohort:)
   end
 
   def course_cohort
@@ -45,6 +48,7 @@ private
 
   def load_form_options
     @courses = Course.where.not(id: cohort.course_cohorts.select(:course_id)).order(:name)
+    @lead_providers = LeadProvider.all
   end
 
   def ensure_super_admin

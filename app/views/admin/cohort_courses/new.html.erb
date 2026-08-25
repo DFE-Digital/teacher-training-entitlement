@@ -5,15 +5,28 @@
 <%= form_with model: @course_cohort, url: admin_cohort_courses_path(@cohort) do |f| %>
   <%= f.govuk_error_summary %>
   <%=
-    f.govuk_collection_select(
-      :course_id,
-      @courses,
-      :id,
-      :name,
-      options: { include_blank: true },
-      label: { text: "Course" },
-    )
+  f.govuk_collection_select(
+    :course_id,
+    @courses,
+    :id,
+    :name,
+    options: { include_blank: true },
+    label: { text: "Course" },
+  )
   %>
+
+  Regisration start date: <%= @cohort.registration_starts_at.to_fs %>
+
+  <%= f.govuk_date_field :training_starts_at, legend: { text: "Training starts at" } %>
+  <%= f.govuk_date_field :training_ends_at, legend: { text: "Training ends at" } %>
+
+  <%= f.govuk_collection_check_boxes(
+    :lead_provider_ids,
+    @lead_providers,
+    :id,
+    :name,
+    legend: { text: "Providers", size: "m" },
+  ) %>
 
   <%= f.govuk_submit "Add course" %>
 <% end %>
