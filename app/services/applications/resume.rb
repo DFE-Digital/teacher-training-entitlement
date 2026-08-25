@@ -38,11 +38,11 @@ module Applications
     def incompatible_course
       return if @course_cohort.nil? || @course_cohort.course == @application.course
 
-      add_error(:base, :incompatible_schedule)
+      add_error(:base, :incompatible_course_cohort)
     end
 
     def cohort_not_in_training
-      return if @course_cohort.nil? || @course_cohort.schedule.training_live?
+      return if @course_cohort.nil? || @course_cohort.training_live?
 
       add_error(:base, :cohort_not_in_training)
     end
