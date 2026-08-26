@@ -1,7 +1,7 @@
 <%= govuk_back_link(href: admin_delivery_partners_path) %>
 
 <h1 class="govuk-heading-l">Assign <%= @delivery_partner.name %> to provider</h1>
-<p class="govuk-caption-m">Select all providers and cohorts that apply</p>
+<p class="govuk-caption-m">Select all providers and course cohorts that apply</p>
 
 <%= form_with model: [:admin, @delivery_partner], method: :patch, id: 'delivery-partnerships-form' do |form| %>
   <%= form.govuk_error_summary %>
@@ -11,11 +11,11 @@
       <%= form.govuk_check_boxes_fieldset :lead_providers, legend: nil do %>
         <%= form.govuk_check_box :lead_provider_id, lead_provider.id, label: { text: lead_provider.name }, checked: @delivery_partner.delivery_partnerships.where(lead_provider:).any? do %>
           <p class="govuk-caption-m">Select all that apply</p>
-          <% @cohorts.each do |cohort| %>
-            <%= form.fields_for :delivery_partnerships, @delivery_partner.delivery_partnerships.find_or_initialize_by(lead_provider:, cohort:) do |delivery_partnership_form| %>
+          <% @course_cohorts.each do |course_cohort| %>
+            <%= form.fields_for :delivery_partnerships, @delivery_partner.delivery_partnerships.find_or_initialize_by(lead_provider:, course_cohort:) do |delivery_partnership_form| %>
               <%= delivery_partnership_form.hidden_field :lead_provider_id, value: lead_provider.id %>
-              <%= delivery_partnership_form.hidden_field :cohort_id, value: cohort.id %>
-              <%= delivery_partnership_form.govuk_check_box :_destroy, 0, 1, multiple: false, label: { text: "Cohort #{cohort.description}" }, checked: delivery_partnership_form.object.persisted? %>
+              <%= delivery_partnership_form.hidden_field :course_cohort_id, value: course_cohort.id %>
+              <%= delivery_partnership_form.govuk_check_box :_destroy, 0, 1, multiple: false, label: { text: "#{course_cohort.course.name} – #{course_cohort.cohort.description}" }, checked: delivery_partnership_form.object.persisted? %>
             <% end %>
           <% end %>
         <% end %>

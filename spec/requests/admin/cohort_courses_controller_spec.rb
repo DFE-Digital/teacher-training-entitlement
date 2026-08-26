@@ -14,13 +14,14 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   let(:valid_params) { { course_cohort: { course_id: course.id, schedule_id: schedule.id } } }
   let(:invalid_params) { { course_cohort: { course_id: "", schedule_id: "" } } }
 
-  before { create_list(:delivery_partnership, 2, cohort:, lead_provider:) }
-
   context "when logged in as super admin" do
     before { sign_in_as_admin(super_admin: true) }
 
     describe "#show" do
-      before { get admin_cohort_course_path(cohort, course_cohort.course) }
+      before do
+        create_list(:delivery_partnership, 2, course_cohort:, lead_provider:)
+        get admin_cohort_course_path(cohort, course_cohort.course)
+      end
 
       it { is_expected.to have_http_status :success }
 

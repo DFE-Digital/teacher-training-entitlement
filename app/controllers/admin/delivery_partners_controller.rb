@@ -36,7 +36,7 @@ class Admin::DeliveryPartnersController < AdminController
   end
 
   def update
-    if @delivery_partner.name.present? && DeliveryPartner.name_similar_to(@delivery_partner.name).any?
+    if @delivery_partner.name.present? && @delivery_partner.will_save_change_to_name? && DeliveryPartner.name_similar_to(@delivery_partner.name).any?
       render :similar
     elsif save_delivery_partner
       redirect_to action: :index
@@ -60,7 +60,7 @@ private
       delivery_partnerships_attributes: %i[
         id
         lead_provider_id
-        cohort_id
+        course_cohort_id
         _destroy
       ],
     )
