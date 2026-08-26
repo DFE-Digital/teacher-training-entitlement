@@ -135,7 +135,7 @@ APPLICATION = {
             description: "Indicates whether or not this participant’s training is being funded by DfE",
             nullable: true,
             type: :boolean,
-            example: nil,
+            example: true,
           },
           created_at: {
             description: "The date the application was created",
@@ -169,21 +169,10 @@ APPLICATION = {
             description: "The course cohort identifier for the participant",
             nullable: true,
             type: :string,
-            format: :uuid,
-            example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
+            example: CourseCohort::TERM_IDENTIFIERS.keys.first,
           },
         },
       },
     },
   },
-}.tap { |h|
-  h[:v2] = h[:v1].deep_dup
-  h[:v3] = h[:v2].deep_dup
-  h[:v3][:properties][:attributes][:properties][:schedule_identifier] = {
-    description: "The course cohort identifier for the participant",
-    nullable: true,
-    type: :string,
-    format: :uuid,
-    example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
-  }
 }.freeze

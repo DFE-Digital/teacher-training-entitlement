@@ -69,7 +69,7 @@ DECLARATION = {
             description: "Whether the participant has failed or passed",
             type: :boolean,
             nullable: true,
-            example: nil,
+            example: true,
           },
           ineligible_for_funding_reason: {
             description: "If the declaration is ineligible, the reason why",

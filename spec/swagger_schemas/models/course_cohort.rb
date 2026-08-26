@@ -10,9 +10,9 @@ COURSE_COHORT = {
       type: {
         description: "The data type",
         type: :string,
-        example: "course_cohort",
+        example: "schedule",
         enum: %w[
-          course_cohort
+          schedule
         ],
       },
       attributes: {

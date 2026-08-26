@@ -110,11 +110,10 @@ PARTICIPANT = {
           enum: Course::IDENTIFIERS,
         },
         schedule_identifier: {
-          description: "The course cohort identifier for the participant",
+          description: "The ternmidentifier for the participant",
           nullable: true,
           type: :string,
-          format: :uuid,
-          example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
+          example: CourseCohort::TERM_IDENTIFIERS.keys.first,
         },
         cohort: {
           description: "Indicates which call-off contract would fund this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Once a provider accepts an application, they may change a participant's cohort up until the point of submitting a started declaration.",
@@ -172,7 +171,6 @@ PARTICIPANT = {
       type: :object,
       nullable: true,
       required: %i[reason date],
-      example: nil,
       properties: {
         reason: {
           description: "The reason a participant was withdrawn",
@@ -195,7 +193,6 @@ PARTICIPANT = {
       type: :object,
       nullable: true,
       required: %i[reason date],
-      example: nil,
       properties: {
         reason: {
           description: "The reason a participant was deferred",
