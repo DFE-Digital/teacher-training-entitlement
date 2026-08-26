@@ -22,6 +22,7 @@ module "postgres" {
 module "redis-cache" {
   source = "./vendor/modules/aks//aks/redis"
 
+  count                     = var.deploy_cache_redis ? 1 : 0
   namespace                 = var.namespace
   environment               = local.environment
   azure_resource_prefix     = var.azure_resource_prefix
@@ -38,6 +39,7 @@ module "redis-cache" {
 module "redis-managed-cache" {
   source = "./vendor/modules/aks//aks/redis_managed"
 
+  count                 = var.deploy_managed_redis ? 1 : 0
   name                  = "cache"
   namespace             = var.namespace
   environment           = local.environment
@@ -52,4 +54,34 @@ module "redis-managed-cache" {
   azure_enable_monitoring = var.enable_monitoring
 
   azure_managed_redis_sku = var.redis_managed_cache_sku_name
+}
+
+moved {
+  from = module.redis-managed-cache.azurerm_private_endpoint.main[0]
+  to   = module.redis-managed-cache[0].azurerm_private_endpoint.main[0]
+}
+
+moved {
+  from = module.redis-managed-cache.azurerm_managed_redis.main[0]
+  to   = module.redis-managed-cache[0].azurerm_managed_redis.main[0]
+}
+
+moved  {
+  from = module.redis-cache.azurerm_redis_cache.main[0]
+  to   = module.redis-cache[0].azurerm_redis_cache.main[0]
+}
+
+moved {
+  from = module.redis-cache.azurerm_private_endpoint.main[0]
+  to   = module.redis-cache[0].azurerm_private_endpoint.main[0]
+}
+
+moved {
+  from = module.redis-managed-cache.azurerm_monitor_metric_alert.memory[0]
+  to   = module.redis-managed-cache[0].azurerm_monitor_metric_alert.memory[0]
+}
+
+moved {
+  from = module.redis-cache.azurerm_monitor_metric_alert.memory[0]
+  to   = module.redis-cache[0].azurerm_monitor_metric_alert.memory[0]
 }
