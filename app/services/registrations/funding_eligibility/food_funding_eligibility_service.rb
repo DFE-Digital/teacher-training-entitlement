@@ -1,7 +1,7 @@
 module Registrations
   module FundingEligibility
     class FoodFundingEligibilityService < Registrations::BaseStepService
-      FUNDED_FOOD_MOOD = "fresh_and_light".freeze
+      FUNDED_FOOD_MOOD = ["fresh_and_light", "Fresh and light"].freeze
 
       def call
         wizard.state_store.write(
@@ -13,7 +13,7 @@ module Registrations
     private
 
       def funded?
-        @funded ||= wizard.state_store[:which_food_mood_are_you_in] == FUNDED_FOOD_MOOD
+        @funded ||= wizard.state_store[:which_food_mood_are_you_in].to_s.in?(FUNDED_FOOD_MOOD)
       end
 
       def complicated_food_funding_eligibility_result
