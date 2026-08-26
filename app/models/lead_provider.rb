@@ -18,10 +18,6 @@ class LeadProvider < ApplicationRecord
 
   scope :alphabetical, -> { order(name: :asc) }
 
-  def delivery_partners_for_cohort(cohort)
-    delivery_partners.where(delivery_partnerships: { cohort: })
-  end
-
   def delivery_partners_for_course_cohort(course_cohort:)
     delivery_partners.where(delivery_partnerships: { course_cohort: })
   end

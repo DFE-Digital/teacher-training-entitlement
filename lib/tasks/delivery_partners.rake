@@ -60,7 +60,6 @@ namespace :delivery_partners do
           DeliveryPartnership.create!(
             lead_provider: lead_providers[row["Lead Provider ECF Id"]],
             course_cohort: course_cohorts[row["Course Cohort ECF Id"]],
-            cohort: course_cohorts[row["Course Cohort ECF Id"]]&.cohort,
             delivery_partner: delivery_partners[row["Delivery Partner ECF Id"]],
           )
         end

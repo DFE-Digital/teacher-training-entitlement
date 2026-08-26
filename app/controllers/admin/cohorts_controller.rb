@@ -17,7 +17,6 @@ class Admin::CohortsController < AdminController
     @cohort = Cohort.new(cohort_params)
 
     if @cohort.save
-      Cohorts::CopyDeliveryPartnersJob.perform_later(@cohort.id)
       flash[:success] = "Cohort created"
       redirect_to action: :index
     else

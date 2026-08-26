@@ -44,7 +44,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     end
 
     scenario "creation" do
-      partnerships = create_list(:delivery_partnership, 3, cohort: Cohort.order_by_latest.first)
       visit_index
       click_on new_button_text
 
@@ -69,7 +68,6 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(cohort.start_year).to be(2029)
       expect(cohort.funding_cap).to be(true)
       expect(cohort.registration_starts_at).to eq(Date.new(2029, 3, 2))
-      expect(cohort.delivery_partnerships.pluck(:delivery_partner_id, :lead_provider_id)).to eq(partnerships.pluck(:delivery_partner_id, :lead_provider_id))
     end
 
     scenario "editing" do
