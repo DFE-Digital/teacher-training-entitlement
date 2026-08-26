@@ -691,8 +691,8 @@ RSpec.describe Declaration, type: :model do
 
     let :lead_provider do
       create :lead_provider, delivery_partners: {
-        twenty_three => twenty_three_partner,
-        create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) => twenty_four_partner,
+        course_cohort => twenty_three_partner,
+        create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2024, 4, 1))) => twenty_four_partner,
       }
     end
 
@@ -715,7 +715,7 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "without milestone" do
-      before { allow(lead_provider).to receive(:delivery_partners_for_cohort) }
+      before { allow(lead_provider).to receive(:delivery_partners_for_course_cohort) }
 
       let(:declaration) { build(:declaration, delivery_partner: nil, lead_provider:, milestone: nil, declaration_date: 1.day.ago) }
 
@@ -724,7 +724,7 @@ RSpec.describe Declaration, type: :model do
       it "avoids querying the database" do
         available_delivery_partner_ids
 
-        expect(lead_provider).not_to have_received(:delivery_partners_for_cohort)
+        expect(lead_provider).not_to have_received(:delivery_partners_for_course_cohort)
       end
     end
   end

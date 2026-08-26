@@ -302,11 +302,11 @@ module ValidTestDataGenerators
         training_ends_at:,
       )
 
-      cc = CourseCohort.find_by(course:, cohort: current_cohort)
-      if cc
-        cc.update!(schedule:, academic_year:)
+      course_cohort = CourseCohort.find_by(course:, cohort: current_cohort)
+      if course_cohort
+        course_cohort.update!(schedule:, academic_year:)
       else
-        cc = CourseCohort.create!(
+        course_cohort = CourseCohort.create!(
           course:,
           cohort: current_cohort,
           schedule:,
@@ -315,7 +315,7 @@ module ValidTestDataGenerators
       end
 
       create_or_update_milestone!(
-        course_cohort: cc,
+        course_cohort:,
         declaration_type: Milestone::STARTED,
         acceptance_window_start_date: training_starts_at,
         acceptance_window_end_date: training_starts_at + 2.months,
@@ -328,20 +328,20 @@ module ValidTestDataGenerators
                      training_ends_at
                    end
       create_or_update_milestone!(
-        course_cohort: cc,
+        course_cohort:,
         declaration_type: Milestone::COMPLETED,
         acceptance_window_start_date: start_date,
         acceptance_window_end_date: training_ends_at + 2.months,
         payment_amount: 40,
       )
 
-      create_or_update_lead_provider_contract(course_cohort: cc, lead_provider:)
+      create_or_update_lead_provider_contract(course_cohort:, lead_provider:)
 
       delivery_partners.each do |dp|
-        dp.delivery_partnerships.find_or_create_by!(lead_provider:, cohort: current_cohort)
+        dp.delivery_partnerships.find_or_create_by!(lead_provider:, course_cohort:)
       end
 
-      cc
+      course_cohort
     end
 
     def create_or_update_lead_provider_contract(course_cohort:, lead_provider:)

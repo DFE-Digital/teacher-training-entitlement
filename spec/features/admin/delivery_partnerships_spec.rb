@@ -97,12 +97,12 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
       partnership1 = create(:delivery_partnership,
                             delivery_partner: delivery_partner,
                             lead_provider: lead_provider,
-                            cohort: cohort1)
+                            course_cohort: create(:course_cohort, cohort: cohort1))
 
       partnership2 = create(:delivery_partnership,
                             delivery_partner: delivery_partner,
                             lead_provider: lead_provider,
-                            cohort: cohort2)
+                            course_cohort: create(:course_cohort, cohort: cohort2))
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
 

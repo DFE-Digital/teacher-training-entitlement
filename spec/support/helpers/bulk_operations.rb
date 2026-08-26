@@ -20,9 +20,10 @@ module Helpers
         lead_provider = create(:lead_provider)
         delivery_partner = create(:delivery_partner)
         schedule = create(:schedule, cohort:, course_group: course.course_group, allowed_declaration_types: %w[started completed], training_starts_at: Date.yesterday)
+        course_cohort = CourseCohort.find_by(course:, cohort:) || create(:course_cohort, course:, cohort:, schedule:, lead_provider:)
 
         # Create required partnerships
-        create(:delivery_partnership, cohort:, delivery_partner:, lead_provider:)
+        create(:delivery_partnership, course_cohort:, delivery_partner:, lead_provider:)
 
         participant1 = create(:user)
         participant2 = create(:user)

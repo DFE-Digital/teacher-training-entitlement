@@ -17,7 +17,7 @@ FactoryBot.define do
       end
     end
     declaration_type { Milestone::STARTED }
-    delivery_partner { create(:delivery_partner, lead_providers: { milestone.cohort => lead_provider }) }
+    delivery_partner { create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider }) }
     declaration_date { milestone.acceptance_window_start_date + 1.day }
     submitted
     ecf_id { SecureRandom.uuid }
@@ -86,21 +86,21 @@ FactoryBot.define do
     end
 
     trait :with_delivery_partner do
-      delivery_partner { create(:delivery_partner, lead_providers: { milestone.cohort => lead_provider }) }
+      delivery_partner { create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider }) }
     end
 
     trait :with_sometimes_nil_delivery_partner do
       delivery_partner do
         if milestone.cohort.start_year.between?(2021, 2023)
-          [nil, create(:delivery_partner, lead_providers: { milestone.cohort => lead_provider })].sample
+          [nil, create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider })].sample
         else
-          create(:delivery_partner, lead_providers: { milestone.cohort => lead_provider })
+          create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider })
         end
       end
     end
 
     trait :with_secondary_delivery_partner do
-      secondary_delivery_partner { create(:delivery_partner, lead_providers: { milestone.cohort => lead_provider }) }
+      secondary_delivery_partner { create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider }) }
     end
   end
 end
