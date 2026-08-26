@@ -116,8 +116,8 @@ PARTICIPANT = {
           example: CourseCohort::TERM_IDENTIFIERS.keys.first,
         },
         cohort: {
-          description: "Indicates which call-off contract would fund this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Once a provider accepts an application, they may change a participant's cohort up until the point of submitting a started declaration.",
-          type: :string,
+          description: "Contract year",
+          type: :integer,
           nullable: true,
           example: "2022",
         },

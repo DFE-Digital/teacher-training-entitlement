@@ -11,7 +11,7 @@ namespace :data_migrations do
       updated_count += 1
     end
 
-    puts "Updated #{updated_count} course cohort"
-    puts "Skipped #{skipped_count} course cohort"
+    Rails.logger.debug "Updated #{updated_count} course cohort"
+    Rails.logger.debug "Skipped #{skipped_count} course cohort"
   end
 end
