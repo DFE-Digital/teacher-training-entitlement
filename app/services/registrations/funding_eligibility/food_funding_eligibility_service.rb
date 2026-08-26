@@ -1,7 +1,7 @@
 module Registrations
   module FundingEligibility
     class FoodFundingEligibilityService < Registrations::BaseStepService
-      FUNDED_FOOD_MOOD = "Fresh and light".freeze
+      FUNDED_FOOD_MOOD = "fresh_and_light".freeze
 
       def call
         wizard.state_store.write(

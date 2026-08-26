@@ -75,7 +75,9 @@ module ApplicationHelper
       step.answer_key == answer_key.to_s
     end
 
-    answer = registration_step&.answer_data&.find { |configured_answer| configured_answer["value"] == value.to_s }
+    answer = registration_step&.answer_data&.find do |configured_answer|
+      registration_step.answer_value_for(configured_answer) == value.to_s
+    end
 
     answer&.fetch("name") || value
   end

@@ -23,6 +23,25 @@ RSpec.describe ApplicationHelper, type: :helper do
         .to eq("State-funded nursery, pre-school, school or academy trust")
     end
 
+    it "returns the configured answer name for a derived stored answer value" do
+      journey = RegistrationJourney.create!(name: "Demo journey", slug: "demo-journey")
+      journey.registration_steps.create!(
+        name: "Choose your extras",
+        answer_key: "extras",
+        type: "Checkboxes",
+        config: {
+          "checkboxes" => {
+            "answers" => [
+              { "name" => "Toasted seeds" },
+            ],
+          },
+        },
+      )
+
+      expect(helper.registration_step_display_value(journey, :extras, "toasted_seeds"))
+        .to eq("Toasted seeds")
+    end
+
     it "returns the raw value when no configured answer matches" do
       journey = RegistrationJourney.create!(name: "Demo journey", slug: "demo-journey")
 

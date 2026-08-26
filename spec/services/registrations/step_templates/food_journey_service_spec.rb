@@ -44,6 +44,20 @@ RSpec.describe Registrations::StepTemplates::FoodJourneyService do
       ])
     end
 
+    it "sets values for answer choices" do
+      journey = RegistrationJourney.create!(name: "Food journey", slug: "food-journey")
+
+      described_class.new(registration_journey: journey, registration_template: nil).call
+
+      meal_kind = journey.registration_steps.find_by!(slug: "meal-kind")
+
+      expect(meal_kind.answer_data).to eq([
+        { "name" => "Breakfast", "value" => "breakfast" },
+        { "name" => "Lunch", "value" => "lunch" },
+        { "name" => "Dinner", "value" => "dinner" },
+      ])
+    end
+
     it "sets previous step ids for branch steps" do
       journey = RegistrationJourney.create!(name: "Food journey", slug: "food-journey")
 

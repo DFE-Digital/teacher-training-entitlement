@@ -176,6 +176,10 @@ class RegistrationStep < ApplicationRecord
     config.dig(type_as_param, "answers") || []
   end
 
+  def answer_value_for(answer)
+    normalized_answer_value(name: answer["name"], value: answer["value"])
+  end
+
   def set_answers!(answers:)
     config_for_type = config[type_as_param] ||= {}
     config_for_type["answers"] = answers.filter_map do |answer|

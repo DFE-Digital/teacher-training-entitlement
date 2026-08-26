@@ -193,7 +193,7 @@ module Registrations
         type_as_param = type.underscore.parameterize.underscore
         config = {
           type_as_param => {
-            "answers" => answers,
+            "answers" => [],
           },
         }
         config["previous_step_id"] = previous_step_id if previous_step_id
@@ -204,7 +204,9 @@ module Registrations
           type:,
           order:,
           config:,
-        )
+        ).tap do |registration_step|
+          registration_step.set_answers!(answers:) if answers.any?
+        end
       end
     end
   end

@@ -4,7 +4,8 @@ module Registrations
       def call
         funding_eligibility_result = nil
         funding_eligibility_result_text = nil
-        if wizard.state_store["teacher_catchment"] != "England"
+
+        if wizard.state_store["teacher_catchment"] != "england"
           funding_eligibility_result_text = "You're not eligible because you're not in England"
           funding_eligibility_result = "ineligible"
         else
