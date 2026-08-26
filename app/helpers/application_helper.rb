@@ -69,4 +69,14 @@ module ApplicationHelper
   def one_login_home_url
     Rails.application.config.x.teacher_auth.one_login_home_url
   end
+
+  def registration_step_display_value(registration_journey, answer_key, value)
+    registration_step = registration_journey.registration_steps.find do |step|
+      step.answer_key == answer_key.to_s
+    end
+
+    answer = registration_step&.answer_data&.find { |configured_answer| configured_answer["value"] == value.to_s }
+
+    answer&.fetch("name") || value
+  end
 end

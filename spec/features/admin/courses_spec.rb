@@ -19,6 +19,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       expect(page).to have_css("h1", text: "Courses")
       expect(page).to have_link(course.name, href: admin_course_path(course))
+      expect(page).not_to have_link("Create course")
       expect(page).to have_css(".x-govuk-sub-navigation")
       expect(page).to have_css(".govuk-pagination__item--current", text: 1)
     end
@@ -88,6 +89,24 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       expect(page).to have_css("h1", text: "Updated Course Name")
       expect(page).to have_summary_item("Name", "Updated Course Name")
+    end
+
+    scenario "creating a course" do
+      visit(admin_courses_path)
+
+      click_link("Create course")
+
+      expect(page).to have_css("h1", text: "Create course")
+
+      fill_in("Course name", with: "New Course")
+      fill_in("Course identifier", with: "new-course")
+      fill_in("Course description", with: "A freshly created course")
+      click_button("Create course")
+
+      expect(page).to have_css("h1", text: "New Course")
+      expect(page).to have_summary_item("Name", "New Course")
+      expect(page).to have_summary_item("Identifier", "new-course")
+      expect(page).to have_summary_item("Description", "A freshly created course")
     end
 
     scenario "editing a course with invalid input shows an error" do

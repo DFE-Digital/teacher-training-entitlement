@@ -30,24 +30,31 @@
         <%= render partial: "layouts/shared/messages" %>
 
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-quarter" id="side-navigation">
-            <%=
-              render SubNavigationComponent.new(
-                request.path,
-                structure: admin_navigation_structure.sub_structure(request.path, default_to_first_section: true),
-              )
-            %>
+          <% if content_for(:side_navigation).present? %>
+            <div class="govuk-grid-column-one-quarter" id="side-navigation">
+              <%=
+                render SubNavigationComponent.new(
+                  request.path,
+                  structure: admin_navigation_structure.sub_structure(request.path, default_to_first_section: true),
+                )
+              %>
 
-            <%= yield :side_navigation %>
-          </div>
+              <%= yield :side_navigation %>
+            </div>
 
-          <div class="govuk-grid-column-three-quarters">
-            <%= yield %>
-          </div>
+            <div class="govuk-grid-column-three-quarters">
+              <%= yield %>
+            </div>
+          <% else %>
+            <div class="govuk-grid-column-full-width">
+              <%= yield %>
+            </div>
+          <% end %>
         </div>
-      </main>
-    </div>
-  </body>
+      </div>
+    </main>
+  </div>
+</body>
 
-  <%= render partial: "layouts/shared/footer" %>
+<%= render partial: "layouts/shared/footer" %>
 </html>

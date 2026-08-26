@@ -1,0 +1,41 @@
+<%= form_with model: [:admin, registration_journey] do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <%=
+    form.govuk_text_field :name,
+                          width: "two-thirds",
+                          label: {
+                            text: "Name",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_text_field :slug,
+                          width: "two-thirds",
+                          label: {
+                            text: "Slug",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_collection_select(
+      :course_id,
+      Course.order(:name),
+      :id,
+      :name,
+      options: { include_blank: "No course" },
+      label: {
+        text: "Course",
+        size: "m",
+      },
+      width: "two-thirds",
+    )
+  %>
+
+  <div class="govuk-button-group">
+    <%= form.govuk_submit "Save registration journey" %>
+    <%= govuk_link_to "Cancel", admin_registration_journeys_path, class: "govuk-link--no-visited-state" %>
+  </div>
+<% end %>

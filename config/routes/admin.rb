@@ -21,6 +21,31 @@ namespace :admin do
   resources :super_admins, only: %i[update]
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
+  resources :registration_step_answers, only: %i[index], path: "registration-step-answers"
+  resources :registration_templates, path: "registration-templates" do
+    resource :journey, controller: "registration_template_journeys", only: :create
+  end
+  resources :registration_journeys, path: "registration-journeys" do
+    resource :template, controller: "registration_journey_templates", only: %i[new create]
+
+    member do
+      patch "registration-steps", action: :update_registration_steps
+    end
+
+    resources :registration_steps, except: :show, path: "registration-steps" do
+      member do
+        patch "move-up", action: :move_up
+        patch "move-down", action: :move_down
+      end
+
+      resource :duplication, controller: "registration_step_duplications", only: :create
+      resource :answers, controller: "registration_step_answers", only: %i[create update destroy]
+      resource :custom_step, controller: "registration_step_custom_steps", only: %i[create update], path: "custom-step"
+      resource :custom_view, controller: "registration_step_custom_views", only: %i[create update], path: "custom-views"
+      resource :services, controller: "registration_step_services", only: %i[create]
+      resource :texts, controller: "registration_step_texts", only: %i[show create destroy]
+    end
+  end
   resources :glossary, only: %i[index]
   resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
     collection do
@@ -115,7 +140,7 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show edit update] do
+  resources :courses, only: %i[index show new create edit update] do
     concerns :cohortable, index: "courses#index"
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end

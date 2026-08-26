@@ -1,0 +1,23 @@
+<p class="govuk-body">Enter the month and year you started. For example, 9 2024.</p>
+
+<div class="govuk-date-input">
+  <div class="govuk-date-input__item">
+    <%=
+      @form.govuk_number_field(
+        :senco_start_month,
+        width: 2,
+        label: { text: "Month" },
+      )
+    %>
+  </div>
+
+  <div class="govuk-date-input__item">
+    <%=
+      @form.govuk_number_field(
+        :senco_start_year,
+        width: 4,
+        label: { text: "Year" },
+      )
+    %>
+  </div>
+</div>

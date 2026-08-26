@@ -43,6 +43,24 @@ RSpec.describe Admin::CoursesController, type: :request do
       it { is_expected.to redirect_to(sign_in_path) }
     end
 
+    describe "GET /admin/courses/new" do
+      subject do
+        get new_admin_course_path
+        response
+      end
+
+      it { is_expected.to redirect_to(sign_in_path) }
+    end
+
+    describe "POST /admin/courses" do
+      subject do
+        post admin_courses_path, params: { course: { name: "New course", identifier: "new-course" } }
+        response
+      end
+
+      it { is_expected.to redirect_to(sign_in_path) }
+    end
+
     describe "PATCH /admin/courses/{id}" do
       let(:course) { create(:course) }
 
@@ -67,6 +85,32 @@ RSpec.describe Admin::CoursesController, type: :request do
       end
 
       it { is_expected.to have_http_status(:ok) }
+    end
+
+    describe "GET /admin/courses/new" do
+      subject do
+        get new_admin_course_path
+        response
+      end
+
+      it { is_expected.to have_http_status(:ok) }
+    end
+
+    describe "POST /admin/courses" do
+      subject do
+        post admin_courses_path, params: { course: { name: "New course", identifier: "new-course", description: "A new course" } }
+        response
+      end
+
+      it { is_expected.to redirect_to(admin_course_path(Course.find_by!(identifier: "new-course"))) }
+
+      it "creates the course" do
+        expect { subject }.to change(Course, :count).by(1)
+        expect(Course.find_by!(identifier: "new-course")).to have_attributes(
+          name: "New course",
+          description: "A new course",
+        )
+      end
     end
 
     describe "PATCH /admin/courses/{id}" do

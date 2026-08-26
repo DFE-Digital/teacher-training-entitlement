@@ -19,6 +19,23 @@ erDiagram
     text ukprn
     datetime updated_at
   }
+  Schedule {
+    integer id
+    date acceptance_window_end
+    date acceptance_window_start
+    array[enum] allowed_declaration_types
+    integer cohort_id
+    enum course_group
+    datetime created_at
+    uuid ecf_id
+    string identifier
+    string name
+    integer policy_descriptor
+    date training_ends_at
+    date training_starts_at
+    datetime updated_at
+  }
+  Schedule }o--|| Cohort : belongs_to
   PrivateChildcareProvider {
     integer id
     datetime created_at
@@ -75,11 +92,8 @@ erDiagram
     integer course_id
     datetime created_at
     uuid ecf_id
+    integer schedule_id
     datetime updated_at
-    date registration_starts_at
-    date registration_ends_at
-    date training_starts_at
-    date training_ends_at
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to

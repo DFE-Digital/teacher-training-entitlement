@@ -1,0 +1,32 @@
+<%= form_with url: admin_registration_journey_registration_step_texts_path(registration_step.registration_journey, registration_step) do |form| %>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <%=
+        form.govuk_text_area :text,
+                             rows: 5,
+                             label: {
+                               text: "Text",
+                               size: "m",
+                             }
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_collection_select(
+          :text_size,
+          [["Plain", "t"], ["Small", "s"], ["Medium", "m"], ["Large", "l"]],
+          :second,
+          :first,
+          options: { prompt: true },
+          label: {
+            text: "Size",
+            size: "m",
+          },
+        )
+      %>
+    </div>
+  </div>
+
+  <%= form.govuk_submit "Add" %>
+<% end %>

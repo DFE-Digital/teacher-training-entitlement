@@ -1,0 +1,35 @@
+<%= govuk_back_link(href: admin_registration_journey_path(@registration_journey)) %>
+
+<div class="govuk-button-group govuk-!-margin-bottom-6">
+  <%= govuk_link_to "New registration step", new_admin_registration_journey_registration_step_path(@registration_journey), class: "govuk-button" %>
+</div>
+
+<h1 class="govuk-heading-l">Registration steps</h1>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Order")
+        row.with_cell(text: "Name")
+        row.with_cell(text: "Slug")
+        row.with_cell(text: "Type")
+      end
+    end
+
+    table.with_body do |body|
+      @registration_steps.each do |registration_step|
+        body.with_row do |row|
+          row.with_cell(text: registration_step.order)
+          row.with_cell do
+            govuk_link_to(registration_step.name.presence || "Untitled", edit_admin_registration_journey_registration_step_path(@registration_journey, registration_step))
+          end
+          row.with_cell(text: registration_step.slug)
+          row.with_cell(text: registration_step.type)
+        end
+      end
+    end
+  end
+%>
+
+<%= govuk_pagination(pagy: @pagy) %>

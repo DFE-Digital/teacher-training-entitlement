@@ -1,0 +1,42 @@
+<div class="govuk-button-group govuk-!-margin-bottom-6">
+  <%= govuk_link_to "New registration journey", new_admin_registration_journey_path, class: "govuk-button" %>
+  <%= govuk_link_to "Registration templates", admin_registration_templates_path %>
+</div>
+
+<h1 class="govuk-heading-l">Registration journeys</h1>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |header|
+        header.with_row do |row|
+          row.with_cell(text: "Name")
+          row.with_cell(text: "Slug")
+          row.with_cell(text: "Steps")
+          row.with_cell(text: "")
+        end
+    end
+
+    table.with_body do |body|
+      @registration_journeys.each do |registration_journey|
+        body.with_row do |row|
+          row.with_cell do
+            govuk_link_to(registration_journey.name.presence || "Untitled", admin_registration_journey_path(registration_journey))
+          end
+          row.with_cell do
+            govuk_link_to(registration_journey.slug, registration_path(registration_journey.slug, ""), target: "_blank", rel: "noopener")
+          end
+          row.with_cell(text: registration_journey.registration_steps.size)
+          row.with_cell do
+            govuk_button_link_to(
+              "Delete",
+              admin_registration_journey_path(registration_journey),
+              method: :delete,
+              warning: true,
+              data: { confirm: "Are you sure you want to delete this registration journey?" },
+            )
+          end
+        end
+      end
+    end
+  end
+%>

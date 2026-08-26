@@ -1,0 +1,56 @@
+<% if registration_step.configured_services.any? %>
+  <%= govuk_summary_list do |summary_list| %>
+    <% registration_step.configured_services.each do |service| %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: service["class_name"]) %>
+        <% row.with_value(text: RegistrationStep::SERVICE_EXECUTE_POINT_OPTIONS.key(service["execute_point"]) || service["execute_point"]) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="govuk-body">No services have been configured.</p>
+<% end %>
+
+<%= form_with url: admin_registration_journey_registration_step_services_path(registration_step.registration_journey, registration_step) do |form| %>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <%=
+        form.govuk_collection_select(
+          :service_class,
+          registration_step.available_services,
+          :to_s,
+          :to_s,
+          options: { prompt: true, selected: registration_step.configured_service_class_name },
+          label: {
+            text: "Service",
+            size: "m",
+          },
+          hint: {
+            text: "To add a service create a class located under `app/services` which inherits from Registrations::BaseStepService",
+          },
+        )
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_select(
+          :execute_point,
+          options_for_select(
+            RegistrationStep::SERVICE_EXECUTE_POINT_OPTIONS.map { |label, value| [label, value] },
+            registration_step.configured_service_execute_point || RegistrationStep::DEFAULT_SERVICE_EXECUTE_POINT,
+          ),
+          label: {
+            text: "When to run",
+            size: "m",
+          },
+          hint: {
+            text: "You can run a service before #show or after a successful #update",
+          },
+        )
+      %>
+    </div>
+  </div>
+
+  <%= form.govuk_submit registration_step.configured_services.any? ? "Update service" : "Add service" %>
+<% end %>

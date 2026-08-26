@@ -1,0 +1,6 @@
+<p class="govuk-body"><%= t("helpers.title.registration_wizard.course_start_date_sub", date: application_course_start_date) %>.</p>
+
+<%= @form.govuk_radio_buttons_fieldset("When do you want to start the course?", legend: { size: "m", tag: "h2" }) do %>
+  <%= @form.govuk_radio_button(:step_answer, "yes", label: { text: application_course_start_date }, hint: { text: t("helpers.hint.registration_wizard.course_start_date_hint") }) %>
+  <%= @form.govuk_radio_button(:step_answer, "later", label: { text: "I want to start at a later date" }) %>
+<% end %>

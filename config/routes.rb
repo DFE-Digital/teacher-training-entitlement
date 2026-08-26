@@ -76,4 +76,9 @@ Rails.application.routes.draw do
   get "/500", to: "errors#internal_server_error", via: :all
 
   get "/development_login", to: "registration_wizard#development_login"
+
+  get "/registrations/:journey_slug", to: "registrations#show"
+  get "/registrations/:journey_slug/:step_slug", to: "registrations#show", as: :registration
+  patch "/registrations/:journey_slug/:step_slug", to: "registrations#update"
+  put "/registrations/:journey_slug/:step_slug", to: "registrations#update"
 end

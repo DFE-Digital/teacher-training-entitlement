@@ -87,6 +87,11 @@ module NavigationStructures
           prefix: "/admin/schools",
         ) => [],
         Node.new(
+          name: "Registration Journeys",
+          href: admin_registration_journeys_path,
+          prefix: "/admin/registration-journeys",
+        ) => [],
+        Node.new(
           name: "Bulk changes",
           href: admin_bulk_operations_path,
           prefix: "/admin/bulk-changes",

@@ -52,10 +52,50 @@
   - record_id
   - record_type
   :statements:
-  - cohort_id
-  - month
   - reconcile_amount
-  - year
+  :schedules:
+  - id
+  - acceptance_window_end
+  - acceptance_window_start
+  - allowed_declaration_types
+  - cohort_id
+  - course_group
+  - created_at
+  - ecf_id
+  - identifier
+  - name
+  - policy_descriptor
+  - training_ends_at
+  - training_starts_at
+  - updated_at
+  :registration_templates:
+  - id
+  - name
+  - description
+  - template_generating_service_class
+  - created_at
+  - updated_at
+  :registration_steps:
+  - id
+  - registration_journey_id
+  - name
+  - config
+  - type
+  - created_at
+  - updated_at
+  - slug
+  - order
+  - sti_type
+  - redirect_path
+  - redirect_state_store_key
+  - answer_key
+  :registration_journeys:
+  - id
+  - name
+  - created_at
+  - updated_at
+  - slug
+  - course_id
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -74,26 +114,28 @@
   :course_cohort_providers:
   - recruitment_target
   - teacher_funding
+  :course_cohorts:
+  - schedule_id
   :contract_years:
   - id
   - academic_year
   - course_id
   - course_url
   - created_at
-  - lead_provider_id
   - email
+  - lead_provider_id
   - recruitment_target
   - secondary_form_url
   - service_fee
   - teacher_funding
   - updated_at
-  :declarations:
-  - value
   :closed_registration_users:
   - id
   - created_at
   - email
   - updated_at
+  :declarations:
+  - value
   :application_lead_providers:
   - created_at
   - updated_at

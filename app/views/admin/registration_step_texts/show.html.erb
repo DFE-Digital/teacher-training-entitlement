@@ -1,0 +1,16 @@
+<%= govuk_back_link(href: edit_admin_registration_journey_registration_step_path(@registration_journey, @registration_step)) %>
+
+<h1 class="govuk-heading-l">Edit text</h1>
+
+<% if @registration_step.config.dig(@registration_step.type_as_param, "text").present? %>
+  <ul class="govuk-list govuk-list--bullet">
+    <% @registration_step.config.dig(@registration_step.type_as_param, "text").each do |text_config| %>
+      <li>
+        <%= text_config["text"] %>
+        <span class="govuk-hint govuk-!-display-inline">(<%= text_config["text_size"] %>)</span>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= render "form", registration_step: @registration_step %>

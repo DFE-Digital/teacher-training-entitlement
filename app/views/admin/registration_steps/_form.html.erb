@@ -1,0 +1,175 @@
+<% form_url = registration_step.persisted? ? admin_registration_journey_registration_step_path(registration_journey, registration_step) : admin_registration_journey_registration_steps_path(registration_journey) %>
+
+<%= form_with model: registration_step, scope: :registration_step, url: form_url do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_text_field :name,
+                              label: {
+                                text: "Name",
+                                size: "m",
+                              }
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_text_field :slug,
+                              label: {
+                                text: "Slug",
+                                size: "m",
+                              }
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_collection_select(
+          :type,
+          RegistrationStep::TYPES,
+          :to_s,
+          :to_s,
+          options: { prompt: true },
+          label: {
+            text: "Type",
+            size: "m",
+          },
+        )
+      %>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_text_field :answer_key,
+                              label: {
+                                text: "Answer key",
+                                size: "m",
+                              },
+                              hint: {
+                                text: "Defaults to the underscored step name.",
+                              }
+      %>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <% unless registration_step.new_record? %>
+      <div class="govuk-grid-column-one-third">
+        <%=
+          form.govuk_collection_select(
+            :previous_step_id,
+            registration_step.other_registration_steps,
+            :id,
+            :name,
+            options: { selected: registration_step.previous_step_id, include_blank: "Default previous step" },
+            label: {
+              text: "Previous step",
+              size: "m",
+            },
+            hint: {
+              text: "Set this to override the previous step",
+            }            
+          )
+        %>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <%=
+          form.govuk_collection_select(
+            :branch_join_step_id,
+            registration_step.other_registration_steps,
+            :id,
+            :name,
+            options: { selected: registration_step.branch_join_step_id, include_blank: "Automatic join step" },
+            label: {
+              text: "Branch join step",
+              size: "m",
+            },
+            hint: {
+              text: "Where paths from this step rejoin. Set this for nested branches.",
+            },
+          )
+        %>
+      </div>
+    <% end %>
+    <% if registration_step.new_record? %>
+      <div class="govuk-grid-column-one-third">
+        <%=
+        form.govuk_collection_select(
+          :after_step_id,
+          registration_journey.registration_steps,
+          :id,
+          :name,
+          options: { include_blank: "At the end" },
+          label: {
+            text: "After step",
+            size: "m",
+          },
+        )
+      %>
+      </div>
+    <% end %>
+  </div>
+
+  <% unless registration_step.new_record? %>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <%=
+          form.govuk_text_field :redirect_path,
+                                value: registration_step.redirect_path,
+                                label: {
+                                  text: "Redirect path",
+                                  size: "m",
+                                },
+                                hint: {
+                                  text: "Use an app path, for example /applications/example-id",
+                                },
+                                placeholder: "No redirect"
+        %>
+      </div>
+
+      <div class="govuk-grid-column-one-half">
+        <%=
+          form.govuk_text_field :redirect_state_store_key,
+                                value: registration_step.redirect_state_store_key,
+                                label: {
+                                  text: "Redirect state key",
+                                  size: "m",
+                                },
+                                hint: {
+                                  text: "Use this when a service writes the redirect path to the journey state.",
+                                }
+        %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if registration_step.funding_eligibility_step? %>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <%=
+          form.govuk_collection_select(
+            :funding_eligibility_service_class,
+            registration_step.funding_eligibility_services,
+            :to_s,
+            :to_s,
+            options: { prompt: true, selected: registration_step.funding_eligibility_service_class },
+            label: {
+              text: "Funding eligibility service class",
+              size: "m",
+            },
+          )
+        %>
+
+      </div>
+    </div>
+  <% end %>
+
+  <div class="govuk-button-group">
+    <%= form.govuk_submit "Save registration step" %>
+    <%= govuk_link_to "Cancel", admin_registration_journey_path(registration_journey), class: "govuk-link--no-visited-state" %>
+  </div>
+<% end %>

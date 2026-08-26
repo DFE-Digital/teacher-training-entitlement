@@ -1,0 +1,142 @@
+<% if registration_step.answers.any? %>
+  <%= form_with url: admin_registration_journey_registration_step_answers_path(registration_step.registration_journey, registration_step), method: :patch do |form| %>
+    <% registration_step.answer_data.each_with_index do |answer, index| %>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <%=
+            form.govuk_text_field "answers[#{index}][name]",
+                                  value: answer["name"],
+                                  label: {
+                                    text: "Answer #{index + 1}",
+                                    size: "m",
+                                  },
+                                  hint: {
+                                    text: "The human readable answer",
+                                  }                                  
+          %>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+          <%=
+            form.govuk_text_field "answers[#{index}][value]",
+                                  value: answer["value"],
+                                  label: {
+                                    text: "Value",
+                                    size: "m",
+                                  },
+                                  hint: {
+                                    text: "Override the stored answer value",
+                                  }
+          %>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+          <%=
+            form.govuk_collection_select(
+              "answers[#{index}][next_step_id]",
+              registration_step.other_registration_steps,
+              :id,
+              :name,
+              options: { selected: answer["next_step_id"], include_blank: "Default next step" },
+              label: {
+                text: "Next step",
+                size: "m",
+              },
+              hint: {
+                text: "Choose the next step based on the answer",
+              },
+            )
+          %>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+          <%=
+            form.govuk_text_field "answers[#{index}][redirect_path]",
+                                  value: answer.dig("redirect", "path"),
+                                  label: {
+                                    text: "Redirect path",
+                                    size: "m",
+                                  },
+                                  placeholder: "No redirect"
+          %>
+        </div>
+
+        <div class="govuk-grid-column-full">
+          <%= govuk_button_link_to "Delete",
+                                   admin_registration_journey_registration_step_answers_path(registration_step.registration_journey, registration_step, index:),
+                                   method: :delete,
+                                   warning: true %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form.govuk_submit "Update answers" %>
+  <% end %>
+<% else %>
+  <p class="govuk-body">No answers have been added.</p>
+<% end %>
+
+<h3 class="govuk-heading-s govuk-!-padding-top-4">Add another answer</h3>
+
+<%= form_with url: admin_registration_journey_registration_step_answers_path(registration_step.registration_journey, registration_step) do |form| %>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_text_field :answer_name,
+                              label: {
+                                text: "Answer name",
+                                size: "m",
+                              },
+                              hint: {
+                                text: "The human readable answer",
+                              }
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_text_field :answer_value,
+                              label: {
+                                text: "Answer value",
+                                size: "m",
+                              },
+                              hint: {
+                                text: "Override the stored answer value.",
+                              }
+      %>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <%=
+        form.govuk_collection_select(
+          :next_step_id,
+          registration_step.other_registration_steps,
+          :id,
+          :name,
+          options: { include_blank: "Default next step" },
+          label: {
+            text: "Next step",
+            size: "m",
+          },
+          hint: {
+            text: 'Choose the next step based on the answer'
+          }
+        )
+      %>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <%=
+        form.govuk_text_field :redirect_path,
+                              label: {
+                                text: "Redirect path",
+                                size: "m",
+                              }
+      %>
+    </div>
+  </div>
+
+  <%= form.govuk_submit "Add" %>
+<% end %>

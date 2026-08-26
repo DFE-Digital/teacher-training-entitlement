@@ -32,21 +32,6 @@ shared:
     - phase_type
     - phase_name
     - number_of_pupils
-  :schedules:
-    - id
-    - cohort_id
-    - name
-    - identifier
-    - training_starts_at
-    - training_ends_at
-    - allowed_declaration_types
-    - created_at
-    - updated_at
-    - ecf_id
-    - policy_descriptor
-    - acceptance_window_start
-    - acceptance_window_end
-    - course_group
   :registration_interests:
     - id
     - email
@@ -159,7 +144,6 @@ shared:
     - course_id
     - created_at
     - ecf_id
-    - schedule_id
     - updated_at
   :course_cohort_providers:
     - id

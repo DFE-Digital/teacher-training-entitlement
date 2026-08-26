@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -476,6 +476,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
     t.index ["email"], name: "index_registration_interests_on_email", unique: true
   end
 
+  create_table "registration_journeys", force: :cascade do |t|
+    t.bigint "course_id"
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "slug"
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_registration_journeys_on_course_id"
+  end
+
+  create_table "registration_steps", force: :cascade do |t|
+    t.string "answer_key"
+    t.jsonb "config", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.integer "order"
+    t.string "redirect_path"
+    t.string "redirect_state_store_key"
+    t.bigint "registration_journey_id", null: false
+    t.string "slug"
+    t.string "sti_type"
+    t.string "type"
+    t.datetime "updated_at", null: false
+    t.index ["registration_journey_id"], name: "index_registration_steps_on_registration_journey_id"
+  end
+
+  create_table "registration_templates", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.string "template_generating_service_class"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "reports", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "data"
@@ -625,6 +658,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"
+  add_foreign_key "registration_steps", "registration_journeys"
   add_foreign_key "schedules", "cohorts"
   add_foreign_key "statements", "lead_providers"
 end

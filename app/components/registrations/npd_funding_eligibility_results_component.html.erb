@@ -1,0 +1,21 @@
+<% if ineligible? %>
+  <p class="govuk-body">You're not eligible for scholarship funding for the course as you do not work in one of the eligible settings, such as state-funded schools.</p>
+
+  <p class="govuk-body">This means that you would need to pay for the course another way. For example, you could pay for the course fees yourself or ask your workplace or trust to:</p>
+
+  <ul class="govuk-list govuk-list--bullet">
+    <li>cover the full cost of the course</li>
+    <li>share the cost of the course with you</li>
+  </ul>
+
+<% else %>
+  <p class="govuk-body"><%= @wizard.state_store[:funding_eligibility_result_text] %>.</p>
+
+  <h2 class="govuk-heading-m">What happens next</h2>
+  <ol class="govuk-list govuk-list--number">
+
+    <li>When you submit your registration, we notify your provider that you're eligible for a funded place</li>
+    <li>Your provider will contact you to complete your application and confirm if a place is available</li>
+  </ol>
+
+<% end %>

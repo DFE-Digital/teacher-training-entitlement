@@ -18,6 +18,7 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
         "Users" => "/admin/users",
         "Finance" => "/admin/finance/statements",
         "Workplaces" => "/admin/schools",
+        "Registration Journeys" => "/admin/registration-journeys",
         "Bulk changes" => "/admin/bulk-changes",
         "Registration closed" => "/admin/registration-closed",
         "Actions log" => "/admin/actions-log",

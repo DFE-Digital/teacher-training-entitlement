@@ -1,0 +1,46 @@
+<%
+  hidden_state_keys = %w[completed completed_at]
+  captured_values = @wizard.state_store.read.reject do |key, value|
+    value.blank? || key.to_s.in?(hidden_state_keys)
+  end
+  course = @wizard.registration_journey.course
+%>
+
+<% if course.present? || captured_values.any? %>
+  <%=
+    govuk_summary_list do |summary_list|
+      if course.present?
+        summary_list.with_row do |row|
+          row.with_key(text: "Course")
+          row.with_value(text: course.name)
+        end
+      end
+
+      captured_values.each do |key, value|
+        summary_list.with_row do |row|
+          row.with_key(text: key.to_s.humanize)
+          row.with_value do
+            case value
+            when Array
+              safe_join(
+                value.map do |item|
+                  tag.div(registration_step_display_value(@wizard.registration_journey, key, item))
+                end,
+              )
+            when Hash
+              safe_join(
+                value.map do |nested_key, nested_value|
+                  tag.div("#{nested_key.to_s.humanize}: #{nested_value}")
+                end,
+              )
+            else
+              registration_step_display_value(@wizard.registration_journey, key, value).to_s
+            end
+          end
+        end
+      end
+    end
+  %>
+<% else %>
+  <p class="govuk-body">No answers have been captured yet.</p>
+<% end %>

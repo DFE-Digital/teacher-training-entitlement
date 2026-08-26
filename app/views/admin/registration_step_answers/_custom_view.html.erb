@@ -1,0 +1,34 @@
+<%= form_with url: admin_registration_journey_registration_step_custom_view_path(registration_step.registration_journey, registration_step), multipart: true do |form| %>
+  <%=
+    form.govuk_collection_select(
+      :custom_view,
+      registration_step.custom_views,
+      :to_s,
+      :to_s,
+      options: { prompt: true, selected: registration_step.custom_view_class_name },
+      label: {
+        text: "Custom view",
+        size: "m",
+      },
+      hint: {
+        text: "To add a step create a class located under `app/components/registrations` which inherits from Registrations::BaseCustomViewComponent",
+      },
+    )
+  %>
+
+  <%=
+    form.govuk_collection_select(
+      :next_step_id,
+      registration_step.other_registration_steps,
+      :id,
+      :name,
+      options: { include_blank: "Default next step" },
+      label: {
+        text: "Next step",
+        size: "m",
+      },
+    )
+  %>
+
+  <%= form.govuk_submit registration_step.custom_view_class_name.blank? ? "Add" : "Update" %>
+<% end %>

@@ -1,0 +1,60 @@
+<%= govuk_back_link(href: admin_registration_journey_path(@registration_journey)) %>
+
+<h1 class="govuk-heading-l">Edit registration step</h1>
+
+<p class="govuk-body">
+  <%= govuk_link_to "View step", registration_path(@registration_journey.slug, @registration_step.slug), target: "_blank", rel: "noopener" %>
+</p>
+
+<%= render "form", registration_journey: @registration_journey, registration_step: @registration_step %>
+
+<div class="govuk-!-padding-top-8">
+  <h2 class="govuk-heading-m">Services</h2>
+  <hr>
+  <%= render "admin/registration_step_services/form", registration_step: @registration_step %>
+</div>
+
+<% if @registration_step.simple_question_type? %>
+  <div class="govuk-!-padding-top-8">
+    <h2 class="govuk-heading-m">Configured Text</h2>
+    <hr>
+
+    <% if @registration_step.text_data.any? %>
+      <% @registration_step.text_data.each.with_index do |text_data, index| %>
+        <p class="govuk-heading-<%= text_data['text_size'] %>"><%= text_data['text'] %></p>
+        <%= govuk_button_link_to "Delete",
+                                 admin_registration_journey_registration_step_texts_path(@registration_journey, @registration_step, index:),
+                                 method: :delete,
+                                 warning: true %>
+      <% end %>
+    <% else %>
+      <p class="govuk-body">No text has been configured.</p>
+    <% end %>
+
+    <%= render "admin/registration_step_texts/form", registration_step: @registration_step %>
+  </div>
+
+  <div class="govuk-!-padding-top-8">
+    <h2 class="govuk-heading-m">Answers</h2>
+    <hr>
+    <%= render "admin/registration_step_answers/registration_step_answer",
+               registration_step: @registration_step,
+               registration_journey: @registration_journey %>
+  </div>
+<% elsif @registration_step.custom_step? %>
+  <div class="govuk-!-padding-top-8">
+    <h2 class="govuk-heading-m">Custom step</h2>
+    <hr>
+    <%= render "admin/registration_step_answers/custom_step",
+               registration_step: @registration_step,
+               registration_journey: @registration_journey %>
+  </div>
+<% elsif @registration_step.custom_view? %>
+  <div class="govuk-!-padding-top-8">
+    <h2 class="govuk-heading-m">Custom view</h2>
+    <hr>
+    <%= render "admin/registration_step_answers/custom_view",
+               registration_step: @registration_step,
+               registration_journey: @registration_journey %>
+  </div>
+<% end %>

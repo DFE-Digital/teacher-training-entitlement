@@ -1,0 +1,5 @@
+<%= govuk_back_link(href: admin_registration_journey_path(@registration_journey)) %>
+
+<h1 class="govuk-heading-l">New registration step</h1>
+
+<%= render "form", registration_journey: @registration_journey, registration_step: @registration_step %>

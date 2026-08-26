@@ -11,6 +11,15 @@
   %>
 
   <%=
+    form.govuk_text_field :identifier,
+                          width: "two-thirds",
+                          label: {
+                            text: "Course identifier",
+                            size: "m",
+                          }
+  %>
+
+  <%=
     form.govuk_text_area :description,
                          rows: 5,
                          label: {
@@ -20,7 +29,7 @@
   %>
 
   <div class="govuk-button-group">
-    <%= form.govuk_submit "Save course details" %>
-    <%= govuk_link_to "Cancel", admin_course_path(course), class: "govuk-link--no-visited-state" %>
+    <%= form.govuk_submit course.persisted? ? "Save course details" : "Create course" %>
+    <%= govuk_link_to "Cancel", course.persisted? ? admin_course_path(course) : admin_courses_path, class: "govuk-link--no-visited-state" %>
   </div>
 <% end %>

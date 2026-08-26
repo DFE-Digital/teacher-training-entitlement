@@ -1,0 +1,42 @@
+<%= govuk_back_link(href: admin_registration_journey_path(@registration_journey)) %>
+
+<h1 class="govuk-heading-l">Apply a registration template</h1>
+<p class="govuk-body">Choose a template to add its steps to <strong><%= @registration_journey.name %></strong>.</p>
+
+<% if @registration_templates.any? %>
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Name")
+          row.with_cell(text: "Description")
+          row.with_cell(text: "")
+        end
+      end
+
+      table.with_body do |body|
+        @registration_templates.each do |registration_template|
+          body.with_row do |row|
+            row.with_cell(text: registration_template.name)
+            row.with_cell(text: registration_template.description.presence || "—")
+            row.with_cell do
+              form_with url: admin_registration_journey_template_path(@registration_journey), method: :post do |form|
+                safe_join(
+                  [
+                    form.hidden_field(:registration_template_id, value: registration_template.id),
+                    form.govuk_submit("Apply", class: "govuk-!-margin-bottom-0"),
+                  ],
+                )
+              end
+            end
+          end
+        end
+      end
+    end
+  %>
+
+  <%= govuk_link_to "Cancel", admin_registration_journey_path(@registration_journey), class: "govuk-link--no-visited-state" %>
+<% else %>
+  <p class="govuk-body">No registration templates have been added.</p>
+  <%= govuk_link_to "Create a registration template", new_admin_registration_template_path, class: "govuk-button" %>
+<% end %>

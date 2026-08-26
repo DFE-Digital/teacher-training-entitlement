@@ -1,0 +1,3 @@
+<%# This renders the ViewComponent which is returned  %>
+<%# from the class implementing Forms::CustomRegistrationStepForm %>
+<%= render @wizard.current_step.view_component(form:, registration_step:) %>

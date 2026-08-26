@@ -1,0 +1,43 @@
+<%= form_with model: [:admin, registration_template] do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <%=
+    form.govuk_text_field :name,
+                          width: "two-thirds",
+                          label: {
+                            text: "Name",
+                            size: "m",
+                          }
+  %>
+
+  <%=
+    form.govuk_text_area :description,
+                         rows: 5,
+                         label: {
+                           text: "Description",
+                           size: "m",
+                         }
+  %>
+
+  <%=
+    form.govuk_collection_select(
+      :template_generating_service_class,
+      registration_template.template_generating_services,
+      :to_s,
+      :to_s,
+      options: {
+        prompt: true,
+        selected: registration_template.template_generating_service_class,
+      },
+      label: {
+        text: "Template-generating service class",
+        size: "m",
+      },
+    )
+  %>
+
+  <div class="govuk-button-group">
+    <%= form.govuk_submit "Save registration template" %>
+    <%= govuk_link_to "Cancel", registration_template.persisted? ? admin_registration_template_path(registration_template) : admin_registration_templates_path, class: "govuk-link--no-visited-state" %>
+  </div>
+<% end %>

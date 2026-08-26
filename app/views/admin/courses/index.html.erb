@@ -7,6 +7,11 @@
 <% end %>
 
 <h1 class="govuk-heading-l">Courses</h1>
+
+<% if current_admin.super_admin? %>
+  <%= govuk_link_to "Create course", new_admin_course_path, class: "govuk-button" %>
+<% end %>
+
 <%=
 govuk_table do |table|
     table.with_head do |header|

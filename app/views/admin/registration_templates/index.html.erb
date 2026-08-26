@@ -1,0 +1,34 @@
+<div class="govuk-button-group govuk-!-margin-bottom-6">
+  <%= govuk_link_to "New registration template", new_admin_registration_template_path, class: "govuk-button" %>
+</div>
+
+<h1 class="govuk-heading-l">Registration templates</h1>
+
+<% if @registration_templates.any? %>
+  <%=
+    govuk_table do |table|
+      table.with_head do |header|
+        header.with_row do |row|
+          row.with_cell(text: "Name")
+          row.with_cell(text: "Description")
+        end
+      end
+
+      table.with_body do |body|
+        @registration_templates.each do |registration_template|
+          body.with_row do |row|
+            row.with_cell do
+              govuk_link_to(
+                registration_template.name.presence || "Untitled",
+                admin_registration_template_path(registration_template),
+              )
+            end
+            row.with_cell(text: registration_template.description)
+          end
+        end
+      end
+    end
+  %>
+<% else %>
+  <p class="govuk-body">No registration templates have been added.</p>
+<% end %>

@@ -1,0 +1,23 @@
+<%# <h2 class="govuk-heading-l"><%= @wizard.registration_journey.name </h2>%>
+<% if @wizard.previous_step %>
+  <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: registration_path(@wizard.registration_journey.slug, @wizard.previous_step)) %>
+<% end %>
+
+<h3 class="govuk-heading-l"><%= @wizard.registration_step.name %></h3>
+
+<% if @wizard.registration_step.simple_question_type? %>
+  <% @wizard.registration_step.text_data.each do |text_data| %>
+    <p class="govuk-heading-<%= text_data['text_size'] %>"><%= text_data['text'] %></p>
+  <% end %>
+<% end %>
+
+<%= form_with model: @step,
+                    url: registration_path(@wizard.registration_journey.slug, @wizard.registration_step.slug),
+                    scope: current_step_name,
+                    method: :patch do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <%= render @wizard.registration_step.type_as_param, form:, registration_journey: @wizard.registration_journey, registration_step: @wizard.registration_step %>
+
+  <%= form.govuk_submit %>
+<% end %>

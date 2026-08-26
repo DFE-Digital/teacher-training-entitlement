@@ -1,0 +1,142 @@
+<% content_for :head do %>
+  <%= nonced_javascript_include_tag "mermaid", defer: true %>
+<% end %>
+
+<%= govuk_back_link(href: admin_registration_journeys_path) %>
+
+<h1 class="govuk-heading-l"><%= @registration_journey.name.presence || "Untitled registration journey" %></h1>
+<%= govuk_link_to "Edit", edit_admin_registration_journey_path(@registration_journey), class: "govuk-button" %>
+
+<%=
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
+      row.with_key(text: "Slug")
+      row.with_value(text: @registration_journey.slug)
+    end
+    summary_list.with_row do |row|
+      row.with_key(text: "Course")
+      row.with_value(text: @registration_journey.course&.name || 'No course')
+    end
+  end
+%>
+
+<h2 class="govuk-heading-m">Registration steps</h2>
+<div class="govuk-button-group">
+  <%= govuk_link_to "Add registration step", new_admin_registration_journey_registration_step_path(@registration_journey), class: "govuk-button" %>
+  <%= govuk_link_to "Find registration template to apply", new_admin_registration_journey_template_path(@registration_journey) %>
+</div>
+
+<% if @registration_steps.any? %>
+  <%= form_with url: registration_steps_admin_registration_journey_path(@registration_journey), method: :patch do |form| %>
+    <%=
+      govuk_table do |table|
+        table.with_head do |header|
+          header.with_row do |row|
+            row.with_cell(text: "Order")
+            row.with_cell(text: "Name")
+            row.with_cell(text: "Slug")
+            row.with_cell(text: "Type")
+            row.with_cell(text: "")
+          end
+        end
+
+        table.with_body do |body|
+          @registration_steps.each do |registration_step|
+            body.with_row do |row|
+              row.with_cell do
+                if @registration_journey_graph.order_group_root?(registration_step)
+                  safe_join(
+                    [
+                      govuk_link_to("Up", move_up_admin_registration_journey_registration_step_path(@registration_journey, registration_step), method: :patch),
+                      ' | ',
+                      govuk_link_to("Down", move_down_admin_registration_journey_registration_step_path(@registration_journey, registration_step), method: :patch),
+                    ],
+                  )
+                else
+                  tag.span("Grouped with branch", class: "govuk-body-s")
+                end
+              end
+
+              row.with_cell do
+                form.govuk_text_field "registration_steps[#{registration_step.id}][name]",
+                                      value: registration_step.name,
+                                      label: { text: "Name for #{registration_step.name}", hidden: true }
+              end
+
+              row.with_cell do
+                govuk_link_to registration_step.slug, registration_path(@registration_journey.slug, registration_step.slug), target: "_blank"
+              end
+
+              row.with_cell(text: registration_step.type)
+
+              row.with_cell do
+                safe_join(
+                  [
+                    govuk_link_to("Edit", edit_admin_registration_journey_registration_step_path(@registration_journey, registration_step), class: "govuk-button"),
+                    govuk_link_to("Dup", admin_registration_journey_registration_step_duplication_path(@registration_journey, registration_step), method: :post, class: "govuk-button govuk-button--secondary"),
+                    govuk_link_to("Delete", admin_registration_journey_registration_step_path(@registration_journey, registration_step), method: :delete, class: "govuk-button govuk-button--warning"),
+                  ],
+                  " ",
+                )
+              end
+            end
+          end
+        end
+      end
+    %>
+
+    <%= form.govuk_submit "Save registration steps" %>
+    <h3 class="govuk-heading-s">Journey graph</h3>
+    <div class="mermaid">
+      <%= @registration_journey_graph.to_mermaid %>
+    </div>
+
+    <h3 class="govuk-heading-s">Step configuration</h3>
+    <%=
+      govuk_table do |table|
+        table.with_head do |header|
+          header.with_row do |row|
+            row.with_cell(text: "Step ID")
+            row.with_cell(text: "Step")
+            row.with_cell(text: "Answers")
+            row.with_cell(text: "Previous step")
+            row.with_cell(text: "Answer next steps")
+            row.with_cell(text: "Branch join step")
+          end
+        end
+
+        table.with_body do |body|
+          @registration_journey_graph.configuration_rows.each do |configuration|
+            body.with_row do |row|
+              row.with_cell(text: configuration[:id])
+              row.with_cell(text: configuration[:name])
+              row.with_cell do
+                if configuration[:answer_names].any?
+                  safe_join(configuration[:answer_names].map { |answer_name| tag.div(answer_name) })
+                else
+                  "—"
+                end
+              end
+              row.with_cell(text: configuration[:previous_step_name] || "—")
+              row.with_cell do
+                if configuration[:answer_next_steps].any?
+                  safe_join(
+                    configuration[:answer_next_steps].map do |transition|
+                      tag.div("#{transition[:answer_name]} → #{transition[:step_name]}")
+                    end,
+                  )
+                else
+                  "—"
+                end
+              end
+              row.with_cell(text: configuration[:branch_join_step_name] || "—")
+            end
+          end
+        end
+      end
+    %>
+
+  <% end %>
+<% else %>
+  <p class="govuk-body">No registration steps have been added.</p>
+<% end %>
