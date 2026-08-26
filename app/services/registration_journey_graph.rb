@@ -261,7 +261,18 @@ private
   end
 
   def escape_label(label)
-    label.to_s.gsub("\\", "\\\\\\").gsub("\"", "\\\"")
+    escaped_characters = label.to_s.each_char.map do |character|
+      case character
+      when "\\"
+        "\\\\"
+      when "\""
+        "\\\""
+      else
+        character
+      end
+    end
+
+    escaped_characters.join
   end
 
   def configured_step_name(step_id)

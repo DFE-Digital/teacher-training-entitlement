@@ -2,6 +2,21 @@ require "rails_helper"
 
 RSpec.describe RegistrationJourneyGraph do
   describe "#to_mermaid" do
+    it "escapes backslashes and quotes in labels" do
+      journey = RegistrationJourney.create!(name: "Escaping journey", slug: "escaping-journey")
+      step = journey.registration_steps.create!(
+        name: "Path \\ \"quoted\"",
+        slug: "path-quoted",
+        type: "Radio buttons",
+        order: 1,
+        config: {},
+      )
+
+      mermaid = described_class.new(journey).to_mermaid
+
+      expect(mermaid).to include("step_#{step.id}[\"Path \\\\ \\\"quoted\\\"\"]")
+    end
+
     it "shows labelled edges for explicit and default answer paths" do
       journey = RegistrationJourney.create!(name: "Funding journey", slug: "funding-journey")
       teacher_catchment = journey.registration_steps.create!(
