@@ -127,7 +127,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -210,7 +210,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -275,7 +275,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -358,7 +358,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -441,7 +441,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -524,7 +524,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -607,7 +607,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -1534,7 +1534,7 @@ components:
               description: The course cohort identifier for the participant
               nullable: true
               type: string
-              example: autumn
+              example: tte-early-years-autumn
     ApplicationAcceptRequest:
       description: An application acceptance request
       type: object
@@ -1819,15 +1819,10 @@ components:
                     description: The ternmidentifier for the participant
                     nullable: true
                     type: string
-                    example: autumn
+                    example: tte-early-years-autumn
                   cohort:
-                    description: Indicates which call-off contract would fund this
-                      participant's training. 2021 indicates a participant that has
-                      started, or will start, their training in the 2021/22 academic
-                      year. Once a provider accepts an application, they may change
-                      a participant's cohort up until the point of submitting a started
-                      declaration.
-                    type: string
+                    description: Contract year
+                    type: integer
                     nullable: true
                     example: '2022'
                   application_id:
@@ -2626,11 +2621,7 @@ components:
               description: The new schedule of the participant
               nullable: true
               type: string
-              example: autumn
-              enum:
-              - autumn
-              - spring
-              - summer
+              example: tte-early-years-autumn
             cohort:
               description: The requested academic years
               type: string

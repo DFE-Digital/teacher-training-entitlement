@@ -24,7 +24,7 @@ RSpec.describe "Course cohorts endpoints", type: :request do
       it "includes the correct attributes" do
         attrs = parsed_response["data"].first["attributes"]
         expect(attrs["course_identifier"]).to eq(course.identifier)
-        expect(attrs["schedule_identifier"]).to eq(course_cohort.term_identifier)
+        expect(attrs["schedule_identifier"]).to eq(course_cohort.schedule_identifier)
         expect(attrs["cohort"]).to eq(course_cohort.academic_year)
       end
 

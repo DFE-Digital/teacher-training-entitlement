@@ -113,7 +113,7 @@ PARTICIPANT = {
           description: "The ternmidentifier for the participant",
           nullable: true,
           type: :string,
-          example: CourseCohort::TERM_IDENTIFIERS.keys.first,
+          example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
         },
         cohort: {
           description: "Contract year",

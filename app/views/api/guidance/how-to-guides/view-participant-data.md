@@ -34,7 +34,7 @@ For more detailed information, see the ['Retrieve multiple participants' endpoin
           {
             "email": "isabelle.macdonald2@some-school.example.com",
             "course_identifier": "tte-early-years",
-            "schedule_identifier": "tte-reception-autumn",
+            "schedule_identifier": "tte-early-years-autumn",
             "cohort": "2025",
             "application_id": "db3a7848-7308-4879-942a-c4a70ced400a",
             "eligible_for_funding": true,

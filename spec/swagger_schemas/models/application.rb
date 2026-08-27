@@ -169,7 +169,7 @@ APPLICATION = {
             description: "The course cohort identifier for the participant",
             nullable: true,
             type: :string,
-            example: CourseCohort::TERM_IDENTIFIERS.keys.first,
+            example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
           },
         },
       },

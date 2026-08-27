@@ -7,7 +7,7 @@ module API
       exclude :id
 
       field(:course_identifier) { |cc| cc.course.identifier }
-      field(:term_identifier, name: :schedule_identifier)
+      field(:schedule_identifier)
       field(:academic_year, name: :cohort)
     end
 
