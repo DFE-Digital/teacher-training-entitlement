@@ -156,6 +156,10 @@ class Application < ApplicationRecord
     touch_later
   end
 
+  def contract
+    lead_provider.contract(course_cohort: started_declaration&.course_cohort || course_cohort)
+  end
+
   def assigned_at
     # assignment is a specific a application_lead_provider record set before render
     assignment&.assigned_at

@@ -47,6 +47,10 @@ class CourseCohort < ApplicationRecord
     [academic_year, term_identifier].join("-")
   end
 
+  def schedule_identifier
+    [course.identifier, term_identifier].join("-")
+  end
+
   def training_live?
     training_started? && !training_ended?
   end

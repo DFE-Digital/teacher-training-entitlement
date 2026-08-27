@@ -28,7 +28,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     subject(:attributes) { v1_json.dig("data", "attributes") }
 
     it "serializes the `schedule_identifier`" do
-      expect(attributes["schedule_identifier"]).to eq(course_cohort.ecf_id)
+      expect(attributes["schedule_identifier"]).to eq(course_cohort.schedule_identifier)
     end
 
     it "serializes the `funding_choice`" do
@@ -87,7 +87,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
 
     describe "cohort serialization" do
       it "serializes the `cohort`" do
-        expect(attributes["cohort"]).to eq(cohort.start_year.to_s)
+        expect(attributes["cohort"]).to eq(course_cohort.academic_year)
       end
     end
 

@@ -92,6 +92,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
       before do
         course_cohort.milestones.destroy_all
         create(:milestone, :started, course_cohort:, acceptance_window_start_date: 3.days.ago, acceptance_window_end_date: 1.day.ago)
+        create(:milestone, :completed, course_cohort:, acceptance_window_start_date: 3.days.ago, acceptance_window_end_date: 1.day.ago)
       end
 
       it "raises an error" do

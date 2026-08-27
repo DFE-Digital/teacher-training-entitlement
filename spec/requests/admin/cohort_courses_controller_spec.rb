@@ -93,7 +93,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         it "shows milestones for the course cohort" do
           get admin_cohort_course_path(cohort, course)
 
-          expect(response.body).to include("£123.45")
+          expect(response.body).to include("%123.45")
           expect(response.body).to include(edit_admin_cohort_course_milestone_path(cohort, course, milestone))
         end
       end

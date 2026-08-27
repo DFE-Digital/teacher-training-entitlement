@@ -79,17 +79,6 @@ module Declarations
       declaration_type == Milestone::STARTED
     end
 
-    def course_cohort
-      return unless application
-
-      @course_cohort ||= if started_declaration?
-                           application.course_cohort
-                         else
-                           # all declarations for an application belong to the same course_cohort
-                           application.started_declaration&.course_cohort
-                         end
-    end
-
     def milestone
       return if declaration_type.blank?
       return unless course_cohort
@@ -99,7 +88,11 @@ module Declarations
     end
 
     def contract
-      @contract ||= lead_provider.contract(course_cohort:)
+      @contract ||= application.contract
+    end
+
+    def course_cohort
+      contract.course_cohort
     end
 
     def allowed_declaration_types

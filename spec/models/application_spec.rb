@@ -35,6 +35,51 @@ RSpec.describe Application do
     end
   end
 
+  describe "#contract" do
+    subject(:contract) { application.contract }
+
+    let(:application) { create(:application, lead_provider:, course_cohort:) }
+    let(:course_cohort_provider) { create(:course_cohort_provider, recruitment_target: 234, teacher_funding: 650) }
+    let(:expected_contract) do
+      ComputedContract.new(recruitment_target: 234, teacher_funding: 650, course_cohort:)
+    end
+    let(:course_cohort) { course_cohort_provider.course_cohort }
+    let(:lead_provider) { course_cohort_provider.lead_provider }
+
+    context "without started_declaration" do
+      it { is_expected.to be_a_contractual_match(expected_contract) }
+    end
+
+    context "with started_declaration and after deferral/resume" do
+      let(:resume_course_cohort) do
+        create(
+          :course_cohort,
+          cohort: create(:cohort, registration_starts_at: 1.year.from_now),
+          course: course_cohort.course,
+          academic_year: course_cohort.academic_year + 1,
+        )
+      end
+
+      before do
+        milestone = create(:milestone, :started, course_cohort:)
+        create(:declaration, :started, application:, milestone:)
+        create(
+          :course_cohort_provider,
+          lead_provider:,
+          course_cohort: resume_course_cohort,
+          recruitment_target: 100,
+          teacher_funding: 300,
+        )
+        application.update!(course_cohort: resume_course_cohort)
+      end
+
+      it do
+        expect(application.contract).to be_a_contractual_match(expected_contract)
+        expect(application.course_cohort.id).to eq(resume_course_cohort.id)
+      end
+    end
+  end
+
   describe "paper_trail" do
     subject { create(:application, status: Application::PENDING) }
 
