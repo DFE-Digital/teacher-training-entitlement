@@ -7,7 +7,7 @@ module Registrations
             application = user.applications.create!(
               course_cohort: CourseCohort.next_open_for(course: Course.reception),
               application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
-              institution: (Institution.find(wizard.state_store["institution_id"]) if store["teacher_catchment"] == "England"),
+              institution: (Institution.find(wizard.state_store["institution_id"]) if wizard.state_store["institution_id"].present?),
               eligible_for_funding: store["funding_eligibility_result"] == "funded",
               funding_eligiblity_status_code: store["funding_eligibility_result"],
               funding_choice: nil,
