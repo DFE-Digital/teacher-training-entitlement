@@ -4,14 +4,15 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:admin) { create(:admin) }
   let(:bulk_operation) { create(:submit_declarations_bulk_operation, admin: admin) }
 
-  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
-  let(:course) { create(:course, identifier: "leadership-development") }
-  let(:lead_provider) { create(:lead_provider) }
+  let(:course_cohort_provider) { create(:course_cohort_provider) }
+  let(:course_cohort) { course_cohort_provider.course_cohort }
+  let(:course) { course_cohort.course }
+  let(:lead_provider) { course_cohort_provider.lead_provider }
   let(:delivery_partner) { create(:delivery_partner) }
   let(:statement) { create(:statement, lead_provider:) }
   let(:participant) { create(:user) }
 
-  let!(:application) { create(:application, :accepted, :for_cohort_starting_on, user: participant, course:, lead_provider:, registration_starts_at: cohort.registration_starts_at) }
+  let!(:application) { create(:application, :accepted, course_cohort:, user: participant, lead_provider:) }
   let(:started_milestone) do
     create(:milestone, course_cohort: application.course_cohort, declaration_type: "started")
   end
@@ -85,7 +86,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
 
     context "when the entire CSV is valid" do
       let(:participant2) { create(:user) }
-      let!(:application2) { create(:application, :accepted, :for_cohort_starting_on, user: participant2, course:, lead_provider:, registration_starts_at: cohort.registration_starts_at) }
+      let!(:application2) { create(:application, :accepted, course_cohort:, user: participant2, lead_provider:) }
 
       let(:csv) do
         <<~CSV

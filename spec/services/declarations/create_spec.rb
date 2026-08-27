@@ -15,12 +15,14 @@ RSpec.describe Declarations::Create, type: :model do
       secondary_delivery_partner_id:,
     }
   end
+  let(:course_cohort_provider) { create(:course_cohort_provider) }
+  let(:course_cohort) { course_cohort_provider.course_cohort }
+  let(:lead_provider) { course_cohort_provider.lead_provider }
   let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
   let(:declaration_date) { started_milestone.acceptance_window_start_date + 1.hour }
-  let(:course_cohort) { create(:course_cohort) }
+
   let!(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 2.days.ago) }
   let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, acceptance_window_start_date: 1.day.ago) }
-  let(:lead_provider) { create(:lead_provider) }
   let(:has_passed) { true }
   let(:delivery_partner_id) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
@@ -213,6 +215,7 @@ RSpec.describe Declarations::Create, type: :model do
         end
 
         before do
+          create(:course_cohort_provider, course_cohort:, lead_provider:)
           application.update!(course_cohort:)
         end
 

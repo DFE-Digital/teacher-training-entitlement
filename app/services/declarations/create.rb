@@ -15,7 +15,7 @@ module Declarations
 
     validates :application, presence: true
     validates :declaration_type, presence: true
-    validate :declaration_type_out_of_order
+    validate :declaration_type_out_of_order, if: -> { application }
     validates :declaration_type, inclusion: { in: ->(service) { service.allowed_declaration_types } }, if: -> { application && declaration_type }
     validates :declaration_date, presence: true
     validates :declaration_date, declaration_date: true
