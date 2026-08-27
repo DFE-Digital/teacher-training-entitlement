@@ -157,6 +157,7 @@ class Application < ApplicationRecord
   end
 
   def contract
+    # Application stays in the contract set by the started declaration
     lead_provider.contract(course_cohort: started_declaration&.course_cohort || course_cohort)
   end
 

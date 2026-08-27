@@ -17,8 +17,11 @@ module Applications
                                  :cohort,
                                  :institution,
                                  :rejected_event,
+                                 :lead_provider,
+                                 :started_declaration,
                                  :current_application_lead_provider,
-                                 { course_cohort: %i[course cohort] }],
+                                 { course_cohort: %i[course cohort] },
+                                 { declarations: %i[milestone course_cohort] }],
                  )
                  .preload(application: { institution: :institutionable })
       @sort = sort

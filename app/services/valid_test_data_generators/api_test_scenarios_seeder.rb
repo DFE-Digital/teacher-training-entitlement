@@ -110,7 +110,7 @@ module ValidTestDataGenerators
         year = academic_year
         loop do
           yielder << Date.new(year, 7, 1) # for autumn term
-          yielder << Date.new(year, 9, 1) # for spring term
+          yielder << Date.new(year, 12, 1) # for spring term
           year += 1
         end
       end
@@ -278,10 +278,9 @@ module ValidTestDataGenerators
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       academic_year = registration_starts_at.year
       current_cohort = Cohort.find_by(registration_starts_at:)
-      acceptance_window_start_date = training_starts_now ? 2.days.ago : registration_starts_at + 2.months
+      acceptance_window_start_date = training_starts_now ? 2.days.ago : registration_starts_at + 3.months
       acceptance_window_end_date = acceptance_window_start_date + 6.months
       term_identifier = CourseCohort.school_term(acceptance_window_start_date)
-
       attrs = {
         description: "#{registration_starts_at.strftime('%B')} #{academic_year}",
         registration_starts_at:,
@@ -420,7 +419,7 @@ module ValidTestDataGenerators
       milestone = milestone_for(application:, declaration_type: :started)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
       value = application.funded_place ? declaration_value(milestone) : nil
-      application.declarations.create!(
+      declaration = application.declarations.new(
         declaration_type: :started,
         declaration_date: date,
         state: :eligible,
@@ -430,13 +429,15 @@ module ValidTestDataGenerators
         statement:,
         value:,
       )
+      declaration.save!(validate: false)
+      declaration
     end
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
       date = declaration_date || milestone.acceptance_window_start_date + 1.day
       value = application.funded_place ? declaration_value(milestone) : nil
-      declaration = application.declarations.create!(
+      declaration = application.declarations.build(
         declaration_type: :completed,
         declaration_date: date,
         state: :eligible,
@@ -446,10 +447,12 @@ module ValidTestDataGenerators
         statement:,
         value:,
       )
+      declaration.save!(validate: false)
 
       if has_passed
         state = has_passed ? "passed" : "failed"
-        ParticipantOutcome.create!(declaration:, state:, completion_date: date)
+        outcome = ParticipantOutcome.new(declaration:, state:, completion_date: date)
+        outcome.save!(validate: false)
       end
       declaration
     end
@@ -491,7 +494,7 @@ module ValidTestDataGenerators
 
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
-      if course_cohort.cohort.start_year < Time.zone.now.year
+      if course_cohort.academic_year < Time.zone.now.year
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
           start_date: course_cohort

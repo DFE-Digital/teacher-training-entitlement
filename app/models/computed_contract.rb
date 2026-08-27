@@ -5,7 +5,8 @@ class ComputedContract
   attribute :recruitment_target, :integer
   attribute :teacher_funding, :decimal
   attribute :service_fee, :decimal
-  attribute :course_cohort
+
+  attr_accessor :course_cohort
 
   class << self
     def load_from(contract)
