@@ -4,46 +4,75 @@ module CourseCohorts
   class Create
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include ActiveRecord::AttributeAssignment
 
     attribute :cohort
     attribute :course_id
     attribute :course_cohort
-    attribute :training_starts_at, :datetime
-    attribute :training_ends_at, :datetime
+    attribute :training_starts_at, :date_or_hash
+    attribute :training_ends_at, :date_or_hash
     attribute :lead_providers
 
     validates :cohort, presence: true
     validate :course_present
     validates :training_starts_at, presence: true
-    validates :lead_providers, presence: true
+    validate :at_least_one_lead_provider_selected
 
     def call
       return if invalid?
 
       term_identifier = CourseCohort.school_term(training_starts_at)
       academic_year = cohort.start_year
-      course_cohort = cohort.course_cohorts.create!(course:, academic_year:, term_identifier:)
 
-      # add milestones
-      course_cohort.milestones.started.create!(acceptance_window_start_date: training_starts_at)
-      course_cohort.milestones.completed.create!(acceptance_window_end_date: training_ends_at) if training_ends_at
+      CourseCohort.transaction do
+        self.course_cohort = cohort.course_cohorts.create!(
+          course:,
+          academic_year:,
+          term_identifier:,
+        )
 
-      # add lead_provider
-      lead_providers.each do |lead_provider|
-        course_cohort.course_cohort_providers.create(lead_provider:)
+        course_cohort.milestones.started.create!(acceptance_window_start_date: training_starts_at)
+        course_cohort.milestones.completed.create!(acceptance_window_end_date: training_ends_at) if training_ends_at
 
-        # add delivery partners
+        selected_providers.each do |lead_provider_id, attrs|
+          lead_provider = LeadProvider.find(lead_provider_id)
+
+          course_cohort.course_cohort_providers.create!(
+            lead_provider:,
+            teacher_funding: attrs["teacher_funding"].presence,
+            recruitment_target: attrs["recruitment_target"].presence,
+          )
+
+          lead_provider.delivery_partners.each do |delivery_partner|
+            course_cohort.delivery_partnerships.create!(
+              lead_provider:,
+              delivery_partner:,
+            )
+          end
+        end
       end
     end
 
     def course
-      @course ||= Course.find(course_id)
+      @course ||= Course.find_by(id: course_id)
     end
 
   private
 
+    def selected_providers
+      lead_providers.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" }
+    end
+
     def course_present
       errors.add(:missing_course) unless course
+    end
+
+    def at_least_one_lead_provider_selected
+      return if lead_providers.blank?
+
+      if selected_providers.blank?
+        errors.add(:lead_providers, "Select at least one lead provider")
+      end
     end
   end
 end

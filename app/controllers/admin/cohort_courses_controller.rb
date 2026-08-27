@@ -23,6 +23,7 @@ class Admin::CohortCoursesController < AdminController
       flash[:success] = "Course added to cohort"
       redirect_to admin_cohort_course_path(cohort, @course_cohort.course)
     else
+      @course_cohort = service.course_cohort || cohort.course_cohorts.new
       load_form_options
       render :new, status: :unprocessable_content
     end
@@ -32,7 +33,7 @@ private
 
   def course_cohort_params
     params.require(:course_cohort)
-      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, :lead_providers)
+      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, lead_providers: {})
       .merge(cohort:)
   end
 
