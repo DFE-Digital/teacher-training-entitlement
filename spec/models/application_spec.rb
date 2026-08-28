@@ -9,6 +9,7 @@ RSpec.describe Application do
     it { is_expected.to have_many(:participant_id_changes).through(:user) }
     it { is_expected.to have_many(:state_changes) }
     it { is_expected.to have_many(:declarations) }
+    it { is_expected.to have_one(:contract).through(:course_cohort) }
   end
 
   describe "#transition_status!" do
