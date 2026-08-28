@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, :with_default_schedules, type: :feature do
+RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::ReceptionRegistrationPathHelper
   include ApplicationHelper

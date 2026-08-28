@@ -15,7 +15,6 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
         :application,
         :deferred,
         course_cohort:,
-        schedule: create(:schedule, cohort: application_cohort),
       )
     end
 
@@ -48,7 +47,6 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
         :for_cohort_starting_on,
         course: other_course,
         registration_starts_at: other_cohort.registration_starts_at,
-        schedule: create(:schedule, cohort: other_cohort),
       )
 
       expect { described_class.perform_now }

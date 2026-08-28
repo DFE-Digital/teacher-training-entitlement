@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Change workplace", :with_default_schedules, type: :feature do
+RSpec.feature "Change workplace", type: :feature do
   include Helpers::JourneyAssertionHelper
   include Helpers::JourneyStepHelper
 

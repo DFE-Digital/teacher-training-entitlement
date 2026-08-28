@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Previously funded participant", :with_default_schedules, type: :feature do
+RSpec.feature "Previously funded participant", type: :feature do
   include Helpers::JourneyAssertionHelper
   include ApplicationHelper
 
