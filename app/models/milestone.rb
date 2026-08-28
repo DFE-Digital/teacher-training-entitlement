@@ -17,6 +17,9 @@ class Milestone < ApplicationRecord
   validates :declaration_type, uniqueness: { scope: :course_cohort_id }, if: :valid_declaration_type?
 
   scope :in_declaration_type_order, -> { order(:declaration_type) }
+  scope :started, -> { where(declaration_type: STARTED) }
+  scope :completed, -> { where(declaration_type: COMPLETED) }
+
   default_scope { order(:acceptance_window_start_date) }
 
   enum :declaration_type,

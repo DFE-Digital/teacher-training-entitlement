@@ -155,11 +155,12 @@ shared:
   :course_cohorts:
     - id
     - academic_year
+    - term_identifier
     - cohort_id
     - course_id
+    - schedule_id
     - created_at
     - ecf_id
-    - schedule_id
     - updated_at
   :course_cohort_providers:
     - id

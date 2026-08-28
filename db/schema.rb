@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_100218) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
   create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
   create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "statements_frequency_types", ["monthly"]
+  create_enum "term_identifiers", ["autumn", "spring", "summer"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -229,12 +230,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_140000) do
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "schedule_id"
+    t.enum "term_identifier", enum_type: "term_identifiers"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
     t.index ["course_id"], name: "index_course_cohorts_on_course_id"
     t.index ["ecf_id"], name: "index_course_cohorts_on_ecf_id", unique: true
-    t.index ["schedule_id"], name: "index_course_cohorts_on_schedule_id"
   end
 
   create_table "courses", force: :cascade do |t|

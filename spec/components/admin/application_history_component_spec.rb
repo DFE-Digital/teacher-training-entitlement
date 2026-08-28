@@ -37,10 +37,9 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
       )
     end
     let(:whodunnit) { "some user" }
-    let(:schedule) { create(:schedule, course_group: application.course.course_group, identifier: application.schedule.identifier) }
 
     before do
-      create(:course_cohort, cohort: older_cohort, course:, schedule:)
+      create(:course_cohort, cohort: older_cohort, course:)
       travel_to time_2
       Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
     end
