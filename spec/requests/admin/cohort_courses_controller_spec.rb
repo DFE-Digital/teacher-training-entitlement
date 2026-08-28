@@ -6,13 +6,39 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   subject { response }
 
   let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 5, 1)) }
-  let!(:schedule) { create(:schedule, cohort:) }
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let(:lead_provider) { create(:lead_provider, name: "Provider One") }
-  let(:course_cohort) { create(:course_cohort, cohort:, course:, schedule:, lead_provider:) }
+  let!(:delivery_partner) { create(:delivery_partner, lead_providers: [lead_provider]) }
+  let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
-  let(:valid_params) { { course_cohort: { course_id: course.id, schedule_id: schedule.id } } }
-  let(:invalid_params) { { course_cohort: { course_id: "", schedule_id: "" } } }
+  let(:valid_params) do
+    {
+      course_cohort: {
+        course_id: course.id,
+        "training_starts_at(1i)": "2025",
+        "training_starts_at(2i)": "9",
+        "training_starts_at(3i)": "1",
+        lead_providers: {
+          lead_provider.id.to_s => {
+            id: lead_provider.id.to_s,
+            teacher_funding: "1000",
+            recruitment_target: "50",
+          },
+        },
+      },
+    }
+  end
+  let(:invalid_params) do
+    {
+      course_cohort: {
+        course_id: "",
+        "training_starts_at(1i)": "",
+        "training_starts_at(2i)": "",
+        "training_starts_at(3i)": "",
+        lead_providers: {},
+      },
+    }
+  end
 
   context "when logged in as super admin" do
     before { sign_in_as_admin(super_admin: true) }
@@ -67,7 +93,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         it "shows milestones for the course cohort" do
           get admin_cohort_course_path(cohort, course)
 
-          expect(response.body).to include("£123.45")
+          expect(response.body).to include("%123.45")
           expect(response.body).to include(edit_admin_cohort_course_milestone_path(cohort, course, milestone))
         end
       end
@@ -77,15 +103,6 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       before { get new_admin_cohort_course_path(cohort) }
 
       it { is_expected.to have_http_status :success }
-
-      it "shows schedules for the cohort" do
-        expect(response.body).to include(schedule.name)
-      end
-
-      it "links to create a schedule in a new tab" do
-        expect(response.body).to include(new_admin_cohort_schedule_path(cohort))
-        expect(response.body).to include('target="_blank"')
-      end
     end
 
     describe "#create" do
@@ -94,7 +111,17 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       it { is_expected.to redirect_to admin_cohort_course_path(cohort, course) }
 
       it "creates the course cohort" do
-        expect(cohort.course_cohorts.find_by(course:, schedule:)).to be_present
+        expect(cohort.course_cohorts.find_by(course:)).to be_present
+      end
+
+      it "creates the course cohort provider" do
+        course_cohort = cohort.course_cohorts.find_by(course:)
+        expect(course_cohort.course_cohort_providers.find_by(lead_provider:)).to be_present
+      end
+
+      it "creates the delivery partnership" do
+        course_cohort = cohort.course_cohorts.find_by(course:)
+        expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_present
       end
 
       it "flashes success" do
