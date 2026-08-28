@@ -8,7 +8,8 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
   let(:default_delivery_partner) { create(:delivery_partner) }
   let(:delivery_partner) { create(:delivery_partner) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
-  let(:declaration_date) { application.schedule.training_starts_at.in_time_zone("UTC") }
+  let(:started_milestone) { create(:milestone, :started, course_cohort: application.course_cohort) }
+  let(:declaration_date) { started_milestone.acceptance_window_start_date.in_time_zone("UTC") }
 
   let(:expected_body) do
     {
@@ -30,6 +31,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
   end
 
   before do
+    started_milestone if application
     stub_const("LEAD_PROVIDER_CONFIG", lead_provider.name => { token: "test-token" }) if lead_provider
     allow(HTTParty).to receive(:post).and_return(api_response)
   end

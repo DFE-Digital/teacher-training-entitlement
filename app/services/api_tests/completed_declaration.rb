@@ -33,15 +33,12 @@ module APITests
   private
 
     def declaration_date
-      if application.schedule.training_ends_at < Time.zone.now
-        application.schedule.training_ends_at.in_time_zone("UTC").iso8601
-      else
-        (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC").iso8601
-      end
+      milestone = application.milestones.find_by(declaration_type: :completed)
+      milestone.acceptance_window_start_date.in_time_zone("UTC").iso8601
     end
 
     def delivery_partner_id
-      @delivery_partner&.ecf_id || application.lead_provider.delivery_partners.first.ecf_id
+      @delivery_partner&.ecf_id || application.course_cohort.delivery_partners.first.ecf_id
     end
 
     def application

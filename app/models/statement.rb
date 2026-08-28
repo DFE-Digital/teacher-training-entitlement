@@ -1,4 +1,6 @@
 class Statement < ApplicationRecord
+  include CourseGroupable
+
   FREQUENCIES = {
     "monthly" => 1.month,
   }.with_indifferent_access.freeze
@@ -15,7 +17,7 @@ class Statement < ApplicationRecord
   has_many :adjustments
 
   validates :start_date, presence: true
-  validates :lead_provider_id, uniqueness: { scope: %i[start_date frequency], message: "Statement for this lead provider start_date frequency already exists" }
+  validates :lead_provider_id, uniqueness: { scope: %i[start_date frequency course_group] }
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validates :output_fee, inclusion: { in: [true, false] }
@@ -29,15 +31,16 @@ class Statement < ApplicationRecord
   scope :unpaid, -> { with_state(%w[open payable]) }
   scope :paid, -> { with_state("paid") }
 
-  scope :current, lambda { |frequency: :monthly|
-    where(state: :open, frequency:, start_date: Date.current.beginning_of_month)
+  scope :current, lambda { |lead_provider: nil, course_group: nil, date: Date.current, frequency: :monthly|
+    where(state: :open, frequency:, start_date: date.to_date.beginning_of_month)
+      .where({ lead_provider:, course_group: }.compact)
   }
-  scope :clawback, lambda { |frequency: :monthly|
+  scope :clawback, lambda { |lead_provider: nil, course_group: nil, date: Date.current, frequency: :monthly|
     where(
       state: :open,
       frequency:,
-      start_date: Date.current.beginning_of_month.next_month,
-    )
+      start_date: date.to_date.beginning_of_month.next_month,
+    ).where({ lead_provider:, course_group: }.compact)
   }
 
   enum :frequency, FREQUENCIES.keys.index_with(&:itself), suffix: true
@@ -45,22 +48,24 @@ class Statement < ApplicationRecord
   before_save :set_deadline_and_payment_date, if: -> { start_date_changed? }
   before_save :set_academic_year, if: -> { start_date_changed? }
 
-  def self.create_current!(lead_provider:, frequency: :monthly)
+  def self.create_current!(lead_provider:, course_group:, date: Date.current, frequency: :monthly)
     create!(
       state: :open,
       frequency:,
-      start_date: Date.current.beginning_of_month,
+      start_date: date.to_date.beginning_of_month,
       lead_provider:,
+      course_group:,
       ecf_id: SecureRandom.uuid,
     )
   end
 
-  def self.create_clawback!(lead_provider:, frequency: :monthly)
+  def self.create_clawback!(lead_provider:, course_group:, date: Date.current, frequency: :monthly)
     create!(
       state: :open,
       frequency:,
-      start_date: Date.current.beginning_of_month.next_month,
+      start_date: date.to_date.beginning_of_month.next_month,
       lead_provider:,
+      course_group:,
       ecf_id: SecureRandom.uuid,
     )
   end

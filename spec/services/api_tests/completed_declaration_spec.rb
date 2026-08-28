@@ -9,8 +9,8 @@ RSpec.describe APITests::CompletedDeclaration, type: :model do
   let(:delivery_partner) { create(:delivery_partner) }
   let(:has_passed) { "true" }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
-  # let(:declaration_date) { (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC") }
-  let(:declaration_date) { (application.declarations.started.last.declaration_date + 1.day).in_time_zone("UTC") }
+  let(:completed_milestone) { create(:milestone, :completed, course_cohort: application.course_cohort) }
+  let(:declaration_date) { completed_milestone.acceptance_window_start_date.in_time_zone("UTC") }
 
   let(:expected_body) do
     {
@@ -29,6 +29,7 @@ RSpec.describe APITests::CompletedDeclaration, type: :model do
   end
 
   before do
+    completed_milestone if application
     stub_const("LEAD_PROVIDER_CONFIG", lead_provider.name => { token: "test-token" }) if lead_provider
     allow(HTTParty).to receive(:post).and_return(api_response)
   end

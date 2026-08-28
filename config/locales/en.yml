@@ -372,7 +372,7 @@ en:
               not_a_number: Year must be a 4 digit number
               not_an_integer: Year must be a 4 digit number
             lead_provider_id:
-              taken: A statement for this lead provider, cohort, year and month
+              taken: Statement for this lead provider/start_date/frequency/course_group
                 already exists
             ecf_id:
               blank: Enter an ECF ID

@@ -25,7 +25,7 @@ RSpec.describe Statement, type: :model do
     it { is_expected.to allow_value(%w[true false]).for(:output_fee).with_message("Output fee must be true or false") }
     it { is_expected.not_to allow_value(nil).for(:output_fee).with_message("Choose yes or no for output fee") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
-    it { is_expected.to validate_uniqueness_of(:lead_provider_id).scoped_to(:start_date, :frequency).with_message("A statement for this lead provider, cohort, year and month already exists") }
+    it { is_expected.to validate_uniqueness_of(:lead_provider_id).scoped_to(:start_date, :frequency, :course_group).with_message(I18n.t("activerecord.errors.models.statement.attributes.lead_provider_id.taken")) }
 
     describe "State validation" do
       context "when setting invalid state" do
@@ -156,6 +156,62 @@ RSpec.describe Statement, type: :model do
       it "selects only output fee statements" do
         expect(Statement.with_output_fee.to_sql).to include(%(WHERE "statements"."output_fee" = TRUE))
       end
+    end
+
+    describe ".current" do
+      let(:lead_provider) { create(:lead_provider) }
+
+      it "selects the open statement for the lead provider, period, frequency and course group" do
+        statement = create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 8, 1))
+        create(:statement, :open, lead_provider:, course_group: "send", start_date: Date.new(2026, 8, 1))
+        create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 9, 1))
+
+        expect(Statement.current(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))).to contain_exactly(statement)
+      end
+    end
+
+    describe ".clawback" do
+      let(:lead_provider) { create(:lead_provider) }
+
+      it "selects the next open statement for the lead provider, period, frequency and course group" do
+        statement = create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 9, 1))
+        create(:statement, :open, lead_provider:, course_group: "send", start_date: Date.new(2026, 9, 1))
+        create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 8, 1))
+
+        expect(Statement.clawback(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))).to contain_exactly(statement)
+      end
+    end
+  end
+
+  describe ".create_current!" do
+    it "creates an open statement for the lead provider, period, frequency and course group" do
+      lead_provider = create(:lead_provider)
+
+      statement = Statement.create_current!(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))
+
+      expect(statement).to have_attributes(
+        lead_provider:,
+        course_group: "reception",
+        frequency: "monthly",
+        start_date: Date.new(2026, 8, 1),
+        state: "open",
+      )
+    end
+  end
+
+  describe ".create_clawback!" do
+    it "creates the next open statement for the lead provider, period, frequency and course group" do
+      lead_provider = create(:lead_provider)
+
+      statement = Statement.create_clawback!(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))
+
+      expect(statement).to have_attributes(
+        lead_provider:,
+        course_group: "reception",
+        frequency: "monthly",
+        start_date: Date.new(2026, 9, 1),
+        state: "open",
+      )
     end
   end
 
