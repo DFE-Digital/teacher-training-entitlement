@@ -4,8 +4,8 @@ require "swagger_helper"
 RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
   let(:course) { create(:course, :npd_eirt) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn) }
-  let(:course_cohort) { create(:course_cohort, course:, schedule:) }
+  let(:course_cohort) { create(:course_cohort, course:) }
+  let!(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now) }
   let(:application) { create(:application, lead_provider:, course_cohort:) }
 
   describe "list applications" do
@@ -128,11 +128,10 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
         let(:target_course_cohort) do
           create(:course_cohort,
                  course: course_cohort.course,
-                 cohort: create(:cohort, :current),
-                 schedule: target_schedule,
+                 cohort: create(:cohort, :next),
                  lead_provider: application.lead_provider)
         end
-        let(:target_schedule) { create(:schedule, :tte_reception_autumn, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now, change_training_dates: false) }
+        let(:target_started_milestone) { create(:milestone, :started, course_cohort: target_course_cohort, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now) }
 
         let(:resource) { application }
         let(:type) { "application" }
@@ -144,6 +143,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
             example[:data][:attributes][:funded_place] = true
           end
         end
+
+        before { target_started_milestone }
       end
     end
 
@@ -181,10 +182,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           create(:course_cohort,
                  course: course_cohort.course,
                  cohort: create(:cohort, :next),
-                 schedule: target_schedule,
                  lead_provider: application.lead_provider)
         end
-        let(:target_schedule) { create(:schedule, :tte_reception_spring, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now, change_training_dates: false) }
 
         let(:resource) { application }
         let(:type) { "application" }
@@ -209,8 +208,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                       "#/components/schemas/DeclarationStartedRequest" do
         let(:application) { create(:application, :accepted, lead_provider:, course_cohort:) }
         let(:resource) { application }
-        let(:declaration_date) { schedule.training_starts_at + 1.hour }
-        let(:schedule) { create(:schedule, :tte_reception_autumn, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+        let(:declaration_date) { started_milestone.acceptance_window_start_date + 1.hour }
         let(:delivery_partner_id) do
           create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
         end
@@ -221,15 +219,13 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
         let(:type) { "declaration" }
         let(:attributes) do
           {
-            declaration_date: schedule.training_starts_at.rfc3339,
+            declaration_date: declaration_date.rfc3339,
             delivery_partner_id:,
             secondary_delivery_partner_id:,
 
           }
         end
         let(:invalid_attributes) { { declaration_date: nil } }
-
-        before { create(:milestone, :started, course_cohort:) }
       end
     end
 
@@ -245,10 +241,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
         end
         let(:resource) { application }
-        let(:declaration_date) { schedule.training_starts_at + 1.hour }
-        let(:schedule) do
-          create(:schedule, :tte_reception_autumn, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now)
-        end
+        let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, acceptance_window_start_date: started_milestone.acceptance_window_start_date + 1.day) }
+        let(:declaration_date) { completed_milestone.acceptance_window_start_date + 1.hour }
         let(:delivery_partner_id) do
           create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
         end
@@ -259,7 +253,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
         let(:type) { "declaration" }
         let(:attributes) do
           {
-            declaration_date: schedule.training_starts_at.rfc3339,
+            declaration_date: declaration_date.rfc3339,
             has_passed: true,
             delivery_partner_id:,
             # secondary_delivery_partner_id:,
@@ -268,8 +262,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
         let(:invalid_attributes) { { declaration_date: nil } }
 
         before do
-          create(:milestone, :started, course_cohort:)
-          create(:milestone, :completed, course_cohort:)
+          started_milestone
+          completed_milestone
         end
       end
     end

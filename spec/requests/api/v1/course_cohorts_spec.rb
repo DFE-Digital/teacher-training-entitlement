@@ -1,15 +1,13 @@
 require "rails_helper"
 
-RSpec.describe "Schedule endpoints", type: :request do
+RSpec.describe "Course cohorts endpoints", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:serializer) { API::ScheduleSerializer }
   let(:serializer_version) { :v1 }
 
   describe "GET /api/v1/schedules" do
-    let(:cohort) { create(:cohort, :current) }
     let(:course) { create(:course, :npd_eirt) }
-    let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
-    let!(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:, lead_providers: [current_lead_provider]) }
+    let!(:course_cohort) { create(:course_cohort, course:, lead_providers: [current_lead_provider]) }
 
     context "when authorized" do
       before { api_get(api_v1_schedules_path) }
@@ -26,14 +24,13 @@ RSpec.describe "Schedule endpoints", type: :request do
       it "includes the correct attributes" do
         attrs = parsed_response["data"].first["attributes"]
         expect(attrs["course_identifier"]).to eq(course.identifier)
-        expect(attrs["schedule_identifier"]).to eq(schedule.identifier)
-        expect(attrs["cohort"]).to eq(cohort.start_year.to_s)
+        expect(attrs["schedule_identifier"]).to eq(course_cohort.schedule_identifier)
+        expect(attrs["cohort"]).to eq(course_cohort.academic_year)
       end
 
       it "does not return schedules for other lead providers" do
         other_lp = create(:lead_provider)
-        other_schedule = create(:schedule, :tte_reception_spring, cohort:)
-        create(:course_cohort, course:, cohort:, schedule: other_schedule, lead_providers: [other_lp])
+        create(:course_cohort, course:, lead_providers: [other_lp])
 
         api_get(api_v1_schedules_path)
 

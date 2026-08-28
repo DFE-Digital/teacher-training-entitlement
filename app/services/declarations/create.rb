@@ -15,7 +15,7 @@ module Declarations
 
     validates :application, presence: true
     validates :declaration_type, presence: true
-    validate :declaration_type_out_of_order
+    validate :declaration_type_out_of_order, if: -> { application }
     validates :declaration_type, inclusion: { in: ->(service) { service.allowed_declaration_types } }, if: -> { application && declaration_type }
     validates :declaration_date, presence: true
     validates :declaration_date, declaration_date: true
@@ -79,17 +79,6 @@ module Declarations
       declaration_type == Milestone::STARTED
     end
 
-    def course_cohort
-      return unless application
-
-      @course_cohort ||= if started_declaration?
-                           application.course_cohort
-                         else
-                           # all declarations for an application belong to the same course_cohort
-                           application.started_declaration&.course_cohort
-                         end
-    end
-
     def milestone
       return if declaration_type.blank?
       return unless course_cohort
@@ -99,7 +88,11 @@ module Declarations
     end
 
     def contract
-      @contract ||= lead_provider.contract(course_cohort:)
+      @contract ||= application.contract
+    end
+
+    def course_cohort
+      contract.course_cohort
     end
 
     def allowed_declaration_types
@@ -176,13 +169,6 @@ module Declarations
       return if lead_provider.next_output_fee_statement(course_cohort.cohort).present?
 
       errors.add(:cohort, :no_output_fee_statement, cohort: cohort.start_year)
-    end
-
-    def validate_declaration_type_for_schedule
-      return if errors.any?
-      return if allowed_declaration_types.include?(declaration_type)
-
-      errors.add(:declaration_type, :mismatch_declaration_type_for_schedule)
     end
 
     def no_duplicate_billable_declaration

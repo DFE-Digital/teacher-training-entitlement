@@ -22,12 +22,12 @@ module API
         field(:status)
         field(:reason_for_rejection)
         field(:works_in_school)
-        field(:cohort) { |a| a.cohort&.start_year&.to_s }
+        field(:cohort) { |a| a.contract.course_cohort.academic_year }
         field(:inside_uk_catchment?, name: :teacher_catchment)
         field(:teacher_catchment_country)
         field(:teacher_catchment_iso_country_code)
         field(:funded_place)
-        field(:schedule_identifier) { |a| a.schedule&.identifier }
+        field(:schedule_identifier) { |a| a.course_cohort.schedule_identifier }
         field(:assigned_at)
         field(:unassigned_at)
         field(:created_at)
