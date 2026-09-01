@@ -6,64 +6,37 @@ RSpec.describe CourseCohorts::Create, type: :model do
   subject(:service) do
     described_class.new(
       cohort:,
-      course_id:,
-      training_starts_at:,
-      training_ends_at:,
+      course:,
+      training_dates:,
       lead_providers:,
     )
   end
 
   let(:cohort) { create(:cohort, :next) }
   let!(:course) { create(:course) }
-  let(:course_id) { course.id }
-  let(:training_starts_at) { Date.new(2025, 9, 1) }
-  let(:training_ends_at) { nil }
+  let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
   let!(:lead_provider) { create(:lead_provider) }
   let(:lead_providers) do
-    {
-      lead_provider.id.to_s => {
-        "id" => lead_provider.id.to_s,
-        "teacher_funding" => "1000",
-        "recruitment_target" => "50",
-      },
-    }
+    [
+      [
+        lead_provider,
+        {
+          "id" => lead_provider.id.to_s,
+          "teacher_funding" => "1000",
+          "recruitment_target" => "50",
+        },
+      ],
+    ]
   end
 
   describe "validations" do
     it { is_expected.to be_valid }
-    it { is_expected.to validate_presence_of(:cohort) }
-    it { is_expected.to validate_presence_of(:course_id) }
-    it { is_expected.to validate_presence_of(:training_starts_at) }
 
-    context "when course_id does not match a course" do
-      let(:course_id) { nil }
+    context "when course missing" do
+      let(:course) { nil }
 
       it { is_expected.to be_invalid }
-      it { expect(service).to have_error(:missing_course) }
-    end
-
-    context "when lead_providers is an empty hash" do
-      let(:lead_providers) { {} }
-
-      it { is_expected.to be_invalid }
-    end
-
-    context "when lead_providers is present but none are selected" do
-      let(:lead_providers) do
-        { lead_provider.id.to_s => { "id" => "" } }
-      end
-
-      it { is_expected.to be_invalid }
-      it { expect(service).to have_error(:lead_providers, nil, "Select at least one lead provider") }
-    end
-
-    context "when lead_providers only contains an id of '0'" do
-      let(:lead_providers) do
-        { lead_provider.id.to_s => { "id" => "0" } }
-      end
-
-      it { is_expected.to be_invalid }
-      it { expect(service).to have_error(:lead_providers, nil, "Select at least one lead provider") }
+      it { expect(service).to have_error(:course, :blank) }
     end
   end
 
@@ -107,12 +80,11 @@ RSpec.describe CourseCohorts::Create, type: :model do
 
       it "sets service.course_cohort to the created record" do
         service.call
-
         expect(service.course_cohort).to eq(cohort.course_cohorts.find_by(course:))
       end
 
       context "when training_starts_at falls in autumn" do
-        let(:training_starts_at) { Date.new(2025, 9, 1) }
+        let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
 
         it "sets the term_identifier to autumn" do
           service.call
@@ -122,7 +94,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       end
 
       context "when training_starts_at falls in spring" do
-        let(:training_starts_at) { Date.new(2025, 2, 1) }
+        let(:training_dates) { { start: Date.new(2025, 2, 1), end: nil } }
 
         it "sets the term_identifier to spring" do
           service.call
@@ -135,22 +107,22 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect { service.call }.to change(Milestone.started, :count).by(1)
 
         milestone = service.course_cohort.milestones.started.sole
-        expect(milestone.acceptance_window_start_date).to eq(training_starts_at)
+        expect(milestone.acceptance_window_start_date).to eq(training_dates[:start])
       end
 
       context "when training_ends_at is present" do
-        let(:training_ends_at) { training_starts_at + 6.months }
+        let(:training_dates) { { start: Date.new(2025, 9, 1), end: Date.new(2026, 3, 1)} }
 
         it "creates a completed milestone" do
           expect { service.call }.to change(Milestone.completed, :count).by(1)
           milestone = service.course_cohort.milestones.completed.sole
           expect(milestone.acceptance_window_start_date).to be_present
-          expect(milestone.acceptance_window_end_date).to eq(training_ends_at)
+          expect(milestone.acceptance_window_end_date).to eq(Date.new(2026, 3, 1))
         end
       end
 
       context "when training_ends_at is blank" do
-        let(:training_ends_at) { nil }
+        let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil} }
 
         it "does not create a completed milestone" do
           expect { service.call }.not_to change(Milestone.completed, :count)
@@ -166,13 +138,16 @@ RSpec.describe CourseCohorts::Create, type: :model do
 
       context "when teacher_funding and recruitment_target are blank strings" do
         let(:lead_providers) do
-          {
-            lead_provider.id.to_s => {
-              "id" => lead_provider.id.to_s,
-              "teacher_funding" => "",
-              "recruitment_target" => "",
-            },
-          }
+          [
+            [
+              lead_provider,
+              {
+                "id" => lead_provider.id.to_s,
+                "teacher_funding" => "",
+                "recruitment_target" => "",
+              },
+            ],
+          ]
         end
 
         it "stores them as nil" do
@@ -199,18 +174,24 @@ RSpec.describe CourseCohorts::Create, type: :model do
       context "when there are multiple selected lead providers" do
         let(:other_lead_provider) { create(:lead_provider) }
         let(:lead_providers) do
-          {
-            lead_provider.id.to_s => {
-              "id" => lead_provider.id.to_s,
-              "teacher_funding" => "1000",
-              "recruitment_target" => "50",
-            },
-            other_lead_provider.id.to_s => {
-              "id" => other_lead_provider.id.to_s,
-              "teacher_funding" => "2000",
-              "recruitment_target" => "100",
-            },
-          }
+          [
+            [
+              lead_provider,
+              {
+                "id" => lead_provider.id.to_s,
+                "teacher_funding" => "",
+                "recruitment_target" => "",
+              },
+            ],
+            [
+              other_lead_provider,
+              {
+                "id" => other_lead_provider.id.to_s,
+                "teacher_funding" => "2000",
+                "recruitment_target" => "100",
+              },
+            ],
+          ]
         end
 
         it "creates a course cohort provider for each selected lead provider" do
@@ -224,17 +205,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       context "when a lead provider is present but not selected" do
         let(:unselected_lead_provider) { create(:lead_provider) }
         let(:another_unselected_lead_provider) { create(:lead_provider) }
-        let(:lead_providers) do
-          {
-            lead_provider.id.to_s => {
-              "id" => lead_provider.id.to_s,
-              "teacher_funding" => "1000",
-              "recruitment_target" => "50",
-            },
-            unselected_lead_provider.id.to_s => { "id" => "" },
-            another_unselected_lead_provider.id.to_s => { "id" => "0" },
-          }
-        end
+        let(:lead_providers) { [] }
 
         it "does not create a course cohort provider for the unselected lead providers" do
           service.call

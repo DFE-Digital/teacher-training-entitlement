@@ -1,13 +1,13 @@
-<%= govuk_back_link href: admin_cohort_path(@cohort) %>
+<%= govuk_back_link href: admin_cohort_path(@form.cohort) %>
 
 <h1 class="govuk-heading-l">Add course to cohort <%= @cohort.description %></h1>
 
-<%= form_with model: @course_cohort, url: admin_cohort_courses_path(@cohort) do |f| %>
+<%= form_with model: @form, url: admin_cohort_courses_path(@form.cohort) do |f| %>
   <%= f.govuk_error_summary %>
   <%=
   f.govuk_collection_select(
     :course_id,
-    @courses,
+    @form.course_options,
     :id,
     :name,
     options: { include_blank: true },
@@ -19,7 +19,7 @@
   <%= f.govuk_date_field :training_ends_at, legend: { text: "Training ends at" } %>
 
   <%= f.govuk_check_boxes_fieldset :lead_providers, multiple: false, legend: { text: "Lead providers contracts", size: "m" } do %>
-    <% @lead_providers.each do |lead_provider| %>
+    <% @form.lead_provider_options.each do |lead_provider| %>
       <%
         checkbox_id = "lead_provider_#{lead_provider.id}_id"
         teacher_funding_id = "lead_provider_#{lead_provider.id}_teacher_funding"

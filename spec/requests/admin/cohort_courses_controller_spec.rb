@@ -9,11 +9,10 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let(:lead_provider) { create(:lead_provider, name: "Provider One") }
   let!(:delivery_partner) { create(:delivery_partner, lead_providers: [lead_provider]) }
-  let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
   let(:valid_params) do
     {
-      course_cohort: {
+      course_cohorts_setup_form: {
         course_id: course.id,
         "training_starts_at(1i)": "2025",
         "training_starts_at(2i)": "9",
@@ -30,7 +29,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   end
   let(:invalid_params) do
     {
-      course_cohort: {
+      course_cohorts_setup_form: {
         course_id: "",
         "training_starts_at(1i)": "",
         "training_starts_at(2i)": "",
@@ -42,6 +41,8 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
   context "when logged in as super admin" do
     before { sign_in_as_admin(super_admin: true) }
+
+    let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
     describe "#show" do
       before do
@@ -106,26 +107,21 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
     end
 
     describe "#create" do
-      before { post admin_cohort_courses_path(cohort), params: valid_params }
+      let(:request) { post admin_cohort_courses_path(cohort), params: valid_params }
 
-      it { is_expected.to redirect_to admin_cohort_course_path(cohort, course) }
-
-      it "creates the course cohort" do
-        expect(cohort.course_cohorts.find_by(course:)).to be_present
-      end
-
-      it "creates the course cohort provider" do
-        course_cohort = cohort.course_cohorts.find_by(course:)
-        expect(course_cohort.course_cohort_providers.find_by(lead_provider:)).to be_present
-      end
-
-      it "creates the delivery partnership" do
-        course_cohort = cohort.course_cohorts.find_by(course:)
-        expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_present
-      end
-
-      it "flashes success" do
+      it do
+        request
+        expect(response).to redirect_to admin_cohort_course_path(cohort, course)
         expect(flash[:success]).to match(/Course added/i)
+      end
+
+      it "sets up complete course cohort" do
+        expect { request }.to change(CourseCohort, :count).by(1)
+
+        course_cohort = cohort.course_cohorts.find_by(course:)
+        expect(course_cohort).to be_present
+        expect(course_cohort.course_cohort_providers.find_by(lead_provider:)).to be_present
+        expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_present
       end
     end
 
@@ -138,6 +134,8 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
 
   context "when logged in as normal admin" do
     before { sign_in_as_admin }
+
+    let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
     shared_examples "inaccessible to normal admins" do
       it { is_expected.to redirect_to admin_cohort_path(cohort) }
@@ -167,6 +165,8 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
   end
 
   context "when not logged in" do
+    let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
+
     describe "#show" do
       before { get admin_cohort_course_path(cohort, course_cohort.course) }
 
