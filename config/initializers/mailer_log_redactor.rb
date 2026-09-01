@@ -12,7 +12,7 @@ private
   end
 
   def filter_parameters
-    Rails.application.config.filter_parameters
+    Rails.application.config.filter_parameters + %i[mail]
   end
 end
 
