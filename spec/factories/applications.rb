@@ -13,7 +13,6 @@ FactoryBot.define do
       cohort do
         course.cohorts.last
       end
-      schedule { course.course_cohorts.last&.schedule || create(:schedule, cohort: course.cohorts.last) }
     end
 
     course_cohort { course.course_cohorts.last }
@@ -49,8 +48,7 @@ FactoryBot.define do
       end
 
       cohort { create(:cohort, registration_starts_at:) }
-      schedule { create(:schedule, cohort:) }
-      course_cohort { create(:course_cohort, course:, cohort:, schedule:) }
+      course_cohort { create(:course_cohort, course:, cohort:) }
     end
 
     trait :with_school do
@@ -164,13 +162,6 @@ FactoryBot.define do
 
     trait :with_declaration do
       after(:create) do |application|
-        if application.schedule.training_starts_at.future?
-          application.schedule.update!(
-            training_starts_at: 1.month.ago.beginning_of_day,
-            training_ends_at: 1.month.from_now.beginning_of_day,
-          )
-        end
-
         milestone = application.course_cohort.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
           record.acceptance_window_start_date = 1.month.ago.to_date
           record.acceptance_window_end_date = 1.month.from_now.to_date

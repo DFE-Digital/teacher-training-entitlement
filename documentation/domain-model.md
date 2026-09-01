@@ -46,6 +46,7 @@ erDiagram
     integer delivery_partner_id
     integer lead_provider_id
     datetime updated_at
+    integer course_cohort_id
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
@@ -76,14 +77,10 @@ erDiagram
     datetime created_at
     uuid ecf_id
     datetime updated_at
-    date registration_starts_at
-    date registration_ends_at
-    date training_starts_at
-    date training_ends_at
+    enum term_identifier
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to
-  CourseCohort }o--|| Schedule : belongs_to
   Course {
     integer id
     enum course_group
