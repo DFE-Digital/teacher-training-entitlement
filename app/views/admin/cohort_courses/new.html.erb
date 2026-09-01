@@ -5,38 +5,32 @@
 <%= form_with model: @course_cohort, url: admin_cohort_courses_path(@cohort) do |f| %>
   <%= f.govuk_error_summary %>
   <%=
-    f.govuk_collection_select(
-      :course_id,
-      @courses,
-      :id,
-      :name,
-      options: { include_blank: true },
-      label: { text: "Course" },
-    )
+  f.govuk_collection_select(
+    :course_id,
+    @courses,
+    :id,
+    :name,
+    options: { include_blank: true },
+    label: { text: "Course" },
+  )
   %>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third">
-      <%=
-        f.govuk_collection_select(
-          :schedule_id,
-          @schedules,
-          :id,
-          :name_and_start_date,
-          options: { include_blank: true },
-          label: { text: "Schedule" },
-        )
-      %>
-    </div>
+  <%= f.govuk_date_field :training_starts_at, legend: { text: "Training starts at" }, caption: { text: "Regisration start date: #{@cohort.registration_starts_at.to_fs(:govuk_short)}" } %>
+  <%= f.govuk_date_field :training_ends_at, legend: { text: "Training ends at" } %>
 
-    <div class="govuk-grid-column-one-third govuk-!-padding-top-6">
-      <%= link_to "New schedule",
-                  new_admin_cohort_schedule_path(@cohort),
-                  class: "govuk-button",
-                  target: "_blank",
-                  rel: "noopener" %>
-    </div>
-  </div>
+  <%= f.govuk_check_boxes_fieldset :lead_providers, multiple: false, legend: { text: "Lead providers contracts", size: "m" } do %>
+    <% @lead_providers.each do |lead_provider| %>
+      <%
+        checkbox_id = "lead_provider_#{lead_provider.id}_id"
+        teacher_funding_id = "lead_provider_#{lead_provider.id}_teacher_funding"
+        recruitment_target_id = "lead_provider_#{lead_provider.id}_recruitment_target"
+      %>
+      <%= f.govuk_check_box checkbox_id, lead_provider.id, name: "#{f.object_name}[lead_providers][#{lead_provider.id}][id]", link_errors: true, label: { text: lead_provider.name }, multiple: false do %>
+        <%= f.govuk_text_field teacher_funding_id, name: "#{f.object_name}[lead_providers][#{lead_provider.id}][teacher_funding]", label: { text: t(".teacher_funding") }, width: 10, multiple: false %>
+        <%= f.govuk_text_field recruitment_target_id, name: "#{f.object_name}[lead_providers][#{lead_provider.id}][recruitment_target]", label: { text: t(".recruitment_target") }, width: 5, multiple: false %>
+      <% end %>
+    <% end %>
+  <% end %>
 
   <%= f.govuk_submit "Add course" %>
 <% end %>
