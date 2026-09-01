@@ -44,6 +44,12 @@ class Application < ApplicationRecord
   has_one :started_declaration, -> { billable_or_changeable.where(declaration_type: Milestone::STARTED) }, class_name: "Declaration"
   has_one :completed_declaration, -> { billable_or_changable.where(declaration_type: Milestone::COMPLETED) }, class_name: "Declaration"
 
+  # TODO: contract should stay the same even after defer/resume
+  has_one :contract, -> { where(lead_provider: lead_provider) },
+          through: :course_cohort,
+          source: :course_cohort_providers,
+          class_name: "CourseCohortProvider"
+
   scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
   scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }

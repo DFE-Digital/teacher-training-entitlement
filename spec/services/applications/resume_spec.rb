@@ -4,21 +4,22 @@ RSpec.describe Applications::Resume, type: :model do
   subject(:service) { described_class.new(application:, course_cohort: target_course_cohort) }
 
   let(:application) { create(:application, :deferred, :with_declaration, course_cohort:) }
-  let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule:) }
+  let(:course_cohort) { create(:course_cohort, course:, cohort:) }
   let(:course) { create(:course) }
   let(:cohort) { create(:cohort, :previous) }
-  let(:schedule) { create(:schedule, training_starts_at: 1.year.ago, training_ends_at: 6.months.ago) }
 
   let(:target_course_cohort) do
     create(:course_cohort,
            course: target_course,
-           cohort: target_cohort,
-           schedule: target_schedule)
+           cohort: target_cohort)
   end
 
   let(:target_course) { course }
   let(:target_cohort) { create(:cohort, :current) }
-  let(:target_schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+
+  before do
+    create(:milestone, :started, course_cohort: target_course_cohort, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now)
+  end
 
   describe "happy path" do
     it "updates application status" do
@@ -46,7 +47,10 @@ RSpec.describe Applications::Resume, type: :model do
     end
 
     context "when course cohort has a cohort not currently in training" do
-      let(:target_schedule) { build(:schedule, training_starts_at: 1.day.from_now, training_ends_at: 2.days.from_now) }
+      before do
+        target_course_cohort.milestones.destroy_all
+        create(:milestone, :started, course_cohort: target_course_cohort, acceptance_window_start_date: 1.day.from_now, acceptance_window_end_date: 2.days.from_now)
+      end
 
       it { expect { service.call }.not_to change(application, :status) }
     end

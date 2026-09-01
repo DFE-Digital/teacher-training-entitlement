@@ -20,8 +20,8 @@ module API
             {
               email: object.email,
               course_identifier: application.course.identifier,
-              schedule_identifier: application&.schedule&.identifier,
-              cohort: application.cohort&.start_year&.to_s,
+              schedule_identifier: application.course_cohort.schedule_identifier,
+              cohort: application.contract.course_cohort.academic_year,
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
               status: application.status,
