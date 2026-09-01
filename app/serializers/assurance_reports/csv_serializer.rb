@@ -59,7 +59,7 @@ private
       user.full_name,
       user.trn,
       application.course.identifier,
-      application.course_cohort.schedule.identifier,
+      application.course_cohort.schedule_identifier,
       application.eligible_for_funding,
       application.funded_place,
       @lead_provider_name,
