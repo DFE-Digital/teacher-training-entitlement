@@ -6,6 +6,8 @@ class ComputedContract
   attribute :teacher_funding, :decimal
   attribute :service_fee, :decimal
 
+  attr_accessor :course_cohort
+
   class << self
     def load_from(contract)
       new.tap do |c|
@@ -31,9 +33,12 @@ class ComputedContract
 
     def draw(lead_provider:, course_cohort:)
       course = course_cohort.course
-      generic(lead_provider:, course:)
+      contract = generic(lead_provider:, course:)
         .apply_amendment(academic_year_amendment(lead_provider:, course:, academic_year: course_cohort.academic_year))
         .apply_amendment(course_cohort_amendment(lead_provider:, course_cohort:))
+
+      contract.course_cohort = course_cohort
+      contract
     end
   end
 

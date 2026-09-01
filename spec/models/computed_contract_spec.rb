@@ -1,23 +1,5 @@
 require "rails_helper"
 
-RSpec::Matchers.define :be_a_contractual_match do |expected|
-  match do |actual|
-    actual.attribute_names.all? do |attribute|
-      a_value = actual.public_send(attribute.to_sym)
-      b_value = expected.public_send(attribute.to_sym)
-      a_value == b_value
-    end
-  end
-  description do |actual|
-    expected_attrs = actual.attributes_from(expected)
-    "be a contractual match of #{expected_attrs}"
-  end
-  failure_message do |actual|
-    expected_attrs = actual.attributes_from(expected)
-    "expected contract #{actual.attributes} to match #{expected_attrs}"
-  end
-end
-
 RSpec.describe ComputedContract, type: :model do
   let(:nil_contract) do
     described_class.new(
