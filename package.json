@@ -21,7 +21,7 @@
     "svg-pan-zoom": "^3.6.2",
     "swagger-ui-dist": "^5.32.14",
     "webpack": "^5.109.2",
-    "webpack-cli": "^7.2.2"
+    "webpack-cli": "^7.2.3"
   },
   "resolutions": {
     "lodash-es": "^4.18.0",
