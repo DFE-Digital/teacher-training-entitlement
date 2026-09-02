@@ -45,11 +45,14 @@ RSpec.describe Statements::CourseCohortCalculator do
 
   describe "with only started declarations" do
     before do
-      # course_cohort has 5 applications (4 funded and 1 self-funded)
+      # course_cohort has 7 applications (4 funded, 2 rejected funded and 1 self-funded)
       # lead provider has 1 paid statement and 1 open statement for course_cohort
       # paid statement has 1 started declaration
       # open statement has 3 started declarations (2 funded, 1 self-funded)
       # completed milestone acceptance window is in the future so not expecting any completed declarations
+
+      # create some rejected applications to ensure they are not counted
+      create_list(:application, 2, :with_funded_place, course_cohort:, lead_provider:, status: Application::REJECTED)
 
       # out of scope for calculation
       started_received(application: funded_apps[0], statement: paid_statement, milestone: started_milestone)
