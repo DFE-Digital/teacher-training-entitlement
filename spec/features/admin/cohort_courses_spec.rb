@@ -13,13 +13,13 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
   before { sign_in_as_super_admin }
 
   def fill_in_training_starts_at(day:, month:, year:)
-    fill_in "course_cohort_training_starts_at_3i", with: day
-    fill_in "course_cohort_training_starts_at_2i", with: month
-    fill_in "course_cohort_training_starts_at_1i", with: year
+    fill_in "course_cohorts_setup_form_training_starts_at_3i", with: day
+    fill_in "course_cohorts_setup_form_training_starts_at_2i", with: month
+    fill_in "course_cohorts_setup_form_training_starts_at_1i", with: year
   end
 
   def lead_provider_conditional_selector(lead_provider)
-    "#course-cohort-lead-provider-#{lead_provider.id}-id-#{lead_provider.id}-conditional"
+    "#course-cohorts-setup-form-lead-provider-#{lead_provider.id}-id-#{lead_provider.id}-conditional"
   end
 
   scenario "adding a course with a selected lead provider and funding details" do

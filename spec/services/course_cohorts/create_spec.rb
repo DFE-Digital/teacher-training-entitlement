@@ -111,7 +111,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       end
 
       context "when training_ends_at is present" do
-        let(:training_dates) { { start: Date.new(2025, 9, 1), end: Date.new(2026, 3, 1)} }
+        let(:training_dates) { { start: Date.new(2025, 9, 1), end: Date.new(2026, 3, 1) } }
 
         it "creates a completed milestone" do
           expect { service.call }.to change(Milestone.completed, :count).by(1)
@@ -122,7 +122,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       end
 
       context "when training_ends_at is blank" do
-        let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil} }
+        let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
 
         it "does not create a completed milestone" do
           expect { service.call }.not_to change(Milestone.completed, :count)
