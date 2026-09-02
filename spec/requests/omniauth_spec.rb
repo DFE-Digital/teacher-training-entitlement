@@ -9,7 +9,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
     end
 
     describe "POST /users/auth/teacher_auth/callback" do
-      subject { post "/users/auth/teacher_auth/callback" }
+      let(:make_request) { post "/users/auth/teacher_auth/callback" }
 
       let(:uid) { "urn:fdc:gov.uk:2022:#{SecureRandom.alphanumeric(43)}" }
       let(:mock_auth) do
@@ -49,12 +49,26 @@ RSpec.describe "Omniauth callbacks", type: :request do
             provider_data: mock_auth,
             feature_flag_id: nil,
           )
-          subject
+          make_request
         end
 
         it "signs in the user and redirects" do
-          subject
+          make_request
           expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
+        end
+
+        context "when registration is not open for any course cohort" do
+          before do
+            create(:"tte-early-years")
+            allow(CourseCohort).to receive(:next_open_for).and_return(nil)
+          end
+
+          it "redirects to the registration closed page" do
+            make_request
+            follow_redirect!
+
+            expect(response).to redirect_to(registration_wizard_show_path(:closed))
+          end
         end
 
         context "when user has applications" do
@@ -63,7 +77,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
           end
 
           it "redirects to user registrations path" do
-            subject
+            make_request
             expect(response).to redirect_to(applications_path)
           end
         end
@@ -75,12 +89,12 @@ RSpec.describe "Omniauth callbacks", type: :request do
         end
 
         it "redirects to the failed sign in path" do
-          subject
+          make_request
           expect(response).to redirect_to(registration_wizard_show_path(:start))
         end
 
         it "sets an error flash message" do
-          subject
+          make_request
           expect(flash[:error]).to include("There was an error")
         end
       end

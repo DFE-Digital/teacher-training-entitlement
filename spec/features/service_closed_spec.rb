@@ -18,6 +18,8 @@ RSpec.feature "Service is closed", type: :feature do
   scenario "Services closes while registration in progress" do
     open_registration!
 
+    seed_course_cohort_in_registration_store
+
     visit "/"
     expect(page).to have_text("Before you start")
     page.click_button("Start now")
@@ -65,6 +67,7 @@ RSpec.feature "Service is closed", type: :feature do
 
       Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
 
+      seed_course_cohort_in_registration_store
       visit "/closed_registration_exception"
       click_on("Start now")
 
@@ -75,6 +78,7 @@ RSpec.feature "Service is closed", type: :feature do
 
     scenario "When user is deleted" do
       Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
+      seed_course_cohort_in_registration_store
       visit "/closed_registration_exception"
 
       click_on("Start now")
@@ -88,6 +92,7 @@ RSpec.feature "Service is closed", type: :feature do
 
       expect(page).to have_content("Added #{email}")
 
+      seed_course_cohort_in_registration_store
       visit "/closed_registration_exception"
 
       click_on("Start now")

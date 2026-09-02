@@ -83,12 +83,21 @@ class RegistrationQueryStore
   end
 
   def course_cohort
-    @course_cohort ||= CourseCohort.find_by(id: store["course_cohort_id"]) || assign_course_cohort
+    return @course_cohort if @course_cohort
+
+    course_cohort = if store["course_cohort_id"].blank?
+                      assign_course_cohort
+                    else
+                      CourseCohort.find_by(id: store["course_cohort_id"])
+                    end
+    @course_cohort = course_cohort if course_cohort.present?
   end
 
   def assign_course_cohort
+    return if course.nil?
+
     CourseCohort.next_open_for(course:).tap do |course_cohort|
-      store["course_cohort_id"] = course_cohort.id
+      store["course_cohort_id"] = course_cohort.id if course_cohort
     end
   end
 

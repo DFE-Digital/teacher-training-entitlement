@@ -41,6 +41,17 @@ module Helpers
       expect(Application.count).to be(total_number_of_created_applications)
     end
 
+    def seed_course_cohort_in_registration_store
+      course_cohort = CourseCohort.next_open_for(course: Course.reception)
+      return unless course_cohort
+
+      page.set_rack_session(
+        "registration_store" => {
+          "course_cohort_id" => course_cohort.id,
+        },
+      )
+    end
+
     def check_back_journey_is_correct
       starting_path = page.current_path
       until page.current_path == "/registration/course-start-date"

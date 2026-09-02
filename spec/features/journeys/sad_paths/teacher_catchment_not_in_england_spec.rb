@@ -18,6 +18,8 @@ RSpec.feature "Sad journey", :with_default_lead_provider, type: :feature do
   end
 
   def run_scenario
+    seed_course_cohort_in_registration_store
+
     navigate_to_page(path: "/", submit_form: false) do
       page.click_button("Start now")
     end
