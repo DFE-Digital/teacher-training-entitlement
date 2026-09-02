@@ -2,6 +2,7 @@ class RegistrationWizardController < PublicPagesController
   before_action :registration_closed
   before_action :redirect_to_start_if_signed_out, except: :development_login
   before_action :set_wizard
+  before_action :redirect_to_closed_if_no_course_cohort, only: :show
   before_action :set_form
   before_action :check_duplicate_applications, only: %i[update]
   before_action :ensure_can_render_step, only: :show
@@ -79,6 +80,13 @@ private
     return if params[:step].to_s.in?(%w[start closed])
 
     redirect_to root_path
+  end
+
+  def redirect_to_closed_if_no_course_cohort
+    return unless params[:step].to_s == "course-start-date"
+    return if @wizard.query_store.course_cohort
+
+    redirect_to registration_wizard_show_path(:closed)
   end
 
   def redirect_to_course_start_date

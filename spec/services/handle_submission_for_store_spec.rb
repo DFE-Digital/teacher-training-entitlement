@@ -65,6 +65,7 @@ RSpec.describe HandleSubmissionForStore do
         {
           "current_user" => user,
           "course_identifier" => course.identifier,
+          "course_cohort_id" => course_cohort.id,
           "lead_provider_id" => lead_provider.id,
         }
       end

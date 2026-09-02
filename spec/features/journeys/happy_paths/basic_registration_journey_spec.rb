@@ -17,6 +17,8 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_sched
   end
 
   def run_scenario(js:)
+    seed_course_cohort_in_registration_store
+
     navigate_to_page(path: "/", submit_form: false) do
       expect(page).to have_text("Before you start")
       page.click_button("Start now")

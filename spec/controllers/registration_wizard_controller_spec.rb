@@ -45,6 +45,12 @@ RSpec.describe RegistrationWizardController do
 
   describe "#show" do
     let(:make_request) { get(:show, params: { step: "course-start-date" }) }
+    let(:course) { Course.reception || create(:course) }
+    let(:course_cohort) { CourseCohort.next_open_for(course:) || create(:course_cohort, course:) }
+
+    before do
+      session["registration_store"] = { "course_cohort_id" => course_cohort.id }
+    end
 
     it_behaves_like "it redirects on missing mandatory institution"
 
@@ -72,13 +78,11 @@ RSpec.describe RegistrationWizardController do
     end
 
     context "when application already submitted for course" do
-      let(:course) { Course.reception || create(:course) }
-      let(:course_cohort) { CourseCohort.next_open_for(course:) || create(:course_cohort, course:) }
       let!(:application) { create(:application, :accepted, course:, cohort: course_cohort.cohort, user: current_user) }
       let(:step) { nil }
 
       before do
-        session["registration_store"] = { "course_identifier" => course.identifier }
+        session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_id" => course_cohort.id }
         patch(:update, params: { step: })
       end
 
