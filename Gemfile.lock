@@ -658,8 +658,8 @@ GEM
     site_prism-all_there (3.0.9)
     skylight (7.1.1)
       activesupport (>= 7.2.0)
-    sprockets (4.2.2)
-      concurrent-ruby (~> 1.0)
+    sprockets (4.4.1)
+      concurrent-ruby (~> 1.1)
       logger
       rack (>= 2.2.4, < 4)
     sprockets-rails (3.5.2)
