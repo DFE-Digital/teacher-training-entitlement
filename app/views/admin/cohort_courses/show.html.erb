@@ -13,32 +13,37 @@
 <h1 class="govuk-heading-l"><%= @course.name %></h1>
 
 <%=
-  govuk_summary_list do |summary_list|
-    summary_list.with_row do |row|
-      row.with_key(text: "Cohort name")
-      row.with_value(text: @cohort.name)
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Cohort registration open")
-      row.with_value(text: @cohort.registration_starts_at.to_date.to_fs(:govuk))
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Course ID")
-      row.with_value(text: @course.ecf_id)
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Identifier")
-      row.with_value(text: @course.identifier)
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Description")
-      row.with_value(text: @course.description)
-    end
+govuk_summary_list do |summary_list|
+  summary_list.with_row do |row|
+    row.with_key(text: "Cohort name")
+    row.with_value(text: @cohort.name)
   end
+
+  summary_list.with_row do |row|
+    row.with_key(text: "Cohort registration open")
+    row.with_value(text: @cohort.registration_starts_at.to_date.to_fs(:govuk))
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: "Course ID")
+    row.with_value(text: @course.ecf_id)
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: "Identifier")
+    row.with_value(text: @course.identifier)
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: "Term")
+    row.with_value(text: @course_cohort.term_identifier)
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: "Description")
+    row.with_value(text: @course.description)
+  end
+end
 %>
 
 <h2 class="govuk-heading-m">Milestones</h2>
@@ -55,7 +60,7 @@
           row.with_cell(text: "Declaration type")
           row.with_cell(text: "Acceptance window start")
           row.with_cell(text: "Acceptance window end")
-          row.with_cell(text: "Payment amount")
+          row.with_cell(text: "Payment percentage")
           row.with_cell(text: "")
         end
       end
@@ -66,7 +71,7 @@
             row.with_cell(text: milestone.declaration_type)
             row.with_cell(text: milestone.acceptance_window_start_date&.to_fs(:govuk) || "-")
             row.with_cell(text: milestone.acceptance_window_end_date&.to_fs(:govuk) || "-")
-            row.with_cell(text: milestone.payment_amount ? number_to_currency(milestone.payment_amount, unit: "£") : "-")
+            row.with_cell(text: milestone.payment_amount ? number_to_currency(milestone.payment_amount, unit: "%") : "-")
             row.with_cell do
               if current_admin.super_admin? && milestone.editable?
                 govuk_button_link_to("Edit", edit_admin_cohort_course_milestone_path(@cohort, @course, milestone), class: "govuk-!-margin-bottom-0")
@@ -88,21 +93,25 @@
 <% end %>
 
 <%=
-  govuk_table do |table|
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Provider")
-        row.with_cell(text: "Delivery partners")
-      end
+govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Provider")
+      row.with_cell(text: "Recruitment target")
+      row.with_cell(text: "Teacher funding")
+      row.with_cell(text: "Delivery partners")
     end
+  end
 
-    table.with_body do |body|
-      @course_cohort.lead_providers.order(:name).each do |provider|
-        body.with_row do |row|
-          row.with_cell(text: govuk_link_to(provider.name, cohort_admin_lead_provider_path(provider, @cohort)))
-          row.with_cell(text: pluralize(@delivery_partner_counts.fetch(provider.id, 0), "delivery partner"))
-        end
+  table.with_body do |body|
+    @course_cohort.course_cohort_providers.each do |ccp|
+      body.with_row do |row|
+        row.with_cell(text: govuk_link_to(ccp.lead_provider.name, cohort_admin_lead_provider_path(ccp.lead_provider, @cohort)))
+        row.with_cell(text: ccp.recruitment_target)
+        row.with_cell(text: number_to_currency(ccp.teacher_funding, unit: "£"))
+        row.with_cell(text: pluralize(@delivery_partner_counts.fetch(ccp.lead_provider_id, 0), "delivery partner"))
       end
     end
   end
+end
 %>

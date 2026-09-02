@@ -1,6 +1,11 @@
 ---
 en:
   admin:
+    cohort_courses:
+      new:
+        recruitment_target: Recruitment target
+        teacher_funding: Teacher funding
+
     admins:
       new:
         title: Add a new admin

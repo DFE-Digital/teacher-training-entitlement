@@ -11,26 +11,34 @@ class Admin::CohortCoursesController < AdminController
   end
 
   def new
-    @course_cohort = cohort.course_cohorts.new
-    load_form_options
+    @form = CourseCohorts::SetupForm.new(cohort:)
   end
 
   def create
-    @course_cohort = cohort.course_cohorts.new(course_cohort_params)
+    @form = CourseCohorts::SetupForm.new(form_params)
+    service = CourseCohorts::Create.new(
+      cohort:,
+      course: @form.selected_course,
+      training_dates: @form.training_dates,
+      lead_providers: @form.selected_lead_providers,
+    )
 
-    if @course_cohort.save
+    if @form.valid? && service.valid?
+      service.call
       flash[:success] = "Course added to cohort"
-      redirect_to admin_cohort_course_path(cohort, @course_cohort.course)
+      redirect_to admin_cohort_course_path(cohort, service.course)
     else
-      load_form_options
+      @form.add_service_errors(service.errors)
       render :new, status: :unprocessable_content
     end
   end
 
 private
 
-  def course_cohort_params
-    params.require(:course_cohort).permit(:course_id, :schedule_id)
+  def form_params
+    params.require(:course_cohorts_setup_form)
+      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, lead_providers: {})
+      .merge(cohort:)
   end
 
   def course_cohort
@@ -41,11 +49,6 @@ private
 
   def cohort
     @cohort ||= Cohort.find(params[:cohort_id])
-  end
-
-  def load_form_options
-    @courses = Course.where.not(id: cohort.course_cohorts.select(:course_id)).order(:name)
-    @schedules = Schedule.order(training_starts_at: :desc)
   end
 
   def ensure_super_admin

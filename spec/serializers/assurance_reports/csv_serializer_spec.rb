@@ -72,7 +72,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           declaration.user.full_name,
           declaration.user.trn,
           declaration.course.identifier,
-          declaration.application.schedule.identifier,
+          declaration.course_cohort.schedule_identifier,
           declaration.application.eligible_for_funding.to_s,
           declaration.application.funded_place.to_s,
           lead_provider.name,
