@@ -2,12 +2,14 @@ class Admin::Finance::StatementsController < AdminController
   include Admin::Cohortable
 
   before_action :set_statement, only: %i[show print_provider print_dfe_user]
+  before_action :redirect_to_current_academic_year, only: %i[index]
 
   def index
     params[:output_fee] = "true" unless params.key?(:output_fee)
 
     scope = Statement.includes(:lead_provider)
-                     .where(statement_params)
+              .where(statement_params)
+              .order(start_date: :desc)
 
     if @current_cohort
       scope = scope.joins(:course_cohorts).where(course_cohorts: { cohort_id: @current_cohort.id }).distinct

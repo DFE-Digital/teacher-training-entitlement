@@ -9,24 +9,6 @@
 
 <h1 class="govuk-heading-l"><%= @lead_provider.name %></h1>
 
-<%=
-  govuk_summary_list do |summary_list|
-    summary_list.with_row do |row|
-      row.with_key(text: "Email address")
-      row.with_value(text: @lead_provider.email.presence || "Not set")
-    end
-
-    summary_list.with_row do |row|
-      row.with_key(text: "Website URL")
-      row.with_value(text: @lead_provider.url.presence || "Not set")
-    end
-  end
-%>
-
-<p class="govuk-body">
-  <%= govuk_button_link_to "Edit provider details", edit_admin_lead_provider_path(@lead_provider) %>
-</p>
-
 <%= govuk_tabs do |tabs| %>
     <%= tabs.with_tab(label: "Applications") do %>
         <%= render partial: "applications",  locals: { applications: @applications, pagy: @pagy_applications } %>

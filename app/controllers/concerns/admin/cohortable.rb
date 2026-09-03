@@ -4,7 +4,7 @@ module Admin
 
     included do
       before_action :set_cohorts
-      before_action :redirect_to_current_academic_year, only: [:index]
+      before_action :redirect_to_current_academic_year, only: %i[index show]
     end
 
   protected
