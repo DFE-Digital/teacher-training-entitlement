@@ -79,18 +79,10 @@ class RegistrationQueryStore
   end
 
   def course
-    if Rails.env.production?
-      @course ||= Course.first
-      return @course
-    end
     @course ||= Course.reception
   end
 
   def course_cohort
-    if Rails.env.production?
-      @course_cohort = CourseCohort.first
-    end
-
     return @course_cohort if @course_cohort
 
     course_cohort = if store["course_cohort_id"].blank?
