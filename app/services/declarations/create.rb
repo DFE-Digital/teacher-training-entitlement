@@ -151,7 +151,12 @@ module Declarations
     end
 
     def statement
-      Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:)
+      Statement.current(lead_provider:, course_group:).first ||
+        Statement.create_current!(lead_provider:, course_group:)
+    end
+
+    def course_group
+      course_cohort.course.course_group
     end
 
     def declaration_parameters_for_create

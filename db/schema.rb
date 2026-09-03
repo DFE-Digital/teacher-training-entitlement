@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_100218) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_104453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -533,6 +533,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_100218) do
 
   create_table "statements", force: :cascade do |t|
     t.integer "academic_year"
+    t.enum "course_group", enum_type: "course_group"
     t.datetime "created_at", null: false
     t.date "deadline_date"
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
@@ -546,7 +547,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_100218) do
     t.enum "state", default: "open", null: false, enum_type: "statement_states"
     t.datetime "updated_at", null: false
     t.index ["ecf_id"], name: "index_statements_on_ecf_id", unique: true
-    t.index ["lead_provider_id", "start_date", "frequency"], name: "index_statements_on_lead_provider_id_start_date_frequency", unique: true
+    t.index ["lead_provider_id", "start_date", "frequency", "course_group"], name: "index_statements_on_lead_provider_period_course_group", unique: true
     t.index ["lead_provider_id"], name: "index_statements_on_lead_provider_id"
   end
 

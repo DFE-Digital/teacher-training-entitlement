@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :statement do
     start_date { Date.current.beginning_of_month }
     frequency { Statement::FREQUENCIES.keys.first }
+    course_group { "reception" }
     deadline_date { start_date + Statement::FREQUENCIES.fetch(frequency) - 1.day }
     payment_date { deadline_date ? deadline_date + 3.days : Faker::Date.forward(days: 30) }
     lead_provider

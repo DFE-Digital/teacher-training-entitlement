@@ -28,7 +28,8 @@ FactoryBot.define do
     end
     statement do
       if lead_provider && LeadProvider.exists?(lead_provider.id)
-        Statement.current.find_by(lead_provider:) || Statement.create_current!(lead_provider:)
+        Statement.current(lead_provider:, course_group: application.course.course_group).first ||
+          Statement.create_current!(lead_provider:, course_group: application.course.course_group)
       else
         build(:statement)
       end

@@ -20,6 +20,7 @@ namespace :api_test do
                          DeliveryPartner.find_by_id(args[:delivery_partner_id])
                        end
 
-    ::APITests::StartedDeclaration.new(application:, delivery_partner:).call
+    result = ::APITests::StartedDeclaration.new(application:, delivery_partner:).call
+    puts result if Rails.env.development?
   end
 end

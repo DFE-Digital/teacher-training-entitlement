@@ -127,7 +127,12 @@ class Declaration < ApplicationRecord
   }
 
   def clawback_statement
-    Statement.clawback.find_by(lead_provider:) || Statement.create_clawback!(lead_provider:)
+    Statement.clawback(lead_provider:, course_group:).first ||
+      Statement.create_clawback!(lead_provider:, course_group:)
+  end
+
+  def course_group
+    application.course.course_group
   end
 
   def clawback!
