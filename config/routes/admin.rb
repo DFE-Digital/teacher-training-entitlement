@@ -124,6 +124,7 @@ namespace :admin do
 
   namespace :finance do
     resources :statements, only: %i[index show] do
+      concerns :cohortable, index: "statements#index"
       resources :adjustments, controller: "statements/adjustments" do
         collection do
           post :add_another

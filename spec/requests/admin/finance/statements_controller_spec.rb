@@ -17,6 +17,33 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
 
   before { sign_in_as_admin }
 
+  describe "cohort filtering" do
+    let(:cohort_a) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
+    let(:cohort_b) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
+    let(:filter_lead_provider) { create(:lead_provider) }
+
+    let!(:statement_a) { create(:statement, lead_provider: filter_lead_provider, start_date: Date.new(2023, 10, 1)) }
+    let!(:statement_b) { create(:statement, lead_provider: filter_lead_provider, start_date: Date.new(2023, 11, 1)) }
+
+    before do
+      create(:declaration, :started, statement: statement_a, course_cohort: create(:course_cohort, cohort: cohort_a))
+      create(:declaration, :started, statement: statement_b, course_cohort: create(:course_cohort, cohort: cohort_b))
+    end
+
+    subject do
+      get(cohort_admin_finance_statements_path(cohort_a))
+      response
+    end
+
+    it { is_expected.to have_http_status(:ok) }
+
+    it "only shows statements associated with the selected cohort" do
+      subject
+      expect(response.body).to match(/October 2023<\/td>/)
+      expect(response.body).not_to match(/November 2023<\/td>/)
+    end
+  end
+
   describe "/admin/statements" do
     subject do
       get(admin_finance_statements_path, params:)

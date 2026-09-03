@@ -10,7 +10,7 @@ module Admin
     end
 
     def show
-      @cohorts = Cohort.where(id: @course.course_cohorts.select(:cohort_id)).order_by_latest
+      @course_cohorts = @course.course_cohorts.includes(:cohort).joins(:cohort).order("cohorts.registration_starts_at DESC")
     end
 
     def edit; end

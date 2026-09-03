@@ -3,9 +3,9 @@ class CohortsComponent < BaseComponent
 
   attr_accessor :current_path, :current_section, :heading
 
-  def initialize(current_path, cohorts:, base_path:, resource: nil, cohort_path: nil)
+  def initialize(current_path, course_cohorts:, base_path:, resource: nil, cohort_path: nil)
     @current_path = current_path
-    @cohorts = cohorts
+    @course_cohorts = course_cohorts
     @base_path = base_path
     @resource = resource
     @cohort_path = cohort_path
@@ -13,15 +13,19 @@ class CohortsComponent < BaseComponent
   end
 
   def render?
-    structure.present?
+    @course_cohorts.present?
   end
 
-  def cohort_nodes
-    @cohorts.map do |cohort|
+  def year_nodes
+    cohorts_by_academic_year.sort_by { |academic_year, _cohorts| academic_year }.reverse.map do |academic_year, cohorts|
+      leaf_nodes = cohort_leaf_nodes(cohorts)
+      most_recent_cohort_leaf_node = leaf_nodes.first
+
       NavigationStructure::Node.new(
-        name: cohort.description,
-        href: cohort_resource_path(cohort),
-        prefix: cohort_resource_path(cohort),
+        name: academic_year.to_s,
+        href: most_recent_cohort_leaf_node.href,
+        prefix: most_recent_cohort_leaf_node.prefix,
+        nodes: leaf_nodes,
       )
     end
   end
@@ -35,22 +39,22 @@ class CohortsComponent < BaseComponent
   end
 
   def structure
-    [all_node, *cohort_nodes]
+    [all_node, *year_nodes]
   end
 
-  def navigation_link(section)
+  def navigation_link(section, parent: false)
     link_to(
       section.name,
       section.href,
       class: "x-govuk-sub-navigation__link",
-      aria: { current: current?(section.prefix) },
+      aria: (parent ? {} : { current: current?(section.prefix) }),
     )
   end
 
   def navigation_item_classes(section)
     class_names(
       "x-govuk-sub-navigation__section-item",
-      "x-govuk-sub-navigation__section-item--current" => current?(section.prefix),
+      "x-govuk-sub-navigation__section-item--current" => current_section?(section),
     )
   end
 
@@ -70,6 +74,31 @@ class CohortsComponent < BaseComponent
   end
 
 private
+
+  def cohorts_by_academic_year
+    @course_cohorts
+      .uniq(&:cohort_id)
+      .group_by(&:academic_year)
+  end
+
+  def cohort_leaf_nodes(course_cohorts)
+    course_cohorts
+      .sort_by { |course_cohort| course_cohort.cohort.registration_starts_at }
+      .reverse
+      .map do |course_cohort|
+        cohort = course_cohort.cohort
+
+        NavigationStructure::Node.new(
+          name: cohort.description,
+          href: cohort_resource_path(cohort),
+          prefix: cohort_resource_path(cohort),
+        )
+      end
+  end
+
+  def current_section?(section)
+    current?(section.prefix) || section.nodes&.any? { |node| current?(node.prefix) }
+  end
 
   def cohort_resource_path(cohort)
     if @cohort_path

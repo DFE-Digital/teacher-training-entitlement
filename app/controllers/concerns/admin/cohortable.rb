@@ -9,8 +9,11 @@ module Admin
   protected
 
     def set_cohorts
-      @cohorts = Cohort.order_by_latest
-      @current_cohort = params[:cohort_id] ? @cohorts.find(params[:cohort_id]) : nil
+      @course_cohorts = CourseCohort.includes(:cohort)
+                                     .joins(:cohort)
+                                     .select("DISTINCT ON (course_cohorts.cohort_id) course_cohorts.*")
+                                     .order("course_cohorts.cohort_id, cohorts.registration_starts_at DESC")
+      @current_cohort = params[:cohort_id] ? Cohort.find(params[:cohort_id]) : nil
     end
   end
 end
