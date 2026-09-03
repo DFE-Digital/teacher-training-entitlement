@@ -10,7 +10,7 @@ class CohortsComponent < BaseComponent
     @resource = resource
     @cohort_path = cohort_path
     @academic_year_path = academic_year_path
-    @heading = { text: "Cohorts", visible: true }
+    @heading = { text: "Registration periods", visible: true }
   end
 
   def render?
@@ -24,7 +24,7 @@ class CohortsComponent < BaseComponent
       href = academic_year_resource_path(academic_year, fallback: most_recent_cohort_leaf_node.href)
 
       NavigationStructure::Node.new(
-        name: academic_year.to_s,
+        name: [academic_year, academic_year + 1].join(" / "),
         href:,
         prefix: href,
         nodes: leaf_nodes,
@@ -41,7 +41,8 @@ class CohortsComponent < BaseComponent
   end
 
   def structure
-    [all_node, *year_nodes]
+    # [all_node, *year_nodes]
+    year_nodes
   end
 
   def navigation_link(section, parent: false)

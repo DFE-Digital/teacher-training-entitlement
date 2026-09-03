@@ -45,7 +45,7 @@ RSpec.describe CohortsComponent, type: :component do
   describe "rendering" do
     before { render_inline(subject) }
 
-    it "renders an 'All' link as the first item" do
+    it "renders an 'All' link as the first item", pending: "disabled all link" do
       selector = "ul.x-govuk-sub-navigation__section > li.x-govuk-sub-navigation__section-item:first-child > a.x-govuk-sub-navigation__link"
 
       expect(rendered_content).to have_css(selector, text: "All")
@@ -56,7 +56,7 @@ RSpec.describe CohortsComponent, type: :component do
 
       years = page.all(years_selector).map(&:text)
 
-      expect(years).to eq(%w[All 2027 2026])
+      expect(years).to eq(["2027 / 2028", "2026 / 2027"])
     end
 
     it "nests each cohort under its academic year" do
@@ -89,8 +89,8 @@ RSpec.describe CohortsComponent, type: :component do
     end
 
     it "links the year node to the academic-year-scoped route, filtering across every cohort in that year" do
-      expect(page.find_link("2026")[:href]).to eq(academic_year_admin_courses_path(2026))
-      expect(page.find_link("2027")[:href]).to eq(academic_year_admin_courses_path(2027))
+      expect(page.find_link("2026 / 2027")[:href]).to eq(academic_year_admin_courses_path(2026))
+      expect(page.find_link("2027 / 2028")[:href]).to eq(academic_year_admin_courses_path(2027))
     end
 
     describe "current-state highlighting" do
@@ -150,7 +150,7 @@ RSpec.describe CohortsComponent, type: :component do
     it "falls back to the most recent child cohort's own link" do
       render_inline(subject)
 
-      expect(page.find_link("2026")[:href]).to eq(admin_cohort_course_path(cohort_2026_october, course))
+      expect(page.find_link("2026 / 2027")[:href]).to eq(admin_cohort_course_path(cohort_2026_october, course))
     end
   end
 
@@ -169,7 +169,7 @@ RSpec.describe CohortsComponent, type: :component do
     it "uses the custom academic_year_path callable" do
       render_inline(subject)
 
-      expect(page.find_link("2026")[:href]).to eq("/custom/2026")
+      expect(page.find_link("2026 / 2027")[:href]).to eq("/custom/2026")
     end
   end
 

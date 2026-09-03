@@ -51,7 +51,6 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).not_to have_css("h2", text: "Providers")
-      expect(page).to have_link("All", href: admin_course_path(course))
       expect(page).to have_link(course_cohort.cohort.description, href: admin_cohort_course_path(course_cohort.cohort, course))
       expect(page).to have_current_path(admin_course_path(course))
       expect(page).not_to have_link("Change")
@@ -86,7 +85,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       visit(admin_courses_path)
 
-      click_link("2026", exact: true)
+      click_link("2026 / 2027", exact: true)
 
       expect(page).to have_current_path(academic_year_admin_courses_path(2026))
       expect(page).to have_link(course_2026_a.name)
