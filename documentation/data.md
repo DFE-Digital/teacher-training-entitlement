@@ -25,7 +25,7 @@ Tables are grouped by domain. Column types are abbreviated: `PK` (primary key),
 | **Cohort**                  | A programme year.                                                                                                                                     | `start_year`, `registration_starts_at`, `registration_ends_at`, `funding_cap`                                                                                                                                                |
 | **Schedule**                | Defines when training starts/ends and when declaration types are valid. Belongs to a course_cohort.                                                   | `identifier`, `course_group` (enum), `training_starts_at`, `training_ends_at`, `allowed_declaration_types` (array), `policy_descriptor`                                                                                      |
 | **CourseCohort**            | Join between Course, Cohort and Schedule. The cornerstone of the registration domain — each offering of a course in a year.                           | `course_id` (FK), `cohort_id` (FK), `schedule_id` (FK), `ecf_id`                                                                                                                                                             |
-| **CourseCohortProvider**    | Links a LeadProvider to a CourseCohort — determines which providers can accept applications for which course+cohort.                                  | `course_cohort_id` (FK), `lead_provider_id` (FK)                                                                                                                                                                             |
+| **CourseCohortProvider**    | Links a LeadProvider to a CourseCohort — determines which providers can accept applications for which course+cohort. Also carries course-cohort-level contract amendments. | `course_cohort_id` (FK), `lead_provider_id` (FK), `recruitment_target`, `teacher_funding`                                                                                                       |
 | **ApplicationLeadProvider** | Tracks provider assignment history for an Application (including transfers). The `current` flag indicates the active provider.                        | `application_id` (FK), `lead_provider_id` (FK), `current` (boolean), `assigned_at`, `unassigned_at`                                                                                                                          |
 | **ApplicationEvent**        | Audit log of state changes and notifications on an Application. Uses single-table inheritance (`Notification` subclass).                              | `application_id` (FK), `event` (string), `type`, `metadata` (jsonb), `lead_provider_id` (FK)                                                                                                                                 |
 | **RegistrationInterest**    | Captures email sign-ups from non-registered users who want to be notified when registration opens.                                                    | `email`, `full_name`                                                                                                                                                                                                         |
@@ -38,7 +38,7 @@ Tables are grouped by domain. Column types are abbreviated: `PK` (primary key),
 |-------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | **LeadProvider**        | A third-party training provider. Authenticates via Bearer token.                                                | `name`, `email`, `url`, `hint`, `ecf_id`                                                                        |
 | **DeliveryPartner**     | A sub-organisation working under a LeadProvider to deliver training.                                            | `name`, `ecf_id`                                                                                                |
-| **DeliveryPartnership** | Join between LeadProvider, DeliveryPartner, and Cohort. A provider works with certain partners in a given year. | `lead_provider_id` (FK), `delivery_partner_id` (FK), `cohort_id` (FK)                                           |
+| **DeliveryPartnership** | Join between LeadProvider, DeliveryPartner, and CourseCohort. A provider works with certain partners on a given course cohort; a declaration's delivery partner must be one of them. | `lead_provider_id` (FK), `delivery_partner_id` (FK), `course_cohort_id` (FK) — unique on the triple            |
 | **ApiToken**            | Bearer token for provider API access. Hashed for storage; tracks last usage.                                    | `lead_provider_id` (FK), `hashed_token`, `last_used_at`, `scope` (enum: lead_provider / teacher_record_service) |
 
 ---
@@ -47,14 +47,18 @@ Tables are grouped by domain. Column types are abbreviated: `PK` (primary key),
 
 | Table                            | Role                                                                                                                         | Key columns                                                                                                                                                                                                                |
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Declaration**                  | A milestone claim submitted by the Lead Provider (started, retained-1, retained-2, completed). Goes through a state machine. | `application_id` (FK), `cohort_id` (FK), `lead_provider_id` (FK), `delivery_partner_id` (FK), `declaration_type` (enum), `state` (enum: submitted→eligible→payable→paid, or voided/ineligible/clawed_back), `state_reason` |
-| **Statement**                    | A monthly financial statement for a LeadProvider+Cohort. Aggregates declarations into billing periods.                       | `lead_provider_id` (FK), `cohort_id` (FK), `month` (enum), `year`, `deadline_date`, `state` (enum: open→payable→paid), `reconcile_amount`, `marked_as_paid_at`                                                             |
+| **Declaration**                  | A milestone claim submitted by the Lead Provider (started, retained-1, retained-2, completed). Goes through a state machine. Uses STI via `type`. | `application_id` (FK), `milestone_id` (FK), `statement_id` (FK), `lead_provider_id` (FK), `delivery_partner_id` (FK), `secondary_delivery_partner_id` (FK), `declaration_type` (enum), `declaration_date`, `value` (decimal), `state` (enum: submitted→eligible→payable→paid, or voided/ineligible), `state_reason`, `type`, `clawback_declaration_id` (FK), `paid_declaration_id` (FK), `cohort_id` (FK, deprecated) |
+| **ClawbackDeclaration**          | STI subclass of Declaration, created when a *paid* declaration is voided. Mirrors its paid declaration with a negative `value`. | `paid_declaration_id` (FK, required), `value` (≤ 0), `state` (enum: submitted→awaiting_clawback→clawed_back)                                                                                                             |
+| **Statement**                    | A monthly financial statement for a LeadProvider. Aggregates that provider's declarations, clawbacks and adjustments into a billing period. | `lead_provider_id` (FK), `start_date`, `frequency` (enum: monthly), `deadline_date`, `payment_date`, `academic_year`, `output_fee` (boolean), `state` (enum: open→payable→paid), `reconcile_amount`, `marked_as_paid_at`, `ecf_id` |
 | **ParticipantOutcome**           | Tracks whether a participant passed/failed/voided their course. Linked to a Declaration.                                     | `declaration_id` (FK), `state` (enum: passed/failed/voided), `completion_date`                                                                                                                                             |
-| **Milestone**                    | A training milestone tied to a Schedule. Each milestone corresponds to a declaration type.                                   | `schedule_id` (FK), `declaration_type`, `milestone_date`                                                                                                                                                                   |
-| **Adjustment**                   | Manual financial adjustments to a Statement.                                                                                 | `statement_id` (FK), `amount`, `description`                                                                                                                                                                               |
-| **FinancialChangeLog**           | An audit trail for financial data changes.                                                                                   | `statement_item_id` (FK), `changed_data`, `change_type`                                                                                                                                                                    |
-| **ComputedContract**             | contract values for a lead provider and course cohort |
-| **ContractYear**                 | contract values academic-year    |
+| **Milestone**                    | A claimable milestone on a CourseCohort. One per declaration type per course cohort; defines the acceptance window and the share of `teacher_funding` payable. | `course_cohort_id` (FK), `declaration_type` (enum), `acceptance_window_start_date`, `acceptance_window_end_date` (nullable), `payment_amount` (decimal — a *percentage*)                                    |
+| **Adjustment**                   | Manual financial adjustments to a Statement.                                                                                 | `statement_id` (FK), `amount` (decimal, non-zero, signed), `description`                                                                                                                                                   |
+| **FinancialChangeLog**           | An audit trail for bulk/out-of-band financial data changes (CSV imports, one-off fixes). Not tied to any record.             | `operation_description`, `data_changes` (json)                                                                                                                                                                             |
+| **ContractYear**                 | Contract values for a LeadProvider + Course, either as the default (`academic_year` null) or as an academic-year amendment.  | `lead_provider_id` (FK), `course_id` (FK), `academic_year` (nullable), `recruitment_target`, `teacher_funding`, `service_fee`                                                                                               |
+| **ComputedContract**             | Not a table. Plain ActiveModel object holding the contract values for a LeadProvider + CourseCohort, merged from ContractYear (default) → ContractYear (academic year) → CourseCohortProvider. | `recruitment_target`, `teacher_funding`, `service_fee`                                                    |
+
+`Contract`, `ContractTemplate`, `StatementItem` and `MilestoneStatement` were removed —
+see [`finance/README.md`](finance/README.md) for the current model.
 
 ---
 
@@ -99,7 +103,20 @@ erDiagram
   Application }o--|| Institution : ""
 
   Declaration }o--|| Application : ""
+  Declaration }o--|| Milestone : ""
+  Declaration }o--|| Statement : ""
+  Declaration }o--|| DeliveryPartner : ""
+  Declaration ||--o| ClawbackDeclaration : ""
+  Milestone }o--|| CourseCohort : ""
+  Statement }o--|| LeadProvider : ""
+  Adjustment }o--|| Statement : ""
   ParticipantOutcome }o--|| Declaration : ""
+
+  ContractYear }o--|| LeadProvider : ""
+  ContractYear }o--|| Course : ""
+  DeliveryPartnership }o--|| CourseCohort : ""
+  DeliveryPartnership }o--|| LeadProvider : ""
+  DeliveryPartnership }o--|| DeliveryPartner : ""
 
   ApplicationLeadProvider }o--|| Application : ""
   ApplicationLeadProvider }o--|| LeadProvider : ""

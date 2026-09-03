@@ -41,12 +41,11 @@ erDiagram
   }
   DeliveryPartnership {
     integer id
-    integer cohort_id
+    integer course_cohort_id
     datetime created_at
     integer delivery_partner_id
     integer lead_provider_id
     datetime updated_at
-    integer course_cohort_id
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
@@ -135,6 +134,61 @@ erDiagram
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| Declaration : belongs_to
+  Declaration }o--|| Statement : belongs_to
+  Declaration }o--|| Milestone : belongs_to
+  Milestone {
+    integer id
+    date acceptance_window_end_date
+    date acceptance_window_start_date
+    integer course_cohort_id
+    datetime created_at
+    enum declaration_type
+    decimal payment_amount
+    datetime updated_at
+  }
+  Milestone }o--|| CourseCohort : belongs_to
+  Statement {
+    integer id
+    integer academic_year
+    datetime created_at
+    date deadline_date
+    uuid ecf_id
+    enum frequency
+    integer lead_provider_id
+    datetime marked_as_paid_at
+    boolean output_fee
+    date payment_date
+    decimal reconcile_amount
+    date start_date
+    enum state
+    datetime updated_at
+  }
+  Statement }o--|| LeadProvider : belongs_to
+  Adjustment {
+    integer id
+    decimal amount
+    datetime created_at
+    string description
+    integer statement_id
+    datetime updated_at
+  }
+  Adjustment }o--|| Statement : belongs_to
+  ContractYear {
+    integer id
+    integer academic_year
+    integer course_id
+    string course_url
+    datetime created_at
+    string email
+    integer lead_provider_id
+    integer recruitment_target
+    string secondary_form_url
+    decimal service_fee
+    decimal teacher_funding
+    datetime updated_at
+  }
+  ContractYear }o--|| LeadProvider : belongs_to
+  ContractYear }o--|| Course : belongs_to
   ApplicationLeadProvider {
     integer id
     integer application_id
