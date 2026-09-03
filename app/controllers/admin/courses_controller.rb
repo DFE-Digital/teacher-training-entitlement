@@ -38,6 +38,7 @@ module Admin
                 .includes(:applications, course_cohorts: :cohort)
                 .order(name: :asc)
       scope.merge!(Course.where(course_cohorts: { cohort: @current_cohort })) if @current_cohort
+      scope.merge!(Course.where(course_cohorts: { academic_year: @current_academic_year })) if @current_academic_year
       scope
     end
   end

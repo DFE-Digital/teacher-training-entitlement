@@ -14,6 +14,7 @@ module Admin
                                      .select("DISTINCT ON (course_cohorts.cohort_id) course_cohorts.*")
                                      .order("course_cohorts.cohort_id, cohorts.registration_starts_at DESC")
       @current_cohort = params[:cohort_id] ? Cohort.find(params[:cohort_id]) : nil
+      @current_academic_year = params[:academic_year].presence&.to_i
     end
   end
 end

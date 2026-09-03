@@ -3,12 +3,13 @@ class CohortsComponent < BaseComponent
 
   attr_accessor :current_path, :current_section, :heading
 
-  def initialize(current_path, course_cohorts:, base_path:, resource: nil, cohort_path: nil)
+  def initialize(current_path, course_cohorts:, base_path:, resource: nil, cohort_path: nil, academic_year_path: nil)
     @current_path = current_path
     @course_cohorts = course_cohorts
     @base_path = base_path
     @resource = resource
     @cohort_path = cohort_path
+    @academic_year_path = academic_year_path
     @heading = { text: "Cohorts", visible: true }
   end
 
@@ -20,11 +21,12 @@ class CohortsComponent < BaseComponent
     cohorts_by_academic_year.sort_by { |academic_year, _cohorts| academic_year }.reverse.map do |academic_year, cohorts|
       leaf_nodes = cohort_leaf_nodes(cohorts)
       most_recent_cohort_leaf_node = leaf_nodes.first
+      href = academic_year_resource_path(academic_year, fallback: most_recent_cohort_leaf_node.href)
 
       NavigationStructure::Node.new(
         name: academic_year.to_s,
-        href: most_recent_cohort_leaf_node.href,
-        prefix: most_recent_cohort_leaf_node.prefix,
+        href:,
+        prefix: href,
         nodes: leaf_nodes,
       )
     end
@@ -108,6 +110,19 @@ private
     else
       public_send(:"cohort_#{@base_path}", cohort)
     end
+  end
+
+  # Filters the resource (courses, applications, lead providers, statements)
+  # by academic year, spanning every cohort within that year. Falls back to
+  # the most recent child cohort's own link when the resource has no
+  # academic-year-scoped route (e.g. a single course's cohort-scoped page).
+  def academic_year_resource_path(academic_year, fallback:)
+    return @academic_year_path.call(academic_year) if @academic_year_path
+
+    helper_name = :"academic_year_#{@base_path}"
+    return fallback unless respond_to?(helper_name)
+
+    @resource ? public_send(helper_name, @resource, academic_year) : public_send(helper_name, academic_year)
   end
 
   def resource_path

@@ -11,6 +11,8 @@ class Admin::Finance::StatementsController < AdminController
 
     if @current_cohort
       scope = scope.joins(:course_cohorts).where(course_cohorts: { cohort_id: @current_cohort.id }).distinct
+    elsif @current_academic_year
+      scope = scope.joins(:course_cohorts).where(course_cohorts: { academic_year: @current_academic_year }).distinct
     end
 
     if scope.none?

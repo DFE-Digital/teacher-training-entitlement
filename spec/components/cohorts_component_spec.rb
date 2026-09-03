@@ -84,12 +84,13 @@ RSpec.describe CohortsComponent, type: :component do
     end
 
     it "links each cohort node to its own resource path" do
-      expect(rendered_content).to have_link("October 2026", href: cohort_admin_courses_path(cohort_2026_october))
-      expect(rendered_content).to have_link("February 2026", href: cohort_admin_courses_path(cohort_2026_february))
+      expect(page.find_link("October 2026")[:href]).to eq(cohort_admin_courses_path(cohort_2026_october))
+      expect(page.find_link("February 2026")[:href]).to eq(cohort_admin_courses_path(cohort_2026_february))
     end
 
-    it "links the year node to its most recent child cohort's resource path" do
-      expect(rendered_content).to have_link("2026", href: cohort_admin_courses_path(cohort_2026_october))
+    it "links the year node to the academic-year-scoped route, filtering across every cohort in that year" do
+      expect(page.find_link("2026")[:href]).to eq(academic_year_admin_courses_path(2026))
+      expect(page.find_link("2027")[:href]).to eq(academic_year_admin_courses_path(2027))
     end
 
     describe "current-state highlighting" do
@@ -128,6 +129,47 @@ RSpec.describe CohortsComponent, type: :component do
 
         expect(page.all(year_selector).map(&:text)).not_to include("2027")
       end
+    end
+  end
+
+  context "when the resource has no academic-year-scoped route" do
+    let(:course_cohorts) { [course_cohort_2026_october, course_cohort_2026_february] }
+    let(:current_path) { admin_cohort_course_path(cohort_2026_october, course) }
+    let(:course) { create(:course) }
+
+    subject do
+      described_class.new(
+        current_path,
+        course_cohorts:,
+        base_path: :admin_course_path,
+        resource: course,
+        cohort_path: ->(cohort) { admin_cohort_course_path(cohort, course) },
+      )
+    end
+
+    it "falls back to the most recent child cohort's own link" do
+      render_inline(subject)
+
+      expect(page.find_link("2026")[:href]).to eq(admin_cohort_course_path(cohort_2026_october, course))
+    end
+  end
+
+  context "when an explicit academic_year_path is given" do
+    let(:course_cohorts) { [course_cohort_2026_october] }
+
+    subject do
+      described_class.new(
+        current_path,
+        course_cohorts:,
+        base_path: :admin_courses_path,
+        academic_year_path: ->(academic_year) { "/custom/#{academic_year}" },
+      )
+    end
+
+    it "uses the custom academic_year_path callable" do
+      render_inline(subject)
+
+      expect(page.find_link("2026")[:href]).to eq("/custom/2026")
     end
   end
 

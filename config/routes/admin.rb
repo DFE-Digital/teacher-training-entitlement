@@ -6,12 +6,14 @@ namespace :admin do
     if options.key?(:index)
       collection do
         get "cohorts/:cohort_id", to: options[:index], as: :cohort
+        get "academic-years/:academic_year", to: options[:index], as: :academic_year
       end
     end
 
     if options.key?(:show)
       member do
         get "cohorts/:cohort_id", to: options[:show], as: :cohort
+        get "academic-years/:academic_year", to: options[:show], as: :academic_year
       end
     end
   end
