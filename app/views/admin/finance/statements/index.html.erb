@@ -11,7 +11,7 @@
 <p class="govuk-body">You can search for financial statements that are paid or unpaid.</p>
 
 <div class="admin-search-box">
-  <%= render Admin::StatementSelectorComponent.new(params) %>
+  <%= render Admin::StatementSelectorComponent.new(params, cohort: @current_cohort, academic_year: @current_academic_year) %>
 </div>
 
 <%= render Admin::StatementsTableComponent.new(@statements) %>

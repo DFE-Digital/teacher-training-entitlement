@@ -1,6 +1,7 @@
 <%= form_with url: admin_finance_statements_path, method: :get do |f| %>
   <h2 class="govuk-heading-m">Filter statements by:</h2>
 
+  <%= f.hidden_field :academic_year, value: academic_year %>
   <div class="govuk-grid-row">
     <% unless format_for_sidebar %>
       <div class="<%= grid_column_class %>">

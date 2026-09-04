@@ -9,9 +9,13 @@ class Admin::Finance::StatementsController < AdminController
               .order(start_date: :desc)
 
     if @current_cohort
-      scope = scope.joins(:course_cohorts).where(course_cohorts: { cohort_id: @current_cohort.id }).distinct
+      scope = scope.joins(:course_cohorts)
+                .where(course_cohorts: { cohort_id: @current_cohort.id })
+                .distinct
     elsif @current_academic_year
-      scope = scope.joins(:course_cohorts).where(course_cohorts: { academic_year: @current_academic_year }).distinct
+      scope = scope
+                .where(academic_year: @current_academic_year)
+                .distinct
     end
 
     if scope.none?
@@ -55,7 +59,7 @@ private
   end
 
   def statement_params
-    params.permit(:lead_provider_id, :payment_status, :statement, :output_fee)
+    params.permit(:lead_provider_id, :payment_status, :statement, :output_fee, :academic_year, :start_date, :frequency)
       .tap { extract_output_fee _1 }
       .tap { extract_period _1 }
       .tap { extract_state _1 }
@@ -67,10 +71,10 @@ private
   end
 
   def extract_period(params)
-    return unless (period = params.delete(:statement))
+    return if (period = params.delete(:statement)).blank?
 
     start_date, frequency = period.split("::")
-    params[:frequency] = Statement::FREQUENCIES.fetch(frequency)
+    params[:frequency] = frequency if Statement::FREQUENCIES.keys.include?(frequency)
     params[:start_date] = Date.parse(start_date)
   end
 
