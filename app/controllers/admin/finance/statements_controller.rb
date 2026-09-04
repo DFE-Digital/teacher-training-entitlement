@@ -2,7 +2,6 @@ class Admin::Finance::StatementsController < AdminController
   include Admin::Cohortable
 
   before_action :set_statement, only: %i[show print_provider print_dfe_user]
-  before_action :redirect_to_current_academic_year, only: %i[index]
 
   def index
     params[:output_fee] = "true" unless params.key?(:output_fee)

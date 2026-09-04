@@ -4,7 +4,7 @@ module Admin
 
     included do
       before_action :set_cohorts
-      before_action :redirect_to_current_academic_year, only: %i[index show]
+      before_action :redirect_to_current_academic_year, only: %i[index] # rubocop:disable Rails/LexicallyScopedActionFilter
     end
 
   protected
