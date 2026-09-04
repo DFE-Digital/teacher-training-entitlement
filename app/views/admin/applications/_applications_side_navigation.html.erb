@@ -1,7 +1,8 @@
 <% content_for :side_navigation do %>
     <%= render CohortsComponent.new(
         request.path,
-        cohorts: @cohorts,
+        course_cohorts: @course_cohorts,
         base_path: :admin_applications_path,
+        current_academic_year: @current_academic_year,
     ) %>
 <% end %>

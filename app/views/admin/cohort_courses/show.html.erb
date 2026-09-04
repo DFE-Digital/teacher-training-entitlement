@@ -3,7 +3,7 @@
 <% content_for :side_navigation do %>
   <%= render CohortsComponent.new(
     request.path,
-    cohorts: @cohorts,
+    course_cohorts: @course_cohorts,
     base_path: :admin_course_path,
     resource: @course,
     cohort_path: ->(cohort) { admin_cohort_course_path(cohort, @course) },

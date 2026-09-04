@@ -10,7 +10,7 @@ module Admin
     end
 
     def show
-      @cohorts = Cohort.where(id: @course.course_cohorts.select(:cohort_id)).order_by_latest
+      @course_cohorts = @course.course_cohorts.includes(:cohort).joins(:cohort).order("cohorts.registration_starts_at DESC")
     end
 
     def edit; end
@@ -38,6 +38,7 @@ module Admin
                 .includes(:applications, course_cohorts: :cohort)
                 .order(name: :asc)
       scope.merge!(Course.where(course_cohorts: { cohort: @current_cohort })) if @current_cohort
+      scope.merge!(Course.where(course_cohorts: { academic_year: @current_academic_year })) if @current_academic_year
       scope
     end
   end

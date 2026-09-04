@@ -51,7 +51,6 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).not_to have_css("h2", text: "Providers")
-      expect(page).to have_link("All", href: admin_course_path(course))
       expect(page).to have_link(course_cohort.cohort.description, href: admin_cohort_course_path(course_cohort.cohort, course))
       expect(page).to have_current_path(admin_course_path(course))
       expect(page).not_to have_link("Change")
@@ -68,6 +67,30 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
       expect(page).to have_css("h2", text: "Providers")
       expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
+    end
+
+    scenario "filtering courses by academic year" do
+      cohort_2026_october = create(:cohort, registration_starts_at: Date.new(2026, 10, 1))
+      cohort_2026_february = create(:cohort, registration_starts_at: Date.new(2026, 2, 1))
+      cohort_2025 = create(:cohort, registration_starts_at: Date.new(2025, 10, 1))
+
+      course_2026_a = build(:course, name: "Course 2026 A").tap(&:save!)
+      create(:course_cohort, course: course_2026_a, cohort: cohort_2026_october, academic_year: 2026)
+
+      course_2026_b = build(:course, name: "Course 2026 B").tap(&:save!)
+      create(:course_cohort, course: course_2026_b, cohort: cohort_2026_february, academic_year: 2026)
+
+      course_2025 = build(:course, name: "Course 2025").tap(&:save!)
+      create(:course_cohort, course: course_2025, cohort: cohort_2025, academic_year: 2025)
+
+      visit(admin_courses_path)
+
+      click_link("2026 / 2027", exact: true)
+
+      expect(page).to have_current_path(academic_year_admin_courses_path(2026))
+      expect(page).to have_link(course_2026_a.name)
+      expect(page).to have_link(course_2026_b.name)
+      expect(page).not_to have_link(course_2025.name)
     end
   end
 

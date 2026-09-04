@@ -1,5 +1,6 @@
 class Statement < ApplicationRecord
   include CourseGroupable
+  include DateHelper
 
   FREQUENCIES = {
     "monthly" => 1.month,
@@ -133,7 +134,7 @@ class Statement < ApplicationRecord
 private
 
   def set_academic_year
-    self.academic_year = start_date.year - (start_date.month < 9 ? 1 : 0)
+    self.academic_year = get_academic_year(start_date)
   end
 
   def set_deadline_and_payment_date

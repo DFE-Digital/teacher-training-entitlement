@@ -24,12 +24,25 @@ module Admin
                                           .where(course_cohorts: { cohort: @current_cohort })
                                           .distinct
         @pagy_delivery_partners, @delivery_partners = pagy(delivery_partners)
+        @pagy_statements, @statements = pagy(@lead_provider.statements
+                                               .joins(:course_cohorts)
+                                               .where(course_cohorts: { cohort: @current_cohort })
+                                               .order(start_date: :desc)
+                                               .distinct)
+      elsif @current_academic_year
+        applications_scope.merge!(Application.where(course_cohorts: { academic_year: @current_academic_year }))
+        @pagy_applications, @applications = pagy(applications_scope, items: 25)
+        delivery_partners = @lead_provider.delivery_partners
+                                          .joins(delivery_partnerships: :course_cohort)
+                                          .where(course_cohorts: { academic_year: @current_academic_year })
+                                          .distinct
+        @pagy_delivery_partners, @delivery_partners = pagy(delivery_partners)
+        @pagy_statements, @statements = pagy(@lead_provider.statements.where(academic_year: @current_academic_year).order(start_date: :desc).distinct)
       else
         @pagy_applications, @applications = pagy(applications_scope, items: 25)
         @pagy_delivery_partners, @delivery_partners = pagy(@lead_provider.delivery_partners.distinct)
+        @pagy_statements, @statements = pagy(@lead_provider.statements.order(start_date: :desc))
       end
-
-      @pagy_statements, @statements = pagy(@lead_provider.statements)
     end
 
     def edit
@@ -44,6 +57,12 @@ module Admin
       else
         render :edit, status: :unprocessable_content
       end
+    end
+
+  protected
+
+    def default_academic_year_actions
+      %i[index show]
     end
 
   private
@@ -62,6 +81,18 @@ module Admin
         # group in memory, no N+1
         @apps_by_provider = scope.each_with_object({}) do |lp, hash|
           hash[lp.id] = lp.applications.select { |a| a.course_cohort.cohort_id == @current_cohort.id }
+        end
+
+        scope
+      elsif @current_academic_year
+        scope = LeadProvider
+                  .includes(:applications, :course_cohorts, applications: :course_cohort)
+                  .order(name: :asc)
+                  .where(course_cohorts: { academic_year: @current_academic_year })
+
+        # group in memory, no N+1
+        @apps_by_provider = scope.each_with_object({}) do |lp, hash|
+          hash[lp.id] = lp.applications.select { |a| a.course_cohort.academic_year == @current_academic_year }
         end
 
         scope

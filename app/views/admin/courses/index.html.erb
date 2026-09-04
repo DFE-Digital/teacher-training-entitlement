@@ -1,31 +1,36 @@
 <% content_for :side_navigation do %>
   <%= render CohortsComponent.new(
-        request.path,
-        cohorts: @cohorts,
-        base_path: :admin_courses_path,
-    ) %>
+    request.path,
+    course_cohorts: @course_cohorts,
+    base_path: :admin_courses_path,
+    current_academic_year: @current_academic_year,
+  ) %>
 <% end %>
 
 <h1 class="govuk-heading-l">Courses</h1>
 <%=
 govuk_table do |table|
-    table.with_head do |header|
-        header.with_row do |row|
-            row.with_cell(text: "Name")
-            row.with_cell(text: "Nb applications")
-        end
+  table.with_head do |header|
+    header.with_row do |row|
+      row.with_cell(text: "Name")
+      row.with_cell(text: "Nb applications")
     end
+  end
 
-    table.with_body do |body|
-        @resources.each do |course|
-            body.with_row do |row|
-                row.with_cell do
-                  govuk_link_to(course.name, admin_course_path(course))
-                end
-                row.with_cell(text: course.applications.size)
-            end
+  table.with_body do |body|
+    @resources.each do |course|
+      body.with_row do |row|
+        row.with_cell do
+          if @current_cohort
+            govuk_link_to(course.name, admin_cohort_course_path(@current_cohort, course))
+          else
+            course.name
+          end
         end
+        row.with_cell(text: course.applications.size)
+      end
     end
+  end
 end
 %>
 

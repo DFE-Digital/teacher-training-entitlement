@@ -1,11 +1,22 @@
 class Admin::Finance::StatementsController < AdminController
+  include Admin::Cohortable
+
   before_action :set_statement, only: %i[show print_provider print_dfe_user]
 
   def index
-    params[:output_fee] = "true" unless params.key?(:output_fee)
-
     scope = Statement.includes(:lead_provider)
-                     .where(statement_params)
+              .where(statement_params)
+              .order(start_date: :desc)
+
+    if @current_cohort
+      scope = scope.joins(:course_cohorts)
+                .where(course_cohorts: { cohort_id: @current_cohort.id })
+                .distinct
+    elsif @current_academic_year
+      scope = scope
+                .where(academic_year: @current_academic_year)
+                .distinct
+    end
 
     if scope.none?
       flash.now[:error] = "No statements matched all the filters, showing all statement periods instead"
@@ -48,16 +59,23 @@ private
   end
 
   def statement_params
-    params.permit(:lead_provider_id, :cohort_id, :payment_status, :statement, :output_fee)
-          .tap { extract_period _1 }
-          .tap { extract_state _1 }
-          .reject { |_k, v| v.blank? && v != false }
+    params.permit(:lead_provider_id, :payment_status, :statement, :output_fee, :academic_year, :start_date, :frequency)
+      .tap { extract_output_fee _1 }
+      .tap { extract_period _1 }
+      .tap { extract_state _1 }
+      .reject { |_k, v| v.blank? && v != false }
+  end
+
+  def extract_output_fee(params)
+    params[:output_fee] = !!params.key?(:output_fee).to_s
   end
 
   def extract_period(params)
-    return unless (period = params.delete(:statement))
+    return if (period = params.delete(:statement)).blank?
 
-    params[:start_date], params[:frequency] = period.split("::")
+    start_date, frequency = period.split("::")
+    params[:frequency] = frequency if Statement::FREQUENCIES.keys.include?(frequency)
+    params[:start_date] = Date.parse(start_date)
   end
 
   def extract_state(params)
