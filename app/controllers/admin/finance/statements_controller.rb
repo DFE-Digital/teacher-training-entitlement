@@ -4,8 +4,6 @@ class Admin::Finance::StatementsController < AdminController
   before_action :set_statement, only: %i[show print_provider print_dfe_user]
 
   def index
-    params[:output_fee] = "true" unless params.key?(:output_fee)
-
     scope = Statement.includes(:lead_provider)
               .where(statement_params)
               .order(start_date: :desc)
@@ -43,6 +41,15 @@ class Admin::Finance::StatementsController < AdminController
     # empty method to appease rubocop
   end
 
+protected
+
+  # Finance statements should show every statement by default, regardless
+  # of the current academic year - unlike courses/applications/providers,
+  # a finance user typically needs to browse across periods.
+  def default_academic_year_actions
+    []
+  end
+
 private
 
   def set_statement
@@ -58,15 +65,22 @@ private
 
   def statement_params
     params.permit(:lead_provider_id, :payment_status, :statement, :output_fee)
-          .tap { extract_period _1 }
-          .tap { extract_state _1 }
-          .reject { |_k, v| v.blank? && v != false }
+      .tap { extract_output_fee _1 }
+      .tap { extract_period _1 }
+      .tap { extract_state _1 }
+      .reject { |_k, v| v.blank? && v != false }
+  end
+
+  def extract_output_fee(params)
+    params[:output_fee] = !!params.key?(:output_fee).to_s
   end
 
   def extract_period(params)
     return unless (period = params.delete(:statement))
 
-    params[:start_date], params[:frequency] = period.split("::")
+    start_date, frequency = period.split("::")
+    params[:frequency] = Statement::FREQUENCIES.fetch(frequency)
+    params[:start_date] = Date.parse(start_date)
   end
 
   def extract_state(params)

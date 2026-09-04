@@ -59,6 +59,12 @@ module Admin
       end
     end
 
+  protected
+
+    def default_academic_year_actions
+      %i[index show]
+    end
+
   private
 
     def lead_provider_params
