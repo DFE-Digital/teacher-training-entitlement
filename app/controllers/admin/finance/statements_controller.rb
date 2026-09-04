@@ -41,15 +41,6 @@ class Admin::Finance::StatementsController < AdminController
     # empty method to appease rubocop
   end
 
-protected
-
-  # Finance statements should show every statement by default, regardless
-  # of the current academic year - unlike courses/applications/providers,
-  # a finance user typically needs to browse across periods.
-  def default_academic_year_actions
-    []
-  end
-
 private
 
   def set_statement

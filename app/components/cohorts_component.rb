@@ -3,13 +3,14 @@ class CohortsComponent < BaseComponent
 
   attr_accessor :current_path, :current_section, :heading
 
-  def initialize(current_path, course_cohorts:, base_path:, resource: nil, cohort_path: nil, academic_year_path: nil)
+  def initialize(current_path, course_cohorts:, base_path:, resource: nil, cohort_path: nil, academic_year_path: nil, current_academic_year: nil)
     @current_path = current_path
     @course_cohorts = course_cohorts
     @base_path = base_path
     @resource = resource
     @cohort_path = cohort_path
     @academic_year_path = academic_year_path
+    @current_academic_year = current_academic_year
     @heading = { text: "Registration periods", visible: true }
   end
 
@@ -28,6 +29,7 @@ class CohortsComponent < BaseComponent
         href:,
         prefix: href,
         nodes: leaf_nodes,
+        current: default_current_year?(academic_year),
       )
     end
   end
@@ -100,7 +102,20 @@ private
   end
 
   def current_section?(section)
-    current?(section.prefix) || section.nodes&.any? { |node| current?(node.prefix) }
+    section.current || current?(section.prefix) || section.nodes&.any? { |node| current?(node.prefix) }
+  end
+
+  # When a controller silently defaults @current_academic_year (e.g. no
+  # cohort_id/academic_year param given, see Admin::Cohortable), the
+  # rendered current_path never actually contains that academic year's
+  # segment, so the usual current_path == prefix match in `current?` can't
+  # highlight it. Explicitly mark that year as current when we're on the
+  # resource's bare/unfiltered path and it matches the applied default.
+  def default_current_year?(academic_year)
+    return false unless @current_academic_year
+    return false unless current_path == resource_path
+
+    academic_year == @current_academic_year
   end
 
   def cohort_resource_path(cohort)
