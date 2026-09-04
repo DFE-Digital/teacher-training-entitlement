@@ -1,0 +1,12 @@
+<%= govuk_back_link href: admin_cohort_course_path(@cohort, @course) %>
+
+<h1 class="govuk-heading-l">Add contract year</h1>
+
+<%= render "form",
+           contract_year: @contract_year,
+           cohort: @cohort,
+           course: @course,
+           lead_providers: @lead_providers,
+           url: admin_cohort_course_contract_years_path(@cohort, @course),
+           form_method: :post,
+           submit_text: "Add contract year" %>
