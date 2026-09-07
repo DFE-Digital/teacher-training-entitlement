@@ -1,7 +1,6 @@
 <% content_for :side_navigation do %>
-    <%= render CohortsComponent.new(
+    <%= render RegistrationPeriodsComponent.new(
         request.path,
-        course_cohorts: @course_cohorts,
         base_path: :admin_lead_providers_path,
         current_academic_year: @current_academic_year,
     ) %>
@@ -18,15 +17,14 @@ govuk_table do |table|
     end
 
     table.with_body do |body|
-        @resources.each do |resource|
+        @resources.each do |resource, app_count|
             body.with_row do |row|
                 if @current_cohort
-                    row.with_cell(text: govuk_link_to(resource.name, cohort_admin_lead_provider_path(resource, @current_cohort)))
-                    row.with_cell(text: @apps_by_provider[resource.id].size)
+                  row.with_cell(text: govuk_link_to(resource.name, cohort_admin_lead_provider_path(resource, @current_cohort)))
                 else
-                    row.with_cell(text: govuk_link_to(resource.name, admin_lead_provider_path(resource)))
-                    row.with_cell(text: resource.applications.size)
+                  row.with_cell(text: govuk_link_to(resource.name, admin_lead_provider_path(resource)))
                 end
+                row.with_cell(text: app_count)
             end
         end
     end

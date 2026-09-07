@@ -75,7 +75,13 @@ private
 
     start_date, frequency = period.split("::")
     params[:frequency] = frequency if Statement::FREQUENCIES.keys.include?(frequency)
-    params[:start_date] = Date.parse(start_date)
+    params[:start_date] = parsed_date(start_date)
+  end
+
+  def parsed_date(date)
+    Date.parse(date)
+  rescue StandardError
+    nil
   end
 
   def extract_state(params)

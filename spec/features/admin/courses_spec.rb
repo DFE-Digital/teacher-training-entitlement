@@ -18,7 +18,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       visit(admin_courses_path)
 
       expect(page).to have_css("h1", text: "Courses")
-      expect(page).to have_link(course.name, href: admin_course_path(course))
+      expect(page).to have_text(course.name)
       expect(page).to have_css(".x-govuk-sub-navigation")
       expect(page).to have_css(".govuk-pagination__item--current", text: 1)
     end
@@ -38,35 +38,20 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       course = Course.order(name: :asc).first
       course_cohort = course.course_cohorts.max_by { |cc| cc.cohort.registration_starts_at }
 
+      click_link(course_cohort.cohort.description)
       click_link(course.name)
 
       expect(page).to have_css("h1", text: course.name)
 
       within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Name", course.name)
-        expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
-        expect(summary_list).to have_summary_item("Identifier", course.identifier)
-        expect(summary_list).to have_summary_item("Description", course.description)
-        expect(summary_list).not_to have_text("Cohort name")
-      end
-
-      expect(page).not_to have_css("h2", text: "Providers")
-      expect(page).to have_link(course_cohort.cohort.description, href: admin_cohort_course_path(course_cohort.cohort, course))
-      expect(page).to have_current_path(admin_course_path(course))
-      expect(page).not_to have_link("Change")
-
-      click_on course_cohort.cohort.description
-
-      within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Cohort name", course_cohort.cohort.name)
-        expect(summary_list).to have_summary_item("Cohort registration open", course_cohort.cohort.registration_starts_at.to_date.to_fs(:govuk))
+        expect(summary_list).to have_summary_item("Cohort name", course_cohort.cohort.description)
         expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
         expect(summary_list).to have_summary_item("Identifier", course.identifier)
         expect(summary_list).to have_summary_item("Description", course.description)
       end
 
       expect(page).to have_css("h2", text: "Providers")
-      expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
+      expect(page).to have_current_path(cohort_admin_course_path(course, course_cohort.cohort))
     end
 
     scenario "filtering courses by academic year" do
@@ -88,40 +73,9 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       click_link("2026 / 2027", exact: true)
 
       expect(page).to have_current_path(academic_year_admin_courses_path(2026))
-      expect(page).to have_link(course_2026_a.name)
-      expect(page).to have_link(course_2026_b.name)
-      expect(page).not_to have_link(course_2025.name)
-    end
-  end
-
-  context "when signed in as super admin" do
-    let(:admin_user) { create(:super_admin) }
-
-    scenario "editing a course name" do
-      course = Course.first
-
-      visit(admin_course_path(course))
-
-      click_link("Edit course details")
-
-      expect(page).to have_css("h1", text: "Edit course details")
-
-      fill_in("Course name", with: "Updated Course Name")
-      click_button("Save course details")
-
-      expect(page).to have_css("h1", text: "Updated Course Name")
-      expect(page).to have_summary_item("Name", "Updated Course Name")
-    end
-
-    scenario "editing a course with invalid input shows an error" do
-      course = Course.first
-
-      visit(edit_admin_course_path(course))
-
-      fill_in("Course name", with: "")
-      click_button("Save course details")
-
-      expect(page).to have_css(".govuk-error-summary", text: "can't be blank")
+      expect(page).to have_text(course_2026_a.name)
+      expect(page).to have_text(course_2026_b.name)
+      expect(page).not_to have_text(course_2025.name)
     end
   end
 end

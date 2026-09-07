@@ -1,31 +1,28 @@
-class CohortsComponent < BaseComponent
+class RegistrationPeriodsComponent < BaseComponent
   include Rails.application.routes.url_helpers
 
   attr_accessor :current_path, :current_section, :heading
 
-  def initialize(current_path, course_cohorts:, base_path:, resource: nil, cohort_path: nil, academic_year_path: nil, current_academic_year: nil)
+  def initialize(current_path, base_path:, resource: nil, current_academic_year: nil)
     @current_path = current_path
-    @course_cohorts = course_cohorts
     @base_path = base_path
     @resource = resource
-    @cohort_path = cohort_path
-    @academic_year_path = academic_year_path
     @current_academic_year = current_academic_year
     @heading = { text: "Registration periods", visible: true }
   end
 
   def render?
-    @course_cohorts.present?
+    true
   end
 
-  def year_nodes
-    cohorts_by_academic_year.sort_by { |academic_year, _cohorts| academic_year }.reverse.map do |academic_year, cohorts|
-      leaf_nodes = cohort_leaf_nodes(cohorts)
-      most_recent_cohort_leaf_node = leaf_nodes.first
-      href = academic_year_resource_path(academic_year, fallback: most_recent_cohort_leaf_node.href)
+  def academic_years_nodes
+    academic_years.map do |academic_year, reg_periods|
+      leaf_nodes = registration_period_leaf_nodes(reg_periods)
+      href = academic_year_resource_path(academic_year, fallback: leaf_nodes.first.href)
+      academic_year_link_name = [academic_year, academic_year + 1].join(" / ")
 
       NavigationStructure::Node.new(
-        name: [academic_year, academic_year + 1].join(" / "),
+        name: academic_year_link_name,
         href:,
         prefix: href,
         nodes: leaf_nodes,
@@ -34,17 +31,8 @@ class CohortsComponent < BaseComponent
     end
   end
 
-  def all_node
-    NavigationStructure::Node.new(
-      name: "All",
-      href: resource_path,
-      prefix: resource_path,
-    )
-  end
-
   def structure
-    # [all_node, *year_nodes]
-    year_nodes
+    academic_years_nodes
   end
 
   def navigation_link(section, parent: false)
@@ -80,25 +68,24 @@ class CohortsComponent < BaseComponent
 
 private
 
-  def cohorts_by_academic_year
-    @course_cohorts
-      .uniq(&:cohort_id)
-      .group_by(&:academic_year)
+  def academic_years
+    Cohort.all
+      .group_by(&:start_year)
+      .sort_by { |academic_year, _| academic_year }
+      .reverse
   end
 
-  def cohort_leaf_nodes(course_cohorts)
-    course_cohorts
-      .sort_by { |course_cohort| course_cohort.cohort.registration_starts_at }
+  def registration_period_leaf_nodes(registration_periods)
+    registration_periods
+      .sort_by(&:registration_starts_at)
       .reverse
-      .map do |course_cohort|
-        cohort = course_cohort.cohort
-
-        NavigationStructure::Node.new(
-          name: cohort.description,
-          href: cohort_resource_path(cohort),
-          prefix: cohort_resource_path(cohort),
-        )
-      end
+      .map do |registration_period|
+      NavigationStructure::Node.new(
+        name: registration_period.description,
+        href: registration_period_path(registration_period),
+        prefix: registration_period_path(registration_period),
+      )
+    end
   end
 
   def current_section?(section)
@@ -118,13 +105,11 @@ private
     academic_year == @current_academic_year
   end
 
-  def cohort_resource_path(cohort)
-    if @cohort_path
-      @cohort_path.call(cohort)
-    elsif @resource
-      public_send(:"cohort_#{@base_path}", @resource, cohort)
+  def registration_period_path(registration_period)
+    if @resource
+      public_send(:"cohort_#{@base_path}", @resource, registration_period)
     else
-      public_send(:"cohort_#{@base_path}", cohort)
+      public_send(:"cohort_#{@base_path}", registration_period)
     end
   end
 
@@ -133,8 +118,6 @@ private
   # the most recent child cohort's own link when the resource has no
   # academic-year-scoped route (e.g. a single course's cohort-scoped page).
   def academic_year_resource_path(academic_year, fallback:)
-    return @academic_year_path.call(academic_year) if @academic_year_path
-
     helper_name = :"academic_year_#{@base_path}"
     return fallback unless respond_to?(helper_name)
 

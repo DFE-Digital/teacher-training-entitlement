@@ -117,11 +117,6 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show edit update] do
-    concerns :cohortable, index: "courses#index"
-    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
-  end
-
   resources :users, only: %i[index show]
 
   namespace :finance do
@@ -150,6 +145,11 @@ namespace :admin do
         end
       end
     end
+  end
+
+  resources :courses, only: %i[index show edit update] do
+    concerns :cohortable, index: "courses#index", show: "courses#show"
+    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 
   resources :lead_providers, only: %i[index show edit update], path: "providers" do

@@ -4,16 +4,12 @@ module Admin
     include DateHelper
 
     included do
-      before_action :set_cohorts
+      before_action :set_registration_periods
     end
 
   protected
 
-    def set_cohorts
-      @course_cohorts = CourseCohort.includes(:cohort)
-                                     .joins(:cohort)
-                                     .select("DISTINCT ON (course_cohorts.cohort_id) course_cohorts.*")
-                                     .order("course_cohorts.cohort_id, cohorts.registration_starts_at DESC")
+    def set_registration_periods
       @current_cohort = params[:cohort_id].presence ? Cohort.find(params[:cohort_id]) : nil
       @current_academic_year = current_academic_year_param
     end
