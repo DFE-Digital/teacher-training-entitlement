@@ -6,15 +6,13 @@ RSpec.describe "Participant Outcomes endpoint", openapi_spec: "v1/swagger.yaml",
 
   let(:course_group) { CourseGroup.find_by(name: "reception") || create(:course_group, name: "reception") }
   let(:course) { create(:course, :npd_eirt) }
-  let(:schedule) { create(:schedule, :tte_reception_autumn, cohort:) }
   let(:cohort) { create(:cohort, :current, funding_cap: true) }
+  let(:course_cohort) { create(:course_cohort, course:, cohort:) }
   let(:application) do
     create(
       :application,
-      course:,
+      course_cohort:,
       lead_provider:,
-      cohort:,
-      schedule:,
     )
   end
   let(:declaration) { create(:declaration, :completed, application:) }

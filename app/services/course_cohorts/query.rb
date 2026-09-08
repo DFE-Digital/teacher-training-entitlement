@@ -1,4 +1,4 @@
-module Schedules
+module CourseCohorts
   class Query
     include API::Concerns::Orderable
     include Queries::ConditionFormats
@@ -6,14 +6,14 @@ module Schedules
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider:, cohort_start_years: :ignore, course_identifier: :ignore, sort: nil)
+    def initialize(lead_provider:, academic_years: :ignore, course_identifier: :ignore, sort: nil)
       @scope = lead_provider
                  .course_cohorts
-                 .includes(:schedule, :course, :cohort)
+                 .includes(:course, :cohort)
 
       @sort = sort
 
-      where_cohort_start_year_in(cohort_start_years)
+      where_academic_year_in(academic_years)
       where_course_identifier_in(course_identifier)
     end
 
@@ -23,10 +23,10 @@ module Schedules
 
   private
 
-    def where_cohort_start_year_in(cohort_start_years)
-      return if ignore?(filter: cohort_start_years)
+    def where_academic_year_in(academic_years)
+      return if ignore?(filter: academic_years)
 
-      scope.merge!(CourseCohort.where(cohorts: { start_year: extract_conditions(cohort_start_years) }))
+      scope.merge!(CourseCohort.where(academic_year: extract_conditions(academic_years)))
     end
 
     def where_course_identifier_in(course_identifier)

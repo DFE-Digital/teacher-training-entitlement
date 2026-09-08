@@ -127,7 +127,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -205,12 +205,12 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place:
+                        funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -275,7 +275,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -358,7 +358,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -441,7 +441,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -519,12 +519,12 @@ paths:
                         teacher_catchment_country: United Kingdom of Great Britain
                           and Northern Ireland
                         teacher_catchment_iso_country_code: GBR
-                        funded_place:
+                        funded_place: true
                         created_at: '2021-05-31T02:21:32.000Z'
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -607,7 +607,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-reception-autumn
+                        schedule_identifier: tte-early-years-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -738,6 +738,39 @@ paths:
           application/json:
             schema:
               "$ref": "#/components/schemas/DeclarationCompletedRequest"
+  "/api/v1/schedules":
+    get:
+      summary: Retrieve multiple Lead providers available schedule details
+      tags:
+      - Schedules
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/ListCourseCohortsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      responses:
+        '200':
+          description: A list of Lead providers available schedule details
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CourseCohortsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
   "/api/v1/declarations":
     get:
       summary: Retrieve multiple List declarations
@@ -834,15 +867,15 @@ paths:
                         course_identifier: tte-early-years
                         declaration_date: '2021-05-31T02:22:32Z'
                         state: voided
-                        has_passed:
+                        has_passed: 
                         ineligible_for_funding_reason: duplicate_declaration
                         delivery_partner_id: 524df095-f9bf-4f9d-ba4c-772545a99e60
                         delivery_partner_name: Foo education
                         secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
                         secondary_delivery_partner_name: Bar education
                         statement_id: cd3a12347-7308-4879-942a-c4a70ced400a
-                        clawback_declaration_id:
-                        paid_declaration_id:
+                        clawback_declaration_id: 
+                        paid_declaration_id: 
                         uplift_paid: true
                         lead_provider_name: Example Institute
                         created_at: '2021-05-31T02:22:32.000Z'
@@ -1052,39 +1085,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
-  "/api/v1/schedules":
-    get:
-      summary: Retrieve multiple Lead providers available schedule details
-      tags:
-      - Schedules
-      security:
-      - api_key: []
-      parameters:
-      - name: filter
-        in: query
-        required: false
-        schema:
-          "$ref": "#/components/schemas/ListSchedulesFilter"
-        style: deepObject
-      - name: page
-        in: query
-        required: false
-        schema:
-          "$ref": "#/components/schemas/PaginationFilter"
-        style: deepObject
-      responses:
-        '200':
-          description: A list of Lead providers available schedule details
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/SchedulesResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/UnauthorisedResponse"
   "/api/v1/statements":
     get:
       summary: Retrieve financial statements
@@ -1273,12 +1273,12 @@ components:
             and time (ISO 8601 date format)
           type: string
           example: '2021-05-13T11:21:55Z'
-    ListSchedulesFilter:
+    ListCourseCohortsFilter:
       description: Filter schedules to return more specific results
       type: object
       properties:
         cohort:
-          description: Return schedules associated to the specified cohort or cohorts.
+          description: Return schedules associated to the specified academic year.
             This is a comma delimited string of years.
           type: string
           example: '2025,2026'
@@ -1505,7 +1505,7 @@ components:
                 being funded by DfE
               nullable: true
               type: boolean
-              example:
+              example: true
             created_at:
               description: The date the application was created
               type: string
@@ -1531,13 +1531,10 @@ components:
               format: date-time
               example: '2021-05-31T02:22:32.000Z'
             schedule_identifier:
-              description: The new schedule of the participant
+              description: The course cohort identifier for the participant
               nullable: true
               type: string
-              example: tte-reception-autumn
-              enum:
-              - tte-reception-autumn
-              - tte-reception-spring
+              example: tte-early-years-autumn
     ApplicationAcceptRequest:
       description: An application acceptance request
       type: object
@@ -1819,21 +1816,13 @@ components:
                     enum:
                     - tte-early-years
                   schedule_identifier:
-                    description: The new schedule of the participant
+                    description: The ternmidentifier for the participant
                     nullable: true
                     type: string
-                    example: tte-reception-autumn
-                    enum:
-                    - tte-reception-autumn
-                    - tte-reception-spring
+                    example: tte-early-years-autumn
                   cohort:
-                    description: Indicates which call-off contract would fund this
-                      participant's training. 2021 indicates a participant that has
-                      started, or will start, their training in the 2021/22 academic
-                      year. Once a provider accepts an application, they may change
-                      a participant's cohort up until the point of submitting a started
-                      declaration.
-                    type: string
+                    description: Contract year
+                    type: integer
                     nullable: true
                     example: '2022'
                   application_id:
@@ -1886,7 +1875,6 @@ components:
                     required:
                     - reason
                     - date
-                    example:
                     properties:
                       reason:
                         description: The reason a participant was withdrawn
@@ -1929,7 +1917,6 @@ components:
                     required:
                     - reason
                     - date
-                    example:
                     properties:
                       reason:
                         description: The reason a participant was deferred
@@ -2346,7 +2333,7 @@ components:
               description: Whether the participant has failed or passed
               type: boolean
               nullable: true
-              example:
+              example: true
             ineligible_for_funding_reason:
               description: If the declaration is ineligible, the reason why
               type: string
@@ -2605,7 +2592,7 @@ components:
                 example:
                   delivery_partner_id: db3a7848-7308-4879-942a-c4a70ced400a
                   secondary_delivery_partner_id: f0de7abf-399b-4e68-83de-2c33b503810c
-    Schedule:
+    CourseCohort:
       description: A single schedule
       type: object
       required:
@@ -2634,16 +2621,12 @@ components:
               description: The new schedule of the participant
               nullable: true
               type: string
-              example: tte-reception-autumn
-              enum:
-              - tte-reception-autumn
-              - tte-reception-spring
+              example: tte-early-years-autumn
             cohort:
-              description: The starting years of the cohorts the delivery partner
-                is valid for
+              description: The requested academic years
               type: string
               example: '2025'
-    ScheduleResponse:
+    CourseCohortResponse:
       description: A single schedule
       type: object
       required:
@@ -2651,7 +2634,7 @@ components:
       properties:
         data:
           "$ref": "#/components/schemas/Schedule"
-    SchedulesResponse:
+    CourseCohortsResponse:
       description: A list of schedules
       type: object
       required:

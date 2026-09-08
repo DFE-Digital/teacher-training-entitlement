@@ -110,15 +110,14 @@ PARTICIPANT = {
           enum: Course::IDENTIFIERS,
         },
         schedule_identifier: {
-          description: "The new schedule of the participant",
+          description: "The ternmidentifier for the participant",
           nullable: true,
           type: :string,
-          example: Schedule::IDENTIFIERS.first,
-          enum: Schedule::IDENTIFIERS,
+          example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
         },
         cohort: {
-          description: "Indicates which call-off contract would fund this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year. Once a provider accepts an application, they may change a participant's cohort up until the point of submitting a started declaration.",
-          type: :string,
+          description: "Contract year",
+          type: :integer,
           nullable: true,
           example: "2022",
         },
@@ -172,7 +171,6 @@ PARTICIPANT = {
       type: :object,
       nullable: true,
       required: %i[reason date],
-      example: nil,
       properties: {
         reason: {
           description: "The reason a participant was withdrawn",
@@ -195,7 +193,6 @@ PARTICIPANT = {
       type: :object,
       nullable: true,
       required: %i[reason date],
-      example: nil,
       properties: {
         reason: {
           description: "The reason a participant was deferred",

@@ -1,22 +1,22 @@
 require "rails_helper"
 
-RSpec.describe Schedules::Query do
+RSpec.describe CourseCohorts::Query do
   subject(:query) do
     described_class.new(
       lead_provider:,
-      cohort_start_years:,
+      academic_years:,
       course_identifier:,
       sort:,
     )
   end
 
   let(:lead_provider) { create(:lead_provider) }
-  let(:cohort_start_years) { :ignore }
+  let(:academic_years) { :ignore }
   let(:course_identifier) { :ignore }
   let(:sort) { nil }
 
   let(:course_cohort1) { create(:course_cohort, course: create(:course, identifier: "other")) }
-  let(:course_cohort2) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2021, 9, 1))) }
+  let(:course_cohort2) { create(:course_cohort, academic_year: 2021) }
 
   describe "#course_cohorts" do
     before do
@@ -29,7 +29,7 @@ RSpec.describe Schedules::Query do
     end
 
     context "with cohort filter" do
-      let(:cohort_start_years) { "2021" }
+      let(:academic_years) { "2021" }
 
       it { expect(query.course_cohorts).to include(course_cohort2) }
     end

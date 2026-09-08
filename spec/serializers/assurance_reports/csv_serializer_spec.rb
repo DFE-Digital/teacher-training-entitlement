@@ -39,7 +39,7 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
           "Participant Name",
           "TRN",
           "Course Identifier",
-          "Schedule",
+          "Term",
           "Eligible For Funding",
           "Funded place",
           "Lead Provider Name",

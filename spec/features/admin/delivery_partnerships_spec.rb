@@ -6,8 +6,9 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
   let(:admin) { create(:admin) }
   let!(:delivery_partner) { create(:delivery_partner) }
   let!(:lead_providers) { create_list(:lead_provider, 3) }
+  let(:course) { create(:course) }
   let!(:cohorts) { [create(:cohort, :current), create(:cohort, :next)] }
-  let!(:course_cohorts) { cohorts.map { |cohort| create(:course_cohort, cohort:) } }
+  let!(:course_cohorts) { cohorts.map { |cohort| create(:course_cohort, cohort:, course:) } }
 
   context "when not logged in" do
     scenario "delivery partnerships interface is inaccessible" do
