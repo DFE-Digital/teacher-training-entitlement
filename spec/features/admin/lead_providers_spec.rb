@@ -8,7 +8,7 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
   let(:contracts) { create_list(:course_cohort_provider, 5, course_cohort:) }
   let(:providers) { contracts.map(&:lead_provider) }
   let!(:delivery_partner) do
-    create(:delivery_partner).tap {|dp| dp.delivery_partnerships.create!(lead_provider: providers.first, course_cohort:) }
+    create(:delivery_partner).tap { |dp| dp.delivery_partnerships.create!(lead_provider: providers.first, course_cohort:) }
   end
 
   before do
@@ -31,6 +31,6 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     expect(page).to have_css(".govuk-heading-l", text: lead_provider.name)
 
     find("#tab_delivery-partners").click
-    expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner.name}])
+    expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner.name }])
   end
 end
