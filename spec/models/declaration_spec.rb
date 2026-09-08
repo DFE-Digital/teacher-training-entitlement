@@ -645,11 +645,11 @@ RSpec.describe Declaration, type: :model do
     describe ".for_delivery_partners" do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
+      let(:milestone) { create(:milestone) }
+      let(:course_cohort) { milestone.course_cohort }
       let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-      let(:declaration_date) { schedule.training_starts_at + 1.hour }
-      let(:course_cohort) { create(:course_cohort, schedule:) }
+      let(:declaration_date) { milestone.acceptance_window_start_date + 1.day }
       let(:lead_provider) { create(:lead_provider) }
-      let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
 
       let(:delivery_partner) do
         create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
@@ -659,7 +659,7 @@ RSpec.describe Declaration, type: :model do
       end
 
       let(:declaration_as_primary) do
-        create :declaration, lead_provider:, application:, delivery_partner:, milestone: create(:milestone, course_cohort:)
+        create :declaration, lead_provider:, application:, delivery_partner:, milestone:
       end
 
       it { is_expected.to include declaration_as_primary }
@@ -670,7 +670,7 @@ RSpec.describe Declaration, type: :model do
         let :declaration_as_secondary do
           create :declaration, lead_provider:,
                                application:,
-                               milestone: create(:milestone, course_cohort:),
+                               milestone:,
                                delivery_partner:,
                                secondary_delivery_partner:
         end

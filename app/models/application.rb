@@ -13,7 +13,6 @@ class Application < ApplicationRecord
 
   has_one :course, through: :course_cohort
   has_one :cohort, through: :course_cohort
-  has_one :schedule, through: :course_cohort
   has_many :milestones, through: :course_cohort
 
   # Convenience methods to access the institutionable through institution

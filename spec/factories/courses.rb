@@ -33,8 +33,7 @@ FactoryBot.define do
           create(:cohort, :current)
         end
 
-        schedule = CourseCohort.find_by(course:, cohort:)&.schedule || create(:schedule, cohort:)
-        course.course_cohorts << create(:course_cohort, course:, cohort:, schedule:, lead_provider: evaluator.lead_provider)
+        course.course_cohorts << create(:course_cohort, course:, cohort:, lead_provider: evaluator.lead_provider)
       end
     end
   end

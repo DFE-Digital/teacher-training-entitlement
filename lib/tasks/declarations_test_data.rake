@@ -43,24 +43,10 @@ namespace :declarations do
     ]
 
     course_setups = courses.map do |course|
-      schedule = Schedule.find_or_create_by!(cohort:, identifier: "declaration-test-#{course.identifier}-#{started_on.to_fs(:number)}") do |record|
-        record.name = "Declaration test #{course.short_code} schedule"
-        record.course_group = course.course_group
-        record.training_starts_at = started_on
-        record.training_ends_at = ends_on
-        record.acceptance_window_start = started_on
-        record.acceptance_window_end = ends_on
-        record.policy_descriptor = started_on.year
-        record.ecf_id = SecureRandom.uuid
-      end
-
       course_cohort = CourseCohort.find_or_create_by!(course:, cohort:) do |record|
-        record.schedule = schedule
         record.academic_year = started_on.year
         record.ecf_id = SecureRandom.uuid
       end
-
-      course_cohort.update!(schedule:) unless course_cohort.schedule == schedule
 
       started_milestone = Milestone.find_or_create_by!(course_cohort:, declaration_type: Milestone::STARTED) do |record|
         record.acceptance_window_start_date = started_on

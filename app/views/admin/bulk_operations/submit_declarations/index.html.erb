@@ -16,21 +16,19 @@
   <p class="govuk-body">Your file must include the following column headers:</p>
 
   <ul class="govuk-list govuk-list--bullet">
-    <li>participant_id</li>
-    <li>declaration_type</li>
-    <li>declaration_date</li>
-    <li>course_identifier</li>
-    <li>delivery_partner_id</li>
-    <li>lead_provider_name</li>
-    <li>has_passed (TRUE or FALSE for "completed" declarations, otherwise blank)</li>
+    <li>lead_provider_name  <div class="govuk-hint">(example: "Provider name")</div></li>
+    <li>application_id     <div class="govuk-hint"> (example: "503811f3-77b4-454f-a806-6faced527a6c")</div></li>
+    <li>declaration_type   <div class="govuk-hint"> (one of: <%= Milestone::DECLARATION_TYPES.join(", ") %>)</div></li>
+    <li>declaration_date   <div class="govuk-hint"> (example: "2026-09-09T00:00:00+00:00")</div></li>
+    <li>delivery_partner_id<div class="govuk-hint"> (example: "503811f3-77b4-454f-a806-6faced527a6c")</div></li>
+    <li>secondary_delivery_partner_id <div class="govuk-hint">(optional; example: "503811f3-77b4-454f-a806-6faced527a6c")</div></li>
+    <li>has_passed<div class="govuk-hint"> (TRUE or FALSE for "completed" declarations, otherwise blank)</div></li>
   </ul>
 
   <p class="govuk-body">
     For example:
     <pre>
-      participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-      1234567890,started,2021-01-01T00:00:00Z,course_identifier,1234567890,"Lead provider name",
-      1234567891,completed,2021-01-01T00:00:00Z,course_identifier,1234567890,"Lead provider name",TRUE
+      <%= BulkOperation::SubmitDeclarations::FILE_HEADERS.join(", ") %>
     </pre>
   </p>
 

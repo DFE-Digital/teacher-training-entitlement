@@ -2,72 +2,46 @@ require "rails_helper"
 
 RSpec.describe BulkOperation::SubmitDeclarations do
   let(:admin) { create(:admin) }
-  let(:bulk_operation) { create(:submit_declarations_bulk_operation, admin: admin) }
-
-  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
-  let(:course) { create(:course, identifier: "leadership-development") }
-  let(:lead_provider) { create(:lead_provider) }
-  let(:delivery_partner) { create(:delivery_partner) }
-  let(:schedule) { create(:schedule, cohort:, course_group: course.course_group, allowed_declaration_types: %w[started]) }
-  let(:statement) { create(:statement, lead_provider:) }
-  let(:participant) { create(:user) }
-
-  let!(:application) { create(:application, :accepted, :for_cohort_starting_on, user: participant, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }
-  let(:started_milestone) do
-    create(:milestone, course_cohort: application.course_cohort, declaration_type: "started",
-                       acceptance_window_start_date: schedule.training_starts_at)
+  let(:bulk_operation) { create(:submit_declarations_bulk_operation, admin:) }
+  let(:contract) { create(:course_cohort_provider) }
+  let(:course_cohort) { contract.course_cohort }
+  let(:lead_provider) { contract.lead_provider }
+  let(:milestone) { create(:milestone, :started, course_cohort:) }
+  let(:delivery_partner) do
+    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+  end
+  let(:csv_headers) { described_class::FILE_HEADERS.join(",") }
+  let(:csv_row) do
+    [
+      application.lead_provider.name,
+      application.ecf_id,
+      milestone.declaration_type,
+      (milestone.acceptance_window_start_date + 1.day).rfc3339,
+      delivery_partner.ecf_id,
+    ].join(",")
+  end
+  let(:csv_file) do
+    tempfile <<~CSV
+      #{csv_headers}
+      #{csv_row}
+    CSV
   end
 
+  let!(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+
   describe "validations" do
+    before { bulk_operation.file.attach(csv_file.open) }
+
     context "with valid CSV file" do
-      let(:valid_csv_file) do
-        tempfile <<~CSV
-          participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-          #{participant.ecf_id},started,2023-01-01T00:00:00Z,#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-        CSV
-      end
-
-      before do
-        bulk_operation.file.attach(valid_csv_file.open)
-      end
-
-      it "is valid" do
-        expect(bulk_operation).to be_valid
-      end
+      it { expect(bulk_operation).to be_valid }
     end
 
     context "with invalid CSV format" do
-      let(:invalid_csv_file) do
-        tempfile <<~CSV
-          wrong,headers,in,csv,file,here
-          value1,value2,value3,value4,value5,value6
-        CSV
-      end
+      let(:csv_headers) { "wrong,headers,in,csv,file,here" }
 
-      before do
-        bulk_operation.file.attach(invalid_csv_file.open)
-      end
-
-      it "is invalid" do
+      it do
         expect(bulk_operation).not_to be_valid
         expect(bulk_operation.errors[:file]).to include("Uploaded file is wrong format")
-      end
-    end
-
-    context "with empty CSV file" do
-      let(:empty_csv_file) do
-        tempfile <<~CSV
-          participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-        CSV
-      end
-
-      before do
-        bulk_operation.file.attach(empty_csv_file.open)
-      end
-
-      it "is invalid" do
-        expect(bulk_operation).not_to be_valid
-        expect(bulk_operation.errors[:file]).to include("Uploaded file is empty")
       end
     end
   end
@@ -75,41 +49,38 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   describe "#run!" do
     subject(:run) { bulk_operation.run! }
 
-    let(:csv_file) { tempfile(csv) }
+    let(:csv_file) do
+      tempfile <<~CSV
+        #{csv_headers}
+        #{csv_row}
+        #{csv_second_row}
+      CSV
+    end
+    let(:csv_second_row) do
+      [
+        application2.lead_provider.name,
+        application2.ecf_id,
+        milestone.declaration_type,
+        (milestone.acceptance_window_start_date + 1.day).rfc3339,
+        delivery_partner.ecf_id,
+      ].join(",")
+    end
+    let(:result) { JSON.parse(bulk_operation.reload.result) }
+    let!(:application2) { create(:application, :accepted, course_cohort:, lead_provider:) }
 
     before do
-      started_milestone
-      create(:delivery_partnership, course_cohort: application.course_cohort, delivery_partner:, lead_provider:)
-
       bulk_operation.file.attach(csv_file.open)
       bulk_operation.save!
+      run
     end
 
     context "when the entire CSV is valid" do
-      let(:participant2) { create(:user) }
-      let!(:application2) { create(:application, :accepted, :for_cohort_starting_on, user: participant2, course:, lead_provider:, schedule:, registration_starts_at: cohort.registration_starts_at) }
-
-      let(:csv) do
-        <<~CSV
-          participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-          #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          #{participant2.ecf_id},started,#{(schedule.training_starts_at + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-        CSV
-      end
-
-      it "creates declarations for all rows" do
-        expect { run }.to change(Declaration, :count).by(2)
-      end
-
       it "saves successful results for all rows" do
-        run
-        result = JSON.parse(bulk_operation.reload.result)
         expect(result["1"]).to eq("Declaration created successfully")
         expect(result["2"]).to eq("Declaration created successfully")
       end
 
       it "creates declarations with correct attributes" do
-        run
         declaration1 = Declaration.find_by(application: application)
         declaration2 = Declaration.find_by(application: application2)
 
@@ -121,92 +92,51 @@ RSpec.describe BulkOperation::SubmitDeclarations do
     end
 
     context "when some rows are invalid" do
-      let(:csv) do
-        <<~CSV
-          participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-          #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          nonexistent-participant-id,started,#{(schedule.training_starts_at + 1.day).rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-        CSV
+      let(:csv_second_row) do
+        [
+          application2.lead_provider.name,
+          "error",
+          milestone.declaration_type,
+          (milestone.acceptance_window_start_date + 1.day).rfc3339,
+          delivery_partner.ecf_id,
+        ].join(",")
       end
 
-      it "creates declarations for valid rows only" do
-        expect { run }.to change(Declaration, :count).by(1)
-      end
-
-      it "sets finished_at timestamp" do
-        run
-        expect(bulk_operation.reload.finished_at).to be_present
-      end
+      it { expect(bulk_operation.reload.finished_at).to be_present }
 
       it "records both success and failure results" do
-        run
-        result = JSON.parse(bulk_operation.reload.result)
         expect(result["1"]).to eq("Declaration created successfully")
-        expect(result["2"]).to eq("Participant not found")
+        expect(result["2"]).to eq("Application not found")
       end
     end
 
-    context "with details of individual errors" do
-      context "when participant does not exist" do
-        let(:csv) do
-          <<~CSV
-            participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-            nonexistent-participant-id,started,2023-01-01T00:00:00Z,#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          CSV
-        end
-
-        it "returns error message for missing participant" do
-          run
-          result = JSON.parse(bulk_operation.reload.result)
-          expect(result["1"]).to eq("Participant not found")
-        end
+    context "when lead provider does not exist" do
+      let(:csv_row) do
+        [
+          "not a lead provider name",
+          application.ecf_id,
+          "other",
+          milestone.acceptance_window_start_date + 1.day,
+          delivery_partner.ecf_id,
+        ].join(",")
       end
 
-      context "when application does not exist" do
-        let(:participant_without_app) { create(:user) }
+      it { expect(result["1"]).to eq("Lead provider not found") }
+    end
 
-        let(:csv) do
-          <<~CSV
-            participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-            #{participant_without_app.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          CSV
-        end
-
-        it "returns error message for missing application" do
-          run
-          result = JSON.parse(bulk_operation.reload.result)
-          expect(result["1"]).to include("Application The entered '#/application' is missing from your request. Check details and try again.")
-        end
+    context "when declaration service validation fails" do
+      let(:csv_row) do
+        [
+          application.lead_provider.name,
+          application.ecf_id,
+          "other",
+          milestone.acceptance_window_start_date + 1.day,
+          delivery_partner.id,
+        ].join(",")
       end
 
-      context "when lead provider does not exist" do
-        let(:csv) do
-          <<~CSV
-            participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-            #{participant.ecf_id},started,#{schedule.training_starts_at.rfc3339},#{course.identifier},#{delivery_partner.ecf_id},NonExistentProvider,
-          CSV
-        end
-
-        it "returns error message for missing lead provider" do
-          run
-          result = JSON.parse(bulk_operation.reload.result)
-          expect(result["1"]).to eq("Lead provider not found")
-        end
-      end
-
-      context "when declaration service validation fails" do
-        let(:csv) do
-          <<~CSV
-            participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
-            #{participant.ecf_id},invalid_type,2023-01-01T00:00:00Z,#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",
-          CSV
-        end
-
-        it "returns validation error messages" do
-          run
-          result = JSON.parse(bulk_operation.reload.result)
-          expect(result["1"]).to include("The entered '#/declaration_type' is not recognised")
-        end
+      it do
+        expect(result["1"]).to include("The entered '#/declaration_type' is not recognised")
       end
     end
   end

@@ -1,6 +1,6 @@
 class BulkOperation::SubmitDeclarations < BulkOperation
   HEADERS = true
-  FILE_HEADERS = %w[participant_id declaration_type declaration_date course_identifier delivery_partner_id lead_provider_name has_passed].freeze
+  FILE_HEADERS = %w[lead_provider_name application_id declaration_type declaration_date delivery_partner_id secondary_delivery_partner_id has_passed].freeze
 
   def run!
     result = {}
@@ -22,24 +22,20 @@ private
   end
 
   def process_csv_row(row)
-    participant = User.find_by(ecf_id: row["participant_id"])
-    return "Participant not found" if participant.nil?
+    application = Application.find_by(ecf_id: row["application_id"])
+    return "Application not found" unless application
 
     lead_provider = LeadProvider.find_by(name: row["lead_provider_name"])
-    return "Lead provider not found" if lead_provider.nil?
+    return "Lead provider not found" unless lead_provider
 
-    course = Course.find_by(identifier: row["course_identifier"])
-    application = Application
-                    .joins(:course_cohort, :application_lead_providers)
-                    .where(user: participant, course_cohorts: { course: })
-                    .merge(ApplicationLeadProvider.current.where(lead_provider:))
-                    .first
+    return "Lead provider is not assigned to application" if application.current_application_lead_provider&.lead_provider&.id != lead_provider.id
 
     service = Declarations::Create.new(
       application:,
       declaration_type: row["declaration_type"],
       declaration_date: row["declaration_date"],
       delivery_partner_id: row["delivery_partner_id"],
+      secondary_delivery_partner_id: row["secondary_delivery_partner_id"],
       has_passed: row["has_passed"].presence.try(:downcase),
     )
 
