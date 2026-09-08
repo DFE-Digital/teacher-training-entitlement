@@ -36,11 +36,17 @@ class RegistrationPeriodsComponent < BaseComponent
   end
 
   def navigation_link(section, parent: false)
+    aria = if !parent && current?(section.prefix)
+             { current: true }
+           else
+             {}
+           end
+
     link_to(
       section.name,
       section.href,
       class: "x-govuk-sub-navigation__link",
-      aria: (parent ? {} : { current: current?(section.prefix) }),
+      aria:,
     )
   end
 
