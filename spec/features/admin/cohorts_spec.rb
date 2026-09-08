@@ -7,7 +7,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   let(:admin) { create :admin }
   let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, registration_starts_at: Date.new(2026, 4, 1)) }
 
-  let(:new_button_text)    { "New cohort" }
+  let(:new_button_text)    { "New registration period" }
   let(:edit_button_text)   { "Edit cohort details" }
   let(:delete_button_text) { "Delete cohort" }
 
@@ -21,7 +21,14 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
     visit_index
 
     expect(Cohort.count).to be_positive
-    expected = Cohort.order_by_latest.map { |c| [c.description, c.registration_starts_at.to_date.to_fs(:govuk), "Yes"] }
+    expected = Cohort.order_by_latest.map do |c|
+      [
+        c.description,
+        c.registration_open? ? "Yes" : "No",
+        c.registration_starts_at.to_fs(:govuk),
+        c.registration_ends_at&.to_fs(:govuk),
+      ]
+    end
     expect(page).to have_table(rows: expected)
   end
 

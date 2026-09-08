@@ -52,6 +52,15 @@ module Admin
         )
       end
 
+      if @current_academic_year
+        scope.merge!(
+          Application
+            .joins(:course_cohort)
+            .includes(course_cohort: %i[course cohort])
+            .where(course_cohorts: { academic_year: @current_academic_year }),
+        )
+      end
+
       scope
     end
 

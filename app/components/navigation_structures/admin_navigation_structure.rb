@@ -47,7 +47,7 @@ module NavigationStructures
     def admin_nodes
       nodes = {
         Node.new(
-          name: "Cohorts",
+          name: "Registration periods",
           href: admin_cohorts_path,
           prefix: "/admin/cohorts",
         ) => [],

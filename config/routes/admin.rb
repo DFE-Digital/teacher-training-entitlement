@@ -6,12 +6,14 @@ namespace :admin do
     if options.key?(:index)
       collection do
         get "cohorts/:cohort_id", to: options[:index], as: :cohort
+        get "academic-years/:academic_year", to: options[:index], as: :academic_year
       end
     end
 
     if options.key?(:show)
       member do
         get "cohorts/:cohort_id", to: options[:show], as: :cohort
+        get "academic-years/:academic_year", to: options[:show], as: :academic_year
       end
     end
   end
@@ -115,15 +117,11 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show edit update] do
-    concerns :cohortable, index: "courses#index"
-    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
-  end
-
   resources :users, only: %i[index show]
 
   namespace :finance do
     resources :statements, only: %i[index show] do
+      concerns :cohortable, index: "statements#index"
       resources :adjustments, controller: "statements/adjustments" do
         collection do
           post :add_another
@@ -147,6 +145,11 @@ namespace :admin do
         end
       end
     end
+  end
+
+  resources :courses, only: %i[index show edit update] do
+    concerns :cohortable, index: "courses#index", show: "courses#show"
+    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 
   resources :lead_providers, only: %i[index show edit update], path: "providers" do

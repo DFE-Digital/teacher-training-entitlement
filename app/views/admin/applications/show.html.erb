@@ -100,7 +100,7 @@ govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
   end
   sl.with_row do |row|
     row.with_key(text: "Schedule identifier")
-    row.with_value(text: @application.schedule&.identifier || "-" )
+    row.with_value(text: @application.course_cohort.schedule_identifier)
   end
   sl.with_row do |row|
     row.with_key(text: "Funding choice")

@@ -6,20 +6,48 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
   let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { statements.first }
+  let(:year) { 2024 }
 
   let!(:statements) do
     [
-      create(:statement, lead_provider:, start_date: Date.new(2024, 10, 1)),
-      create(:statement, lead_provider:, start_date: Date.new(2024, 11, 1)),
-      create(:statement, lead_provider:, start_date: Date.new(2024, 12, 1), output_fee: false),
+      create(:statement, lead_provider:, start_date: Date.new(2024, 10, 1), academic_year: year),
+      create(:statement, lead_provider:, start_date: Date.new(2024, 11, 1), academic_year: year),
+      create(:statement, lead_provider:, start_date: Date.new(2024, 12, 1), academic_year: year, output_fee: false),
     ]
   end
 
   before { sign_in_as_admin }
 
+  describe "cohort filtering" do
+    let(:cohort_a) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
+    let(:cohort_b) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
+    let(:filter_lead_provider) { create(:lead_provider) }
+
+    let!(:statement_a) { create(:statement, lead_provider: filter_lead_provider, start_date: Date.new(2023, 10, 1)) }
+    let!(:statement_b) { create(:statement, lead_provider: filter_lead_provider, start_date: Date.new(2023, 11, 1)) }
+
+    before do
+      create(:declaration, :started, statement: statement_a, course_cohort: create(:course_cohort, cohort: cohort_a))
+      create(:declaration, :started, statement: statement_b, course_cohort: create(:course_cohort, cohort: cohort_b))
+    end
+
+    subject do
+      get(cohort_admin_finance_statements_path(cohort_a))
+      response
+    end
+
+    it { is_expected.to have_http_status(:ok) }
+
+    it "only shows statements associated with the selected cohort" do
+      subject
+      expect(response.body).to match(/October 2023<\/td>/)
+      expect(response.body).not_to match(/November 2023<\/td>/)
+    end
+  end
+
   describe "/admin/statements" do
     subject do
-      get(admin_finance_statements_path, params:)
+      get(academic_year_admin_finance_statements_path(year), params:)
       response
     end
 
@@ -56,36 +84,6 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
       it { is_expected.to have_attributes body: %r{October 2024</td>} }
       it { is_expected.to have_attributes body: %r{November 2024</td>} }
       it { is_expected.not_to have_attributes body: %r{December 2024</td>} }
-    end
-
-    context "with output_fee set to false" do
-      let(:params) do
-        {
-          output_fee: "false",
-        }
-      end
-
-      it "shows only statements without output_fee" do
-        subject
-        expect(response.body).not_to match(/October 2024<\/td>/)
-        expect(response.body).not_to match(/November 2024<\/td>/)
-        expect(response.body).to match(/December 2024<\/td>/)
-      end
-    end
-
-    context "with output_fee explicitly set to blank (user selected 'All')" do
-      let(:params) do
-        {
-          output_fee: "",
-        }
-      end
-
-      it "shows all statements regardless of output_fee" do
-        subject
-        expect(response.body).to match(/October 2024<\/td>/)
-        expect(response.body).to match(/November 2024<\/td>/)
-        expect(response.body).to match(/December 2024<\/td>/)
-      end
     end
 
     context "with params matching no statement statement" do

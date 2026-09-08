@@ -3,14 +3,14 @@
   <ul class="x-govuk-sub-navigation__section">
     <% structure.each do |section| %>
       <%= tag.li(class: navigation_item_classes(section)) do %>
-        <%= navigation_link(section) %>
+        <%= navigation_link(section, parent: section.nodes.present?) %>
 
         <% if section.nodes.present? %>
           <ul class="x-govuk-sub-navigation__section x-govuk-sub-navigation__section--nested">
             <% section.nodes.each do |node| %>
-                <li class="x-govuk-sub-navigation__section-item">
+                <%= tag.li(class: navigation_item_classes(node)) do %>
                     <%= navigation_link(node) %>
-                </li>
+                <% end %>
             <% end %>
           </ul>
         <% end %>

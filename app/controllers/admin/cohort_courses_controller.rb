@@ -3,7 +3,7 @@ class Admin::CohortCoursesController < AdminController
   before_action :course_cohort, only: :show
 
   def show
-    @cohorts = Cohort.where(id: @course.course_cohorts.select(:cohort_id)).order_by_latest
+    @course_cohorts = @course.course_cohorts.includes(:cohort).joins(:cohort).order("cohorts.registration_starts_at DESC")
     @delivery_partner_counts = DeliveryPartnership
       .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
       .group(:lead_provider_id)

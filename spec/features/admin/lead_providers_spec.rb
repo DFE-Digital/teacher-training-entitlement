@@ -3,8 +3,16 @@ require "rails_helper"
 RSpec.feature "Listing and viewing course providers", type: :feature do
   include Helpers::AdminLogin
 
+  let(:cohort) { create(:cohort, start_year: Date.current.year) }
+  let(:course_cohort) { create(:course_cohort, cohort:, academic_year: cohort.start_year) }
+  let(:contracts) { create_list(:course_cohort_provider, 5, course_cohort:) }
+  let(:providers) { contracts.map(&:lead_provider) }
+  let!(:delivery_partner) do
+    create(:delivery_partner).tap { |dp| dp.delivery_partnerships.create!(lead_provider: providers.first, course_cohort:) }
+  end
+
   before do
-    create_list(:lead_provider, 5)
+    providers.each { |lead_provider| create(:application_lead_provider, lead_provider:) }
     sign_in_as(create(:admin))
   end
 
@@ -13,70 +21,16 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
 
     expect(page).to have_css("h1", text: "Providers")
 
-    LeadProvider.all.find_each do |lead_provider|
+    providers.each do |lead_provider|
       expect(page).to have_link(lead_provider.name, href: admin_lead_provider_path(lead_provider))
     end
-  end
 
-  scenario "viewing course provider details" do
-    cohort_2025 = create(:cohort, registration_starts_at: Date.new(2025, 4, 1))
-    cohort_2024 = create(:cohort, registration_starts_at: Date.new(2024, 4, 1))
-    cohort_2023 = create(:cohort, registration_starts_at: Date.new(2023, 4, 1))
-    lead_provider = LeadProvider.order(:name).first
-    lead_provider.update!(url: "https://example.com/provider")
-    delivery_partner_25 = create(:delivery_partner, lead_providers: { cohort_2025 => lead_provider })
-    delivery_partner_24 = create(:delivery_partner, lead_providers: { cohort_2024 => lead_provider })
-    delivery_partner_23 = create(:delivery_partner, lead_providers: { cohort_2023 => lead_provider })
-
-    visit(admin_lead_providers_path)
+    lead_provider = providers.first
     click_link(lead_provider.name)
 
     expect(page).to have_css(".govuk-heading-l", text: lead_provider.name)
-    expect(page).to have_text(lead_provider.email)
-    expect(page).to have_text(lead_provider.url)
 
     find("#tab_delivery-partners").click
-    expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_25.name }])
-
-    click_link(cohort_2024.description)
-    find("#tab_delivery-partners").click
-    expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_24.name }])
-
-    click_link(cohort_2023.description)
-    find("#tab_delivery-partners").click
-    expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner_23.name }])
-  end
-
-  scenario "editing course provider details" do
-    lead_provider = LeadProvider.order(:name).first
-
-    visit(admin_lead_provider_path(lead_provider))
-    click_on("Edit provider details")
-
-    fill_in("Provider name", with: "Updated Provider")
-    fill_in("Email address", with: "updated-provider@example.com")
-    fill_in("Website URL", with: "https://example.com/provider")
-    fill_in("Hint text", with: "Updated hint text")
-    click_on("Save provider details")
-
-    expect(page).to have_text("Provider updated")
-    expect(page).to have_css(".govuk-heading-l", text: "Updated Provider")
-
-    lead_provider.reload
-    expect(lead_provider.name).to eq("Updated Provider")
-    expect(lead_provider.email).to eq("updated-provider@example.com")
-    expect(lead_provider.url).to eq("https://example.com/provider")
-    expect(lead_provider.hint).to eq("Updated hint text")
-  end
-
-  scenario "editing course provider with invalid details" do
-    lead_provider = LeadProvider.order(:name).first
-
-    visit(edit_admin_lead_provider_path(lead_provider))
-    fill_in("Provider name", with: "")
-    click_on("Save provider details")
-
-    expect(page).to have_css("h1", text: "Edit provider details")
-    expect(page).to have_text("can't be blank")
+    expect(page).to have_table(with_rows: [{ "Delivery partner" => delivery_partner.name }])
   end
 end

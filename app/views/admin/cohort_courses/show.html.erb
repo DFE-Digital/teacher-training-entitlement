@@ -1,12 +1,10 @@
 <%= govuk_back_link href: request.referrer.presence || admin_courses_path %>
 
 <% content_for :side_navigation do %>
-  <%= render CohortsComponent.new(
+  <%= render RegistrationPeriodsComponent.new(
     request.path,
-    cohorts: @cohorts,
     base_path: :admin_course_path,
     resource: @course,
-    cohort_path: ->(cohort) { admin_cohort_course_path(cohort, @course) },
   ) %>
 <% end %>
 

@@ -1,4 +1,10 @@
-<%= render "applications_side_navigation" %>
+<% content_for :side_navigation do %>
+  <%= render RegistrationPeriodsComponent.new(
+    request.path,
+    base_path: :admin_applications_path,
+    current_academic_year: @current_academic_year,
+  ) %>
+<% end %>
 
 <h1 class="govuk-heading-l">Applications</h1>
 
