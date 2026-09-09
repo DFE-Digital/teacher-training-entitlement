@@ -5,6 +5,7 @@ module API
 
       field(:start_date, datetime_format: "%Y-%m-%d")
       field :frequency
+      field(:cohort) { |s| s.academic_year.to_s }
       field :deadline_date, name: :cut_off_date, datetime_format: "%Y-%m-%d"
       field :payment_date, datetime_format: "%Y-%m-%d"
       field(:paid?, name: :paid)
