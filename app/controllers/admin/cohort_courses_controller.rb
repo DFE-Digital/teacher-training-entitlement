@@ -8,6 +8,11 @@ class Admin::CohortCoursesController < AdminController
       .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
       .group(:lead_provider_id)
       .count
+    @contract_years = @course.contract_years.generic.includes(:lead_provider)
+    @contract_financials = @course.contract_years.year(@course_cohort.academic_year).includes(:lead_provider)
+    if @contract_financials.blank?
+      @contract_financials = @contract_years
+    end
   end
 
   def new

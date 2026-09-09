@@ -72,10 +72,10 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect(cohort.course_cohorts.find_by(course:)).to be_present
       end
 
-      it "sets the academic_year to the cohort's start_year" do
+      it "sets the academic_year from the cohort registration start date" do
         service.call
 
-        expect(service.course_cohort.academic_year).to eq(cohort.start_year)
+        expect(service.course_cohort.academic_year).to eq(CourseCohort.academic_year_for(cohort.registration_starts_at))
       end
 
       it "sets service.course_cohort to the created record" do
@@ -83,7 +83,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect(service.course_cohort).to eq(cohort.course_cohorts.find_by(course:))
       end
 
-      context "when training_starts_at falls in autumn" do
+      context "when cohort registration_starts_at falls in autumn" do
+        let(:cohort) { create(:cohort, registration_starts_at: Date.new(2025, 9, 1)) }
         let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
 
         it "sets the term_identifier to autumn" do
@@ -93,7 +94,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
         end
       end
 
-      context "when training_starts_at falls in spring" do
+      context "when cohort registration_starts_at falls in spring" do
+        let(:cohort) { create(:cohort, registration_starts_at: Date.new(2025, 2, 1)) }
         let(:training_dates) { { start: Date.new(2025, 2, 1), end: nil } }
 
         it "sets the term_identifier to spring" do

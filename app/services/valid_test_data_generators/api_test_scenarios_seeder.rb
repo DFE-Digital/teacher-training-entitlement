@@ -276,7 +276,7 @@ module ValidTestDataGenerators
     end
 
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
-      academic_year = registration_starts_at.year
+      academic_year = CourseCohort.academic_year_for(registration_starts_at)
       current_cohort = Cohort.find_by(registration_starts_at:)
       training_start_date = registration_starts_at + 3.months
       acceptance_window_start_date = training_starts_now ? 2.days.ago : training_start_date
@@ -495,7 +495,7 @@ module ValidTestDataGenerators
 
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
-      if course_cohort.academic_year < Time.zone.now.year
+      if course_cohort.started_milestone.acceptance_window_start_date <= Time.zone.today
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
           start_date: course_cohort

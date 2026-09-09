@@ -12,4 +12,6 @@ class ContractYear < ApplicationRecord
   validates :recruitment_target, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :service_fee, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :teacher_funding, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  scope :generic, -> { where(academic_year: nil) }
+  scope :year, ->(academic_year) { where(academic_year:) }
 end

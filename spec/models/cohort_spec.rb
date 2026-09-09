@@ -36,6 +36,49 @@ RSpec.describe Cohort, type: :model do
       it { is_expected.to validate_presence_of(:description) }
       it { is_expected.to validate_uniqueness_of(:description).case_insensitive }
       it { is_expected.to validate_length_of(:description).is_at_least(5).is_at_most(50) }
+
+      it "defaults to the registration start month on create when blank" do
+        cohort = described_class.create!(
+          registration_starts_at: Date.new(2028, 6, 1),
+          funding_cap: true,
+        )
+
+        expect(cohort.description).to eq("June 2028")
+      end
+
+      it "does not overwrite an explicit description on create" do
+        cohort = described_class.create!(
+          registration_starts_at: Date.new(2028, 7, 1),
+          description: "Custom cohort",
+          funding_cap: true,
+        )
+
+        expect(cohort.description).to eq("Custom cohort")
+      end
+    end
+
+    describe "changing funding_cap when there are applications" do
+      before do
+        create(:application, :for_cohort_starting_on, registration_starts_at: cohort.registration_starts_at)
+      end
+
+      context "when the funding cap is true" do
+        let(:cohort) { create(:cohort, :with_funding_cap) }
+
+        it "does not allow changing the funding_cap" do
+          cohort.funding_cap = false
+          expect(cohort).to have_error(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
+        end
+      end
+
+      context "when the funding cap is false" do
+        let(:cohort) { create(:cohort, :without_funding_cap) }
+
+        it "does not allow changing the funding_cap" do
+          cohort.funding_cap = true
+          expect(cohort).to have_error(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
+        end
+      end
     end
   end
 

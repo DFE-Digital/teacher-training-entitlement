@@ -1,0 +1,117 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+<% state_store = @wizard.state_store %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l">Check course configuration</h1>
+
+<%= govuk_table do |table| %>
+  <% table.with_head do |head| %>
+    <% head.with_row do |row| %>
+      <% row.with_cell(text: "Section") %>
+      <% row.with_cell(text: "Details") %>
+      <% row.with_cell(text: "Action") %>
+    <% end %>
+  <% end %>
+
+  <% table.with_body do |body| %>
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Course details") %>
+      <% row.with_cell do %>
+        <%= simple_format(
+              [
+                "Name: #{state_store.course_details.name}",
+                "Identifier: #{state_store.course_details.identifier}",
+                "Short code: #{state_store.course_details.short_code}",
+                "Description: #{state_store.course_details.description}",
+              ].compact_blank.join("\n"),
+              {},
+              wrapper_tag: "div",
+            ) %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change", @wizard.resolve_step_path(:course_details) %>
+      <% end %>
+    <% end %>
+
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Registration period") %>
+      <% row.with_cell do %>
+        <% if state_store.registration_period.cohort %>
+          <%= "Existing cohort: #{state_store.registration_period.cohort&.name || 'Not selected'}" %>
+          <br/>
+        <% end %>
+        <%= simple_format(
+          [
+            "Start date: #{state_store.registration_period.starts_at&.to_fs(:govuk_short) || 'Not set'}",
+            "End date: #{state_store.registration_period.ends_at&.to_fs(:govuk_short) || 'Not set'}",
+          ].join("\n"),
+          {},
+          wrapper_tag: "div",
+        ) %>
+
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change", @wizard.resolve_step_path(:registration_period) %>
+      <% end %>
+    <% end %>
+
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Milestones") %>
+      <% row.with_cell do %>
+        <%= state_store.milestone_types.map(&:humanize).to_sentence.presence || "None selected" %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change", @wizard.resolve_step_path(:milestones) %>
+      <% end %>
+    <% end %>
+
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Lead providers") %>
+      <% row.with_cell do %>
+        <% if state_store.selected_lead_providers.any? %>
+          <% state_store.selected_lead_providers.each do |selected_provider| %>
+            <p class="govuk-body">
+              <%= selected_provider.lead_provider.name %><br>
+              URL: <%= selected_provider.url.presence || "Not set" %><br>
+              Email: <%= selected_provider.email.presence || "Not set" %>
+            </p>
+          <% end %>
+        <% else %>
+          None selected
+        <% end %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change", @wizard.resolve_step_path(:lead_providers) %>
+      <% end %>
+    <% end %>
+
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Contract financials") %>
+      <% row.with_cell do %>
+        <% if state_store.selected_contract_financials.any? %>
+          <p class="govuk-body">
+            Academic year: <%= state_store.selected_contract_financials.first.academic_year.presence || "Generic" %>
+          </p>
+          <% state_store.selected_contract_financials.each do |contract_financial| %>
+            <p class="govuk-body">
+              <%= contract_financial.lead_provider.name %><br>
+              Teacher funding: <%= contract_financial.teacher_funding.presence || "Not set" %><br>
+              Recruitment target: <%= contract_financial.recruitment_target.presence || "Not set" %>
+            </p>
+          <% end %>
+        <% else %>
+          None selected
+        <% end %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change", @wizard.resolve_step_path(:contract_financials) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path do |f| %>
+  <%= f.govuk_error_summary %>
+  <%= f.govuk_submit "Create course" %>
+<% end %>
