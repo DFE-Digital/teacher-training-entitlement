@@ -144,7 +144,6 @@ shared:
     - term_identifier
     - cohort_id
     - course_id
-    - schedule_id
     - created_at
     - ecf_id
     - updated_at
