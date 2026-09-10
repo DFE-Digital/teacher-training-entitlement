@@ -24,10 +24,10 @@ module Admin
       return if params[:id].nil?
 
       @application = Application
-                   .includes(:institution, :user,
-                             application_lead_providers: { lead_provider: { course_cohorts: [:schedule] } },
-                             course_cohort: %i[course cohort schedule])
-                   .find(params[:id])
+                       .includes(:institution, :user,
+                                 application_lead_providers: { lead_provider: :course_cohorts },
+                                 course_cohort: %i[course cohort])
+                       .find(params[:id])
     end
 
     def filter_params

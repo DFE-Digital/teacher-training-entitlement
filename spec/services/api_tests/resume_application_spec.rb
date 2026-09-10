@@ -5,16 +5,16 @@ RSpec.describe APITests::ResumeApplication, type: :model do
 
   let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:, schedule:) }
-  let(:schedule) { create(:schedule, training_starts_at: 1.day.ago, training_ends_at: 1.day.from_now) }
+  let(:course_cohort) { create(:course_cohort, lead_provider:) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
 
+  let(:schedule_id) { course_cohort.ecf_id }
   let(:expected_body) do
     {
       data: {
         type: "application",
         attributes: {
-          schedule_id: course_cohort.ecf_id,
+          schedule_id:,
         },
       },
     }.to_json
@@ -88,7 +88,8 @@ RSpec.describe APITests::ResumeApplication, type: :model do
       subject(:service) { described_class.new(application:) }
 
       let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
-      let(:schedule) { create(:schedule, training_starts_at: 3.days.ago, training_ends_at: 1.day.ago) }
+
+      before { course_cohort.course_cohort_providers.delete_all }
 
       it "raises an error" do
         expect { service.call }

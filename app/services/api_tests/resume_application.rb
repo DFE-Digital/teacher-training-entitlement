@@ -52,7 +52,7 @@ module APITests
     end
 
     def training_live_course_cohorts_for(lead_provider:)
-      lead_provider.course_cohorts.select { |cc| cc.schedule&.training_live? }
+      lead_provider.course_cohorts.select(&:training_live?)
     end
   end
 end

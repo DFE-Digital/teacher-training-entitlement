@@ -19,23 +19,6 @@ erDiagram
     text ukprn
     datetime updated_at
   }
-  Schedule {
-    integer id
-    date acceptance_window_end
-    date acceptance_window_start
-    array[enum] allowed_declaration_types
-    integer cohort_id
-    enum course_group
-    datetime created_at
-    uuid ecf_id
-    string identifier
-    string name
-    integer policy_descriptor
-    date training_ends_at
-    date training_starts_at
-    datetime updated_at
-  }
-  Schedule }o--|| Cohort : belongs_to
   PrivateChildcareProvider {
     integer id
     datetime created_at
@@ -92,13 +75,11 @@ erDiagram
     integer course_id
     datetime created_at
     uuid ecf_id
-    integer schedule_id
     enum term_identifier
     datetime updated_at
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to
-  CourseCohort }o--|| Schedule : belongs_to
   Course {
     integer id
     enum course_group
@@ -153,61 +134,6 @@ erDiagram
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| Declaration : belongs_to
-  Declaration }o--|| Statement : belongs_to
-  Declaration }o--|| Milestone : belongs_to
-  Milestone {
-    integer id
-    date acceptance_window_end_date
-    date acceptance_window_start_date
-    integer course_cohort_id
-    datetime created_at
-    enum declaration_type
-    decimal payment_amount
-    datetime updated_at
-  }
-  Milestone }o--|| CourseCohort : belongs_to
-  Statement {
-    integer id
-    integer academic_year
-    datetime created_at
-    date deadline_date
-    uuid ecf_id
-    enum frequency
-    integer lead_provider_id
-    datetime marked_as_paid_at
-    boolean output_fee
-    date payment_date
-    decimal reconcile_amount
-    date start_date
-    enum state
-    datetime updated_at
-  }
-  Statement }o--|| LeadProvider : belongs_to
-  Adjustment {
-    integer id
-    decimal amount
-    datetime created_at
-    string description
-    integer statement_id
-    datetime updated_at
-  }
-  Adjustment }o--|| Statement : belongs_to
-  ContractYear {
-    integer id
-    integer academic_year
-    integer course_id
-    string course_url
-    datetime created_at
-    string email
-    integer lead_provider_id
-    integer recruitment_target
-    string secondary_form_url
-    decimal service_fee
-    decimal teacher_funding
-    datetime updated_at
-  }
-  ContractYear }o--|| LeadProvider : belongs_to
-  ContractYear }o--|| Course : belongs_to
   ApplicationLeadProvider {
     integer id
     integer application_id

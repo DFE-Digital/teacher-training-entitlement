@@ -21,7 +21,7 @@ RSpec.describe Admin::Finance::Statements::AssuranceReportsController, type: :re
     let(:statement)     { create(:statement, lead_provider:) }
     let(:course)        { create(:course) }
     let(:cohort)        { create(:cohort, :current) }
-    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule: create(:schedule, cohort:)) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort:) }
     let(:application)   { create(:application, :accepted, course_cohort:, lead_provider:) }
 
     let :declaration do
