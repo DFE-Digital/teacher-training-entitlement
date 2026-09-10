@@ -5,28 +5,14 @@ RSpec.describe Courses::Create do
     subject(:service) { described_class.new(state_store:) }
 
     context "when creating the course succeeds" do
-      let(:cohort) { create(:cohort, registration_starts_at: Date.new(2026, 9, 1), registration_ends_at: Date.new(2026, 10, 1)) }
       let(:lead_provider) { create(:lead_provider) }
       let(:course_details) do
         Admin::CourseBuilder::StateStore::CourseDetails.new(
           name: "New course",
           identifier: "new-course",
           short_code: "NEWCOUR",
+          course_group: "send",
           description: "New course description",
-        )
-      end
-      let(:registration_period) do
-        Admin::CourseBuilder::StateStore::RegistrationPeriod.new(
-          cohort:,
-          starts_at: cohort.registration_starts_at,
-          length_in_months: nil,
-          ends_at: cohort.registration_ends_at,
-        )
-      end
-      let(:training_period) do
-        Admin::CourseBuilder::StateStore::TrainingPeriod.new(
-          starts_at: Date.new(2026, 10, 2),
-          ends_at: Date.new(2027, 1, 2),
         )
       end
       let(:selected_lead_provider) do
@@ -48,11 +34,38 @@ RSpec.describe Courses::Create do
         instance_double(
           Admin::CourseBuilder::StateStore,
           course_details:,
-          registration_period:,
-          training_period:,
           selected_lead_providers: [selected_lead_provider],
           selected_contract_financials: [selected_contract_financial],
           milestone_types: [Milestone::STARTED],
+        )
+      end
+
+      around do |example|
+        travel_to(Date.new(2028, 4, 15)) { example.run }
+      end
+
+      it "creates the course" do
+        service.call
+
+        expect(service.course).to have_attributes(
+          name: "New course",
+          identifier: "new-course",
+          short_code: "NEWCOUR",
+          course_group: "send",
+          description: "New course description",
+        )
+      end
+
+      it "creates a course cohort using today's date" do
+        service.call
+
+        expect(service.cohort).to have_attributes(
+          registration_starts_at: Time.zone.today,
+          registration_ends_at: Time.zone.today,
+        )
+        expect(service.course_cohort.milestones.first).to have_attributes(
+          acceptance_window_start_date: Time.zone.today,
+          acceptance_window_end_date: nil,
         )
       end
 
@@ -110,6 +123,7 @@ RSpec.describe Courses::Create do
           name: "Existing course",
           identifier: existing_course.identifier,
           short_code: "EXIST",
+          course_group: "reception",
           description: "Existing course description",
         )
       end

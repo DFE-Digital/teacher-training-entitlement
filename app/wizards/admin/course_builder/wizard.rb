@@ -7,7 +7,6 @@ module Admin
 
       STEPS = {
         course_details: Steps::CourseDetails,
-        registration_period: Steps::RegistrationPeriod,
         milestones: Steps::Milestones,
         lead_providers: Steps::LeadProviders,
         contract_financials: Steps::ContractFinancials,
@@ -16,7 +15,6 @@ module Admin
 
       STEP_TITLES = {
         course_details: "Course details",
-        registration_period: "Registration period",
         milestones: "Milestones",
         lead_providers: "Lead providers",
         contract_financials: "Contract financials",
@@ -30,8 +28,7 @@ module Admin
           end
 
           graph.root :course_details
-          graph.add_edge from: :course_details, to: :registration_period
-          graph.add_edge from: :registration_period, to: :milestones
+          graph.add_edge from: :course_details, to: :milestones
           graph.add_edge from: :milestones, to: :lead_providers
           graph.add_edge from: :lead_providers, to: :contract_financials
           graph.add_edge from: :contract_financials, to: :check_answers

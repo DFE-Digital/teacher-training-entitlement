@@ -11,15 +11,27 @@
                              label: { text: "Name", size: "s" } %>
     </div>
     <div class="govuk-grid-column-one-half">
+      <%= f.govuk_select :course_group,
+                         options_for_select(
+                           Course.course_groups.keys.map { |course_group| [course_group.humanize, course_group] },
+                           @wizard.current_step.course_group,
+                         ),
+                         label: { text: "Course group", size: "s" } %>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
       <%= f.govuk_text_field :identifier,
                              label: { text: "Identifier", size: "s" },
                              placeholder: "Optional" %>
     </div>
+    <div class="govuk-grid-column-one-half">
+      <%= f.govuk_text_field :short_code,
+                             label: { text: "Short code", size: "s" },
+                             placeholder: "Optional" %>
+    </div>
   </div>
-
-  <%= f.govuk_text_field :short_code,
-                         label: { text: "Short code", size: "s" },
-                         placeholder: "Optional" %>
 
   <%= f.govuk_text_area :description,
                         label: { text: "Description", size: "s" },

@@ -4,7 +4,12 @@ module Admin
       class Milestones
         include DfE::Wizard::Step
 
-        attribute :milestone_types, default: -> { [] }
+        REQUIRED_MILESTONE_TYPES = [
+          Milestone::STARTED,
+          Milestone::COMPLETED,
+        ].freeze
+
+        attribute :milestone_types, default: -> { REQUIRED_MILESTONE_TYPES }
 
         validates :milestone_types, presence: true
         validate :milestone_types_are_supported
@@ -14,7 +19,11 @@ module Admin
         end
 
         def milestone_types=(value)
-          super(Array(value).reject(&:blank?))
+          super Array(value).reject(&:blank?) | REQUIRED_MILESTONE_TYPES
+        end
+
+        def required_milestone_type?(milestone_type)
+          milestone_type.in?(REQUIRED_MILESTONE_TYPES)
         end
 
       private

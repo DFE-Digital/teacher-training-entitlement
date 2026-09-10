@@ -31,6 +31,7 @@ module Courses
         name: course_details.name,
         identifier: course_details.identifier,
         short_code: course_details.short_code,
+        course_group: course_details.course_group,
         description: course_details.description,
       )
     end
@@ -41,8 +42,8 @@ module Courses
         course:,
         lead_providers: lead_provider_contracts,
         training_dates: {
-          start: state_store.training_period.starts_at,
-          end: state_store.training_period.ends_at,
+          start: Time.zone.today,
+          end: Time.zone.today,
         },
         milestone_types: state_store.milestone_types,
       )
@@ -99,11 +100,8 @@ module Courses
     end
 
     def find_or_create_cohort!
-      @cohort = state_store.registration_period.cohort
-      return if @cohort.present?
-
-      registration_starts_at = state_store.registration_period.starts_at
-      registration_ends_at = state_store.registration_period.ends_at
+      registration_starts_at = Time.zone.today
+      registration_ends_at = Time.zone.today
 
       @cohort = Cohort.find_or_create_by!(identifier: registration_starts_at.strftime("%Y-%B")) do |cohort|
         cohort.registration_starts_at = registration_starts_at
