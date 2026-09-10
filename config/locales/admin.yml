@@ -1,8 +1,8 @@
 ---
 en:
   admin:
-    cohort_courses:
-      new:
+    course_cohort_providers:
+      lead_providers_form:
         recruitment_target: Recruitment target
         teacher_funding: Teacher funding
 

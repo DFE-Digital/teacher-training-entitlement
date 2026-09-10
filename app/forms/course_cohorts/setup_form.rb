@@ -21,7 +21,7 @@ module CourseCohorts
     end
 
     def lead_provider_options
-      @lead_providers = LeadProvider.all
+      @lead_providers = LeadProvider.order(:name)
     end
 
     def selected_lead_providers
