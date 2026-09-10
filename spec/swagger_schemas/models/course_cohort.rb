@@ -1,4 +1,4 @@
-SCHEDULE = {
+COURSE_COHORT = {
   v1: {
     description: "A single schedule",
     type: :object,
@@ -28,11 +28,10 @@ SCHEDULE = {
             description: "The new schedule of the participant",
             nullable: true,
             type: :string,
-            example: Schedule::IDENTIFIERS.first,
-            enum: Schedule::IDENTIFIERS,
+            example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
           },
           cohort: {
-            description: "The starting years of the cohorts the delivery partner is valid for",
+            description: "The requested academic years",
             type: :string,
             example: "2025",
           },

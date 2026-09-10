@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Applications
-  class ChangeSchedule
+  class ChangeCourseCohort
     include ActiveModel::Model
     include ActiveModel::Attributes
 
@@ -41,17 +41,17 @@ module Applications
     def incompatible_course
       return if course_cohort.course == application.course
 
-      add_error(:application, :incompatible_schedule)
+      add_error(:application, :incompatible_course_cohort)
     end
 
     def cohort_in_training
-      return unless course_cohort.schedule.training_started?
+      return unless course_cohort.training_started?
 
       add_error(:base, :cohort_in_training)
     end
 
     def add_error(group, key)
-      message = I18n.t("activemodel.errors.models.applications/change_schedule.attributes.#{group}.#{key}")
+      message = I18n.t("activemodel.errors.models.applications/change_course_cohort.attributes.#{group}.#{key}")
       errors.add(group, message)
     end
   end

@@ -23,7 +23,6 @@ class Cohort < ApplicationRecord
   validate :identifier_is_unique
   validates :funding_cap, inclusion: { in: [true, false] }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
-  validate :changing_funding_cap_with_dependent_applications
 
   scope :order_by_latest, -> { order(registration_starts_at: :desc) }
   scope :order_by_oldest, -> { order(registration_starts_at: :asc) }
@@ -70,11 +69,5 @@ private
     return unless duplicate
 
     errors.add(:identifier, :taken, cohort_start: registration_starts_at.strftime("%b %Y"))
-  end
-
-  def changing_funding_cap_with_dependent_applications
-    return unless funding_cap_changed? && Application.joins(:course_cohort).where(course_cohorts: { cohort: self }).any?
-
-    errors.add(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
   end
 end

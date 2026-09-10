@@ -7,8 +7,8 @@ ENROLMENTS_CSV_RESPONSE = {
         items: { "$ref": "#/components/schemas/EnrolmentCsv" },
       },
     },
-    example: "participant_id,course_identifier,schedule_identifier,cohort,npq_application_id,eligible_for_funding,status,school_urn,funded_place\n
-    52a606ba-4e49-4dab-aa11-42e1e9274884,npq-senior-leadership,npq-ehco-june,2022,8e788f3c-4eac-4bb3-876d-b7b701fcdbd3,true,accepted,945562,true\n
-    e6112b6f-e9c8-40ad-8e5a-3f74dc74d7fd,npq-leading-teaching,npq-leadership-autumn,2022,6feecd44-196a-4203-9fcd-207fb8ddc4eb,true,accepted,102561,true\n",
+    example: "participant_id,course_identifier,schedule_identifier,cohort,application_id,eligible_for_funding,status,institution_urn,funded_place\n
+    52a606ba-4e49-4dab-aa11-42e1e9274884,npd-reception,autumn,2022,8e788f3c-4eac-4bb3-876d-b7b701fcdbd3,true,accepted,945562,true\n
+    e6112b6f-e9c8-40ad-8e5a-3f74dc74d7fd,npd-reception,spring,2022,6feecd44-196a-4203-9fcd-207fb8ddc4eb,true,accepted,102561,true\n",
   },
 }.freeze

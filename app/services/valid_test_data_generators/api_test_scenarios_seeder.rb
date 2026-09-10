@@ -278,9 +278,10 @@ module ValidTestDataGenerators
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       academic_year = registration_starts_at.year
       current_cohort = Cohort.find_by(registration_starts_at:)
-      acceptance_window_start_date = training_starts_now ? 2.days.ago : registration_starts_at + 3.months
+      training_start_date = registration_starts_at + 3.months
+      acceptance_window_start_date = training_starts_now ? 2.days.ago : training_start_date
       acceptance_window_end_date = acceptance_window_start_date + 6.months
-      term_identifier = CourseCohort.school_term(acceptance_window_start_date)
+      term_identifier = CourseCohort.school_term(training_start_date)
       attrs = {
         description: "#{registration_starts_at.strftime('%B')} #{academic_year}",
         registration_starts_at:,

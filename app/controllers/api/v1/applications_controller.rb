@@ -46,7 +46,7 @@ module API
       end
 
       def change_schedule
-        service = Applications::ChangeSchedule.new(application: updateable_application, course_cohort:)
+        service = Applications::ChangeCourseCohort.new(application: updateable_application, course_cohort:)
         call_and_render(service:)
       end
 
@@ -83,7 +83,7 @@ module API
             .includes(
               application: [:user,
                             :institution,
-                            { course_cohort: %i[course cohort schedule] }],
+                            { course_cohort: %i[course cohort] }],
             )
             .where(application: { ecf_id: })
             .order(current: :desc, updated_at: :desc, id: :desc)

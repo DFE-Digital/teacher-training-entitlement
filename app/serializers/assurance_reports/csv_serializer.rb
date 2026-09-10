@@ -31,7 +31,7 @@ class AssuranceReports::CsvSerializer
       "Participant Name",
       "TRN",
       "Course Identifier",
-      "Schedule",
+      "Term",
       "Eligible For Funding",
       "Funded place",
       "Lead Provider Name",

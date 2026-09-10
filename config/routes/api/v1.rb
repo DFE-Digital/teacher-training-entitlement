@@ -29,7 +29,7 @@ namespace :api do
       end
     end
 
-    resources :schedules, only: %i[index]
+    resources :schedules, only: %i[index], controller: :course_cohorts
 
     resources :statements, only: %i[index show], param: :ecf_id
 

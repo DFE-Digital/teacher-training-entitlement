@@ -135,7 +135,7 @@ APPLICATION = {
             description: "Indicates whether or not this participant’s training is being funded by DfE",
             nullable: true,
             type: :boolean,
-            example: nil,
+            example: true,
           },
           created_at: {
             description: "The date the application was created",
@@ -166,24 +166,13 @@ APPLICATION = {
             example: "2021-05-31T02:22:32.000Z",
           },
           schedule_identifier: {
-            description: "The new schedule of the participant",
+            description: "The course cohort identifier for the participant",
             nullable: true,
             type: :string,
-            example: Schedule::IDENTIFIERS.first,
-            enum: Schedule::IDENTIFIERS,
+            example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
           },
         },
       },
     },
   },
-}.tap { |h|
-  h[:v2] = h[:v1].deep_dup
-  h[:v3] = h[:v2].deep_dup
-  h[:v3][:properties][:attributes][:properties][:schedule_identifier] = {
-    description: "The new schedule of the participant",
-    nullable: true,
-    type: :string,
-    example: Schedule::IDENTIFIERS.first,
-    enum: Schedule::IDENTIFIERS,
-  }
 }.freeze

@@ -29,6 +29,12 @@ STATEMENT = {
             nullable: false,
             example: "2022",
           },
+          cohort: {
+            description: "Statement academic year",
+            type: :string,
+            nullable: false,
+            example: "2026",
+          },
           cut_off_date: {
             description: "The milestone cut off or review point for the statement.",
             type: :string,

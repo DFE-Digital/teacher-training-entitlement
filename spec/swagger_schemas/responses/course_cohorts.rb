@@ -1,4 +1,4 @@
-SCHEDULES_RESPONSE = {
+COURSE_COHORTS_RESPONSE = {
   v1: {
     description: "A list of schedules",
     type: :object,

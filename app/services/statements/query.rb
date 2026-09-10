@@ -5,9 +5,10 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, cohort_start_years: :ignore, updated_since: :ignore, state: :ignore, output_fee: true) # rubocop:disable Lint/UnusedMethodArgument
+    def initialize(lead_provider: :ignore, cohort_start_years: :ignore, updated_since: :ignore, state: :ignore, output_fee: true)
       @scope = Statement.distinct.includes(:lead_provider)
 
+      where_cohort_start_year_in(cohort_start_years)
       where_lead_provider_is(lead_provider)
       where_updated_since(updated_since)
       where_state_is(state)
@@ -26,6 +27,12 @@ module Statements
     end
 
   private
+
+    def where_cohort_start_year_in(cohort_start_years)
+      return if ignore?(filter: cohort_start_years)
+
+      scope.merge!(Statement.where(academic_year: extract_conditions(cohort_start_years)))
+    end
 
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
