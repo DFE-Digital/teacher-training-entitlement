@@ -36,6 +36,11 @@ govuk_summary_list do |summary_list|
   end
 
   summary_list.with_row do |row|
+    row.with_key(text: "Group")
+    row.with_value(text: @course.course_group)
+  end
+
+  summary_list.with_row do |row|
     row.with_key(text: "Description")
     row.with_value(text: @course.description)
   end

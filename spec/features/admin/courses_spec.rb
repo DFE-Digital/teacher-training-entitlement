@@ -44,9 +44,11 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_css("h1", text: course.name)
 
       within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Cohort name", course_cohort.cohort.description)
+        expect(summary_list).to have_summary_item("Registration period", course_cohort.cohort.description)
         expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
         expect(summary_list).to have_summary_item("Identifier", course.identifier)
+        expect(summary_list).to have_summary_item("Term", course_cohort.term_identifier)
+        expect(summary_list).to have_summary_item("Group", course.course_group)
         expect(summary_list).to have_summary_item("Description", course.description)
       end
 
