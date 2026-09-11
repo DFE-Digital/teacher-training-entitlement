@@ -110,7 +110,7 @@ govuk_table do |table|
         row.with_cell(text: govuk_link_to(ccp.lead_provider.name, cohort_admin_lead_provider_path(ccp.lead_provider, @cohort)))
         row.with_cell(text: ccp.recruitment_target)
         row.with_cell(text: number_to_currency(ccp.teacher_funding, unit: "£"))
-        row.with_cell(text: pluralize(@delivery_partner_counts.fetch(ccp.lead_provider_id, 0), "delivery partner"))
+        row.with_cell(text: govuk_link_to(@delivery_partner_counts.fetch(ccp.lead_provider_id, 0), cohort_admin_lead_provider_path(ccp.lead_provider, @cohort, anchor: "delivery-partners")))
       end
     end
   end
