@@ -12,11 +12,10 @@ module Admin
         course_cohort: @course_cohort,
         selected_lead_providers: selected_lead_providers,
       )
-
-      if service.valid?
-        service.call
+      service.call
+      if service.errors.blank?
         flash[:success] = "Course providers updated"
-        redirect_to cohort_admin_course_path(service.course, service.cohort)
+        redirect_to cohort_admin_course_path(@course_cohort.course, @course_cohort.cohort)
       else
         @course_cohort = service.course_cohort
         @selected_lead_providers = service.selected_lead_providers
@@ -48,7 +47,7 @@ module Admin
 
     def selected_lead_providers
       selected_providers = course_cohort_params[:lead_providers]
-                             &.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" } || []
+                             &.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" } || {}
 
       selected_providers.to_hash.map do |id, contract|
         [LeadProvider.find(id), contract]
@@ -59,7 +58,7 @@ module Admin
       return if current_admin.super_admin?
 
       flash[:error] = "You must be a super admin to change course cohort providers"
-      redirect_to admin_cohort_course_path(@course_cohort.cohort, @course)
+      redirect_to cohort_admin_course_path(@course, @course_cohort.cohort)
     end
   end
 end

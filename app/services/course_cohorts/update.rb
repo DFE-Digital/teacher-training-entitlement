@@ -6,13 +6,11 @@ module CourseCohorts
 
     validates :course_cohort, presence: true
 
-    attr_reader :course_cohort, :cohort, :course, :selected_lead_providers
+    attr_reader :course_cohort, :selected_lead_providers
 
     def initialize(course_cohort:, selected_lead_providers:)
       @course_cohort = course_cohort
       @selected_lead_providers = selected_lead_providers
-      @course = course_cohort.course
-      @cohort = course_cohort.cohort
     end
 
     def call
@@ -39,6 +37,7 @@ module CourseCohorts
         teacher_funding: contract["teacher_funding"].presence,
         recruitment_target: contract["recruitment_target"].presence,
       )
+
       lead_provider.delivery_partners.each do |delivery_partner|
         @course_cohort.delivery_partnerships.create!(
           lead_provider:,

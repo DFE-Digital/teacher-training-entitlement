@@ -21,14 +21,25 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
     describe "#update" do
       let!(:new_lead_provider) { create(:lead_provider) }
 
-      it "updates the providers for the course cohort" do
+      let(:request) do
         patch admin_course_course_cohort_provider_path(course, course_cohort),
               params: {
-                course_cohort: { lead_provider_ids: [new_lead_provider.id] },
+                course_cohort: {
+                  lead_providers: {
+                    new_lead_provider.id => {
+                      id: new_lead_provider.id,
+                      teacher_funding: 700,
+                      recruitment_target: 150,
+                    },
+                  },
+                },
               }
+      end
 
-        expect(response).to redirect_to(admin_cohort_course_path(course_cohort.cohort, course))
-        expect(course_cohort.lead_providers.reload).to contain_exactly(new_lead_provider)
+      it "updates the providers for the course cohort" do
+        expect { request }.to change(course_cohort.course_cohort_providers, :count).by(1)
+
+        expect(response).to redirect_to(cohort_admin_course_path(course, course_cohort.cohort))
       end
     end
   end
@@ -40,7 +51,7 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
       before { get admin_course_course_cohort_provider_path(course, course_cohort) }
 
       it "redirects to the course page" do
-        expect(response).to redirect_to(admin_cohort_course_path(course_cohort.cohort, course))
+        expect(response).to redirect_to(cohort_admin_course_path(course, course_cohort.cohort))
         expect(flash[:error]).to match(/You must be a super admin to change course cohort providers/i)
       end
     end
