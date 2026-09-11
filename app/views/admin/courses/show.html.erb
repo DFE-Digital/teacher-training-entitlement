@@ -11,13 +11,13 @@
 <%=
 govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
-    row.with_key(text: "Cohort name")
+    row.with_key(text: "Registration period")
     row.with_value(text: @course_cohort.cohort.name)
   end
 
   summary_list.with_row do |row|
-    row.with_key(text: "Cohort registration open")
-    row.with_value(text: @cohort.registration_starts_at.to_date.to_fs(:govuk))
+    row.with_key(text: "Registration opening date")
+    row.with_value(text: @cohort.registration_starts_at.to_fs(:govuk))
   end
 
   summary_list.with_row do |row|
@@ -33,6 +33,11 @@ govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
     row.with_key(text: "Term")
     row.with_value(text: @course_cohort.term_identifier)
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: "Group")
+    row.with_value(text: @course.course_group)
   end
 
   summary_list.with_row do |row|
@@ -100,12 +105,12 @@ govuk_table do |table|
   end
 
   table.with_body do |body|
-    @course_cohort.course_cohort_providers.each do |ccp|
+    @course_cohort_providers.each do |ccp|
       body.with_row do |row|
         row.with_cell(text: govuk_link_to(ccp.lead_provider.name, cohort_admin_lead_provider_path(ccp.lead_provider, @cohort)))
         row.with_cell(text: ccp.recruitment_target)
         row.with_cell(text: number_to_currency(ccp.teacher_funding, unit: "£"))
-        row.with_cell(text: pluralize(@delivery_partner_counts.fetch(ccp.lead_provider_id, 0), "delivery partner"))
+        row.with_cell(text: govuk_link_to(@delivery_partner_counts.fetch(ccp.lead_provider_id, 0), cohort_admin_lead_provider_path(ccp.lead_provider, @cohort, anchor: "delivery-partners")))
       end
     end
   end

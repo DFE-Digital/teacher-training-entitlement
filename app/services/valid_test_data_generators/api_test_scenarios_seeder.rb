@@ -498,12 +498,14 @@ module ValidTestDataGenerators
       if course_cohort.academic_year < Time.zone.now.year
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
+          group: course_cohort.course.course_group,
           start_date: course_cohort
                         .milestones
                         .find_by!(declaration_type: Milestone::STARTED)
                         .acceptance_window_start_date,
         )
         open_statement = create_open_statement(
+          group: course_cohort.course.course_group,
           start_date: course_cohort
                         .milestones
                         .find_by!(declaration_type: Milestone::COMPLETED)
@@ -629,10 +631,11 @@ module ValidTestDataGenerators
       application.change_provider!(to: new_provider)
     end
 
-    def create_open_statement(start_date:)
+    def create_open_statement(group:, start_date:)
       Statement.find_or_create_by!(
         lead_provider: lead_provider,
         start_date:,
+        course_group: group,
         frequency: :monthly,
       ) do |statement|
         statement.state = "open"
