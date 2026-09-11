@@ -1,0 +1,28 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <% Admin::CourseBuilder::Steps::Milestones::REQUIRED_MILESTONE_TYPES.each do |milestone_type| %>
+    <%= hidden_field_tag "#{f.object_name}[milestone_types][]", milestone_type %>
+  <% end %>
+
+  <%= f.govuk_check_boxes_fieldset :milestone_types, legend: { text: "Select milestone types", size: "m" } do %>
+    <% Milestone::DECLARATION_TYPES.each do |declaration_type| %>
+      <div class="<%= "app-required-milestone" if @wizard.current_step.required_milestone_type?(declaration_type) %>">
+        <%= f.govuk_check_box :milestone_types,
+                              declaration_type,
+                              multiple: true,
+                              checked: @wizard.current_step.required_milestone_type?(declaration_type),
+                              disabled: @wizard.current_step.required_milestone_type?(declaration_type),
+                              label: { text: declaration_type.humanize } %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

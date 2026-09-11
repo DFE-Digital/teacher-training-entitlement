@@ -9,12 +9,14 @@ class Milestone < ApplicationRecord
   has_paper_trail
 
   has_many :declarations, dependent: :restrict_with_exception
-  belongs_to :course_cohort
+  belongs_to :course, optional: true
+  belongs_to :course_cohort, optional: true
   has_one :cohort, through: :course_cohort
 
   validates :acceptance_window_start_date, presence: true
   validates :declaration_type, inclusion: DECLARATION_TYPES
-  validates :declaration_type, uniqueness: { scope: :course_cohort_id }, if: :valid_declaration_type?
+  validates :declaration_type, uniqueness: { scope: :course_cohort_id }, if: :valid_declaration_type_with_course_cohort?
+  validate :course_or_course_cohort_present
 
   scope :in_declaration_type_order, -> { order(:declaration_type) }
   scope :started, -> { where(declaration_type: STARTED) }
@@ -34,5 +36,15 @@ private
 
   def valid_declaration_type?
     declaration_type.in?(DECLARATION_TYPES.map(&:to_s))
+  end
+
+  def valid_declaration_type_with_course_cohort?
+    valid_declaration_type? && course_cohort_id.present?
+  end
+
+  def course_or_course_cohort_present
+    return if course.present? || course_cohort.present?
+
+    errors.add(:base, "Choose a course or course cohort")
   end
 end

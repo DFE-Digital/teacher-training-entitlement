@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :course_cohort do
     association :course, factory: :"tte-early-years"
     cohort
-    academic_year { Date.current.year }
+    academic_year { cohort.registration_starts_at.year - (cohort.registration_starts_at.month < 9 ? 1 : 0) }
     term_identifier { :autumn }
     initialize_with do
       CourseCohort.find_or_initialize_by(course:, cohort:)

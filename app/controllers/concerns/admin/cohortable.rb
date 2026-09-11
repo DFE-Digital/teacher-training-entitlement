@@ -5,6 +5,7 @@ module Admin
 
     included do
       before_action :set_registration_periods
+      helper_method :using_default_academic_year?
     end
 
   protected
@@ -20,6 +21,12 @@ module Admin
     # defaults to opting in on :index only, matching prior behaviour.
     def default_academic_year_actions
       %i[index]
+    end
+
+    def using_default_academic_year?
+      params[:cohort_id].blank? &&
+        params[:academic_year].blank? &&
+        default_academic_year_actions.include?(action_name.to_sym)
     end
 
   private

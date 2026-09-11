@@ -52,10 +52,7 @@
   - record_id
   - record_type
   :statements:
-  - cohort_id
-  - month
   - reconcile_amount
-  - year
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -80,20 +77,22 @@
   - course_id
   - course_url
   - created_at
-  - lead_provider_id
   - email
+  - lead_provider_id
   - recruitment_target
   - secondary_form_url
   - service_fee
   - teacher_funding
   - updated_at
-  :declarations:
-  - value
   :closed_registration_users:
   - id
   - created_at
   - email
   - updated_at
+  :milestones:
+  - course_id
+  :declarations:
+  - value
   :application_lead_providers:
   - created_at
   - updated_at

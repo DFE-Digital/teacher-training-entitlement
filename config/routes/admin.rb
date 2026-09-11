@@ -24,6 +24,11 @@ namespace :admin do
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
   resources :glossary, only: %i[index]
+
+  get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
+  get "course-builder/:step", to: "course_builder#show", as: :course_builder
+  post "course-builder/:step", to: "course_builder#create", as: nil
+
   resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
     collection do
       post "create_custom_data"

@@ -149,6 +149,10 @@
   overflow: auto;
 }
 
+.app-required-milestone .govuk-checkboxes__input:disabled + .govuk-checkboxes__label {
+  opacity: 1;
+}
+
 .api-view {
   overflow: auto; // show scrollbar when the content is too wide
 }
