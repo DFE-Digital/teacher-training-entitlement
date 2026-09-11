@@ -52,7 +52,7 @@ private
                    .includes(
                      :declarations,
                      :milestones,
-                     :course_cohorts,
+                     course_cohorts: %i[course milestones],
                    )
                    .find(params[:id])
     @calculator = Statements::Calculate.new(statement: @statement)

@@ -19,7 +19,12 @@ class AssuranceReports::CsvSerializer
     CSV.generate do |csv|
       csv << csv_headers
 
-      @statement.declarations.each do |record|
+      @statement
+        .declarations
+        .includes(
+          application: %i[user course_cohort course institution],
+        )
+        .find_each do |record|
         csv << to_row(record, @statement.ecf_id)
       end
     end
