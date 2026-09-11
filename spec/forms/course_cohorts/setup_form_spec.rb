@@ -9,7 +9,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
       course_id:,
       training_starts_at:,
       training_ends_at:,
-      lead_providers:,
     )
   end
 
@@ -18,10 +17,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
   let(:course_id) { course.id }
   let(:training_starts_at) { { 1 => 2027, 2 => 9, 3 => 1 } }
   let(:training_ends_at) { nil }
-  let(:lead_provider) { create(:lead_provider) }
-  let(:lead_providers) do
-    { lead_provider.id.to_s => { "id" => lead_provider.id.to_s, "contract" => "1000" } }
-  end
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:cohort) }
@@ -65,25 +60,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
       end
     end
 
-    describe "#at_least_one_lead_provider_selected" do
-      context "when no lead providers are selected" do
-        let(:lead_providers) { {} }
-
-        it "adds an error on lead_providers" do
-          form.valid?
-
-          expect(form.errors[:lead_providers]).to include("Select at least one lead provider")
-        end
-      end
-
-      context "when at least one lead provider is selected" do
-        it "does not add an error on lead_providers" do
-          form.valid?
-
-          expect(form.errors[:lead_providers]).to be_empty
-        end
-      end
-    end
   end
 
   describe "#course_options" do
@@ -101,38 +77,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
       expect(names).to include(apple_course.name, zebra_course.name)
       expect(names).not_to include(existing_course.name)
       expect(names).to eq(names.sort)
-    end
-  end
-
-  describe "#lead_provider_options" do
-    it "returns all lead providers" do
-      expect(form.lead_provider_options).to match_array(LeadProvider.all)
-    end
-  end
-
-  describe "#selected_lead_providers" do
-    let(:selected_provider) { create(:lead_provider) }
-    let(:another_provider) { create(:lead_provider) }
-    let(:lead_providers) do
-      {
-        selected_provider.id.to_s => { "id" => selected_provider.id.to_s, "contract" => "1000" },
-        another_provider.id.to_s => { "id" => another_provider.id.to_s, "contract" => "2000" },
-        "0" => { "id" => "0" },
-        "blank" => { "id" => "" },
-      }
-    end
-
-    it "returns a [lead_provider, contract] pair for each selected provider" do
-      expect(form.selected_lead_providers).to contain_exactly(
-        [selected_provider, { "id" => selected_provider.id.to_s, "contract" => "1000" }],
-        [another_provider, { "id" => another_provider.id.to_s, "contract" => "2000" }],
-      )
-    end
-
-    it "ignores unselected and blank entries" do
-      selected_ids = form.selected_lead_providers.map { |provider, _contract| provider.id }
-
-      expect(selected_ids).to contain_exactly(selected_provider.id, another_provider.id)
     end
   end
 

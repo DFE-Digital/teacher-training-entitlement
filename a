@@ -1,0 +1,6 @@
+./spec/features/admin/cohort_courses_spec.rb
+./spec/forms/course_cohorts/setup_form_spec.rb
+./spec/models/cohort_spec.rb
+./spec/services/course_cohorts/query_spec.rb
+./spec/services/courses/create_spec.rb
+'./spec/requests/api/docs/v1/participants_spec.rb

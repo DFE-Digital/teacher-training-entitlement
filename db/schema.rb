@@ -407,13 +407,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_125243) do
   create_table "milestones", force: :cascade do |t|
     t.date "acceptance_window_end_date"
     t.date "acceptance_window_start_date"
-    t.bigint "course_cohort_id", null: false
+    t.bigint "course_cohort_id"
+    t.bigint "course_id"
     t.datetime "created_at", null: false
     t.enum "declaration_type", null: false, enum_type: "declaration_types"
     t.decimal "payment_amount", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "declaration_type"], name: "index_milestones_on_course_cohort_id_and_declaration_type", unique: true
     t.index ["course_cohort_id"], name: "index_milestones_on_course_cohort_id"
+    t.index ["course_id"], name: "index_milestones_on_course_id"
   end
 
   create_table "participant_id_changes", force: :cascade do |t|

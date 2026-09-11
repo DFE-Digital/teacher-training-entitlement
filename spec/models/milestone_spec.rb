@@ -6,10 +6,23 @@ RSpec.describe Milestone, type: :model do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:course_cohort) }
+    it { is_expected.to belong_to(:course).optional }
+    it { is_expected.to belong_to(:course_cohort).optional }
   end
 
   describe "validations" do
+    context "when course and course cohort are missing" do
+      subject(:milestone) { build(:milestone, course: nil, course_cohort: nil) }
+
+      it { is_expected.to have_error(:base, "Choose a course or course cohort") }
+    end
+
+    context "when course cohort is missing and course is present" do
+      subject(:milestone) { build(:milestone, course: create(:course), course_cohort: nil) }
+
+      it { is_expected.to be_valid }
+    end
+
     context "when creating a milestone for an invalid declaration type" do
       subject(:milestone) { build(:milestone, declaration_type: "invalid") }
 

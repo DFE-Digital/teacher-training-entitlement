@@ -49,14 +49,14 @@ govuk_summary_list do |summary_list|
   
   summary_list.with_row do |row|
     row.with_key(text: "Registration ends")
-    row.with_value(text: @cohort.registration_ends_at.to_fs(:govuk_short))
+    row.with_value(text: @cohort.registration_ends_at&.to_fs(:govuk_short))
   end  
 end
 %>
 
 <h2 class="govuk-heading-m">Milestones</h2>
 
-<% if current_admin.super_admin? %>
+<% if current_admin.super_admin? && @course_cohort.milestones.size < Milestone::DECLARATION_TYPES.size %>
   <%= govuk_button_link_to("Add Milestone", new_admin_cohort_course_milestone_path(@cohort, @course)) %>
 <% end %>
 

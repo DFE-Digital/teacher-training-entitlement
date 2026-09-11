@@ -24,7 +24,7 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
 
   before do
     application.course_cohort.update!(
-      schedule: create(:schedule, :tte_reception_autumn, cohort: application.cohort),
+      term_identifier: :autumn,
     )
   end
 

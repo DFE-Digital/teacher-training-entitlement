@@ -32,7 +32,7 @@ private
       render wizard.current_step_name, status: :unprocessable_content
     else
       state_store.clear
-      redirect_to admin_cohort_course_path(service.cohort, service.course)
+      redirect_to admin_course_path(service.course)
     end
   end
 

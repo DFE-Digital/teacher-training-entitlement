@@ -16,7 +16,7 @@ class Admin::CohortCoursesController < AdminController
   end
 
   def new
-    @form = CourseCohorts::SetupForm.new(cohort:)
+    @form = CourseCohorts::SetupForm.new(cohort:, course_id: params[:course_id])
   end
 
   def create
@@ -25,7 +25,6 @@ class Admin::CohortCoursesController < AdminController
       cohort:,
       course: @form.selected_course,
       training_dates: @form.training_dates,
-      lead_providers: @form.selected_lead_providers,
     )
 
     if @form.valid? && service.valid?
@@ -42,12 +41,12 @@ private
 
   def form_params
     params.require(:course_cohorts_setup_form)
-      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, lead_providers: {})
+      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at)
       .merge(cohort:)
   end
 
   def course_cohort
-    @course_cohort ||= cohort.course_cohorts.includes(:course, :lead_providers, :milestones).find_by!(course_id: params[:id]).tap do |course_cohort|
+    @course_cohort ||= cohort.course_cohorts.includes(:course, :milestones, course_cohort_providers: :lead_provider).find_by!(course_id: params[:id]).tap do |course_cohort|
       @course = course_cohort.course
     end
   end

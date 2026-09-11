@@ -10,7 +10,7 @@ module Admin
         attribute :course_group, :string
         attribute :description, :string
 
-        validates :name, presence: true
+        validates :name, :course_group, presence: true
 
         def self.permitted_params
           %i[name identifier short_code course_group description]

@@ -84,6 +84,21 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         expect(response.body).to include(new_admin_cohort_course_milestone_path(cohort, course))
       end
 
+      context "when all milestone declaration types have been added" do
+        before do
+          course_cohort.milestones.destroy_all
+          Milestone::DECLARATION_TYPES.each do |declaration_type|
+            create(:milestone, course_cohort:, declaration_type:)
+          end
+
+          get admin_cohort_course_path(cohort, course)
+        end
+
+        it "does not link to add a milestone" do
+          expect(response.body).not_to include(new_admin_cohort_course_milestone_path(cohort, course))
+        end
+      end
+
       describe "Showing milestones" do
         let!(:milestone) do
           create(:milestone,
@@ -104,10 +119,22 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       before { get new_admin_cohort_course_path(cohort) }
 
       it { is_expected.to have_http_status :success }
+
+      context "when course_id is provided" do
+        before { get new_admin_cohort_course_path(cohort, course_id: course.id) }
+
+        it "preselects the course" do
+          expect(response.body).to include(%(option selected="selected" value="#{course.id}"))
+        end
+      end
     end
 
     describe "#create" do
       let(:request) { post admin_cohort_courses_path(cohort), params: valid_params }
+
+      before do
+        create(:contract_year, :generic, course:, lead_provider:, teacher_funding: 1000, recruitment_target: 50)
+      end
 
       it do
         request
