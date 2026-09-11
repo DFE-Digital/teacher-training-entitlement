@@ -105,7 +105,7 @@ govuk_table do |table|
   end
 
   table.with_body do |body|
-    @course_cohort.course_cohort_providers.each do |ccp|
+    @course_cohort_providers.each do |ccp|
       body.with_row do |row|
         row.with_cell(text: govuk_link_to(ccp.lead_provider.name, cohort_admin_lead_provider_path(ccp.lead_provider, @cohort)))
         row.with_cell(text: ccp.recruitment_target)

@@ -14,6 +14,10 @@ module Admin
     def show
       @course = @course_cohort.course
       @cohort = @course_cohort.cohort
+      @course_cohort_providers = @course_cohort
+                         .course_cohort_providers
+                         .joins(:lead_provider)
+                         .order(lead_provider: { name: :asc })
       @delivery_partner_counts = DeliveryPartnership
       .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
       .group(:lead_provider_id)
