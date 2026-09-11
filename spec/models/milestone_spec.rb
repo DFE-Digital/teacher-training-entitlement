@@ -6,7 +6,7 @@ RSpec.describe Milestone, type: :model do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:course_cohort) }
+    it { is_expected.to belong_to(:course_cohort).required }
   end
 
   describe "validations" do

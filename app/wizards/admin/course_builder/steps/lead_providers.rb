@@ -24,8 +24,18 @@ module Admin
 
         def normalize(value)
           (value || {}).to_h.transform_values do |attributes|
-            attributes.to_h.slice("selected", "url", "email").transform_values { _1.is_a?(String) ? _1.strip : _1 }
+            attributes = attributes.to_h.slice("selected", "url", "email").transform_values { _1.is_a?(String) ? _1.strip : _1 }
+            attributes.merge("url" => normalize_url(attributes["url"]))
           end
+        end
+
+        def normalize_url(url)
+          return url if url.blank?
+          return url if URI.parse(url).scheme.present?
+
+          "http://#{url}"
+        rescue URI::InvalidURIError
+          url
         end
 
         def selected_lead_provider_details_are_valid

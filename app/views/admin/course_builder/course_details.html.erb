@@ -16,6 +16,7 @@
                            Course.course_groups.keys.map { |course_group| [course_group.humanize, course_group] },
                            @wizard.current_step.course_group,
                          ),
+                         options: { include_blank: true },
                          label: { text: "Course group", size: "s" } %>
     </div>
   </div>

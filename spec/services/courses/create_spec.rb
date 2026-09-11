@@ -25,7 +25,7 @@ RSpec.describe Courses::Create do
       let(:selected_contract_financial) do
         Admin::CourseBuilder::StateStore::SelectedContractFinancial.new(
           lead_provider:,
-          academic_year: "2027",
+          academic_year: 2027,
           teacher_funding: "650",
           recruitment_target: "3000",
         )
@@ -35,10 +35,11 @@ RSpec.describe Courses::Create do
           Admin::CourseBuilder::StateStore,
           course_details:,
           selected_lead_providers: [selected_lead_provider],
-          selected_contract_financials: [selected_contract_financial],
-          milestone_types: [Milestone::STARTED],
+          selected_contract_financials: selected_contract_financials,
+          milestone_types: [Milestone::STARTED, Milestone::COMPLETED],
         )
       end
+      let(:selected_contract_financials) { [selected_contract_financial] }
 
       around do |example|
         travel_to(Date.new(2028, 4, 15)) { example.run }
@@ -56,16 +57,14 @@ RSpec.describe Courses::Create do
         )
       end
 
-      it "creates a course cohort using today's date" do
+      it "stores the milestone configuration on the course" do
         service.call
 
-        expect(service.cohort).to have_attributes(
-          registration_starts_at: Time.zone.today,
-          registration_ends_at: Time.zone.today,
-        )
-        expect(service.course_cohort.milestones.first).to have_attributes(
-          acceptance_window_start_date: Time.zone.today,
-          acceptance_window_end_date: nil,
+        expect(service.course.cohort_configuration).to eq(
+          "milestones" => [
+            { "declaration_type" => Milestone::STARTED },
+            { "declaration_type" => Milestone::COMPLETED },
+          ],
         )
       end
 
@@ -103,6 +102,8 @@ RSpec.describe Courses::Create do
           )
         end
 
+        let(:selected_contract_financials) { [selected_contract_financial] }
+
         it "adds the financials to the generic contract year" do
           service.call
 
@@ -113,6 +114,26 @@ RSpec.describe Courses::Create do
             teacher_funding: 650,
             recruitment_target: 3000,
           )
+        end
+      end
+
+      context "when there are multiple specific academic years" do
+        let(:selected_contract_financials) do
+          [
+            selected_contract_financial,
+            Admin::CourseBuilder::StateStore::SelectedContractFinancial.new(
+              lead_provider:,
+              academic_year: 2028,
+              teacher_funding: "700",
+              recruitment_target: "3500",
+            ),
+          ]
+        end
+
+        it "creates a contract year for each academic year" do
+          service.call
+
+          expect(ContractYear.where(course: service.course, lead_provider:).pluck(:academic_year)).to contain_exactly(nil, 2027, 2028)
         end
       end
     end
@@ -127,7 +148,7 @@ RSpec.describe Courses::Create do
           description: "Existing course description",
         )
       end
-      let(:state_store) { instance_double(Admin::CourseBuilder::StateStore, course_details:) }
+      let(:state_store) { instance_double(Admin::CourseBuilder::StateStore, course_details:, milestone_types: []) }
       let!(:existing_course) { create(:course, identifier: "existing-course") }
 
       it "adds the failing model name to validation errors" do

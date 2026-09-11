@@ -435,6 +435,12 @@ en:
           attributes:
             course_cohort_id:
               blank: Choose a cohort
+        admin/course_builder/steps/course_details:
+          attributes:
+            name:
+              blank: Enter a course name
+            course_group:
+              blank: Choose a course group
         admin/adjustments/create_adjustment_form:
           attributes:
             statement:

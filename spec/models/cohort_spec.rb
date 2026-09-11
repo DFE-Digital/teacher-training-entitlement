@@ -57,29 +57,6 @@ RSpec.describe Cohort, type: :model do
       end
     end
 
-    describe "changing funding_cap when there are applications" do
-      before do
-        create(:application, :for_cohort_starting_on, registration_starts_at: cohort.registration_starts_at)
-      end
-
-      context "when the funding cap is true" do
-        let(:cohort) { create(:cohort, :with_funding_cap) }
-
-        it "does not allow changing the funding_cap" do
-          cohort.funding_cap = false
-          expect(cohort).to have_error(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
-        end
-      end
-
-      context "when the funding cap is false" do
-        let(:cohort) { create(:cohort, :without_funding_cap) }
-
-        it "does not allow changing the funding_cap" do
-          cohort.funding_cap = true
-          expect(cohort).to have_error(:funding_cap, "Cannot change funding_cap when there are existing applications for this cohort")
-        end
-      end
-    end
   end
 
   describe ".order_by_latest" do

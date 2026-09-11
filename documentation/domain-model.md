@@ -92,6 +92,7 @@ erDiagram
     integer position
     string short_code
     datetime updated_at
+    jsonb cohort_configuration
   }
   Cohort {
     integer id
