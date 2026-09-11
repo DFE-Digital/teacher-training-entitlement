@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_09_125243) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_11_101200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -230,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_125243) do
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.enum "term_identifier", enum_type: "term_identifiers"
+    t.date "training_starts_at"
     t.datetime "updated_at", null: false
     t.index ["cohort_id"], name: "index_course_cohorts_on_cohort_id"
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
@@ -406,14 +407,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_125243) do
 
   create_table "milestones", force: :cascade do |t|
     t.date "acceptance_window_end_date"
+    t.integer "acceptance_window_end_offset"
     t.date "acceptance_window_start_date"
+    t.integer "acceptance_window_start_offset"
     t.bigint "course_cohort_id", null: false
+    t.bigint "course_id"
     t.datetime "created_at", null: false
     t.enum "declaration_type", null: false, enum_type: "declaration_types"
     t.decimal "payment_amount", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "declaration_type"], name: "index_milestones_on_course_cohort_id_and_declaration_type", unique: true
     t.index ["course_cohort_id"], name: "index_milestones_on_course_cohort_id"
+    t.index ["course_id"], name: "index_milestones_on_course_id"
   end
 
   create_table "participant_id_changes", force: :cascade do |t|
@@ -604,6 +609,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_125243) do
   add_foreign_key "delivery_partnerships", "delivery_partners"
   add_foreign_key "delivery_partnerships", "lead_providers"
   add_foreign_key "milestones", "course_cohorts"
+  add_foreign_key "milestones", "courses"
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"

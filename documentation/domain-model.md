@@ -77,6 +77,7 @@ erDiagram
     uuid ecf_id
     enum term_identifier
     datetime updated_at
+    date training_starts_at
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to
