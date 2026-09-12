@@ -1,0 +1,111 @@
+<% content_for :side_navigation do %>
+  <%= render StatementSubNavComponent.new(statement: @statement, current: "received") %>
+<% end %>
+
+<%= tag.h1("#{@statement.lead_provider.name}, #{statement_name(@statement)}", class: "govuk-heading-l") %>
+
+<div class="admin-search-box">
+  <%= form_with method: :get do |f| %>
+    <%= f.govuk_text_field(
+        :q,
+        value: params[:q],
+        label: { text: "Find a declaration", size: "m" },
+        hint: { text: "Search by contract, application ID or declaration ID", size: "s" },
+      )
+    %>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <%=
+        f.govuk_collection_select(
+          :milestone,
+          Milestone::DECLARATION_TYPES,
+          :to_s,
+          :humanize,
+          options: { selected: params[:milestone], include_blank: "All" },
+          label: { text: "Milestone", size: "s" },
+        )
+        %>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <%=
+        f.govuk_collection_select(
+          :funded,
+          %w[yes no],
+          :to_s,
+          :humanize,
+          options: { selected: params[:funded], include_blank: "All" },
+          label: { text: "Funded", size: "s" },
+        )
+        %>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <%=
+        f.govuk_collection_select(
+          :status,
+          (Declaration.states.values + ClawbackDeclaration.states.values).uniq,
+          :to_s,
+          :humanize,
+          options: { selected: params[:status], include_blank: "All" },
+          label: { text: "Declaration status", size: "s" },
+        )
+        %>
+      </div>
+
+    </div>
+
+    <%= f.govuk_submit "Search" %>
+  <% end %>
+</div>
+
+
+<div class="govuk-grid-row">
+  <%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Contract")
+        row.with_cell(text: "Application")
+        row.with_cell(text: "Milestone")
+        row.with_cell(text: "Funded")
+        row.with_cell(text: "Value")
+        row.with_cell(text: "Status")
+      end
+    end
+
+    table.with_body do |body|
+      @declarations.each do |declaration|
+        body.with_row do |row|
+          row.with_cell do
+            govuk_link_to(
+              [declaration.course_cohort.academic_year, declaration.course_cohort.schedule_identifier].join("-"),
+              cohort_admin_course_path(declaration.course_cohort.course, declaration.course_cohort.cohort),
+            )
+          end
+          row.with_cell do
+            govuk_link_to(
+              declaration.application.user.full_name,
+              admin_application_path(declaration.application)
+            )
+          end
+          row.with_cell(text: declaration.declaration_type)
+          row.with_cell(text: declaration.application.funded_place)
+          row.with_cell(text: declaration.value)
+          row.with_cell do
+            declaration_status_badge(declaration.state)
+          end
+        end
+      end
+    end
+  end
+  %>
+
+  <% if @declarations.none? %>
+    <p class="govuk-body">No declarations match the search and filters.</p>
+  <% end %>
+
+  <%= govuk_pagination(pagy: @pagy) %>
+
+</div>

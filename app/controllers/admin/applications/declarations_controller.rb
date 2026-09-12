@@ -9,6 +9,7 @@ module Admin
                                     :participant_outcomes,
                                     :delivery_partner,
                                     :secondary_delivery_partner,
+                                    :statement,
                                     :versions,
                                     milestone: :course)
                           .order(created_at: :asc, id: :asc)

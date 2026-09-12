@@ -1,3 +1,7 @@
+<% content_for :side_navigation do %>
+  <%= render StatementSubNavComponent.new(statement: @statement, current: "summary") %>
+<% end %>
+
 <%= tag.h1("#{@statement.lead_provider.name}, #{statement_name(@statement)}", class: "govuk-heading-l") %>
 
 <div class="govuk-grid-row">
