@@ -1,8 +1,9 @@
 <% content_for :side_navigation do %>
   <%= render StatementSubNavComponent.new(statement: @statement, current: "received") %>
 <% end %>
+<div class="govuk-grid-row">
+  <%= statement_heading(@statement) %>
 
-<%= tag.h1("#{@statement.lead_provider.name}, #{statement_name(@statement)}", class: "govuk-heading-l") %>
 
 <div class="admin-search-box">
   <%= form_with method: :get do |f| %>
@@ -59,7 +60,7 @@
     <%= f.govuk_submit "Search" %>
   <% end %>
 </div>
-
+</div>
 
 <div class="govuk-grid-row">
   <%=

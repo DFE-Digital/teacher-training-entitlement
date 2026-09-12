@@ -84,3 +84,19 @@ $admin-template-max-width: 1200px;
     border-bottom: 0;
   }
 }
+
+.govuk-header.with-extra-content {
+  .govuk-header__container {
+    display: flex;
+  }
+
+  .govuk-header__container .govuk-header__logo {
+    flex-grow: 1;
+  }
+
+  .govuk-header__container .account-options {
+    align-content: center;
+    font-weight: bold;
+    padding-top: 23px;
+  }
+}
