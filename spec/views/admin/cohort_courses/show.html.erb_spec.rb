@@ -10,19 +10,19 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
   let(:editable_milestone) do
     create(
       :milestone,
-      course_cohort:,
+      course:,
       declaration_type: "started",
-      acceptance_window_start_date: 1.week.ago,
-      acceptance_window_end_date: 1.week.from_now,
+      acceptance_window_start_offset: -7,
+      acceptance_window_end_offset: 7,
     )
   end
   let(:non_editable_milestone) do
     create(
       :milestone,
-      course_cohort:,
+      course:,
       declaration_type: "completed",
-      acceptance_window_start_date: 4.weeks.ago,
-      acceptance_window_end_date: 1.week.ago,
+      acceptance_window_start_offset: -28,
+      acceptance_window_end_offset: -7,
     )
   end
 

@@ -14,10 +14,7 @@ class CourseCohort < ApplicationRecord
   has_many :delivery_partners, through: :delivery_partnerships
 
   has_many :applications
-  has_many :milestones, dependent: :destroy
-
-  has_one :started_milestone, -> { started }, class_name: "Milestone"
-  has_one :completed_milestone, -> { completed }, class_name: "Milestone"
+  has_many :milestones, through: :course
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }
@@ -56,18 +53,40 @@ class CourseCohort < ApplicationRecord
   end
 
   def training_started?
-    return false if started_milestone.nil?
+    return false if started_milestone.nil? || training_starts_at.nil?
 
-    started_milestone.acceptance_window_start_date <= Time.zone.today
+    acceptance_window_start_date_for(started_milestone) <= Time.zone.today
   end
 
   def training_ended?
-    return false if completed_milestone.nil?
+    return false if completed_milestone.nil? || training_starts_at.nil?
 
-    completed_milestone.acceptance_window_end_date <= Time.zone.today
+    acceptance_window_end_date_for(completed_milestone) <= Time.zone.today
+  end
+
+  def acceptance_window_start_date_for(milestone)
+    return if milestone.nil?
+    return if training_starts_at.nil? || milestone.acceptance_window_start_offset.nil?
+
+    training_starts_at + milestone.acceptance_window_start_offset.days
+  end
+
+  def acceptance_window_end_date_for(milestone)
+    return if milestone.nil?
+    return if training_starts_at.nil? || milestone.acceptance_window_end_offset.nil?
+
+    training_starts_at + milestone.acceptance_window_end_offset.days
   end
 
   def taken_declaration_types(except: nil)
     milestones.where.not(id: except&.id).pluck(:declaration_type)
+  end
+
+  def started_milestone
+    milestones.started.first
+  end
+
+  def completed_milestone
+    milestones.completed.first
   end
 end

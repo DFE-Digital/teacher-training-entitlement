@@ -87,14 +87,16 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
     let(:lead_provider) { LeadProvider.first }
     let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
     let(:course_cohort) { create(:course_cohort, cohort:) }
-    let(:milestone) { create(:milestone, course_cohort:) }
+    let(:milestone) { create(:milestone, course: course_cohort.course) }
     let(:bulk_operation) { create(:backfill_declaration_delivery_partners_bulk_operation, admin: create(:admin)) }
     let(:instance) { described_class.new(bulk_operation:) }
-    let(:declaration_1) { create(:declaration, lead_provider:, milestone:, delivery_partner: nil) }
-    let(:declaration_2) { create(:declaration, lead_provider:, milestone:, delivery_partner: nil) }
-    let(:delivery_partner_1) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    let(:delivery_partner_2) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-    let(:delivery_partner_3) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
+    let(:application_1) { create(:application, :accepted, course_cohort:, lead_provider:) }
+    let(:application_2) { create(:application, :accepted, course_cohort:, lead_provider:) }
+    let(:declaration_1) { create(:declaration, application: application_1, lead_provider:, milestone:, delivery_partner: nil) }
+    let(:declaration_2) { create(:declaration, application: application_2, lead_provider:, milestone:, delivery_partner: nil) }
+    let(:delivery_partner_1) { create(:delivery_partner, lead_providers: { course_cohort => lead_provider }) }
+    let(:delivery_partner_2) { create(:delivery_partner, lead_providers: { course_cohort => lead_provider }) }
+    let(:delivery_partner_3) { create(:delivery_partner, lead_providers: { course_cohort => lead_provider }) }
     let(:file) do
       tempfile(
         "#{BulkOperation::BackfillDeclarationDeliveryPartners::FILE_HEADERS.join(",")}\n" \
@@ -125,7 +127,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
     end
 
     context "when updating only the secondary delivery partner" do
-      let(:declaration_1) { create(:declaration, lead_provider:, milestone:, delivery_partner: delivery_partner_1) }
+      let(:declaration_1) { create(:declaration, application: application_1, lead_provider:, milestone:, delivery_partner: delivery_partner_1) }
 
       let(:file) do
         tempfile(
@@ -158,7 +160,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
         )
       end
 
-      let(:declaration_1) { create(:declaration, milestone:, delivery_partner: delivery_partner_3) }
+      let(:declaration_1) { create(:declaration, application: application_1, milestone:, delivery_partner: delivery_partner_3) }
 
       it "does not change the delivery partner" do
         expect { run }.not_to(change { declaration_1.reload.delivery_partner })
@@ -175,7 +177,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
         )
       end
 
-      let(:declaration_1) { create(:declaration, milestone:, delivery_partner: delivery_partner_1, secondary_delivery_partner: delivery_partner_2) }
+      let(:declaration_1) { create(:declaration, application: application_1, milestone:, delivery_partner: delivery_partner_1, secondary_delivery_partner: delivery_partner_2) }
 
       it "does not change the delivery partner" do
         expect { run }.not_to(change { declaration_1.reload.secondary_delivery_partner })
@@ -255,7 +257,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
     end
 
     context "when there is an error updating a declaration" do
-      let(:delivery_partner_for_wrong_lead_provider) { create(:delivery_partner, lead_providers: { cohort => create(:lead_provider) }) }
+      let(:delivery_partner_for_wrong_lead_provider) { create(:delivery_partner, lead_providers: { course_cohort => create(:lead_provider) }) }
 
       let(:file) do
         tempfile(

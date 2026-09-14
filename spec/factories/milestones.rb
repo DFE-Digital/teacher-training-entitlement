@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :milestone do
     declaration_type { :started }
-    acceptance_window_start_date { 1.week.ago.to_date }
-    acceptance_window_end_date { 1.month.from_now.to_date }
-    course_cohort
+    acceptance_window_start_offset { 0 }
+    acceptance_window_end_offset { 30 }
+    course
 
     trait :started do
       declaration_type { Milestone::STARTED }
