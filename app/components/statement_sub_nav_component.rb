@@ -12,8 +12,9 @@ class StatementSubNavComponent < BaseComponent
   def items
     @items ||= {
       "summary" => admin_finance_statement_path(statement),
-      "received" => admin_finance_details_path(statement),
-      "outstanding" => "",
+      "received" => received_admin_finance_statement_path(statement),
+      "expected" => expected_admin_finance_statement_path(statement),
+      "outstanding" => outstanding_admin_finance_statement_path(statement),
     }
   end
 

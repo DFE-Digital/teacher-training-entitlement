@@ -1,0 +1,65 @@
+<% content_for :side_navigation do %>
+  <%= render StatementSubNavComponent.new(statement: @statement, current: "received") %>
+<% end %>
+<div class="govuk-grid-row">
+  <%= statement_heading(@statement) %>
+
+
+<div class="admin-search-box">
+  <%= form_with method: :get do |f| %>
+    <%= f.govuk_text_field(
+        :q,
+        value: params[:q],
+        label: { text: "Filters", size: "m" },
+        hint: { text: "Search by contract, teacher or declaration ID", size: "s" },
+      )
+    %>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <%=
+        f.govuk_collection_select(
+          :milestone,
+          Milestone::DECLARATION_TYPES,
+          :to_s,
+          :humanize,
+          options: { selected: params[:milestone], include_blank: "All" },
+          label: { text: "Milestone", size: "s" },
+        )
+        %>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <%=
+        f.govuk_collection_select(
+          :funded,
+          %w[yes no],
+          :to_s,
+          :humanize,
+          options: { selected: params[:funded], include_blank: "All" },
+          label: { text: "Funded", size: "s" },
+        )
+        %>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <%=
+        f.govuk_collection_select(
+          :status,
+          (Declaration.states.values + ClawbackDeclaration.states.values).uniq,
+          :to_s,
+          :humanize,
+          options: { selected: params[:status], include_blank: "All" },
+          label: { text: "Declaration status", size: "s" },
+        )
+        %>
+      </div>
+
+    </div>
+
+    <%= f.govuk_submit "Search" %>
+  <% end %>
+</div>
+</div>
+
+<%= render "declarations", declarations: @declarations, name: @name %>
