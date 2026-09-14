@@ -632,7 +632,7 @@ module ValidTestDataGenerators
     end
 
     def create_open_statement(group:, start_date:)
-      Statement.find_or_create_by!(
+      statement = Statement.find_or_create_by!(
         lead_provider: lead_provider,
         start_date:,
         course_group: group,
@@ -640,7 +640,11 @@ module ValidTestDataGenerators
       ) do |statement|
         statement.state = "open"
         statement.ecf_id = SecureRandom.uuid
+        # statement.marked_as_paid_at = nil
       end
+
+      statement.update_columns(state: "open", marked_as_paid_at: nil) unless statement.open?
+      statement
     end
   end
 end
