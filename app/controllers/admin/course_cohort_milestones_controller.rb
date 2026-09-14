@@ -5,8 +5,7 @@ class Admin::CourseCohortMilestonesController < AdminController
 
   def new
     @form = build_form(
-      acceptance_window_start_date: @cohort.registration_starts_at,
-      acceptance_window_end_date: @cohort.registration_ends_at,
+      acceptance_window_start_offset: 0,
     )
   end
 

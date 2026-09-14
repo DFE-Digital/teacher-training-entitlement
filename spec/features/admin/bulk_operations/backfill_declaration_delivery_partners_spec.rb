@@ -9,12 +9,13 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
   let(:lead_provider) { LeadProvider.first }
   let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
   let(:course_cohort) { create(:course_cohort, cohort:) }
-  let(:milestone) { create(:milestone, course_cohort:) }
+  let(:milestone) { create(:milestone, course: course_cohort.course) }
   let(:bulk_operation) { create(:backfill_declaration_delivery_partners_bulk_operation, admin: create(:admin)) }
   let(:instance) { described_class.new(bulk_operation:) }
-  let(:declaration) { create(:declaration, lead_provider:, milestone:, delivery_partner: nil) }
-  let(:delivery_partner_1) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-  let(:delivery_partner_2) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
+  let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+  let(:declaration) { create(:declaration, application:, lead_provider:, milestone:, delivery_partner: nil) }
+  let(:delivery_partner_1) { create(:delivery_partner, lead_providers: { course_cohort => lead_provider }) }
+  let(:delivery_partner_2) { create(:delivery_partner, lead_providers: { course_cohort => lead_provider }) }
 
   let(:file) do
     tempfile <<~CSV

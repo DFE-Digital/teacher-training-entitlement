@@ -5,13 +5,13 @@ RSpec.describe Statements::CourseCohortCalculator do
 
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { create(:statement, lead_provider:, start_date: Date.current.beginning_of_month, deadline_date: Date.current) }
-  let(:started_milestone) { create(:milestone, :started, payment_percentage: 0.6) }
   let(:course_cohort) do
-    cc = started_milestone.course_cohort
-    create(:course_cohort_provider, course_cohort: cc, lead_provider:, teacher_funding: 100, recruitment_target: 20)
-    cc
+    create(:course_cohort, training_starts_at: 1.week.ago.to_date).tap do |course_cohort|
+      create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100, recruitment_target: 20)
+    end
   end
-  let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, payment_percentage: 0.4, acceptance_window_start_date: 2.months.from_now) }
+  let(:started_milestone) { create(:milestone, :started, course: course_cohort.course, payment_percentage: 0.6, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
+  let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 60, acceptance_window_end_offset: 90) }
   let(:paid_statement) { create(:statement, :paid, lead_provider:) }
 
   def started_received(application:, statement:, milestone:)
@@ -160,7 +160,7 @@ RSpec.describe Statements::CourseCohortCalculator do
       end
     end
 
-    let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, payment_percentage: 0.4, acceptance_window_start_date: 1.day.ago) }
+    let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
     let(:payable_statement) { create(:statement, :payable, lead_provider:) }
     let(:funded_apps) { create_list(:application, 4, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
     let(:self_funded_apps) { create_list(:application, 2, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
@@ -263,7 +263,7 @@ RSpec.describe Statements::CourseCohortCalculator do
       end
     end
 
-    let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, payment_percentage: 0.4, acceptance_window_start_date: 1.day.ago) }
+    let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
     let(:payable_statement) { create(:statement, :payable, lead_provider:) }
     let(:funded_apps) { create_list(:application, 4, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
     let(:self_funded_apps) { create_list(:application, 2, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
@@ -368,7 +368,7 @@ RSpec.describe Statements::CourseCohortCalculator do
       end
     end
 
-    let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, payment_percentage: 0.4, acceptance_window_start_date: 1.day.ago) }
+    let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
     let(:payable_statement) { create(:statement, :payable, lead_provider:) }
     let(:funded_apps) { create_list(:application, 4, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
     let(:self_funded_apps) { create_list(:application, 2, :accepted, :without_funded_place, course_cohort:, lead_provider:) }

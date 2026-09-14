@@ -8,12 +8,8 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
       {
         declaration_type: "started",
         payment_percentage: "40",
-        "acceptance_window_start_date(1i)": "2026",
-        "acceptance_window_start_date(2i)": "1",
-        "acceptance_window_start_date(3i)": "1",
-        "acceptance_window_end_date(1i)": "2026",
-        "acceptance_window_end_date(2i)": "1",
-        "acceptance_window_end_date(3i)": "31",
+        acceptance_window_start_offset: "0",
+        acceptance_window_end_offset: "30",
         unexpected: "ignored",
       }
     end
@@ -22,8 +18,8 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
       expect(form).to have_attributes(
         declaration_type: "started",
         payment_percentage: BigDecimal("40"),
-        acceptance_window_start_date: Date.new(2026, 1, 1),
-        acceptance_window_end_date: Date.new(2026, 1, 31),
+        acceptance_window_start_offset: 0,
+        acceptance_window_end_offset: 30,
       )
     end
 
@@ -48,8 +44,8 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
         expect(form.attributes.symbolize_keys).to eq(
           declaration_type: nil,
           payment_percentage: nil,
-          acceptance_window_start_date: nil,
-          acceptance_window_end_date: nil,
+          acceptance_window_start_offset: nil,
+          acceptance_window_end_offset: nil,
         )
       end
     end
@@ -65,8 +61,8 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
         :milestone,
         declaration_type: "started",
         payment_percentage: BigDecimal("0.4"),
-        acceptance_window_start_date: Date.new(2026, 1, 1),
-        acceptance_window_end_date: Date.new(2026, 1, 31),
+        acceptance_window_start_offset: 0,
+        acceptance_window_end_offset: 30,
       )
     end
 
@@ -74,8 +70,8 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
       expect(form).to have_attributes(
         declaration_type: "started",
         payment_percentage: BigDecimal("40"),
-        acceptance_window_start_date: Date.new(2026, 1, 1),
-        acceptance_window_end_date: Date.new(2026, 1, 31),
+        acceptance_window_start_offset: 0,
+        acceptance_window_end_offset: 30,
       )
     end
   end

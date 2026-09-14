@@ -68,13 +68,16 @@ end
 
       table.with_body do |body|
         @course_cohort.milestones.each do |milestone|
+          acceptance_window_start_date = @course_cohort.acceptance_window_start_date_for(milestone)
+          acceptance_window_end_date = @course_cohort.acceptance_window_end_date_for(milestone)
+
           body.with_row do |row|
             row.with_cell(text: milestone.declaration_type)
-            row.with_cell(text: milestone.acceptance_window_start_date&.to_fs(:govuk) || "-")
-            row.with_cell(text: milestone.acceptance_window_end_date&.to_fs(:govuk) || "-")
+            row.with_cell(text: acceptance_window_start_date&.to_fs(:govuk) || "-")
+            row.with_cell(text: acceptance_window_end_date&.to_fs(:govuk) || "-")
             row.with_cell(text: milestone.payment_percentage ? number_to_percentage(milestone.payment_percentage * 100, precision: 2, strip_insignificant_zeros: true) : "-")
             row.with_cell do
-              if current_admin.super_admin? && milestone.editable?
+              if current_admin.super_admin? && (acceptance_window_end_date.nil? || acceptance_window_end_date >= Time.zone.today)
                 govuk_button_link_to("Edit", edit_admin_cohort_course_milestone_path(@cohort, @course, milestone), class: "govuk-!-margin-bottom-0")
               end
             end

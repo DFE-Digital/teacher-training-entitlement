@@ -62,7 +62,7 @@ module Declarations
 
       scope.merge!(
         Declaration
-          .joins(milestone: { course_cohort: :cohort })
+          .joins(application: { course_cohort: :cohort })
           .where(cohorts: { start_year: extract_conditions(cohort_start_years) }),
       )
     end
@@ -95,7 +95,7 @@ module Declarations
           :paid_declaration,
           :statement,
           {
-            milestone: { course_cohort: :cohort },
+            milestone: :course,
             application: [
               :user,
               :course,

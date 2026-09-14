@@ -3,14 +3,15 @@ require "rails_helper"
 RSpec.describe APITests::CompletedDeclaration, type: :model do
   subject(:service) { described_class.new(application:, has_passed:, delivery_partner:) }
 
-  let!(:application) { create(:application, :started, lead_provider:) }
+  let!(:application) { create(:application, :started, lead_provider:, course_cohort:) }
+  let(:course_cohort) { create(:course_cohort, training_starts_at: 1.day.ago.to_date) }
   let(:lead_provider) { create(:lead_provider, delivery_partner: default_delivery_partner) }
   let(:default_delivery_partner) { create(:delivery_partner) }
   let(:delivery_partner) { create(:delivery_partner) }
   let(:has_passed) { "true" }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
-  let(:completed_milestone) { create(:milestone, :completed, course_cohort: application.course_cohort) }
-  let(:declaration_date) { completed_milestone.acceptance_window_start_date.in_time_zone("UTC") }
+  let(:completed_milestone) { create(:milestone, :completed, course: application.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 1) }
+  let(:declaration_date) { application.course_cohort.acceptance_window_start_date_for(completed_milestone).in_time_zone("UTC") }
 
   let(:expected_body) do
     {
@@ -100,7 +101,7 @@ RSpec.describe APITests::CompletedDeclaration, type: :model do
     context "when an application is not provided" do
       subject(:service) { described_class.new(has_passed:, delivery_partner:) }
 
-      let!(:application) { create(:application, :started, lead_provider:) }
+      let!(:application) { create(:application, :started, lead_provider:, course_cohort:) }
 
       it "uses the most recent started application" do
         service.call

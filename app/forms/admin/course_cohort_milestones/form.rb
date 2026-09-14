@@ -4,25 +4,19 @@ module Admin
       include ActiveModel::Model
       include ActiveModel::Attributes
 
-      DATE_ATTRIBUTE_KEYS = %i[
-        acceptance_window_start_date
-        acceptance_window_end_date
-      ].freeze
-
       ATTRIBUTE_KEYS = %i[
         declaration_type
+        acceptance_window_start_offset
+        acceptance_window_end_offset
         payment_percentage
-      ].concat(DATE_ATTRIBUTE_KEYS).freeze
+      ].freeze
 
-      FORM_ATTRIBUTE_KEYS = (
-        ATTRIBUTE_KEYS +
-        DATE_ATTRIBUTE_KEYS.flat_map { |attribute| [:"#{attribute}(1i)", :"#{attribute}(2i)", :"#{attribute}(3i)"] }
-      ).freeze
+      FORM_ATTRIBUTE_KEYS = ATTRIBUTE_KEYS.freeze
 
       attribute :declaration_type, :string
+      attribute :acceptance_window_start_offset, :integer
+      attribute :acceptance_window_end_offset, :integer
       attribute :payment_percentage, :decimal
-      attribute :acceptance_window_start_date, :date
-      attribute :acceptance_window_end_date, :date
 
       attr_reader :taken_declaration_types
 
@@ -32,11 +26,7 @@ module Admin
         attributes = attributes.with_indifferent_access
         attributes[:payment_percentage] = payment_percentage_for_form(attributes)
 
-        super(attributes
-              .except(*date_parameter_keys)
-              .merge(date_attributes_from_params(attributes))
-              .slice(*ATTRIBUTE_KEYS)
-              .compact)
+        super(attributes.slice(*ATTRIBUTE_KEYS).compact)
       end
 
       def milestone_attributes

@@ -83,6 +83,12 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect(service.course_cohort).to eq(cohort.course_cohorts.find_by(course:))
       end
 
+      it "sets the training start date" do
+        service.call
+
+        expect(service.course_cohort.training_starts_at).to eq(training_dates[:start])
+      end
+
       context "when training_starts_at falls in autumn" do
         let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
 
@@ -107,7 +113,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect { service.call }.to change(Milestone.started, :count).by(1)
 
         milestone = service.course_cohort.milestones.started.sole
-        expect(milestone.acceptance_window_start_date).to eq(training_dates[:start])
+        expect(milestone.acceptance_window_start_offset).to eq(0)
+        expect(service.course_cohort.acceptance_window_start_date_for(milestone)).to eq(training_dates[:start])
       end
 
       context "when training_ends_at is present" do
@@ -116,8 +123,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
         it "creates a completed milestone" do
           expect { service.call }.to change(Milestone.completed, :count).by(1)
           milestone = service.course_cohort.milestones.completed.sole
-          expect(milestone.acceptance_window_start_date).to be_present
-          expect(milestone.acceptance_window_end_date).to eq(Date.new(2026, 3, 1))
+          expect(service.course_cohort.acceptance_window_start_date_for(milestone)).to eq(Date.new(2026, 1, 1))
+          expect(service.course_cohort.acceptance_window_end_date_for(milestone)).to eq(Date.new(2026, 3, 1))
         end
       end
 
