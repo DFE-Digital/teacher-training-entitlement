@@ -25,12 +25,12 @@
           row.with_cell do
             govuk_link_to(
               declaration.application.user.full_name,
-              admin_application_path(declaration.application)
+              admin_application_declarations_path(declaration.application)
             )
           end
           row.with_cell(text: declaration.declaration_type)
           row.with_cell(text: declaration.application.funded_place)
-          row.with_cell(text: declaration.value)
+          row.with_cell(text: number_to_currency(declaration.value))
           row.with_cell do
             declaration_status_badge(declaration.state)
           end
