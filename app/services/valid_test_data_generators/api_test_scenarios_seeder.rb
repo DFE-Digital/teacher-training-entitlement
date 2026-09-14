@@ -612,18 +612,23 @@ module ValidTestDataGenerators
     def milestone_for(application:, declaration_type:)
       application.course_cohort.milestones.find_or_create_by!(declaration_type:) do |milestone|
         milestone.assign_attributes(acceptance_window_start_offset: 0,
-                                    acceptance_window_end_offset: (application.cohort.registration_ends_at - application.course_cohort.training_starts_at).to_i)
+                                    acceptance_window_end_offset: months_between(application.course_cohort.training_starts_at,
+                                                                                 application.cohort.registration_ends_at))
       end
     end
 
     def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_amount:)
       milestone = course_cohort.milestones.find_or_initialize_by(declaration_type:)
       milestone.update!(
-        acceptance_window_start_offset: (acceptance_window_start_date - course_cohort.training_starts_at).to_i,
-        acceptance_window_end_offset: (acceptance_window_end_date - course_cohort.training_starts_at).to_i,
+        acceptance_window_start_offset: months_between(course_cohort.training_starts_at, acceptance_window_start_date),
+        acceptance_window_end_offset: months_between(course_cohort.training_starts_at, acceptance_window_end_date),
         payment_amount:,
       )
       milestone
+    end
+
+    def months_between(start_date, end_date)
+      (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
     end
 
     def change_provider(application:)
@@ -640,7 +645,6 @@ module ValidTestDataGenerators
       ) do |statement|
         statement.state = "open"
         statement.ecf_id = SecureRandom.uuid
-        # statement.marked_as_paid_at = nil
       end
 
       statement.update_columns(state: "open", marked_as_paid_at: nil) unless statement.open?

@@ -4,7 +4,7 @@ RSpec.describe Applications::Resume, type: :model do
   subject(:service) { described_class.new(application:, course_cohort: target_course_cohort) }
 
   let(:application) { create(:application, :deferred, :with_declaration, course_cohort:) }
-  let(:course_cohort) { create(:course_cohort, course:, cohort:) }
+  let(:course_cohort) { create(:course_cohort, course:, cohort:, training_starts_at: 2.months.ago.to_date) }
   let(:course) { create(:course) }
   let(:cohort) { create(:cohort, :previous) }
 

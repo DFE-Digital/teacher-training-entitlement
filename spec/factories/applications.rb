@@ -164,7 +164,7 @@ FactoryBot.define do
       after(:create) do |application|
         milestone = application.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
           record.acceptance_window_start_offset = 0
-          record.acceptance_window_end_offset = 30
+          record.acceptance_window_end_offset = 1
         end
 
         declaration_date = application.course_cohort.acceptance_window_start_date_for(milestone) ||

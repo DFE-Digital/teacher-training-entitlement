@@ -123,6 +123,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
         it "creates a completed milestone" do
           expect { service.call }.to change(Milestone.completed, :count).by(1)
           milestone = service.course_cohort.milestones.completed.sole
+          expect(milestone.acceptance_window_start_offset).to eq(4)
+          expect(milestone.acceptance_window_end_offset).to eq(6)
           expect(service.course_cohort.acceptance_window_start_date_for(milestone)).to eq(Date.new(2026, 1, 1))
           expect(service.course_cohort.acceptance_window_end_date_for(milestone)).to eq(Date.new(2026, 3, 1))
         end

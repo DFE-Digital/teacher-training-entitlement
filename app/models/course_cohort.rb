@@ -68,14 +68,14 @@ class CourseCohort < ApplicationRecord
     return if milestone.nil?
     return if training_starts_at.nil? || milestone.acceptance_window_start_offset.nil?
 
-    training_starts_at + milestone.acceptance_window_start_offset.days
+    training_starts_at.advance(months: milestone.acceptance_window_start_offset)
   end
 
   def acceptance_window_end_date_for(milestone)
     return if milestone.nil?
     return if training_starts_at.nil? || milestone.acceptance_window_end_offset.nil?
 
-    training_starts_at + milestone.acceptance_window_end_offset.days
+    training_starts_at.advance(months: milestone.acceptance_window_end_offset)
   end
 
   def taken_declaration_types(except: nil)
