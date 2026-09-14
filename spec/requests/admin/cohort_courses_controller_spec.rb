@@ -88,7 +88,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         let!(:milestone) do
           create(:milestone,
                  course_cohort:,
-                 payment_amount: 123.45)
+                 payment_percentage: 123.45)
         end
 
         it "shows milestones for the course cohort" do

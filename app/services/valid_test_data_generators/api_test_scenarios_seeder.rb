@@ -310,7 +310,7 @@ module ValidTestDataGenerators
         declaration_type: Milestone::STARTED,
         acceptance_window_start_date: acceptance_window_start_date,
         acceptance_window_end_date: acceptance_window_start_date + 2.months,
-        payment_amount: 60,
+        payment_percentage: 60,
       )
 
       start_date = if training_starts_now
@@ -323,7 +323,7 @@ module ValidTestDataGenerators
         declaration_type: Milestone::COMPLETED,
         acceptance_window_start_date: start_date,
         acceptance_window_end_date: acceptance_window_end_date + 2.months,
-        payment_amount: 40,
+        payment_percentage: 40,
       )
 
       create_or_update_lead_provider_contract(course_cohort:, lead_provider:)
@@ -411,9 +411,8 @@ module ValidTestDataGenerators
     end
 
     def declaration_value(milestone)
-      # TODO: rename milestone.payment_amount to miletstone.payment_percentage
       contract = lead_provider.contract(course_cohort: milestone.course_cohort)
-      contract.teacher_funding * (milestone.payment_amount / 100)
+      contract.teacher_funding * (milestone.payment_percentage / 100)
     end
 
     def create_started_declaration(application:, statement:, declaration_date: nil)
@@ -616,12 +615,12 @@ module ValidTestDataGenerators
       end
     end
 
-    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_amount:)
+    def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_percentage:)
       milestone = course_cohort.milestones.find_or_initialize_by(declaration_type:)
       milestone.update!(
         acceptance_window_start_date:,
         acceptance_window_end_date:,
-        payment_amount:,
+        payment_percentage:,
       )
       milestone
     end

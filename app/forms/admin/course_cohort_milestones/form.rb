@@ -11,7 +11,7 @@ module Admin
 
       ATTRIBUTE_KEYS = %i[
         declaration_type
-        payment_amount
+        payment_percentage
       ].concat(DATE_ATTRIBUTE_KEYS).freeze
 
       FORM_ATTRIBUTE_KEYS = (
@@ -20,7 +20,7 @@ module Admin
       ).freeze
 
       attribute :declaration_type, :string
-      attribute :payment_amount, :decimal
+      attribute :payment_percentage, :decimal
       attribute :acceptance_window_start_date, :date
       attribute :acceptance_window_end_date, :date
 

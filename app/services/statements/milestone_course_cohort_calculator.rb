@@ -56,9 +56,9 @@ module Statements
     end
 
     def value_for_milestone
-      return if milestone.payment_amount.blank?
+      return if milestone.payment_percentage.blank?
 
-      contract.teacher_funding * (milestone.payment_amount / 100)
+      contract.teacher_funding * (milestone.payment_percentage / 100)
     end
 
     def expected_count

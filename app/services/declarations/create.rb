@@ -112,9 +112,8 @@ module Declarations
       return unless application.funded_place # only funded application have a value
 
       amount = nil
-      # TODO: rename payment_amount to payment_percentage
-      if milestone&.payment_amount
-        percentage = milestone.payment_amount / 100
+      if milestone&.payment_percentage
+        percentage = milestone.payment_percentage / 100
         amount = contract.teacher_funding * percentage
       end
       # for uplift incentives
