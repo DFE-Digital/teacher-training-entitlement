@@ -1,4 +1,6 @@
 class Milestone < ApplicationRecord
+  self.ignored_columns += %w[acceptance_window_start_date acceptance_window_end_date]
+
   DECLARATION_TYPES = [
     STARTED = "started".freeze,
     RETAINED_1 = "retained-1".freeze,
@@ -9,26 +11,33 @@ class Milestone < ApplicationRecord
   has_paper_trail
 
   has_many :declarations, dependent: :restrict_with_exception
-  belongs_to :course_cohort
-  has_one :cohort, through: :course_cohort
+  belongs_to :course, optional: true
+  has_many :course_cohorts, through: :course
+  has_many :cohorts, through: :course_cohorts
 
-  validates :acceptance_window_start_date, presence: true
+  validates :acceptance_window_start_offset, presence: true
+  validates :acceptance_window_start_offset, numericality: { only_integer: true }, allow_nil: true
+  validates :acceptance_window_end_offset, numericality: { only_integer: true }, allow_nil: true
   validates :declaration_type, inclusion: DECLARATION_TYPES
-  validates :declaration_type, uniqueness: { scope: :course_cohort_id }, if: :valid_declaration_type?
+  validates :declaration_type, uniqueness: { scope: :course_id }, if: :valid_declaration_type?
 
-  scope :in_declaration_type_order, -> { order(:declaration_type) }
+  scope :in_declaration_type_order, lambda {
+    order(
+      Arel.sql(
+        DECLARATION_TYPES.each_with_index.map { |declaration_type, index| "WHEN '#{declaration_type}' THEN #{index}" }
+                         .join(" ")
+                         .then { |order_clause| "CASE declaration_type #{order_clause} END" },
+      ),
+    )
+  }
   scope :started, -> { where(declaration_type: STARTED) }
   scope :completed, -> { where(declaration_type: COMPLETED) }
 
-  default_scope { order(:acceptance_window_start_date) }
+  default_scope { order(:acceptance_window_start_offset) }
 
   enum :declaration_type,
        DECLARATION_TYPES.index_with(&:itself),
        suffix: true, validate: true
-
-  def editable?
-    acceptance_window_end_date.nil? || acceptance_window_end_date >= Time.zone.today
-  end
 
 private
 

@@ -11,14 +11,23 @@ RSpec.describe Applications::Resume, type: :model do
   let(:target_course_cohort) do
     create(:course_cohort,
            course: target_course,
-           cohort: target_cohort)
+           cohort: target_cohort,
+           training_starts_at: 1.day.ago.to_date)
   end
 
   let(:target_course) { course }
   let(:target_cohort) { create(:cohort, :current) }
 
   before do
-    create(:milestone, :started, course_cohort: target_course_cohort, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now)
+    target_course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+      milestone.acceptance_window_start_offset = 0
+      milestone.acceptance_window_end_offset = 1
+    end
+
+    target_course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+      milestone.acceptance_window_start_offset = 1
+      milestone.acceptance_window_end_offset = 2
+    end
   end
 
   describe "happy path" do
@@ -47,10 +56,7 @@ RSpec.describe Applications::Resume, type: :model do
     end
 
     context "when course cohort has a cohort not currently in training" do
-      before do
-        target_course_cohort.milestones.destroy_all
-        create(:milestone, :started, course_cohort: target_course_cohort, acceptance_window_start_date: 1.day.from_now, acceptance_window_end_date: 2.days.from_now)
-      end
+      let(:target_course_cohort) { create(:course_cohort, course: target_course, cohort: target_cohort, training_starts_at: 1.day.from_now.to_date) }
 
       it { expect { service.call }.not_to change(application, :status) }
     end

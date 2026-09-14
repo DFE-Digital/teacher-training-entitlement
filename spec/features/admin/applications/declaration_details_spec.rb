@@ -8,9 +8,9 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
   let(:course_cohort) { course_cohort_provider.course_cohort }
   let(:application) { create(:application, lead_provider:, course_cohort:) }
   let(:payable_statement) { create(:statement, :payable, lead_provider:) }
-  let(:started_milestone) { create(:milestone, :started, course_cohort:) }
-  let(:completed_milestone) { create(:milestone, :completed, course_cohort:) }
-  let(:payable_milestone) { create(:milestone, declaration_type: Milestone::RETAINED_1, course_cohort:) }
+  let(:started_milestone) { create(:milestone, :started, course: course_cohort.course) }
+  let(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course) }
+  let(:payable_milestone) { create(:milestone, declaration_type: Milestone::RETAINED_1, course: course_cohort.course) }
 
   context "when not logged in" do
     scenario "viewing declaration details" do
@@ -44,7 +44,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", started_declaration.ecf_id)
           expect(summary_list).to have_summary_item("Declaration date", started_declaration.declaration_date.to_fs(:govuk_short))
-          expect(summary_list).to have_summary_item("Declaration cohort", started_declaration.milestone.cohort.name)
+          expect(summary_list).to have_summary_item("Declaration cohort", started_declaration.cohort.name)
           expect(summary_list).to have_summary_item("Provider", started_declaration.lead_provider.name)
           expect(summary_list).to have_summary_item("Delivery partner", started_declaration.delivery_partner.name)
           expect(summary_list).to have_summary_item("Created at", started_declaration.created_at.to_fs(:govuk_short))
@@ -59,7 +59,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
         within(find(".govuk-summary-list")) do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", "-")
           expect(summary_list).to have_summary_item("Declaration date", completed_declaration.declaration_date.to_fs(:govuk_short))
-          expect(summary_list).to have_summary_item("Declaration cohort", completed_declaration.milestone.cohort.name)
+          expect(summary_list).to have_summary_item("Declaration cohort", completed_declaration.cohort.name)
           expect(summary_list).to have_summary_item("Provider", completed_declaration.lead_provider.name)
           expect(summary_list).to have_summary_item("Delivery partner", completed_declaration.delivery_partner.name)
           expect(summary_list).to have_summary_item("Secondary delivery partner", "")

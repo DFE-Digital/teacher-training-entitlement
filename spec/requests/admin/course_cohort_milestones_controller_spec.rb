@@ -8,17 +8,13 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
   let(:cohort) { create(:cohort, registration_starts_at: Date.new(2026, 4, 1), registration_ends_at: Date.new(2026, 6, 30)) }
   let(:course_cohort) { create(:course_cohort, cohort:) }
   let(:course) { course_cohort.course }
-  let(:milestone) { create(:milestone, course_cohort:, declaration_type: "started") }
+  let(:milestone) { create(:milestone, course:, declaration_type: "started") }
   let(:valid_create_params) do
     {
       form: {
         declaration_type: "started",
-        "acceptance_window_start_date(1i)": "2026",
-        "acceptance_window_start_date(2i)": "1",
-        "acceptance_window_start_date(3i)": "1",
-        "acceptance_window_end_date(1i)": "2026",
-        "acceptance_window_end_date(2i)": "1",
-        "acceptance_window_end_date(3i)": "31",
+        acceptance_window_start_offset: "0",
+        acceptance_window_end_offset: "30",
         payment_amount: "123.45",
       },
     }
@@ -37,19 +33,14 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
 
       it { is_expected.to have_http_status :success }
 
-      it "pre-fills acceptance window dates from the cohort registration dates" do
+      it "pre-fills the acceptance window start offset" do
         html = Nokogiri::HTML(response.body)
 
-        expect(html.at_css('input[name="form[acceptance_window_start_date(3i)]"]')["value"]).to eq("1")
-        expect(html.at_css('input[name="form[acceptance_window_start_date(2i)]"]')["value"]).to eq("4")
-        expect(html.at_css('input[name="form[acceptance_window_start_date(1i)]"]')["value"]).to eq("2026")
-        expect(html.at_css('input[name="form[acceptance_window_end_date(3i)]"]')["value"]).to eq("30")
-        expect(html.at_css('input[name="form[acceptance_window_end_date(2i)]"]')["value"]).to eq("6")
-        expect(html.at_css('input[name="form[acceptance_window_end_date(1i)]"]')["value"]).to eq("2026")
+        expect(html.at_css('input[name="form[acceptance_window_start_offset]"]')["value"]).to eq("0")
       end
 
       it "disables declaration types already used by another milestone on the course cohort" do
-        create(:milestone, course_cohort:, declaration_type: "started")
+        create(:milestone, course:, declaration_type: "started")
 
         get new_admin_cohort_course_milestone_path(cohort, course)
 
@@ -70,10 +61,10 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
 
         expect(response).to redirect_to admin_cohort_course_path(cohort, course)
         expect(Milestone.last).to have_attributes(
-          course_cohort:,
+          course:,
           declaration_type: "started",
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
+          acceptance_window_start_offset: 0,
+          acceptance_window_end_offset: 30,
           payment_amount: BigDecimal("123.45"),
         )
       end
@@ -95,7 +86,7 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
       it { is_expected.to have_http_status :success }
 
       it "does not disable the milestone's current declaration type" do
-        create(:milestone, course_cohort:, declaration_type: "completed")
+        create(:milestone, course:, declaration_type: "completed")
 
         get edit_admin_cohort_course_milestone_path(cohort, course, milestone)
 
@@ -117,8 +108,8 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
         expect(response).to redirect_to admin_cohort_course_path(cohort, course)
         expect(milestone.reload).to have_attributes(
           declaration_type: "completed",
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
+          acceptance_window_start_offset: 0,
+          acceptance_window_end_offset: 30,
           payment_amount: BigDecimal("123.45"),
         )
       end

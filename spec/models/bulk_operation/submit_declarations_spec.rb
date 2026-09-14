@@ -6,7 +6,8 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:contract) { create(:course_cohort_provider) }
   let(:course_cohort) { contract.course_cohort }
   let(:lead_provider) { contract.lead_provider }
-  let(:milestone) { create(:milestone, :started, course_cohort:) }
+  let(:milestone) { create(:milestone, :started, course: course_cohort.course) }
+  let(:declaration_date) { course_cohort.acceptance_window_start_date_for(milestone) + 1.day }
   let(:delivery_partner) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
   end
@@ -16,7 +17,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
       application.lead_provider.name,
       application.ecf_id,
       milestone.declaration_type,
-      (milestone.acceptance_window_start_date + 1.day).rfc3339,
+      declaration_date.rfc3339,
       delivery_partner.ecf_id,
     ].join(",")
   end
@@ -61,7 +62,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
         application2.lead_provider.name,
         application2.ecf_id,
         milestone.declaration_type,
-        (milestone.acceptance_window_start_date + 1.day).rfc3339,
+        declaration_date.rfc3339,
         delivery_partner.ecf_id,
       ].join(",")
     end
@@ -97,7 +98,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
           application2.lead_provider.name,
           "error",
           milestone.declaration_type,
-          (milestone.acceptance_window_start_date + 1.day).rfc3339,
+          declaration_date.rfc3339,
           delivery_partner.ecf_id,
         ].join(",")
       end
@@ -116,7 +117,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
           "not a lead provider name",
           application.ecf_id,
           "other",
-          milestone.acceptance_window_start_date + 1.day,
+          declaration_date,
           delivery_partner.ecf_id,
         ].join(",")
       end
@@ -130,7 +131,7 @@ RSpec.describe BulkOperation::SubmitDeclarations do
           application.lead_provider.name,
           application.ecf_id,
           "other",
-          milestone.acceptance_window_start_date + 1.day,
+          declaration_date,
           delivery_partner.id,
         ].join(",")
       end

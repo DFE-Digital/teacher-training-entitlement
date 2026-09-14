@@ -278,9 +278,9 @@ module ValidTestDataGenerators
     def course_cohort_setup(registration_starts_at:, training_starts_now: false)
       academic_year = registration_starts_at.year
       current_cohort = Cohort.find_by(registration_starts_at:)
-      training_start_date = registration_starts_at + 3.months
-      acceptance_window_start_date = training_starts_now ? 2.days.ago : training_start_date
-      acceptance_window_end_date = acceptance_window_start_date + 6.months
+      training_start_date = (registration_starts_at + 3.months).to_date
+      acceptance_window_start_date = (training_starts_now ? 2.days.ago : training_start_date).to_date
+      acceptance_window_end_date = (acceptance_window_start_date + 6.months).to_date
       term_identifier = CourseCohort.school_term(training_start_date)
       attrs = {
         description: "#{registration_starts_at.strftime('%B')} #{academic_year}",
@@ -295,13 +295,14 @@ module ValidTestDataGenerators
 
       course_cohort = CourseCohort.find_by(course:, cohort: current_cohort)
       if course_cohort
-        course_cohort.update!(academic_year:, term_identifier:)
+        course_cohort.update!(academic_year:, term_identifier:, training_starts_at: acceptance_window_start_date)
       else
         course_cohort = CourseCohort.create!(
           cohort: current_cohort,
           course:,
           academic_year:,
           term_identifier:,
+          training_starts_at: acceptance_window_start_date,
         )
       end
 
@@ -410,16 +411,16 @@ module ValidTestDataGenerators
       application.application_events.create!(event:, lead_provider: application.lead_provider)
     end
 
-    def declaration_value(milestone)
+    def declaration_value(milestone, course_cohort:)
       # TODO: rename milestone.payment_amount to miletstone.payment_percentage
-      contract = lead_provider.contract(course_cohort: milestone.course_cohort)
+      contract = lead_provider.contract(course_cohort:)
       contract.teacher_funding * (milestone.payment_amount / 100)
     end
 
     def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
-      date = declaration_date || milestone.acceptance_window_start_date + 1.day
-      value = application.funded_place ? declaration_value(milestone) : nil
+      date = declaration_date || application.course_cohort.acceptance_window_start_date_for(milestone) + 1.day
+      value = application.funded_place ? declaration_value(milestone, course_cohort: application.course_cohort) : nil
       declaration = application.declarations.new(
         declaration_type: :started,
         declaration_date: date,
@@ -436,8 +437,8 @@ module ValidTestDataGenerators
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
-      date = declaration_date || milestone.acceptance_window_start_date + 1.day
-      value = application.funded_place ? declaration_value(milestone) : nil
+      date = declaration_date || application.course_cohort.acceptance_window_start_date_for(milestone) + 1.day
+      value = application.funded_place ? declaration_value(milestone, course_cohort: application.course_cohort) : nil
       declaration = application.declarations.build(
         declaration_type: :completed,
         declaration_date: date,
@@ -499,17 +500,16 @@ module ValidTestDataGenerators
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
           group: course_cohort.course.course_group,
-          start_date: course_cohort
-                        .milestones
-                        .find_by!(declaration_type: Milestone::STARTED)
-                        .acceptance_window_start_date,
+          start_date: course_cohort.acceptance_window_start_date_for(
+            course_cohort.milestones.find_by!(declaration_type: Milestone::STARTED),
+          ),
         )
+
         open_statement = create_open_statement(
           group: course_cohort.course.course_group,
-          start_date: course_cohort
-                        .milestones
-                        .find_by!(declaration_type: Milestone::COMPLETED)
-                        .acceptance_window_start_date,
+          start_date: course_cohort.acceptance_window_start_date_for(
+            course_cohort.milestones.find_by!(declaration_type: Milestone::COMPLETED),
+          ),
         )
 
         # started
@@ -611,16 +611,16 @@ module ValidTestDataGenerators
 
     def milestone_for(application:, declaration_type:)
       application.course_cohort.milestones.find_or_create_by!(declaration_type:) do |milestone|
-        milestone.assign_attributes(acceptance_window_start_date: application.cohort.registration_starts_at,
-                                    acceptance_window_end_date: application.cohort.registration_ends_at)
+        milestone.assign_attributes(acceptance_window_start_offset: 0,
+                                    acceptance_window_end_offset: (application.cohort.registration_ends_at - application.course_cohort.training_starts_at).to_i)
       end
     end
 
     def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_amount:)
       milestone = course_cohort.milestones.find_or_initialize_by(declaration_type:)
       milestone.update!(
-        acceptance_window_start_date:,
-        acceptance_window_end_date:,
+        acceptance_window_start_offset: (acceptance_window_start_date - course_cohort.training_starts_at).to_i,
+        acceptance_window_end_offset: (acceptance_window_end_date - course_cohort.training_starts_at).to_i,
         payment_amount:,
       )
       milestone

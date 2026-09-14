@@ -10,11 +10,11 @@ RSpec.describe Statements::Calculate do
     subject(:course_cohorts) { described_class.new(statement:).course_cohorts }
 
     let(:application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-    let(:milestone) { create(:milestone, :started, payment_amount: 60) }
+    let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_amount: 60) }
     let!(:course_cohort) do
-      cc = milestone.course_cohort
-      create(:course_cohort_provider, course_cohort: cc, lead_provider:, teacher_funding: 100, recruitment_target: 20)
-      cc
+      create(:course_cohort).tap do |course_cohort|
+        create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100, recruitment_target: 20)
+      end
     end
 
     before do

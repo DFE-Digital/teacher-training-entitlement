@@ -16,13 +16,17 @@ RSpec.describe Declarations::Create, type: :model do
     }
   end
   let(:course_cohort_provider) { create(:course_cohort_provider) }
-  let(:course_cohort) { course_cohort_provider.course_cohort }
+  let(:course_cohort) do
+    course_cohort_provider.course_cohort.tap do |course_cohort|
+      course_cohort.update!(training_starts_at: 2.days.ago.to_date)
+    end
+  end
   let(:lead_provider) { course_cohort_provider.lead_provider }
   let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-  let(:declaration_date) { started_milestone.acceptance_window_start_date + 1.hour }
+  let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) + 1.hour }
 
-  let!(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 2.days.ago) }
-  let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, acceptance_window_start_date: 1.day.ago) }
+  let!(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 1) }
+  let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
   let(:has_passed) { true }
   let(:delivery_partner_id) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
@@ -143,7 +147,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when declaration_date is before milestone acceptance_window_start_date" do
-        let(:declaration_date) { started_milestone.acceptance_window_start_date - 1.hour }
+        let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) - 1.hour }
 
         it { is_expected.to validate_param(:declaration_date).with_message("Enter a '#/declaration_date' that's on or after the schedule start.") }
       end
@@ -164,7 +168,7 @@ RSpec.describe Declarations::Create, type: :model do
 
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
-    let(:declaration_date) { completed_milestone.acceptance_window_start_date + 1.hour }
+    let(:declaration_date) { course_cohort.acceptance_window_start_date_for(completed_milestone) + 1.hour }
     let!(:application) do
       create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
     end
@@ -198,9 +202,9 @@ RSpec.describe Declarations::Create, type: :model do
 
       context "when the application has resumed in a different cohort" do
         let(:resume_cohort) { create(:cohort, :next) }
-        let(:course_cohort) { create(:course_cohort, cohort: resume_cohort) }
+        let(:course_cohort) { create(:course_cohort, cohort: resume_cohort, training_starts_at: 2.days.ago.to_date) }
         let(:started_declaration) { application.declarations.started_declaration_type.first }
-        let!(:completed_milestone) { create(:milestone, :completed, course_cohort: started_milestone.course_cohort) }
+        let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
         let(:delivery_partner_id) do
           create(:delivery_partner,
                  lead_providers: {
@@ -323,10 +327,10 @@ RSpec.describe Declarations::Create, type: :model do
 
     context "when declaration_type is out of order" do
       let(:declaration_type) { "retained-1" }
-      let(:declaration_date) { retained_milestone.acceptance_window_start_date + 1.hour }
+      let(:declaration_date) { course_cohort.acceptance_window_start_date_for(retained_milestone) + 1.hour }
       let!(:retained_milestone) do
-        create(:milestone, declaration_type: "retained-1", course_cohort:,
-                           acceptance_window_start_date: started_milestone.acceptance_window_start_date + 1.day)
+        create(:milestone, declaration_type: "retained-1", course: course_cohort.course,
+                           acceptance_window_start_offset: started_milestone.acceptance_window_start_offset + 1)
       end
 
       context "when previous milestone has no declaration" do

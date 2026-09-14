@@ -247,8 +247,15 @@ module Declarations
 
       return unless milestone
 
+      milestone_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+      return unless milestone_start_date
+
       previous_milestones = course_cohort.milestones
-        .where("acceptance_window_start_date < ?", milestone.acceptance_window_start_date)
+        .select do |previous_milestone|
+          previous_milestone_start_date = course_cohort.acceptance_window_start_date_for(previous_milestone)
+
+          previous_milestone_start_date && previous_milestone_start_date < milestone_start_date
+        end
 
       return if previous_milestones.none?
 

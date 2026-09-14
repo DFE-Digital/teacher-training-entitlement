@@ -32,7 +32,7 @@ module APITests
 
     def declaration_date
       milestone = application.milestones.find_by(declaration_type: :started)
-      milestone.acceptance_window_start_date.in_time_zone("UTC").iso8601
+      application.course_cohort.acceptance_window_start_date_for(milestone).in_time_zone("UTC").iso8601
     end
 
     def delivery_partner_id
