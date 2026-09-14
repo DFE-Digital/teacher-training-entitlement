@@ -4,7 +4,7 @@ require "swagger_helper"
 RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
   let(:course) { create(:course, :npd_eirt) }
-  let(:course_cohort) { create(:course_cohort, course:, training_starts_at: 1.day.ago.to_date) }
+  let(:course_cohort) { create(:course_cohort, course:, training_starts_at: 2.months.ago.to_date) }
   let!(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2) }
   let(:application) { create(:application, lead_provider:, course_cohort:) }
 

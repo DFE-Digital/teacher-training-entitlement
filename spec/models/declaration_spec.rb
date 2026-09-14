@@ -222,8 +222,8 @@ RSpec.describe Declaration, type: :model do
     context "when declaration_date is before the acceptance window start" do
       context "when declaration is being created" do
         before do
-          subject.application.course_cohort.update!(training_starts_at: 2.weeks.ago.to_date)
-          subject.milestone.update!(acceptance_window_start_offset: 7, acceptance_window_end_offset: 21)
+          subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+          subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
           subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) - 1.week
         end
 
@@ -247,8 +247,8 @@ RSpec.describe Declaration, type: :model do
 
         context "when declaration_date is going to be changed" do
           it "is not valid" do
-            subject.application.course_cohort.update!(training_starts_at: 2.weeks.ago.to_date)
-            subject.milestone.update!(acceptance_window_start_offset: 7, acceptance_window_end_offset: 21)
+            subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+            subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
             subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) - 1.week
 
             expect(subject).not_to be_valid
@@ -259,8 +259,8 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is at the acceptance window start" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 2.weeks.ago.to_date)
-        subject.milestone.update!(acceptance_window_start_offset: 7, acceptance_window_end_offset: 21)
+        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
         subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone)
       end
 
@@ -269,8 +269,8 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is after the acceptance window end" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 1.month.ago.to_date)
-        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 7)
+        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
         subject.declaration_date = subject.application.course_cohort.acceptance_window_end_date_for(subject.milestone) + 1.day
       end
 
@@ -282,8 +282,8 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is at the acceptance window end" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 1.month.ago.to_date)
-        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 7)
+        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
         subject.declaration_date = subject.application.course_cohort.acceptance_window_end_date_for(subject.milestone)
       end
 

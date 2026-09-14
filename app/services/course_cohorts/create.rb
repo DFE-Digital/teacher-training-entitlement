@@ -38,8 +38,8 @@ module CourseCohorts
 
         if training_ends_at
           course.milestones.completed.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
-            milestone.acceptance_window_start_offset = (training_ends_at - 2.months - training_starts_at).to_i
-            milestone.acceptance_window_end_offset = (training_ends_at - training_starts_at).to_i
+            milestone.acceptance_window_start_offset = months_between(training_starts_at, training_ends_at - 2.months)
+            milestone.acceptance_window_end_offset = months_between(training_starts_at, training_ends_at)
           end
         end
 
@@ -58,6 +58,12 @@ module CourseCohorts
           end
         end
       end
+    end
+
+  private
+
+    def months_between(start_date, end_date)
+      (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
     end
   end
 end
