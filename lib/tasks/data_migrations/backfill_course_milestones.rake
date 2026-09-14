@@ -8,6 +8,11 @@ namespace :data_migrations do
     removed_legacy_milestones = 0
     skipped_milestones = 0
     course_milestone_keys = Milestone.unscoped.where.not(course_id: nil).pluck(:course_id, :declaration_type).to_set
+    month_offset_between = lambda do |from_date, to_date|
+      next if to_date.blank?
+
+      (to_date.year * 12 + to_date.month) - (from_date.year * 12 + from_date.month)
+    end
 
     CourseCohort.includes(:course).find_each do |course_cohort|
       legacy_milestones = Milestone.unscoped.where(course_cohort_id: course_cohort.id).to_a
@@ -30,8 +35,8 @@ namespace :data_migrations do
       end
 
       legacy_milestones.each do |legacy_milestone|
-        start_offset = month_offset_between(training_starts_at, legacy_milestone.acceptance_window_start_date)
-        end_offset = month_offset_between(training_starts_at, legacy_milestone.acceptance_window_end_date)
+        start_offset = month_offset_between.call(training_starts_at, legacy_milestone.acceptance_window_start_date)
+        end_offset = month_offset_between.call(training_starts_at, legacy_milestone.acceptance_window_end_date)
 
         course_milestone_key = [course_cohort.course_id, legacy_milestone.declaration_type]
         course_milestone = Milestone.unscoped.find_by(course_id: course_cohort.course_id, declaration_type: legacy_milestone.declaration_type) if course_milestone_keys.include?(course_milestone_key)
@@ -86,11 +91,5 @@ namespace :data_migrations do
     puts "Rewired declarations: #{rewired_declarations}"
     puts "Removed duplicate legacy milestones: #{removed_legacy_milestones}"
     puts "Skipped milestones: #{skipped_milestones}"
-  end
-
-  def month_offset_between(from_date, to_date)
-    return if to_date.blank?
-
-    (to_date.year * 12 + to_date.month) - (from_date.year * 12 + from_date.month)
   end
 end
