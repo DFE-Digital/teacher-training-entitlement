@@ -15,7 +15,7 @@
       end
 
       table.with_body do |body|
-        calculator.funded_scopes.each do |item|
+        calculator.summary_funded.each do |item|
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(numeric: true) do
@@ -38,7 +38,7 @@
       end
 
       table.with_body do |body|
-        calculator.self_funded_scopes.each do |item|
+        calculator.summary_self_funded.each do |item|
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(numeric: true) do

@@ -7,9 +7,43 @@ module Statements
     end
 
     def course_cohorts
-      @course_cohorts ||= statement.course_cohorts.map do |course_cohort|
+      @course_cohorts ||= statement.course_cohorts.includes(:course, :milestones).map do |course_cohort|
         CourseCohortCalculator.new(statement: @statement, course_cohort:)
       end
+    end
+
+    def expected
+      grouping = {}
+
+      course_cohorts.each do |ccc|
+        ccc.funded_scopes.each do |milestone_scope|
+          declaration_type = milestone_scope[:declaration_type]
+          if grouping[declaration_type].nil?
+            grouping[declaration_type] = milestone_scope[:expected].includes(course_cohort: :cohort).to_a
+          else
+            grouping[declaration_type] = grouping[declaration_type] + milestone_scope[:expected].includes(course_cohort: :cohort).to_a
+          end
+        end
+      end
+
+      grouping
+    end
+
+    def outstanding
+      grouping = {}
+
+      course_cohorts.each do |ccc|
+        ccc.funded_scopes.each do |milestone_scope|
+          declaration_type = milestone_scope[:declaration_type]
+          if grouping[declaration_type].nil?
+            grouping[declaration_type] = milestone_scope[:outstanding].includes(course_cohort: :cohort).to_a
+          else
+            grouping[declaration_type] = grouping[declaration_type] + milestone_scope[:outstanding].includes(course_cohort: :cohort).to_a
+          end
+        end
+      end
+
+      grouping
     end
 
     def summary_rows
@@ -18,9 +52,9 @@ module Statements
       @summary_rows = declaration_types.map do |declaration_type|
         {
           declaration_type:,
-          expected: course_cohorts.sum { |ccc| ccc.get_funded(:expected, declaration_type:) },
-          received: course_cohorts.sum { |ccc| ccc.get_funded(:received, declaration_type:) },
-          outstanding: course_cohorts.sum { |ccc| ccc.get_funded(:outstanding, declaration_type:) },
+          expected: course_cohorts.sum { |ccc| ccc.get_funded_scope(:expected, declaration_type:).size },
+          received: course_cohorts.sum { |ccc| ccc.get_funded_scope(:received, declaration_type:).size },
+          outstanding: course_cohorts.sum { |ccc| ccc.get_funded_scope(:outstanding, declaration_type:).size },
         }
       end
 
@@ -35,7 +69,7 @@ module Statements
 
     def expected_output_payment
       @expected_output_payment ||= course_cohorts.sum do |ccc|
-        ccc.funded.sum { |row| row[:expected_value] || 0 }
+        ccc.funded_scopes.sum { |row| row[:expected_value] || 0 }
       end
     end
 
@@ -60,7 +94,7 @@ module Statements
     end
 
     def declaration_types
-      course_cohorts.flat_map { |ccc| ccc.funded.map { |row| row[:declaration_type] } }.uniq
+      course_cohorts.flat_map { |ccc| ccc.funded_scopes.map { |row| row[:declaration_type] } }.uniq
     end
 
   private

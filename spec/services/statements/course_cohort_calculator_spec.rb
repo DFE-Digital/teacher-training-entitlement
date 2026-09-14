@@ -43,6 +43,53 @@ RSpec.describe Statements::CourseCohortCalculator do
     declaration.clawback!
   end
 
+  RSpec::Matchers.define :match_statement_row do |expected|
+    match do |actual|
+      @mismatches = {}
+      @milestone = "milestone: #{expected[:declaration_type]}"
+      expected.each do |key, expected_value|
+        actual_value = actual[key]
+        @mismatches[key] = { expected: expected_value, actual: actual_value } unless values_match_field?(expected_value, actual_value)
+      end
+
+      @mismatches.empty?
+    end
+
+    failure_message do
+      details = @mismatches.map { |key, diff|
+        <<~MSG
+          row field #{key}:
+            expected: #{format_field(diff[:expected])}
+            actual:   #{format_field(diff[:actual])}
+        MSG
+      }.join("\n")
+
+      [@milestone, details].join("\n")
+    end
+
+    def values_match_field?(expected_value, actual_value)
+      if collection?(expected_value) || collection?(actual_value)
+        ids(actual_value).sort == ids(expected_value).sort
+      else
+        actual_value == expected_value
+      end
+    end
+
+    def collection?(value)
+      value.is_a?(Enumerable) || value.is_a?(ActiveRecord::Relation)
+    end
+
+    def ids(value)
+      return [] if value.nil?
+
+      Array(value).map { |v| v.respond_to?(:id) ? v.id : v }
+    end
+
+    def format_field(value)
+      collection?(value) ? ids(value).inspect : value.inspect
+    end
+  end
+
   describe "with only started declarations" do
     before do
       # course_cohort has 7 applications (4 funded, 2 rejected funded and 1 self-funded)
@@ -58,31 +105,38 @@ RSpec.describe Statements::CourseCohortCalculator do
       started_received(application: funded_apps[0], statement: paid_statement, milestone: started_milestone)
 
       # in scope for calculation
-      (funded_apps[1..2] + self_funded_apps).each do |application|
-        started_received(application:, statement:, milestone: started_milestone)
-      end
     end
 
     let(:funded_apps) { create_list(:application, 4, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
     let(:self_funded_apps) { create_list(:application, 1, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
     let(:value) { BigDecimal(60) }
     let(:completed_value) { BigDecimal(40) }
+    let!(:funded_declarations) do
+      funded_apps[1..2].map do |application|
+        started_received(application:, statement:, milestone: started_milestone)
+      end
+    end
+    let!(:self_funded_declarations) do
+      self_funded_apps.map do |application|
+        started_received(application:, statement:, milestone: started_milestone)
+      end
+    end
     let(:expected_funded) do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 3, # expecting only 3 because we deduct started declaration on previous statements
-          received: 2,
-          outstanding: 1,
+          expected: funded_apps[1..3], # 3 expecting only 3 because we deduct started declaration on previous statements
+          received: funded_declarations,
+          outstanding: funded_apps[3..3],
           value:,
           expected_value: 3 * value,
           received_value: 2 * value,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 0,
-          received: 0,
-          outstanding: 0,
+          expected: [],
+          received: [],
+          outstanding: [],
           value: completed_value,
           expected_value: 0.0,
           received_value: 0.0,
@@ -102,19 +156,19 @@ RSpec.describe Statements::CourseCohortCalculator do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 0,
-          received: 1,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: self_funded_declarations,
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 0,
-          received: 0,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: [],
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: "Total",
@@ -127,13 +181,15 @@ RSpec.describe Statements::CourseCohortCalculator do
       ]
     end
 
-    it do
-      subject.funded_rows.zip(expected_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    it "funded rows" do
+      subject.summary_funded.zip(expected_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
+    end
 
-      subject.self_funded_rows.zip(expected_self_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    it "self funded rows" do
+      subject.summary_self_funded.zip(expected_self_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
     end
   end
@@ -152,12 +208,6 @@ RSpec.describe Statements::CourseCohortCalculator do
       (funded_apps[1..2] + self_funded_apps[0..0]).each do |application|
         started_received(application:, statement: payable_statement, milestone: started_milestone)
       end
-
-      # in scope for calculation
-      started_received(application: funded_apps[3], statement:, milestone: started_milestone)
-      (funded_apps[0..2] + self_funded_apps[0..0]).each do |application|
-        completed_received(application:, statement:, milestone: completed_milestone)
-      end
     end
 
     let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
@@ -167,22 +217,36 @@ RSpec.describe Statements::CourseCohortCalculator do
 
     let(:value) { BigDecimal(60) }
     let(:completed_value) { BigDecimal(40) }
+    let!(:funded_started_declarations) do
+      [started_received(application: funded_apps[3], statement:, milestone: started_milestone)]
+    end
+    let!(:funded_completed_declarations) do
+      funded_apps[0..2].map do |application|
+        completed_received(application:, statement:, milestone: completed_milestone)
+      end
+    end
+    let!(:self_funded_completed_declarations) do
+      self_funded_apps[0..0].map do |application|
+        completed_received(application:, statement:, milestone: completed_milestone)
+      end
+    end
+
     let(:expected_funded) do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 1,
-          received: 1,
-          outstanding: 0,
+          expected: funded_apps[3..3],
+          received: funded_started_declarations,
+          outstanding: [],
           value:,
           expected_value: value,
           received_value: value,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 4,
-          received: 3,
-          outstanding: 1,
+          expected: funded_apps,
+          received: funded_completed_declarations,
+          outstanding: funded_apps[3..3],
           value: completed_value,
           expected_value: 4 * completed_value,
           received_value: 3 * completed_value,
@@ -190,8 +254,8 @@ RSpec.describe Statements::CourseCohortCalculator do
         {
           declaration_type: "Total",
           expected: 5,
-          received: 4,
-          outstanding: 1,
+          received: funded_started_declarations.size + funded_completed_declarations.size,
+          outstanding: funded_apps[3..3].size,
           expected_value: value + 4 * completed_value,
           received_value: value + 3 * completed_value,
         },
@@ -202,24 +266,24 @@ RSpec.describe Statements::CourseCohortCalculator do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 0,
-          received: 0,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: [],
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 0,
-          received: 1,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: self_funded_completed_declarations,
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: "Total",
           expected: 0,
-          received: 1,
+          received: self_funded_completed_declarations.size,
           outstanding: 0,
           expected_value: 0,
           received_value: 0,
@@ -227,12 +291,15 @@ RSpec.describe Statements::CourseCohortCalculator do
       ]
     end
 
-    it do
-      subject.funded_rows.zip(expected_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    it "funded rows" do
+      subject.summary_funded.zip(expected_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
-      subject.self_funded_rows.zip(expected_self_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    end
+
+    it "self funded rows" do
+      subject.summary_self_funded.zip(expected_self_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
     end
   end
@@ -256,11 +323,6 @@ RSpec.describe Statements::CourseCohortCalculator do
       funded_apps[0..0].each do |application|
         completed_received(application:, statement: payable_statement, milestone: completed_milestone)
       end
-
-      # in scope for calculation
-      (funded_apps[1..3] + self_funded_apps[0..0]).each do |application|
-        completed_received(application:, statement:, milestone: completed_milestone)
-      end
     end
 
     let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
@@ -270,22 +332,33 @@ RSpec.describe Statements::CourseCohortCalculator do
 
     let(:value) { BigDecimal(60) }
     let(:completed_value) { BigDecimal(40) }
+    let!(:funded_completed_declarations) do
+      funded_apps[1..3].map do |application|
+        completed_received(application:, statement:, milestone: completed_milestone)
+      end
+    end
+    let!(:self_funded_completed_declarations) do
+      self_funded_apps[0..0].map do |application|
+        completed_received(application:, statement:, milestone: completed_milestone)
+      end
+    end
+
     let(:expected_funded) do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 0,
-          received: 0,
-          outstanding: 0,
+          expected: [],
+          received: [],
+          outstanding: [],
           value:,
           expected_value: 0,
           received_value: 0,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 3,
-          received: 3,
-          outstanding: 0,
+          expected: funded_apps[1..3],
+          received: funded_completed_declarations,
+          outstanding: [],
           value: completed_value,
           expected_value: 3 * completed_value,
           received_value: 3 * completed_value,
@@ -293,7 +366,7 @@ RSpec.describe Statements::CourseCohortCalculator do
         {
           declaration_type: "Total",
           expected: 3,
-          received: 3,
+          received: funded_completed_declarations.size,
           outstanding: 0,
           expected_value: 3 * completed_value,
           received_value: 3 * completed_value,
@@ -305,24 +378,24 @@ RSpec.describe Statements::CourseCohortCalculator do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 0,
-          received: 0,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: [],
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 0,
-          received: 1,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: self_funded_completed_declarations,
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: "Total",
           expected: 0,
-          received: 1,
+          received: self_funded_completed_declarations.size,
           outstanding: 0,
           expected_value: 0,
           received_value: 0,
@@ -330,12 +403,15 @@ RSpec.describe Statements::CourseCohortCalculator do
       ]
     end
 
-    it do
-      subject.funded_rows.zip(expected_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    it "funded rows" do
+      subject.summary_funded.zip(expected_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
-      subject.self_funded_rows.zip(expected_self_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    end
+
+    it "self funded rows" do
+      subject.summary_self_funded.zip(expected_self_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
     end
   end
@@ -363,9 +439,6 @@ RSpec.describe Statements::CourseCohortCalculator do
 
       # in scope for calculation
       clawback_received(funded_apps[1], milestone: started_milestone)
-      (funded_apps[2..3] + self_funded_apps[0..0]).each do |application|
-        completed_received(application:, statement:, milestone: completed_milestone)
-      end
     end
 
     let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
@@ -375,22 +448,33 @@ RSpec.describe Statements::CourseCohortCalculator do
 
     let(:value) { BigDecimal(60) }
     let(:completed_value) { BigDecimal(40) }
+    let!(:funded_completed_declarations) do
+      funded_apps[2..3].map do |application|
+        completed_received(application:, statement:, milestone: completed_milestone)
+      end
+    end
+    let!(:self_funded_completed_declarations) do
+      self_funded_apps[0..0].map do |application|
+        completed_received(application:, statement:, milestone: completed_milestone)
+      end
+    end
+
     let(:expected_funded) do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 1,
-          received: 0,
-          outstanding: 1,
+          expected: funded_apps[1..1], # started declaration has been clawed back
+          received: [],
+          outstanding: funded_apps[1..1],
           value:,
           expected_value: value,
           received_value: 0,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 3,
-          received: 2,
-          outstanding: 1,
+          expected: funded_apps[1..3],
+          received: funded_completed_declarations,
+          outstanding: funded_apps[1..1],
           value: completed_value,
           expected_value: 3 * completed_value,
           received_value: 2 * completed_value,
@@ -410,19 +494,19 @@ RSpec.describe Statements::CourseCohortCalculator do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 0,
-          received: 0,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: [],
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 0,
-          received: 1,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
+          expected: [],
+          received: self_funded_completed_declarations,
+          outstanding: [],
+          expected_value: nil,
+          received_value: nil,
         },
         {
           declaration_type: "Total",
@@ -435,12 +519,15 @@ RSpec.describe Statements::CourseCohortCalculator do
       ]
     end
 
-    it do
-      subject.funded_rows.zip(expected_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    it "funded rows" do
+      subject.summary_funded.zip(expected_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
-      subject.self_funded_rows.zip(expected_self_funded).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+    end
+
+    it "self funded rows" do
+      subject.summary_self_funded.zip(expected_self_funded).each do |row, expected_row|
+        expect(row).to match_statement_row(expected_row)
       end
     end
   end
