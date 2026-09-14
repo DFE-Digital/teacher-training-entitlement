@@ -13,7 +13,7 @@ FactoryBot.define do
     milestone do
       (application&.course || course_cohort.course).milestones.find_or_create_by!(declaration_type:) do |record|
         record.assign_attributes(acceptance_window_start_offset: 0,
-                                 acceptance_window_end_offset: 30)
+                                 acceptance_window_end_offset: 1)
       end
     end
     declaration_type { Milestone::STARTED }

@@ -18,7 +18,7 @@ RSpec.describe Declarations::Create, type: :model do
   let(:course_cohort_provider) { create(:course_cohort_provider) }
   let(:course_cohort) do
     course_cohort_provider.course_cohort.tap do |course_cohort|
-      course_cohort.update!(training_starts_at: 2.days.ago.to_date)
+      course_cohort.update!(training_starts_at: 2.months.ago.to_date)
     end
   end
   let(:lead_provider) { course_cohort_provider.lead_provider }
@@ -202,7 +202,7 @@ RSpec.describe Declarations::Create, type: :model do
 
       context "when the application has resumed in a different cohort" do
         let(:resume_cohort) { create(:cohort, :next) }
-        let(:course_cohort) { create(:course_cohort, cohort: resume_cohort, training_starts_at: 2.days.ago.to_date) }
+        let(:course_cohort) { create(:course_cohort, cohort: resume_cohort, training_starts_at: 2.months.ago.to_date) }
         let(:started_declaration) { application.declarations.started_declaration_type.first }
         let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
         let(:delivery_partner_id) do
@@ -330,7 +330,8 @@ RSpec.describe Declarations::Create, type: :model do
       let(:declaration_date) { course_cohort.acceptance_window_start_date_for(retained_milestone) + 1.hour }
       let!(:retained_milestone) do
         create(:milestone, declaration_type: "retained-1", course: course_cohort.course,
-                           acceptance_window_start_offset: started_milestone.acceptance_window_start_offset + 1)
+                           acceptance_window_start_offset: started_milestone.acceptance_window_start_offset + 1,
+                           acceptance_window_end_offset: started_milestone.acceptance_window_start_offset + 2)
       end
 
       context "when previous milestone has no declaration" do

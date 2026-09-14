@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :milestone do
     declaration_type { :started }
     acceptance_window_start_offset { 0 }
-    acceptance_window_end_offset { 30 }
+    acceptance_window_end_offset { 1 }
     course
 
     trait :started do

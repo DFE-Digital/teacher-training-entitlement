@@ -104,9 +104,9 @@ RSpec.describe CourseCohort do
     subject(:acceptance_window_start_date) { course_cohort.acceptance_window_start_date_for(milestone) }
 
     let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
-    let(:milestone) { build(:milestone, acceptance_window_start_offset: 10) }
+    let(:milestone) { build(:milestone, acceptance_window_start_offset: 1) }
 
-    it { is_expected.to eq(Date.new(2026, 9, 11)) }
+    it { is_expected.to eq(Date.new(2026, 10, 1)) }
 
     context "when the course cohort has no training start date" do
       let(:course_cohort) { create(:course_cohort, training_starts_at: nil) }
@@ -131,9 +131,9 @@ RSpec.describe CourseCohort do
     subject(:acceptance_window_end_date) { course_cohort.acceptance_window_end_date_for(milestone) }
 
     let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
-    let(:milestone) { build(:milestone, acceptance_window_end_offset: 10) }
+    let(:milestone) { build(:milestone, acceptance_window_end_offset: 1) }
 
-    it { is_expected.to eq(Date.new(2026, 9, 11)) }
+    it { is_expected.to eq(Date.new(2026, 10, 1)) }
 
     context "when the course cohort has no training start date" do
       let(:course_cohort) { create(:course_cohort, training_starts_at: nil) }
