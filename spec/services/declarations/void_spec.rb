@@ -7,7 +7,7 @@ RSpec.describe Declarations::Void, type: :model do
   let(:course_cohort) { create(:course_cohort) }
   let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: statement.lead_provider) }
   let(:declaration_trait) { :started }
-  let(:declaration) { create(:declaration, declaration_trait, application:, lead_provider: statement.lead_provider, course_cohort:) }
+  let(:declaration) { create(:declaration, declaration_trait, application:, lead_provider: statement.lead_provider, course_cohort:, value: 100) }
 
   subject(:service) { described_class.new(declaration:) }
 
@@ -62,6 +62,7 @@ RSpec.describe Declarations::Void, type: :model do
       let(:declaration_trait) { declaration_state }
 
       it { expect { service.call }.to change { declaration.reload.state }.from(declaration_state).to("voided") }
+      it { expect { service.call }.to change { declaration.reload.value}.from(100).to(nil) }
 
       it "calls the void participant outcome service" do
         service_double = instance_double(ParticipantOutcomes::Void)
