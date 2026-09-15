@@ -19,7 +19,7 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
         "acceptance_window_end_date(1i)": "2026",
         "acceptance_window_end_date(2i)": "1",
         "acceptance_window_end_date(3i)": "31",
-        payment_amount: "123.45",
+        payment_percentage: "40",
       },
     }
   end
@@ -74,7 +74,7 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
           declaration_type: "started",
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
-          payment_amount: BigDecimal("123.45"),
+          payment_percentage: BigDecimal("0.4"),
         )
       end
 
@@ -119,7 +119,7 @@ RSpec.describe Admin::CourseCohortMilestonesController, type: :request do
           declaration_type: "completed",
           acceptance_window_start_date: Date.new(2026, 1, 1),
           acceptance_window_end_date: Date.new(2026, 1, 31),
-          payment_amount: BigDecimal("123.45"),
+          payment_percentage: BigDecimal("0.4"),
         )
       end
 

@@ -70,7 +70,7 @@ RSpec.describe Declarations::Create, type: :model do
           it { expect(declaration.milestone).to eq(started_milestone) }
           it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
           it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
-          it { expect(declaration.value).to eq(started_milestone.payment_amount) }
+          it { expect(declaration.value).to eq(started_milestone.payment_percentage) }
           it { expect(declaration.statement).to eq(statement) }
         end
 

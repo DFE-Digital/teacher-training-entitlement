@@ -248,4 +248,4 @@ shared:
     - acceptance_window_end_date
     - acceptance_window_start_offset
     - acceptance_window_end_offset
-    - payment_amount
+    - payment_percentage
