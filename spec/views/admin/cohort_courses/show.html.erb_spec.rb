@@ -35,6 +35,7 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
     assign(:course, course)
     assign(:course_cohort, course_cohort)
     assign(:delivery_partner_counts, {})
+    assign(:contract_years, [])
 
     without_partial_double_verification { allow(view).to receive(:current_admin).and_return(admin) }
 

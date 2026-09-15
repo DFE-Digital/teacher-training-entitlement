@@ -1,0 +1,59 @@
+<%=
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
+      row.with_key(text: "Course")
+      row.with_value(text: course.name)
+    end
+
+    summary_list.with_row do |row|
+      row.with_key(text: "Cohort")
+      row.with_value(text: cohort.name)
+    end
+  end
+%>
+
+<%= form_with model: contract_year, url:, method: form_method do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <%=
+    f.govuk_collection_select(
+      :lead_provider_id,
+      lead_providers,
+      :id,
+      :name,
+      options: { include_blank: true },
+      label: { text: "Lead provider" },
+    )
+  %>
+
+  <div class="govuk-grid-row">
+    <%= f.govuk_text_field :academic_year,
+                           label: { text: "Academic year" },
+                           width: 4,
+                           form_group: { class: "govuk-grid-column-one-quarter" } %>
+
+    <%= f.govuk_text_field :recruitment_target,
+                           label: { text: "Recruitment target" },
+                           width: 5,
+                           form_group: { class: "govuk-grid-column-one-quarter" } %>
+  </div>
+
+  <div class="govuk-grid-row">
+    <%= f.govuk_text_field :teacher_funding,
+                           label: { text: "Teacher funding" },
+                           prefix_text: "£",
+                           width: 10,
+                           form_group: { class: "govuk-grid-column-one-quarter" } %>
+
+    <%= f.govuk_text_field :service_fee,
+                           label: { text: "Service fee" },
+                           prefix_text: "£",
+                           width: 10,
+                           form_group: { class: "govuk-grid-column-one-quarter" } %>
+  </div>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit submit_text %>
+    <%= govuk_link_to("Cancel", admin_cohort_course_path(cohort, course), class: "govuk-link--no-visited-state") %>
+  </div>
+<% end %>

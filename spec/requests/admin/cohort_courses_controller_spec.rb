@@ -76,6 +76,37 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         expect(response.body).to include("2 delivery partners")
       end
 
+      it "shows the contract years for the course and cohort academic year" do
+        matching_contract_year = create(
+          :contract_year,
+          lead_provider:,
+          course:,
+          academic_year: course_cohort.academic_year,
+          recruitment_target: 100,
+          teacher_funding: 650,
+          service_fee: 50,
+        )
+        other_contract_year = create(:contract_year, academic_year: course_cohort.academic_year)
+
+        get admin_cohort_course_path(cohort, course_cohort.course)
+
+        expect(response.body).to include("Contract years")
+        expect(response.body).to include(matching_contract_year.lead_provider.name)
+        expect(response.body).to include("100")
+        expect(response.body).to include("£650.00")
+        expect(response.body).to include("£50.00")
+        expect(response.body).not_to include(other_contract_year.lead_provider.name)
+      end
+
+      it "links to add and edit contract years" do
+        contract_year = create(:contract_year, lead_provider:, course:, academic_year: course_cohort.academic_year)
+
+        get admin_cohort_course_path(cohort, course_cohort.course)
+
+        expect(response.body).to include(new_admin_cohort_course_contract_year_path(cohort, course))
+        expect(response.body).to include(edit_admin_cohort_course_contract_year_path(cohort, course, contract_year))
+      end
+
       it "links to add or remove providers" do
         expect(response.body).to include(admin_course_course_cohort_provider_path(course, course_cohort))
       end
@@ -149,6 +180,10 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
       before { get admin_cohort_course_path(cohort, course_cohort.course) }
 
       it { is_expected.to have_http_status :success }
+
+      it "does not link to add contract years" do
+        expect(response.body).not_to include(new_admin_cohort_course_contract_year_path(cohort, course))
+      end
     end
 
     describe "#new" do

@@ -1,0 +1,16 @@
+<%= govuk_back_link href: admin_cohort_course_path(@cohort, @course) %>
+
+<h1 class="govuk-heading-l">Edit contract year</h1>
+
+<% if @contract_year.academic_year.blank? %>
+  <p class="govuk-body">This is a generic contract year.</p>
+<% end %>
+
+<%= render "form",
+           contract_year: @contract_year,
+           cohort: @cohort,
+           course: @course,
+           lead_providers: @lead_providers,
+           url: admin_cohort_course_contract_year_path(@cohort, @course, @contract_year),
+           form_method: :patch,
+           submit_text: "Save contract year" %>
