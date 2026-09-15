@@ -80,8 +80,8 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
         expect(response.body).to include(admin_course_course_cohort_provider_path(course, course_cohort))
       end
 
-      it "links to add a milestone" do
-        expect(response.body).to include(new_admin_cohort_course_milestone_path(cohort, course))
+      it "does not link to add a milestone" do
+        expect(response.body).not_to include("Add Milestone")
       end
 
       describe "Showing milestones" do
@@ -95,7 +95,7 @@ RSpec.describe Admin::CohortCoursesController, :ecf_api_disabled, type: :request
           get admin_cohort_course_path(cohort, course)
 
           expect(response.body).to include("%123.45")
-          expect(response.body).to include(edit_admin_cohort_course_milestone_path(cohort, course, milestone))
+          expect(response.body).not_to include("Edit")
         end
       end
     end
