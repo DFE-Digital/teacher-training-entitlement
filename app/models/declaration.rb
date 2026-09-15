@@ -12,7 +12,6 @@ class Declaration < ApplicationRecord
   belongs_to :statement
   belongs_to :application
   belongs_to :lead_provider
-  belongs_to :cohort, deprecated: true, optional: true
   belongs_to :milestone, optional: true
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
@@ -20,6 +19,7 @@ class Declaration < ApplicationRecord
   belongs_to :clawback_declaration, optional: true
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
   has_one :course_cohort, through: :application
+  has_one :cohort, through: :course_cohort
   has_many :participant_outcomes, dependent: :destroy
 
   delegate :course, :user, to: :application
@@ -112,8 +112,6 @@ class Declaration < ApplicationRecord
             inclusion: { in: :available_delivery_partner_ids },
             if: -> { secondary_delivery_partner && secondary_delivery_partner_changed? }
 
-  validate :delivery_partners_are_not_the_same, if: :delivery_partner
-
   validates :milestone_id,
             uniqueness: { scope: %i[application_id type], conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
@@ -134,16 +132,11 @@ class Declaration < ApplicationRecord
     application.course.course_group
   end
 
-  def cohort
-    application&.cohort || super
-  end
-
   def clawback!
     self.clawback_declaration = ClawbackDeclaration.new(
       paid_declaration: self,
       application: application,
       milestone: milestone,
-      cohort: cohort,
       statement: clawback_statement,
       lead_provider: lead_provider,
       delivery_partner: delivery_partner,
@@ -195,10 +188,6 @@ class Declaration < ApplicationRecord
     result
   end
 
-  def course_cohort
-    application&.course_cohort
-  end
-
 private
 
   def validate_declaration_date_within_acceptance_window
@@ -223,12 +212,6 @@ private
 
   def validate_declaration_date_not_in_the_future
     errors.add(:declaration_date, :future_declaration_date) if declaration_date&.future?
-  end
-
-  def delivery_partners_are_not_the_same
-    if delivery_partner == secondary_delivery_partner
-      errors.add :secondary_delivery_partner_id, :duplicate_delivery_partner
-    end
   end
 
   def delivery_partner_required

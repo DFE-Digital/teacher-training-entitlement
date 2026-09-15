@@ -10,9 +10,7 @@ FactoryBot.define do
     transient do
       lead_provider { nil }
       course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
-      cohort do
-        course.cohorts.last || create(:cohort)
-      end
+      cohort { course_cohort.cohort }
     end
 
     course_cohort { course.course_cohorts.last || create(:course_cohort, course:, cohort:) }

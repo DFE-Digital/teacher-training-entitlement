@@ -11,6 +11,8 @@ RSpec.describe CourseCohort do
     it { is_expected.to have_many(:delivery_partnerships).dependent(:destroy) }
     it { is_expected.to have_many(:delivery_partners).through(:delivery_partnerships) }
     it { is_expected.to have_many(:milestones).through(:course) }
+    it { is_expected.to have_one(:started_milestone).through(:course).source(:milestones) }
+    it { is_expected.to have_one(:completed_milestone).through(:course).source(:milestones) }
   end
 
   describe "validations" do
@@ -83,8 +85,12 @@ RSpec.describe CourseCohort do
     let(:except) { nil }
 
     before do
-      create(:milestone, course: course_cohort.course, declaration_type: "started")
-      create(:milestone, course: course_cohort.course, declaration_type: "completed")
+      course_cohort.course.milestones.find_or_create_by!(declaration_type: "started") do |milestone|
+        milestone.acceptance_window_start_offset = 0
+      end
+      course_cohort.course.milestones.find_or_create_by!(declaration_type: "completed") do |milestone|
+        milestone.acceptance_window_start_offset = 0
+      end
     end
 
     it "returns the declaration types already used by milestones on the course cohort" do
