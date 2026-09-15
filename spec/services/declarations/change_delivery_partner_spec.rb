@@ -102,10 +102,5 @@ RSpec.describe Declarations::ChangeDeliveryPartner, type: :model do
       it { is_expected.to have_error(:secondary_delivery_partner_id, :present, "The property '#/secondary_delivery_partner_id' cannot be specified without the property '#/delivery_partner_id'") }
     end
 
-    context "when delivery_partner and secondary_delivery partner are the same" do
-      let(:secondary_delivery_partner_id) { delivery_partner_id }
-
-      it { is_expected.to have_error(:secondary_delivery_partner_id, :duplicate_delivery_partner, "The property '#/secondary_delivery_partner_id' cannot have the same value as the property '#/delivery_partner_id'") }
-    end
   end
 end

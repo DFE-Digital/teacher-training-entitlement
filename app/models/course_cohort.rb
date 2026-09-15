@@ -16,6 +16,14 @@ class CourseCohort < ApplicationRecord
   has_many :applications
   has_many :milestones, through: :course
 
+  has_one :started_milestone,
+          -> { started },
+          through: :course,
+          source: :milestones
+  has_one :completed_milestone,
+          -> { completed },
+          through: :course,
+          source: :milestones
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }
   validates :academic_year, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
@@ -80,13 +88,5 @@ class CourseCohort < ApplicationRecord
 
   def taken_declaration_types(except: nil)
     milestones.where.not(id: except&.id).pluck(:declaration_type)
-  end
-
-  def started_milestone
-    milestones.started.first
-  end
-
-  def completed_milestone
-    milestones.completed.first
   end
 end

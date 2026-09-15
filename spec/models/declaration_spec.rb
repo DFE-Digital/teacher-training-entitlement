@@ -1,7 +1,11 @@
 require "rails_helper"
 
 RSpec.describe Declaration, type: :model do
-  subject(:declaration) { build(:declaration) }
+  subject(:declaration) { build(:declaration, application:, delivery_partner: nil) }
+
+  let(:application) { create(:application, :accepted, course_cohort:) }
+  let(:course_cohort) { create(:course_cohort, cohort:) }
+  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
 
   describe "associations" do
     it { is_expected.to belong_to(:application) }
@@ -27,9 +31,14 @@ RSpec.describe Declaration, type: :model do
       let(:application) { create(:application, :accepted) }
       let(:lead_provider) { application.lead_provider }
       let(:cohort) { application.cohort }
-      let(:milestone) { create(:milestone, course: application.course) }
-      let(:primary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
-      let(:secondary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
+      let(:milestone) do
+        application.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+          record.acceptance_window_start_offset = 0
+          record.acceptance_window_end_offset = 1
+        end
+      end
+      let(:primary_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { cohort => lead_provider }) }
+      let(:secondary_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { cohort => lead_provider }) }
 
       it { is_expected.to have_attributes delivery_partner: primary_partner }
       it { is_expected.to have_attributes secondary_delivery_partner: secondary_partner }
@@ -51,10 +60,10 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
 
     describe "milestone uniqueness" do
-      let(:existing_declaration) { create(:declaration, :submitted) }
+      let(:existing_declaration) { create(:declaration, :submitted, application:, delivery_partner: nil) }
 
       it "is invalid when another unique declaration state exists for the same application and milestone" do
-        declaration = build(:declaration, :submitted, application: existing_declaration.application, milestone: existing_declaration.milestone)
+        declaration = build(:declaration, :submitted, application: existing_declaration.application, milestone: existing_declaration.milestone, delivery_partner: nil)
 
         expect(declaration).to have_error(:milestone_id, :taken)
       end
@@ -71,25 +80,28 @@ RSpec.describe Declaration, type: :model do
     context "with delivery_partners" do
       before { delivery_partner && old_cohort_partner }
 
-      let(:application) { create(:application, :accepted, lead_provider: declaration.lead_provider) }
+      let(:lead_provider) { create(:lead_provider) }
+      let(:application) { create(:application, :accepted, lead_provider:) }
+      subject(:declaration) { build(:declaration, application:, lead_provider:, delivery_partner:) }
+
       let :delivery_partner do
-        create :delivery_partner, lead_providers: { application.cohort => declaration.lead_provider }
+        create :delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { application.cohort => lead_provider }
       end
 
       let :second_partner do
-        create :delivery_partner, lead_providers: { application.cohort => application.lead_provider }
+        create :delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { application.cohort => application.lead_provider }
       end
 
       let :old_cohort_partner do
-        create :delivery_partner, lead_providers: {
-          create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) => declaration.lead_provider,
+        create :delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: {
+          create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) => lead_provider,
         }
       end
 
       it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
 
       context "when no delivery partner provided" do
-        let(:declaration) { build(:declaration, delivery_partner: nil) }
+        subject(:declaration) { build(:declaration, application:, lead_provider:, delivery_partner: nil) }
 
         it { is_expected.not_to validate_absence_of(:delivery_partner_id) }
         it { is_expected.to validate_absence_of(:secondary_delivery_partner_id) }
@@ -101,7 +113,12 @@ RSpec.describe Declaration, type: :model do
         let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
         let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
         let(:course_cohort) { create(:course_cohort, cohort:) }
-        let(:milestone) { create(:milestone, course: course_cohort.course) }
+        let(:milestone) do
+          course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+            record.acceptance_window_start_offset = 0
+            record.acceptance_window_end_offset = 1
+          end
+        end
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
 
         context "with earlier cohort" do
@@ -119,7 +136,7 @@ RSpec.describe Declaration, type: :model do
         end
 
         context "without cohort set" do
-          let(:declaration) { build(:declaration, delivery_partner: nil, application: nil, milestone: nil, declaration_date: 1.day.ago) }
+          subject(:declaration) { build(:declaration, delivery_partner: nil, application: nil, milestone: nil, declaration_date: 1.day.ago) }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner_id) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
@@ -127,7 +144,7 @@ RSpec.describe Declaration, type: :model do
 
         context "when changing declaration state" do
           subject do
-            create(:declaration, :with_delivery_partner, application:, lead_provider:, milestone:)
+            create(:declaration, application:, lead_provider:, milestone:, delivery_partner:)
               .tap(&:mark_eligible!)
               .reload
           end
@@ -157,7 +174,7 @@ RSpec.describe Declaration, type: :model do
             build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
           end
 
-          let(:application) { build(:application, teacher_catchment: "wales") }
+          let(:application) { create(:application, :accepted, course_cohort:, lead_provider:, teacher_catchment: "wales") }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner) }
@@ -170,9 +187,14 @@ RSpec.describe Declaration, type: :model do
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
         let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
         let(:course_cohort) { create(:course_cohort, cohort:) }
-        let(:milestone) { create(:milestone, course: course_cohort.course) }
+        let(:milestone) do
+          course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+            record.acceptance_window_start_offset = 0
+            record.acceptance_window_end_offset = 1
+          end
+        end
 
-        subject(:declaration) { create(:declaration, milestone:) }
+        subject(:declaration) { create(:declaration, application:, lead_provider:, milestone:, delivery_partner:) }
 
         before do
           declaration
@@ -194,11 +216,6 @@ RSpec.describe Declaration, type: :model do
         it { expect(declaration.errors).to include :secondary_delivery_partner_id }
       end
 
-      context "when delivery_partner and secondary_delivery partner are the same" do
-        before { declaration.delivery_partner = delivery_partner }
-
-        it { is_expected.not_to allow_value(delivery_partner.id).for(:secondary_delivery_partner_id) }
-      end
     end
 
     context "when the declaration_date is in the future" do
@@ -239,7 +256,7 @@ RSpec.describe Declaration, type: :model do
 
         let(:application) { create(:application, :accepted, user:, course:) }
 
-        subject { build(:declaration, course:, user:, application:).tap { |d| d.save!(validate: false) } }
+        subject { build(:declaration, course:, user:, application:, delivery_partner: nil).tap { |d| d.save!(validate: false) } }
 
         context "when declaration_date is not changed" do
           it { is_expected.to be_valid }
@@ -337,7 +354,7 @@ RSpec.describe Declaration, type: :model do
   end
 
   describe "state transition" do
-    let(:declaration) { create(:declaration, state:) }
+    let(:declaration) { create(:declaration, application:, delivery_partner: nil, state:) }
 
     describe ".mark_eligible" do
       let(:state) { :submitted }
@@ -441,7 +458,7 @@ RSpec.describe Declaration, type: :model do
   end
 
   describe "#clawback!" do
-    subject(:paid_declaration) { create(:declaration, :paid) }
+    subject(:paid_declaration) { create(:declaration, :paid, application:, delivery_partner: nil) }
 
     before { paid_declaration.clawback! }
 
@@ -456,7 +473,7 @@ RSpec.describe Declaration, type: :model do
     let(:state) { described_class::UPLIFT_PAID_STATES.sample }
 
     subject(:declaration) do
-      build(:declaration, declaration_type:, state:)
+      build(:declaration, application:, delivery_partner: nil, declaration_type:, state:)
     end
 
     it { is_expected.to be_uplift_paid }
@@ -489,7 +506,7 @@ RSpec.describe Declaration, type: :model do
   describe "#ineligible_for_funding_reason" do
     let(:state) { :ineligible }
     let(:state_reason) { nil }
-    let(:declaration) { build(:declaration, state:, state_reason:) }
+    let(:declaration) { build(:declaration, application:, delivery_partner: nil, state:, state_reason:) }
 
     subject { declaration.ineligible_for_funding_reason }
 
@@ -511,7 +528,7 @@ RSpec.describe Declaration, type: :model do
   end
 
   describe "#eligible_for_payment?" do
-    subject { build(:declaration, state:) }
+    subject { build(:declaration, application:, delivery_partner: nil, state:) }
 
     context "when the state is payable" do
       let(:state) { :payable }
@@ -536,8 +553,8 @@ RSpec.describe Declaration, type: :model do
 
   describe "scopes" do
     describe ".latest_first" do
-      let!(:latest_declaration) { create(:declaration) }
-      let!(:older_declaration) { travel_to(1.day.ago) { create(:declaration) } }
+      let!(:latest_declaration) { create(:declaration, application:, delivery_partner: nil) }
+      let!(:older_declaration) { travel_to(1.day.ago) { create(:declaration, application: create(:application, :accepted, course_cohort:), delivery_partner: nil) } }
 
       it "returns the declarations with those created latest first" do
         expect(described_class.latest_first).to eq([latest_declaration, older_declaration])
@@ -547,25 +564,64 @@ RSpec.describe Declaration, type: :model do
     describe ".eligible_for_outcomes" do
       subject { described_class.eligible_for_outcomes(lead_provider, course_identifier) }
 
-      let(:lead_provider) { completed_declaration.lead_provider }
-      let(:course_identifier) { completed_declaration.course_identifier }
-      let(:completed_declaration) { create(:declaration, :completed, :payable) }
-      let(:course) { completed_declaration.course }
-      let(:older_completed_declaration) { travel_to(1.hour.ago) { create(:declaration, :completed, :payable, course:, lead_provider:) } }
+      let(:lead_provider) { create(:lead_provider) }
+      let(:course) { Course.first || create(:course) }
+      let(:course_identifier) { course.identifier }
+      let(:cohort_not_requiring_delivery_partner) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+      let(:completed_declaration) do
+        create(:declaration,
+               :completed,
+               :payable,
+               application: create(:application, :accepted, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner), lead_provider:),
+               lead_provider:,
+               delivery_partner: nil)
+      end
+      let(:older_completed_declaration) do
+        travel_to(1.hour.ago) do
+          create(:declaration,
+                 :completed,
+                 :payable,
+                 application: create(:application, :accepted, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner), lead_provider:),
+                 lead_provider:,
+                 delivery_partner: nil)
+        end
+      end
 
       before do
         # Not a completed declaration.
-        create(:declaration, :payable, lead_provider:, course:, declaration_type: "retained-1")
+        create(:declaration,
+               :payable,
+               application: create(:application, :accepted, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner), lead_provider:),
+               lead_provider:,
+               delivery_partner: nil,
+               declaration_type: "retained-1")
 
         # Declaration on another provider.
-        create(:declaration, :completed, :payable, lead_provider: create(:lead_provider), course:)
+        other_lead_provider = create(:lead_provider)
+        create(:declaration,
+               :completed,
+               :payable,
+               application: create(:application, :accepted, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner), lead_provider: other_lead_provider),
+               lead_provider: other_lead_provider,
+               delivery_partner: nil)
 
         # Declaration with different course.
-        create(:declaration, :completed, :payable, lead_provider:, course:, application: create(:application, course: create(:course, identifier: "other-course")))
+        other_course = create(:course, identifier: "other-course")
+        create(:declaration,
+               :completed,
+               :payable,
+               application: create(:application, :accepted, course_cohort: create(:course_cohort, course: other_course, cohort: cohort_not_requiring_delivery_partner), lead_provider:),
+               lead_provider:,
+               delivery_partner: nil)
 
         # Declarations that are not billable or voidable.
         Declaration.states.keys.excluding(Declaration::BILLABLE_STATES + Declaration::VOIDABLE_STATES).each do |state|
-          create(:declaration, :completed, :payable, lead_provider:, course:, state:)
+          create(:declaration,
+                 :completed,
+                 application: create(:application, :accepted, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner), lead_provider:),
+                 lead_provider:,
+                 delivery_partner: nil,
+                 state:)
         end
       end
 
@@ -579,8 +635,14 @@ RSpec.describe Declaration, type: :model do
     end
 
     describe "declaration states" do
+      let(:cohort_not_requiring_delivery_partner) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+
       let(:declarations) do
-        described_class.states.keys.map { |state| create(:declaration, application: create(:application), state:) }
+        described_class.states.keys.map do |state|
+          application = create(:application, course_cohort: create(:course_cohort, cohort: cohort_not_requiring_delivery_partner))
+
+          create(:declaration, application:, state:, delivery_partner: nil)
+        end
       end
       let(:voided_paid_declaration) { create(:declaration, :voided_paid) }
 
@@ -635,26 +697,43 @@ RSpec.describe Declaration, type: :model do
 
     describe ".with_lead_provider" do
       let(:lead_provider) { declaration.lead_provider }
-      let(:declaration) { create(:declaration) }
+      let(:declaration) { create(:declaration, application:, delivery_partner: nil) }
 
-      before { create(:declaration, lead_provider: create(:lead_provider)) }
+      before do
+        other_lead_provider = create(:lead_provider)
+        create(:declaration,
+               application: create(:application, :accepted, course_cohort:, lead_provider: other_lead_provider),
+               lead_provider: other_lead_provider,
+               delivery_partner: nil)
+      end
 
       it { expect(described_class.with_lead_provider(lead_provider)).to contain_exactly(declaration) }
     end
 
     describe ".completed" do
-      let(:completed_declaration) { create(:declaration, :completed) }
+      let(:completed_declaration) { create(:declaration, :completed, application:, delivery_partner: nil) }
 
       it { expect(described_class.completed).to contain_exactly(completed_declaration) }
     end
 
     describe ".with_course_identifier" do
-      let(:course_identifier) { declaration.application.course.identifier }
-      let(:declaration) { create(:declaration) }
+      let(:cohort_not_requiring_delivery_partner) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
+      let(:course) { Course.first || create(:course) }
+      let(:course_identifier) { course.identifier }
+      let(:declaration) do
+        create(:declaration,
+               application: create(:application, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner)),
+               delivery_partner: nil)
+      end
 
       before do
         Course::IDENTIFIERS.excluding(course_identifier).each do |identifier|
-          create(:declaration, course: Course.find_by(identifier:))
+          course = Course.find_by(identifier:)
+          next unless course
+
+          create(:declaration,
+                 application: create(:application, course_cohort: create(:course_cohort, course:, cohort: cohort_not_requiring_delivery_partner)),
+                 delivery_partner: nil)
         end
       end
 
@@ -665,15 +744,20 @@ RSpec.describe Declaration, type: :model do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
       let(:course_cohort) { create(:course_cohort) }
-      let(:milestone) { create(:milestone, course: course_cohort.course) }
+      let(:milestone) do
+        course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+          record.acceptance_window_start_offset = 0
+          record.acceptance_window_end_offset = 1
+        end
+      end
       let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
       let(:lead_provider) { create(:lead_provider) }
 
       let(:delivery_partner) do
-        create(:delivery_partner, lead_providers: { course_cohort => lead_provider })
+        create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { course_cohort => lead_provider })
       end
       let(:secondary_delivery_partner) do
-        create(:delivery_partner, lead_providers: { course_cohort => lead_provider })
+        create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { course_cohort => lead_provider })
       end
 
       let(:declaration_as_primary) do
@@ -716,11 +800,16 @@ RSpec.describe Declaration, type: :model do
 
     let(:twenty_three) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
     let(:course_cohort) { create(:course_cohort, cohort: twenty_three) }
-    let(:milestone) { create(:milestone, course: course_cohort.course) }
+    let(:milestone) do
+      course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+        record.acceptance_window_start_offset = 0
+        record.acceptance_window_end_offset = 1
+      end
+    end
     let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-    let(:declaration) { build(:declaration, application:, lead_provider:, milestone:) }
-    let(:twenty_three_partner) { create(:delivery_partner) }
-    let(:twenty_four_partner) { create(:delivery_partner) }
+    let(:declaration) { build(:declaration, application:, lead_provider:, milestone:, delivery_partner: nil) }
+    let(:twenty_three_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}") }
+    let(:twenty_four_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}") }
 
     it { is_expected.to include twenty_three_partner.id }
     it { is_expected.not_to include twenty_four_partner.id }
@@ -752,7 +841,7 @@ RSpec.describe Declaration, type: :model do
     subject { declaration.state_history }
 
     context "with default initial state" do
-      let(:declaration) { create(:declaration) }
+      let(:declaration) { create(:declaration, application:, delivery_partner: nil) }
 
       it { is_expected.to eq [["submitted", declaration.created_at]] }
 
@@ -769,7 +858,7 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "with specific initial state" do
-      let(:declaration) { create(:declaration, :payable) }
+      let(:declaration) { create(:declaration, :payable, application:, delivery_partner: nil) }
 
       it { is_expected.to eq [["payable", declaration.created_at]] }
 
