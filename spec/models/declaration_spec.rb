@@ -27,7 +27,7 @@ RSpec.describe Declaration, type: :model do
       let(:application) { create(:application, :accepted) }
       let(:lead_provider) { application.lead_provider }
       let(:cohort) { application.cohort }
-      let(:milestone) { create(:milestone, course_cohort: application.course_cohort) }
+      let(:milestone) { create(:milestone, course: application.course) }
       let(:primary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
       let(:secondary_partner) { create(:delivery_partner, lead_providers: { cohort => lead_provider }) }
 
@@ -96,10 +96,12 @@ RSpec.describe Declaration, type: :model do
       end
 
       describe "skipping validation for certain cases" do
-        let(:declaration) { build(:declaration, milestone:, delivery_partner: nil) }
+        let(:declaration) { build(:declaration, application:, lead_provider:, milestone:, delivery_partner: nil) }
+        let(:lead_provider) { create(:lead_provider) }
+        let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
         let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
         let(:course_cohort) { create(:course_cohort, cohort:) }
-        let(:milestone) { create(:milestone, course_cohort:) }
+        let(:milestone) { create(:milestone, course: course_cohort.course) }
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
 
         context "with earlier cohort" do
@@ -117,7 +119,7 @@ RSpec.describe Declaration, type: :model do
         end
 
         context "without cohort set" do
-          let(:declaration) { build(:declaration, delivery_partner: nil, milestone: nil, declaration_date: 1.day.ago) }
+          let(:declaration) { build(:declaration, delivery_partner: nil, application: nil, milestone: nil, declaration_date: 1.day.ago) }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner_id) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
@@ -125,7 +127,7 @@ RSpec.describe Declaration, type: :model do
 
         context "when changing declaration state" do
           subject do
-            create(:declaration, :with_delivery_partner, milestone:)
+            create(:declaration, :with_delivery_partner, application:, lead_provider:, milestone:)
               .tap(&:mark_eligible!)
               .reload
           end
@@ -168,7 +170,7 @@ RSpec.describe Declaration, type: :model do
         let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM }
         let(:cohort) { create(:cohort, registration_starts_at: Date.new(cohort_start_year, 4, 1)) }
         let(:course_cohort) { create(:course_cohort, cohort:) }
-        let(:milestone) { create(:milestone, course_cohort:) }
+        let(:milestone) { create(:milestone, course: course_cohort.course) }
 
         subject(:declaration) { create(:declaration, milestone:) }
 
@@ -219,7 +221,11 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is before the acceptance window start" do
       context "when declaration is being created" do
-        before { subject.declaration_date = subject.milestone.acceptance_window_start_date - 1.week }
+        before do
+          subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+          subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
+          subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) - 1.week
+        end
 
         it "has a meaningful error" do
           expect(subject).to be_invalid
@@ -241,7 +247,10 @@ RSpec.describe Declaration, type: :model do
 
         context "when declaration_date is going to be changed" do
           it "is not valid" do
-            subject.declaration_date = subject.milestone.acceptance_window_start_date - 1.week
+            subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+            subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
+            subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) - 1.week
+
             expect(subject).not_to be_valid
           end
         end
@@ -249,13 +258,21 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "when declaration_date is at the acceptance window start" do
-      before { subject.declaration_date = subject.milestone.acceptance_window_start_date }
+      before do
+        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
+        subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone)
+      end
 
       it { is_expected.to be_valid }
     end
 
     context "when declaration_date is after the acceptance window end" do
-      before { subject.declaration_date = subject.milestone.acceptance_window_end_date + 1.day }
+      before do
+        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
+        subject.declaration_date = subject.application.course_cohort.acceptance_window_end_date_for(subject.milestone) + 1.day
+      end
 
       it "has a meaningful error" do
         expect(subject).to be_invalid
@@ -265,8 +282,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is at the acceptance window end" do
       before do
-        subject.milestone.update!(acceptance_window_end_date: 1.day.ago)
-        subject.declaration_date = subject.milestone.acceptance_window_end_date
+        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
+        subject.declaration_date = subject.application.course_cohort.acceptance_window_end_date_for(subject.milestone)
       end
 
       it { is_expected.to be_valid }
@@ -274,8 +292,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when milestone has no acceptance_window_end_date" do
       before do
-        subject.milestone.update!(acceptance_window_end_date: nil)
-        subject.declaration_date = subject.milestone.acceptance_window_start_date + 1.day
+        subject.application.course_cohort.update!(training_starts_at: 1.month.ago.to_date)
+        subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: nil)
+        subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) + 1.day
       end
 
       it { is_expected.to be_valid }
@@ -645,17 +664,16 @@ RSpec.describe Declaration, type: :model do
     describe ".for_delivery_partners" do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
-      let(:milestone) { create(:milestone) }
-      let(:course_cohort) { milestone.course_cohort }
+      let(:course_cohort) { create(:course_cohort) }
+      let(:milestone) { create(:milestone, course: course_cohort.course) }
       let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-      let(:declaration_date) { milestone.acceptance_window_start_date + 1.day }
       let(:lead_provider) { create(:lead_provider) }
 
       let(:delivery_partner) do
-        create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+        create(:delivery_partner, lead_providers: { course_cohort => lead_provider })
       end
       let(:secondary_delivery_partner) do
-        create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
+        create(:delivery_partner, lead_providers: { course_cohort => lead_provider })
       end
 
       let(:declaration_as_primary) do
@@ -698,8 +716,9 @@ RSpec.describe Declaration, type: :model do
 
     let(:twenty_three) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
     let(:course_cohort) { create(:course_cohort, cohort: twenty_three) }
-    let(:milestone) { create(:milestone, course_cohort:) }
-    let(:declaration) { build(:declaration, lead_provider:, milestone:) }
+    let(:milestone) { create(:milestone, course: course_cohort.course) }
+    let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
+    let(:declaration) { build(:declaration, application:, lead_provider:, milestone:) }
     let(:twenty_three_partner) { create(:delivery_partner) }
     let(:twenty_four_partner) { create(:delivery_partner) }
 

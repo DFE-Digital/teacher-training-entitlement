@@ -15,12 +15,12 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
   let(:statement) { create(:statement, lead_provider:, deadline_date: Time.zone.today) }
   let(:paid_statement) { create(:statement, :paid, lead_provider:) }
   let(:course_cohort) do
-    create(:course_cohort).tap do |course_cohort|
+    create(:course_cohort, training_starts_at: 1.week.ago.to_date).tap do |course_cohort|
       create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100)
     end
   end
   let(:contract) { lead_provider.contract(course_cohort:) }
-  let(:milestone) { create(:milestone, :started, course_cohort:, payment_amount: 60, acceptance_window_start_date: 1.day.ago) }
+  let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_amount: 60, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
   let(:funded_place) { [true] }
 
   def create_declaration(application:, statement:, milestone:)
@@ -100,7 +100,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
         create_declaration(application: completed_application, statement:, milestone:)
       end
 
-      let(:milestone) { create(:milestone, :completed, course_cohort:, payment_amount: 40, acceptance_window_start_date: 1.day.ago) }
+      let(:milestone) { create(:milestone, :completed, course: course_cohort.course, payment_amount: 40, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
       let(:accepted_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
       let(:started_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
       let(:completed_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
@@ -119,7 +119,12 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
 
     context "when the statement deadline is before the milestone acceptance window" do
       let(:statement) { create(:statement, lead_provider:, start_date: 1.month.ago.beginning_of_month) }
-      let(:milestone) { create(:milestone, :started, course_cohort:, payment_amount: 60, acceptance_window_start_date: Time.zone.today) }
+      let(:course_cohort) do
+        create(:course_cohort, training_starts_at: Time.zone.today).tap do |course_cohort|
+          create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100)
+        end
+      end
+      let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_amount: 60, acceptance_window_start_offset: 0) }
 
       before do
         create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)

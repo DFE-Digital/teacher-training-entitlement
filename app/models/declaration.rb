@@ -19,8 +19,7 @@ class Declaration < ApplicationRecord
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
   belongs_to :clawback_declaration, optional: true
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
-  has_one :course_cohort, through: :milestone
-  has_one :application_course_cohort, through: :application, source: :course_cohort
+  has_one :course_cohort, through: :application
   has_many :participant_outcomes, dependent: :destroy
 
   delegate :course, :user, to: :application
@@ -135,6 +134,10 @@ class Declaration < ApplicationRecord
     application.course.course_group
   end
 
+  def cohort
+    application&.cohort || super
+  end
+
   def clawback!
     self.clawback_declaration = ClawbackDeclaration.new(
       paid_declaration: self,
@@ -173,9 +176,9 @@ class Declaration < ApplicationRecord
   end
 
   def available_delivery_partner_ids
-    return [] unless lead_provider && milestone&.course_cohort
+    return [] unless lead_provider && milestone && course_cohort
 
-    lead_provider.delivery_partners_for_course_cohort(course_cohort: milestone.course_cohort).map(&:id)
+    lead_provider.delivery_partners_for_course_cohort(course_cohort:).map(&:id)
   end
 
   def delivery_partners
@@ -192,6 +195,10 @@ class Declaration < ApplicationRecord
     result
   end
 
+  def course_cohort
+    application&.course_cohort
+  end
+
 private
 
   def validate_declaration_date_within_acceptance_window
@@ -202,11 +209,14 @@ private
     milestone = application.milestones.find_by(declaration_type:)
     return unless milestone
 
-    unless declaration_date >= milestone.acceptance_window_start_date
+    acceptance_window_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+    acceptance_window_end_date = course_cohort.acceptance_window_end_date_for(milestone)
+
+    unless acceptance_window_start_date.nil? || declaration_date >= acceptance_window_start_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
     end
 
-    if milestone.acceptance_window_end_date && declaration_date > milestone.acceptance_window_end_date
+    if acceptance_window_end_date && declaration_date > acceptance_window_end_date
       errors.add(:declaration_date, :declaration_after_schedule_end)
     end
   end
@@ -222,10 +232,10 @@ private
   end
 
   def delivery_partner_required
-    return false unless milestone&.cohort
+    return false unless application&.cohort
     return false unless application_inside_catchment?
     return false if persisted? && !delivery_partner_id_changed?
 
-    milestone.cohort.start_year >= DELIVER_PARTNER_REQUIRED_FROM
+    application.cohort.start_year >= DELIVER_PARTNER_REQUIRED_FROM
   end
 end

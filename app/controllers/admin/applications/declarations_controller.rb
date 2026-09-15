@@ -10,7 +10,7 @@ module Admin
                                     :delivery_partner,
                                     :secondary_delivery_partner,
                                     :versions,
-                                    milestone: { course_cohort: :cohort })
+                                    milestone: :course)
                           .order(created_at: :asc, id: :asc)
       end
     end

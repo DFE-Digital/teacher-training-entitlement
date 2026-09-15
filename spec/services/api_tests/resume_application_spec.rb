@@ -5,7 +5,7 @@ RSpec.describe APITests::ResumeApplication, type: :model do
 
   let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
   let(:lead_provider) { create(:lead_provider) }
-  let(:course_cohort) { create(:course_cohort, lead_provider:) }
+  let(:course_cohort) { create(:course_cohort, lead_provider:, training_starts_at: 1.day.ago.to_date) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
 
   let(:schedule_id) { course_cohort.ecf_id }
@@ -25,6 +25,15 @@ RSpec.describe APITests::ResumeApplication, type: :model do
   end
 
   before do
+    course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+      milestone.acceptance_window_start_offset = 0
+      milestone.acceptance_window_end_offset = 1
+    end
+    course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+      milestone.acceptance_window_start_offset = 1
+      milestone.acceptance_window_end_offset = 2
+    end
+
     stub_const("LEAD_PROVIDER_CONFIG", lead_provider.name => { token: "test-token" }) if lead_provider
     allow(HTTParty).to receive(:put).and_return(api_response)
   end

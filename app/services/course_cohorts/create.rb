@@ -29,14 +29,18 @@ module CourseCohorts
           course:,
           academic_year:,
           term_identifier:,
+          training_starts_at:,
         )
 
-        @course_cohort.milestones.started.create!(acceptance_window_start_date: training_starts_at)
+        course.milestones.started.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+          milestone.acceptance_window_start_offset = 0
+        end
+
         if training_ends_at
-          @course_cohort.milestones.completed.create!(
-            acceptance_window_start_date: training_ends_at - 2.months,
-            acceptance_window_end_date: training_ends_at,
-          )
+          course.milestones.completed.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+            milestone.acceptance_window_start_offset = months_between(training_starts_at, training_ends_at - 2.months)
+            milestone.acceptance_window_end_offset = months_between(training_starts_at, training_ends_at)
+          end
         end
 
         lead_providers.each do |lead_provider, contract|
@@ -54,6 +58,12 @@ module CourseCohorts
           end
         end
       end
+    end
+
+  private
+
+    def months_between(start_date, end_date)
+      (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
     end
   end
 end

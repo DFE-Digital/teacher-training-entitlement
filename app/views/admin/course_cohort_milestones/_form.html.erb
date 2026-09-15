@@ -15,9 +15,9 @@
     <% end %>
   <% end %>
 
-  <%= f.govuk_date_field :acceptance_window_start_date, legend: { text: "Acceptance window start" } %>
+  <%= f.govuk_text_field :acceptance_window_start_offset, label: { text: "Acceptance window start offset" }, suffix_text: "months", class: "govuk-input--width-5" %>
 
-  <%= f.govuk_date_field :acceptance_window_end_date, legend: { text: "Acceptance window end" } %>
+  <%= f.govuk_text_field :acceptance_window_end_offset, label: { text: "Acceptance window end offset" }, suffix_text: "months", class: "govuk-input--width-5" %>
 
   <%= f.govuk_text_field :payment_amount, label: { text: "Payment amount" }, prefix_text: "£", class: "govuk-input--width-10" %>
 

@@ -236,7 +236,7 @@ RSpec.describe "Application endpoints", type: :request do
   describe "PUT /api/v1/applications/:ecf_id/defer" do
     let(:expected_data_id) { application.ecf_id }
     let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider) }
-    let(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now) }
+    let(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2) }
     let(:application_status_trait) { :started }
     let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course_cohort:) }
     let(:params) { { data: { attributes: { reason: "career-break" } } } }
@@ -285,14 +285,26 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "PUT /api/v1/applications/:ecf_id/resume" do
     let(:expected_data_id) { application.ecf_id }
-    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider) }
-    let(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now) }
+    let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider, training_starts_at: 1.day.ago.to_date) }
+    let(:started_milestone) do
+      course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+        milestone.acceptance_window_start_offset = 0
+        milestone.acceptance_window_end_offset = 1
+      end
+    end
+    let(:completed_milestone) do
+      course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+        milestone.acceptance_window_start_offset = 1
+        milestone.acceptance_window_end_offset = 2
+      end
+    end
     let(:application_status_trait) { :deferred }
     let(:application) { create(:application, application_status_trait, lead_provider: current_lead_provider, course_cohort:) }
     let(:params) { { data: { attributes: { schedule_id: course_cohort.ecf_id } } } }
 
     before do
       started_milestone
+      completed_milestone
       api_put(resume_api_v1_application_path(ecf_id: application.ecf_id), params:)
     end
 
@@ -329,7 +341,7 @@ RSpec.describe "Application endpoints", type: :request do
   describe "PUT /api/v1/applications/:ecf_id/withdraw" do
     let(:expected_data_id) { application.ecf_id }
     let!(:course_cohort) { create(:course_cohort, lead_provider: current_lead_provider) }
-    let(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now) }
+    let(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2) }
     let(:application_status_trait) { :started }
     let(:application) { create(:application, application_status_trait, :with_declaration, lead_provider: current_lead_provider, course_cohort:) }
     let(:params) { { data: { attributes: { reason: "insufficient-capacity" } } } }
@@ -436,9 +448,9 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "POST /api/v1/applications/:ecf_id/declarations/started" do
     let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
-    let(:declaration_date) { started_milestone.acceptance_window_start_date + 1.hour }
+    let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) + 1.hour }
     let(:course_cohort) { create(:course_cohort) }
-    let!(:started_milestone) { create(:milestone, :started, course_cohort:, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 1.day.from_now) }
+    let!(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2) }
     let(:has_passed) { true }
     let(:delivery_partner_id) do
       create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
@@ -491,10 +503,10 @@ RSpec.describe "Application endpoints", type: :request do
   end
 
   describe "POST /api/v1/applications/:ecf_id/declarations/completed" do
-    let(:resource) { create(:application, :with_declaration, lead_provider: current_lead_provider) }
-    let(:declaration_date) { completed_milestone.acceptance_window_start_date + 1.hour }
-    let(:course_cohort) { resource.course_cohort }
-    let!(:completed_milestone) { create(:milestone, :completed, course_cohort:, acceptance_window_start_date: resource.declarations.started.last.declaration_date + 1.day) }
+    let(:resource) { create(:application, :with_declaration, course_cohort:, lead_provider: current_lead_provider) }
+    let(:declaration_date) { course_cohort.acceptance_window_start_date_for(completed_milestone) + 1.hour }
+    let(:course_cohort) { create(:course_cohort) }
+    let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
     let(:has_passed) { true }
     let(:delivery_partner_id) do
       create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id

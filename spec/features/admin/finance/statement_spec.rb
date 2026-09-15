@@ -13,8 +13,8 @@ RSpec.feature "Statement", type: :feature do
   end
 
   before do
-    create(:milestone, declaration_type: "started", course_cohort:)
-    create(:milestone, declaration_type: "completed", course_cohort:)
+    create(:milestone, declaration_type: "started", course: course_cohort.course)
+    create(:milestone, declaration_type: "completed", course: course_cohort.course)
 
     application = create(:application, :accepted, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider)
     create(:declaration, state: :eligible, application:, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider, statement:)

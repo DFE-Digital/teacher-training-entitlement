@@ -44,7 +44,8 @@ RSpec.describe Applications::ChangeCourseCohort, type: :model do
 
     context "when target course cohort is already in training" do
       before do
-        create(:milestone, :started, course_cohort: target_course_cohort, acceptance_window_start_date: 1.day.ago, acceptance_window_end_date: 2.days.from_now)
+        target_course_cohort.update!(training_starts_at: 1.day.ago.to_date)
+        create(:milestone, :started, course: target_course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2)
       end
 
       it { expect { service.call }.not_to change(application, :course_cohort) }
