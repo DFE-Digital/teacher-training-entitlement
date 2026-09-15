@@ -113,8 +113,7 @@ module Declarations
 
       amount = nil
       if milestone&.payment_percentage
-        percentage = milestone.payment_percentage / 100
-        amount = contract.teacher_funding * percentage
+        amount = contract.teacher_funding * milestone.payment_percentage
       end
       # for uplift incentives
       # amount += qualifying_uplfit_incentives.sum(&:value)

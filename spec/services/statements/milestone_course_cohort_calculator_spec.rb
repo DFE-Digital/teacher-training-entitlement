@@ -20,7 +20,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
     end
   end
   let(:contract) { lead_provider.contract(course_cohort:) }
-  let(:milestone) { create(:milestone, :started, course_cohort:, payment_percentage: 60, acceptance_window_start_date: 1.day.ago) }
+  let(:milestone) { create(:milestone, :started, course_cohort:, payment_percentage: 0.6, acceptance_window_start_date: 1.day.ago) }
   let(:funded_place) { [true] }
 
   def create_declaration(application:, statement:, milestone:)
@@ -100,7 +100,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
         create_declaration(application: completed_application, statement:, milestone:)
       end
 
-      let(:milestone) { create(:milestone, :completed, course_cohort:, payment_percentage: 40, acceptance_window_start_date: 1.day.ago) }
+      let(:milestone) { create(:milestone, :completed, course_cohort:, payment_percentage: 0.4, acceptance_window_start_date: 1.day.ago) }
       let(:accepted_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
       let(:started_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
       let(:completed_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
@@ -119,7 +119,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
 
     context "when the statement deadline is before the milestone acceptance window" do
       let(:statement) { create(:statement, lead_provider:, start_date: 1.month.ago.beginning_of_month) }
-      let(:milestone) { create(:milestone, :started, course_cohort:, payment_percentage: 60, acceptance_window_start_date: Time.zone.today) }
+      let(:milestone) { create(:milestone, :started, course_cohort:, payment_percentage: 0.6, acceptance_window_start_date: Time.zone.today) }
 
       before do
         create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)

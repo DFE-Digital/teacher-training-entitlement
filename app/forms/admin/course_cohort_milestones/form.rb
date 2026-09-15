@@ -30,12 +30,19 @@ module Admin
         @taken_declaration_types = taken_declaration_types
 
         attributes = attributes.with_indifferent_access
+        attributes[:payment_percentage] = payment_percentage_for_form(attributes)
 
         super(attributes
               .except(*date_parameter_keys)
               .merge(date_attributes_from_params(attributes))
               .slice(*ATTRIBUTE_KEYS)
               .compact)
+      end
+
+      def milestone_attributes
+        attributes.symbolize_keys.merge(
+          payment_percentage: payment_percentage_for_milestone,
+        )
       end
 
       def declaration_type_taken?(declaration_type)
@@ -59,6 +66,18 @@ module Admin
 
       def date_parameter_keys
         DATE_ATTRIBUTE_KEYS.flat_map { |attribute| [:"#{attribute}(1i)", :"#{attribute}(2i)", :"#{attribute}(3i)"] }
+      end
+
+      def payment_percentage_for_form(attributes)
+        return attributes[:payment_percentage] unless attributes.key?(:id) && attributes[:payment_percentage].present?
+
+        BigDecimal(attributes[:payment_percentage].to_s) * 100
+      end
+
+      def payment_percentage_for_milestone
+        return if payment_percentage.blank?
+
+        payment_percentage / 100
       end
     end
   end

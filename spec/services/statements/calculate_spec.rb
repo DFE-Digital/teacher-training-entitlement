@@ -10,7 +10,7 @@ RSpec.describe Statements::Calculate do
     subject(:course_cohorts) { described_class.new(statement:).course_cohorts }
 
     let(:application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-    let(:milestone) { create(:milestone, :started, payment_percentage: 60) }
+    let(:milestone) { create(:milestone, :started, payment_percentage: 0.6) }
     let!(:course_cohort) do
       cc = milestone.course_cohort
       create(:course_cohort_provider, course_cohort: cc, lead_provider:, teacher_funding: 100, recruitment_target: 20)

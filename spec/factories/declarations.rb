@@ -23,7 +23,7 @@ FactoryBot.define do
     ecf_id { SecureRandom.uuid }
     value do
       if application.funded_place && milestone.payment_percentage
-        (contract&.teacher_funding || 100) * (milestone.payment_percentage / 100)
+        (contract&.teacher_funding || 100) * milestone.payment_percentage
       end
     end
     statement do

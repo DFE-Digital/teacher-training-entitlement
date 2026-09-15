@@ -12,7 +12,7 @@ class Admin::CourseCohortMilestonesController < AdminController
 
   def create
     @form = build_form(form_params)
-    @milestone = @course_cohort.milestones.new(@form.attributes.symbolize_keys)
+    @milestone = @course_cohort.milestones.new(@form.milestone_attributes)
 
     if @milestone.save
       flash[:success] = "Milestone created"
@@ -29,7 +29,7 @@ class Admin::CourseCohortMilestonesController < AdminController
 
   def update
     @form = build_form(form_params)
-    @milestone.assign_attributes(@form.attributes.symbolize_keys)
+    @milestone.assign_attributes(@form.milestone_attributes)
 
     if @milestone.save
       flash[:success] = "Milestone updated"
