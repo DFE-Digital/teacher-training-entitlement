@@ -62,7 +62,7 @@ RSpec.describe Declarations::Void, type: :model do
       let(:declaration_trait) { declaration_state }
 
       it { expect { service.call }.to change { declaration.reload.state }.from(declaration_state).to("voided") }
-      it { expect { service.call }.to change { declaration.reload.value}.from(100).to(nil) }
+      it { expect { service.call }.to change { declaration.reload.value }.from(100).to(nil) }
 
       it "calls the void participant outcome service" do
         service_double = instance_double(ParticipantOutcomes::Void)

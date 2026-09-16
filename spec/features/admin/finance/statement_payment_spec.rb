@@ -7,6 +7,13 @@ RSpec.feature "Statement payment", type: :feature do
 
   let(:statement) { create(:statement, :payable) }
   let(:component) { Admin::StatementDetailsComponent.new(statement:, link_to_voids: false) }
+  let(:heading) do
+    [
+      statement.lead_provider.name,
+      statement.course_group,
+      statement.start_date.to_fs(:govuk_approx),
+    ].join(", ")
+  end
 
   before do
     declaration = create(:declaration, :payable, statement:)
@@ -17,7 +24,7 @@ RSpec.feature "Statement payment", type: :feature do
   end
 
   scenario "marking a statement as paid" do
-    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
+    expect(page).to have_css("h1", text: heading)
     click_link "Authorise for payment"
 
     expect(page).to have_css("h1", text: "Check #{statement.start_date.to_fs(:govuk_approx)} statement details")
@@ -28,12 +35,12 @@ RSpec.feature "Statement payment", type: :feature do
       click_button "Authorise for payment"
     end
 
-    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
+    expect(page).to have_css("h1", text: heading)
     expect(page).to have_css(".govuk-tag", text: /Authorised for payment at 1?\d:\d\d[ap]m on \d?\d [A-Z][a-z]{2} 20\d\d/)
   end
 
   scenario "marking a statement as paid before job has run" do
-    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
+    expect(page).to have_css("h1", text: heading)
     click_link "Authorise for payment"
 
     expect(page).to have_css("h1", text: "Check #{statement.start_date.to_fs(:govuk_approx)} statement details")
@@ -42,6 +49,6 @@ RSpec.feature "Statement payment", type: :feature do
     check "Yes, I'm ready to authorise this for payment", visible: :all
     click_button "Authorise for payment"
 
-    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
+    expect(page).to have_css("h1", text: heading)
   end
 end

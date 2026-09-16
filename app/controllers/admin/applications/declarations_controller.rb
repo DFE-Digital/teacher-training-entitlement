@@ -6,6 +6,7 @@ module Admin
 
         @declarations = @application.declarations
                           .includes(:lead_provider,
+                                    :course_cohort,
                                     :participant_outcomes,
                                     :delivery_partner,
                                     :secondary_delivery_partner,

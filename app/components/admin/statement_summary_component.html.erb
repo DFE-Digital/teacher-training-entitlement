@@ -62,7 +62,7 @@
       summary_list.with_row do |row|
         row.with_key { label_with_hint("Clawbacks", "The total value of voids") }
         row.with_value { number_to_currency(total_clawbacks) }
-        row.with_action(text: "View clawbacks", href: received_admin_finance_statement_path(statement, status: ClawbackDeclaration.states.values.join(","))) if link_to_voids
+        row.with_action(text: "View clawbacks", href: received_admin_finance_statement_path(statement, status: :awaiting_clawback)) if link_to_voids
       end
 
       summary_list.with_row do |row|

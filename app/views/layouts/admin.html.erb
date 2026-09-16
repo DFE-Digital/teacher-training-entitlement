@@ -15,7 +15,7 @@
     <%= render partial: "shared/cookies/banner" %>
 
     <%= govuk_header(classes: %w(with-extra-content)) do |header|
-      header.with_product_name(name: " | TTE admin console")
+      header.with_product_name(name: " | NPD admin console")
 
       tag.div(class: "govuk-header__container account-options") do
         govuk_link_to("Sign out", admin_sign_out_path, inverse: true, no_underline: true)
