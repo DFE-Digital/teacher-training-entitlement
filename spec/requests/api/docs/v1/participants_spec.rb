@@ -22,6 +22,12 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
   end
   let!(:participant) { application.user }
 
+  before do
+    application.course_cohort.update!(
+      term_identifier: :autumn,
+    )
+  end
+
   it_behaves_like "an API index endpoint documentation",
                   "/api/v1/participants",
                   "Participants",

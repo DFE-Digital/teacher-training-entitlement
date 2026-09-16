@@ -1,0 +1,66 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<% academic_year_keys = @wizard.current_step.academic_year_keys %>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <% @wizard.current_step.academic_years.each do |academic_year| %>
+    <%= f.hidden_field :academic_years, multiple: true, value: academic_year %>
+  <% end %>
+
+  <% academic_year_keys.each do |academic_year_key| %>
+    <h2 class="govuk-heading-m"><%= @wizard.current_step.academic_year_label(academic_year_key) %></h2>
+    <%= f.govuk_check_boxes_fieldset "selected_contract_financial_lead_provider_ids_#{academic_year_key}",
+                                     legend: { text: "Select contract financials", size: "s" } do %>
+      <% @wizard.state_store.selected_lead_providers.each do |selected_provider| %>
+        <% lead_provider = selected_provider.lead_provider %>
+        <% contract_financial_data = @wizard.current_step.contract_financial_data(academic_year_key, lead_provider) %>
+        <% field_prefix = "contract_financial_#{academic_year_key}_#{lead_provider.id}" %>
+        <% name_prefix = "#{f.object_name}[contract_financials][#{academic_year_key}][#{lead_provider.id}]" %>
+
+        <%= f.govuk_check_box "#{field_prefix}_selected",
+                              "1",
+                              name: "#{name_prefix}[selected]",
+                              checked: @wizard.current_step.contract_financial_selected?(academic_year_key, lead_provider),
+                              multiple: false,
+                              label: { text: lead_provider.name } do %>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+              <%= f.govuk_text_field "#{field_prefix}_teacher_funding",
+                                     name: "#{name_prefix}[teacher_funding]",
+                                     value: contract_financial_data["teacher_funding"],
+                                     label: { text: "Teacher funding", size: "s" } %>
+            </div>
+            <div class="govuk-grid-column-one-half">
+              <%= f.govuk_text_field "#{field_prefix}_recruitment_target",
+                                     name: "#{name_prefix}[recruitment_target]",
+                                     value: contract_financial_data["recruitment_target"],
+                                     label: { text: "Recruitment target", size: "s" } %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <%= f.govuk_text_field :academic_year_to_add,
+                             label: { text: "Add academic year", size: "s" },
+                             hint: { text: "For example, 2028" } %>
+    </div>
+  </div>
+
+  <%= button_tag "Add academic year",
+                 type: "submit",
+                 name: "add_academic_year",
+                 value: "1",
+                 class: "govuk-button govuk-button--secondary",
+                 data: { module: "govuk-button" } %>
+  <%= f.govuk_submit "Continue" %>
+<% end %>

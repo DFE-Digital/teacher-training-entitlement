@@ -132,6 +132,10 @@ class Declaration < ApplicationRecord
     application.course.course_group
   end
 
+  def cohort
+    application&.cohort || super
+  end
+
   def clawback!
     self.clawback_declaration = ClawbackDeclaration.new(
       paid_declaration: self,
@@ -186,6 +190,10 @@ class Declaration < ApplicationRecord
     result = changes.map { |v| [v.object_changes.dig("state", 1), v.created_at] }
     result.prepend([changes.first.object_changes.dig("state", 0), created_at]) unless changes.first.created_at == created_at
     result
+  end
+
+  def course_cohort
+    application&.course_cohort
   end
 
 private

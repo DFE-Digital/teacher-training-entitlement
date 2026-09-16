@@ -16,7 +16,7 @@ RSpec.describe CourseCohorts::Query do
   let(:sort) { nil }
 
   let(:course_cohort1) { create(:course_cohort, course: create(:course, identifier: "other")) }
-  let(:course_cohort2) { create(:course_cohort, academic_year: 2021) }
+  let(:course_cohort2) { create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2021, 9, 1)), academic_year: 2021) }
 
   describe "#course_cohorts" do
     before do

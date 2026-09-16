@@ -130,7 +130,6 @@ erDiagram
   }
   Declaration }o--|| Application : belongs_to
   Declaration }o--|| LeadProvider : belongs_to
-  Declaration }o--|| Cohort : belongs_to
   Declaration }o--|| Declaration : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
