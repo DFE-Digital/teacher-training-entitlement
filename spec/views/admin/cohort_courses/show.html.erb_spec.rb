@@ -7,19 +7,8 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
   let(:cohort) { create(:cohort) }
   let(:course) { create(:course) }
   let(:course_cohort) { create(:course_cohort, cohort:, course:) }
-  let(:milestone) do
-    create(
-      :milestone,
-      course:,
-      declaration_type: "started",
-      acceptance_window_start_offset: -7,
-      acceptance_window_end_offset: 7,
-    )
-  end
 
   before do
-    milestone
-
     assign(:cohort, cohort)
     assign(:cohorts, [cohort])
     assign(:course, course)

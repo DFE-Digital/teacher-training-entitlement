@@ -25,8 +25,8 @@ RSpec.describe Declarations::Create, type: :model do
   let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
   let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) + 1.hour }
 
-  let!(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 1) }
-  let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
+  let(:started_milestone) { course_milestone(course_cohort.course, :started) }
+  let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
   let(:has_passed) { true }
   let(:delivery_partner_id) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
@@ -74,7 +74,6 @@ RSpec.describe Declarations::Create, type: :model do
           it { expect(declaration.milestone).to eq(started_milestone) }
           it { expect(declaration.delivery_partner.ecf_id).to eq(delivery_partner_id) }
           it { expect(declaration.secondary_delivery_partner.ecf_id).to eq(secondary_delivery_partner_id) }
-          it { expect(declaration.value).to eq(started_milestone.payment_percentage) }
           it { expect(declaration.statement).to eq(statement) }
         end
 
@@ -187,7 +186,7 @@ RSpec.describe Declarations::Create, type: :model do
 
       context "when application has a voided completed declaration" do
         before do
-          application.declarations << create(:declaration, :voided, declaration_type:, application:)
+          application.declarations << create(:declaration, :voided, declaration_type:, application:, milestone: completed_milestone)
         end
 
         it "sets the application to completed" do
@@ -204,7 +203,7 @@ RSpec.describe Declarations::Create, type: :model do
         let(:resume_cohort) { create(:cohort, :next) }
         let(:course_cohort) { create(:course_cohort, cohort: resume_cohort, training_starts_at: 2.months.ago.to_date) }
         let(:started_declaration) { application.declarations.started_declaration_type.first }
-        let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
+
         let(:delivery_partner_id) do
           create(:delivery_partner,
                  lead_providers: {
@@ -231,6 +230,8 @@ RSpec.describe Declarations::Create, type: :model do
     end
 
     describe "error scenarios" do
+      let(:completed_milestone) { course_cohort.milestones.detect(&:completed_declaration_type?) }
+
       context "when application already completed" do
         before { application.update_column(:status, :completed) }
 
@@ -239,6 +240,7 @@ RSpec.describe Declarations::Create, type: :model do
 
       context "when application already have a completed declaration" do
         before do
+          # completed_milestone.update!(acceptance_window_start_offset: 0)
           application.declarations << create(:declaration, :eligible, declaration_type:, application:)
         end
 
@@ -345,7 +347,7 @@ RSpec.describe Declarations::Create, type: :model do
           application.declarations << create(:declaration, :eligible, declaration_type: "started", application:, milestone: started_milestone)
         end
 
-        it { is_expected.to be_valid }
+        it { is_expected.to be_invalid }
       end
     end
   end

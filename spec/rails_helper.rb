@@ -88,6 +88,7 @@ RSpec.configure do |config|
   config.include Helpers::APIHelpers, type: :request
   config.include Helpers::SwaggerExampleParser, type: :request
   config.include Helpers::TempfileHelper
+  config.include Helpers::CourseHelper
   config.include RSpec::DefaultHttpHeader, type: :request
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures

@@ -3,11 +3,12 @@ require "rails_helper"
 RSpec.describe "admin/applications/declarations/_declaration.html.erb", type: :view do
   subject { Capybara.string(render(locals: { declaration: })) }
 
-  let(:declaration) { build_stubbed(:declaration, delivery_partner: nil) }
+  let(:application) { create(:application) }
+  let(:declaration) { build_stubbed(:declaration, application:, delivery_partner: nil) }
 
   it { is_expected.to have_summary_item("Declaration ID", declaration.ecf_id) }
   it { is_expected.to have_summary_item("Declaration date", declaration.declaration_date.to_fs(:govuk_short)) }
-  it { is_expected.to have_summary_item("Declaration cohort", declaration.cohort&.name) }
+  it { is_expected.to have_summary_item("Declaration cohort", declaration.course_cohort.schedule_identifier) }
   it { is_expected.to have_summary_item("Provider", declaration.lead_provider.name) }
   it { is_expected.to have_summary_item("Delivery partner", "-") }
   it { is_expected.to have_summary_item("Secondary delivery partner", "-") }
@@ -16,7 +17,7 @@ RSpec.describe "admin/applications/declarations/_declaration.html.erb", type: :v
   it { is_expected.to have_summary_item("Statement", declaration.statement.start_date.to_fs(:govuk_approx)) }
 
   context "with delivery partners" do
-    let(:declaration) { build_stubbed(:declaration, delivery_partner: build_stubbed(:delivery_partner), secondary_delivery_partner: build_stubbed(:delivery_partner)) }
+    let(:declaration) { build_stubbed(:declaration, application:, delivery_partner: build_stubbed(:delivery_partner), secondary_delivery_partner: build_stubbed(:delivery_partner)) }
 
     it { is_expected.to have_summary_item("Delivery partner", declaration.delivery_partner.name) }
     it { is_expected.to have_summary_item("Secondary delivery partner", declaration.secondary_delivery_partner.name) }

@@ -4,7 +4,7 @@ FactoryBot.define do
     cohort
     academic_year { Date.current.year }
     term_identifier { :autumn }
-    training_starts_at { 1.week.ago.to_date }
+    training_starts_at { 3.months.ago.to_date }
     initialize_with do
       CourseCohort.find_or_initialize_by(course:, cohort:)
     end

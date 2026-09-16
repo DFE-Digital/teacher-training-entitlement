@@ -18,11 +18,11 @@ module Statements
       course_cohorts.each do |ccc|
         ccc.funded_scopes.each do |milestone_scope|
           declaration_type = milestone_scope[:declaration_type]
-          if grouping[declaration_type].nil?
-            grouping[declaration_type] = milestone_scope[:expected].includes(course_cohort: :cohort).to_a
-          else
-            grouping[declaration_type] = grouping[declaration_type] + milestone_scope[:expected].includes(course_cohort: :cohort).to_a
-          end
+          grouping[declaration_type] = if grouping[declaration_type].nil?
+                                         milestone_scope[:expected].includes(course_cohort: :cohort).to_a
+                                       else
+                                         grouping[declaration_type] + milestone_scope[:expected].includes(course_cohort: :cohort).to_a
+                                       end
         end
       end
 
@@ -35,11 +35,11 @@ module Statements
       course_cohorts.each do |ccc|
         ccc.funded_scopes.each do |milestone_scope|
           declaration_type = milestone_scope[:declaration_type]
-          if grouping[declaration_type].nil?
-            grouping[declaration_type] = milestone_scope[:outstanding].includes(course_cohort: :cohort).to_a
-          else
-            grouping[declaration_type] = grouping[declaration_type] + milestone_scope[:outstanding].includes(course_cohort: :cohort).to_a
-          end
+          grouping[declaration_type] = if grouping[declaration_type].nil?
+                                         milestone_scope[:outstanding].includes(course_cohort: :cohort).to_a
+                                       else
+                                         grouping[declaration_type] + milestone_scope[:outstanding].includes(course_cohort: :cohort).to_a
+                                       end
         end
       end
 

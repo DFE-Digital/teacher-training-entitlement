@@ -20,7 +20,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
     end
   end
   let(:contract) { lead_provider.contract(course_cohort:) }
-  let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_percentage: 0.6, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
+  let(:milestone) { course_cohort.course.milestones.detect(&:started_declaration_type?) }
   let(:funded_place) { [true] }
 
   def create_declaration(application:, statement:, milestone:)
