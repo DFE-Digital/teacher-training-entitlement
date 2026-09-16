@@ -129,7 +129,7 @@ RSpec.describe Declaration, type: :model do
         context "with later cohort" do
           let(:cohort_start_year) { described_class::DELIVER_PARTNER_REQUIRED_FROM + 1 }
 
-          it { is_expected.to validate_presence_of(:delivery_partner_id) }
+          it { is_expected.not_to validate_presence_of(:delivery_partner_id) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
         end
 
@@ -212,6 +212,16 @@ RSpec.describe Declaration, type: :model do
         end
 
         it { expect(declaration.errors).to include :secondary_delivery_partner_id }
+      end
+
+      context "when delivery_partner and secondary_delivery_partner are the same" do
+        before do
+          declaration.secondary_delivery_partner = delivery_partner
+        end
+
+        it "is invalid" do
+          expect(declaration).to have_error(:secondary_delivery_partner_id, :duplicate_delivery_partner, "The property '#/secondary_delivery_partner_id' cannot have the same value as the property '#/delivery_partner_id'")
+        end
       end
     end
 

@@ -48,6 +48,11 @@ class Declaration < ApplicationRecord
     .latest_first
   }
 
+  scope :for_delivery_partners, lambda { |delivery_partner|
+    where(delivery_partner: delivery_partner)
+      .or(where(secondary_delivery_partner: delivery_partner))
+  }
+
   enum :state, {
     submitted: "submitted",
     eligible: "eligible",
@@ -96,7 +101,6 @@ class Declaration < ApplicationRecord
   validate :validate_declaration_date_not_in_the_future
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
-  validates :delivery_partner_id, presence: true, if: :delivery_partner_required
   validates :delivery_partner_id, absence: { message: :overseas },
                                   unless: :application_inside_catchment?
   validates :delivery_partner_id, inclusion: { in: :available_delivery_partner_ids },
@@ -117,11 +121,7 @@ class Declaration < ApplicationRecord
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
 
   validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true, if: -> { type.blank? }
-
-  scope :for_delivery_partners, lambda { |delivery_partner|
-    where(delivery_partner: delivery_partner)
-      .or(where(secondary_delivery_partner: delivery_partner))
-  }
+  validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
   def clawback_statement
     Statement.clawback(lead_provider:, course_group:).first ||
@@ -214,11 +214,9 @@ private
     errors.add(:declaration_date, :future_declaration_date) if declaration_date&.future?
   end
 
-  def delivery_partner_required
-    return false unless application&.cohort
-    return false unless application_inside_catchment?
-    return false if persisted? && !delivery_partner_id_changed?
-
-    application.cohort.start_year >= DELIVER_PARTNER_REQUIRED_FROM
+  def delivery_partners_are_not_the_same
+    if delivery_partner == secondary_delivery_partner
+      errors.add :secondary_delivery_partner_id, :duplicate_delivery_partner
+    end
   end
 end
