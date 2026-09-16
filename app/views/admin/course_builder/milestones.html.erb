@@ -1,0 +1,67 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <% Admin::CourseBuilder::Steps::Milestones::REQUIRED_MILESTONE_TYPES.each do |milestone_type| %>
+    <%= hidden_field_tag "#{f.object_name}[milestones][#{milestone_type}][selected]", true %>
+  <% end %>
+
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        Select milestone types
+      </legend>
+
+      <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+        <% Milestone::DECLARATION_TYPES.each do |declaration_type| %>
+          <% milestone_data = @wizard.current_step.milestone_data(declaration_type) %>
+
+          <div class="<%= "app-required-milestone" if @wizard.current_step.required_milestone_type?(declaration_type) %>">
+            <%= f.govuk_check_box "#{declaration_type}_selected",
+                                  true,
+                                  name: "#{f.object_name}[milestones][#{declaration_type}][selected]",
+                                  multiple: false,
+                                  checked: @wizard.current_step.milestone_selected?(declaration_type),
+                                  disabled: @wizard.current_step.required_milestone_type?(declaration_type),
+                                  label: { text: declaration_type.humanize } do %>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-third">
+                  <%= f.govuk_select "#{declaration_type}_acceptance_window_start_offset",
+                                     options_for_select(
+                                       Admin::CourseBuilder::Steps::Milestones::OFFSET_OPTIONS,
+                                       milestone_data["acceptance_window_start_offset"],
+                                     ),
+                                     name: "#{f.object_name}[milestones][#{declaration_type}][acceptance_window_start_offset]",
+                                     label: { text: "Acceptance window start", size: "s" } %>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                  <%= f.govuk_select "#{declaration_type}_acceptance_window_end_offset",
+                                     options_for_select(
+                                       Admin::CourseBuilder::Steps::Milestones::OFFSET_OPTIONS,
+                                       milestone_data["acceptance_window_end_offset"],
+                                     ),
+                                     name: "#{f.object_name}[milestones][#{declaration_type}][acceptance_window_end_offset]",
+                                     label: { text: "Acceptance window end", size: "s" } %>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                  <%= f.govuk_text_field "#{declaration_type}_payment_percentage",
+                                         name: "#{f.object_name}[milestones][#{declaration_type}][payment_percentage]",
+                                         value: milestone_data["payment_percentage"],
+                                         label: { text: "Payment percentage", size: "s" },
+                                         suffix_text: "%" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </fieldset>
+  </div>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

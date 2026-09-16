@@ -17,10 +17,5 @@
 
   <%= f.govuk_date_field :training_starts_at, legend: { text: "Training starts at" }, caption: { text: "Registration start date: #{@cohort.registration_starts_at.to_fs(:govuk_short)}" } %>
 
-  <%= render "admin/course_cohort_providers/lead_providers_form",
-             f:,
-             lead_provider_options: @form.lead_provider_options,
-             selection: @form.selected_lead_providers %>
-
   <%= f.govuk_submit "Add course" %>
 <% end %>

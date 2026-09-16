@@ -194,6 +194,10 @@ class Declaration < ApplicationRecord
     result
   end
 
+  def course_cohort
+    application&.course_cohort
+  end
+
 private
 
   def validate_declaration_date_within_acceptance_window
