@@ -7,7 +7,7 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
     let(:attributes) do
       {
         declaration_type: "started",
-        payment_amount: "123.45",
+        payment_percentage: "40",
         "acceptance_window_start_date(1i)": "2026",
         "acceptance_window_start_date(2i)": "1",
         "acceptance_window_start_date(3i)": "1",
@@ -21,7 +21,7 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
     it "maps the milestone attributes" do
       expect(form).to have_attributes(
         declaration_type: "started",
-        payment_amount: BigDecimal("123.45"),
+        payment_percentage: BigDecimal("40"),
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
       )
@@ -30,7 +30,14 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
     it "exposes normalized attributes" do
       expect(form.attributes.symbolize_keys).to include(
         declaration_type: "started",
-        payment_amount: BigDecimal("123.45"),
+        payment_percentage: BigDecimal("40"),
+      )
+    end
+
+    it "exposes milestone attributes with payment percentage as a decimal ratio" do
+      expect(form.milestone_attributes).to include(
+        declaration_type: "started",
+        payment_percentage: BigDecimal("0.4"),
       )
     end
 
@@ -40,7 +47,7 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
       it "builds an empty form" do
         expect(form.attributes.symbolize_keys).to eq(
           declaration_type: nil,
-          payment_amount: nil,
+          payment_percentage: nil,
           acceptance_window_start_date: nil,
           acceptance_window_end_date: nil,
         )
@@ -57,7 +64,7 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
       create(
         :milestone,
         declaration_type: "started",
-        payment_amount: BigDecimal("123.45"),
+        payment_percentage: BigDecimal("0.4"),
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
       )
@@ -66,7 +73,7 @@ RSpec.describe Admin::CourseCohortMilestones::Form, type: :model do
     it "maps milestone attributes onto the form" do
       expect(form).to have_attributes(
         declaration_type: "started",
-        payment_amount: BigDecimal("123.45"),
+        payment_percentage: BigDecimal("40"),
         acceptance_window_start_date: Date.new(2026, 1, 1),
         acceptance_window_end_date: Date.new(2026, 1, 31),
       )

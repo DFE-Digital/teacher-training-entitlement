@@ -19,7 +19,7 @@
 
   <%= f.govuk_date_field :acceptance_window_end_date, legend: { text: "Acceptance window end" } %>
 
-  <%= f.govuk_text_field :payment_amount, label: { text: "Payment amount" }, prefix_text: "£", class: "govuk-input--width-10" %>
+  <%= f.govuk_text_field :payment_percentage, label: { text: "Payment percentage" }, suffix_text: "%", class: "govuk-input--width-10" %>
 
   <div class="govuk-button-group">
     <%= f.govuk_submit submit_text %>

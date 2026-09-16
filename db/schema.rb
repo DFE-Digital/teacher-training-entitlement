@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_11_101200) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_13_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -414,7 +414,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_11_101200) do
     t.bigint "course_id"
     t.datetime "created_at", null: false
     t.enum "declaration_type", null: false, enum_type: "declaration_types"
-    t.decimal "payment_amount", precision: 10, scale: 2
+    t.decimal "payment_percentage", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.index ["course_cohort_id", "declaration_type"], name: "index_milestones_on_course_cohort_id_and_declaration_type", unique: true
     t.index ["course_cohort_id"], name: "index_milestones_on_course_cohort_id"

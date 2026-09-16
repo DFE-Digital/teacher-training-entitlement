@@ -324,7 +324,7 @@ en:
           attributes:
             declaration_type:
               inclusion: Please choose a declaration type
-            payment_amount:
+            payment_percentage:
               inclusion: Please choose a declaration type
         participant_outcome:
           attributes:
