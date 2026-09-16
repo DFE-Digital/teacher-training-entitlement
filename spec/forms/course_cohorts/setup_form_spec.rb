@@ -8,7 +8,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
       cohort:,
       course_id:,
       training_starts_at:,
-      training_ends_at:,
       lead_providers:,
     )
   end
@@ -17,7 +16,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
   let(:course) { create(:course) }
   let(:course_id) { course.id }
   let(:training_starts_at) { { 1 => 2027, 2 => 9, 3 => 1 } }
-  let(:training_ends_at) { nil }
   let(:lead_provider) { create(:lead_provider) }
   let(:lead_providers) do
     { lead_provider.id.to_s => { "id" => lead_provider.id.to_s, "contract" => "1000" } }
@@ -36,11 +34,11 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
         end
       end
 
-      context "with no training end date" do
+      context "with no training start date" do
         it "does not add an error on training_ends_at" do
           form.valid?
 
-          expect(form.errors[:training_ends_at]).to be_empty
+          expect(form.errors[:training_starts_at]).to be_empty
         end
       end
 
@@ -51,16 +49,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
           form.valid?
 
           expect(form.errors[:training_starts_at]).to include("Enter a valid date")
-        end
-      end
-
-      context "with an invalid training end date" do
-        let(:training_ends_at) { "not-a-date" }
-
-        it "adds an error on training_ends_at" do
-          form.valid?
-
-          expect(form.errors[:training_ends_at]).to include("Enter a valid date")
         end
       end
     end
@@ -149,18 +137,6 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
       it "returns nil" do
         expect(form.selected_course).to be_nil
       end
-    end
-  end
-
-  describe "#training_dates" do
-    let(:training_starts_at) { { 1 => 2027, 2 => 9, 3 => 1 } }
-    let(:training_ends_at) { { 1 => 2028, 2 => 7, 3 => 31 } }
-
-    it "returns a hash of the start and end training dates" do
-      expect(form.training_dates).to eq(
-        start: Date.new(2027, 9, 1),
-        end: Date.new(2028, 7, 31),
-      )
     end
   end
 end
