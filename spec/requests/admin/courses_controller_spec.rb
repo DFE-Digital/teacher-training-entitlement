@@ -84,6 +84,5 @@ RSpec.describe Admin::CoursesController, type: :request do
         expect(course.reload.name).to eq("Updated")
       end
     end
-
   end
 end

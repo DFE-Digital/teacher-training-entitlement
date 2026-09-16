@@ -9,9 +9,9 @@ module Admin
           Milestone::COMPLETED,
         ].freeze
 
-        OFFSET_OPTIONS = (1..12).map do |months|
+        OFFSET_OPTIONS = (1..12).map { |months|
           ["#{months} #{'month'.pluralize(months)}", months]
-        end.freeze
+        }.freeze
 
         attribute :milestones, default: -> { {} }
 

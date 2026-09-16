@@ -59,7 +59,6 @@ RSpec.describe Cohort, type: :model do
         expect(cohort.description).to eq("Custom cohort")
       end
     end
-
   end
 
   describe ".order_by_latest" do
