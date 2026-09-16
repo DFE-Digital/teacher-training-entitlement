@@ -6,7 +6,7 @@ RSpec.describe Milestone, type: :model do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:course_cohort) }
+    it { is_expected.to belong_to(:course).optional }
   end
 
   describe "validations" do
@@ -16,155 +16,60 @@ RSpec.describe Milestone, type: :model do
       it { is_expected.to have_error(:declaration_type, :inclusion, "Please choose a declaration type") }
     end
 
-    context "when acceptance window start date is missing" do
-      subject(:milestone) { build(:milestone, acceptance_window_start_date: nil) }
+    context "when acceptance window start offset is missing" do
+      subject(:milestone) { build(:milestone, acceptance_window_start_offset: nil) }
 
-      it { is_expected.to have_error(:acceptance_window_start_date, :blank, "can't be blank") }
+      it { is_expected.to have_error(:acceptance_window_start_offset, :blank, "can't be blank") }
     end
 
-    context "when creating a milestone with a declaration type that already exists for the course cohort" do
+    context "when acceptance window start offset is present" do
+      subject(:milestone) { build(:milestone, acceptance_window_start_offset: 0) }
+
+      it { is_expected.to be_valid }
+    end
+
+    context "when acceptance window offsets are not integers" do
       subject(:milestone) do
         build(
           :milestone,
-          :started,
-          course_cohort:,
-          acceptance_window_start_date: Date.new(2026, 2, 1),
-          acceptance_window_end_date: Date.new(2026, 2, 28),
+          acceptance_window_start_offset: 1.5,
+          acceptance_window_end_offset: 2.5,
         )
       end
 
-      let(:course_cohort) { create(:course_cohort) }
-
-      before do
-        create(
-          :milestone,
-          :started,
-          course_cohort:,
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
-        )
+      it do
+        expect(milestone).to have_error(:acceptance_window_start_offset, :not_an_integer, "must be an integer")
+        expect(milestone).to have_error(:acceptance_window_end_offset, :not_an_integer, "must be an integer")
       end
+    end
+
+    context "when creating a milestone with a declaration type that already exists for the course" do
+      subject(:milestone) { build(:milestone, :started, course:) }
+
+      let(:course) { create(:course) }
+
+      before { create(:milestone, :started, course:) }
 
       it { is_expected.to have_error(:declaration_type, :taken, "has already been taken") }
     end
 
-    context "when creating a milestone with a declaration type that exists for another course cohort" do
-      let(:course_cohort) { create(:course_cohort) }
+    context "when creating a milestone with a declaration type that exists for another course" do
+      let(:course) { create(:course) }
 
-      before do
-        create(
-          :milestone,
-          :started,
-          course_cohort: create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2026, 2, 1))),
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
-        )
-      end
+      before { create(:milestone, :started, course: create(:course)) }
 
       it "is valid" do
-        milestone = build(
-          :milestone,
-          :started,
-          course_cohort:,
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
-        )
-
-        expect(milestone).to be_valid
-      end
-    end
-
-    context "when acceptance windows do not overlap in the same course cohort" do
-      let(:course_cohort) { create(:course_cohort) }
-
-      before do
-        create(
-          :milestone,
-          :started,
-          course_cohort:,
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
-        )
-      end
-
-      it "is valid" do
-        milestone = build(
-          :milestone,
-          :completed,
-          course_cohort:,
-          acceptance_window_start_date: Date.new(2026, 2, 1),
-          acceptance_window_end_date: Date.new(2026, 2, 28),
-        )
-
-        expect(milestone).to be_valid
-      end
-    end
-
-    context "when an acceptance window overlaps a milestone in another course cohort" do
-      let(:course_cohort) { create(:course_cohort) }
-
-      before do
-        create(
-          :milestone,
-          course_cohort: create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2026, 2, 1))),
-          declaration_type: "started",
-          acceptance_window_start_date: Date.new(2026, 1, 1),
-          acceptance_window_end_date: Date.new(2026, 1, 31),
-        )
-      end
-
-      it "is valid" do
-        milestone = build(
-          :milestone,
-          :completed,
-          course_cohort:,
-          acceptance_window_start_date: Date.new(2026, 1, 15),
-          acceptance_window_end_date: Date.new(2026, 2, 15),
-        )
-
-        expect(milestone).to be_valid
+        expect(build(:milestone, :started, course:)).to be_valid
       end
     end
   end
 
   describe "#in_declaration_type_order" do
-    let(:course_cohort) { create(:course_cohort) }
-    let(:started) do
-      create(
-        :milestone,
-        declaration_type: Milestone::STARTED,
-        course_cohort:,
-        acceptance_window_start_date: Date.new(2026, 1, 1),
-        acceptance_window_end_date: Date.new(2026, 1, 31),
-      )
-    end
-    let(:retained_1) do
-      create(
-        :milestone,
-        declaration_type: Milestone::RETAINED_1,
-        course_cohort:,
-        acceptance_window_start_date: Date.new(2026, 2, 1),
-        acceptance_window_end_date: Date.new(2026, 2, 28),
-      )
-    end
-    let(:retained_2) do
-      create(
-        :milestone,
-        declaration_type: Milestone::RETAINED_2,
-        course_cohort:,
-        acceptance_window_start_date: Date.new(2026, 3, 1),
-        acceptance_window_end_date: Date.new(2026, 3, 31),
-      )
-    end
-    let(:completed) do
-      create(
-        :milestone,
-        declaration_type: Milestone::COMPLETED,
-        course_cohort:,
-        acceptance_window_start_date: Date.new(2026, 4, 1),
-        acceptance_window_end_date: Date.new(2026, 4, 30),
-      )
-    end
+    let(:course) { create(:course) }
+    let(:started) { create(:milestone, declaration_type: Milestone::STARTED, course:, acceptance_window_start_offset: 0) }
+    let(:retained_1) { create(:milestone, declaration_type: Milestone::RETAINED_1, course:, acceptance_window_start_offset: 1) }
+    let(:retained_2) { create(:milestone, declaration_type: Milestone::RETAINED_2, course:, acceptance_window_start_offset: 2) }
+    let(:completed) { create(:milestone, declaration_type: Milestone::COMPLETED, course:, acceptance_window_start_offset: 3) }
 
     before do
       # create deliberately out of order
@@ -179,63 +84,11 @@ RSpec.describe Milestone, type: :model do
     end
   end
 
-  describe "#editable?" do
-    subject { build(:milestone, acceptance_window_end_date:).editable? }
-
-    context "when the acceptance window ended before today" do
-      let(:acceptance_window_end_date) { 1.day.ago }
-
-      it { is_expected.to be_falsey }
-    end
-
-    context "when the acceptance window ends today" do
-      let(:acceptance_window_end_date) { Time.zone.today }
-
-      it { is_expected.to be_truthy }
-    end
-
-    context "when the acceptance window ends after today" do
-      let(:acceptance_window_end_date) { 1.day.from_now }
-
-      it { is_expected.to be_truthy }
-    end
-
-    context "when the acceptance window end date is missing" do
-      let(:acceptance_window_end_date) { nil }
-
-      it { is_expected.to be_truthy }
-    end
-  end
-
   describe ".all" do
-    let(:course_cohort) { create(:course_cohort) }
-    let(:january_milestone) do
-      create(
-        :milestone,
-        course_cohort:,
-        declaration_type: Milestone::STARTED,
-        acceptance_window_start_date: Date.new(2026, 1, 1),
-        acceptance_window_end_date: Date.new(2026, 1, 31),
-      )
-    end
-    let(:february_milestone) do
-      create(
-        :milestone,
-        course_cohort:,
-        declaration_type: Milestone::RETAINED_1,
-        acceptance_window_start_date: Date.new(2026, 2, 1),
-        acceptance_window_end_date: Date.new(2026, 2, 28),
-      )
-    end
-    let(:march_milestone) do
-      create(
-        :milestone,
-        course_cohort:,
-        declaration_type: Milestone::COMPLETED,
-        acceptance_window_start_date: Date.new(2026, 3, 1),
-        acceptance_window_end_date: Date.new(2026, 3, 31),
-      )
-    end
+    let(:course) { create(:course) }
+    let(:january_milestone) { create(:milestone, course:, declaration_type: Milestone::STARTED, acceptance_window_start_offset: 0) }
+    let(:february_milestone) { create(:milestone, course:, declaration_type: Milestone::RETAINED_1, acceptance_window_start_offset: 31) }
+    let(:march_milestone) { create(:milestone, course:, declaration_type: Milestone::COMPLETED, acceptance_window_start_offset: 59) }
 
     before do
       # create deliberately out of order
@@ -244,7 +97,7 @@ RSpec.describe Milestone, type: :model do
       february_milestone
     end
 
-    it "orders by acceptance_window_start_date by default" do
+    it "orders by acceptance_window_start_offset by default" do
       expect(Milestone.all).to eq([january_milestone, february_milestone, march_milestone])
     end
   end

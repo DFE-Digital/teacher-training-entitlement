@@ -7,28 +7,18 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
   let(:cohort) { create(:cohort) }
   let(:course) { create(:course) }
   let(:course_cohort) { create(:course_cohort, cohort:, course:) }
-  let(:editable_milestone) do
+  let(:milestone) do
     create(
       :milestone,
-      course_cohort:,
+      course:,
       declaration_type: "started",
-      acceptance_window_start_date: 1.week.ago,
-      acceptance_window_end_date: 1.week.from_now,
-    )
-  end
-  let(:non_editable_milestone) do
-    create(
-      :milestone,
-      course_cohort:,
-      declaration_type: "completed",
-      acceptance_window_start_date: 4.weeks.ago,
-      acceptance_window_end_date: 1.week.ago,
+      acceptance_window_start_offset: -7,
+      acceptance_window_end_offset: 7,
     )
   end
 
   before do
-    editable_milestone
-    non_editable_milestone
+    milestone
 
     assign(:cohort, cohort)
     assign(:cohorts, [cohort])
@@ -41,17 +31,7 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
     render
   end
 
-  it "shows an edit button for editable milestones" do
-    expect(rendered_page).to have_link(
-      "Edit",
-      href: edit_admin_cohort_course_milestone_path(cohort, course, editable_milestone),
-    )
-  end
-
-  it "does not show an edit button for non-editable milestones" do
-    expect(rendered_page).not_to have_link(
-      "Edit",
-      href: edit_admin_cohort_course_milestone_path(cohort, course, non_editable_milestone),
-    )
+  it "does not show an edit button for milestones" do
+    expect(rendered_page).not_to have_link("Edit")
   end
 end

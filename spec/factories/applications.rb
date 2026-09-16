@@ -10,12 +10,10 @@ FactoryBot.define do
     transient do
       lead_provider { nil }
       course { Course.find_by(identifier: Course::IDENTIFIERS.first) || create(Course::IDENTIFIERS.first.to_sym) }
-      cohort do
-        course.cohorts.last
-      end
+      cohort { course_cohort.cohort }
     end
 
-    course_cohort { course.course_cohorts.last }
+    course_cohort { course.course_cohorts.last || create(:course_cohort, course:, cohort:) }
     teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
@@ -162,10 +160,13 @@ FactoryBot.define do
 
     trait :with_declaration do
       after(:create) do |application|
-        milestone = application.course_cohort.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
-          record.acceptance_window_start_date = 1.month.ago.to_date
-          record.acceptance_window_end_date = 1.month.from_now.to_date
+        milestone = application.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+          record.acceptance_window_start_offset = 0
+          record.acceptance_window_end_offset = 1
         end
+
+        declaration_date = application.course_cohort.acceptance_window_start_date_for(milestone) ||
+          1.month.ago.to_date
 
         application.declarations << create(
           :declaration,
@@ -174,7 +175,7 @@ FactoryBot.define do
           application:,
           course_cohort: application.course_cohort,
           milestone:,
-          declaration_date: milestone.acceptance_window_start_date + 1.day,
+          declaration_date: declaration_date + 1.day,
         )
       end
     end

@@ -29,7 +29,12 @@ module Helpers
         create(:application, :accepted, user: participant1, course_cohort:, lead_provider:)
         create(:application, :accepted, user: participant2, course_cohort:, lead_provider:)
 
-        declaration_date = (course_cohort.started_milestone.acceptance_window_start_date + 1.day).rfc3339
+        milestone = course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
+          record.acceptance_window_start_offset = 0
+          record.acceptance_window_end_offset = 30
+        end
+        declaration_date = (course_cohort.acceptance_window_start_date_for(milestone) + 1.day).rfc3339
+
         tempfile_with_bom <<~CSV
           participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed
           #{participant1.ecf_id},started,#{declaration_date},#{course.identifier},#{delivery_partner.ecf_id},"#{lead_provider.name}",

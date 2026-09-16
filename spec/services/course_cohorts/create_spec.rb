@@ -7,14 +7,14 @@ RSpec.describe CourseCohorts::Create, type: :model do
     described_class.new(
       cohort:,
       course:,
-      training_dates:,
+      training_starts_at:,
       lead_providers:,
     )
   end
 
   let(:cohort) { create(:cohort, :next) }
   let!(:course) { create(:course) }
-  let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
+  let(:training_starts_at) { Date.new(2025, 9, 1) }
   let!(:lead_provider) { create(:lead_provider) }
   let(:lead_providers) do
     [
@@ -83,8 +83,14 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect(service.course_cohort).to eq(cohort.course_cohorts.find_by(course:))
       end
 
+      it "sets the training start date" do
+        service.call
+
+        expect(service.course_cohort.training_starts_at).to eq(training_starts_at)
+      end
+
       context "when training_starts_at falls in autumn" do
-        let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
+        let(:training_starts_at) { Date.new(2025, 9, 1) }
 
         it "sets the term_identifier to autumn" do
           service.call
@@ -94,7 +100,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       end
 
       context "when training_starts_at falls in spring" do
-        let(:training_dates) { { start: Date.new(2025, 2, 1), end: nil } }
+        let(:training_starts_at) { Date.new(2025, 2, 1) }
 
         it "sets the term_identifier to spring" do
           service.call
@@ -107,22 +113,20 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect { service.call }.to change(Milestone.started, :count).by(1)
 
         milestone = service.course_cohort.milestones.started.sole
-        expect(milestone.acceptance_window_start_date).to eq(training_dates[:start])
+        expect(milestone.acceptance_window_start_offset).to eq(0)
+        expect(service.course_cohort.acceptance_window_start_date_for(milestone)).to eq(training_starts_at)
       end
 
       context "when training_ends_at is present" do
-        let(:training_dates) { { start: Date.new(2025, 9, 1), end: Date.new(2026, 3, 1) } }
+        let(:training_starts_at) { Date.new(2025, 9, 1) }
 
-        it "creates a completed milestone" do
-          expect { service.call }.to change(Milestone.completed, :count).by(1)
-          milestone = service.course_cohort.milestones.completed.sole
-          expect(milestone.acceptance_window_start_date).to be_present
-          expect(milestone.acceptance_window_end_date).to eq(Date.new(2026, 3, 1))
+        it "does not alter the milestone" do
+          expect { service.call }.not_to change(Milestone.completed, :count)
         end
       end
 
-      context "when training_ends_at is blank" do
-        let(:training_dates) { { start: Date.new(2025, 9, 1), end: nil } }
+      context "when training_starts_at is blank" do
+        let(:training_starts_at) { nil }
 
         it "does not create a completed milestone" do
           expect { service.call }.not_to change(Milestone.completed, :count)

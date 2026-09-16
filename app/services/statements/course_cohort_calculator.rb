@@ -4,7 +4,7 @@ module Statements
       @statement = statement
       @course_cohort = course_cohort
       @contract = statement.lead_provider.contract(course_cohort:)
-      @milestones = course_cohort.milestones
+      @milestones = course_cohort.milestones.sort_by { |milestone| Milestone::DECLARATION_TYPES.index(milestone.declaration_type) }
       @course_name = course_cohort.course.name
     end
 

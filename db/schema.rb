@@ -406,18 +406,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_120000) do
   end
 
   create_table "milestones", force: :cascade do |t|
-    t.date "acceptance_window_end_date"
     t.integer "acceptance_window_end_offset"
-    t.date "acceptance_window_start_date"
     t.integer "acceptance_window_start_offset"
-    t.bigint "course_cohort_id", null: false
     t.bigint "course_id"
     t.datetime "created_at", null: false
     t.enum "declaration_type", null: false, enum_type: "declaration_types"
     t.decimal "payment_percentage", precision: 10, scale: 2
     t.datetime "updated_at", null: false
-    t.index ["course_cohort_id", "declaration_type"], name: "index_milestones_on_course_cohort_id_and_declaration_type", unique: true
-    t.index ["course_cohort_id"], name: "index_milestones_on_course_cohort_id"
     t.index ["course_id"], name: "index_milestones_on_course_id"
   end
 
@@ -608,7 +603,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_120000) do
   add_foreign_key "delivery_partnerships", "course_cohorts"
   add_foreign_key "delivery_partnerships", "delivery_partners"
   add_foreign_key "delivery_partnerships", "lead_providers"
-  add_foreign_key "milestones", "course_cohorts"
   add_foreign_key "milestones", "courses"
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"

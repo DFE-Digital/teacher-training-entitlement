@@ -19,7 +19,7 @@ class Admin::CohortCoursesController < AdminController
     service = CourseCohorts::Create.new(
       cohort:,
       course: @form.selected_course,
-      training_dates: @form.training_dates,
+      training_starts_at: @form.training_starts_at,
       lead_providers: @form.selected_lead_providers,
     )
 
@@ -37,7 +37,7 @@ private
 
   def form_params
     params.require(:course_cohorts_setup_form)
-      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, lead_providers: {})
+      .permit(:course_id, :academic_year, :training_starts_at, lead_providers: {})
       .merge(cohort:)
   end
 

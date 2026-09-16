@@ -13,7 +13,7 @@ RSpec.describe "Declaration endpoints", type: :request do
     end
 
     if attrs[:cohort] && !attrs[:course_cohort]
-      attrs[:course_cohort] = create(:course_cohort, cohort: attrs[:cohort])
+      attrs[:course_cohort] = create(:course_cohort, course: create(:course), cohort: attrs[:cohort])
     end
     attrs.delete(:cohort)
 

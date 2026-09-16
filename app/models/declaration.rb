@@ -12,15 +12,14 @@ class Declaration < ApplicationRecord
   belongs_to :statement
   belongs_to :application
   belongs_to :lead_provider
-  belongs_to :cohort, deprecated: true, optional: true
   belongs_to :milestone, optional: true
   belongs_to :superseded_by, class_name: "Declaration", optional: true
   belongs_to :delivery_partner, optional: true
   belongs_to :secondary_delivery_partner, class_name: "DeliveryPartner", optional: true
   belongs_to :clawback_declaration, optional: true
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
-  has_one :course_cohort, through: :milestone
-  has_one :application_course_cohort, through: :application, source: :course_cohort
+  has_one :course_cohort, through: :application
+  has_one :cohort, through: :course_cohort
   has_many :participant_outcomes, dependent: :destroy
 
   delegate :course, :user, to: :application
@@ -47,6 +46,11 @@ class Declaration < ApplicationRecord
     .with_course_identifier(course_identifier)
     .billable_or_voidable
     .latest_first
+  }
+
+  scope :for_delivery_partners, lambda { |delivery_partner|
+    where(delivery_partner: delivery_partner)
+      .or(where(secondary_delivery_partner: delivery_partner))
   }
 
   enum :state, {
@@ -97,7 +101,6 @@ class Declaration < ApplicationRecord
   validate :validate_declaration_date_not_in_the_future
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
-  validates :delivery_partner_id, presence: true, if: :delivery_partner_required
   validates :delivery_partner_id, absence: { message: :overseas },
                                   unless: :application_inside_catchment?
   validates :delivery_partner_id, inclusion: { in: :available_delivery_partner_ids },
@@ -113,18 +116,12 @@ class Declaration < ApplicationRecord
             inclusion: { in: :available_delivery_partner_ids },
             if: -> { secondary_delivery_partner && secondary_delivery_partner_changed? }
 
-  validate :delivery_partners_are_not_the_same, if: :delivery_partner
-
   validates :milestone_id,
             uniqueness: { scope: %i[application_id type], conditions: -> { where(state: UNIQUE_MILESTONE_STATES) } },
             if: -> { milestone_id.present? && state.in?(UNIQUE_MILESTONE_STATES) }
 
   validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true, if: -> { type.blank? }
-
-  scope :for_delivery_partners, lambda { |delivery_partner|
-    where(delivery_partner: delivery_partner)
-      .or(where(secondary_delivery_partner: delivery_partner))
-  }
+  validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
   def clawback_statement
     Statement.clawback(lead_provider:, course_group:).first ||
@@ -140,7 +137,6 @@ class Declaration < ApplicationRecord
       paid_declaration: self,
       application: application,
       milestone: milestone,
-      cohort: cohort,
       statement: clawback_statement,
       lead_provider: lead_provider,
       delivery_partner: delivery_partner,
@@ -173,9 +169,9 @@ class Declaration < ApplicationRecord
   end
 
   def available_delivery_partner_ids
-    return [] unless lead_provider && milestone&.course_cohort
+    return [] unless lead_provider && milestone && course_cohort
 
-    lead_provider.delivery_partners_for_course_cohort(course_cohort: milestone.course_cohort).map(&:id)
+    lead_provider.delivery_partners_for_course_cohort(course_cohort:).map(&:id)
   end
 
   def delivery_partners
@@ -202,11 +198,14 @@ private
     milestone = application.milestones.find_by(declaration_type:)
     return unless milestone
 
-    unless declaration_date >= milestone.acceptance_window_start_date
+    acceptance_window_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+    acceptance_window_end_date = course_cohort.acceptance_window_end_date_for(milestone)
+
+    unless acceptance_window_start_date.nil? || declaration_date >= acceptance_window_start_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
     end
 
-    if milestone.acceptance_window_end_date && declaration_date > milestone.acceptance_window_end_date
+    if acceptance_window_end_date && declaration_date > acceptance_window_end_date
       errors.add(:declaration_date, :declaration_after_schedule_end)
     end
   end
@@ -219,13 +218,5 @@ private
     if delivery_partner == secondary_delivery_partner
       errors.add :secondary_delivery_partner_id, :duplicate_delivery_partner
     end
-  end
-
-  def delivery_partner_required
-    return false unless milestone&.cohort
-    return false unless application_inside_catchment?
-    return false if persisted? && !delivery_partner_id_changed?
-
-    milestone.cohort.start_year >= DELIVER_PARTNER_REQUIRED_FROM
   end
 end

@@ -9,6 +9,7 @@ class Course < ApplicationRecord
   has_many :cohorts, through: :course_cohorts
   has_many :lead_providers, through: :course_cohort_providers
   has_many :applications, through: :course_cohorts
+  has_many :milestones, dependent: :destroy
 
   scope :displayable, -> { where(display: true).order(:position) }
 

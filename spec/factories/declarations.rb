@@ -11,23 +11,28 @@ FactoryBot.define do
     application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
     lead_provider { application&.lead_provider || create(:lead_provider) }
     milestone do
-      (application&.course_cohort || course_cohort).milestones.find_or_create_by!(declaration_type:) do |record|
-        record.assign_attributes(acceptance_window_start_date: 1.week.ago.to_date,
-                                 acceptance_window_end_date: 1.month.from_now.to_date)
+      (application&.course || course_cohort.course).milestones.find_or_create_by!(declaration_type:) do |record|
+        record.assign_attributes(acceptance_window_start_offset: 0,
+                                 acceptance_window_end_offset: 1)
       end
     end
     declaration_type { Milestone::STARTED }
-    delivery_partner { create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider }) }
-    declaration_date { milestone.acceptance_window_start_date + 1.day }
+    delivery_partner { create(:delivery_partner, lead_providers: { application.course_cohort => lead_provider }) }
+    declaration_date do
+      acceptance_window_start_date = application.course_cohort.acceptance_window_start_date_for(milestone) ||
+        1.week.ago.to_date
+
+      acceptance_window_start_date + 1.day
+    end
     submitted
     ecf_id { SecureRandom.uuid }
     value do
-      if application.funded_place && milestone.payment_percentage
+      if application&.funded_place && milestone&.payment_percentage
         (contract&.teacher_funding || 100) * milestone.payment_percentage
       end
     end
     statement do
-      if lead_provider && LeadProvider.exists?(lead_provider.id)
+      if application && lead_provider && LeadProvider.exists?(lead_provider.id)
         Statement.current(lead_provider:, course_group: application.course.course_group).first ||
           Statement.create_current!(lead_provider:, course_group: application.course.course_group)
       else
@@ -87,21 +92,21 @@ FactoryBot.define do
     end
 
     trait :with_delivery_partner do
-      delivery_partner { create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider }) }
+      delivery_partner { create(:delivery_partner, lead_providers: { application.course_cohort => lead_provider }) }
     end
 
     trait :with_sometimes_nil_delivery_partner do
       delivery_partner do
-        if milestone.cohort.start_year.between?(2021, 2023)
-          [nil, create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider })].sample
+        if application.cohort.start_year.between?(2021, 2023)
+          [nil, create(:delivery_partner, lead_providers: { application.course_cohort => lead_provider })].sample
         else
-          create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider })
+          create(:delivery_partner, lead_providers: { application.course_cohort => lead_provider })
         end
       end
     end
 
     trait :with_secondary_delivery_partner do
-      secondary_delivery_partner { create(:delivery_partner, lead_providers: { milestone.course_cohort => lead_provider }) }
+      secondary_delivery_partner { create(:delivery_partner, lead_providers: { application.course_cohort => lead_provider }) }
     end
   end
 end

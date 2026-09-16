@@ -41,8 +41,8 @@ RSpec.describe Declarations::Query do
         let(:other_lead_provider) { create(:lead_provider) }
 
         let(:application) { create(:application, lead_provider: current_lead_provider) }
-        let(:started_milestone) { create(:milestone, :started, course_cohort: application.course_cohort) }
-        let(:completed_milestone) { create(:milestone, :completed, course_cohort: application.course_cohort) }
+        let(:started_milestone) { create(:milestone, :started, course: application.course) }
+        let(:completed_milestone) { create(:milestone, :completed, course: application.course) }
 
         let!(:declaration_before_transfer) { create(:declaration, :started, lead_provider: previous_lead_provider, application:, milestone: started_milestone) }
         let!(:declaration_after_transfer)  { create(:declaration, :completed, lead_provider: current_lead_provider, application:, milestone: completed_milestone) }
@@ -131,8 +131,8 @@ RSpec.describe Declarations::Query do
         let(:cohort_2025) { create(:cohort, registration_starts_at: Date.new(2025, 4, 1)) }
 
         def create_declaration_for_cohort(cohort)
-          course_cohort = create(:course_cohort, cohort:)
-          milestone = create(:milestone, course_cohort:)
+          course_cohort = create(:course_cohort, course: create(:course), cohort:)
+          milestone = create(:milestone, course: course_cohort.course)
           create(:declaration, course_cohort:, milestone:)
         end
 

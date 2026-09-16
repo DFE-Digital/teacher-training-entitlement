@@ -14,11 +14,16 @@ class CourseCohort < ApplicationRecord
   has_many :delivery_partners, through: :delivery_partnerships
 
   has_many :applications
-  has_many :milestones, dependent: :destroy
+  has_many :milestones, through: :course
 
-  has_one :started_milestone, -> { started }, class_name: "Milestone"
-  has_one :completed_milestone, -> { completed }, class_name: "Milestone"
-
+  has_one :started_milestone,
+          -> { started },
+          through: :course,
+          source: :milestones
+  has_one :completed_milestone,
+          -> { completed },
+          through: :course,
+          source: :milestones
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }
   validates :academic_year, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
@@ -56,15 +61,29 @@ class CourseCohort < ApplicationRecord
   end
 
   def training_started?
-    return false if started_milestone.nil?
+    return false if started_milestone.nil? || training_starts_at.nil?
 
-    started_milestone.acceptance_window_start_date <= Time.zone.today
+    acceptance_window_start_date_for(started_milestone) <= Time.zone.today
   end
 
   def training_ended?
-    return false if completed_milestone.nil?
+    return false if completed_milestone.nil? || training_starts_at.nil?
 
-    completed_milestone.acceptance_window_end_date <= Time.zone.today
+    acceptance_window_end_date_for(completed_milestone) <= Time.zone.today
+  end
+
+  def acceptance_window_start_date_for(milestone)
+    return if milestone.nil?
+    return if training_starts_at.nil? || milestone.acceptance_window_start_offset.nil?
+
+    training_starts_at.advance(months: milestone.acceptance_window_start_offset)
+  end
+
+  def acceptance_window_end_date_for(milestone)
+    return if milestone.nil?
+    return if training_starts_at.nil? || milestone.acceptance_window_end_offset.nil?
+
+    training_starts_at.advance(months: milestone.acceptance_window_end_offset)
   end
 
   def taken_declaration_types(except: nil)

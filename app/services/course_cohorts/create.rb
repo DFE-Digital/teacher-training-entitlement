@@ -7,20 +7,18 @@ module CourseCohorts
     validates :cohort, presence: true
     validates :course, presence: true
 
-    attr_reader :course_cohort, :cohort, :course, :lead_providers, :training_dates
+    attr_reader :course_cohort, :cohort, :course, :lead_providers, :training_starts_at
 
-    def initialize(cohort:, course:, lead_providers:, training_dates:)
+    def initialize(cohort:, course:, lead_providers:, training_starts_at:)
       @cohort = cohort
       @course = course
       @lead_providers = lead_providers
-      @training_dates = training_dates
+      @training_starts_at = training_starts_at
     end
 
     def call
       return if invalid?
 
-      training_starts_at = training_dates[:start]
-      training_ends_at = training_dates[:end]
       term_identifier = CourseCohort.school_term(training_starts_at)
       academic_year = cohort.start_year
 
@@ -29,14 +27,11 @@ module CourseCohorts
           course:,
           academic_year:,
           term_identifier:,
+          training_starts_at:,
         )
 
-        @course_cohort.milestones.started.create!(acceptance_window_start_date: training_starts_at)
-        if training_ends_at
-          @course_cohort.milestones.completed.create!(
-            acceptance_window_start_date: training_ends_at - 2.months,
-            acceptance_window_end_date: training_ends_at,
-          )
+        course.milestones.started.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+          milestone.acceptance_window_start_offset = 0
         end
 
         lead_providers.each do |lead_provider, contract|
@@ -54,6 +49,12 @@ module CourseCohorts
           end
         end
       end
+    end
+
+  private
+
+    def months_between(start_date, end_date)
+      (end_date.year * 12 + end_date.month) - (start_date.year * 12 + start_date.month)
     end
   end
 end
