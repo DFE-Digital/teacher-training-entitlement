@@ -81,22 +81,20 @@ RSpec.describe Declaration, type: :model do
       before { delivery_partner && old_cohort_partner }
 
       let(:lead_provider) { create(:lead_provider) }
-      let(:application) { create(:application, :accepted, lead_provider:) }
-      subject(:declaration) { build(:declaration, application:, lead_provider:, delivery_partner:) }
-
       let :delivery_partner do
         create :delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { application.cohort => lead_provider }
       end
-
       let :second_partner do
         create :delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { application.cohort => application.lead_provider }
       end
-
       let :old_cohort_partner do
         create :delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: {
           create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) => lead_provider,
         }
       end
+      let(:application) { create(:application, :accepted, lead_provider:) }
+
+      subject(:declaration) { build(:declaration, application:, lead_provider:, delivery_partner:) }
 
       it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
 
@@ -215,7 +213,6 @@ RSpec.describe Declaration, type: :model do
 
         it { expect(declaration.errors).to include :secondary_delivery_partner_id }
       end
-
     end
 
     context "when the declaration_date is in the future" do

@@ -101,6 +101,5 @@ RSpec.describe Declarations::ChangeDeliveryPartner, type: :model do
 
       it { is_expected.to have_error(:secondary_delivery_partner_id, :present, "The property '#/secondary_delivery_partner_id' cannot be specified without the property '#/delivery_partner_id'") }
     end
-
   end
 end
