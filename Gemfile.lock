@@ -207,11 +207,7 @@ GEM
       base64 (~> 0.2)
       concurrent-ruby (~> 1.1)
       websocket-driver (~> 0.7)
-    ffi (1.17.3-aarch64-linux-musl)
     ffi (1.17.3-arm64-darwin)
-    ffi (1.17.3-x86_64-darwin)
-    ffi (1.17.3-x86_64-linux-gnu)
-    ffi (1.17.3-x86_64-linux-musl)
     flipper (1.4.2)
       concurrent-ruby (< 2)
     flipper-active_record (1.4.2)
@@ -261,7 +257,7 @@ GEM
     govuk-components (6.5.0)
       html-attributes-utils (~> 1.0.0, >= 1.0.0)
       pagy (>= 6, < 10)
-      view_component (>= 4.9, < 4.13)
+      view_component (>= 4.9, < 4.16)
     govuk_design_system_formbuilder (6.5.0)
       actionview (>= 7.2)
       activemodel (>= 7.2)
@@ -358,15 +354,7 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
-    nokogiri (1.19.4-aarch64-linux-musl)
-      racc (~> 1.4)
     nokogiri (1.19.4-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.19.4-x86_64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.19.4-x86_64-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
     notifications-ruby-client (6.3.0)
       jwt (>= 1.5, < 4)
@@ -410,11 +398,7 @@ GEM
     parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
-    pg (1.6.3-aarch64-linux-musl)
     pg (1.6.3-arm64-darwin)
-    pg (1.6.3-x86_64-darwin)
-    pg (1.6.3-x86_64-linux)
-    pg (1.6.3-x86_64-linux-musl)
     pg_search (2.4.0)
       activerecord (>= 8.0)
       activesupport (>= 8.0)
@@ -723,14 +707,9 @@ GEM
     zeitwerk (2.8.3)
 
 PLATFORMS
-  aarch64-linux-musl
   arm64-darwin
   arm64-darwin-23
   arm64-darwin-25
-  x86_64-darwin
-  x86_64-darwin-20
-  x86_64-linux
-  x86_64-linux-musl
 
 DEPENDENCIES
   activerecord-session_store
