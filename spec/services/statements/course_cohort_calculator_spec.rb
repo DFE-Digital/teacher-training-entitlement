@@ -8,19 +8,19 @@ RSpec.describe Statements::CourseCohortCalculator do
   let(:lead_provider) { create(:lead_provider) }
   let(:course) { create(:course, name: "foo", lead_provider:) }
   let(:course_cohort) { course.course_cohorts.first }
-  let!(:started_milestone) do
-    course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+  let(:started_milestone) do
+    course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) { |milestone|
       milestone.acceptance_window_start_offset = 0
       milestone.acceptance_window_end_offset = 1
-    end.tap do |milestone|
+    }.tap do |milestone|
       milestone.update!(payment_percentage: 0.6)
     end
   end
-  let!(:completed_milestone) do
-    course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+  let(:completed_milestone) do
+    course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) { |milestone|
       milestone.acceptance_window_start_offset = 0
       milestone.acceptance_window_end_offset = 1
-    end.tap do |milestone|
+    }.tap do |milestone|
       milestone.update!(payment_percentage: 0.4)
     end
   end
@@ -28,6 +28,10 @@ RSpec.describe Statements::CourseCohortCalculator do
   let(:paid_statement) { create(:statement, :paid, lead_provider:) }
   let(:payable_statement) { create(:statement, :payable, lead_provider:) }
   let(:statement) { create(:statement, lead_provider:, start_date: Date.current.beginning_of_month, deadline_date: Date.current) }
+
+  before do
+    started_milestone
+  end
 
   describe "with only started declarations" do
     include_context "with only started declarations"

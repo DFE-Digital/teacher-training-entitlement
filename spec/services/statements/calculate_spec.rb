@@ -32,11 +32,16 @@ RSpec.describe Statements::Calculate do
     include_context "with started and completed declarations"
 
     let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
-    let!(:started_milestone) { create(:milestone, :started, course:, payment_percentage: 0.6) }
-    let!(:completed_milestone) { create(:milestone, :completed, course:, payment_percentage: 0.4) }
+    let(:started_milestone) { create(:milestone, :started, course:, payment_percentage: 0.6) }
+    let(:completed_milestone) { create(:milestone, :completed, course:, payment_percentage: 0.4) }
     let(:course_cohort) { course.course_cohorts.first }
     let(:paid_statement) { create(:statement, :paid, lead_provider:) }
     let(:payable_statement) { create(:statement, :payable, lead_provider:) }
+
+    before do
+      started_milestone
+      completed_milestone
+    end
 
     context "with expected scope" do
       subject(:applications_by_declaration_type) { described_class.new(statement:, scope: :expected).applications_by_declaration_type }
@@ -67,6 +72,9 @@ RSpec.describe Statements::Calculate do
     include_context "with started and completed declarations"
 
     before do
+      started_milestone
+      completed_milestone
+
       send_course = create(:course, name: "npd send", identifier: "npd-s", lead_provider:)
       send_course_cohort = send_course.course_cohorts.first
       milestone = create(:milestone, :started, course: send_course, payment_percentage: 0.6)
@@ -78,8 +86,8 @@ RSpec.describe Statements::Calculate do
 
     let(:number_of_other_course_apps) { 1 }
     let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
-    let!(:started_milestone) { create(:milestone, :started, course:, payment_percentage: 0.6) }
-    let!(:completed_milestone) { create(:milestone, :completed, course:, payment_percentage: 0.4) }
+    let(:started_milestone) { create(:milestone, :started, course:, payment_percentage: 0.6) }
+    let(:completed_milestone) { create(:milestone, :completed, course:, payment_percentage: 0.4) }
     let(:course_cohort) { course.course_cohorts.first }
     let(:paid_statement) { create(:statement, :paid, lead_provider:) }
     let(:payable_statement) { create(:statement, :payable, lead_provider:) }
