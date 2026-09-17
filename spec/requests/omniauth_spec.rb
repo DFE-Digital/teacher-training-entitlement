@@ -57,6 +57,19 @@ RSpec.describe "Omniauth callbacks", type: :request do
           expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
         end
 
+        it "queues a Google Analytics event for completing One Login" do
+          make_request
+
+          expect(session[:google_analytics_events]).to include(
+            {
+              event_name: :one_login_completed,
+              params: {
+                page_path: "/users/auth/teacher_auth/callback",
+              },
+            },
+          )
+        end
+
         context "when registration is not open for any course cohort" do
           before do
             create(:"tte-early-years")

@@ -79,7 +79,16 @@
 
 
     <% if Feature.registration_enabled? %>
-      <%= render 'shared/teacher_auth/redirect_button', button_text: "Log in", secondary: true %>
+      <%= render 'shared/teacher_auth/redirect_button',
+                 button_text: "Log in",
+                 secondary: true,
+                 html_attributes: {
+                   data: {
+                     google_analytics_event: "one_login_started",
+                     google_analytics_event_button_text: "Log in",
+                     google_analytics_event_page_path: "/registration/start",
+                   },
+                 } %>
     <% end %>
   </div>
 </div>

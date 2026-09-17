@@ -1,4 +1,6 @@
 class OmniauthController < Devise::OmniauthCallbacksController
+  include GoogleAnalyticsEventQueue
+
   skip_before_action :verify_authenticity_token, only: %i[teacher_auth]
   skip_before_action :authenticate_user!
 
@@ -15,6 +17,10 @@ class OmniauthController < Devise::OmniauthCallbacksController
 
     session["user_id"] = @user.id
     @user.set_closed_registration_feature_flag
+
+    queue_google_analytics_event(event_name: :one_login_completed,
+                                 page_path: "/users/auth/teacher_auth/callback")
+
     sign_in_and_redirect @user
   rescue StandardError => e
     Rails.logger.info("[TeacherAuth] #{e} raised, user_id=#{@user.try(:id)} uid=#{try_to_extract_user_uid}")

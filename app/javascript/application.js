@@ -6,6 +6,7 @@ import accessibleAutocomplete from 'accessible-autocomplete';
 
 import institutionPicker from "./institution-picker";
 import cookieBanner from "./cookie-banner";
+import googleAnalyticsEvents from "./google-analytics-events";
 import print from "./print";
 import HMRCFrontend from "hmrc-frontend/hmrc/all.js";
 
@@ -17,6 +18,7 @@ window.GOVUKFrontend = GOVUKFrontend;
 
 GOVUKFrontend.initAll();
 HMRCFrontend.initAll();
+googleAnalyticsEvents();
 
 if (document.querySelector('[data-picker="school"]')) {
   institutionPicker.enhanceSelectElement({

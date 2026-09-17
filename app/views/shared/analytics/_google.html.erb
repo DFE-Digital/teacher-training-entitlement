@@ -7,5 +7,11 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', '<%= Rails.configuration.x.google_analytics_id %>');
+    <% if session[:google_analytics_events].present? %>
+      <% session.delete(:google_analytics_events).each do |event| %>
+        <% event = event.with_indifferent_access %>
+        gtag("event", <%= event[:event_name].to_json.html_safe %>, <%= event[:params].to_json.html_safe %>);
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>

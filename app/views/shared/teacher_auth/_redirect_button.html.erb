@@ -1,6 +1,7 @@
 <% hidden ||= false %>
 <% button_text ||= "Continue" %>
 <% secondary ||= false %>
+<% html_attributes ||= {} %>
 
 <span <%= "class=govuk-visually-hidden" if hidden %>>
   <%=
@@ -8,7 +9,8 @@
       text: button_text,
       href: user_teacher_auth_omniauth_authorize_path,
       as_button: true,
-      classes: secondary ? %w[govuk-button--secondary] : []
+      classes: secondary ? %w[govuk-button--secondary] : [],
+      html_attributes:
     )
   %>
 </span>
