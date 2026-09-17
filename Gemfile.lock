@@ -208,6 +208,7 @@ GEM
       concurrent-ruby (~> 1.1)
       websocket-driver (~> 0.7)
     ffi (1.17.3-arm64-darwin)
+    ffi (1.17.3-x86_64-linux-gnu)
     flipper (1.4.2)
       concurrent-ruby (< 2)
     flipper-active_record (1.4.2)
@@ -356,6 +357,8 @@ GEM
     nio4r (2.7.5)
     nokogiri (1.19.4-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.19.4-x86_64-linux-gnu)
+      racc (~> 1.4)
     notifications-ruby-client (6.3.0)
       jwt (>= 1.5, < 4)
     oj (3.17.6)
@@ -399,6 +402,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     pg_search (2.4.0)
       activerecord (>= 8.0)
       activesupport (>= 8.0)
@@ -710,6 +714,7 @@ PLATFORMS
   arm64-darwin
   arm64-darwin-23
   arm64-darwin-25
+  x86_64-linux
 
 DEPENDENCIES
   activerecord-session_store
