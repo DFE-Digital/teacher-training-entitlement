@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REMOTE="${REMOTE:-origin}"
+BASE_BRANCH="${BASE_BRANCH:-main}"
+ROLLUP_BRANCH="${ROLLUP_BRANCH:-dependabot-rollup}"
+DEPENDABOT_AUTHOR="${DEPENDABOT_AUTHOR:-app/dependabot}"
+
+usage() {
+  cat <<USAGE
+Usage:
+  bin/dependabot-rollup [rollup-branch]
+
+Creates a local branch from ${REMOTE}/${BASE_BRANCH} and merges all open
+Dependabot PRs into it.
+
+Environment variables:
+  REMOTE              Git remote to fetch from. Default: origin
+  BASE_BRANCH         Branch to create the rollup from. Default: main
+  ROLLUP_BRANCH       Rollup branch name. Default: dependabot-rollup
+  DEPENDABOT_AUTHOR   PR author to list. Default: app/dependabot
+
+Examples:
+  bin/dependabot-rollup
+  bin/dependabot-rollup dependabot-rollup-september
+  BASE_BRANCH=develop bin/dependabot-rollup
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ -n "${1:-}" ]]; then
+  ROLLUP_BRANCH="$1"
+fi
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "Error: GitHub CLI (gh) is required." >&2
+  exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Error: working tree is not clean. Commit or stash your changes first." >&2
+  exit 1
+fi
+
+echo "Fetching ${REMOTE}/${BASE_BRANCH}..."
+git fetch "$REMOTE" "$BASE_BRANCH"
+
+echo "Creating ${ROLLUP_BRANCH} from ${REMOTE}/${BASE_BRANCH}..."
+git switch -C "$ROLLUP_BRANCH" "${REMOTE}/${BASE_BRANCH}"
+
+dependabot_prs_file="$(mktemp)"
+trap 'rm -f "$dependabot_prs_file"' EXIT
+
+gh pr list \
+  --state open \
+  --author "$DEPENDABOT_AUTHOR" \
+  --json number,title,url \
+  --jq '.[] | [.number, .title, .url] | @tsv' > "$dependabot_prs_file"
+
+if [[ ! -s "$dependabot_prs_file" ]]; then
+  echo "No open Dependabot PRs found."
+  exit 0
+fi
+
+pr_count="$(wc -l < "$dependabot_prs_file" | tr -d ' ')"
+echo "Found ${pr_count} Dependabot PR(s)."
+
+while IFS=$'\t' read -r number title url; do
+  pr_ref="refs/remotes/${REMOTE}/dependabot-pr-${number}"
+
+  echo
+  echo "Merging #${number}: ${title}"
+  echo "${url}"
+
+  git fetch "$REMOTE" "pull/${number}/head:${pr_ref}"
+
+  if ! git merge --no-edit --no-ff "$pr_ref"; then
+    echo
+    echo "Merge conflict while merging #${number}."
+    echo "Resolve the conflict, then run:"
+    echo "  git add <resolved-files>"
+    echo "  git merge --continue"
+    echo
+    echo "After that, rerun this script to rebuild ${ROLLUP_BRANCH},"
+    echo "or manually merge the remaining Dependabot PRs listed by:"
+    echo "  gh pr list --state open --author ${DEPENDABOT_AUTHOR}"
+    exit 1
+  fi
+done < "$dependabot_prs_file"
+
+echo
+echo "Done. ${ROLLUP_BRANCH} contains all open Dependabot PRs."
+echo "Push it with:"
+echo "  git push -u ${REMOTE} ${ROLLUP_BRANCH}"

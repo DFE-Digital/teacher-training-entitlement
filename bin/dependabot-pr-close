@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DEPENDABOT_AUTHOR="${DEPENDABOT_AUTHOR:-app/dependabot}"
+YES="false"
+
+usage() {
+  cat <<USAGE
+Usage:
+  bin/dependabot-pr-close [--yes]
+
+Closes all open Dependabot PRs using the GitHub CLI.
+
+Options:
+  --yes, -y          Close PRs without prompting for confirmation
+  --help, -h        Show this help
+
+Environment variables:
+  DEPENDABOT_AUTHOR Author to list. Default: app/dependabot
+
+Examples:
+  bin/dependabot-pr-close
+  bin/dependabot-pr-close --yes
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --yes|-y)
+      YES="true"
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "Error: GitHub CLI (gh) is required." >&2
+  exit 1
+fi
+
+dependabot_prs_file="$(mktemp)"
+trap 'rm -f "$dependabot_prs_file"' EXIT
+
+gh pr list \
+  --state open \
+  --author "$DEPENDABOT_AUTHOR" \
+  --json number,title,url \
+  --jq '.[] | [.number, .title, .url] | @tsv' > "$dependabot_prs_file"
+
+if [[ ! -s "$dependabot_prs_file" ]]; then
+  echo "No open Dependabot PRs found."
+  exit 0
+fi
+
+pr_count="$(wc -l < "$dependabot_prs_file" | tr -d ' ')"
+echo "Found ${pr_count} open Dependabot PR(s):"
+echo
+
+while IFS=$'\t' read -r number title url; do
+  echo "  #${number}: ${title}"
+  echo "    ${url}"
+done < "$dependabot_prs_file"
+
+echo
+
+if [[ "$YES" != "true" ]]; then
+  printf "Close all %s Dependabot PR(s)? [y/N] " "$pr_count"
+  read -r confirmation
+
+  case "$confirmation" in
+    y|Y|yes|YES)
+      ;;
+    *)
+      echo "Aborted."
+      exit 0
+      ;;
+  esac
+fi
+
+while IFS=$'\t' read -r number title url; do
+  echo "Closing #${number}: ${title}"
+  gh pr close "$number" --comment "Closed because these updates have been rolled up into a combined dependency update branch."
+done < "$dependabot_prs_file"
+
+echo
+echo "Done. Closed ${pr_count} Dependabot PR(s)."
