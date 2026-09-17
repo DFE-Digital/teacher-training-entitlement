@@ -6,10 +6,24 @@ RSpec.describe Statements::CourseCohortCalculator do
   subject { described_class.new(statement:, course_cohort:) }
 
   let(:lead_provider) { create(:lead_provider) }
-  let(:course) { create(:course, name: "foo", identifier: "nth", lead_provider:) }
+  let(:course) { create(:course, name: "foo", lead_provider:) }
   let(:course_cohort) { course.course_cohorts.first }
-  let(:started_milestone) { course.milestones.detect(&:started_declaration_type?) }
-  let(:completed_milestone) { course.milestones.detect(&:completed_declaration_type?) }
+  let!(:started_milestone) do
+    course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+      milestone.acceptance_window_start_offset = 0
+      milestone.acceptance_window_end_offset = 1
+    end.tap do |milestone|
+      milestone.update!(payment_percentage: 0.6)
+    end
+  end
+  let!(:completed_milestone) do
+    course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+      milestone.acceptance_window_start_offset = 0
+      milestone.acceptance_window_end_offset = 1
+    end.tap do |milestone|
+      milestone.update!(payment_percentage: 0.4)
+    end
+  end
 
   let(:paid_statement) { create(:statement, :paid, lead_provider:) }
   let(:payable_statement) { create(:statement, :payable, lead_provider:) }

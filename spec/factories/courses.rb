@@ -23,16 +23,18 @@ FactoryBot.define do
 
     transient do
       lead_provider { nil }
-      cohort { nil }
     end
 
     after(:create) do |course, evaluator|
-      if course.milestones.empty?
-        course.milestones << create(:milestone, :started, course: course, payment_percentage: 0.6, acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
-        course.milestones << create(:milestone, :completed, course: course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
+      if course.course_cohorts.empty?
+        cohort = begin
+          Cohort.current
+        rescue StandardError
+          create(:cohort, :current)
+        end
+
+        course.course_cohorts << create(:course_cohort, course:, cohort:, lead_provider: evaluator.lead_provider)
       end
-      cohort = evaluator.cohort || create(:cohort, :current)
-      course.course_cohorts << create(:course_cohort, course:, cohort:, lead_provider: evaluator.lead_provider)
     end
   end
 end

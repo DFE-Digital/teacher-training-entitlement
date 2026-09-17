@@ -45,51 +45,6 @@ class Admin::Finance::StatementsController < AdminController
     # empty method to appease rubocop
   end
 
-  def received
-    @declarations = @statement.declarations.includes(:course_cohort, application: :user)
-    funded_place = if params[:funded].blank? || params[:funded].downcase == "all"
-                     nil
-                   elsif params[:funded].downcase == "yes"
-                     [true]
-                   else
-                     [nil, false]
-                   end
-
-    state = if params[:status].blank? || params[:status].downcase == "all"
-              nil
-            else
-              params[:status].downcase
-            end
-
-    declaration_type = params[:milestone].presence&.downcase
-    if funded_place
-      @declarations.merge!(
-        Declaration.joins(:application)
-          .where(application: { funded_place: }),
-      )
-    end
-
-    if state
-      @declarations.merge!(Declaration.where(state:))
-    end
-
-    if declaration_type
-      @declarations.merge!(Declaration.where(declaration_type:))
-    end
-
-    @name = @declarations.size
-  end
-
-  def outstanding
-    @grouping = @calculator.outstanding
-    @name = @grouping.values.flatten.size
-  end
-
-  def expected
-    @grouping = @calculator.expected
-    @name = @grouping.values.flatten.size
-  end
-
 private
 
   def set_statement

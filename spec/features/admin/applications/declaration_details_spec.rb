@@ -8,8 +8,18 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
   let(:course_cohort) { course_cohort_provider.course_cohort }
   let(:application) { create(:application, lead_provider:, course_cohort:) }
   let(:payable_statement) { create(:statement, :payable, lead_provider:) }
-  let(:started_milestone) { course_cohort.course.milestones.detect(&:started_declaration_type?) }
-  let(:completed_milestone) { course_cohort.course.milestones.detect(&:completed_declaration_type?) }
+  let(:started_milestone) do
+    course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
+      milestone.acceptance_window_start_offset = 0
+      milestone.acceptance_window_end_offset = 1
+    end
+  end
+  let(:completed_milestone) do
+    course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
+      milestone.acceptance_window_start_offset = 0
+      milestone.acceptance_window_end_offset = 1
+    end
+  end
   let(:payable_milestone) { create(:milestone, declaration_type: Milestone::RETAINED_1, course: course_cohort.course) }
 
   before do

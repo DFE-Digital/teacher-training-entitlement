@@ -28,13 +28,49 @@ RSpec.describe Statements::Calculate do
     end
   end
 
+  describe "#applications_by_declaration_type" do
+    include_context "with started and completed declarations"
+
+    let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
+    let!(:started_milestone) { create(:milestone, :started, course:, payment_percentage: 0.6) }
+    let!(:completed_milestone) { create(:milestone, :completed, course:, payment_percentage: 0.4) }
+    let(:course_cohort) { course.course_cohorts.first }
+    let(:paid_statement) { create(:statement, :paid, lead_provider:) }
+    let(:payable_statement) { create(:statement, :payable, lead_provider:) }
+
+    context "with expected scope" do
+      subject(:applications_by_declaration_type) { described_class.new(statement:, scope: :expected).applications_by_declaration_type }
+
+      it "groups expected applications by declaration type" do
+        expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED)
+      end
+    end
+
+    context "with outstanding scope" do
+      subject(:applications_by_declaration_type) { described_class.new(statement:, scope: :outstanding).applications_by_declaration_type }
+
+      it "groups outstanding applications by declaration type" do
+        expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED)
+      end
+    end
+
+    context "without an application scope" do
+      subject(:applications_by_declaration_type) { described_class.new(statement:).applications_by_declaration_type }
+
+      it "raises an error" do
+        expect { applications_by_declaration_type }.to raise_error(ArgumentError, "scope must be one of: expected, outstanding")
+      end
+    end
+  end
+
   describe "#summary_rows across multiple course_cohorts" do
     include_context "with started and completed declarations"
 
     before do
       send_course = create(:course, name: "npd send", identifier: "npd-s", lead_provider:)
       send_course_cohort = send_course.course_cohorts.first
-      milestone = send_course.milestones.detect(&:started_declaration_type?)
+      milestone = create(:milestone, :started, course: send_course, payment_percentage: 0.6)
+      create(:milestone, :completed, course: send_course, payment_percentage: 0.4)
       create_list(:application, number_of_other_course_apps, :accepted, :with_funded_place, course_cohort: send_course_cohort, lead_provider:).each do |application|
         started_received(application:, statement:, milestone:)
       end
@@ -42,8 +78,8 @@ RSpec.describe Statements::Calculate do
 
     let(:number_of_other_course_apps) { 1 }
     let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
-    let(:started_milestone) { course.milestones.detect(&:started_declaration_type?) }
-    let(:completed_milestone) { course.milestones.detect(&:completed_declaration_type?) }
+    let!(:started_milestone) { create(:milestone, :started, course:, payment_percentage: 0.6) }
+    let!(:completed_milestone) { create(:milestone, :completed, course:, payment_percentage: 0.4) }
     let(:course_cohort) { course.course_cohorts.first }
     let(:paid_statement) { create(:statement, :paid, lead_provider:) }
     let(:payable_statement) { create(:statement, :payable, lead_provider:) }

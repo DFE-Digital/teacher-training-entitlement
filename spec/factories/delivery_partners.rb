@@ -7,7 +7,7 @@ FactoryBot.define do
     end
 
     ecf_id { SecureRandom.uuid }
-    sequence(:name) { |n| "Delivery Partner #{n}" }
+    sequence(:name) { "Delivery Partner #{SecureRandom.uuid}" }
 
     after :create do |delivery_partner, evaluator|
       partnerships = if evaluator.lead_providers.is_a?(Hash)
