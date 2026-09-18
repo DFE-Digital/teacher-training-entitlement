@@ -35,6 +35,7 @@
               render SubNavigationComponent.new(
                 request.path,
                 structure: admin_navigation_structure.sub_structure(request.path, default_to_first_section: true),
+                heading: admin_navigation_structure.sub_navigation_heading(request.path),
               )
             %>
 

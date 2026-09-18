@@ -14,8 +14,24 @@ class NavigationStructure
   #             the primary nav to the sub nav
   # * nodes   - a list of nodes that sit under this one in the structure
   Node = Struct.new(:name, :href, :prefix, :current, :nodes, keyword_init: true) do
+    def initialize(...)
+      super
+      self.prefix ||= href
+    end
+
     def to_service_navigation_item
       { text: name, href: href, active_when: prefix }
+    end
+
+    def matches_path?(path)
+      case prefix
+      when Regexp
+        prefix.match?(path)
+      when String
+        path.start_with?(prefix)
+      when Array
+        prefix.any? { |path_prefix| path.start_with?(path_prefix) }
+      end
     end
   end
 
@@ -24,7 +40,7 @@ class NavigationStructure
   end
 
   def sub_structure(path, default_to_first_section: false)
-    primary_section = primary_structure.find { |section| path.start_with?(section.prefix) }
+    primary_section = primary_structure.find { |section| section.matches_path?(path) }
 
     if primary_section.nil?
       fail(SectionNotFoundError) unless default_to_first_section
