@@ -1,0 +1,9 @@
+<% content_for :side_navigation do %>
+  <%= render StatementSubNavComponent.new(statement: @statement, current: "received") %>
+<% end %>
+
+<%= render "admin/finance/statements/details_filters",
+           statement: @statement,
+           url: received_admin_finance_statement_path(@statement) %>
+
+<%= render "admin/finance/statements/received/declarations", declarations: @declarations, name: @name %>

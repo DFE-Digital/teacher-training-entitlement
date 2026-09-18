@@ -1,7 +1,7 @@
 class Admin::Finance::StatementsController < AdminController
   include Admin::Cohortable
 
-  before_action :set_statement, only: %i[show print_provider print_dfe_user]
+  before_action :set_statement, except: :index
 
   def index
     scope = Statement.includes(:lead_provider)

@@ -37,6 +37,8 @@ RSpec.describe LeadProvider do
     let(:course_cohort_two) { create(:course_cohort, course: create(:course), lead_provider:) }
 
     before do
+      course_cohort_one.course_cohort_providers.find_by!(lead_provider:).update!(recruitment_target: nil)
+      course_cohort_two.course_cohort_providers.find_by!(lead_provider:).update!(recruitment_target: nil)
       create(:contract_year, :generic, lead_provider:, course: course_cohort_one.course, recruitment_target: 100)
       create(:contract_year, :generic, lead_provider:, course: course_cohort_two.course, recruitment_target: 200)
     end

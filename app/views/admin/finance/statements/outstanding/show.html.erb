@@ -1,0 +1,51 @@
+<% content_for :side_navigation do %>
+  <%= render StatementSubNavComponent.new(statement: @statement, current: "outstanding") %>
+<% end %>
+
+<%= render "admin/finance/statements/details_filters",
+           statement: @statement,
+           url: outstanding_admin_finance_statement_path(@statement) %>
+
+<h2><%= @applications_by_declaration_type.values.flatten.size %></h2>
+
+<div class="govuk-grid-row">
+  <%= govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Contract")
+        row.with_cell(text: "Teacher")
+        row.with_cell(text: "Milestone")
+        row.with_cell(text: "Value")
+      end
+    end
+
+    table.with_body do |body|
+      @applications_by_declaration_type.each do |milestone, applications|
+        applications.each do |application|
+          course_cohort = application.course_cohort
+
+          body.with_row do |row|
+            row.with_cell do
+              govuk_link_to(
+                [course_cohort.academic_year, course_cohort.schedule_identifier].join("-"),
+                cohort_admin_course_path(course_cohort.course, course_cohort.cohort),
+              )
+            end
+            row.with_cell do
+              govuk_link_to(
+                application.user.full_name,
+                admin_application_path(application),
+              )
+            end
+            row.with_cell(text: milestone)
+            row.with_cell(text: "calculate")
+          end
+        end
+      end
+    end
+  end %>
+
+  <% if @applications_by_declaration_type.empty? %>
+    <p class="govuk-body">No outstanding declarations match the search and filters.</p>
+  <% end %>
+</div>

@@ -116,4 +116,31 @@ RSpec.describe Admin::Finance::StatementsController, type: :request do
       it { is_expected.to have_http_status(:not_found) }
     end
   end
+
+  describe "/admin/statements/{id}/received" do
+    subject do
+      get received_admin_finance_statement_path(statement)
+      response
+    end
+
+    it { is_expected.to have_http_status(:ok) }
+  end
+
+  describe "/admin/statements/{id}/expected" do
+    subject do
+      get expected_admin_finance_statement_path(statement)
+      response
+    end
+
+    it { is_expected.to have_http_status(:ok) }
+  end
+
+  describe "/admin/statements/{id}/outstanding" do
+    subject do
+      get outstanding_admin_finance_statement_path(statement)
+      response
+    end
+
+    it { is_expected.to have_http_status(:ok) }
+  end
 end

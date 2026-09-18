@@ -1,8 +1,11 @@
-<%= tag.h1("#{@statement.lead_provider.name}, #{statement_name(@statement)}", class: "govuk-heading-l") %>
+<% content_for :side_navigation do %>
+  <%= render StatementSubNavComponent.new(statement: @statement, current: "summary") %>
+<% end %>
+
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-three-quarters">
-    <p class="govuk-body govuk-!-margin-bottom-2">
+  <%= statement_heading(@statement) %>
+  <p class="govuk-body govuk-!-margin-bottom-2">
       <strong>Output payment date:</strong>
       <%= @statement.payment_date.to_fs(:govuk) %>
       &nbsp;<%= govuk_link_to "Change", admin_finance_statements_change_payment_date_path(@statement) %>
@@ -80,5 +83,5 @@
         end
       end%>
     <% end %>
-  </div>
+
 </div>

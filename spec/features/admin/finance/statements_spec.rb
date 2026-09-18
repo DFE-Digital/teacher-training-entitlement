@@ -4,9 +4,13 @@ RSpec.feature "Listing statements", type: :feature do
   include Helpers::AdminLogin
 
   let(:statements_per_page) { Pagy::DEFAULT[:limit] }
+  let!(:statements) do
+    Array.new(statements_per_page + 1) do |index|
+      create(:statement, start_date: (statements_per_page - index).months.from_now.to_date.beginning_of_month)
+    end
+  end
 
   before do
-    create_list(:statement, statements_per_page + 1)
     sign_in_as(create(:admin))
   end
 
@@ -15,7 +19,7 @@ RSpec.feature "Listing statements", type: :feature do
 
     expect(page).to have_css("h1", text: "Finance")
 
-    Statement.order(payment_date: :asc).limit(statements_per_page).each do |statement|
+    statements.sort_by(&:start_date).reverse.first(statements_per_page).each do |statement|
       expect(page).to have_link("View", href: admin_finance_statement_path(statement))
     end
 

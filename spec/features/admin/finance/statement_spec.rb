@@ -7,15 +7,18 @@ RSpec.feature "Statement", type: :feature do
   include ActionView::Helpers::NumberHelper
 
   let(:statement) { create(:statement) }
-
+  let(:statement_heading) do
+    [
+      statement.lead_provider.name,
+      statement.course_group,
+      statement.start_date.to_fs(:govuk_approx),
+    ].join(", ")
+  end
   let!(:course_cohort) do
     create(:course_cohort, course: create(:course, :npd_eirt))
   end
 
   before do
-    create(:milestone, declaration_type: "started", course: course_cohort.course)
-    create(:milestone, declaration_type: "completed", course: course_cohort.course)
-
     application = create(:application, :accepted, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider)
     create(:declaration, state: :eligible, application:, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider, statement:)
     create(:course_cohort_provider, course_cohort:, lead_provider: statement.lead_provider, recruitment_target: 100, teacher_funding: 900)
@@ -26,7 +29,7 @@ RSpec.feature "Statement", type: :feature do
   scenario "see details" do
     visit(admin_finance_statement_path(statement))
 
-    expect(page).to have_css("h1", text: "#{statement.lead_provider.name}, #{statement.start_date.to_fs(:govuk_approx)}")
+    expect(page).to have_css("h1", text: statement_heading)
 
     find("span", text: "Statement ID").click
     within("#statement-id") do
