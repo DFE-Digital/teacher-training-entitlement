@@ -130,7 +130,6 @@ erDiagram
   }
   Declaration }o--|| Application : belongs_to
   Declaration }o--|| LeadProvider : belongs_to
-  Declaration }o--|| Cohort : belongs_to
   Declaration }o--|| Declaration : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| DeliveryPartner : belongs_to
@@ -190,6 +189,7 @@ erDiagram
     boolean works_in_childcare
     boolean works_in_nursery
     boolean works_in_school
+    date training_starts_at
   }
   Application }o--|| User : belongs_to
   Application }o--|| CourseCohort : belongs_to
