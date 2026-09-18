@@ -67,6 +67,8 @@ class Application < ApplicationRecord
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
+  before_save :set_training_starts_at_from_course_cohort, if: :will_save_change_to_course_cohort_id?
+
   STATUSES =
     [
       PENDING = "pending".freeze,
@@ -333,5 +335,9 @@ private
     if funded_place && !eligible_for_funding
       errors.add(:funded_place, :not_eligible)
     end
+  end
+
+  def set_training_starts_at_from_course_cohort
+    self.training_starts_at = course_cohort&.training_starts_at
   end
 end

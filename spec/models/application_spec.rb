@@ -11,6 +11,32 @@ RSpec.describe Application do
     it { is_expected.to have_many(:declarations) }
   end
 
+  describe "callbacks" do
+    let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
+    let(:new_course_cohort) do
+      create(
+        :course_cohort,
+        course: create(:course),
+        cohort: create(:cohort, registration_starts_at: Date.new(2027, 1, 1)),
+        training_starts_at: Date.new(2027, 3, 1),
+      )
+    end
+
+    it "sets training_starts_at from the course cohort on create" do
+      application = create(:application, course_cohort:)
+
+      expect(application.training_starts_at).to eq(Date.new(2026, 9, 1))
+    end
+
+    it "updates training_starts_at when the course cohort changes" do
+      application = create(:application, course_cohort:)
+
+      application.update!(course_cohort: new_course_cohort)
+
+      expect(application.reload.training_starts_at).to eq(Date.new(2027, 3, 1))
+    end
+  end
+
   describe "#transition_status!" do
     subject(:application) { create(:application, :started) }
 
