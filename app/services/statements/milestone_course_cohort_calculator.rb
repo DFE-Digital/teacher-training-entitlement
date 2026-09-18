@@ -62,7 +62,7 @@ module Statements
     end
 
     def expected_count
-      acceptance_window_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+      acceptance_window_start_date = milestone.acceptance_window_start_date_for(training_starts_at: course_cohort.training_starts_at)
       return 0 if acceptance_window_start_date.nil? || statement.deadline_date <= acceptance_window_start_date
 
       forecast = provider_applications_count - previous_declarations_count

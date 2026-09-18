@@ -246,9 +246,9 @@ RSpec.describe Declaration, type: :model do
     context "when declaration_date is before the acceptance window start" do
       context "when declaration is being created" do
         before do
-          subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+          subject.application.update!(training_starts_at: 2.months.ago.to_date)
           subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
-          subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) - 1.week
+          subject.declaration_date = subject.milestone.acceptance_window_start_date_for(training_starts_at: subject.application.training_starts_at) - 1.week
         end
 
         it "has a meaningful error" do
@@ -271,9 +271,9 @@ RSpec.describe Declaration, type: :model do
 
         context "when declaration_date is going to be changed" do
           it "is not valid" do
-            subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+            subject.application.update!(training_starts_at: 2.months.ago.to_date)
             subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
-            subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) - 1.week
+            subject.declaration_date = subject.milestone.acceptance_window_start_date_for(training_starts_at: subject.application.training_starts_at) - 1.week
 
             expect(subject).not_to be_valid
           end
@@ -283,9 +283,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is at the acceptance window start" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.application.update!(training_starts_at: 2.months.ago.to_date)
         subject.milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
-        subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone)
+        subject.declaration_date = subject.milestone.acceptance_window_start_date_for(training_starts_at: subject.application.training_starts_at)
       end
 
       it { is_expected.to be_valid }
@@ -293,9 +293,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is after the acceptance window end" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.application.update!(training_starts_at: 2.months.ago.to_date)
         subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
-        subject.declaration_date = subject.application.course_cohort.acceptance_window_end_date_for(subject.milestone) + 1.day
+        subject.declaration_date = subject.milestone.acceptance_window_end_date_for(training_starts_at: subject.application.training_starts_at) + 1.day
       end
 
       it "has a meaningful error" do
@@ -306,9 +306,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when declaration_date is at the acceptance window end" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 2.months.ago.to_date)
+        subject.application.update!(training_starts_at: 2.months.ago.to_date)
         subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
-        subject.declaration_date = subject.application.course_cohort.acceptance_window_end_date_for(subject.milestone)
+        subject.declaration_date = subject.milestone.acceptance_window_end_date_for(training_starts_at: subject.application.training_starts_at)
       end
 
       it { is_expected.to be_valid }
@@ -316,9 +316,9 @@ RSpec.describe Declaration, type: :model do
 
     context "when milestone has no acceptance_window_end_date" do
       before do
-        subject.application.course_cohort.update!(training_starts_at: 1.month.ago.to_date)
+        subject.application.update!(training_starts_at: 1.month.ago.to_date)
         subject.milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: nil)
-        subject.declaration_date = subject.application.course_cohort.acceptance_window_start_date_for(subject.milestone) + 1.day
+        subject.declaration_date = subject.milestone.acceptance_window_start_date_for(training_starts_at: subject.application.training_starts_at) + 1.day
       end
 
       it { is_expected.to be_valid }

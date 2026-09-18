@@ -133,6 +133,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       "teacher_catchment" => "england",
       "teacher_catchment_country" => "United Kingdom of Great Britain and Northern Ireland",
       "teacher_catchment_iso_country_code" => "GBR",
+      "training_starts_at" => latest_application.course_cohort.training_starts_at.to_s,
       "ukprn" => Institution.find_by(institution_reference_number: "100000").ukprn,
       "primary_establishment" => false,
       "number_of_pupils" => nil,

@@ -245,12 +245,13 @@ module Declarations
 
       return unless milestone
 
-      milestone_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+      milestone_start_date = milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
       return unless milestone_start_date
 
       previous_milestones = course_cohort.milestones
         .select do |previous_milestone|
-          previous_milestone_start_date = course_cohort.acceptance_window_start_date_for(previous_milestone)
+          previous_milestone_start_date =
+            previous_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
 
           previous_milestone_start_date && previous_milestone_start_date < milestone_start_date
         end
