@@ -8,7 +8,7 @@ module Statements
       @course_name = course_cohort.course.name
     end
 
-    attr_reader :statement, :contract, :course_name
+    attr_reader :statement, :contract, :course_name, :course_cohort, :milestones
 
     def funded_scopes
       @funded_scopes ||= milestones.map { |milestone| scopes(milestone:, funded_place: [true]) }
@@ -32,8 +32,6 @@ module Statements
     end
 
   private
-
-    attr_reader :course_cohort, :milestones
 
     def scopes(milestone:, funded_place:)
       MilestoneCourseCohortCalculator.new(

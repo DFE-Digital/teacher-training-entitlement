@@ -2,7 +2,7 @@ class Admin::Finance::Statements::ExpectedController < AdminController
   before_action :set_statement
 
   def show
-    @applications_by_declaration_type = calculator.applications_by_declaration_type
+    @applications_by_declaration_type = calculator.applications_by_declaration_type(filters:)
   end
 
 private
@@ -19,5 +19,12 @@ private
                      course_cohorts: %i[course milestones],
                    )
                    .find(params[:id])
+  end
+
+  def filters
+    {
+      declaration_type: params[:milestone].presence,
+      teacher_name: params[:q].presence,
+    }
   end
 end
