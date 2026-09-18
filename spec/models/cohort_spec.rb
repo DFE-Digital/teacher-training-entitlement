@@ -36,6 +36,25 @@ RSpec.describe Cohort, type: :model do
       it { is_expected.to validate_presence_of(:description) }
       it { is_expected.to validate_uniqueness_of(:description).case_insensitive }
       it { is_expected.to validate_length_of(:description).is_at_least(5).is_at_most(50) }
+
+      it "defaults to the registration start month on create when blank" do
+        cohort = described_class.create!(
+          registration_starts_at: Date.new(2028, 6, 1),
+          funding_cap: true,
+        )
+
+        expect(cohort.description).to eq("June 2028")
+      end
+
+      it "does not overwrite an explicit description on create" do
+        cohort = described_class.create!(
+          registration_starts_at: Date.new(2028, 7, 1),
+          description: "Custom cohort",
+          funding_cap: true,
+        )
+
+        expect(cohort.description).to eq("Custom cohort")
+      end
     end
   end
 

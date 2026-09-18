@@ -23,12 +23,12 @@ RSpec.describe Admin::CoursesController, type: :request do
         response
       end
 
-      it { is_expected.to redirect_to(academic_year_admin_courses_path(Date.current.year)) }
+      it { is_expected.to have_http_status(:ok) }
 
       context "when the course cannot be found", :exceptions_app do
         let(:course_id) { -1 }
 
-        it { is_expected.to redirect_to(academic_year_admin_courses_path(Date.current.year)) }
+        it { is_expected.to have_http_status(:not_found) }
       end
     end
 

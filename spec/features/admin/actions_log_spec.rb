@@ -33,7 +33,7 @@ RSpec.feature "actions log", :no_js, :versioning, type: :feature do
   end
 
   scenario "Admin actions log page" do
-    click_on "Actions log"
+    click_on "Action logs"
     all_admin_users = AdminUser.order(:full_name).map(&:name_with_email)
     expect(page).to have_select("Admin user", options: ["- select admin user -"] + all_admin_users)
   end

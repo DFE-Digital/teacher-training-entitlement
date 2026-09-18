@@ -1,0 +1,40 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <%= f.govuk_check_boxes_fieldset :selected_lead_provider_ids, legend: { text: "Select lead providers", size: "m" } do %>
+    <% LeadProvider.alphabetical.each do |lead_provider| %>
+      <% provider_data = @wizard.current_step.lead_providers.fetch(lead_provider.id.to_s, {}) %>
+      <% checkbox_id = "lead_provider_#{lead_provider.id}_selected" %>
+
+      <%= f.govuk_check_box checkbox_id,
+                            "1",
+                            name: "#{f.object_name}[lead_providers][#{lead_provider.id}][selected]",
+                            checked: @wizard.current_step.lead_provider_selected?(lead_provider),
+                            multiple: false,
+                            label: { text: lead_provider.name } do %>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <%= f.govuk_text_field "lead_provider_#{lead_provider.id}_url",
+                                   name: "#{f.object_name}[lead_providers][#{lead_provider.id}][url]",
+                                   value: provider_data["url"],
+                                   label: { text: "URL", size: "s" } %>
+          </div>
+          <div class="govuk-grid-column-one-half">
+            <%= f.govuk_email_field "lead_provider_#{lead_provider.id}_email",
+                                    name: "#{f.object_name}[lead_providers][#{lead_provider.id}][email]",
+                                    value: provider_data["email"],
+                                    label: { text: "Email", size: "s" } %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>
