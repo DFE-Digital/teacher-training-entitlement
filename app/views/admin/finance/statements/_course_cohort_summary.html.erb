@@ -19,14 +19,16 @@
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(numeric: true) do
-              govuk_link_to(item[:received].size, received_admin_finance_statement_path(calculator.statement, funded: "yes"))
+              govuk_link_to(
+                (item[:received].is_a?(Enumerable) ? item[:received].size : item[:received]),
+                received_admin_finance_statement_path(calculator.statement, funded: "yes"))
+              end
+              row.with_cell(text: item[:value] ? number_to_currency(item[:value]) : "", numeric: true)
+              row.with_cell(text: number_to_currency(item[:received_value]), numeric: true)
             end
-            row.with_cell(text: item[:value] ? number_to_currency(item[:value]) : "", numeric: true)
-            row.with_cell(text: number_to_currency(item[:received_value]), numeric: true)
           end
         end
-      end
-    end %>
+      end %>
 
     <h3 class="govuk-heading-s"><%= t(".self_funded") %></h3>
     <%= govuk_table do |table|
@@ -42,12 +44,14 @@
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
             row.with_cell(numeric: true) do
-              govuk_link_to(item[:received].size, received_admin_finance_statement_path(calculator.statement, funded: "no"))
+              govuk_link_to(
+                (item[:received].is_a?(Enumerable) ? item[:received].size : item[:received]),
+                received_admin_finance_statement_path(calculator.statement, funded: "no"))
+              end
             end
           end
         end
-      end
-    end %>
+      end %>
   </div>
 </div>
 

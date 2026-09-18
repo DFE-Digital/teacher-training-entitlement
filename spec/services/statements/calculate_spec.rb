@@ -34,7 +34,7 @@ RSpec.describe Statements::Calculate do
     before do
       send_course = create(:course, name: "npd send", identifier: "npd-s", lead_provider:)
       send_course_cohort = send_course.course_cohorts.first
-      milestone = send_course.milestones.detect(&:started_declaration_type?)
+      milestone = course_milestone(send_course, :started)
       create_list(:application, number_of_other_course_apps, :accepted, :with_funded_place, course_cohort: send_course_cohort, lead_provider:).each do |application|
         started_received(application:, statement:, milestone:)
       end
