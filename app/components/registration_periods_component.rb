@@ -24,7 +24,6 @@ class RegistrationPeriodsComponent < BaseComponent
       NavigationStructure::Node.new(
         name: academic_year_link_name,
         href:,
-        prefix: href,
         nodes: leaf_nodes,
         current: default_current_year?(academic_year),
       )
@@ -89,7 +88,6 @@ private
       NavigationStructure::Node.new(
         name: registration_period.description,
         href: registration_period_path(registration_period),
-        prefix: registration_period_path(registration_period),
       )
     end
   end

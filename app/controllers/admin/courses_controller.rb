@@ -7,8 +7,8 @@ module Admin
     before_action :set_course_cohort, only: %i[show], if: -> { params[:cohort_id].present? }
 
     def index
-      @unassigned_courses = Course.left_outer_joins(:course_cohorts).where(course_cohorts: { id: nil }).order(:name) if using_default_academic_year?
       @pagy, @resources = pagy(resources)
+      @unassigned_courses = Course.left_outer_joins(:course_cohorts).where(course_cohorts: { id: nil }).order(:name) if using_default_academic_year?
     end
 
     def show
