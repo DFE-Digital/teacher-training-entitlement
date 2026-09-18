@@ -418,7 +418,7 @@ module ValidTestDataGenerators
 
     def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
-      date = declaration_date || application.course_cohort.acceptance_window_start_date_for(milestone) + 1.day
+      date = declaration_date || milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.day
       value = application.funded_place ? declaration_value(milestone, course_cohort: application.course_cohort) : nil
       declaration = application.declarations.new(
         declaration_type: :started,
@@ -436,7 +436,7 @@ module ValidTestDataGenerators
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
-      date = declaration_date || application.course_cohort.acceptance_window_start_date_for(milestone) + 1.day
+      date = declaration_date || milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.day
       value = application.funded_place ? declaration_value(milestone, course_cohort: application.course_cohort) : nil
       declaration = application.declarations.build(
         declaration_type: :completed,
@@ -499,16 +499,16 @@ module ValidTestDataGenerators
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
           group: course_cohort.course.course_group,
-          start_date: course_cohort.acceptance_window_start_date_for(
-            course_cohort.milestones.find_by!(declaration_type: Milestone::STARTED),
-          ),
+          start_date: course_cohort.milestones
+            .find_by!(declaration_type: Milestone::STARTED)
+            .acceptance_window_start_date_for(training_starts_at: course_cohort.training_starts_at),
         )
 
         open_statement = create_open_statement(
           group: course_cohort.course.course_group,
-          start_date: course_cohort.acceptance_window_start_date_for(
-            course_cohort.milestones.find_by!(declaration_type: Milestone::COMPLETED),
-          ),
+          start_date: course_cohort.milestones
+            .find_by!(declaration_type: Milestone::COMPLETED)
+            .acceptance_window_start_date_for(training_starts_at: course_cohort.training_starts_at),
         )
 
         # started

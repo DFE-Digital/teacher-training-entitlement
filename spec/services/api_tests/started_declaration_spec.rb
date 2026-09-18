@@ -10,7 +10,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
   let(:delivery_partner) { create(:delivery_partner) }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
   let(:started_milestone) { create(:milestone, :started, course: application.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 1) }
-  let(:declaration_date) { application.course_cohort.acceptance_window_start_date_for(started_milestone).in_time_zone("UTC") }
+  let(:declaration_date) { started_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at).in_time_zone("UTC") }
 
   let(:expected_body) do
     {

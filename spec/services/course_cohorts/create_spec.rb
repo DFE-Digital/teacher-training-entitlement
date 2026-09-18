@@ -114,7 +114,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
 
         milestone = service.course_cohort.milestones.started.sole
         expect(milestone.acceptance_window_start_offset).to eq(0)
-        expect(service.course_cohort.acceptance_window_start_date_for(milestone)).to eq(training_starts_at)
+        expect(milestone.acceptance_window_start_date_for(training_starts_at: service.course_cohort.training_starts_at)).to eq(training_starts_at)
       end
 
       context "when training_ends_at is present" do

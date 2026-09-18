@@ -63,27 +63,13 @@ class CourseCohort < ApplicationRecord
   def training_started?
     return false if started_milestone.nil? || training_starts_at.nil?
 
-    acceptance_window_start_date_for(started_milestone) <= Time.zone.today
+    started_milestone.acceptance_window_start_date_for(training_starts_at:) <= Time.zone.today
   end
 
   def training_ended?
     return false if completed_milestone.nil? || training_starts_at.nil?
 
-    acceptance_window_end_date_for(completed_milestone) <= Time.zone.today
-  end
-
-  def acceptance_window_start_date_for(milestone)
-    return if milestone.nil?
-    return if training_starts_at.nil? || milestone.acceptance_window_start_offset.nil?
-
-    training_starts_at.advance(months: milestone.acceptance_window_start_offset)
-  end
-
-  def acceptance_window_end_date_for(milestone)
-    return if milestone.nil?
-    return if training_starts_at.nil? || milestone.acceptance_window_end_offset.nil?
-
-    training_starts_at.advance(months: milestone.acceptance_window_end_offset)
+    completed_milestone.acceptance_window_end_date_for(training_starts_at:) <= Time.zone.today
   end
 
   def taken_declaration_types(except: nil)

@@ -106,60 +106,6 @@ RSpec.describe CourseCohort do
     end
   end
 
-  describe "#acceptance_window_start_date_for" do
-    subject(:acceptance_window_start_date) { course_cohort.acceptance_window_start_date_for(milestone) }
-
-    let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
-    let(:milestone) { build(:milestone, acceptance_window_start_offset: 1) }
-
-    it { is_expected.to eq(Date.new(2026, 10, 1)) }
-
-    context "when the course cohort has no training start date" do
-      let(:course_cohort) { create(:course_cohort, training_starts_at: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone has no start offset" do
-      let(:milestone) { build(:milestone, acceptance_window_start_offset: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone is missing" do
-      let(:milestone) { nil }
-
-      it { is_expected.to be_nil }
-    end
-  end
-
-  describe "#acceptance_window_end_date_for" do
-    subject(:acceptance_window_end_date) { course_cohort.acceptance_window_end_date_for(milestone) }
-
-    let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
-    let(:milestone) { build(:milestone, acceptance_window_end_offset: 1) }
-
-    it { is_expected.to eq(Date.new(2026, 10, 1)) }
-
-    context "when the course cohort has no training start date" do
-      let(:course_cohort) { create(:course_cohort, training_starts_at: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone has no end offset" do
-      let(:milestone) { build(:milestone, acceptance_window_end_offset: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone is missing" do
-      let(:milestone) { nil }
-
-      it { is_expected.to be_nil }
-    end
-  end
-
   describe "term_identifier" do
     subject(:term_identifier) { described_class.school_term(start_date) }
 

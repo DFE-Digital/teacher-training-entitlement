@@ -63,8 +63,8 @@ end
 
       table.with_body do |body|
         @course_cohort.milestones.each do |milestone|
-          acceptance_window_start_date = @course_cohort.acceptance_window_start_date_for(milestone)
-          acceptance_window_end_date = @course_cohort.acceptance_window_end_date_for(milestone)
+          acceptance_window_start_date = milestone.acceptance_window_start_date_for(training_starts_at: @course_cohort.training_starts_at)
+          acceptance_window_end_date = milestone.acceptance_window_end_date_for(training_starts_at: @course_cohort.training_starts_at)
 
           body.with_row do |row|
             row.with_cell(text: milestone.declaration_type)
