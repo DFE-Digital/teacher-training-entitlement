@@ -23,7 +23,11 @@ RSpec.describe Declarations::Create, type: :model do
   end
   let(:lead_provider) { course_cohort_provider.lead_provider }
   let(:application) { create(:application, :accepted, course_cohort:, lead_provider:) }
-  let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) + 1.hour }
+  let(:declaration_date) do
+    started_milestone.acceptance_window_start_date_for(
+      training_starts_at: application&.training_starts_at || course_cohort.training_starts_at,
+    ) + 1.hour
+  end
 
   let(:started_milestone) { course_milestone(course_cohort.course, :started) }
   let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
@@ -146,7 +150,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when declaration_date is before milestone acceptance_window_start_date" do
-        let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) - 1.hour }
+        let(:declaration_date) { started_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) - 1.hour }
 
         it { is_expected.to validate_param(:declaration_date).with_message("Enter a '#/declaration_date' that's on or after the schedule start.") }
       end
@@ -167,7 +171,7 @@ RSpec.describe Declarations::Create, type: :model do
 
   describe "completed declaration" do
     let(:declaration_type) { "completed" }
-    let(:declaration_date) { course_cohort.acceptance_window_start_date_for(completed_milestone) + 1.hour }
+    let(:declaration_date) { completed_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.hour }
     let!(:application) do
       create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
     end
@@ -329,7 +333,7 @@ RSpec.describe Declarations::Create, type: :model do
 
     context "when declaration_type is out of order" do
       let(:declaration_type) { "retained-1" }
-      let(:declaration_date) { course_cohort.acceptance_window_start_date_for(retained_milestone) + 1.hour }
+      let(:declaration_date) { retained_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.hour }
       let!(:retained_milestone) do
         create(:milestone, declaration_type: "retained-1", course: course_cohort.course,
                            acceptance_window_start_offset: started_milestone.acceptance_window_start_offset + 1,

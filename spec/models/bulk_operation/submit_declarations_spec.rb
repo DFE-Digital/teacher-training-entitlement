@@ -6,8 +6,12 @@ RSpec.describe BulkOperation::SubmitDeclarations do
   let(:contract) { create(:course_cohort_provider) }
   let(:course_cohort) { contract.course_cohort }
   let(:lead_provider) { contract.lead_provider }
-  let(:milestone) { course_milestone(course_cohort.course, :started) }
-  let(:declaration_date) { course_cohort.acceptance_window_start_date_for(milestone) + 1.day }
+  let(:milestone) do
+    course_cohort.course.milestones.find_or_initialize_by(declaration_type: Milestone::STARTED).tap do |milestone|
+      milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
+    end
+  end
+  let(:declaration_date) { milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.day }
   let(:delivery_partner) do
     create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider })
   end

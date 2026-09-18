@@ -52,7 +52,9 @@ govuk_summary_list(card: { title: "Course details" }) do |sl|
 
         if application.pending_status? || application.accepted_status? || application.rejected_status?
           text = application.eligible_for_funding ? "eligible_for_funding" : "not_eligible_for_funding"
-          date = application.course_cohort.acceptance_window_start_date_for(application.course_cohort.started_milestone)&.to_fs(:govuk_short)
+          date = application.course_cohort.started_milestone
+            &.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
+            &.to_fs(:govuk_short)
           concat tag.p(I18n.t("course_start_details.#{text}", date:), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
         end
       end

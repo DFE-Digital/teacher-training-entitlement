@@ -19,7 +19,7 @@ FactoryBot.define do
     declaration_type { Milestone::STARTED }
     delivery_partner { create(:delivery_partner, lead_providers: { application.course_cohort => lead_provider }) }
     declaration_date do
-      acceptance_window_start_date = application.course_cohort.acceptance_window_start_date_for(milestone) ||
+      acceptance_window_start_date = milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) ||
         1.week.ago.to_date
 
       acceptance_window_start_date + 1.day

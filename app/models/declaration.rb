@@ -204,8 +204,8 @@ private
     milestone = application.milestones.find_by(declaration_type:)
     return unless milestone
 
-    acceptance_window_start_date = course_cohort.acceptance_window_start_date_for(milestone)
-    acceptance_window_end_date = course_cohort.acceptance_window_end_date_for(milestone)
+    acceptance_window_start_date = milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
+    acceptance_window_end_date = milestone.acceptance_window_end_date_for(training_starts_at: application.training_starts_at)
 
     unless acceptance_window_start_date.nil? || declaration_date >= acceptance_window_start_date
       errors.add(:declaration_date, :declaration_before_schedule_start)
