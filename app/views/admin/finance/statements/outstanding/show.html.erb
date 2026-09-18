@@ -11,7 +11,7 @@
         :q,
         value: params[:q],
         label: { text: "Filters", size: "m" },
-        hint: { text: "Search by contract, teacher or declaration ID", size: "s" },
+        hint: { text: "Search teacher", size: "s" },
       )
     %>
 
@@ -28,33 +28,6 @@
         )
         %>
       </div>
-
-      <div class="govuk-grid-column-one-third">
-        <%=
-        f.govuk_collection_select(
-          :funded,
-          %w[yes no],
-          :to_s,
-          :humanize,
-          options: { selected: params[:funded], include_blank: "All" },
-          label: { text: "Funded", size: "s" },
-        )
-        %>
-      </div>
-
-      <div class="govuk-grid-column-one-third">
-        <%=
-        f.govuk_collection_select(
-          :status,
-          (Declaration.states.values + ClawbackDeclaration.states.values).uniq,
-          :to_s,
-          :humanize,
-          options: { selected: params[:status], include_blank: "All" },
-          label: { text: "Declaration status", size: "s" },
-        )
-        %>
-      </div>
-
     </div>
 
     <%= f.govuk_submit "Search" %>
@@ -71,7 +44,6 @@
         row.with_cell(text: "Contract")
         row.with_cell(text: "Teacher")
         row.with_cell(text: "Milestone")
-        row.with_cell(text: "Value")
       end
     end
 
@@ -92,7 +64,6 @@
               )
             end
             row.with_cell(text: milestone)
-            row.with_cell(text: "calculate")
           end
         end
       end

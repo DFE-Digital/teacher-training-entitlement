@@ -32,8 +32,9 @@ RSpec.describe Statements::Calculate do
   describe "#applications_by_declaration_type" do
     include_context "with started and completed declarations"
 
-    subject(:applications_by_declaration_type) { described_class.new(statement:, scope:).applications_by_declaration_type }
+    subject(:applications_by_declaration_type) { described_class.new(statement:, scope:).applications_by_declaration_type(filters:) }
 
+    let(:filters) { {} }
     let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
     let(:started_milestone) { course_milestone(course_cohort.course, :started) }
     let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
@@ -60,6 +61,39 @@ RSpec.describe Statements::Calculate do
     context "without an application scope" do
       it "raises an error" do
         expect { applications_by_declaration_type }.to raise_error(ArgumentError, "scope must be one of: expected, outstanding")
+      end
+    end
+
+    describe "filters" do
+      let(:users) do
+        ["Julian Moore", "Andy Smith", "Ian Carter", "Blake Tian"].map { |full_name| create(:user, full_name:) }
+      end
+      let(:funded_apps) do
+        users.map do |user|
+          create(:application, :accepted, :with_funded_place, user:, course_cohort:, lead_provider:)
+        end
+      end
+
+      context "with declaration type filter" do
+        let(:scope) { :expected }
+        let(:filters) { { declaration_type: Milestone::STARTED } }
+
+        it "applications expected a completed declaration" do
+          expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED)
+          names = applications_by_declaration_type[Milestone::STARTED].map { _1.user.full_name }
+          expect(names).to contain_exactly("Blake Tian")
+        end
+      end
+
+      context "with teacher name filter" do
+        let(:scope) { :expected }
+        let(:filters) { { teacher_name: "ian" } }
+
+        it "applications to user to have ian in full_name" do
+          names = applications_by_declaration_type.values.flatten.map { _1.user.full_name }
+          # Blake Tian is expected both started & completed declarations
+          expect(names).to contain_exactly("Julian Moore", "Ian Carter", "Blake Tian", "Blake Tian")
+        end
       end
     end
   end

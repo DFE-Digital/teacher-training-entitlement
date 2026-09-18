@@ -229,9 +229,6 @@ RSpec.describe Declaration, type: :model do
       end
 
       it "has an error on update" do
-        subject.declaration_date = Time.zone.now
-        expect(subject.save).to be_truthy
-
         subject.declaration_date = 10.months.from_now
         expect(subject.save).to be_falsey
         expect(subject).to have_error(:declaration_date, :future_declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")

@@ -91,7 +91,7 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
   context "when link_to_voids is false" do
     subject(:rendered) { render_inline described_class.new(statement:, calculator:, link_to_voids: false) }
 
-    it { is_expected.not_to have_link "View Voids", href: admin_finance_voided_index_path(statement) }
+    it { is_expected.not_to have_link "View Voids", href: received_admin_finance_statement_path(statement, status: :voided) }
   end
 
   it "does not show retained row" do

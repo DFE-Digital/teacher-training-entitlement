@@ -39,7 +39,7 @@
       <p class="govuk-heading-m govuk-!-padding-top-0 govuk-!-margin-bottom-0"><%= @calculator.total_voided %></p>
       <% if link_to_voids %>
         <p class="govuk-body-s govuk-!-margin-top-0">
-          <%= helpers.govuk_link_to(t(".view"), admin_finance_voided_index_path(@statement)) %>
+          <%= helpers.govuk_link_to(t(".view"), received_admin_finance_statement_path(@statement, status: :voided)) %>
         </p>
       <% end %>
     </div>

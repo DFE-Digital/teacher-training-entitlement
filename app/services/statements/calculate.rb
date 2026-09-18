@@ -15,15 +15,23 @@ module Statements
       end
     end
 
-    def applications_by_declaration_type
+    def applications_by_declaration_type(filters: {})
       raise ArgumentError, "scope must be one of: #{APPLICATION_SCOPES.join(", ")}" unless APPLICATION_SCOPES.include?(scope)
 
       grouping = {}
+      re = Regexp.new(filters[:teacher_name], "i") if filters[:teacher_name]
 
       course_cohorts.each do |ccc|
         ccc.funded_scopes.each do |milestone_scope|
           declaration_type = milestone_scope[:declaration_type]
-          applications = milestone_scope.fetch(scope).includes(course_cohort: :cohort).to_a
+          next if filters[:declaration_type] && declaration_type != filters[:declaration_type]
+
+          applications = milestone_scope
+                           .fetch(scope).includes(course_cohort: :cohort)
+                           .to_a
+
+          applications = applications.select { _1.user.full_name =~ re } if filters[:teacher_name]
+
           grouping[declaration_type] = Array(grouping[declaration_type]) + applications
         end
       end
