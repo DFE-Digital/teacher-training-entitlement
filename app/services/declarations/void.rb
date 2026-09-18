@@ -21,6 +21,8 @@ module Declarations
       ApplicationRecord.transaction do
         @declaration.mark_voided!
 
+        @declaration.update!(value: nil)
+
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?

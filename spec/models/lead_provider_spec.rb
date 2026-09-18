@@ -33,16 +33,18 @@ RSpec.describe LeadProvider do
   describe "#contract" do
     subject(:lead_provider) { create(:lead_provider) }
 
-    let(:course_cohort_one) { create(:course_cohort, course: create(:course), lead_provider:) }
-    let(:course_cohort_two) { create(:course_cohort, course: create(:course), lead_provider:) }
+    let(:course) { create(:course, lead_provider:) }
+    let(:course_cohort_one) { course.course_cohorts[0] }
+    let(:course_cohort_two) { course.course_cohorts[1] }
 
     before do
-      create(:contract_year, :generic, lead_provider:, course: course_cohort_one.course, recruitment_target: 100)
-      create(:contract_year, :generic, lead_provider:, course: course_cohort_two.course, recruitment_target: 200)
+      cohort = create(:cohort, :next)
+      course_cohort = create(:course_cohort, course:, cohort:)
+      create(:course_cohort_provider, course_cohort:, lead_provider:, recruitment_target: 200)
     end
 
     it "returns the contract for each course cohort" do
-      expect(lead_provider.contract(course_cohort: course_cohort_one).recruitment_target).to eq(100)
+      expect(lead_provider.contract(course_cohort: course_cohort_one).recruitment_target).to eq(20)
       expect(lead_provider.contract(course_cohort: course_cohort_two).recruitment_target).to eq(200)
     end
   end

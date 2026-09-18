@@ -18,6 +18,10 @@ RSpec.describe Applications::ChangeCourseCohort, type: :model do
   let(:target_cohort) { create(:cohort, :next) }
 
   describe "happy path" do
+    before do
+      target_course_cohort.update!(training_starts_at: 1.day.from_now) # adjust so that the training has not started
+    end
+
     it "updates application course_cohort" do
       expect { service.call }.to change(application, :course_cohort).from(course_cohort).to(target_course_cohort)
     end
@@ -45,7 +49,6 @@ RSpec.describe Applications::ChangeCourseCohort, type: :model do
     context "when target course cohort is already in training" do
       before do
         target_course_cohort.update!(training_starts_at: 1.day.ago.to_date)
-        create(:milestone, :started, course: target_course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2)
       end
 
       it { expect { service.call }.not_to change(application, :course_cohort) }

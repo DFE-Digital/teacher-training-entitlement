@@ -5,7 +5,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
   include_context "with authorization for api doc request"
   let(:course) { create(:course, :npd_eirt) }
   let(:course_cohort) { create(:course_cohort, course:, training_starts_at: 2.months.ago.to_date) }
-  let!(:started_milestone) { create(:milestone, :started, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 2) }
+  let(:started_milestone) { course_milestone(course, :started) }
   let(:application) { create(:application, lead_provider:, course_cohort:) }
 
   describe "list applications" do
@@ -132,17 +132,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
                  training_starts_at: 1.day.ago.to_date,
                  lead_provider: application.lead_provider)
         end
-        let(:target_started_milestone) do
-          target_course_cohort.course.milestones.find_or_initialize_by(declaration_type: Milestone::STARTED).tap do |milestone|
-            milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
-          end
-        end
-        let(:target_completed_milestone) do
-          target_course_cohort.course.milestones.find_or_initialize_by(declaration_type: Milestone::COMPLETED).tap do |milestone|
-            milestone.update!(acceptance_window_start_offset: 1, acceptance_window_end_offset: 2)
-          end
-        end
-
+        let(:target_started_milestone) { course_milestone(target_course_cohort.course, :started) }
+        let(:target_completed_milestone) { course_milestone(target_course_cohort.course, :completed) }
         let(:resource) { application }
         let(:type) { "application" }
         let(:attributes) { { schedule_id: target_course_cohort.ecf_id } }
@@ -255,7 +246,7 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
         end
         let(:resource) { application }
-        let!(:completed_milestone) { create(:milestone, :completed, course: course_cohort.course, acceptance_window_start_offset: 1, acceptance_window_end_offset: 2) }
+        let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
         let(:declaration_date) { course_cohort.acceptance_window_start_date_for(completed_milestone) + 1.hour }
         let(:delivery_partner_id) do
           create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
@@ -274,11 +265,6 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           }
         end
         let(:invalid_attributes) { { declaration_date: nil } }
-
-        before do
-          started_milestone
-          completed_milestone
-        end
       end
     end
   end

@@ -1,10 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
-  let!(:cohort) { create(:cohort, :current) }
   let!(:lead_provider) { create(:lead_provider) }
   let!(:course) { create(:course, :npd_eirt, lead_provider:) }
-  let!(:course_cohort) { create(:course_cohort, course:, cohort:, lead_provider:) }
+  let(:course_cohort) { course.course_cohorts.first }
+  let(:cohort) { course_cohort.cohort }
 
   describe "validations" do
     let(:current_step) { "choose_your_provider" }

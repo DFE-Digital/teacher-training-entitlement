@@ -84,7 +84,8 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
     expect(summary_list).to have_text("The total value of voids")
   end
 
-  it { is_expected.to have_link "View Voids", href: admin_finance_voided_index_path(statement) }
+  it { is_expected.to have_link "View Voids", href: received_admin_finance_statement_path(statement, status: :voided) }
+  it { is_expected.to have_link "View clawbacks", href: received_admin_finance_statement_path(statement, status: :awaiting_clawback) }
   it { is_expected.to have_link "Change", href: admin_finance_statements_change_deadline_date_path(statement) }
 
   context "when link_to_voids is false" do

@@ -9,21 +9,16 @@ module Statements
       @contract = contract
     end
 
-    def row
-      received = received_count
-
-      return self_funded_row(received:) unless funded?
-
-      expected = expected_count
+    def scopes
       value = value_for_milestone
       {
         declaration_type: milestone.declaration_type,
         expected:,
         received:,
-        outstanding: expected - received,
+        outstanding:,
         value:,
-        expected_value: (value ? expected * value : nil),
-        received_value: (value ? received * value : nil),
+        expected_value: value_of(expected, value),
+        received_value: value_of(received, value),
       }
     end
 
@@ -31,68 +26,88 @@ module Statements
 
     attr_reader :statement, :lead_provider, :course_cohort, :milestone, :funded_place, :contract
 
-    def funded?
-      funded_place.all?
-    end
-
-    def self_funded_row(received:)
-      {
-        declaration_type: milestone.declaration_type,
-        expected: 0,
-        received:,
-        outstanding: 0,
-        expected_value: 0,
-        received_value: 0,
-      }
-    end
-
-    def received_count
-      statement
-        .declarations
-        .billable
-        .joins(:application)
-        .where(milestone:, application: { funded_place: })
-        .count
-    end
-
-    def value_for_milestone
-      return if milestone.payment_percentage.blank?
-
-      contract.teacher_funding * milestone.payment_percentage
-    end
-
-    def expected_count
-      acceptance_window_start_date = course_cohort.acceptance_window_start_date_for(milestone)
-      return 0 if acceptance_window_start_date.nil? || statement.deadline_date <= acceptance_window_start_date
-
-      forecast = provider_applications_count - previous_declarations_count
-      forecast.positive? ? forecast : 0
-    end
-
-    def provider_applications_count
+    def forecasted_applications_declaration
+      # returns application_scope of forecasted applications to receive a declaration
+      #  for course_cohort for milestone
       scope = course_cohort.applications
         .joins(:current_application_lead_provider)
-        .where(funded_place:)
+                .includes(:course_cohort, :user)
+                .where(funded_place:)
         .where(application_lead_providers: { lead_provider: })
 
       if milestone.started_declaration_type?
-        scope.where(status: [Application::ACCEPTED, Application::STARTED, Application::COMPLETED]).count
+        scope.where(status: [Application::ACCEPTED, Application::STARTED, Application::COMPLETED])
       else
-        scope.where(status: [Application::STARTED, Application::COMPLETED]).count
+        scope.where(status: [Application::STARTED, Application::COMPLETED])
       end
     end
 
-    def previous_declarations_count
+    def received_applications_declaration
+      # returns application_scope of applications with a declaration in previous statement
       previous_statements = Statement
         .includes(:declarations)
         .where(lead_provider:)
         .where.not(id: statement.id)
         .where(declarations: { milestone: })
-        .all
 
-      previous_statements.sum do |statement|
-        statement.declarations.joins(:application).billable.where(milestone:, application: { funded_place: [true] }).count
+      application_ids = previous_statements.flat_map do |statement|
+        statement.declarations
+          .includes(:application)
+          .billable
+          .where(milestone:, application: { funded_place: [true] })
+          .pluck(:application_id)
       end
+
+      return if application_ids.blank?
+
+      Application.where.not(id: application_ids)
+    end
+
+    def expected
+      return Application.none unless funded?
+
+      milestone_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+      return Application.none if statement.deadline_date <= milestone_start_date
+
+      forecast = forecasted_applications_declaration.order(created_at: :desc)
+      forecast.merge!(received_applications_declaration) if received_applications_declaration
+
+      forecast.none? ? Application.none : forecast
+    end
+
+    def received
+      statement
+        .declarations
+        .billable
+        .includes(application: :user, course_cohort: :cohort)
+        .where(milestone:, application: { funded_place: })
+        .order(created_at: :desc)
+    end
+
+    def outstanding
+      return Application.none if expected.none?
+
+      expected
+        .where.not(id: received.pluck(:application_id))
+        .order(created_at: :desc)
+    end
+
+    def value_of(scope, value)
+      return unless value
+      return 0 if scope.none?
+
+      scope.size * value if value
+    end
+
+    def funded?
+      funded_place.all?
+    end
+
+    def value_for_milestone
+      return unless funded?
+      return if milestone.payment_percentage.blank?
+
+      contract.teacher_funding * milestone.payment_percentage
     end
   end
 end

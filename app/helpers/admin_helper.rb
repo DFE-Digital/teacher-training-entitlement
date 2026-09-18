@@ -6,14 +6,7 @@ module AdminHelper
   def admin_service_navigation_items
     return [] unless current_admin
 
-    [
-      *admin_navigation_structure.service_navigation_items,
-      {
-        href: admin_sign_out_path,
-        text: "Sign out",
-        classes: "ml-auto",
-      },
-    ]
+    admin_navigation_structure.service_navigation_items
   end
 
   def review_status_tag(review_status)

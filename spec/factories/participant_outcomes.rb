@@ -20,7 +20,6 @@ FactoryBot.define do
         course:,
         cohort: create(:cohort, registration_starts_at: cohort_registration_starts_at),
       )
-
       association :declaration, :completed, :payable, lead_provider:, course:, course_cohort:, user:
     end
 

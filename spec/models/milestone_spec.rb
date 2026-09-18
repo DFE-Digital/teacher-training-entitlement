@@ -48,57 +48,55 @@ RSpec.describe Milestone, type: :model do
 
       let(:course) { create(:course) }
 
-      before { create(:milestone, :started, course:) }
-
       it { is_expected.to have_error(:declaration_type, :taken, "has already been taken") }
     end
 
     context "when creating a milestone with a declaration type that exists for another course" do
-      let(:course) { create(:course) }
-
-      before { create(:milestone, :started, course: create(:course)) }
+      let(:started_a) { course_milestone(create(:course, name: "a"), :started) }
+      let(:started_b) { course_milestone(create(:course, name: "b"), :started) }
 
       it "is valid" do
-        expect(build(:milestone, :started, course:)).to be_valid
+        expect(started_a.declaration_type).to eq(started_b.declaration_type)
       end
     end
   end
 
   describe "#in_declaration_type_order" do
     let(:course) { create(:course) }
-    let(:started) { create(:milestone, declaration_type: Milestone::STARTED, course:, acceptance_window_start_offset: 0) }
+    let(:started) { course_milestone(course, :started) }
     let(:retained_1) { create(:milestone, declaration_type: Milestone::RETAINED_1, course:, acceptance_window_start_offset: 1) }
     let(:retained_2) { create(:milestone, declaration_type: Milestone::RETAINED_2, course:, acceptance_window_start_offset: 2) }
-    let(:completed) { create(:milestone, declaration_type: Milestone::COMPLETED, course:, acceptance_window_start_offset: 3) }
+    let(:completed) { course_milestone(course, :completed) }
 
     before do
       # create deliberately out of order
       retained_2
       completed
-      started
+      started.update!(acceptance_window_start_offset: 0)
       retained_1
     end
 
     it "orders by declaration_type according to DECLARATION_TYPES" do
-      expect(Milestone.all.in_declaration_type_order).to eq([started, retained_1, retained_2, completed])
+      completed.update!(acceptance_window_start_offset: 3)
+      expect(Milestone.in_declaration_type_order.where(course:)).to eq([started, retained_1, retained_2, completed])
     end
   end
 
   describe ".all" do
     let(:course) { create(:course) }
-    let(:january_milestone) { create(:milestone, course:, declaration_type: Milestone::STARTED, acceptance_window_start_offset: 0) }
+    let(:january_milestone) { course_milestone(course, :started) }
     let(:february_milestone) { create(:milestone, course:, declaration_type: Milestone::RETAINED_1, acceptance_window_start_offset: 31) }
-    let(:march_milestone) { create(:milestone, course:, declaration_type: Milestone::COMPLETED, acceptance_window_start_offset: 59) }
+    let(:march_milestone) { course_milestone(course, :completed) }
 
     before do
       # create deliberately out of order
-      march_milestone
       january_milestone
       february_milestone
     end
 
     it "orders by acceptance_window_start_offset by default" do
-      expect(Milestone.all).to eq([january_milestone, february_milestone, march_milestone])
+      march_milestone.update!(acceptance_window_start_offset: 59)
+      expect(Milestone.all.where(course:)).to eq([january_milestone, february_milestone, march_milestone])
     end
   end
 end

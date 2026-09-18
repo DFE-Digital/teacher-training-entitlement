@@ -14,31 +14,38 @@
 
     <%= render partial: "shared/cookies/banner" %>
 
-    <%= govuk_header %>
+    <%= govuk_header(classes: %w(with-extra-content)) do |header|
+      header.with_product_name(name: " | NPD admin console")
+
+      tag.div(class: "govuk-header__container account-options") do
+        govuk_link_to("Sign out", admin_sign_out_path, inverse: true, no_underline: true)
+      end
+    end %>
+
 
     <%=
       govuk_service_navigation(
         current_path: request.path,
         navigation_items: admin_service_navigation_items,
-        service_name: "NPD Admin console",
         service_url: admin_path,
       )
     %>
 
     <div class="govuk-width-container">
-      <main class="govuk-main-wrapper" id="main-content">
+      <main class=" app-split-pane app-width-container app-container-wrapper
+                   govuk-main-wrapper" id="main-content">
         <%= render partial: "layouts/shared/messages" %>
 
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-quarter" id="side-navigation">
             <%=
-              render SubNavigationComponent.new(
-                request.path,
-                structure: admin_navigation_structure.sub_structure(request.path, default_to_first_section: true),
-              )
+            render SubNavigationComponent.new(
+              request.path,
+              structure: admin_navigation_structure.sub_structure(request.path, default_to_first_section: true),
+            )
             %>
-
             <%= yield :side_navigation %>
+
           </div>
 
           <div class="govuk-grid-column-three-quarters">

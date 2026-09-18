@@ -252,7 +252,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   scenario "changing status" do
     lead_provider = create(:lead_provider)
     course_cohort = create(:course_cohort, course: create(:course), training_starts_at: 1.week.ago)
-    milestone = create(:milestone, course: course_cohort.course, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14)
+    milestone = course_milestone(course_cohort.course, :started)
     application = create(:application, :accepted, course_cohort:, lead_provider:)
     create(:declaration, :started, application:, lead_provider:, milestone:, declaration_date: course_cohort.acceptance_window_start_date_for(milestone) + 1.day)
 

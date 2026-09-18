@@ -67,6 +67,11 @@ module NavigationStructures
           prefix: "/admin/providers",
         ) => [],
         Node.new(
+          name: "Finance",
+          href: admin_finance_statements_path,
+          prefix: "/admin/finance",
+        ) => [],
+        Node.new(
           name: "Delivery partners",
           href: admin_delivery_partners_path,
           prefix: "/admin/delivery-partners",
@@ -75,11 +80,6 @@ module NavigationStructures
           name: "Users",
           href: admin_users_path,
           prefix: "/admin/users",
-        ) => [],
-        Node.new(
-          name: "Finance",
-          href: admin_finance_statements_path,
-          prefix: "/admin/finance",
         ) => [],
         Node.new(
           name: "Workplaces",

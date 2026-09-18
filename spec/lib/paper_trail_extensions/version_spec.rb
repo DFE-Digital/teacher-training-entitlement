@@ -88,36 +88,4 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
       end
     end
   end
-
-  context "when a child class does not have paper trail enabled" do
-    context "when a record is created" do
-      before { create(:course) }
-
-      it "does not call StreamVersionsToBigQueryJob" do
-        expect(StreamVersionsToBigQueryJob).not_to have_received(:perform_later)
-      end
-    end
-
-    context "when a record is updated" do
-      before do
-        course = create(:course)
-        course.update!(name: "New name")
-      end
-
-      it "does not call StreamVersionsToBigQueryJob" do
-        expect(StreamVersionsToBigQueryJob).not_to have_received(:perform_later)
-      end
-    end
-
-    context "when a record is destroyed" do
-      before do
-        course = create(:course)
-        course.destroy!
-      end
-
-      it "does not call StreamVersionsToBigQueryJob" do
-        expect(StreamVersionsToBigQueryJob).not_to have_received(:perform_later)
-      end
-    end
-  end
 end

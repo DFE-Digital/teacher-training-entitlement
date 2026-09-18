@@ -7,8 +7,8 @@ RSpec.describe Applications::Search do
 
   let(:user)         { build(:user, preferred_name: "Rasmus Lerdorf") }
   let(:application)  { create(:application, user:) }
-  let(:started_milestone) { create(:milestone, :started) }
-  let(:completed_milestone) { create(:milestone, :completed) }
+  let(:started_milestone) { course_milestone(application.course, :started) }
+  let(:completed_milestone) { course_milestone(application.course, :completed) }
   let(:declarations) do
     [
       create(:declaration, application:, declaration_type: :started, milestone: started_milestone),

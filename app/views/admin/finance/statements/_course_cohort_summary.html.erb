@@ -15,16 +15,20 @@
       end
 
       table.with_body do |body|
-        calculator.funded_rows.each do |item|
+        calculator.summary_funded.each do |item|
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
-            row.with_cell(text: item[:received], numeric: true)
-            row.with_cell(text: item[:value] ? number_to_currency(item[:value]) : "", numeric: true)
-            row.with_cell(text: number_to_currency(item[:received_value]), numeric: true)
+            row.with_cell(numeric: true) do
+              govuk_link_to(
+                (item[:received].is_a?(Enumerable) ? item[:received].size : item[:received]),
+                received_admin_finance_statement_path(calculator.statement, funded: "yes"))
+              end
+              row.with_cell(text: item[:value] ? number_to_currency(item[:value]) : "", numeric: true)
+              row.with_cell(text: number_to_currency(item[:received_value]), numeric: true)
+            end
           end
         end
-      end
-    end %>
+      end %>
 
     <h3 class="govuk-heading-s"><%= t(".self_funded") %></h3>
     <%= govuk_table do |table|
@@ -36,14 +40,18 @@
       end
 
       table.with_body do |body|
-        calculator.self_funded_rows.each do |item|
+        calculator.summary_self_funded.each do |item|
           body.with_row do |row|
             row.with_cell(text: item[:declaration_type].titleize)
-            row.with_cell(text: item[:received], numeric: true)
+            row.with_cell(numeric: true) do
+              govuk_link_to(
+                (item[:received].is_a?(Enumerable) ? item[:received].size : item[:received]),
+                received_admin_finance_statement_path(calculator.statement, funded: "no"))
+              end
+            end
           end
         end
-      end
-    end %>
+      end %>
   </div>
 </div>
 
@@ -52,18 +60,17 @@
     table.with_head do |head|
       head.with_row do |row|
         row.with_cell(text: "Course")
-        row.with_cell(text: "Recruitment target")
-        row.with_cell(text: "Teacher funding")
+        row.with_cell(text: "Recruitment target", numeric: true)
+        row.with_cell(text: "Teacher funding", numeric: true)
       end
     end
 
     table.with_body do |body|
       body.with_row do |row|
         row.with_cell(text: calculator.course_name)
-        row.with_cell(text: calculator.contract.recruitment_target)
-        row.with_cell(text: number_to_currency(calculator.contract.teacher_funding))
+        row.with_cell(text: calculator.contract.recruitment_target, numeric: true)
+        row.with_cell(text: number_to_currency(calculator.contract.teacher_funding), numeric: true)
       end
     end
-  end 
+  end
 end %>
-
