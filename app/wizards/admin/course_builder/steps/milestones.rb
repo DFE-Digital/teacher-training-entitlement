@@ -18,6 +18,7 @@ module Admin
         validates :milestone_types, presence: true
         validate :milestone_types_are_supported
         validate :offsets_are_supported
+        validate :payment_percentages_equal_100
 
         def self.permitted_params
           [{ milestones: {} }]
@@ -107,6 +108,16 @@ module Admin
           return if data[attribute.to_s].in?(supported_offsets)
 
           errors.add(:"#{milestone_type}_#{attribute}", "is not included in the list")
+        end
+
+        def payment_percentages_equal_100
+          total_payment_percentage = milestone_types.sum do |milestone_type|
+            BigDecimal(milestone_data(milestone_type)["payment_percentage"].to_s.presence || "0")
+          end
+
+          return if total_payment_percentage == 100
+
+          errors.add(:milestones, "payment percentage total must equal 100%")
         end
       end
     end

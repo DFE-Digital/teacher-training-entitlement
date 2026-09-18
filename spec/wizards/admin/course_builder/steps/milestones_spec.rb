@@ -66,6 +66,81 @@ RSpec.describe Admin::CourseBuilder::Steps::Milestones do
   end
 
   describe "validations" do
+    context "when the selected milestone payment percentages do not equal 100" do
+      let(:milestones) do
+        {
+          Milestone::STARTED => {
+            "selected" => "1",
+            "acceptance_window_start_offset" => "6",
+            "acceptance_window_end_offset" => "8",
+            "payment_percentage" => "60",
+          },
+          Milestone::COMPLETED => {
+            "selected" => "1",
+            "acceptance_window_start_offset" => "6",
+            "acceptance_window_end_offset" => "8",
+            "payment_percentage" => "41",
+          },
+        }
+      end
+
+      it "is invalid" do
+        expect(step).to have_error(:milestones, "payment percentage total must equal 100%")
+      end
+
+      context "when the total is less than 100" do
+        let(:milestones) do
+          {
+            Milestone::STARTED => {
+              "selected" => "1",
+              "acceptance_window_start_offset" => "6",
+              "acceptance_window_end_offset" => "8",
+              "payment_percentage" => "40",
+            },
+            Milestone::COMPLETED => {
+              "selected" => "1",
+              "acceptance_window_start_offset" => "6",
+              "acceptance_window_end_offset" => "8",
+              "payment_percentage" => "40",
+            },
+          }
+        end
+
+        it "is invalid" do
+          expect(step).to have_error(:milestones, "payment percentage total must equal 100%")
+        end
+      end
+    end
+
+    context "when selected milestone payment percentages equal 100" do
+      let(:milestones) do
+        {
+          Milestone::STARTED => {
+            "selected" => "1",
+            "acceptance_window_start_offset" => "6",
+            "acceptance_window_end_offset" => "8",
+            "payment_percentage" => "60",
+          },
+          Milestone::COMPLETED => {
+            "selected" => "1",
+            "acceptance_window_start_offset" => "6",
+            "acceptance_window_end_offset" => "8",
+            "payment_percentage" => "40",
+          },
+          Milestone::RETAINED_1 => {
+            "selected" => "0",
+            "acceptance_window_start_offset" => "6",
+            "acceptance_window_end_offset" => "8",
+            "payment_percentage" => "50",
+          },
+        }
+      end
+
+      it "is valid" do
+        expect(step).to be_valid
+      end
+    end
+
     context "when the offsets are not supported" do
       let(:milestones) do
         {
