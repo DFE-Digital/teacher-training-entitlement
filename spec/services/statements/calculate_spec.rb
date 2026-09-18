@@ -3,10 +3,11 @@ require "rails_helper"
 RSpec.describe Statements::Calculate do
   include Helpers::Declarations
 
-  subject(:calculate) { described_class.new(statement:) }
+  subject(:calculate) { described_class.new(statement:, scope:) }
 
   let(:lead_provider) { create(:lead_provider) }
   let(:statement) { create(:statement, lead_provider:, start_date: Date.current.beginning_of_month, deadline_date: Date.current) }
+  let(:scope) { nil }
 
   describe "#course_cohorts" do
     subject(:course_cohorts) { described_class.new(statement:).course_cohorts }
@@ -25,6 +26,41 @@ RSpec.describe Statements::Calculate do
 
     it "returns array of CourseCohortCalculator" do
       expect(course_cohorts.first).to be_a(Statements::CourseCohortCalculator)
+    end
+  end
+
+  describe "#applications_by_declaration_type" do
+    include_context "with started and completed declarations"
+
+    subject(:applications_by_declaration_type) { described_class.new(statement:, scope:).applications_by_declaration_type }
+
+    let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
+    let(:started_milestone) { course_milestone(course_cohort.course, :started) }
+    let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
+    let(:course_cohort) { course.course_cohorts.first }
+    let(:paid_statement) { create(:statement, :paid, lead_provider:) }
+    let(:payable_statement) { create(:statement, :payable, lead_provider:) }
+
+    context "with expected scope" do
+      let(:scope) { :expected }
+
+      it "groups expected applications by declaration type" do
+        expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED)
+      end
+    end
+
+    context "with outstanding scope" do
+      let(:scope) { :outstanding }
+
+      it "groups outstanding applications by declaration type" do
+        expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED)
+      end
+    end
+
+    context "without an application scope" do
+      it "raises an error" do
+        expect { applications_by_declaration_type }.to raise_error(ArgumentError, "scope must be one of: expected, outstanding")
+      end
     end
   end
 

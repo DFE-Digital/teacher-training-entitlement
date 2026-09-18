@@ -76,7 +76,7 @@
     end
 
     table.with_body do |body|
-      @grouping.each do |milestone, applications|
+      @applications_by_declaration_type.each do |milestone, applications|
         applications.each do |application|
           body.with_row do |row|
             row.with_cell do
@@ -92,15 +92,15 @@
               )
             end
             row.with_cell(text: milestone)
-          row.with_cell(text: "calculate")
-        end
+            row.with_cell(text: "calculate")
+          end
         end
       end
     end
   end
   %>
 
-  <% if @grouping.empty? %>
+  <% if @applications_by_declaration_type.empty? %>
     <p class="govuk-body">No outstanding declarations match the search and filters.</p>
   <% end %>
 
