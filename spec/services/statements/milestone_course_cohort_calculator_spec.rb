@@ -20,7 +20,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
     end
   end
   let(:contract) { lead_provider.contract(course_cohort:) }
-  let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_percentage: 0.6, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
+  let(:milestone) { course_cohort.course.milestones.detect(&:started_declaration_type?) }
   let(:funded_place) { [true] }
 
   def create_declaration(application:, statement:, milestone:)
@@ -42,96 +42,178 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
     )
   end
 
-  describe "#row" do
-    context "with a funded started milestone" do
-      before do
-        create_list(:application, 2, :with_funded_place, course_cohort:, lead_provider:, status: Application::REJECTED)
-        create_declaration(application: funded_apps.first, statement: paid_statement, milestone:)
+  describe "#scopes" do
+    subject(:scopes) do
+      described_class.new(
+        statement:,
+        course_cohort:,
+        milestone:,
+        funded_place:,
+        contract:,
+      ).scopes
+    end
 
-        (funded_apps[1..2] + self_funded_apps).each do |application|
-          create_declaration(application:, statement:, milestone:)
+    context "with funded context" do
+      let(:funded_place) { [true] }
+
+      context "and without any funded declaration or any declaration on previous statement" do
+        before do
+          self_funded_app = create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:)
+          create_declaration(application: self_funded_app, statement:, milestone:)
+        end
+
+        let!(:applications) do
+          create_list(:application, 3, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+        end
+
+        it do
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to match_array(applications)
+          expect(scopes[:outstanding]).to match_array(applications)
+          expect(scopes[:value]).to eq(BigDecimal(60))
+          expect(scopes[:expected_value]).to eq(BigDecimal(60) * applications.size)
+          expect(scopes[:received_value]).to eq(0)
+
+          expect(scopes[:received]).to eq(Declaration.none)
         end
       end
 
-      let(:funded_apps) { create_list(:application, 4, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-      let(:self_funded_apps) { create_list(:application, 1, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
+      context "and without any funded declaration and declarations on previous statement" do
+        let!(:applications) do
+          create_list(:application, 3, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+        end
 
-      it "counts funded applications in started states and deducts declarations on previous statements" do
-        expect(calculator.row).to eq(
-          declaration_type: Milestone::STARTED,
-          expected: 3,
-          received: 2,
-          outstanding: 1,
-          value: BigDecimal(60),
-          expected_value: BigDecimal(180),
-          received_value: BigDecimal(120),
-        )
-      end
-    end
+        before do
+          applications[0..1].each { |application| create_declaration(application:, statement: paid_statement, milestone:) }
+        end
 
-    context "with a self-funded started milestone" do
-      before do
-        create_declaration(application: funded_app, statement:, milestone:)
-        create_declaration(application: self_funded_app, statement:, milestone:)
-      end
+        it do
+          expected = [applications.last]
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to match_array(expected)
+          expect(scopes[:outstanding]).to match_array(expected)
+          expect(scopes[:value]).to eq(BigDecimal(60))
+          expect(scopes[:expected_value]).to eq(BigDecimal(60) * expected.size)
+          expect(scopes[:received_value]).to eq(0)
 
-      let(:funded_place) { [nil, false] }
-      let(:funded_app) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-      let(:self_funded_app) { create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
-
-      it "counts received declarations without forecasting expected payments" do
-        expect(calculator.row).to eq(
-          declaration_type: Milestone::STARTED,
-          expected: 0,
-          received: 1,
-          outstanding: 0,
-          expected_value: 0,
-          received_value: 0,
-        )
-      end
-    end
-
-    context "with a funded completed milestone" do
-      before do
-        accepted_application
-        started_application.update!(status: Application::STARTED)
-        rejected_application
-
-        create_declaration(application: completed_application, statement:, milestone:)
-      end
-
-      let(:milestone) { create(:milestone, :completed, course: course_cohort.course, payment_percentage: 0.4, acceptance_window_start_offset: 0, acceptance_window_end_offset: 14) }
-      let(:accepted_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-      let(:started_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-      let(:completed_application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-      let(:rejected_application) { create(:application, :with_funded_place, course_cohort:, lead_provider:, status: Application::REJECTED) }
-
-      it "counts only started and completed applications as expected" do
-        expect(calculator.row).to include(
-          declaration_type: Milestone::COMPLETED,
-          expected: 2,
-          received: 1,
-          outstanding: 1,
-          value: BigDecimal(40),
-        )
-      end
-    end
-
-    context "when the statement deadline is before the milestone acceptance window" do
-      let(:statement) { create(:statement, lead_provider:, start_date: 1.month.ago.beginning_of_month) }
-      let(:course_cohort) do
-        create(:course_cohort, training_starts_at: Time.zone.today).tap do |course_cohort|
-          create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100)
+          expect(scopes[:received]).to eq(Declaration.none)
         end
       end
-      let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_percentage: 0.6, acceptance_window_start_offset: 0) }
 
-      before do
-        create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+      context "and with a funded declaration and not declaration on previous statement" do
+        let!(:applications) do
+          create_list(:application, 3, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+        end
+        let!(:declarations) do
+          [create_declaration(application: applications[0], statement:, milestone:)]
+        end
+
+        it do
+          outstanding = applications[1..2]
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to match_array(applications)
+          expect(scopes[:outstanding]).to match_array(outstanding)
+          expect(scopes[:value]).to eq(BigDecimal(60))
+          expect(scopes[:expected_value]).to eq(BigDecimal(60) * applications.size)
+          expect(scopes[:received_value]).to eq(BigDecimal(60) * declarations.size)
+
+          expect(scopes[:received]).to match_array(declarations)
+        end
       end
 
-      it "does not forecast expected declarations" do
-        expect(calculator.row).to include(expected: 0, received: 0, outstanding: 0)
+      context "and with a funded declaration and declaration on previous statement" do
+        let!(:applications) do
+          create_list(:application, 3, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+        end
+        let!(:declarations) do
+          [create_declaration(application: applications[1], statement:, milestone:)]
+        end
+
+        before do
+          create_declaration(application: applications[0], statement: paid_statement, milestone:)
+        end
+
+        it do
+          expected = applications[1..2]
+          outstanding = applications[2..2]
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to match_array(expected)
+          expect(scopes[:outstanding]).to match_array(outstanding)
+          expect(scopes[:value]).to eq(BigDecimal(60))
+          expect(scopes[:expected_value]).to eq(BigDecimal(60) * expected.size)
+          expect(scopes[:received_value]).to eq(BigDecimal(60) * declarations.size)
+
+          expect(scopes[:received]).to match_array(declarations)
+        end
+      end
+
+      context "and with funded declarations and no outstanding declaration" do
+        let!(:applications) do
+          create_list(:application, 3, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+        end
+        let!(:declarations) do
+          [create_declaration(application: applications[2], statement:, milestone:)]
+        end
+
+        before do
+          applications[0..1].each { |application| create_declaration(application:, statement: paid_statement, milestone:) }
+        end
+
+        it do
+          expected = applications[2..2]
+          outstanding = Application.none
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to match_array(expected)
+          expect(scopes[:outstanding]).to match_array(outstanding)
+          expect(scopes[:value]).to eq(BigDecimal(60))
+          expect(scopes[:expected_value]).to eq(BigDecimal(60) * expected.size)
+          expect(scopes[:received_value]).to eq(BigDecimal(60) * declarations.size)
+
+          expect(scopes[:received]).to match_array(declarations)
+        end
+      end
+    end
+
+    context "with self-funded context" do
+      let(:funded_place) { [false] }
+
+      context "and without any received self funded declaration" do
+        before do
+          funded_app = create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+          create_declaration(application: funded_app, statement:, milestone:)
+        end
+
+        it do
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to eq(Application.none)
+          expect(scopes[:outstanding]).to eq(Application.none)
+          expect(scopes[:value]).to be_nil
+          expect(scopes[:expected_value]).to be_nil
+          expect(scopes[:received_value]).to be_nil
+
+          expect(scopes[:received]).to eq(Declaration.none)
+        end
+      end
+
+      context "and with a received self-funded declaration" do
+        before do
+          funded_app = create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:)
+          create_declaration(application: funded_app, statement:, milestone:)
+        end
+
+        let(:self_funded_app) { create(:application, :accepted, :without_funded_place, course_cohort:, lead_provider:) }
+        let!(:declaration) { create_declaration(application: self_funded_app, statement:, milestone:) }
+
+        it do
+          expect(scopes[:declaration_type]).to eq(milestone.declaration_type)
+          expect(scopes[:expected]).to eq(Application.none)
+          expect(scopes[:outstanding]).to eq(Application.none)
+          expect(scopes[:value]).to be_nil
+          expect(scopes[:expected_value]).to be_nil
+          expect(scopes[:received_value]).to be_nil
+
+          expect(scopes[:received]).to eq(Declaration.where(id: declaration.id))
+        end
       end
     end
   end

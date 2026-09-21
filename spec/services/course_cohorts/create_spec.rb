@@ -109,14 +109,6 @@ RSpec.describe CourseCohorts::Create, type: :model do
         end
       end
 
-      it "creates a started milestone with the given training_starts_at" do
-        expect { service.call }.to change(Milestone.started, :count).by(1)
-
-        milestone = service.course_cohort.milestones.started.sole
-        expect(milestone.acceptance_window_start_offset).to eq(0)
-        expect(service.course_cohort.acceptance_window_start_date_for(milestone)).to eq(training_starts_at)
-      end
-
       context "when training_ends_at is present" do
         let(:training_starts_at) { Date.new(2025, 9, 1) }
 

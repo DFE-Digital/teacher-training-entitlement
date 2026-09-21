@@ -1,0 +1,48 @@
+<h2><%= name  %></h2>
+<div class="govuk-grid-row">
+  <%=
+  govuk_table do |table|
+    table.with_head do |header|
+      header.with_row do |row|
+        row.with_cell(text: "Contract")
+        row.with_cell(text: "Teacher")
+        row.with_cell(text: "Milestone")
+        row.with_cell(text: "Funded")
+        row.with_cell(text: "Value")
+        row.with_cell(text: "Status")
+      end
+    end
+
+    table.with_body do |body|
+      declarations.each do |declaration|
+        body.with_row do |row|
+          row.with_cell do
+            govuk_link_to(
+              [declaration.course_cohort.academic_year, declaration.course_cohort.schedule_identifier].join("-"),
+              cohort_admin_course_path(declaration.course_cohort.course, declaration.course_cohort.cohort),
+            )
+          end
+          row.with_cell do
+            govuk_link_to(
+              declaration.application.user.full_name,
+              admin_application_declarations_path(declaration.application)
+            )
+          end
+          row.with_cell(text: declaration.declaration_type)
+          row.with_cell(text: declaration.application.funded_place)
+          row.with_cell(text: number_to_currency(declaration.value))
+          row.with_cell do
+            declaration_status_badge(declaration.state)
+          end
+        end
+      end
+    end
+  end
+  %>
+
+  <% if declarations.none? %>
+    <p class="govuk-body">No declarations match the search and filters.</p>
+  <% end %>
+
+  <%= govuk_pagination(pagy: @pagy) %>
+</div>

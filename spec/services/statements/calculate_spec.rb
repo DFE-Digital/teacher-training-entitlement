@@ -1,16 +1,19 @@
 require "rails_helper"
 
 RSpec.describe Statements::Calculate do
-  subject(:calculate) { described_class.new(statement:) }
+  include Helpers::Declarations
+
+  subject(:calculate) { described_class.new(statement:, scope:) }
 
   let(:lead_provider) { create(:lead_provider) }
-  let(:statement) { create(:statement, lead_provider:) }
+  let(:statement) { create(:statement, lead_provider:, start_date: Date.current.beginning_of_month, deadline_date: Date.current) }
+  let(:scope) { nil }
 
   describe "#course_cohorts" do
     subject(:course_cohorts) { described_class.new(statement:).course_cohorts }
 
     let(:application) { create(:application, :accepted, :with_funded_place, course_cohort:, lead_provider:) }
-    let(:milestone) { create(:milestone, :started, course: course_cohort.course, payment_percentage: 0.6) }
+    let(:milestone) { course_milestone(course_cohort.course, :started) }
     let!(:course_cohort) do
       create(:course_cohort).tap do |course_cohort|
         create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100, recruitment_target: 20)
@@ -18,8 +21,7 @@ RSpec.describe Statements::Calculate do
     end
 
     before do
-      application.update!(status: Application::STARTED)
-      create(:declaration, :eligible, :started, application:, statement:, milestone:, lead_provider:, value: 60)
+      started_received(application:, statement:, milestone:)
     end
 
     it "returns array of CourseCohortCalculator" do
@@ -27,94 +29,120 @@ RSpec.describe Statements::Calculate do
     end
   end
 
-  describe "#summary_rows" do
+  describe "#applications_by_declaration_type" do
+    include_context "with started and completed declarations"
+
+    subject(:applications_by_declaration_type) { described_class.new(statement:, scope:).applications_by_declaration_type(filters:) }
+
+    let(:filters) { {} }
+    let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
+    let(:started_milestone) { course_milestone(course_cohort.course, :started) }
+    let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
+    let(:course_cohort) { course.course_cohorts.first }
+    let(:paid_statement) { create(:statement, :paid, lead_provider:) }
+    let(:payable_statement) { create(:statement, :payable, lead_provider:) }
+
+    context "with expected scope" do
+      let(:scope) { :expected }
+
+      it "groups expected applications by declaration type" do
+        expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED)
+      end
+    end
+
+    context "with outstanding scope" do
+      let(:scope) { :outstanding }
+
+      it "groups outstanding applications by declaration type" do
+        expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED, Milestone::COMPLETED)
+      end
+    end
+
+    context "without an application scope" do
+      it "raises an error" do
+        expect { applications_by_declaration_type }.to raise_error(ArgumentError, "scope must be one of: expected, outstanding")
+      end
+    end
+
+    describe "filters" do
+      let(:users) do
+        ["Julian Moore", "Andy Smith", "Ian Carter", "Blake Tian"].map { |full_name| create(:user, full_name:) }
+      end
+      let(:funded_apps) do
+        users.map do |user|
+          create(:application, :accepted, :with_funded_place, user:, course_cohort:, lead_provider:)
+        end
+      end
+
+      context "with declaration type filter" do
+        let(:scope) { :expected }
+        let(:filters) { { declaration_type: Milestone::STARTED } }
+
+        it "applications expected a completed declaration" do
+          expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED)
+          names = applications_by_declaration_type[Milestone::STARTED].map { _1.user.full_name }
+          expect(names).to contain_exactly("Blake Tian")
+        end
+      end
+
+      context "with teacher name filter" do
+        let(:scope) { :expected }
+        let(:filters) { { teacher_name: "ian" } }
+
+        it "applications to user to have ian in full_name" do
+          names = applications_by_declaration_type.values.flatten.map { _1.user.full_name }
+          # Blake Tian is expected both started & completed declarations
+          expect(names).to contain_exactly("Julian Moore", "Ian Carter", "Blake Tian", "Blake Tian")
+        end
+      end
+    end
+  end
+
+  describe "#summary_rows across multiple course_cohorts" do
+    include_context "with started and completed declarations"
+
     before do
-      allow(ccc_one).to receive(:funded).and_return(ccc_one_funded)
-      allow(ccc_two).to receive(:funded).and_return(ccc_two_funded)
-      allow(calculate).to receive(:course_cohorts).and_return(course_cohort_calculators) # rubocop:disable RSpec/SubjectStub
+      send_course = create(:course, name: "npd send", identifier: "npd-s", lead_provider:)
+      send_course_cohort = send_course.course_cohorts.first
+      milestone = course_milestone(send_course, :started)
+      create_list(:application, number_of_other_course_apps, :accepted, :with_funded_place, course_cohort: send_course_cohort, lead_provider:).each do |application|
+        started_received(application:, statement:, milestone:)
+      end
     end
 
-    let(:ccp) { create(:course_cohort_provider, lead_provider:) }
-    let(:course_cohort_calculators) { [ccc_one, ccc_two] }
-    let(:ccc_one) do
-      Statements::CourseCohortCalculator.new(statement:, course_cohort: ccp.course_cohort)
-    end
-    let(:ccc_two) do
-      Statements::CourseCohortCalculator.new(statement:, course_cohort: ccp.course_cohort)
-    end
-
-    let(:ccc_one_funded) do
-      [
-        {
-          declaration_type: Milestone::STARTED,
-          expected: 1,
-          received: 1,
-          outstanding: 0,
-          value: 10,
-          expected_value: 10,
-          received_value: 10,
-        },
-        {
-          declaration_type: Milestone::COMPLETED,
-          expected: 4,
-          received: 3,
-          outstanding: 1,
-          value: 10,
-          expected_value: 40,
-          received_value: 30,
-        },
-      ]
-    end
-
-    let(:ccc_two_funded) do
-      [
-        {
-          declaration_type: Milestone::STARTED,
-          expected: 3,
-          received: 1,
-          outstanding: 2,
-          value: 10,
-          expected_value: 10,
-          received_value: 10,
-        },
-        {
-          declaration_type: Milestone::COMPLETED,
-          expected: 5,
-          received: 5,
-          outstanding: 0,
-          value: 10,
-          expected_value: 40,
-          received_value: 30,
-        },
-      ]
-    end
-
+    let(:number_of_other_course_apps) { 1 }
+    let(:course) { create(:course, name: "npd reception", identifier: "npd-r", lead_provider:) }
+    let(:started_milestone) { course.milestones.detect(&:started_declaration_type?) }
+    let(:completed_milestone) { course.milestones.detect(&:completed_declaration_type?) }
+    let(:course_cohort) { course.course_cohorts.first }
+    let(:paid_statement) { create(:statement, :paid, lead_provider:) }
+    let(:payable_statement) { create(:statement, :payable, lead_provider:) }
     let(:expected_rows) do
       [
         {
           declaration_type: Milestone::STARTED,
-          expected: 4,
-          received: 2,
-          outstanding: 2,
+          expected: 1 + number_of_other_course_apps,
+          received: 1 + number_of_other_course_apps,
+          outstanding: 0,
         },
         {
           declaration_type: Milestone::COMPLETED,
-          expected: 9,
-          received: 8,
-          outstanding: 1,
+          expected: 4 + number_of_other_course_apps,
+          received: 3,
+          outstanding: 1 + number_of_other_course_apps,
         },
         {
           declaration_type: "Total",
-          expected: 13,
-          received: 10,
-          outstanding: 3,
+          expected: 5 + 2 * number_of_other_course_apps,
+          received: 4 + number_of_other_course_apps,
+          outstanding: 1 + number_of_other_course_apps,
         },
       ]
     end
 
     it "sum across course_cohorts for funded applications" do
       calculate.summary_rows.zip(expected_rows).each do |row, expected_row|
-        expect(row).to eq(expected_row)
+        expect(row).to match_statement_row(expected_row)
       end
     end
   end

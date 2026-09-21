@@ -63,6 +63,8 @@ class Declaration < ApplicationRecord
   }, suffix: true
 
   state_machine :state, initial: :submitted do
+    before_transition on: :mark_voided, do: :void_declaration_value
+
     event :mark_eligible do
       transition %i[submitted] => :eligible
     end
@@ -130,6 +132,10 @@ class Declaration < ApplicationRecord
 
   def course_group
     application.course.course_group
+  end
+
+  def void_declaration_value
+    self.value = nil
   end
 
   def clawback!

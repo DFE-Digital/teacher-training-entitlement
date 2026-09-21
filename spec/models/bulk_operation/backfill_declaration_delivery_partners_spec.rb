@@ -87,7 +87,7 @@ RSpec.describe BulkOperation::BackfillDeclarationDeliveryPartners, type: :model 
     let(:lead_provider) { LeadProvider.first }
     let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
     let(:course_cohort) { create(:course_cohort, cohort:) }
-    let(:milestone) { create(:milestone, course: course_cohort.course) }
+    let(:milestone) { course_milestone(course_cohort.course, :started) }
     let(:bulk_operation) { create(:backfill_declaration_delivery_partners_bulk_operation, admin: create(:admin)) }
     let(:instance) { described_class.new(bulk_operation:) }
     let(:application_1) { create(:application, :accepted, course_cohort:, lead_provider:) }

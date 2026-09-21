@@ -131,9 +131,11 @@ namespace :admin do
       end
 
       member do
+        get :received, to: "statements/received#show"
+        get :expected, to: "statements/expected#show"
+        get :outstanding, to: "statements/outstanding#show"
         resource :assurance_report, controller: "statements/assurance_reports", only: "show"
         resource :payment_authorisation, controller: "statements/payment_authorisations", only: %i[new create]
-        resources :voided, controller: "statements/voided", only: :index
         get :print_provider
         get :print_dfe_user
 

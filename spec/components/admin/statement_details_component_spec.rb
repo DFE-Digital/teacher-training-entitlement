@@ -24,11 +24,11 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
   it { is_expected.to have_text(/#{t('.total', declaration_type: "started")}\s+#{calculator.get_funded(:received, declaration_type: "started")}/) }
   it { is_expected.to have_text(/#{t('.total', declaration_type: "completed")}\s+#{calculator.get_funded(:received, declaration_type: "completed")}/) }
   it { is_expected.to have_text(/#{t('.total_voids')}\s+#{calculator.total_voided}/) }
-  it { is_expected.to have_link t(".view", href: admin_finance_voided_index_path(statement)) }
+  it { is_expected.to have_link t(".view", href: received_admin_finance_statement_path(statement, status: :voided)) }
 
   context "when link_to_voids is false" do
     subject(:rendered) { render_inline described_class.new(statement:, link_to_voids: false) }
 
-    it { is_expected.not_to have_link t(".view", href: admin_finance_voided_index_path(statement)) }
+    it { is_expected.not_to have_link t(".view", href: received_admin_finance_statement_path(statement, status: :voided)) }
   end
 end

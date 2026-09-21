@@ -9,10 +9,8 @@ RSpec.feature "Viewing participant outcomes", type: :feature do
 
   scenario "viewing an application with outcomes" do
     application = create(:application)
-
-    # The declaration is started by default (declaration_type: "started")
-    started_declaration   = create(:declaration, application: application)
-    completed_declaration = create(:declaration, :completed, application: application)
+    started_declaration   = create(:declaration, :started, application:)
+    completed_declaration = create(:declaration, :completed, application:)
     outcome               = create(:participant_outcome, :passed, declaration: completed_declaration)
 
     visit(admin_applications_path)

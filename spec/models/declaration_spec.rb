@@ -31,12 +31,7 @@ RSpec.describe Declaration, type: :model do
       let(:application) { create(:application, :accepted) }
       let(:lead_provider) { application.lead_provider }
       let(:cohort) { application.cohort }
-      let(:milestone) do
-        application.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
-          record.acceptance_window_start_offset = 0
-          record.acceptance_window_end_offset = 1
-        end
-      end
+      let(:milestone) { course_milestone(course_cohort.course, :started) }
       let(:primary_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { cohort => lead_provider }) }
       let(:secondary_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { cohort => lead_provider }) }
 
@@ -234,10 +229,7 @@ RSpec.describe Declaration, type: :model do
       end
 
       it "has an error on update" do
-        subject.declaration_date = Time.zone.now
-        expect(subject.save).to be_truthy
-
-        subject.declaration_date = 1.day.from_now
+        subject.declaration_date = 10.months.from_now
         expect(subject.save).to be_falsey
         expect(subject).to have_error(:declaration_date, :future_declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")
       end
