@@ -1,5 +1,7 @@
 module Helpers
   module APIHelpers
+    SCHEDULE_IDENTIFIER_EXAMPLE = "tte-reception-autumn".freeze
+
     def api_get(url, lead_provider: nil, params: {}, headers: {}, token: nil)
       token ||= lead_provider_token(lead_provider:)
       headers ||= {}

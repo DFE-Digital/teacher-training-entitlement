@@ -28,7 +28,7 @@ COURSE_COHORT = {
             description: "The new schedule of the participant",
             nullable: true,
             type: :string,
-            example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
+            example: Helpers::APIHelpers::SCHEDULE_IDENTIFIER_EXAMPLE,
           },
           cohort: {
             description: "The requested academic years",
