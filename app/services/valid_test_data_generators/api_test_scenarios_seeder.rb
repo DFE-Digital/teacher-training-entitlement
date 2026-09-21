@@ -286,6 +286,7 @@ module ValidTestDataGenerators
         description: "#{registration_starts_at.strftime('%B')} #{academic_year}",
         registration_starts_at:,
         funding_cap: true,
+        start_year: academic_year,
       }
       if current_cohort
         current_cohort.update!(attrs)

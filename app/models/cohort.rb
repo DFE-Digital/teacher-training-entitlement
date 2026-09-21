@@ -1,5 +1,4 @@
 class Cohort < ApplicationRecord
-  before_validation :set_start_year
   before_validation :set_identifier
 
   has_many :course_cohorts, dependent: :destroy
@@ -10,7 +9,7 @@ class Cohort < ApplicationRecord
             presence: true,
             numericality: {
               greater_than_or_equal_to: 2021,
-              less_than: 2030,
+              less_than: 2035,
             }
 
   validates :description,
@@ -49,12 +48,6 @@ class Cohort < ApplicationRecord
   end
 
 private
-
-  def set_start_year
-    return if registration_starts_at.blank?
-
-    self.start_year = registration_starts_at.year
-  end
 
   def set_identifier
     return if registration_starts_at.blank?
