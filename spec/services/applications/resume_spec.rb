@@ -38,6 +38,13 @@ RSpec.describe Applications::Resume, type: :model do
     it "updates the course_cohort" do
       expect { service.call }.to change(application, :course_cohort).from(course_cohort).to(target_course_cohort)
     end
+
+    it "updates the training start date from the new course cohort" do
+      expect { service.call }
+        .to change { application.reload.training_starts_at }
+        .from(course_cohort.training_starts_at)
+        .to(target_course_cohort.training_starts_at)
+    end
   end
 
   describe "errors scenarios" do
