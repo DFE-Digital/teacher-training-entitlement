@@ -8,7 +8,7 @@ RSpec.describe "layouts/api_guidance.html.erb", type: :view do
       view.instance_variable_set(:@page, instance_double(Guidance::GuidancePage, index_page?: true))
     end
 
-    it { is_expected.to have_link("Teacher training entitlement", href: "/api/guidance") }
+    it { is_expected.to have_text("NPD API guidance") }
   end
 
   describe "sidebar navigation" do

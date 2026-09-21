@@ -1,5 +1,3 @@
-<%= govuk_header do |header|
-  header.with_product_name do
-    govuk_link_to("Teacher training entitlement", "/api/guidance", class: "govuk-header__link")
-  end
+<%= govuk_header(classes: %w(with-extra-content)) do |header|
+  header.with_product_name(name: " | NPD API guidance")
 end %>
