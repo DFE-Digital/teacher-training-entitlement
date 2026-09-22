@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_13_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_131136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -145,6 +145,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_120000) do
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
     t.string "teacher_catchment_iso_country_code", limit: 3
+    t.date "training_starts_at"
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false

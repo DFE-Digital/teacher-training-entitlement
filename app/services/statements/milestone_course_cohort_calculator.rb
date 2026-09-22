@@ -66,7 +66,7 @@ module Statements
     def expected
       return Application.none unless funded?
 
-      milestone_start_date = course_cohort.acceptance_window_start_date_for(milestone)
+      milestone_start_date = milestone.acceptance_window_start_date_for(training_starts_at: course_cohort.training_starts_at)
       return Application.none if statement.deadline_date <= milestone_start_date
 
       forecast = forecasted_applications_declaration.order(created_at: :desc)

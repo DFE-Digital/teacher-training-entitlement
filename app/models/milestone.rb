@@ -39,6 +39,18 @@ class Milestone < ApplicationRecord
        DECLARATION_TYPES.index_with(&:itself),
        suffix: true, validate: true
 
+  def acceptance_window_start_date_for(training_starts_at:)
+    return if training_starts_at.nil? || acceptance_window_start_offset.nil?
+
+    training_starts_at.advance(months: acceptance_window_start_offset)
+  end
+
+  def acceptance_window_end_date_for(training_starts_at:)
+    return if training_starts_at.nil? || acceptance_window_end_offset.nil?
+
+    training_starts_at.advance(months: acceptance_window_end_offset)
+  end
+
 private
 
   def valid_declaration_type?

@@ -4,7 +4,7 @@ RSpec.describe ParticipantOutcome, type: :model do
   let(:course_cohort) { create(:course_cohort) }
   let(:milestone) { course_milestone(course_cohort.course, :completed) }
   let(:application) { create(:application, :accepted, course_cohort:) }
-  let(:declaration_date) { course_cohort.acceptance_window_start_date_for(milestone) }
+  let(:declaration_date) { milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) }
   let!(:declaration) do
     travel_to declaration_date do
       create(:declaration, :completed, application:, declaration_date:, milestone:)

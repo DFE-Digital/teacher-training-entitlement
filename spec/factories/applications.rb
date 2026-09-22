@@ -165,7 +165,7 @@ FactoryBot.define do
           record.acceptance_window_end_offset = 1
         end
 
-        declaration_date = application.course_cohort.acceptance_window_start_date_for(milestone) ||
+        declaration_date = milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) ||
           1.month.ago.to_date
 
         application.declarations << create(

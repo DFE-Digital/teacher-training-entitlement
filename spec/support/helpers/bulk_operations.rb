@@ -33,7 +33,7 @@ module Helpers
           record.acceptance_window_start_offset = 0
           record.acceptance_window_end_offset = 30
         end
-        declaration_date = (course_cohort.acceptance_window_start_date_for(milestone) + 1.day).rfc3339
+        declaration_date = (milestone.acceptance_window_start_date_for(training_starts_at: course_cohort.training_starts_at) + 1.day).rfc3339
 
         tempfile_with_bom <<~CSV
           participant_id,declaration_type,declaration_date,course_identifier,delivery_partner_id,lead_provider_name,has_passed

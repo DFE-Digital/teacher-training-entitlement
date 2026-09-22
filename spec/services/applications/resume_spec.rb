@@ -18,25 +18,20 @@ RSpec.describe Applications::Resume, type: :model do
   let(:target_course) { course }
   let(:target_cohort) { create(:cohort, :current) }
 
-  before do
-    target_course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |milestone|
-      milestone.acceptance_window_start_offset = 0
-      milestone.acceptance_window_end_offset = 1
-    end
-
-    target_course.milestones.find_or_create_by!(declaration_type: Milestone::COMPLETED) do |milestone|
-      milestone.acceptance_window_start_offset = 1
-      milestone.acceptance_window_end_offset = 2
-    end
-  end
-
   describe "happy path" do
     it "updates application status" do
       expect { service.call }.to change(application, :status).from(Application::DEFERRED).to(Application::STARTED)
     end
 
-    it "updates the course_cohort" do
-      expect { service.call }.to change(application, :course_cohort).from(course_cohort).to(target_course_cohort)
+    it "does not update the course_cohort" do
+      expect { service.call }.not_to(change { application.reload.course_cohort })
+    end
+
+    it "updates the training start date from the new course cohort" do
+      expect { service.call }
+        .to change { application.reload.training_starts_at }
+        .from(course_cohort.training_starts_at)
+        .to(target_course_cohort.training_starts_at)
     end
   end
 

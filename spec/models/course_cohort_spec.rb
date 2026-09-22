@@ -84,79 +84,16 @@ RSpec.describe CourseCohort do
     let(:course_cohort) { create(:course_cohort) }
     let(:except) { nil }
 
-    before do
-      course_cohort.course.milestones.find_or_create_by!(declaration_type: "started") do |milestone|
-        milestone.acceptance_window_start_offset = 0
-      end
-      course_cohort.course.milestones.find_or_create_by!(declaration_type: "completed") do |milestone|
-        milestone.acceptance_window_start_offset = 0
-      end
-    end
-
     it "returns the declaration types already used by milestones on the course cohort" do
       expect(taken_declaration_types).to contain_exactly("started", "completed")
     end
 
     context "when excluding a milestone" do
-      let(:except) { course_cohort.milestones.find_by(declaration_type: "started") }
+      let(:except) { course_milestone(course_cohort.course, :started) }
 
       it "does not include the excluded milestone's declaration type" do
         expect(taken_declaration_types).to contain_exactly("completed")
       end
-    end
-  end
-
-  describe "#acceptance_window_start_date_for" do
-    subject(:acceptance_window_start_date) { course_cohort.acceptance_window_start_date_for(milestone) }
-
-    let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
-    let(:milestone) { build(:milestone, acceptance_window_start_offset: 1) }
-
-    it { is_expected.to eq(Date.new(2026, 10, 1)) }
-
-    context "when the course cohort has no training start date" do
-      let(:course_cohort) { create(:course_cohort, training_starts_at: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone has no start offset" do
-      let(:milestone) { build(:milestone, acceptance_window_start_offset: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone is missing" do
-      let(:milestone) { nil }
-
-      it { is_expected.to be_nil }
-    end
-  end
-
-  describe "#acceptance_window_end_date_for" do
-    subject(:acceptance_window_end_date) { course_cohort.acceptance_window_end_date_for(milestone) }
-
-    let(:course_cohort) { create(:course_cohort, training_starts_at: Date.new(2026, 9, 1)) }
-    let(:milestone) { build(:milestone, acceptance_window_end_offset: 1) }
-
-    it { is_expected.to eq(Date.new(2026, 10, 1)) }
-
-    context "when the course cohort has no training start date" do
-      let(:course_cohort) { create(:course_cohort, training_starts_at: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone has no end offset" do
-      let(:milestone) { build(:milestone, acceptance_window_end_offset: nil) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the milestone is missing" do
-      let(:milestone) { nil }
-
-      it { is_expected.to be_nil }
     end
   end
 

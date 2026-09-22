@@ -254,7 +254,14 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     course_cohort = create(:course_cohort, course: create(:course), training_starts_at: 1.week.ago)
     milestone = course_milestone(course_cohort.course, :started)
     application = create(:application, :accepted, course_cohort:, lead_provider:)
-    create(:declaration, :started, application:, lead_provider:, milestone:, declaration_date: course_cohort.acceptance_window_start_date_for(milestone) + 1.day)
+    create(
+      :declaration,
+      :started,
+      application:,
+      lead_provider:,
+      milestone:,
+      declaration_date: milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.day,
+    )
 
     visit admin_application_path(application)
 

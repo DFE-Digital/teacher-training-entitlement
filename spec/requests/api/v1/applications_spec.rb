@@ -436,7 +436,7 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "POST /api/v1/applications/:ecf_id/declarations/started" do
     let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
-    let(:declaration_date) { course_cohort.acceptance_window_start_date_for(started_milestone) + 1.hour }
+    let(:declaration_date) { started_milestone.acceptance_window_start_date_for(training_starts_at: resource.training_starts_at) + 1.hour }
     let(:course_cohort) { create(:course_cohort) }
     let(:started_milestone) { course_milestone(course_cohort.course, :started) }
     let(:has_passed) { true }
@@ -492,7 +492,7 @@ RSpec.describe "Application endpoints", type: :request do
 
   describe "POST /api/v1/applications/:ecf_id/declarations/completed" do
     let(:resource) { create(:application, :with_declaration, course_cohort:, lead_provider: current_lead_provider) }
-    let(:declaration_date) { course_cohort.acceptance_window_start_date_for(completed_milestone) + 1.hour }
+    let(:declaration_date) { completed_milestone.acceptance_window_start_date_for(training_starts_at: resource.training_starts_at) + 1.hour }
     let(:course_cohort) { create(:course_cohort) }
     let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
     let(:has_passed) { true }
@@ -537,10 +537,12 @@ RSpec.describe "Application endpoints", type: :request do
 
     context "when an application changed provider" do
       include_context "with application which changed provider"
-      let(:path) { completed_declaration_api_v1_application_path(ecf_id: application.ecf_id) }
       let(:params) { { data: { attributes: } } }
 
       it "the old provider cannot create the declaration" do
+        path = completed_declaration_api_v1_application_path(ecf_id: application.ecf_id)
+        params
+
         expect { api_post(path, lead_provider: old_lead_provider, params:) }
           .not_to(change(Declaration, :count))
 
