@@ -15,7 +15,7 @@ module Admin
       service.call
       if service.errors.blank?
         flash[:success] = "Course providers updated"
-        redirect_to cohort_admin_course_path(@course_cohort.course, @course_cohort.cohort)
+        redirect_to admin_cohort_course_path(@course_cohort.cohort, @course_cohort.course)
       else
         @course_cohort = service.course_cohort
         @selected_lead_providers = service.selected_lead_providers
@@ -58,7 +58,7 @@ module Admin
       return if current_admin.super_admin?
 
       flash[:error] = "You must be a super admin to change course cohort providers"
-      redirect_to cohort_admin_course_path(@course, @course_cohort.cohort)
+      redirect_to admin_cohort_course_path(@course_cohort.cohort, @course)
     end
   end
 end

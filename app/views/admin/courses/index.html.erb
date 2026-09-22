@@ -22,7 +22,7 @@ govuk_table do |table|
       body.with_row do |row|
         row.with_cell do
           if @current_cohort
-            govuk_link_to(course.name, cohort_admin_course_path(course, @current_cohort))
+            govuk_link_to(course.name, admin_cohort_course_path(@current_cohort, course))
           else
             course.name
           end
@@ -35,27 +35,3 @@ end
 %>
 
 <%= govuk_pagination(pagy: @pagy) %>
-
-<% if @unassigned_courses.present? %>
-  <h2 class="govuk-heading-m">Courses not assigned to a cohort</h2>
-
-  <%=
-    govuk_table do |table|
-      table.with_head do |header|
-        header.with_row do |row|
-          row.with_cell(text: "Name")
-        end
-      end
-
-      table.with_body do |body|
-        @unassigned_courses.each do |course|
-          body.with_row do |row|
-            row.with_cell do
-              govuk_link_to(course.name, admin_course_path(course))
-            end
-          end
-        end
-      end
-    end
-  %>
-<% end %>

@@ -32,7 +32,7 @@ private
       render wizard.current_step_name, status: :unprocessable_content
     else
       state_store.clear
-      redirect_to admin_course_path(service.course)
+      redirect_to admin_settings_path, notice: "Course created successfully"
     end
   end
 

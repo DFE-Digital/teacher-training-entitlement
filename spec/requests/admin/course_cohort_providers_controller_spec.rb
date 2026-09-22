@@ -39,7 +39,7 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
       it "updates the providers for the course cohort" do
         expect { request }.to change(course_cohort.course_cohort_providers, :count).by(1)
 
-        expect(response).to redirect_to(cohort_admin_course_path(course, course_cohort.cohort))
+        expect(response).to redirect_to(admin_cohort_course_path(course_cohort.cohort, course))
       end
     end
   end
@@ -51,7 +51,7 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
       before { get admin_course_course_cohort_provider_path(course, course_cohort) }
 
       it "redirects to the course page" do
-        expect(response).to redirect_to(cohort_admin_course_path(course, course_cohort.cohort))
+        expect(response).to redirect_to(admin_cohort_course_path(course_cohort.cohort, course))
         expect(flash[:error]).to match(/You must be a super admin to change course cohort providers/i)
       end
     end

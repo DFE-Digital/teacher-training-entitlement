@@ -153,8 +153,9 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show edit update] do
-    concerns :cohortable, index: "courses#index", show: "courses#show"
+  resources :courses, only: %i[index edit update] do
+    concerns :cohortable, index: "courses#index"
+    get "cohorts/:cohort_id", to: "courses#show", as: :cohort, on: :member
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 

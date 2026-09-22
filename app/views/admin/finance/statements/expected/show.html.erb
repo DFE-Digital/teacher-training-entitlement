@@ -54,7 +54,7 @@
             row.with_cell do
               govuk_link_to(
                 [application.course_cohort.academic_year, application.course_cohort.schedule_identifier].join("-"),
-                cohort_admin_course_path(application.course_cohort.course, application.course_cohort.cohort),
+                admin_cohort_course_path(application.course_cohort.cohort, application.course_cohort.course),
               )
             end
             row.with_cell do

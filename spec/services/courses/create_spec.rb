@@ -73,6 +73,15 @@ RSpec.describe Courses::Create do
         )
       end
 
+      it "creates milestones from the selected milestone configs" do
+        service.call
+
+        expect(service.course.milestones.pluck(:declaration_type, :acceptance_window_start_offset, :acceptance_window_end_offset, :payment_percentage)).to contain_exactly(
+          [Milestone::STARTED, 1, 2, BigDecimal("0.6")],
+          [Milestone::COMPLETED, 3, 4, BigDecimal("0.4")],
+        )
+      end
+
       it "creates a generic contract year with the lead provider URL and email" do
         service.call
 

@@ -24,21 +24,6 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_css(".govuk-pagination__item--current", text: 1)
     end
 
-    scenario "viewing courses not assigned to a cohort when using the default academic year filter" do
-      unassigned_course = create(:course, name: "Course with no cohorts")
-      unassigned_course.course_cohorts.destroy_all
-
-      visit(admin_courses_path)
-
-      expect(page).to have_css("h2", text: "Courses not assigned to a cohort")
-      expect(page).to have_link(unassigned_course.name, href: admin_course_path(unassigned_course))
-
-      click_link("2026 / 2027", exact: true)
-
-      expect(page).not_to have_css("h2", text: "Courses not assigned to a cohort")
-      expect(page).not_to have_link(unassigned_course.name, href: admin_course_path(unassigned_course))
-    end
-
     scenario "navigating to the second page of courses" do
       visit(admin_courses_path)
 
@@ -69,33 +54,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).to have_css("h2", text: "Providers")
-      expect(page).to have_current_path(cohort_admin_course_path(course, course_cohort.cohort))
-    end
-
-    scenario "viewing course details without a selected cohort" do
-      course = create_course_with_current_cohort(name: "Course with contract years")
-      create(
-        :contract_year,
-        :generic,
-        :course_details,
-        course:,
-        lead_provider: create(:lead_provider, name: "Lead provider"),
-      )
-
-      visit(admin_course_path(course))
-
-      expect(page).to have_css("h1", text: course.name)
-
-      within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
-        expect(summary_list).to have_summary_item("Identifier", course.identifier)
-        expect(summary_list).to have_summary_item("Short code", course.short_code)
-        expect(summary_list).to have_summary_item("Description", course.description)
-      end
-
-      expect(page).to have_css("h2", text: "Contract financials & targets")
-      expect(page).to have_css("h2", text: "Contract year contact details")
-      expect(page).not_to have_css("h2", text: "Providers")
+      expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
     end
 
     scenario "filtering courses by academic year" do

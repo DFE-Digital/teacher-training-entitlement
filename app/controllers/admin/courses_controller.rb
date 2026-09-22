@@ -8,37 +8,17 @@ module Admin
 
     def index
       @pagy, @resources = pagy(resources)
-      @unassigned_courses = Course.left_outer_joins(:course_cohorts).where(course_cohorts: { id: nil }).order(:name) if using_default_academic_year?
     end
 
     def show
-      if @course_cohort
-        @cohort = @course_cohort.cohort
-        @course_cohorts = @course.course_cohorts.includes(:cohort).joins(:cohort).order("cohorts.registration_starts_at DESC")
-        @contract_years = @course.contract_years.generic.includes(:lead_provider)
-        @contract_financials = @course.contract_years.year(@course_cohort.academic_year).includes(:lead_provider)
-        @contract_financials = @contract_years if @contract_financials.blank?
-        @course_cohort_providers = @course_cohort
-                                   .course_cohort_providers
-                                   .joins(:lead_provider)
-                                   .order(lead_provider: { name: :asc })
-        @delivery_partner_counts = DeliveryPartnership
-          .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
-          .group(:lead_provider_id)
-          .count
-        render "admin/cohort_courses/show"
-        return
-      end
-
-      @contract_years = @course.contract_years.includes(:lead_provider).order(:academic_year)
-      @available_cohorts = Cohort.where.not(id: @course.course_cohorts.select(:cohort_id)).order(registration_starts_at: :desc)
+      redirect_to admin_cohort_course_path(@course_cohort.cohort, @course)
     end
 
     def edit; end
 
     def update
       if @course.update(course_params)
-        redirect_to admin_course_path(@course), flash: { success: "Course updated" }
+        redirect_to admin_courses_path, flash: { success: "Course updated" }
       else
         render :edit, status: :unprocessable_content
       end

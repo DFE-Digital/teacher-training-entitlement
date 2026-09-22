@@ -11,6 +11,7 @@ module Courses
     def call
       Course.transaction do
         create_course!
+        create_milestones!
         create_generic_contract_years!
         create_contract_financials!
       end
@@ -47,6 +48,17 @@ module Courses
       end
     end
 
+    def create_milestones!
+      state_store.milestone_configs.each do |milestone_config|
+        course.milestones.create!(
+          declaration_type: milestone_config.declaration_type,
+          acceptance_window_start_offset: milestone_config.acceptance_window_start_offset,
+          acceptance_window_end_offset: milestone_config.acceptance_window_end_offset,
+          payment_percentage: payment_percentage(milestone_config.payment_percentage),
+        )
+      end
+    end
+
     def create_generic_contract_years!
       state_store.selected_lead_providers.each do |selected_provider|
         contract_year = ContractYear.find_or_initialize_by(
@@ -64,6 +76,12 @@ module Courses
 
     def course_details
       @course_details ||= state_store.course_details
+    end
+
+    def payment_percentage(value)
+      return if value.blank?
+
+      BigDecimal(value.to_s) / 100
     end
   end
 end
