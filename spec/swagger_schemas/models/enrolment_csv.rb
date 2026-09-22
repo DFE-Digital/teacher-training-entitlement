@@ -29,7 +29,7 @@ ENROLMENT_CSV = {
         description: "The schedule identifier currently applied to this enrollment",
         nullable: true,
         type: :string,
-        example: [Course::IDENTIFIERS.first, CourseCohort::TERM_IDENTIFIERS.keys.first].join("-"),
+        example: Helpers::APIHelpers::SCHEDULE_IDENTIFIER_EXAMPLE,
         format: "string",
       },
       cohort: {

@@ -13,8 +13,12 @@ class Course < ApplicationRecord
 
   scope :displayable, -> { where(display: true).order(:position) }
 
-  IDENTIFIERS = %w[tte-early-years].freeze
+  IDENTIFIERS = [
+    TTE_EARLY_YEARS = "tte-early-years".freeze,
+  ].freeze
   # IDENTIFIERS = %w[npd-excellence-in-reception-teaching].freeze
+
+  TTE_RECEPTION = "tte-reception".freeze # used to keep backward compatibility with API v1 on schedule endpoint
 
   def self.reception
     find_by(identifier: "npd-excellence-in-reception-teaching") ||
@@ -23,5 +27,11 @@ class Course < ApplicationRecord
 
   def rebranded_alternative_courses
     [self]
+  end
+
+  def identifier_for_schedule
+    return TTE_RECEPTION if identifier == TTE_EARLY_YEARS
+
+    identifier
   end
 end

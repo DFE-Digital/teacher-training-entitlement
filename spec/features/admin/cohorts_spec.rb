@@ -39,7 +39,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
     within(".govuk-summary-list") do |summary_list|
       expect(summary_list).to have_summary_item("Name", "2026")
-      expect(summary_list).to have_summary_item("Start year", "2026")
+      expect(summary_list).to have_summary_item("Academic year", "2026")
       expect(summary_list).to have_summary_item("Registration start date", "1 April 2026")
       expect(summary_list).to have_summary_item("Funding cap", "Yes")
     end
@@ -57,6 +57,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       expect(page).to have_css("a.govuk-back-link[href$='#{admin_cohorts_path}']", text: "Back")
 
       fill_in "Description", with: "2029 to 2030"
+      fill_in "Academic year", with: 2029
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "2"
@@ -85,6 +86,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       new_description = "2025 to 2026 #{rand(100)}"
       fill_in "Description", with: new_description
+      fill_in "Academic year", with: 2025
       check "Funding cap", visible: :all
       within(".starts_at") do
         fill_in "Day", with: "6"

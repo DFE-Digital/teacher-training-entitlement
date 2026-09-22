@@ -17,6 +17,7 @@ RSpec.describe Cohort, type: :model do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:registration_starts_at) }
+    it { is_expected.to validate_presence_of(:start_year) }
     it { is_expected.to allow_value(%w[true false]).for(:funding_cap).with_message("Choose true or false for funding cap") }
     it { is_expected.not_to allow_value(nil).for(:funding_cap).with_message("Choose true or false for funding cap") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }

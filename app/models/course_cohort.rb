@@ -53,7 +53,7 @@ class CourseCohort < ApplicationRecord
   end
 
   def schedule_identifier
-    [course.identifier, term_identifier].join("-")
+    [course.identifier_for_schedule, term_identifier].join("-")
   end
 
   def training_live?

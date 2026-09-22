@@ -127,7 +127,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -210,7 +210,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -275,7 +275,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -358,7 +358,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -441,7 +441,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -524,7 +524,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -607,7 +607,7 @@ paths:
                         updated_at: '2021-05-31T02:22:32.000Z'
                         assigned_at: '2021-05-31T02:22:32.000Z'
                         unassigned_at: '2021-05-31T02:22:32.000Z'
-                        schedule_identifier: tte-early-years-autumn
+                        schedule_identifier: tte-reception-autumn
               schema:
                 "$ref": "#/components/schemas/ApplicationResponse"
         '401':
@@ -1534,7 +1534,7 @@ components:
               description: The course cohort identifier for the participant
               nullable: true
               type: string
-              example: tte-early-years-autumn
+              example: tte-reception-autumn
     ApplicationAcceptRequest:
       description: An application acceptance request
       type: object
@@ -1819,7 +1819,7 @@ components:
                     description: The ternmidentifier for the participant
                     nullable: true
                     type: string
-                    example: tte-early-years-autumn
+                    example: tte-reception-autumn
                   cohort:
                     description: Contract year
                     type: integer
@@ -2626,7 +2626,7 @@ components:
               description: The new schedule of the participant
               nullable: true
               type: string
-              example: tte-early-years-autumn
+              example: tte-reception-autumn
             cohort:
               description: The requested academic years
               type: string

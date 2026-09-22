@@ -5,6 +5,7 @@ FactoryBot.define do
     funding_cap { true }
     description { registration_starts_at.strftime("%B %Y") }
     identifier { registration_starts_at.strftime("%Y-%B") }
+    start_year { registration_starts_at.year }
 
     initialize_with do
       Cohort.find_or_initialize_by(identifier:) do |cohort|

@@ -15,7 +15,6 @@ class Admin::CohortsController < AdminController
 
   def create
     @cohort = Cohort.new(cohort_params)
-
     if @cohort.save
       flash[:success] = "Cohort created"
       redirect_to action: :index
@@ -54,6 +53,7 @@ private
       :registration_starts_at,
       :registration_ends_at,
       :funding_cap,
+      :start_year,
       :description,
     )
   end
