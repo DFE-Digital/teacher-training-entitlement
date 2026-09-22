@@ -112,4 +112,15 @@ class GenericMailerPreview < ActionMailer::Preview
       ecf_id: "abcd-1234-efgh-5678-ijkl",
     ).previous_provider
   end
+
+  def notify_course_cohort_available
+    GenericMailer.with(
+      to: "test@example.com",
+      course_name: "Excellence in reception teaching (NPD)",
+      course_group: "National Professional Development (NPD)",
+      training_date: "January 2027",
+      application_link: Rails.application.routes.url_helpers.registration_wizard_show_url(:start),
+      unsubscribe_link: "https://unsubscribe",
+    ).notify_course_cohort_available
+  end
 end

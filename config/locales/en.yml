@@ -44,6 +44,7 @@ en:
     deferral_expiring_notification: Registration about to expire - %{course_name}
     provider_rejected: Registration status updated for %{course_name} – next steps
     previous_provider: Change provider notification
+    notify_course_cohort_available: Register now for %{course_name} – %{training_date}
 
   application: &application
     blank: The entered '#/%{parameterized_attribute}' is missing from your request. Check details and try again.

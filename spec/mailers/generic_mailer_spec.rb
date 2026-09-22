@@ -249,6 +249,43 @@ RSpec.describe GenericMailer, type: :mailer do
     it_behaves_like "a mailer with redacted logs"
   end
 
+  describe "#notify_course_cohort_available" do
+    let(:to) { "recipient@example.com" }
+    let(:course_name) { "NPD Excellence in reception" }
+    let(:course_group) { "National Professional Development (NPD)" }
+    let(:training_date) { "January 2027" }
+    let(:unsubscribe_link) { "https://example.com/unsubscribe" }
+    let(:application_link) { "https://apply.com/start" }
+
+    subject(:mail) do
+      described_class.with(
+        to:,
+        course_name:,
+        course_group:,
+        training_date:,
+        application_link:,
+        unsubscribe_link:,
+      ).notify_course_cohort_available
+    end
+
+    it do
+      aggregate_failures do
+        expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
+        expect(mail.to).to eq([to])
+        expect(mail.personalisation[:subject]).to eq("Register now for #{course_name} - #{training_date}")
+
+        body = mail.personalisation[:body]
+        expect(body).to include(course_group)
+        expect(body).to include(course_name)
+        expect(body).to include(training_date)
+        expect(body).to include(application_link)
+        expect(body).to include(unsubscribe_link)
+      end
+    end
+
+    it_behaves_like "a mailer with redacted logs"
+  end
+
   describe "#registration_open_notification" do
     let(:to) { "recipient@example.com" }
     let(:full_name) { "Example User" }

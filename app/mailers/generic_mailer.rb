@@ -31,6 +31,10 @@ class GenericMailer < ApplicationMailer
     generic_mail(subject: "mailers.registration_open_notification")
   end
 
+  def notify_course_cohort_available
+    generic_mail(subject: "mailers.notify_course_cohort_available")
+  end
+
   def registration_interest
     generic_mail(subject: "mailers.registration_interest")
   end
@@ -56,12 +60,15 @@ private
   end
 
   def build_subject(subject:)
-    course_name = params[:course_name]
+    attrs = {
+      course_name: params[:course_name],
+      training_date: params[:training_date],
+    }.compact
 
-    if course_name.present?
-      I18n.t(subject, course_name:)
-    else
+    if attrs.empty?
       I18n.t(subject)
+    else
+      I18n.t(subject, **attrs)
     end
   end
 
