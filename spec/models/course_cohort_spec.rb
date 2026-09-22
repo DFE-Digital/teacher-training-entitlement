@@ -84,21 +84,12 @@ RSpec.describe CourseCohort do
     let(:course_cohort) { create(:course_cohort) }
     let(:except) { nil }
 
-    before do
-      course_cohort.course.milestones.find_or_create_by!(declaration_type: "started") do |milestone|
-        milestone.acceptance_window_start_offset = 0
-      end
-      course_cohort.course.milestones.find_or_create_by!(declaration_type: "completed") do |milestone|
-        milestone.acceptance_window_start_offset = 0
-      end
-    end
-
     it "returns the declaration types already used by milestones on the course cohort" do
       expect(taken_declaration_types).to contain_exactly("started", "completed")
     end
 
     context "when excluding a milestone" do
-      let(:except) { course_cohort.milestones.find_by(declaration_type: "started") }
+      let(:except) { course_milestone(course_cohort.course, :started) }
 
       it "does not include the excluded milestone's declaration type" do
         expect(taken_declaration_types).to contain_exactly("completed")

@@ -36,7 +36,7 @@ private
       declaration_date: row["declaration_date"],
       delivery_partner_id: row["delivery_partner_id"],
       secondary_delivery_partner_id: row["secondary_delivery_partner_id"],
-      has_passed: row["has_passed"].presence.try(:downcase),
+      has_passed: row["has_passed"].presence&.downcase,
     )
 
     if service.call

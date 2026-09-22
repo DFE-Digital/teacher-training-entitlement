@@ -28,7 +28,7 @@ module Declarations
     validate :declaration_valid
     validate :application_updateable
 
-    delegate :lead_provider, to: :application
+    delegate :lead_provider, :course_cohort, to: :application
 
     attr_reader :raw_declaration_date, :declaration
 
@@ -89,17 +89,6 @@ module Declarations
 
     def contract
       @contract ||= lead_provider.contract(course_cohort:)
-    end
-
-    def course_cohort
-      return unless application
-
-      @course_cohort ||= if started_declaration?
-                           application.course_cohort
-                         else
-                           # all declarations for an application belong to the same course_cohort
-                           application.started_declaration&.course_cohort
-                         end
     end
 
     def allowed_declaration_types

@@ -10,11 +10,7 @@ RSpec.describe APITests::CompletedDeclaration, type: :model do
   let(:delivery_partner) { create(:delivery_partner) }
   let(:has_passed) { "true" }
   let(:api_response) { instance_double(HTTParty::Response, code: 200, parsed_response: { "message" => "ok" }) }
-  let(:completed_milestone) do
-    application.course.milestones.find_or_initialize_by(declaration_type: Milestone::COMPLETED).tap do |milestone|
-      milestone.update!(acceptance_window_start_offset: 0, acceptance_window_end_offset: 1)
-    end
-  end
+  let(:completed_milestone) { course_milestone(application.course, :completed) }
   let(:declaration_date) { completed_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at).in_time_zone("UTC") }
 
   let(:expected_body) do
