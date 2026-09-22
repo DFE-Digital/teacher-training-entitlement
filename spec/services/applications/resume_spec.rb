@@ -36,7 +36,7 @@ RSpec.describe Applications::Resume, type: :model do
     end
 
     it "does not update the course_cohort" do
-      expect { service.call }.not_to change { application.reload.course_cohort }
+      expect { service.call }.not_to(change { application.reload.course_cohort })
     end
 
     it "updates the training start date from the new course cohort" do
