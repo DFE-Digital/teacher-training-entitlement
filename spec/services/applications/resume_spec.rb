@@ -35,8 +35,8 @@ RSpec.describe Applications::Resume, type: :model do
       expect { service.call }.to change(application, :status).from(Application::DEFERRED).to(Application::STARTED)
     end
 
-    it "updates the course_cohort" do
-      expect { service.call }.to change(application, :course_cohort).from(course_cohort).to(target_course_cohort)
+    it "does not update the course_cohort" do
+      expect { service.call }.not_to change { application.reload.course_cohort }
     end
 
     it "updates the training start date from the new course cohort" do

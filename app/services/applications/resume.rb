@@ -24,7 +24,12 @@ module Applications
     def call
       return if invalid?
 
-      @application.transition_status!(Application::STARTED, course_cohort: @course_cohort)
+      # When we resume an application the course_cohort does not
+      # change but we shift the training_starts_at so that the contractual
+      # milestones for the application are still valid because the milestone offets
+      # are calculated from the application's training_starts_at
+      @application.transition_status!(Application::STARTED,
+                                      training_starts_at: @course_cohort.training_starts_at)
     end
 
   private
