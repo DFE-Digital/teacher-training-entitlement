@@ -496,7 +496,7 @@ module ValidTestDataGenerators
 
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
-      if course_cohort.acceptance_window_start_date_for(course_cohort.started_milestone) <= Time.zone.today
+      if acceptance_window_start_date_for(course_cohort:, declaration_type: Milestone::STARTED) <= Time.zone.today
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
           group: course_cohort.course.course_group,
@@ -615,6 +615,12 @@ module ValidTestDataGenerators
                                     acceptance_window_end_offset: months_between(application.course_cohort.training_starts_at,
                                                                                  application.cohort.registration_ends_at))
       end
+    end
+
+    def acceptance_window_start_date_for(course_cohort:, declaration_type:)
+      course_cohort.milestones
+        .find_by!(declaration_type:)
+        .acceptance_window_start_date_for(training_starts_at: course_cohort.training_starts_at)
     end
 
     def create_or_update_milestone!(course_cohort:, declaration_type:, acceptance_window_start_date:, acceptance_window_end_date:, payment_percentage:)
