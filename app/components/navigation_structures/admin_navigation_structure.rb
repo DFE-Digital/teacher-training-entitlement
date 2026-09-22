@@ -9,11 +9,18 @@ module NavigationStructures
 
     def service_navigation_items
       primary_structure
-        .reject { |node| node.name == "Service settings" }
         .map(&:to_service_navigation_item)
     end
 
-    def sub_navigation_heading(_path)
+    def sub_navigation_structure(path)
+      return [] unless settings_path?(path)
+
+      service_settings_nodes
+    end
+
+    def sub_navigation_heading(path)
+      return {} unless settings_path?(path)
+
       { text: "Service settings", visible: true }
     end
 
@@ -70,28 +77,19 @@ module NavigationStructures
           name: "Action logs",
           href: admin_actions_log_index_path,
         ),
-        Node.new(
-          name: "Workplaces",
-          href: admin_schools_path,
-        ),
-        Node.new(
-          name: "Glossary",
-          href: admin_glossary_index_path,
-        ),
       ]
     end
 
     def service_settings_prefixes
-      service_settings_nodes.map(&:prefix)
+      [admin_settings_path, *service_settings_nodes.map(&:prefix)]
+    end
+
+    def settings_path?(path)
+      service_settings_prefixes.any? { |prefix| path.start_with?(prefix) }
     end
 
     def admin_nodes
       {
-        Node.new(
-          name: "Service settings",
-          href: service_settings_nodes.first.href,
-          prefix: service_settings_prefixes,
-        ) => service_settings_nodes,
         Node.new(
           name: "Registration periods",
           href: admin_cohorts_path,
@@ -120,6 +118,19 @@ module NavigationStructures
         Node.new(
           name: "Users",
           href: admin_users_path,
+        ) => [],
+        Node.new(
+          name: "Settings",
+          href: admin_settings_path,
+          prefix: service_settings_prefixes,
+        ) => service_settings_nodes,
+        Node.new(
+          name: "Workplaces",
+          href: admin_schools_path,
+        ) => [],
+        Node.new(
+          name: "Glossary",
+          href: admin_glossary_index_path,
         ) => [],
       }
     end

@@ -23,9 +23,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
     before { sign_in_as(admin) }
 
     scenario "reject applications" do
-      visit admin_path
-      click_link "Bulk changes"
-      click_link "Reject applications"
+      visit admin_bulk_operations_reject_applications_path
 
       expect(page).to have_content "No files have been uploaded"
 

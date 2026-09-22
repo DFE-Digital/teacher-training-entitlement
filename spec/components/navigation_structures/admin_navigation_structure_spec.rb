@@ -10,7 +10,6 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
 
     expected_structure =
       {
-        "Service settings" => "/admin/registration-closed",
         "Registration periods" => "/admin/cohorts",
         "Courses" => "/admin/courses",
         "Applications" => "/admin/applications",
@@ -18,6 +17,9 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
         "Finance" => "/admin/finance/statements",
         "Delivery partners" => "/admin/delivery-partners",
         "Users" => "/admin/users",
+        "Settings" => "/admin/settings",
+        "Workplaces" => "/admin/schools",
+        "Glossary" => "/admin/glossary",
       }
     expected_structure.each_with_index do |(name, href), i|
       it "#{name} with href #{href} is at position #{i + 1}" do
@@ -50,23 +52,21 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
   describe "#service_navigation_items" do
     subject(:service_navigation_items) { instance.service_navigation_items }
 
-    it "excludes service settings from the primary service navigation" do
-      expect(service_navigation_items.map { |item| item[:text] }).not_to include("Service settings")
+    it "includes settings in the primary service navigation" do
+      expect(service_navigation_items.map { |item| item[:text] }).to include("Settings")
     end
   end
 
-  describe "#sub_structure" do
-    subject(:sub_structure) { instance.sub_structure(path) }
+  describe "#sub_navigation_structure" do
+    subject(:sub_navigation_structure) { instance.sub_navigation_structure(path) }
 
-    let(:path) { "/admin/schools" }
+    let(:path) { "/admin/settings" }
 
     it "groups service setting links under Service settings" do
-      expect(sub_structure.map(&:name)).to contain_exactly(
+      expect(sub_navigation_structure.map(&:name)).to contain_exactly(
         "Bulk changes",
         "Action logs",
         "Registration closed",
-        "Workplaces",
-        "Glossary",
       )
     end
 
@@ -74,18 +74,24 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
       let(:admin) { build_stubbed(:super_admin) }
 
       it "includes super admin service setting links" do
-        expect(sub_structure.map(&:name)).to include("Feature flags", "Admins")
+        expect(sub_navigation_structure.map(&:name)).to include("Feature flags", "Admins")
       end
+    end
+
+    context "when the path is not in settings" do
+      let(:path) { "/admin/applications" }
+
+      it { is_expected.to be_empty }
     end
   end
 
   describe "#sub_navigation_heading" do
     it "shows the Service settings heading for service setting paths" do
-      expect(instance.sub_navigation_heading("/admin/schools")).to eq(text: "Service settings", visible: true)
+      expect(instance.sub_navigation_heading("/admin/settings")).to eq(text: "Service settings", visible: true)
     end
 
-    it "shows the Service settings heading for other paths" do
-      expect(instance.sub_navigation_heading("/admin/applications")).to eq(text: "Service settings", visible: true)
+    it "does not show the Service settings heading for other paths" do
+      expect(instance.sub_navigation_heading("/admin/applications")).to eq({})
     end
   end
 end

@@ -19,6 +19,7 @@ namespace :admin do
   end
 
   resources :features, only: %i[index show update]
+  resources :settings, only: %i[index]
   resources :admins, only: %i[index new create destroy]
   resources :super_admins, only: %i[update]
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"

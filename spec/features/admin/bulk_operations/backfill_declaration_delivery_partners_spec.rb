@@ -40,9 +40,7 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
     before { sign_in_as(admin) }
 
     scenario "Backfilling declaration delivery partners" do
-      visit admin_path
-      click_link "Bulk changes"
-      click_link "Backfill declaration delivery partners"
+      visit admin_bulk_operations_backfill_declaration_delivery_partners_path
 
       expect(page).to have_content "No files have been uploaded"
 
