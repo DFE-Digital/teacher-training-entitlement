@@ -32,6 +32,8 @@ en:
         blank: TRN can't be blank
         not_real: You must enter a valid TRN
         wrong_length: TRN is the wrong length (should be %{count} characters)
+  course_group:
+    reception: National Professional Development (NPD)
   mailers:
     eligible_for_funding: Eligible for funding
     application_submitted: You've registered for %{course_name} – next steps
@@ -44,6 +46,7 @@ en:
     deferral_expiring_notification: Registration about to expire - %{course_name}
     provider_rejected: Registration status updated for %{course_name} – next steps
     previous_provider: Change provider notification
+    notify_course_cohort_available: Register now for %{course_name} – %{training_date}
 
   application: &application
     blank: The entered '#/%{parameterized_attribute}' is missing from your request. Check details and try again.
