@@ -4,7 +4,7 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_wizard
   before_action :redirect_to_closed_if_no_course_cohort, only: :show
   before_action :set_form
-  before_action :check_duplicate_applications, only: %i[update]
+  before_action :check_duplicate_applications, only: %i[update show]
   before_action :ensure_can_render_step, only: :show
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
@@ -84,7 +84,7 @@ private
 
   def redirect_to_closed_if_no_course_cohort
     return unless params[:step].to_s == "course-start-date"
-    return if @wizard.query_store.course_cohort
+    return if CourseCohort.registrable.exists?
 
     redirect_to registration_wizard_show_path(:closed)
   end
@@ -119,7 +119,7 @@ private
   end
 
   def check_duplicate_applications
-    return unless @wizard.current_step.to_s == "course_start_date"
+    return if @wizard.current_step.to_s == "course_start_date"
     return unless course_cohort
 
     active_applications = current_user.applications.active_applications.where(course_cohort:)
@@ -156,10 +156,10 @@ private
   end
 
   def course
-    @course ||= Course.reception
+    @course ||= course_cohort.course
   end
 
   def course_cohort
-    @course_cohort ||= CourseCohort.next_open_for(course:)
+    @course_cohort ||= @wizard.query_store.course_cohort
   end
 end
