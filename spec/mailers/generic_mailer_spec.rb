@@ -272,7 +272,7 @@ RSpec.describe GenericMailer, type: :mailer do
       aggregate_failures do
         expect(subject).to use_template(GenericMailer::TEMPLATE_ID)
         expect(mail.to).to eq([to])
-        expect(mail.personalisation[:subject]).to eq("Register now for #{course_name} - #{training_date}")
+        expect(mail.personalisation[:subject]).to eq("Register now for #{course_name} – #{training_date}")
 
         body = mail.personalisation[:body]
         expect(body).to include(course_group)

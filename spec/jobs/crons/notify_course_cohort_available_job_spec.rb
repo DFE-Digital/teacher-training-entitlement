@@ -2,11 +2,13 @@ require "rails_helper"
 
 RSpec.describe Crons::NotifyCourseCohortAvailableJob, type: :job do
   describe "#perform" do
-    let(:cohort) { create(:cohort, registration_starts_at: Date.current) }
+    before do
+      cc = create(:course_cohort)
+      cc.cohort.update!(registration_starts_at: Date.current)
+    end
 
     context "when user is registered for npd notification" do
       before do
-        create(:course_cohort, cohort:)
         create(:user, email_updates_status: User::EMAIL_NPD_REGISTRATION_OPEN)
       end
 
@@ -18,7 +20,6 @@ RSpec.describe Crons::NotifyCourseCohortAvailableJob, type: :job do
 
     context "when user is not registered for any notification" do
       before do
-        create(:course_cohort, cohort:)
         create(:user, email_updates_status: nil)
       end
 
