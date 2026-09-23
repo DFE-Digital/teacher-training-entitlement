@@ -128,6 +128,42 @@ RSpec.describe Milestone, type: :model do
     end
   end
 
+  describe "#declaration_sort_order" do
+    let(:course) { create(:course) }
+    let(:started) { course_milestone(course, :started) }
+    let(:completed) { course_milestone(course, :completed) }
+
+    before do
+      started.update!(acceptance_window_start_offset: 0)
+      completed.update!(acceptance_window_start_offset: 0)
+    end
+
+    it "uses declaration type order when milestones have the same acceptance window offset" do
+      expect(started.declaration_sort_order <=> completed.declaration_sort_order).to eq(-1)
+    end
+  end
+
+  describe "#declaration_in_order?" do
+    let(:course) { create(:course) }
+    let(:started) { course_milestone(course, :started) }
+    let(:completed) { course_milestone(course, :completed) }
+
+    before do
+      started.update!(acceptance_window_start_offset: 0)
+      completed.update!(acceptance_window_start_offset: 0)
+    end
+
+    it "is true when all previous milestone declaration types already exist" do
+      declaration = create(:declaration, :started, course:, milestone: started)
+
+      expect(completed).to be_declaration_in_order(declarations: Declaration.where(id: declaration.id))
+    end
+
+    it "is false when a previous milestone declaration type is missing" do
+      expect(completed).not_to be_declaration_in_order(declarations: Declaration.none)
+    end
+  end
+
   describe ".all" do
     let(:course) { create(:course) }
     let(:january_milestone) { course_milestone(course, :started) }

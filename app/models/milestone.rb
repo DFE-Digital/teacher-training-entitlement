@@ -51,7 +51,27 @@ class Milestone < ApplicationRecord
     training_starts_at.advance(months: acceptance_window_end_offset)
   end
 
+  def declaration_in_order?(declarations:)
+    existing_declaration_types = declarations.map(&:declaration_type)
+
+    previous_milestones.all? { |m| m.declaration_type.in?(existing_declaration_types) }
+  end
+
+  def declaration_sort_order
+    [
+      acceptance_window_start_offset || Float::INFINITY,
+      DECLARATION_TYPES.index(declaration_type) || Float::INFINITY,
+      id || 0,
+    ]
+  end
+
 private
+
+  def previous_milestones
+    course.milestones
+      .reject { |m| m == self }
+      .select { |m| (m.declaration_sort_order <=> declaration_sort_order)&.negative? }
+  end
 
   def valid_declaration_type?
     declaration_type.in?(DECLARATION_TYPES.map(&:to_s))
