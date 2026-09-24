@@ -53,6 +53,14 @@ RSpec.describe "Omniauth callbacks", type: :request do
         end
 
         it "signs in the user and redirects" do
+          event = instance_double(Analytics::DfeCustomEvents)
+          allow(Analytics::DfeCustomEvents).to receive(:new).with(
+            type: :one_login_completed,
+            request: an_instance_of(ActionDispatch::Request),
+            user:,
+          ).and_return(event)
+          expect(event).to receive(:send_event)
+
           make_request
           expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
         end
@@ -86,6 +94,18 @@ RSpec.describe "Omniauth callbacks", type: :request do
       context "when the service raises an error" do
         before do
           allow(Users::FindOrCreateFromTeacherAuth).to receive(:new).and_raise(StandardError, "Something went wrong")
+        end
+
+        it "sends a failed event" do
+          event = instance_double(Analytics::DfeCustomEvents)
+          allow(Analytics::DfeCustomEvents).to receive(:new).with(
+            type: :one_login_failed,
+            request: an_instance_of(ActionDispatch::Request),
+            data: { error_type: "callback_error" },
+          ).and_return(event)
+          expect(event).to receive(:send_event)
+
+          make_request
         end
 
         it "redirects to the failed sign in path" do

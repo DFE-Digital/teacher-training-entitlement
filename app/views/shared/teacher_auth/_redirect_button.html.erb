@@ -6,7 +6,7 @@
   <%=
     render GovukComponent::ContinueButtonComponent.new(
       text: button_text,
-      href: user_teacher_auth_omniauth_authorize_path,
+      href: one_login_redirect_path,
       as_button: true,
       classes: secondary ? %w[govuk-button--secondary] : []
     )
