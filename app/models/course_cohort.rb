@@ -90,7 +90,7 @@ private
   def set_dates
     return if cohort.blank? || cohort_registration_starts_at.blank?
 
-    self.academic_year ||= self.class.academic_year_for(cohort_registration_starts_at)
+    self.academic_year ||= cohort.start_year
     self.term_identifier ||= self.class.school_term(cohort_registration_starts_at)
   end
 
@@ -103,6 +103,6 @@ private
   end
 
   def expected_academic_year
-    self.class.academic_year_for(cohort_registration_starts_at)
+    cohort.start_year
   end
 end

@@ -58,7 +58,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
     scenario "filtering courses by academic year" do
       cohort_2026_october = create(:cohort, registration_starts_at: Date.new(2026, 10, 1))
-      cohort_2026_february = create(:cohort, registration_starts_at: Date.new(2027, 2, 1))
+      cohort_2026_february = create(:cohort, registration_starts_at: Date.new(2027, 2, 1), start_year: 2026)
       cohort_2025 = create(:cohort, registration_starts_at: Date.new(2025, 10, 1))
 
       course_2026_a = build(:course, name: "Course 2026 A").tap(&:save!)

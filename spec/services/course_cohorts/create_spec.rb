@@ -73,10 +73,10 @@ RSpec.describe CourseCohorts::Create, type: :model do
         expect(cohort.course_cohorts.find_by(course:)).to be_present
       end
 
-      it "sets the academic_year from the cohort registration start date" do
+      it "sets the academic_year from the cohort start year" do
         service.call
 
-        expect(service.course_cohort.academic_year).to eq(CourseCohort.academic_year_for(cohort.registration_starts_at))
+        expect(service.course_cohort.academic_year).to eq(cohort.start_year)
       end
 
       it "sets service.course_cohort to the created record" do

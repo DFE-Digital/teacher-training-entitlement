@@ -28,10 +28,11 @@ RSpec.describe CourseCohort do
       expect(course_cohort).to be_valid
     end
 
-    context "when registration starts in March" do
-      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1)) }
+    context "when registration starts before September" do
+      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1), start_year: 2028) }
+      let(:academic_year) { 2028 }
 
-      it "allows academic year to match the previous year" do
+      it "allows academic year to match the cohort start year" do
         expect(course_cohort).to be_valid
       end
     end
@@ -45,8 +46,8 @@ RSpec.describe CourseCohort do
       end
     end
 
-    context "when academic year is the calendar year for a March registration start" do
-      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1)) }
+    context "when academic year does not match the cohort start year" do
+      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1), start_year: 2027) }
       let(:academic_year) { 2028 }
 
       it "is invalid" do
@@ -158,8 +159,8 @@ RSpec.describe CourseCohort do
       )
     end
 
-    it "sets the academic year from the cohort registration start date on create" do
-      expect(course_cohort.academic_year).to eq(2027)
+    it "sets the academic year from the cohort start year on create" do
+      expect(course_cohort.academic_year).to eq(2028)
     end
 
     it "sets the term identifier from the cohort registration start date on create" do

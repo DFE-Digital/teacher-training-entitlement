@@ -119,6 +119,26 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
         expect(course_cohort.course_cohort_providers.find_by(lead_provider:)).to be_present
         expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_present
       end
+
+      context "when the cohort academic year differs from the training start year" do
+        let(:cohort) { create(:cohort, registration_starts_at: Date.new(2026, 7, 1), start_year: 2026) }
+        let(:cohort_first_params) do
+          {
+            course_cohorts_setup_form: {
+              course_id: course.id,
+              "training_starts_at(1i)": "2026",
+              "training_starts_at(2i)": "10",
+              "training_starts_at(3i)": "1",
+            },
+          }
+        end
+
+        it "uses the cohort start year for the course cohort academic year" do
+          request
+
+          expect(cohort.course_cohorts.find_by(course:).academic_year).to eq(2026)
+        end
+      end
     end
 
     describe "#create with invalid params" do
