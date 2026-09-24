@@ -56,6 +56,73 @@ RSpec.describe CourseCohort do
     end
   end
 
+  describe "#contract" do
+    subject(:course_cohort) { course_cohort_provider.course_cohort }
+
+    let(:course_cohort_provider) { create(:course_cohort_provider) }
+    let(:lead_provider) { course_cohort_provider.lead_provider }
+
+    it { expect(course_cohort.contract(lead_provider:)).to eq(course_cohort_provider) }
+  end
+
+  describe ".next_open_for" do
+    subject(:next_open_course_cohort) { described_class.next_open_for(course:) }
+
+    let(:course) do
+      Course.create!(
+        name: "Course with cohorts",
+        identifier: "course-with-cohorts",
+        course_group: "reception",
+      )
+    end
+
+    around do |example|
+      travel_to(Date.new(2029, 6, 1)) { example.run }
+    end
+
+    it "returns the earliest course cohort with open registration" do
+      later = create(
+        :course_cohort,
+        course:,
+        cohort: create_cohort(Date.new(2029, 5, 1), registration_ends_at: Date.new(2029, 8, 1)),
+      )
+      earlier = create(
+        :course_cohort,
+        course:,
+        cohort: create_cohort(Date.new(2029, 4, 1), registration_ends_at: Date.new(2029, 8, 1)),
+      )
+
+      expect(next_open_course_cohort).to eq(earlier)
+      expect(next_open_course_cohort).not_to eq(later)
+    end
+
+    it "returns the earliest upcoming course cohort when registration is not open" do
+      later = create(
+        :course_cohort,
+        course:,
+        cohort: create_cohort(Date.new(2029, 8, 1)),
+      )
+      earlier = create(
+        :course_cohort,
+        course:,
+        cohort: create_cohort(Date.new(2029, 7, 1)),
+      )
+
+      expect(next_open_course_cohort).to eq(earlier)
+      expect(next_open_course_cohort).not_to eq(later)
+    end
+
+    def create_cohort(registration_starts_at, registration_ends_at: registration_starts_at.advance(months: 2))
+      create(
+        :cohort,
+        registration_starts_at:,
+        registration_ends_at:,
+        funding_cap: true,
+        description: registration_starts_at.strftime("%B %Y"),
+      )
+    end
+  end
+
   describe "#taken_declaration_types" do
     subject(:taken_declaration_types) { course_cohort.taken_declaration_types(except:) }
 

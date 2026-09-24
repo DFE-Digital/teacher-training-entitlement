@@ -80,6 +80,10 @@ class CourseCohort < ApplicationRecord
     milestones.where.not(id: except&.id).pluck(:declaration_type)
   end
 
+  def contract(lead_provider:)
+    course_cohort_providers.detect { |ccp| ccp.lead_provider == lead_provider }
+  end
+
 private
 
   def set_dates
