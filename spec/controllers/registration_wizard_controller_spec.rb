@@ -46,7 +46,7 @@ RSpec.describe RegistrationWizardController do
   describe "#show" do
     let(:make_request) { get(:show, params: { step: "course-start-date" }) }
     let(:course) { Course.reception || create(:course) }
-    let(:course_cohort) { CourseCohort.next_open_for(course:) || create(:course_cohort, course:) }
+    let(:course_cohort) { CourseCohort.registrable.first || create(:course_cohort, course:) }
 
     before do
       session["registration_store"] = { "course_cohort_id" => course_cohort.id }

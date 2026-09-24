@@ -19,13 +19,14 @@ RSpec.feature "Sad journey", :with_default_lead_provider, type: :feature do
 
   def run_scenario
     seed_course_cohort_in_registration_store
+    course_cohort = CourseCohort.registrable.first
 
     navigate_to_page(path: "/", submit_form: false) do
       page.click_button("Start now")
     end
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      page.choose(CourseCohort.next_open_for(course: Course.reception).name, visible: :all)
+      page.choose(course_cohort.cohort.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do

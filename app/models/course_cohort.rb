@@ -36,17 +36,6 @@ class CourseCohort < ApplicationRecord
 
   delegate :registration_starts_at, :registration_ends_at, to: :cohort, prefix: true
 
-  def self.next_open_for(course:)
-    course_cohorts = course.course_cohorts.includes(:cohort).select do |course_cohort|
-      course_cohort.cohort.start_year >= Time.zone.now.year
-    end
-
-    course_cohorts.select { |course_cohort| course_cohort.cohort.registration_open? }
-                  .min_by { |course_cohort| course_cohort.cohort.registration_starts_at } ||
-      course_cohorts.select { |course_cohort| course_cohort.cohort.registration_upcoming? }
-                    .min_by { |course_cohort| course_cohort.cohort.registration_starts_at }
-  end
-
   def self.school_term(date)
     return unless date
 
