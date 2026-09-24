@@ -1,8 +1,10 @@
-class Admin::CohortCoursesController < AdminController
+class Admin::CourseCohortsController < AdminController
   before_action :ensure_super_admin, except: :show
+  before_action :course, only: :show
   before_action :course_cohort, only: :show
 
   def show
+    @cohort = course_cohort.cohort
     @course_cohorts = @course.course_cohorts.includes(:cohort).joins(:cohort).order("cohorts.registration_starts_at DESC")
     @delivery_partner_counts = DeliveryPartnership
       .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
@@ -16,21 +18,25 @@ class Admin::CohortCoursesController < AdminController
   end
 
   def new
-    @form = CourseCohorts::SetupForm.new(cohort:, course_id: params[:course_id])
+    @cohort = Cohort.find(params[:cohort_id])
+    @form = CourseCohorts::SetupForm.new(cohort: @cohort)
   end
 
   def create
     @form = CourseCohorts::SetupForm.new(form_params)
+    @course = @form.selected_course
+    @cohort = @form.selected_cohort
+
     service = CourseCohorts::Create.new(
-      cohort:,
-      course: @form.selected_course,
+      cohort: @cohort,
+      course: @course,
       training_starts_at: @form.training_starts_at,
     )
 
     if @form.valid? && service.valid?
       service.call
-      flash[:success] = "Course added to cohort"
-      redirect_to admin_cohort_course_path(cohort, service.course)
+      flash[:success] = "Course added to registration period"
+      redirect_to admin_course_cohort_path(@course, service.course_cohort.cohort)
     else
       @form.add_service_errors(service.errors)
       render :new, status: :unprocessable_content
@@ -41,24 +47,30 @@ private
 
   def form_params
     params.require(:course_cohorts_setup_form)
-      .permit(:course_id, :academic_year, :training_starts_at)
-      .merge(cohort:)
+      .permit(:course_id, :cohort_id, :academic_year, :training_starts_at)
+      .merge(form_context)
+  end
+
+  def form_context
+    { cohort: Cohort.find(params[:cohort_id]) }
   end
 
   def course_cohort
-    @course_cohort ||= cohort.course_cohorts.includes(:course, :milestones, course_cohort_providers: :lead_provider).find_by!(course_id: params[:id]).tap do |course_cohort|
-      @course = course_cohort.course
-    end
+    @course_cohort ||= course.course_cohorts.includes(:course, :milestones, course_cohort_providers: :lead_provider).find_by!(cohort_id: params[:id])
   end
 
   def cohort
-    @cohort ||= Cohort.find(params[:cohort_id])
+    @cohort ||= course_cohort.cohort
+  end
+
+  def course
+    @course ||= Course.find(params[:course_id])
   end
 
   def ensure_super_admin
     unless current_admin.super_admin?
-      flash[:error] = "You must be a super admin to change cohort courses"
-      redirect_to admin_cohort_path(cohort)
+      flash[:error] = "You must be a super admin"
+      redirect_to admin_courses_path
     end
   end
 end

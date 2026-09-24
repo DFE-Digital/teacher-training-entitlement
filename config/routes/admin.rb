@@ -101,8 +101,8 @@ namespace :admin do
   end
 
   resources :cohorts do
-    resources :courses, controller: "cohort_courses", only: %i[index show new create]
     resources :schedules, except: :index
+    resources :courses, controller: "course_cohorts", only: %i[new create]
   end
 
   resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
@@ -155,7 +155,7 @@ namespace :admin do
 
   resources :courses, only: %i[index edit update] do
     concerns :cohortable, index: "courses#index"
-    get "cohorts/:cohort_id", to: "courses#show", as: :cohort, on: :member
+    resources :cohorts, controller: "course_cohorts", only: %i[show]
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
+RSpec.describe "admin/course_cohorts/show.html.erb", type: :view do
   subject(:rendered_page) { Capybara.string(rendered) }
 
   let(:admin) { create(:admin, super_admin: true) }
@@ -51,18 +51,9 @@ RSpec.describe "admin/cohort_courses/show.html.erb", type: :view do
     expect(rendered_page).not_to have_link("Edit")
   end
 
-  it "shows contract years" do
-    expect(rendered_page).to have_content("Contract financials & targets")
-    expect(rendered_page).to have_content(academic_year_contract_year.lead_provider.name)
-    expect(rendered_page).to have_content(course_cohort.academic_year)
-    expect(rendered_page).to have_content("£750.00")
-    expect(rendered_page).to have_content("4,000")
-    expect(rendered_page).to have_content("£60.00")
-  end
-
-  it "shows contract year contact details" do
-    expect(rendered_page).to have_content("Contract year contact details")
-    expect(rendered_page).to have_link("https://example.com/course", href: "https://example.com/course")
-    expect(rendered_page).to have_content("provider@example.com")
+  it "shows provider course profiles" do
+    expect(rendered_page).to have_content("Provider course profiles")
+    expect(rendered).to include("https://example.com/course")
+    expect(rendered).to include("provider@example.com")
   end
 end

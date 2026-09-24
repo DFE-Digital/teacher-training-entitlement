@@ -45,8 +45,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_css("h1", text: course.name)
 
       within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Registration period", course_cohort.cohort.description)
-        expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
+        expect(summary_list).to have_summary_item("Registration period", course_cohort.cohort.registration_period)
         expect(summary_list).to have_summary_item("Identifier", course.identifier)
         expect(summary_list).to have_summary_item("Term", course_cohort.term_identifier)
         expect(summary_list).to have_summary_item("Group", course.course_group)
@@ -54,7 +53,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).to have_css("h2", text: "Providers")
-      expect(page).to have_current_path(admin_cohort_course_path(course_cohort.cohort, course))
+      expect(page).to have_current_path(admin_course_cohort_path(course, course_cohort.cohort))
     end
 
     scenario "filtering courses by academic year" do

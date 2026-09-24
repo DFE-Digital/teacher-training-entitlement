@@ -47,7 +47,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
       it { is_expected.to redirect_to admin_cohorts_path }
 
       it "flashes success" do
-        expect(flash[:success]).to match(/Cohort created/i)
+        expect(flash[:success]).to match(/Registration period created/i)
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
       it { is_expected.to redirect_to admin_cohort_path(cohort) }
 
       it "flashes success" do
-        expect(flash[:success]).to match(/Cohort updated/i)
+        expect(flash[:success]).to match(/Registration period updated/i)
       end
     end
 
@@ -99,7 +99,7 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
   context "when logged in as normal admin" do
     before { sign_in_as_admin }
 
-    shared_examples "inaccessible to normal admins" do |error_message: "You must be a super admin to change cohorts"|
+    shared_examples "inaccessible to normal admins" do |error_message: "You must be a super admin"|
       it { is_expected.to redirect_to admin_cohorts_path }
 
       it "flashes the correct error" do

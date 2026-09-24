@@ -16,7 +16,7 @@ class Admin::CohortsController < AdminController
   def create
     @cohort = Cohort.new(cohort_params)
     if @cohort.save
-      flash[:success] = "Cohort created"
+      flash[:success] = "Registration period created"
       redirect_to action: :index
     else
       render :form, status: :unprocessable_content
@@ -29,7 +29,7 @@ class Admin::CohortsController < AdminController
 
   def update
     if @cohort.update(cohort_params)
-      flash[:success] = "Cohort updated"
+      flash[:success] = "Registration period updated"
       redirect_to admin_cohort_path(@cohort)
     else
       render :form, status: :unprocessable_content
@@ -39,7 +39,7 @@ class Admin::CohortsController < AdminController
   def destroy
     if params[:confirm].present?
       @cohort.destroy!
-      flash[:success] = "Cohort deleted"
+      flash[:success] = "Registration period deleted"
       redirect_to action: :index
     else
       render :destroy
@@ -64,7 +64,7 @@ private
 
   def ensure_super_admin
     unless current_admin.super_admin?
-      flash[:error] = "You must be a super admin to change cohorts"
+      flash[:error] = "You must be a super admin"
       redirect_to action: :index
     end
   end

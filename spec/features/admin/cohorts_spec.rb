@@ -94,7 +94,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
         fill_in "Year", with: "2025"
       end
       expect { click_on "Update cohort" }.not_to(change(Cohort, :count))
-      expect(page).to have_text("Cohort updated")
+      expect(page).to have_text("Registration period updated")
 
       cohort.reload
 

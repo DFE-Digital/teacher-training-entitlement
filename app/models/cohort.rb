@@ -48,6 +48,13 @@ class Cohort < ApplicationRecord
     description
   end
 
+  def registration_period
+    [
+      registration_starts_at.to_fs(:govuk_short),
+      registration_ends_at&.to_fs(:govuk_short) || "[no end date]",
+    ].join(" - ")
+  end
+
 private
 
   def set_identifier

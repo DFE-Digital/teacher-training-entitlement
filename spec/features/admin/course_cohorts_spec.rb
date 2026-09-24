@@ -4,7 +4,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
   include Helpers::AdminLogin
 
   let(:super_admin) { create(:super_admin) }
-  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 5, 1)) }
+  let!(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 5, 1)) }
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let!(:lead_provider_one) { create(:lead_provider, name: "Provider One") }
   let!(:lead_provider_two) { create(:lead_provider, name: "Provider Two") }

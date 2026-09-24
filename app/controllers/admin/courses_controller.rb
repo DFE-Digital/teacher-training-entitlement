@@ -2,16 +2,11 @@ module Admin
   class CoursesController < AdminController
     include Cohortable
 
-    before_action :set_course, only: %i[show edit update]
+    before_action :set_course, only: %i[edit update]
     before_action :require_super_admin, only: %i[edit update]
-    before_action :set_course_cohort, only: %i[show], if: -> { params[:cohort_id].present? }
 
     def index
       @pagy, @resources = pagy(resources)
-    end
-
-    def show
-      redirect_to admin_cohort_course_path(@course_cohort.cohort, @course)
     end
 
     def edit; end
@@ -32,14 +27,6 @@ module Admin
 
     def default_academic_year_actions
       %i[index]
-    end
-
-    def set_course_cohort
-      @course_cohort = CourseCohort
-                         .includes(:course, :cohort, course_cohort_providers: :lead_provider)
-                         .find_by(course_id: params[:id], cohort_id: params[:cohort_id])
-
-      redirect_to admin_courses_path unless @course_cohort
     end
 
     def course_params

@@ -132,4 +132,28 @@ RSpec.describe Cohort, type: :model do
 
     it { is_expected.to eq cohort.description }
   end
+
+  describe "#registration_period" do
+    subject(:registration_period) { cohort.registration_period }
+
+    let(:cohort) do
+      build(
+        :cohort,
+        registration_starts_at: Date.new(2026, 9, 1),
+        registration_ends_at:,
+      )
+    end
+
+    context "when registration start and end dates are set" do
+      let(:registration_ends_at) { Date.new(2026, 10, 31) }
+
+      it { is_expected.to eq("1 Sep 2026 - 31 Oct 2026") }
+    end
+
+    context "when registration end date is blank" do
+      let(:registration_ends_at) { nil }
+
+      it { is_expected.to eq("1 Sep 2026 - [no end date]") }
+    end
+  end
 end

@@ -5,20 +5,20 @@ require "rails_helper"
 RSpec.describe CourseCohorts::SetupForm, type: :model do
   subject(:form) do
     described_class.new(
-      cohort:,
-      course_id:,
+      course:,
+      cohort_id:,
       training_starts_at:,
     )
   end
 
   let(:cohort) { create(:cohort, registration_starts_at: Date.new(2027, 9, 1)) }
   let(:course) { create(:course) }
-  let(:course_id) { course.id }
+  let(:cohort_id) { cohort.id }
   let(:training_starts_at) { { 1 => 2027, 2 => 9, 3 => 1 } }
 
   describe "validations" do
-    it { is_expected.to validate_presence_of(:cohort) }
-    it { is_expected.to validate_presence_of(:course_id) }
+    it { is_expected.to validate_presence_of(:course) }
+    it { is_expected.to validate_presence_of(:cohort_id) }
 
     describe "#valid_training_dates" do
       context "with a valid training start date" do
@@ -49,36 +49,36 @@ RSpec.describe CourseCohorts::SetupForm, type: :model do
     end
   end
 
-  describe "#course_options" do
-    let!(:existing_course) { create(:course, name: "Existing course") }
-    let!(:apple_course) { create(:course, name: "Apple course") }
-    let!(:zebra_course) { create(:course, name: "Zebra course") }
+  describe "#cohort_options" do
+    let!(:existing_cohort) { create(:cohort, registration_starts_at: Date.new(2027, 1, 1)) }
+    let!(:older_cohort) { create(:cohort, registration_starts_at: Date.new(2026, 1, 1)) }
+    let!(:newer_cohort) { create(:cohort, registration_starts_at: Date.new(2028, 1, 1)) }
 
     before do
-      create(:course_cohort, cohort:, course: existing_course)
+      create(:course_cohort, course:, cohort: existing_cohort)
     end
 
-    it "returns courses not already assigned to the cohort, ordered by name" do
-      names = form.course_options.map(&:name)
+    it "returns cohorts not already assigned to the course, newest first" do
+      cohorts = form.cohort_options
 
-      expect(names).to include(apple_course.name, zebra_course.name)
-      expect(names).not_to include(existing_course.name)
-      expect(names).to eq(names.sort)
+      expect(cohorts).to include(older_cohort, newer_cohort)
+      expect(cohorts).not_to include(existing_cohort)
+      expect(cohorts.map(&:registration_starts_at)).to eq(cohorts.map(&:registration_starts_at).sort.reverse)
     end
   end
 
-  describe "#selected_course" do
-    context "when a course matches the given course_id" do
-      it "returns the course" do
-        expect(form.selected_course).to eq(course)
+  describe "#selected_cohort" do
+    context "when a cohort matches the given cohort_id" do
+      it "returns the cohort" do
+        expect(form.selected_cohort).to eq(cohort)
       end
     end
 
-    context "when no course matches the given course_id" do
-      let(:course_id) { 0 }
+    context "when no cohort matches the given cohort_id" do
+      let(:cohort_id) { 0 }
 
       it "returns nil" do
-        expect(form.selected_course).to be_nil
+        expect(form.selected_cohort).to be_nil
       end
     end
   end

@@ -6,7 +6,10 @@ RSpec.feature "Listing statements", type: :feature do
   let(:statements_per_page) { Pagy::DEFAULT[:limit] }
 
   before do
-    create_list(:statement, statements_per_page + 1)
+    (statements_per_page + 1).times do |index|
+      create(:statement, start_date: index.days.ago.to_date)
+    end
+
     sign_in_as(create(:admin))
   end
 
@@ -15,7 +18,7 @@ RSpec.feature "Listing statements", type: :feature do
 
     expect(page).to have_css("h1", text: "Finance")
 
-    Statement.order(payment_date: :asc).limit(statements_per_page).each do |statement|
+    Statement.order(start_date: :desc).limit(statements_per_page).each do |statement|
       expect(page).to have_link("View", href: admin_finance_statement_path(statement))
     end
 

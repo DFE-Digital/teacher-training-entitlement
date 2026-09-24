@@ -1,9 +1,10 @@
 <%= govuk_back_link href: admin_cohort_path(@form.cohort) %>
 
-<h1 class="govuk-heading-l">Add course to cohort <%= @cohort.description %></h1>
+<h1 class="govuk-heading-l">Add course to cohort <%= @form.cohort.description %></h1>
 
 <%= form_with model: @form, url: admin_cohort_courses_path(@form.cohort) do |f| %>
   <%= f.govuk_error_summary %>
+
   <%=
   f.govuk_collection_select(
     :course_id,
@@ -15,7 +16,7 @@
   )
   %>
 
-  <%= f.govuk_date_field :training_starts_at, legend: { text: "Training starts at" }, caption: { text: "Registration start date: #{@cohort.registration_starts_at.to_fs(:govuk_short)}" } %>
+  <%= f.govuk_date_field :training_starts_at, legend: { text: "Training starts at" } %>
 
   <%= f.govuk_submit "Add course" %>
 <% end %>

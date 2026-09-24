@@ -4,21 +4,33 @@ module CourseCohorts
     include ActiveModel::Attributes
     include ActiveRecord::AttributeAssignment
 
-    attribute :cohort
+    attribute :course
     attribute :course_id
+    attribute :cohort
+    attribute :cohort_id
     attribute :course_cohort
     attribute :training_starts_at, :date_or_hash
 
-    validates :cohort, presence: true
-    validates :course_id, presence: true
+    validates :course, presence: true, unless: :cohort
+    validates :course_id, presence: true, if: :cohort
+    validates :cohort, presence: true, unless: :course
+    validates :cohort_id, presence: true, if: :course
     validate :valid_training_starts_at
+
+    def cohort_options
+      @cohorts = Cohort.where.not(id: course.course_cohorts.select(:cohort_id)).order(registration_starts_at: :desc)
+    end
 
     def course_options
       @courses = Course.where.not(id: cohort.course_cohorts.select(:course_id)).order(:name)
     end
 
+    def selected_cohort
+      cohort || Cohort.find_by(id: cohort_id)
+    end
+
     def selected_course
-      Course.find_by(id: course_id)
+      course || Course.find_by(id: course_id)
     end
 
     def add_service_errors(service_errors)
