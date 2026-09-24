@@ -119,7 +119,7 @@ private
   end
 
   def check_duplicate_applications
-    return if @wizard.current_step.to_s == "course_start_date"
+    return if %w[course_start_date registration_submitted].include?(@wizard.current_step.to_s)
     return unless course_cohort
 
     active_applications = current_user.applications.active_applications.where(course_cohort:)

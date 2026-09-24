@@ -4,16 +4,16 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, type: :feature 
   include ApplicationHelper
 
   let(:user) { create(:user, :with_one_login_id) }
-  let(:lead_provider) { LeadProvider.first }
-  let(:course) { Course.find_by(identifier: "tte-early-years") }
+  let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
+  let(:course_cohort) { create(:course_cohort) }
 
   context "when work setting is 'other'" do
     before do
       page.set_rack_session(
         "user_id" => user.id,
         "registration_store" => {
-          "course_start_date" => "yes",
-          "course_identifier" => course.identifier,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_identifier" => course_cohort.course.identifier,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "england",
           "work_setting" => "other",
@@ -41,8 +41,8 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, type: :feature 
       page.set_rack_session(
         "user_id" => user.id,
         "registration_store" => {
-          "course_start_date" => "yes",
-          "course_identifier" => course.identifier,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_identifier" => course_cohort.course.identifier,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "england",
           "work_setting" => "a_school",

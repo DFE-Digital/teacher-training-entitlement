@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Questionnaires::ChooseSchool, type: :model do
   let(:current_step) { :choose_school }
-  let(:store) { {} }
+  let(:course_cohort) { create(:course_cohort) }
+  let(:store) { { "course_cohort_ecf_id" => course_cohort.ecf_id } }
   let(:request) { nil }
 
   let(:wizard) do
@@ -61,10 +62,9 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     let(:wizard) do
       RegistrationWizard.new(current_step:, store:, request:, current_user: create(:user))
     end
-    let(:course) { build_stubbed(:course, :npd_eirt) }
     let(:store) do
       {
-        "course_identifier" => course.identifier.to_s,
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
         "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
         "teacher_catchment" => "england",
       }

@@ -82,7 +82,7 @@ RSpec.describe RegistrationWizardController do
       let(:step) { nil }
 
       before do
-        session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_id" => course_cohort.id }
+        session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_ecf_id" => course_cohort.ecf_id }
         patch(:update, params: { step: })
       end
 
@@ -90,8 +90,7 @@ RSpec.describe RegistrationWizardController do
         let(:step) { "course-start-date" }
 
         it "redirects to account/registration page with alert" do
-          expect(response).to redirect_to application_path(application.ecf_id)
-          expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
+          expect(response).to be_successful
         end
       end
 
@@ -99,7 +98,8 @@ RSpec.describe RegistrationWizardController do
         let(:step) { "choose-your-provider" }
 
         it "does not redirect, just renders the step" do
-          expect(response).to be_successful
+          expect(response).to redirect_to application_path(application.ecf_id)
+          expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
         end
       end
     end
