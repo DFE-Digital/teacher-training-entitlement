@@ -2,3 +2,6 @@
 shared:
  - persist_api_request
  - version
+ - one_login_started
+ - one_login_completed
+ - one_login_failed

@@ -15,10 +15,12 @@ class OmniauthController < Devise::OmniauthCallbacksController
 
     session["user_id"] = @user.id
     @user.set_closed_registration_feature_flag
+    Analytics::DfeCustomEvents.new(type: :one_login_completed, request:, user: @user).send_event
     sign_in_and_redirect @user
   rescue StandardError => e
     Rails.logger.info("[TeacherAuth] #{e} raised, user_id=#{@user.try(:id)} uid=#{try_to_extract_user_uid}")
     Sentry.capture_exception(e)
+    Analytics::DfeCustomEvents.new(type: :one_login_failed, request:, data: { error_type: "callback_error" }).send_event
 
     flash[:error] = failure_message
     redirect_to failed_sign_in_path
@@ -28,6 +30,7 @@ class OmniauthController < Devise::OmniauthCallbacksController
     redirect_to after_sign_in_path_for(current_user) and return if logged_in_user.present?
 
     Rails.logger.info("[TeacherAuth][omniauth_failure] uid=#{try_to_extract_user_uid} error=#{try_to_extract_error_type}")
+    Analytics::DfeCustomEvents.new(type: :one_login_failed, request:, data: { error_type: try_to_extract_error_type }).send_event
     send_error_to_sentry(
       "Omniauth login failure (#{try_to_extract_error_type})",
       contexts: {
