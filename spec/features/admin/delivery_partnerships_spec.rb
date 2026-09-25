@@ -182,6 +182,8 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
 private
 
   def course_cohort_label(course_cohort)
+    course_cohort.reload
+
     "#{course_cohort.course.name} – #{course_cohort.cohort.description}"
   end
 end

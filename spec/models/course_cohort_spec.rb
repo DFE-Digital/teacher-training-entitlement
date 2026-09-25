@@ -16,8 +16,44 @@ RSpec.describe CourseCohort do
   end
 
   describe "validations" do
+    subject(:course_cohort) { build(:course_cohort, cohort:, academic_year:) }
+
+    let(:cohort) { build(:cohort, registration_starts_at: Date.new(2027, 9, 1)) }
+    let(:academic_year) { 2027 }
+
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive }
     it { is_expected.to validate_numericality_of(:academic_year).only_integer.is_greater_than_or_equal_to(0).allow_nil }
+
+    it "allows academic year to match a September registration start year" do
+      expect(course_cohort).to be_valid
+    end
+
+    context "when registration starts before September" do
+      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1), start_year: 2028) }
+      let(:academic_year) { 2028 }
+
+      it "allows academic year to match the cohort start year" do
+        expect(course_cohort).to be_valid
+      end
+    end
+
+    context "when academic year is blank" do
+      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1)) }
+      let(:academic_year) { nil }
+
+      it "allows academic year to be blank" do
+        expect(course_cohort).to be_valid
+      end
+    end
+
+    context "when academic year does not match the cohort start year" do
+      let(:cohort) { build(:cohort, registration_starts_at: Date.new(2028, 3, 1), start_year: 2027) }
+      let(:academic_year) { 2028 }
+
+      it "is invalid" do
+        expect(course_cohort).to have_error(:academic_year, "must be 2027 for the cohort registration start date")
+      end
+    end
   end
 
   describe "#taken_declaration_types" do
@@ -52,6 +88,25 @@ RSpec.describe CourseCohort do
       let(:course) { build(:course, identifier: "npd-teachers") }
 
       it { is_expected.to eq("npd-teachers-autumn") }
+    end
+  end
+
+  describe "defaults" do
+    let(:course_cohort) do
+      create(
+        :course_cohort,
+        cohort: create(:cohort, registration_starts_at: Date.new(2028, 3, 1)),
+        academic_year: nil,
+        term_identifier: nil,
+      )
+    end
+
+    it "sets the academic year from the cohort start year on create" do
+      expect(course_cohort.academic_year).to eq(2028)
+    end
+
+    it "sets the term identifier from the cohort registration start date on create" do
+      expect(course_cohort.term_identifier).to eq("spring")
     end
   end
 

@@ -24,9 +24,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
     before { sign_in_as(admin) }
 
     scenario "reverting applications to pending" do
-      visit admin_path
-      click_link "Bulk changes"
-      click_link "Revert applications to pending"
+      visit admin_bulk_operations_revert_applications_to_pending_index_path
 
       expect(page).to have_content "No files have been uploaded"
 

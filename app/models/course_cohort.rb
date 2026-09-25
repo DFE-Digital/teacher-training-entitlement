@@ -5,6 +5,8 @@ class CourseCohort < ApplicationRecord
     summer: [5, 6, 7, 8],
   }.freeze
 
+  before_validation :set_dates, on: :create
+
   belongs_to :course
   belongs_to :cohort
 
@@ -27,6 +29,7 @@ class CourseCohort < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }
   validates :course_id, uniqueness: { scope: :cohort_id }
   validates :academic_year, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validate :academic_year_matches_registration_start_date
 
   scope :registerable, lambda {
     includes(:cohort)
@@ -41,6 +44,12 @@ class CourseCohort < ApplicationRecord
 
     month = date.month
     TERM_IDENTIFIERS.find { |_term, months| months.include?(month) }&.first
+  end
+
+  def self.academic_year_for(date)
+    return if date.blank?
+
+    date.year - (date.month < 9 ? 1 : 0)
   end
 
   def name
@@ -69,5 +78,26 @@ class CourseCohort < ApplicationRecord
 
   def taken_declaration_types(except: nil)
     milestones.where.not(id: except&.id).pluck(:declaration_type)
+  end
+
+private
+
+  def set_dates
+    return if cohort.blank? || cohort_registration_starts_at.blank?
+
+    self.academic_year ||= cohort.start_year
+    self.term_identifier ||= self.class.school_term(cohort_registration_starts_at)
+  end
+
+  def academic_year_matches_registration_start_date
+    return if academic_year.blank?
+    return if cohort.blank? || cohort_registration_starts_at.blank?
+    return if academic_year == expected_academic_year
+
+    errors.add(:academic_year, "must be #{expected_academic_year} for the cohort registration start date")
+  end
+
+  def expected_academic_year
+    cohort.start_year
   end
 end

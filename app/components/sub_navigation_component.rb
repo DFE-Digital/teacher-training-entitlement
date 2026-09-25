@@ -49,6 +49,13 @@ private
     # attribute rather than setting "current='false'"
     return nil unless prefix
 
-    current_path.start_with?(prefix) || nil
+    case prefix
+    when Regexp
+      prefix.match?(current_path) || nil
+    when String
+      current_path.start_with?(prefix) || nil
+    when Array
+      prefix.any? { |path_prefix| current_path.start_with?(path_prefix) } || nil
+    end
   end
 end

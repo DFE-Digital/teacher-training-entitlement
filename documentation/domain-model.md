@@ -182,6 +182,7 @@ erDiagram
     text teacher_catchment
     text teacher_catchment_country
     string teacher_catchment_iso_country_code
+    date training_starts_at
     text ukprn
     datetime updated_at
     integer user_id
@@ -189,7 +190,6 @@ erDiagram
     boolean works_in_childcare
     boolean works_in_nursery
     boolean works_in_school
-    date training_starts_at
   }
   Application }o--|| User : belongs_to
   Application }o--|| CourseCohort : belongs_to

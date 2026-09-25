@@ -37,6 +37,27 @@ RSpec.describe Cohort, type: :model do
       it { is_expected.to validate_presence_of(:description) }
       it { is_expected.to validate_uniqueness_of(:description).case_insensitive }
       it { is_expected.to validate_length_of(:description).is_at_least(5).is_at_most(50) }
+
+      it "defaults to the registration start month on create when blank" do
+        cohort = described_class.create!(
+          registration_starts_at: Date.new(2028, 6, 1),
+          start_year: 2028,
+          funding_cap: true,
+        )
+
+        expect(cohort.description).to eq("June 2028")
+      end
+
+      it "does not overwrite an explicit description on create" do
+        cohort = described_class.create!(
+          registration_starts_at: Date.new(2028, 7, 1),
+          start_year: 2028,
+          description: "Custom cohort",
+          funding_cap: true,
+        )
+
+        expect(cohort.description).to eq("Custom cohort")
+      end
     end
   end
 
@@ -110,5 +131,29 @@ RSpec.describe Cohort, type: :model do
     subject { cohort.name }
 
     it { is_expected.to eq cohort.description }
+  end
+
+  describe "#registration_period" do
+    subject(:registration_period) { cohort.registration_period }
+
+    let(:cohort) do
+      build(
+        :cohort,
+        registration_starts_at: Date.new(2026, 9, 1),
+        registration_ends_at:,
+      )
+    end
+
+    context "when registration start and end dates are set" do
+      let(:registration_ends_at) { Date.new(2026, 10, 31) }
+
+      it { is_expected.to eq("1 Sep 2026 - 31 Oct 2026") }
+    end
+
+    context "when registration end date is blank" do
+      let(:registration_ends_at) { nil }
+
+      it { is_expected.to eq("1 Sep 2026 - [no end date]") }
+    end
   end
 end

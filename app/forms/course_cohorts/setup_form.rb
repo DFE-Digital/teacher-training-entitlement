@@ -4,33 +4,33 @@ module CourseCohorts
     include ActiveModel::Attributes
     include ActiveRecord::AttributeAssignment
 
-    attribute :cohort
+    attribute :course
     attribute :course_id
+    attribute :cohort
+    attribute :cohort_id
     attribute :course_cohort
     attribute :training_starts_at, :date_or_hash
-    attribute :lead_providers
 
-    validates :cohort, presence: true
-    validates :course_id, presence: true
+    validates :course, presence: true, unless: :cohort
+    validates :course_id, presence: true, if: :cohort
+    validates :cohort, presence: true, unless: :course
+    validates :cohort_id, presence: true, if: :course
     validate :valid_training_starts_at
-    validate :at_least_one_lead_provider_selected
+
+    def cohort_options
+      @cohorts = Cohort.where.not(id: course.course_cohorts.select(:cohort_id)).order(registration_starts_at: :desc)
+    end
 
     def course_options
       @courses = Course.where.not(id: cohort.course_cohorts.select(:course_id)).order(:name)
     end
 
-    def lead_provider_options
-      @lead_providers = LeadProvider.order(:name)
-    end
-
-    def selected_lead_providers
-      selected_providers.map do |id, contract|
-        [LeadProvider.find(id), contract]
-      end
+    def selected_cohort
+      cohort || Cohort.find_by(id: cohort_id)
     end
 
     def selected_course
-      Course.find_by(id: course_id)
+      course || Course.find_by(id: course_id)
     end
 
     def add_service_errors(service_errors)
@@ -41,18 +41,8 @@ module CourseCohorts
 
   private
 
-    def selected_providers
-      lead_providers&.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" } || []
-    end
-
     def valid_training_starts_at
       errors.add(:training_starts_at, "Enter a valid date") unless training_starts_at.is_a?(Date)
-    end
-
-    def at_least_one_lead_provider_selected
-      return if selected_providers.present?
-
-      errors.add(:lead_providers, "Select at least one lead provider")
     end
   end
 end

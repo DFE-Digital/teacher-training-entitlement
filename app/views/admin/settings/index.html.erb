@@ -1,0 +1,12 @@
+<h1 class="govuk-heading-l">Settings</h1>
+
+<% if current_admin.super_admin? %>
+  <p class="govuk-body">Manage service settings like <%= govuk_link_to "feature flags", admin_features_path %>, and <%= govuk_link_to "registration closed", admin_registration_closed_index_path %>.</p>
+  <p class="govuk-body">Create a <%= govuk_link_to "new course", admin_course_builder_path("course-details") %>.</p>
+  <p class="govuk-body">Manage <%=  govuk_link_to "admin users", admin_admins_path %>.</p>
+  <p class="govuk-body">Access <%= govuk_link_to "API test scenario data", admin_api_test_scenarios_path %>.</p>
+  <p class="govuk-body">Access <%= govuk_link_to "bulk changes", admin_bulk_operations_path %> and <%= govuk_link_to "action logs", admin_actions_log_index_path %>.</p>
+<% else %>
+  <p class="govuk-body">Manage service settings like <%= govuk_link_to "registration closed", admin_registration_closed_index_path %>.</p>
+  <p class="govuk-body">Access <%= govuk_link_to "bulk changes", admin_bulk_operations_path %> and <%= govuk_link_to "action logs", admin_actions_log_index_path %>.</p>
+<% end %>

@@ -1,5 +1,6 @@
 class Cohort < ApplicationRecord
   before_validation :set_identifier
+  before_validation :set_description, on: :create
 
   has_many :course_cohorts, dependent: :destroy
   has_many :courses, through: :course_cohorts
@@ -47,12 +48,25 @@ class Cohort < ApplicationRecord
     description
   end
 
+  def registration_period
+    [
+      registration_starts_at.to_fs(:govuk_short),
+      registration_ends_at&.to_fs(:govuk_short) || "[no end date]",
+    ].join(" - ")
+  end
+
 private
 
   def set_identifier
     return if registration_starts_at.blank?
 
     self.identifier = registration_starts_at.strftime("%Y-%B")
+  end
+
+  def set_description
+    return if description.present? || registration_starts_at.blank?
+
+    self.description = registration_starts_at.strftime("%B %Y")
   end
 
   def identifier_is_unique

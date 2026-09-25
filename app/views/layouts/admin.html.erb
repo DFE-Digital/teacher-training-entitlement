@@ -22,7 +22,6 @@
       end
     end %>
 
-
     <%=
       govuk_service_navigation(
         current_path: request.path,
@@ -39,10 +38,11 @@
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-one-quarter" id="side-navigation">
             <%=
-            render SubNavigationComponent.new(
-              request.path,
-              structure: admin_navigation_structure.sub_structure(request.path, default_to_first_section: true),
-            )
+              render SubNavigationComponent.new(
+                request.path,
+                structure: admin_navigation_structure.sub_navigation_structure(request.path),
+                heading: admin_navigation_structure.sub_navigation_heading(request.path),
+              )
             %>
             <%= yield :side_navigation %>
 

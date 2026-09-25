@@ -31,10 +31,10 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
     it_behaves_like "an API index endpoint with sorting", %w[name]
 
     context "when filtering by cohort" do
-      let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
-      let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
-      let(:course_cohort_2023) { create(:course_cohort, cohort: cohort_2023, academic_year: cohort_2023.start_year) }
-      let(:course_cohort_2024) { create(:course_cohort, cohort: cohort_2024, academic_year: cohort_2024.start_year) }
+      let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 9, 1)) }
+      let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 9, 1)) }
+      let(:course_cohort_2023) { create(:course_cohort, cohort: cohort_2023) }
+      let(:course_cohort_2024) { create(:course_cohort, cohort: cohort_2024) }
       let!(:delivery_partner_2023) { create(:delivery_partner, lead_providers: { course_cohort_2023 => current_lead_provider }) }
 
       before { create(:delivery_partner, lead_providers: { course_cohort_2024 => current_lead_provider }) }

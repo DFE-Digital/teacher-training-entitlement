@@ -4,7 +4,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
   include Helpers::AdminLogin
 
   let(:super_admin) { create(:super_admin) }
-  let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 5, 1)) }
+  let!(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 5, 1)) }
   let!(:course) { create(:course, name: "Course to add", identifier: "course-to-add") }
   let!(:lead_provider_one) { create(:lead_provider, name: "Provider One") }
   let!(:lead_provider_two) { create(:lead_provider, name: "Provider Two") }
@@ -18,21 +18,13 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
     fill_in "course_cohorts_setup_form_training_starts_at_1i", with: year
   end
 
-  def lead_provider_conditional_selector(lead_provider)
-    "#course-cohorts-setup-form-lead-provider-#{lead_provider.id}-id-#{lead_provider.id}-conditional"
-  end
+  scenario "adding a course with contract year templates" do
+    create(:contract_year, :generic, course:, lead_provider: lead_provider_one, teacher_funding: 1000, recruitment_target: 50)
 
-  scenario "adding a course with a selected lead provider and funding details" do
     visit new_admin_cohort_course_path(cohort)
 
     select course.name, from: "Course"
     fill_in_training_starts_at(day: "1", month: "9", year: "2025")
-
-    check lead_provider_one.name, visible: :all
-    within(lead_provider_conditional_selector(lead_provider_one)) do
-      fill_in "Teacher funding", with: "1000"
-      fill_in "Recruitment target", with: "50"
-    end
 
     click_on "Add course"
 
@@ -52,13 +44,13 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
     expect(course_cohort.course_cohort_providers.find_by(lead_provider: lead_provider_two)).to be_nil
   end
 
-  scenario "adding a course with a selected lead provider but no funding details" do
+  scenario "adding a course with a contract year template with no funding details" do
+    create(:contract_year, :generic, course:, lead_provider: lead_provider_one, teacher_funding: nil, recruitment_target: nil)
+
     visit new_admin_cohort_course_path(cohort)
 
     select course.name, from: "Course"
     fill_in_training_starts_at(day: "1", month: "9", year: "2025")
-
-    check lead_provider_one.name, visible: :all
 
     click_on "Add course"
 

@@ -5,15 +5,16 @@ RSpec.feature "Listing and viewing courses", type: :feature do
 
   let(:courses_per_page) { Pagy::DEFAULT[:limit] }
   let(:admin_user) { create(:admin) }
+  let(:current_cohort) { create(:cohort, registration_starts_at: Date.new(2026, 9, 1)) }
 
   before do
-    create_list(:course, 10)
+    (courses_per_page + 5).times { |index| create_course_with_current_cohort(name: "Course #{index}") }
     sign_in_as(admin_user)
   end
 
   context "when signed in as admin" do
     scenario "viewing the list of courses" do
-      course = create(:course, name: "Course with multiple cohorts", identifier: "course-with-multiple-cohorts")
+      course = create_course_with_current_cohort(name: "A Course with multiple cohorts")
 
       visit(admin_courses_path)
 
@@ -44,8 +45,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_css("h1", text: course.name)
 
       within(".govuk-summary-list", match: :first) do |summary_list|
-        expect(summary_list).to have_summary_item("Registration period", course_cohort.cohort.description)
-        expect(summary_list).to have_summary_item("Course ID", course.ecf_id)
+        expect(summary_list).to have_summary_item("Registration period", course_cohort.cohort.registration_period)
         expect(summary_list).to have_summary_item("Identifier", course.identifier)
         expect(summary_list).to have_summary_item("Term", course_cohort.term_identifier)
         expect(summary_list).to have_summary_item("Group", course.course_group)
@@ -53,12 +53,12 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).to have_css("h2", text: "Providers")
-      expect(page).to have_current_path(cohort_admin_course_path(course, course_cohort.cohort))
+      expect(page).to have_current_path(admin_course_cohort_path(course, course_cohort.cohort))
     end
 
     scenario "filtering courses by academic year" do
       cohort_2026_october = create(:cohort, registration_starts_at: Date.new(2026, 10, 1))
-      cohort_2026_february = create(:cohort, registration_starts_at: Date.new(2026, 2, 1))
+      cohort_2026_february = create(:cohort, registration_starts_at: Date.new(2027, 2, 1), start_year: 2026)
       cohort_2025 = create(:cohort, registration_starts_at: Date.new(2025, 10, 1))
 
       course_2026_a = build(:course, name: "Course 2026 A").tap(&:save!)
@@ -79,5 +79,11 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_text(course_2026_b.name)
       expect(page).not_to have_text(course_2025.name)
     end
+  end
+
+  def create_course_with_current_cohort(name:)
+    course = build(:course, name:).tap(&:save!)
+    create(:course_cohort, course:, cohort: current_cohort)
+    course
   end
 end

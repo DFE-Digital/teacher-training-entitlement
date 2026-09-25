@@ -19,11 +19,17 @@ namespace :admin do
   end
 
   resources :features, only: %i[index show update]
+  resources :settings, only: %i[index]
   resources :admins, only: %i[index new create destroy]
   resources :super_admins, only: %i[update]
   resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
   resources :glossary, only: %i[index]
+
+  get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
+  get "course-builder/:step", to: "course_builder#show", as: :course_builder
+  post "course-builder/:step", to: "course_builder#create", as: nil
+
   resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
     collection do
       post "create_custom_data"
@@ -95,8 +101,8 @@ namespace :admin do
   end
 
   resources :cohorts do
-    resources :courses, controller: "cohort_courses", only: %i[index show new create]
     resources :schedules, except: :index
+    resources :courses, controller: "course_cohorts", only: %i[new create]
   end
 
   resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
@@ -147,8 +153,9 @@ namespace :admin do
     end
   end
 
-  resources :courses, only: %i[index show edit update] do
-    concerns :cohortable, index: "courses#index", show: "courses#show"
+  resources :courses, only: %i[index edit update] do
+    concerns :cohortable, index: "courses#index"
+    resources :cohorts, controller: "course_cohorts", only: %i[show]
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 

@@ -1,4 +1,4 @@
-<%= govuk_back_link href: cohort_admin_course_path(@course, @course_cohort.cohort_id) %>
+<%= govuk_back_link href: admin_course_cohort_path(@course, @course_cohort.cohort_id) %>
 
 <h1 class="govuk-heading-l">Add or remove providers</h1>
 
@@ -27,6 +27,6 @@ end
 
   <div class="govuk-button-group">
     <%= f.govuk_submit "Save providers" %>
-    <%= govuk_link_to("Cancel", admin_cohort_course_path(@course_cohort.cohort, @course), class: "govuk-link--no-visited-state") %>
+    <%= govuk_link_to("Cancel", admin_course_cohort_path(@course, @course_cohort.cohort), class: "govuk-link--no-visited-state") %>
   </div>
 <% end %>

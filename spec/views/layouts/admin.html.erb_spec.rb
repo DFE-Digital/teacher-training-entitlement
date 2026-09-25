@@ -6,7 +6,7 @@ RSpec.describe "layouts/admin.html.erb", type: :view do
   let(:admin) { build_stubbed(:admin) }
   let(:expected_items) do
     structure = NavigationStructures::AdminNavigationStructure.new(admin)
-    structure.primary_structure.map(&:name)
+    structure.service_navigation_items.map { _1[:text] }
   end
 
   before do

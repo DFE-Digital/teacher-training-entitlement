@@ -15,23 +15,6 @@ RSpec.describe Admin::CoursesController, type: :request do
       it { is_expected.to have_http_status(:ok) }
     end
 
-    describe "GET /admin/courses/{id}" do
-      let(:course_id) { create(:course).id }
-
-      subject do
-        get admin_course_path(course_id)
-        response
-      end
-
-      it { is_expected.to redirect_to(academic_year_admin_courses_path(Date.current.year)) }
-
-      context "when the course cannot be found", :exceptions_app do
-        let(:course_id) { -1 }
-
-        it { is_expected.to redirect_to(academic_year_admin_courses_path(Date.current.year)) }
-      end
-    end
-
     describe "GET /admin/courses/{id}/edit" do
       let(:course) { create(:course) }
 
@@ -77,7 +60,7 @@ RSpec.describe Admin::CoursesController, type: :request do
         response
       end
 
-      it { is_expected.to redirect_to(admin_course_path(course)) }
+      it { is_expected.to redirect_to(admin_courses_path) }
 
       it "updates the course" do
         subject

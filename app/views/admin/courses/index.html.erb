@@ -7,6 +7,7 @@
 <% end %>
 
 <h1 class="govuk-heading-l">Courses</h1>
+
 <%=
 govuk_table do |table|
   table.with_head do |header|
@@ -21,7 +22,7 @@ govuk_table do |table|
       body.with_row do |row|
         row.with_cell do
           if @current_cohort
-            govuk_link_to(course.name, cohort_admin_course_path(course, @current_cohort))
+            govuk_link_to(course.name, admin_course_cohort_path(course, @current_cohort))
           else
             course.name
           end

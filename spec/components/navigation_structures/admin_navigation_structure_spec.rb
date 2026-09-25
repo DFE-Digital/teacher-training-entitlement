@@ -17,10 +17,8 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
         "Finance" => "/admin/finance/statements",
         "Delivery partners" => "/admin/delivery-partners",
         "Users" => "/admin/users",
+        "Settings" => "/admin/settings",
         "Workplaces" => "/admin/schools",
-        "Bulk changes" => "/admin/bulk-changes",
-        "Registration closed" => "/admin/registration-closed",
-        "Actions log" => "/admin/actions-log",
         "Glossary" => "/admin/glossary",
       }
     expected_structure.each_with_index do |(name, href), i|
@@ -41,15 +39,59 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
     context "when user is a super admin" do
       let(:admin) { build_stubbed(:super_admin) }
 
-      it "includes feature flags" do
-        expect(subject[-3]).to have_attributes(name: "Feature flags")
-        expect(subject[-3]).to have_attributes(href: "/admin/features")
+      it "does not include feature flags in the primary navigation" do
+        expect(subject.map(&:name)).not_to include("Feature flags")
       end
 
-      it "includes admins" do
-        expect(subject[-2]).to have_attributes(name: "Admins")
-        expect(subject[-2]).to have_attributes(href: "/admin/admins")
+      it "does not include admins in the primary navigation" do
+        expect(subject.map(&:name)).not_to include("Admins")
       end
+    end
+  end
+
+  describe "#service_navigation_items" do
+    subject(:service_navigation_items) { instance.service_navigation_items }
+
+    it "includes settings in the primary service navigation" do
+      expect(service_navigation_items.map { |item| item[:text] }).to include("Settings")
+    end
+  end
+
+  describe "#sub_navigation_structure" do
+    subject(:sub_navigation_structure) { instance.sub_navigation_structure(path) }
+
+    let(:path) { "/admin/settings" }
+
+    it "groups service setting links under Service settings" do
+      expect(sub_navigation_structure.map(&:name)).to contain_exactly(
+        "Bulk changes",
+        "Action logs",
+        "Registration closed",
+      )
+    end
+
+    context "when user is a super admin" do
+      let(:admin) { build_stubbed(:super_admin) }
+
+      it "includes super admin service setting links" do
+        expect(sub_navigation_structure.map(&:name)).to include("Feature flags", "Admins")
+      end
+    end
+
+    context "when the path is not in settings" do
+      let(:path) { "/admin/applications" }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe "#sub_navigation_heading" do
+    it "shows the Service settings heading for service setting paths" do
+      expect(instance.sub_navigation_heading("/admin/settings")).to eq(text: "Service settings", visible: true)
+    end
+
+    it "does not show the Service settings heading for other paths" do
+      expect(instance.sub_navigation_heading("/admin/applications")).to eq({})
     end
   end
 end

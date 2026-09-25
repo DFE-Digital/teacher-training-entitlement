@@ -24,7 +24,6 @@ class RegistrationPeriodsComponent < BaseComponent
       NavigationStructure::Node.new(
         name: academic_year_link_name,
         href:,
-        prefix: href,
         nodes: leaf_nodes,
         current: default_current_year?(academic_year),
       )
@@ -89,7 +88,6 @@ private
       NavigationStructure::Node.new(
         name: registration_period.description,
         href: registration_period_path(registration_period),
-        prefix: registration_period_path(registration_period),
       )
     end
   end
@@ -113,6 +111,8 @@ private
 
   def registration_period_path(registration_period)
     if @resource
+      return public_send(@base_path, @resource, registration_period) if respond_to?(@base_path)
+
       public_send(:"cohort_#{@base_path}", @resource, registration_period)
     else
       public_send(:"cohort_#{@base_path}", registration_period)
@@ -132,6 +132,8 @@ private
 
   def resource_path
     if @resource
+      return unless respond_to?(@base_path)
+
       public_send(@base_path, @resource)
     else
       public_send(@base_path)

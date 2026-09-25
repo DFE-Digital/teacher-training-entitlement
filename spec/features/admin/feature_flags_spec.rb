@@ -9,8 +9,7 @@ RSpec.feature "Administering feature flags", :rack_test_driver, type: :feature d
   scenario "super admins can see the list of feature flags and change their state" do
     create(:cohort, :current)
     sign_in_as_super_admin
-    visit "/admin"
-    page.click_link("Feature flags")
+    visit admin_features_path
     expect(page).to have_current_path("/admin/features")
 
     within("tr", text: "Registration open") do
