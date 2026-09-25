@@ -53,13 +53,11 @@ RSpec.describe "Omniauth callbacks", type: :request do
         end
 
         it "signs in the user and redirects" do
-          event = instance_double(Analytics::DfeCustomEvents)
-          allow(Analytics::DfeCustomEvents).to receive(:new).with(
+          expect(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).with(
             type: :one_login_completed,
             request: an_instance_of(ActionDispatch::Request),
             user:,
-          ).and_return(event)
-          expect(event).to receive(:send_event)
+          )
 
           make_request
           expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
@@ -97,13 +95,11 @@ RSpec.describe "Omniauth callbacks", type: :request do
         end
 
         it "sends a failed event" do
-          event = instance_double(Analytics::DfeCustomEvents)
-          allow(Analytics::DfeCustomEvents).to receive(:new).with(
+          expect(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).with(
             type: :one_login_failed,
             request: an_instance_of(ActionDispatch::Request),
             data: { error_type: "callback_error" },
-          ).and_return(event)
-          expect(event).to receive(:send_event)
+          )
 
           make_request
         end
