@@ -60,7 +60,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
         context "when registration is not open for any course cohort" do
           before do
             create(:"tte-early-years")
-            allow(CourseCohort).to receive(:next_open_for).and_return(nil)
+            Cohort.update_all(registration_starts_at: nil, registration_ends_at: nil)
           end
 
           it "redirects to the registration closed page" do

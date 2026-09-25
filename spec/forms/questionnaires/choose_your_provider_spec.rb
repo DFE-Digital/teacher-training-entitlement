@@ -10,7 +10,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     let(:current_step) { "choose_your_provider" }
     let(:request) { nil }
     let(:school) { bulid_stubbed(:school) }
-    let(:store) { { "course_cohort_id" => course_cohort.id } }
+    let(:store) { { "course_cohort_ecf_id" => course_cohort.ecf_id } }
     let(:wizard) do
       RegistrationWizard.new(
         current_step:,
@@ -63,7 +63,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     before do
       form.wizard = RegistrationWizard.new(
         current_step: :choose_your_provider,
-        store: { "course_cohort_id" => course_cohort.id },
+        store: { "course_cohort_ecf_id" => course_cohort.ecf_id },
         request: nil,
         current_user: create(:user),
       )

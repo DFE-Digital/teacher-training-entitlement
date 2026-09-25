@@ -9,6 +9,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
   scenario "private setting in England funded by workplace" do
     lead_provider = LeadProvider.first
+    course_cohort = CourseCohort.registerable.first
 
     start_registration
     choose_current_course_start_date
@@ -44,9 +45,9 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
       expect(application.raw_application_data).to match(
         "can_share_choices" => "1",
-        "course_start" => CourseCohort.next_open_for(course: Course.reception).name,
-        "course_cohort_id" => CourseCohort.next_open_for(course: Course.reception).id,
-        "course_start_date" => "yes",
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "course_cohort_id" => course_cohort.id,
+        "course_start_date" => course_cohort.ecf_id,
         "funding" => "school",
         "funding_amount" => nil,
         "lead_provider_id" => lead_provider.id.to_s,

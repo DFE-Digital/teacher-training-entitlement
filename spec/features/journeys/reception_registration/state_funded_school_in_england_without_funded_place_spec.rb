@@ -18,6 +18,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       town: "manchester",
     )
     institution = school.institution
+    course_cohort = CourseCohort.registerable.first
 
     start_registration
     choose_current_course_start_date
@@ -54,9 +55,9 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
       expect(application.raw_application_data).to match(
         "can_share_choices" => "1",
-        "course_start" => CourseCohort.next_open_for(course: Course.reception).name,
-        "course_cohort_id" => CourseCohort.next_open_for(course: Course.reception).id,
-        "course_start_date" => "yes",
+        "course_cohort_id" => course_cohort.id,
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "course_start_date" => course_cohort.ecf_id,
         "funding" => "school",
         "funding_amount" => nil,
         "institution_id" => institution.id.to_s,

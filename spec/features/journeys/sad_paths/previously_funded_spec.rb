@@ -6,24 +6,29 @@ RSpec.feature "Previously funded participant", type: :feature do
 
   let(:user) { create(:user, :with_one_login_id) }
   let(:school) { create(:school, :with_address) }
-  let(:lead_provider) { create(:lead_provider, :with_courses) }
-  let(:course) { lead_provider.courses.last }
+  let(:course_cohort) { create(:course_cohort) }
+  let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
 
   before do
+    previous_cohort = create(:cohort, registration_starts_at: 1.year.ago, registration_ends_at: 6.months.ago)
+    previous_course_cohort = create(:course_cohort, course: course_cohort.course, cohort: previous_cohort)
+
     create(:application,
            :accepted,
            :eligible_for_funding,
            user:,
            school:,
-           course:,
-           lead_provider:,
+           course_cohort: previous_course_cohort,
+           lead_provider: previous_course_cohort.course_cohort_providers.first.lead_provider,
            funded_place: true)
 
     page.set_rack_session(
       "user_id" => user.id,
       "registration_store" => {
-        "course_start_date" => "yes",
-        "course_identifier" => course.identifier,
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "course_cohort_id" => course_cohort.id,
+        "course_start_date" => course_cohort.ecf_id,
+        "course_identifier" => course_cohort.course.identifier,
         "lead_provider_id" => lead_provider.id,
         "teacher_catchment" => "england",
         "work_setting" => "a_school",

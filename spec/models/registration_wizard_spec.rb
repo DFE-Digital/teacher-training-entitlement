@@ -3,13 +3,12 @@ require "rails_helper"
 RSpec.describe RegistrationWizard do
   subject { described_class.new(current_step:, store:, request:, current_user: user) }
 
-  let(:store) { {} }
+  let(:store) { { "course_cohort_ecf_id" => course_cohort.ecf_id } }
   let(:session) { {} }
   let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
   let(:user) { create(:user) }
   let(:current_step) { "share_provider" }
-
-  before { create(:course, :npd_eirt) }
+  let(:course_cohort) { create(:course_cohort) }
 
   describe "#current_step" do
     it "returns current step" do
@@ -38,6 +37,7 @@ RSpec.describe RegistrationWizard do
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "another",
           "funding" => "self",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
         }
       end
 
@@ -67,6 +67,7 @@ RSpec.describe RegistrationWizard do
           "lead_provider_id" => LeadProvider.all.sample.id,
           "funding" => "self",
           "referred_by_return_to_teaching_adviser" => "no",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
         }
       end
 
@@ -96,6 +97,7 @@ RSpec.describe RegistrationWizard do
           "works_in_childcare" => "yes",
           "works_in_school" => "no",
           "referred_by_return_to_teaching_adviser" => "no",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
         }
       end
 

@@ -3,20 +3,19 @@ require "rails_helper"
 RSpec.describe "registration_wizard/check_answers.html.erb", type: :view do
   subject(:rendered_page) { Capybara.string(render) }
 
-  let(:course) { create(:course, :npd_eirt) }
+  let(:course_cohort) { create(:course_cohort) }
+  let(:course) { course_cohort.course }
   let(:lead_provider) { create(:lead_provider) }
   let(:user) { create(:user) }
   let(:store) do
     {
       "lead_provider_id" => lead_provider.id,
-      "course_start" => "April 2026",
+      "course_cohort_ecf_id" => course_cohort.ecf_id,
       "teacher_catchment" => "england",
     }
   end
 
   let(:wizard) do
-    course
-
     RegistrationWizard.new(
       current_step: :check_answers,
       store:,

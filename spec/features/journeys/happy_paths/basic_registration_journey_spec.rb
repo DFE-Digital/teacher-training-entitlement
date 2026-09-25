@@ -8,6 +8,9 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
   include_context "retrieve latest application data"
   include_context "Stub Teacher Auth Responses"
 
+  let(:course_cohort) { CourseCohort.registerable.first }
+  let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
+
   context "when JavaScript is enabled", :js do
     scenario("registration journey (with JS)") { run_scenario(js: true) }
   end
@@ -29,12 +32,12 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
       expect(page).to have_text("When do you want to start the course?")
 
-      page.choose(CourseCohort.next_open_for(course: Course.reception).name, visible: :all)
+      page.choose(course_cohort.cohort.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
       expect(page).to have_text("Select your training provider")
-      page.choose(LeadProvider.first.name, visible: :all)
+      page.choose(lead_provider.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
@@ -60,9 +63,9 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
     expect_page_to_have(path: "/registration/check-answers", submit_button_text: "Submit", submit_form: true) do
       expect_check_answers_page_to_have_answers(
         {
-          "Course start" => CourseCohort.next_open_for(course: Course.reception).name,
-          "Course" => Course.last.name,
-          "Provider" => LeadProvider.first.name,
+          "Course start" => course_cohort.cohort.name,
+          "Course" => course_cohort.course.name,
+          "Provider" => lead_provider.name,
           "Workplace" => "open manchester school – street 1, manchester",
           "Work setting" => "State-funded nursery, pre-school, school or academy trust",
           "Workplace in England" => "Yes",
@@ -118,7 +121,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
                                                            ))
 
     deep_compare_application_data(
-      "course_cohort_id" => latest_application.course_cohort_id,
+      "course_cohort_id" => course_cohort.id,
       "ecf_id" => latest_application.ecf_id,
       "eligible_for_funding" => true,
       "funded_place" => nil,
@@ -144,9 +147,9 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       "review_status" => nil,
       "raw_application_data" => {
         "can_share_choices" => "1",
-        "course_cohort_id" => latest_application.course_cohort_id,
-        "course_start" => latest_application.course_cohort.name,
-        "course_start_date" => "yes",
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "course_cohort_id" => course_cohort.id,
+        "course_start_date" => course_cohort.ecf_id,
         "funding_amount" => nil,
         "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
         "institution_name" => js ? "" : "open",

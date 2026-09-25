@@ -90,7 +90,7 @@ class RegistrationWizard
   def answers
     array = []
 
-    array << Answer.new("Course start", store["course_start"], :course_start_date)
+    array << Answer.new("Course start", course_cohort.cohort.name, :course_start_date)
     array << Answer.new("Course", course.name)
     array << Answer.new("Provider", lead_provider&.name, :choose_your_provider)
     array << Answer.new("Workplace in England", teacher_catchment_humanized, :teacher_catchment)
@@ -117,6 +117,7 @@ class RegistrationWizard
 private
 
   delegate :course,
+           :course_cohort,
            :formatted_date_of_birth,
            :has_ofsted_urn?,
            :inside_catchment?,

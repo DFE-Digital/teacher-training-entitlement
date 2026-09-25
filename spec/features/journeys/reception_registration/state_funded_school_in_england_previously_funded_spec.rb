@@ -11,6 +11,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
   scenario "state-funded school in England when the user has previously been funded" do
     lead_provider = LeadProvider.first
     institution = Institution.find_by!(institution_reference_number: "100000")
+    course_cohort = CourseCohort.registerable.first
     previously_funded_user = create(:user, trn: user_trn)
     create(:application, :accepted, :eligible_for_funding, user: previously_funded_user, course: Course.reception, cohort: create(:cohort, registration_starts_at: Date.new(2024, 5, 1)))
     previously_funded_user.update!(archived_at: Time.current, archived_email: previously_funded_user.email, email: "archived@example.com")
@@ -54,9 +55,9 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
       expect(application.raw_application_data).to match(
         "can_share_choices" => "1",
-        "course_start" => CourseCohort.next_open_for(course: Course.reception).name,
-        "course_cohort_id" => CourseCohort.next_open_for(course: Course.reception).id,
-        "course_start_date" => "yes",
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "course_cohort_id" => course_cohort.id,
+        "course_start_date" => course_cohort.ecf_id,
         "funding" => "self",
         "funding_amount" => nil,
         "institution_id" => institution.id.to_s,

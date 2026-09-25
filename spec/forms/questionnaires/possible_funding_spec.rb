@@ -29,15 +29,16 @@ RSpec.describe Questionnaires::PossibleFunding do
   end
 
   describe "#course" do
-    let!(:course) { create(:course, :npd_eirt) }
+    let(:course_cohort) { create(:course_cohort) }
     let(:request) { nil }
+    let(:store) { { "course_cohort_ecf_id" => course_cohort.ecf_id } }
 
     before do
       subject.wizard = wizard
     end
 
     it "returns the course undertaken" do
-      expect(subject.course).to eql(course)
+      expect(subject.course).to eql(course_cohort.course)
     end
   end
 
