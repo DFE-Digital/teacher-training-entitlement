@@ -19,7 +19,7 @@ RSpec.describe Statements::MilestoneCourseCohortCalculator do
       create(:course_cohort_provider, course_cohort:, lead_provider:, teacher_funding: 100)
     end
   end
-  let(:contract) { lead_provider.contract(course_cohort:) }
+  let(:contract) { course_cohort.contract(lead_provider:) }
   let(:milestone) { course_cohort.course.milestones.detect(&:started_declaration_type?) }
   let(:funded_place) { [true] }
 

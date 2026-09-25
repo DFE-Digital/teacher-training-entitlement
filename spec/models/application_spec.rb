@@ -37,6 +37,12 @@ RSpec.describe Application do
     end
   end
 
+  describe "contract" do
+    it { expect(application.contract).to be_a(CourseCohortProvider) }
+    it { expect(application.contract.lead_provider).to eq(application.lead_provider) }
+    it { expect(application.contract.course_cohort).to eq(application.course_cohort) }
+  end
+
   describe "#transition_status!" do
     subject(:application) { create(:application, :started) }
 

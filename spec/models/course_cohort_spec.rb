@@ -56,6 +56,15 @@ RSpec.describe CourseCohort do
     end
   end
 
+  describe "#contract" do
+    subject(:course_cohort) { course_cohort_provider.course_cohort }
+
+    let(:course_cohort_provider) { create(:course_cohort_provider) }
+    let(:lead_provider) { course_cohort_provider.lead_provider }
+
+    it { expect(course_cohort.contract(lead_provider:)).to eq(course_cohort_provider) }
+  end
+
   describe "#taken_declaration_types" do
     subject(:taken_declaration_types) { course_cohort.taken_declaration_types(except:) }
 

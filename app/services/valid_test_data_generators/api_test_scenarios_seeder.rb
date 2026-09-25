@@ -413,7 +413,7 @@ module ValidTestDataGenerators
     end
 
     def declaration_value(milestone, course_cohort:)
-      contract = lead_provider.contract(course_cohort:)
+      contract = course_cohort.contract(lead_provider:)
       contract.teacher_funding * milestone.payment_percentage
     end
 

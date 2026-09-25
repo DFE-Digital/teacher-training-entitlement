@@ -21,8 +21,4 @@ class LeadProvider < ApplicationRecord
   def delivery_partners_for_course_cohort(course_cohort:)
     delivery_partners.where(delivery_partnerships: { course_cohort: })
   end
-
-  def contract(course_cohort:)
-    ComputedContract.draw(lead_provider: self, course_cohort:)
-  end
 end

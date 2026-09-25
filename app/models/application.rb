@@ -137,6 +137,12 @@ class Application < ApplicationRecord
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
 
+  def contract
+    return unless course_cohort && lead_provider
+
+    course_cohort.contract(lead_provider:)
+  end
+
   def lead_provider=(new_provider)
     change_provider!(to: new_provider)
   end

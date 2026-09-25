@@ -28,7 +28,7 @@ module Declarations
     validate :declaration_valid
     validate :application_updateable
 
-    delegate :lead_provider, :course_cohort, to: :application
+    delegate :lead_provider, :course_cohort, :contract, to: :application
 
     attr_reader :raw_declaration_date, :declaration
 
@@ -36,10 +36,6 @@ module Declarations
       return false unless valid?
 
       ApplicationRecord.transaction do
-        # DeclarationUplift.upsert_all qualifying_uplift_incentives.map { |qui|
-        # { declaration_id:, uplift_id:, value: qui.value }
-        # } if qualifying_uplfit_incentives.any?
-
         @declaration = application.declarations.create!(declaration_parameters_for_create)
         @declaration.mark_eligible!
 
@@ -81,19 +77,12 @@ module Declarations
 
     def milestone
       return if declaration_type.blank?
-      return unless course_cohort
       return unless declaration_type.in?(allowed_declaration_types)
 
       @milestone ||= course_cohort.milestones.find_by!(declaration_type:)
     end
 
-    def contract
-      @contract ||= lead_provider.contract(course_cohort:)
-    end
-
     def allowed_declaration_types
-      return [] unless course_cohort
-
       course_cohort.milestones.pluck(:declaration_type)
     end
 

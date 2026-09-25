@@ -7,35 +7,41 @@
     contract = (selection.detect { |lp, ccp| lp.id == lead_provider.id })&.last || {}
     checked = !contract.blank?
     %>
-    <%=
-       f.govuk_check_box \
-         checkbox_id, \
-         lead_provider.id, \
-         checked:, \
-         name: "#{f.object_name}[lead_providers][#{lead_provider.id}][id]", \
-         link_errors: true, \
-         label: { text: lead_provider.name }, \
-         multiple: false do
-    %>
+      <%=
+      f.govuk_check_box \
+      checkbox_id, \
+      lead_provider.id, \
+      checked:, \
+      name: "#{f.object_name}[lead_providers][#{lead_provider.id}][id]", \
+      link_errors: true, \
+      label: { text: lead_provider.name }, \
+      multiple: false do
+      %>
 
-      <%=
-         f.govuk_text_field \
-           teacher_funding_id, \
-           value: contract["teacher_funding"], \
-           name: "#{f.object_name}[lead_providers][#{lead_provider.id}][teacher_funding]", \
-           label: { text: t(".teacher_funding") }, \
-           width: 10, \
-           multiple: false
-      %>
-      <%=
-         f.govuk_text_field \
-           recruitment_target_id, \
-           value: contract["recruitment_target"], \
-           name: "#{f.object_name}[lead_providers][#{lead_provider.id}][recruitment_target]", \
-           label: { text: t(".recruitment_target") }, \
-           width: 5, \
-           multiple: false
-      %>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+          <%=
+          f.govuk_text_field \
+          teacher_funding_id, \
+          value: contract["teacher_funding"], \
+          name: "#{f.object_name}[lead_providers][#{lead_provider.id}][teacher_funding]", \
+          label: { text: t(".teacher_funding") }, \
+          width: 10, \
+          multiple: false
+          %>
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <%=
+          f.govuk_text_field \
+          recruitment_target_id, \
+          value: contract["recruitment_target"], \
+          name: "#{f.object_name}[lead_providers][#{lead_provider.id}][recruitment_target]", \
+          label: { text: t(".recruitment_target") }, \
+          width: 10, \
+          multiple: false
+          %>
+        </div>
+      </div>
     <% end %>
   <% end %>
 <% end %>

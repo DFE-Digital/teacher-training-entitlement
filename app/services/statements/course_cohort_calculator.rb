@@ -3,7 +3,7 @@ module Statements
     def initialize(statement:, course_cohort:)
       @statement = statement
       @course_cohort = course_cohort
-      @contract = statement.lead_provider.contract(course_cohort:)
+      @contract = course_cohort.contract(lead_provider: statement.lead_provider)
       @milestones = course_cohort.milestones.sort_by { |milestone| Milestone::DECLARATION_TYPES.index(milestone.declaration_type) }
       @course_name = course_cohort.course.name
     end
