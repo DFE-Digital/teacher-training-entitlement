@@ -216,28 +216,7 @@ module Declarations
     end
 
     def declaration_type_out_of_order
-      if !started_declaration? && application&.started_declaration.blank?
-        errors.add(:declaration_type, :out_of_order)
-        return
-      end
-
-      return unless milestone
-
-      milestone_start_date = milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
-      return unless milestone_start_date
-
-      previous_milestones = course_cohort.milestones
-        .select do |previous_milestone|
-          previous_milestone_start_date =
-            previous_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
-
-          previous_milestone_start_date && previous_milestone_start_date < milestone_start_date
-        end
-
-      return if previous_milestones.none?
-
-      existing_types = application.declarations.billable_or_changeable.pluck(:declaration_type)
-      return if previous_milestones.all? { |m| m.declaration_type.in?(existing_types) }
+      return if milestone&.declaration_in_order?(declarations: active_declarations)
 
       errors.add(:declaration_type, :out_of_order)
     end
