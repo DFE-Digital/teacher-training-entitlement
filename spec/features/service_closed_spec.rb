@@ -8,8 +8,7 @@ RSpec.feature "Service is closed", type: :feature do
 
   include_context "Stub Teacher Auth Responses"
 
-  course_cohort = CourseCohort.registrable.first
-  cohort = course_cohort&.cohort
+  let!(:course_cohort) { create(:course_cohort) }
 
   scenario "Service close date has passed" do
     close_registration!
@@ -28,8 +27,7 @@ RSpec.feature "Service is closed", type: :feature do
     page.click_button("Start now")
 
     expect(page).to have_text("Choose your course start date")
-    course_start_date = cohort&.name || "Registration closed"
-    page.choose(course_start_date, visible: :all)
+    page.choose(course_cohort.cohort.name, visible: :all)
 
     # Registration is now closed
     close_registration!
