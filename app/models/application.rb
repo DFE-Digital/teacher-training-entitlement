@@ -138,13 +138,9 @@ class Application < ApplicationRecord
   validate :eligible_for_funded_place
 
   def contract
-    return @contract if @contract
     return unless course_cohort && lead_provider
 
-    @contract = CourseCohortProvider.find_by(
-      course_cohort: course_cohort,
-      lead_provider: lead_provider,
-    )
+    course_cohort.contract(lead_provider:)
   end
 
   def lead_provider=(new_provider)
