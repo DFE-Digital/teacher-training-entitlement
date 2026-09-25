@@ -9,7 +9,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
   include_context "Stub Teacher Auth Responses"
 
   scenario "state-funded school not in England without funded place" do
-    course_cohort = CourseCohort.registrable.first
+    course_cohort = CourseCohort.registerable.first
     lead_provider = LeadProvider.first
 
     start_registration

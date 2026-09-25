@@ -33,7 +33,7 @@ module Questionnaires
     end
 
     def options
-      course_cohorts = CourseCohort.registrable.order(:training_starts_at).to_a
+      course_cohorts = CourseCohort.registerable.order(:training_starts_at).to_a
       closest_option = course_cohorts[0..0].map do |course_cohort|
         build_option_struct(
           value: course_cohort.ecf_id,

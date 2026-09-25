@@ -8,7 +8,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
   include_context "retrieve latest application data"
   include_context "Stub Teacher Auth Responses"
 
-  let(:course_cohort) { CourseCohort.registrable.first }
+  let(:course_cohort) { CourseCohort.registerable.first }
   let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
 
   context "when JavaScript is enabled", :js do

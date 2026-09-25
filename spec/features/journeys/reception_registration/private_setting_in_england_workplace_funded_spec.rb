@@ -9,7 +9,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
   scenario "private setting in England funded by workplace" do
     lead_provider = LeadProvider.first
-    course_cohort = CourseCohort.registrable.first
+    course_cohort = CourseCohort.registerable.first
 
     start_registration
     choose_current_course_start_date

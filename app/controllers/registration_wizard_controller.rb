@@ -84,7 +84,7 @@ private
 
   def redirect_to_closed_if_no_course_cohort
     return unless params[:step].to_s == "course-start-date"
-    return if CourseCohort.registrable.exists?
+    return if CourseCohort.registerable.exists?
 
     redirect_to registration_wizard_show_path(:closed)
   end

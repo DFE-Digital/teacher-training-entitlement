@@ -42,7 +42,7 @@ module Helpers
     end
 
     def seed_course_cohort_in_registration_store
-      course_cohort = CourseCohort.registrable.first
+      course_cohort = CourseCohort.registerable.first
       return unless course_cohort
 
       page.set_rack_session(

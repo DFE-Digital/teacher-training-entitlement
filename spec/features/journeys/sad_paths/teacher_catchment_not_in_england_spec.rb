@@ -19,7 +19,7 @@ RSpec.feature "Sad journey", :with_default_lead_provider, type: :feature do
 
   def run_scenario
     seed_course_cohort_in_registration_store
-    course_cohort = CourseCohort.registrable.first
+    course_cohort = CourseCohort.registerable.first
 
     navigate_to_page(path: "/", submit_form: false) do
       page.click_button("Start now")

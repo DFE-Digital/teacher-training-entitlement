@@ -18,7 +18,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       town: "manchester",
     )
     institution = school.institution
-    course_cohort = CourseCohort.registrable.first
+    course_cohort = CourseCohort.registerable.first
 
     start_registration
     choose_current_course_start_date
