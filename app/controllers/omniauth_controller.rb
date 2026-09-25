@@ -2,6 +2,12 @@ class OmniauthController < Devise::OmniauthCallbacksController
   skip_before_action :verify_authenticity_token, only: %i[teacher_auth]
   skip_before_action :authenticate_user!
 
+  def one_login
+    StreamAnalyticsEventToBigQueryJob.send_event(type: :one_login_started, request:)
+
+    redirect_to user_teacher_auth_omniauth_authorize_path, status: :temporary_redirect
+  end
+
   def teacher_auth
     provider_data = request.env["omniauth.auth"]
 
@@ -15,10 +21,12 @@ class OmniauthController < Devise::OmniauthCallbacksController
 
     session["user_id"] = @user.id
     @user.set_closed_registration_feature_flag
+    StreamAnalyticsEventToBigQueryJob.send_event(type: :one_login_completed, request:, user: @user)
     sign_in_and_redirect @user
   rescue StandardError => e
     Rails.logger.info("[TeacherAuth] #{e} raised, user_id=#{@user.try(:id)} uid=#{try_to_extract_user_uid}")
     Sentry.capture_exception(e)
+    StreamAnalyticsEventToBigQueryJob.send_event(type: :one_login_failed, request:, data: { error_type: "callback_error" })
 
     flash[:error] = failure_message
     redirect_to failed_sign_in_path
@@ -28,6 +36,7 @@ class OmniauthController < Devise::OmniauthCallbacksController
     redirect_to after_sign_in_path_for(current_user) and return if logged_in_user.present?
 
     Rails.logger.info("[TeacherAuth][omniauth_failure] uid=#{try_to_extract_user_uid} error=#{try_to_extract_error_type}")
+    StreamAnalyticsEventToBigQueryJob.send_event(type: :one_login_failed, request:, data: { error_type: try_to_extract_error_type })
     send_error_to_sentry(
       "Omniauth login failure (#{try_to_extract_error_type})",
       contexts: {

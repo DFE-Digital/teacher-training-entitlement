@@ -44,6 +44,9 @@ Rails.application.routes.draw do
 
   get "/session/:step", to: "session_wizard#show", as: "session_wizard_show"
   patch "/session/:step", to: "session_wizard#update", as: "session_wizard_update"
+  devise_scope :user do
+    post "/one-login", to: "omniauth#one_login", as: "one_login_redirect"
+  end
 
   get "/cookies", to: "pages#show", page: "cookies"
   get "/accessibility-statement", to: "pages#show", page: "accessibility"
