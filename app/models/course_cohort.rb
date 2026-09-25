@@ -81,7 +81,9 @@ class CourseCohort < ApplicationRecord
   end
 
   def contract(lead_provider:)
-    course_cohort_providers.detect { |ccp| ccp.lead_provider == lead_provider }
+    course_cohort_providers
+      .includes(:lead_provider)
+      .detect { |ccp| ccp.lead_provider == lead_provider }
   end
 
 private
