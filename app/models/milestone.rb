@@ -60,8 +60,7 @@ class Milestone < ApplicationRecord
   def declaration_sort_order
     [
       acceptance_window_start_offset || Float::INFINITY,
-      DECLARATION_TYPES.index(declaration_type) || Float::INFINITY,
-      id || 0,
+      DECLARATION_TYPES.index(declaration_type),
     ]
   end
 
