@@ -18,11 +18,12 @@ namespace :admin do
     end
   end
 
+  resource :dashboards, only: %i[show]
+
   resources :features, only: %i[index show update]
   resources :settings, only: %i[index]
   resources :admins, only: %i[index new create destroy]
   resources :super_admins, only: %i[update]
-  resources :dashboards, only: %i[index show], controller: "dashboards", path: "dashboards", param: "name"
   resources :registration_closed, only: %i[index], path: "registration-closed"
   resources :glossary, only: %i[index]
 
