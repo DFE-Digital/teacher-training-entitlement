@@ -18,42 +18,11 @@ namespace :admin do
     end
   end
 
-  resource :dashboards, only: %i[show]
+  resource :dashboard, only: %i[show]
 
-  resources :features, only: %i[index show update]
-  resources :settings, only: %i[index]
-  resources :admins, only: %i[index new create destroy]
-  resources :super_admins, only: %i[update]
-  resources :registration_closed, only: %i[index], path: "registration-closed"
-  resources :glossary, only: %i[index]
-
-  get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
-  get "course-builder/:step", to: "course_builder#show", as: :course_builder
-  post "course-builder/:step", to: "course_builder#create", as: nil
-
-  resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
-    collection do
-      post "create_custom_data"
-    end
-  end
-
-  namespace :registration_closed, path: "registration-closed" do
-    resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
-      member do
-        get "unsubscribe"
-        post "unsubscribe"
-      end
-      collection do
-        get "all_users"
-        get "senco"
-      end
-    end
-    resources :closed_registration_users, path: "closed-registration-users" do
-      member do
-        get "destroy"
-        delete "destroy"
-      end
-    end
+  resources :cohorts do
+    resources :schedules, except: :index
+    resources :courses, controller: "course_cohorts", only: %i[new create]
   end
 
   resources :applications, only: %i[index show] do
@@ -101,9 +70,8 @@ namespace :admin do
     end
   end
 
-  resources :cohorts do
-    resources :schedules, except: :index
-    resources :courses, controller: "course_cohorts", only: %i[new create]
+  resources :lead_providers, only: %i[index show edit update], path: "providers" do
+    concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
   end
 
   resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
@@ -154,15 +122,48 @@ namespace :admin do
     end
   end
 
+  resources :features, only: %i[index show update]
+  resources :settings, only: %i[index]
+  resources :admins, only: %i[index new create destroy]
+  resources :super_admins, only: %i[update]
+  resources :registration_closed, only: %i[index], path: "registration-closed"
+  resources :glossary, only: %i[index]
+
+  get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
+  get "course-builder/:step", to: "course_builder#show", as: :course_builder
+  post "course-builder/:step", to: "course_builder#create", as: nil
+
+  resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
+    collection do
+      post "create_custom_data"
+    end
+  end
+
+  namespace :registration_closed, path: "registration-closed" do
+    resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
+      member do
+        get "unsubscribe"
+        post "unsubscribe"
+      end
+      collection do
+        get "all_users"
+        get "senco"
+      end
+    end
+    resources :closed_registration_users, path: "closed-registration-users" do
+      member do
+        get "destroy"
+        delete "destroy"
+      end
+    end
+  end
+
   resources :courses, only: %i[index edit update] do
     concerns :cohortable, index: "courses#index"
     resources :cohorts, controller: "course_cohorts", only: %i[show]
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 
-  resources :lead_providers, only: %i[index show edit update], path: "providers" do
-    concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
-  end
   resources :admins, only: %i[index]
 
   resources :bulk_operations, only: %i[index], path: "bulk-changes"
