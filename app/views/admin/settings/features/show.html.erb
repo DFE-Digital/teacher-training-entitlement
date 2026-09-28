@@ -1,7 +1,7 @@
 <% content_for :before_content do %>
   <%= render GovukComponent::BackLinkComponent.new(
     text: "Back",
-    href: admin_features_path
+    href: admin_settings_features_path
   ) %>
 <% end %>
 
@@ -24,7 +24,7 @@
     </div>
 
     <div class="govuk-!-margin-top-8">
-      <%= form_with url: admin_feature_path(@feature), method: :patch, local: true do |f| %>
+      <%= form_with url: admin_settings_feature_path(@feature), method: :patch, local: true do |f| %>
         <%= f.govuk_text_field :feature_flag_name,
                                label: { text: 'Confirm the feature flag name to change the state', tag: 'h2', size: 'm', class: 'govuk-!-margin-bottom-2' },
                                hint: { text: 'Write the feature name exactly as it appears, including any capitalisation.' } %>

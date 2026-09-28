@@ -110,8 +110,12 @@ namespace :admin do
     end
   end
 
-  resources :features, only: %i[index show update]
   resources :settings, only: %i[index]
+
+  namespace :settings do
+    resources :features, only: %i[index show update]
+  end
+
   resources :admins, only: %i[index new create destroy]
   resources :super_admins, only: %i[update]
   resources :registration_closed, only: %i[index], path: "registration-closed"

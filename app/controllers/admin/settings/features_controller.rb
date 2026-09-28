@@ -1,4 +1,4 @@
-class Admin::FeaturesController < AdminController
+class Admin::Settings::FeaturesController < AdminController
   before_action :require_super_admin
 
   def index
@@ -8,7 +8,7 @@ class Admin::FeaturesController < AdminController
   def show
     @feature = params[:id]
     unless Feature::FEATURE_FLAG_KEYS.include?(@feature)
-      redirect_back fallback_location: admin_features_path
+      redirect_back fallback_location: admin_settings_features_path
     end
   end
 
@@ -25,6 +25,6 @@ class Admin::FeaturesController < AdminController
     else
       flash[:error] = "There was an error updating the feature flag."
     end
-    redirect_to admin_feature_path(@feature)
+    redirect_to admin_settings_feature_path(@feature)
   end
 end
