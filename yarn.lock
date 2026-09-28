@@ -1382,10 +1382,10 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-accessible-autocomplete@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/accessible-autocomplete/-/accessible-autocomplete-3.0.1.tgz"
-  integrity sha512-xMshgc2LT5addvvfCTGzIkRrvhbOFeylFSnSMfS/PdjvvvElZkakCwxO3/yJYBWyi1hi3tZloqOJQ5kqqJtH4g==
+accessible-autocomplete@^3.0.1, accessible-autocomplete@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/accessible-autocomplete/-/accessible-autocomplete-3.0.2.tgz#1d6cdd4917ca83083c6af840f9f71b13b516231a"
+  integrity sha512-po7fS9YyTFFZjzaenYKtV4JUcb6xh2eFttTsspg5NIX5epQCbderffjW8evYOTuDh+FgJyYPwL9B7qTkhND3gA==
 
 acorn@^8.15.0, acorn@^8.16.0:
   version "8.16.0"
