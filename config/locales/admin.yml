@@ -6,29 +6,29 @@ en:
         recruitment_target: Recruitment target
         teacher_funding: Teacher funding
 
-    admins:
-      new:
-        title: Add a new admin
-      index:
-        super_admins:
-          summary_text: What's the difference between super admins and regular admins?
-          text_html: |
-            Regular admins are capable of logging into the admin interface to view the dashboard, users, applications, along with triggering syncs of unsynced data.
-            <br>
-            <br>
-            Super Admins also have the ability to add and remove other admins, create new super admins, and manage feature flags.
-        admin_type:
-          super_admin: Super Admin
-          admin: Admin
-        buttons:
-          delete: Delete
-          elevate: Make Super Admin
-    super_admins:
-      update:
-        success: Super admin permissions granted to %{email}
-        failure: Failed to grant super admin permissions to %{email}, please
-          contact technical support if this problem persists.
     settings:
+      admins:
+        new:
+          title: Add a new admin
+        index:
+          super_admins:
+            summary_text: What's the difference between super admins and regular admins?
+            text_html: |
+              Regular admins are capable of logging into the admin interface to view the dashboard, users, applications, along with triggering syncs of unsynced data.
+              <br>
+              <br>
+              Super Admins also have the ability to add and remove other admins, create new super admins, and manage feature flags.
+          admin_type:
+            super_admin: Super Admin
+            admin: Admin
+          buttons:
+            delete: Delete
+            elevate: Make Super Admin
+      super_admins:
+        update:
+          success: Super admin permissions granted to %{email}
+          failure: Failed to grant super admin permissions to %{email}, please
+            contact technical support if this problem persists.
       features:
         show:
           registration_open_html: |
@@ -44,18 +44,12 @@ en:
             <p class="govuk-body">When this feature is turned off, submitting a declaration does not require a delivery partner, but will still accept a declaration with a delivery partner.</p>
           maintenance_banner_html: '<p class="govuk-body">When this feature is
             turned on, a banner will be displayed at the top of every page to inform
-            users that the service is down for maintenance.</p>
-
-            '
+            users that the service is down for maintenance.</p> '
           dfe_analytics_enabled_html: '<p class="govuk-body">When this feature
-            is turned on, events will be sent to DfE Analytics.</p>
-
-            '
+            is turned on, events will be sent to DfE Analytics.</p> '
           lead_provider_transferred_declarations_visibility_html: '<p class="govuk-body">When
-            this feature is turned on, lead providers can see transferred declarations.</p>
-
-            '
-    course_payment_overview_component:
+            this feature is turned on, lead providers can see transferred declarations.</p> '
+      course_payment_overview_component:
       funded: Funded
       self_funded: Self-funded
       started: Started

@@ -1,10 +1,10 @@
 require "rails_helper"
 
-RSpec.describe Admin::AdminsController, type: :request do
+RSpec.describe Admin::Settings::AdminsController, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   describe("GET /admin/admins") do
-    subject { get(admin_admins_path) && response }
+    subject { get(admin_settings_admins_path) && response }
 
     context "when signed in as a super admin" do
       before { sign_in_as_admin(super_admin: true) }

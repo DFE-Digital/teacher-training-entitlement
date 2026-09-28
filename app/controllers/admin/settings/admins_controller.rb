@@ -1,4 +1,4 @@
-class Admin::AdminsController < AdminController
+class Admin::Settings::AdminsController < AdminController
   before_action :require_super_admin
 
   def index
@@ -15,7 +15,7 @@ class Admin::AdminsController < AdminController
 
     if @admin.save
       flash[:success] = "Admin permissions granted to #{@admin.email}"
-      redirect_to admin_admins_path
+      redirect_to admin_settings_admins_path
     else
       render :new
     end
@@ -26,12 +26,12 @@ class Admin::AdminsController < AdminController
 
     if @admin == current_admin || @admin.super_admin?
       flash[:error] = "You cannot remove admin permissions from yourself or another super admin."
-      redirect_back fallback_location: admin_admins_path
+      redirect_back fallback_location: admin_settings_admins_path
     elsif @admin.destroy!
-      redirect_to admin_admins_path, flash: { success: "#{@admin.full_name} deleted" }
+      redirect_to admin_settings_admins_path, flash: { success: "#{@admin.full_name} deleted" }
     else
       flash[:error] = "Failed to remove admin permissions from #{@admin.email}, please contact technical support if this problem persists."
-      redirect_back fallback_location: admin_admins_path
+      redirect_back fallback_location: admin_settings_admins_path
     end
   end
 

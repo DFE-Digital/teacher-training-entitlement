@@ -1,4 +1,4 @@
-class Admin::SuperAdminsController < AdminController
+class Admin::Settings::SuperAdminsController < AdminController
   before_action :require_super_admin
 
   def update
@@ -9,6 +9,6 @@ class Admin::SuperAdminsController < AdminController
       flash[:error] = t(".failure", email: @admin.email)
     end
 
-    redirect_back(fallback_location: admin_admins_path)
+    redirect_back(fallback_location: admin_settings_admins_path)
   end
 end
