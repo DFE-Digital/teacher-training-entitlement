@@ -2066,7 +2066,7 @@ govuk-country-and-territory-autocomplete@^2.0.0:
     core-js "3.2.1"
     openregister-picker-engine "^1.2.1"
 
-govuk-frontend@^6.4.0, govuk-frontend@^6.5.1:
+govuk-frontend@^6.5.0, govuk-frontend@^6.5.1:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/govuk-frontend/-/govuk-frontend-6.5.1.tgz#fbd75bc07e5f550419c604310f98201741b2b4b6"
   integrity sha512-myC7pDU9d7NqHa/oiDKe7k/ojCPMY4LjHpJkDncgQ3MgWeGUkySpz/gfdjRVvGaER6GNoi0kDGSgSXMa1he0xg==
