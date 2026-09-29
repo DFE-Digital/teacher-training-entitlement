@@ -117,6 +117,11 @@ namespace :admin do
     resources :features, only: %i[index show update]
     resources :admins, only: %i[index new create destroy]
     resources :super_admins, only: %i[update]
+    resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
+      collection do
+        post "create_custom_data"
+      end
+    end
   end
 
   resources :registration_closed, only: %i[index], path: "registration-closed"
@@ -124,12 +129,6 @@ namespace :admin do
   get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
   get "course-builder/:step", to: "course_builder#show", as: :course_builder
   post "course-builder/:step", to: "course_builder#create", as: nil
-
-  resources :api_test_scenarios, only: %i[index create], path: "api-test-scenarios" do
-    collection do
-      post "create_custom_data"
-    end
-  end
 
   namespace :registration_closed, path: "registration-closed" do
     resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
@@ -157,7 +156,6 @@ namespace :admin do
   end
 
   resources :bulk_operations, only: %i[index], path: "bulk-changes"
-
   namespace :bulk_operations, path: "bulk-changes" do
     resources :revert_applications_to_pending, controller: "revert_applications_to_pending", only: %i[index create show] do
       post "run", on: :member

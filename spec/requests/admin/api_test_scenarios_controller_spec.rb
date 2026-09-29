@@ -12,7 +12,7 @@ RSpec.describe Admin::APITestScenariosController, type: :request do
 
   describe "/admin/api-test-scenarios" do
     subject do
-      get admin_api_test_scenarios_path
+      get admin_settings_api_test_scenarios_path
       response
     end
 
@@ -23,21 +23,21 @@ RSpec.describe Admin::APITestScenariosController, type: :request do
     let(:lead_provider) { create(:lead_provider) }
 
     subject do
-      post admin_api_test_scenarios_path, params: { lead_provider_id: lead_provider.id }
+      post admin_settings_api_test_scenarios_path, params: { lead_provider_id: lead_provider.id }
       response
     end
 
-    it { is_expected.to redirect_to admin_api_test_scenarios_path }
+    it { is_expected.to redirect_to admin_settings_api_test_scenarios_path }
   end
 
   describe "create custom data" do
     let(:lead_provider) { create(:lead_provider) }
 
     subject do
-      post create_custom_data_admin_api_test_scenarios_path, params: { lead_provider_id: lead_provider.id }
+      post create_custom_data_admin_settings_api_test_scenarios_path, params: { lead_provider_id: lead_provider.id }
       response
     end
 
-    it { is_expected.to redirect_to admin_api_test_scenarios_path }
+    it { is_expected.to redirect_to admin_settings_api_test_scenarios_path }
   end
 end

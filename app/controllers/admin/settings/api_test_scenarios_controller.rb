@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Admin::APITestScenariosController < AdminController
+class Admin::Settings::APITestScenariosController < AdminController
   before_action :require_super_admin
   before_action :check_environment
 
@@ -27,7 +27,7 @@ class Admin::APITestScenariosController < AdminController
       flash[:error] = "Failed to seed data"
     end
 
-    redirect_to admin_api_test_scenarios_path
+    redirect_to admin_settings_api_test_scenarios_path
   end
 
   def create_custom_data
@@ -38,7 +38,7 @@ class Admin::APITestScenariosController < AdminController
       nb_cohort: params[:nb_cohort] || 6,
       nb_app_per_state: params[:nb_app_per_state] || 20,
     )
-    redirect_to admin_api_test_scenarios_path
+    redirect_to admin_settings_api_test_scenarios_path
   end
 
 private

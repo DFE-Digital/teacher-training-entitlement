@@ -55,7 +55,7 @@ module NavigationStructures
       if Rails.env.in?(%w[development review sandbox])
         nodes << Node.new(
           name: "API Test Scenarios",
-          href: admin_api_test_scenarios_path,
+          href: admin_settings_api_test_scenarios_path,
         )
       end
 
