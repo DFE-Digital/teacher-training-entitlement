@@ -27,18 +27,6 @@ namespace :admin do
 
   resources :applications, only: %i[index show] do
     concerns :cohortable, index: "applications#index"
-    collection do
-      resources :reviews, controller: "applications/reviews", as: "application_reviews", only: %i[index show] do
-        resource :review_status, controller: "applications/review_statuses", only: %i[edit update]
-        member do
-          namespace :applications, path: nil do
-            namespace :reviews, path: nil do
-              resource :history, controller: "/admin/applications/history", only: %i[show]
-            end
-          end
-        end
-      end
-    end
     member do
       resources :declarations, controller: "applications/declarations", as: "application_declarations", only: %i[index]
       namespace :applications, path: nil do
