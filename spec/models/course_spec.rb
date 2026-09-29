@@ -3,6 +3,17 @@ require "rails_helper"
 RSpec.describe Course do
   subject { build(:course) }
 
+  describe "relationships" do
+    it { is_expected.to have_many(:milestones) }
+    it { is_expected.to have_many(:course_cohorts) }
+    it { is_expected.to have_many(:course_cohort_providers).through(:course_cohorts) }
+    it { is_expected.to have_many(:cohorts).through(:course_cohorts) }
+    it { is_expected.to have_many(:applications).through(:course_cohorts) }
+    it { is_expected.to have_many(:contract_years) }
+    it { is_expected.to have_many(:lead_provider_profiles) }
+    it { is_expected.to have_many(:lead_providers).through(:lead_provider_profiles) }
+  end
+
   describe "validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:identifier).with_message("Identifier already exists, enter a unique one") }
