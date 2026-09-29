@@ -4,6 +4,7 @@ module Admin
   module CourseBuilder
     class Wizard
       include DfE::Wizard
+      include Rails.application.routes.url_helpers
 
       STEPS = {
         course_details: Steps::CourseDetails,
@@ -42,7 +43,7 @@ module Admin
       def route_strategy
         DfE::Wizard::RouteStrategy::DynamicRoutes.new(
           state_store:,
-          path_builder: ->(step_id, _state_store, _helpers, _options) { "/admin/course-builder/#{step_id.to_s.dasherize}" },
+          path_builder: ->(step_id, _state_store, _helpers, _options) { admin_settings_courses_builder_path(step_id.to_s.dasherize) },
         )
       end
 

@@ -24,6 +24,12 @@ namespace :admin do
     resources :courses, controller: "course_cohorts", only: %i[new create]
   end
 
+  resources :courses, only: %i[index edit update] do
+    concerns :cohortable, index: "courses#index"
+    resources :cohorts, controller: "course_cohorts", only: %i[show]
+    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
+  end
+
   resources :applications, only: %i[index show] do
     concerns :cohortable, index: "applications#index"
     member do
@@ -109,6 +115,11 @@ namespace :admin do
 
   resources :settings, only: %i[index]
   namespace :settings do
+    resources :courses, only: %i[index show] do
+      collection do
+        resources :builder, only: %i[show update], param: :step, controller: "courses/builder", as: :courses_builder
+      end
+    end
     resources :features, only: %i[index show update]
     resources :admins, only: %i[index new create destroy]
     resources :super_admins, only: %i[update]
@@ -159,15 +170,5 @@ namespace :admin do
         post "run", on: :member
       end
     end
-  end
-
-  get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
-  get "course-builder/:step", to: "course_builder#show", as: :course_builder
-  post "course-builder/:step", to: "course_builder#create", as: nil
-
-  resources :courses, only: %i[index edit update] do
-    concerns :cohortable, index: "courses#index"
-    resources :cohorts, controller: "course_cohorts", only: %i[show]
-    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
 end

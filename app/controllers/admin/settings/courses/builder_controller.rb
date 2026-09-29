@@ -1,15 +1,15 @@
-class Admin::CourseBuilderController < AdminController
+class Admin::Settings::Courses::BuilderController < AdminController
   before_action :ensure_super_admin
 
   def show
     render wizard.current_step_name
   end
 
-  def create
+  def update
     if wizard.save_current_step
       if adding_contract_financial_academic_year?
         save_contract_financial_academic_year!
-        redirect_to admin_course_builder_path(step: wizard.current_step_name.to_s.dasherize) and return
+        redirect_to admin_settings_courses_builder_path(step: wizard.current_step_name.to_s.dasherize) and return
       end
 
       redirect_to next_path and return unless wizard.current_step_name == :check_answers
@@ -32,7 +32,7 @@ private
       render wizard.current_step_name, status: :unprocessable_content
     else
       state_store.clear
-      redirect_to admin_settings_path, notice: "Course created successfully"
+      redirect_to admin_settings_courses_path, notice: "Course created successfully"
     end
   end
 
@@ -53,7 +53,7 @@ private
   def next_path
     return wizard.next_step_path if wizard.next_step
 
-    admin_course_builder_path(step: wizard.current_step_name.to_s.dasherize)
+    admin_settings_courses_builder_path(step: wizard.current_step_name.to_s.dasherize)
   end
 
   def adding_contract_financial_academic_year?

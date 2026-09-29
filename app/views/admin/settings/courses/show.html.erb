@@ -1,0 +1,106 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= govuk_back_link href: admin_settings_courses_path %>
+
+    <h1 class="govuk-heading-l"><%= @course.name %></h1>
+
+    <%=
+    govuk_summary_list do |summary_list|
+      summary_list.with_row do |row|
+        row.with_key(text: "Identifier")
+        row.with_value(text: @course.identifier)
+      end
+
+      summary_list.with_row do |row|
+        row.with_key(text: "Group")
+        row.with_value(text: @course.course_group)
+      end
+
+      summary_list.with_row do |row|
+        row.with_key(text: "Description")
+        row.with_value(text: @course.description)
+      end
+    end
+    %>
+
+    <h2 class="govuk-heading-m">Milestones</h2>
+
+    <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Declaration type")
+          row.with_cell(text: "Acceptance window start")
+          row.with_cell(text: "Acceptance window end")
+          row.with_cell(text: "Payment percentage")
+        end
+      end
+
+      table.with_body do |body|
+        @course.milestones.each do |milestone|
+          body.with_row do |row|
+            row.with_cell(text: milestone.declaration_type)
+            row.with_cell(text: milestone.acceptance_window_start_offset)
+            row.with_cell(text: milestone.acceptance_window_end_offset)
+            row.with_cell(text: milestone.payment_percentage ? number_to_percentage(milestone.payment_percentage * 100, precision: 2, strip_insignificant_zeros: true) : "-")
+          end
+        end
+      end
+    end
+    %>
+
+    <%= govuk_details(summary_text: "Provider course profiles", id: "provider-course-profiles") do
+      govuk_table do |table|
+        table.with_head do |head|
+          head.with_row do |row|
+            row.with_cell(text: "Lead provider")
+            row.with_cell(text: "Course URL")
+            row.with_cell(text: "Email")
+          end
+        end
+
+        table.with_body do |body|
+          @course.contract_years.where(academic_year: nil).each do |contract_year|
+            body.with_row do |row|
+              row.with_cell(text: contract_year.lead_provider.name)
+              row.with_cell do
+                if contract_year.course_url.present?
+                  govuk_link_to(contract_year.course_url, contract_year.course_url)
+                else
+                  "-"
+                end
+              end
+              row.with_cell(text: contract_year.email.presence || "-")
+            end
+          end
+        end
+      end
+    end %>
+
+    <h2 class="govuk-heading-m">Providers</h2>
+
+    <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "Academic year")
+          row.with_cell(text: "Lead provider")
+          row.with_cell(text: "Recruitment target")
+          row.with_cell(text: "Teacher funding")
+        end
+      end
+
+      table.with_body do |body|
+        @course.contract_years.each do |contract_year|
+          body.with_row do |row|
+            row.with_cell(text: contract_year.academic_year)
+            row.with_cell(text: contract_year.lead_provider.name)
+            row.with_cell(text: contract_year.recruitment_target)
+            row.with_cell(text: number_to_currency(contract_year.teacher_funding, unit: "£"))
+          end
+        end
+      end
+    end
+    %>
+  </div>
+</div>

@@ -37,8 +37,8 @@ module NavigationStructures
 
       nodes = [
         Node.new(
-          name: "Create course",
-          href: "/admin/course-builder",
+          name: "Manage courses",
+          href: admin_settings_courses_path,
         ),
         Node.new(
           name: "Feature flags",
