@@ -6,6 +6,7 @@ REMOTE="${REMOTE:-origin}"
 BASE_BRANCH="${BASE_BRANCH:-main}"
 ROLLUP_BRANCH="${ROLLUP_BRANCH:-dependabot-rollup}"
 DEPENDABOT_AUTHOR="${DEPENDABOT_AUTHOR:-app/dependabot}"
+REBUILD="${REBUILD:-false}"
 
 usage() {
   cat <<USAGE
@@ -13,18 +14,22 @@ Usage:
   bin/dependabot-rollup [rollup-branch]
 
 Creates a local branch from ${REMOTE}/${BASE_BRANCH} and merges all open
-Dependabot PRs into it.
+Dependabot PRs into it. If the rollup branch already exists, the script
+continues from the existing branch and skips Dependabot PRs that are already
+merged. Set REBUILD=true to recreate the rollup branch from scratch.
 
 Environment variables:
   REMOTE              Git remote to fetch from. Default: origin
   BASE_BRANCH         Branch to create the rollup from. Default: main
   ROLLUP_BRANCH       Rollup branch name. Default: dependabot-rollup
   DEPENDABOT_AUTHOR   PR author to list. Default: app/dependabot
+  REBUILD             Recreate rollup branch from base. Default: false
 
 Examples:
   bin/dependabot-rollup
   bin/dependabot-rollup dependabot-rollup-september
   BASE_BRANCH=develop bin/dependabot-rollup
+  REBUILD=true bin/dependabot-rollup
 USAGE
 }
 
@@ -50,8 +55,16 @@ fi
 echo "Fetching ${REMOTE}/${BASE_BRANCH}..."
 git fetch "$REMOTE" "$BASE_BRANCH"
 
-echo "Creating ${ROLLUP_BRANCH} from ${REMOTE}/${BASE_BRANCH}..."
-git switch -C "$ROLLUP_BRANCH" "${REMOTE}/${BASE_BRANCH}"
+if [[ "$REBUILD" == "true" ]]; then
+  echo "Recreating ${ROLLUP_BRANCH} from ${REMOTE}/${BASE_BRANCH}..."
+  git switch -C "$ROLLUP_BRANCH" "${REMOTE}/${BASE_BRANCH}"
+elif git show-ref --verify --quiet "refs/heads/${ROLLUP_BRANCH}"; then
+  echo "Continuing existing ${ROLLUP_BRANCH} branch..."
+  git switch "$ROLLUP_BRANCH"
+else
+  echo "Creating ${ROLLUP_BRANCH} from ${REMOTE}/${BASE_BRANCH}..."
+  git switch -C "$ROLLUP_BRANCH" "${REMOTE}/${BASE_BRANCH}"
+fi
 
 dependabot_prs_file="$(mktemp)"
 trap 'rm -f "$dependabot_prs_file"' EXIT
@@ -79,6 +92,11 @@ while IFS=$'\t' read -r number title url; do
 
   git fetch "$REMOTE" "pull/${number}/head:${pr_ref}"
 
+  if git merge-base --is-ancestor "$pr_ref" HEAD; then
+    echo "Already merged; skipping #${number}."
+    continue
+  fi
+
   if ! git merge --no-edit --no-ff "$pr_ref"; then
     echo
     echo "Merge conflict while merging #${number}."
@@ -86,9 +104,10 @@ while IFS=$'\t' read -r number title url; do
     echo "  git add <resolved-files>"
     echo "  git merge --continue"
     echo
-    echo "After that, rerun this script to rebuild ${ROLLUP_BRANCH},"
-    echo "or manually merge the remaining Dependabot PRs listed by:"
-    echo "  gh pr list --state open --author ${DEPENDABOT_AUTHOR}"
+    echo "After that, rerun this script to continue merging the remaining PRs."
+    echo
+    echo "To rebuild ${ROLLUP_BRANCH} from scratch instead, run:"
+    echo "  REBUILD=true bin/dependabot-rollup ${ROLLUP_BRANCH}"
     exit 1
   fi
 done < "$dependabot_prs_file"

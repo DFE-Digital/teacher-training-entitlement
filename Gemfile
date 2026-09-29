@@ -14,7 +14,7 @@ gem "delayed_cron_job"
 gem "delayed_job"
 gem "delayed_job_active_record"
 gem "devise", "~> 5.0"
-gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.15.17"
+gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.16.0"
 gem "email_validator", require: "email_validator/strict"
 gem "flipper"
 gem "flipper-active_record"
@@ -110,4 +110,4 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 
-gem "dfe-wizard", "~> 1.0.0.beta", github: "DFE-Digital/dfe-wizard", require: "dfe/wizard"
+gem "dfe-wizard", "~> 1.0.0", github: "DFE-Digital/dfe-wizard", require: "dfe/wizard"

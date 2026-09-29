@@ -22,7 +22,7 @@ module Admin
       }.freeze
 
       def steps_processor
-        DfE::Wizard::StepsProcessor::Graph.draw(self) do |graph|
+        DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
           STEPS.each do |step_name, step_class|
             graph.add_node step_name, step_class
           end

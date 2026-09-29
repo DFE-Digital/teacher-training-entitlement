@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @import "./api_guidance/_masthead";
 
 // Fix service navigation layout - prevent nav wrapper from wrapping to new line
@@ -12,14 +14,14 @@
 }
 
 .api-guidance {
-  $orange: darken(#f47738, 20%);
+  $orange: color.adjust(#f47738, $lightness: -20%);
   $blue: #1d70b8;
   $dark-blue: #003078;
-  $pink: darken(#d53880, 10%);
+  $pink: color.adjust(#d53880, $lightness: -10%);
   $text: #0b0c0c;
   $green: #00703c;
   $light-grey: #f3f2f1;
-  $light-pink: lighten(#f499be, 20%);
+  $light-pink: color.adjust(#f499be, $lightness: 20%);
   $red: #d4351c;
   $dark-green: #365e07;
 
@@ -79,7 +81,7 @@
   code {
     padding: 2px 5px;
     font-family: monospace;
-    background-color: govuk-colour("light-grey");
+    background-color: govuk-colour("black", $variant: "tint-95");
     white-space : pre-wrap;
     font-size: 0.8em;
 
