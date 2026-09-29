@@ -116,5 +116,13 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
         expect(subject).not_to have_link("Defer/Withdraw")
       end
     end
+
+    context "when the application is rejected" do
+      let(:application_trait) { :rejected }
+
+      it do
+        expect(subject).to have_link("Revert to Pending")
+      end
+    end
   end
 end

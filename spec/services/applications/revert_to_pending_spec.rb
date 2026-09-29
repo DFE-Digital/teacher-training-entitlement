@@ -7,8 +7,6 @@ RSpec.describe Applications::RevertToPending, type: :model do
   subject(:instance) { described_class.new(application:, admin_user:) }
 
   describe "#valid?" do
-    it { is_expected.to validate_inclusion_of(:change_status_to_pending).in_array(%w[yes no]) }
-
     context "with status attribute" do
       subject { instance.tap(&:valid?).errors.messages[:status] }
 
@@ -20,6 +18,13 @@ RSpec.describe Applications::RevertToPending, type: :model do
         let(:application) { create(:application, :rejected) }
 
         it { is_expected.to be_empty }
+      end
+
+      context "with rejected application and no admin user" do
+        let(:admin_user) { nil }
+        let(:application) { create(:application, :rejected) }
+
+        it { is_expected.not_to be_empty }
       end
 
       context "with pending application" do
@@ -47,9 +52,7 @@ RSpec.describe Applications::RevertToPending, type: :model do
   end
 
   describe "#revert" do
-    subject(:instance) { described_class.new(application:, admin_user:, change_status_to_pending:) }
-
-    let(:change_status_to_pending) { "yes" }
+    subject(:instance) { described_class.new(application:, admin_user:) }
 
     context "when valid" do
       it "returns true" do
@@ -77,33 +80,25 @@ RSpec.describe Applications::RevertToPending, type: :model do
       end
     end
 
-    context "when status set to no" do
-      let :application do
-        create(:application, :eligible_for_funded_place).tap do |application|
-          create(:declaration, :voided, application:)
-        end
-      end
+    context "when the application is rejected and an admin user is present" do
+      let(:application) { create(:application, :rejected) }
 
-      let(:change_status_to_pending) { "no" }
-
-      it "returns true" do
-        expect(instance.revert).to be true
-      end
-
-      it "succeeds but does not change the attributes" do
+      it "updates status" do
         expect { instance.revert }
-          .to not_change { application.reload.status }
-              .and not_change(application, :funded_place)
+          .to change { application.reload.status }
+          .from(Application::REJECTED)
+          .to(Application::PENDING)
       end
+    end
 
-      it "succeeds but does not remove application_events" do
-        expect { instance.revert }
-          .to not_change(application.application_events, :count)
-      end
+    context "when the application is rejected and an admin user is not present" do
+      subject(:instance) { described_class.new(application:) }
 
-      it "succeeds but does not remove declarations" do
+      let(:application) { create(:application, :rejected) }
+
+      it "does not update status" do
         expect { instance.revert }
-          .to not_change(application.declarations, :count)
+          .not_to(change { application.reload.status })
       end
     end
 

@@ -13,6 +13,7 @@ namespace :api do
         put :resume
         put :withdraw
         put :change_schedule, path: "change-schedule"
+        put :revert_to_pending, path: "revert-to-pending"
         post :started, path: "declarations/started", controller: :application_declarations, as: :started_declaration
         post :completed, path: "declarations/completed", controller: :application_declarations, as: :completed_declaration
       end

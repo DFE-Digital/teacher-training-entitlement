@@ -1,30 +1,63 @@
 module Applications
   class RevertToPending
     include ActiveModel::Model
-    include ActiveModel::Attributes
+    include Validations::StatusTransitionValidation
 
-    attribute :change_status_to_pending
-    attribute :application
-    attribute :admin_user
-    delegate :status, to: :application
+    attr_reader :application, :admin_user
 
-    validates :change_status_to_pending, inclusion: { in: %w[yes no] }
-    validates :status, inclusion: { in: [Application::ACCEPTED, Application::REJECTED] }, if: :application
+    def initialize(application:, admin_user: nil)
+      @application = application
+      @application.admin_user = admin_user if admin_user && @application
+      @admin_user = admin_user
+    end
+
     validates :application, presence: true
-    validates :admin_user, presence: true
+    validate :application_revertable, if: -> { application }
+    validate :application_can_transition_to_pending, if: -> { application }
     validate :application_has_no_unremoveable_declarations, if: :application
 
+    def call = revert
+
+    def status
+      application&.status
+    end
+
     def revert
-      return true if change_status_to_pending == "no"
       return false if invalid?
 
-      application.admin_user = admin_user
-      application.transition_status!(Application::PENDING, reason: "reverted_to_pending", funded_place: nil)
+      application.transition_status!(Application::PENDING, reason:, funded_place: nil)
+      application.reload
 
       true
     end
 
   private
+
+    def reason
+      if @admin_user
+        "Admin #{@admin_user.email} reverted application"
+      else
+        "Reverted by lead provider API call"
+      end
+    end
+
+    def application_revertable
+      return if application.accepted_status?
+      return if admin_user && application.rejected_status?
+
+      errors.add(:status, :inclusion)
+    end
+
+    def application_can_transition_to_pending
+      return if errors.any?
+
+      validate_status_transition(
+        application:,
+        to: Application::PENDING,
+        error: :invalid_status_transition,
+        attribute: :status,
+      )
+    end
 
     def application_has_no_unremoveable_declarations
       if application.declarations.where.not(state: Declaration::REVERTABLE_STATES).any?
