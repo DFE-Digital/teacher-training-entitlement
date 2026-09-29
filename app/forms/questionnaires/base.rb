@@ -112,7 +112,7 @@ module Questionnaires
       @institution ||= ::Institution.find(wizard.store["institution_id"])
     end
 
-    def build_option_struct(value:, label: nil, hint: nil, link_errors: false, divider: false, revealed_question: nil)
+    def build_option_struct(value:, label: nil, hint: nil, link_errors: false, divider: false, revealed_question: nil, disabled: nil)
       QuestionTypes::RadioOption.new(
         value:,
         label:,
@@ -120,6 +120,7 @@ module Questionnaires
         link_errors:,
         divider:,
         revealed_question:,
+        disabled:,
       )
     end
   end
