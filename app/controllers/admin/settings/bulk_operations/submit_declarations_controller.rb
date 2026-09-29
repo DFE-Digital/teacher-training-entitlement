@@ -1,4 +1,4 @@
-module Admin::BulkOperations
+module Admin::Settings::BulkOperations
   class SubmitDeclarationsController < BaseController
   private
 
@@ -7,7 +7,7 @@ module Admin::BulkOperations
     end
 
     def bulk_operation_index
-      :admin_bulk_operations_submit_declarations
+      :admin_settings_bulk_operations_submit_declarations
     end
   end
 end

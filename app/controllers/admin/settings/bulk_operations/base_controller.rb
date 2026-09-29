@@ -1,4 +1,4 @@
-module Admin::BulkOperations
+module Admin::Settings::BulkOperations
   class BaseController < AdminController
     before_action :find_bulk_operation, only: %i[run show]
     before_action :set_bulk_operations, :initialize_bulk_operation, only: %i[index create]

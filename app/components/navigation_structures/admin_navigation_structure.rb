@@ -52,7 +52,7 @@ module NavigationStructures
       ]
 
       # Only show API Test Scenarios in development, review, and sandbox environments
-      if Rails.env.in?(%w[development review sandbox])
+      if Rails.env.in?(%w[development review])
         nodes << Node.new(
           name: "API Test Scenarios",
           href: admin_settings_api_test_scenarios_path,
@@ -71,7 +71,7 @@ module NavigationStructures
         ),
         Node.new(
           name: "Bulk changes",
-          href: admin_bulk_operations_path,
+          href: admin_settings_bulk_operations_path,
         ),
         Node.new(
           name: "Action logs",
@@ -120,11 +120,6 @@ module NavigationStructures
           href: admin_users_path,
         ) => [],
         Node.new(
-          name: "Settings",
-          href: admin_settings_path,
-          prefix: service_settings_prefixes,
-        ) => service_settings_nodes,
-        Node.new(
           name: "Workplaces",
           href: admin_schools_path,
         ) => [],
@@ -132,6 +127,11 @@ module NavigationStructures
           name: "Glossary",
           href: admin_glossary_index_path,
         ) => [],
+        Node.new(
+          name: "Settings",
+          href: admin_settings_path,
+          prefix: service_settings_prefixes,
+        ) => service_settings_nodes,
       }
     end
   end

@@ -1,6 +1,6 @@
 <h1 class="govuk-heading-l">Backfill declaration delivery partners</h1>
 
-<%= form_for @bulk_operation, url: admin_bulk_operations_backfill_declaration_delivery_partners_path, method: :post, multipart: true do |f| %>
+<%= form_for @bulk_operation, url: admin_settings_bulk_operations_backfill_declaration_delivery_partners_path, method: :post, multipart: true do |f| %>
   <%= f.govuk_error_summary %>
 
   <p class="govuk-body">
@@ -52,13 +52,13 @@
       table.with_body do |body|
         @bulk_operations.each do |bulk_operation|
           body.with_row do |row|
-            row.with_cell(text: govuk_link_to(bulk_operation.file.filename, admin_bulk_operations_backfill_declaration_delivery_partner_path(bulk_operation)))
+            row.with_cell(text: govuk_link_to(bulk_operation.file.filename, admin_settings_bulk_operations_backfill_declaration_delivery_partner_path(bulk_operation)))
             row.with_cell(text: bulk_operation.row_count)
             row.with_cell(text: bulk_operation.created_at.to_formatted_s(:govuk_short))
             row.with_cell(text: bulk_operation.started_at&.to_formatted_s(:govuk_short))
             row.with_cell do
               unless bulk_operation.started?
-                form_with url: run_admin_bulk_operations_backfill_declaration_delivery_partner_path(bulk_operation) do |f|
+                form_with url: run_admin_settings_bulk_operations_backfill_declaration_delivery_partner_path(bulk_operation) do |f|
                   tag.div(class: "govuk-button-group bulk-operation-action-button-group") do
                     f.govuk_submit "Backfill declaration delivery partners", class: "bulk-operation-action-button"
                   end
