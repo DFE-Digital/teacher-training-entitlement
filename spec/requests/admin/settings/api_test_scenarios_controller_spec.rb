@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::APITestScenariosController, type: :request do
+RSpec.describe Admin::Settings::APITestScenariosController, type: :request do
   include Helpers::NPQSeparationAdminLogin
 
   before do
@@ -10,7 +10,7 @@ RSpec.describe Admin::APITestScenariosController, type: :request do
 
   let(:environment) { "sandbox" }
 
-  describe "/admin/api-test-scenarios" do
+  describe "/admin/settings/api-test-scenarios" do
     subject do
       get admin_settings_api_test_scenarios_path
       response
