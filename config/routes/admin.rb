@@ -112,7 +112,6 @@ namespace :admin do
   resources :glossary, only: %i[index]
 
   resources :settings, only: %i[index]
-
   namespace :settings do
     resources :features, only: %i[index show update]
     resources :admins, only: %i[index new create destroy]
@@ -122,32 +121,30 @@ namespace :admin do
         post "create_custom_data"
       end
     end
+    resources :registration_closed, only: %i[index], path: "registration-closed"
+    namespace :registration_closed, path: "registration-closed" do
+      resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
+        member do
+          get "unsubscribe"
+          post "unsubscribe"
+        end
+        collection do
+          get "all_users"
+          get "senco"
+        end
+      end
+      resources :closed_registration_users, path: "closed-registration-users" do
+        member do
+          get "destroy"
+          delete "destroy"
+        end
+      end
+    end
   end
-
-  resources :registration_closed, only: %i[index], path: "registration-closed"
 
   get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
   get "course-builder/:step", to: "course_builder#show", as: :course_builder
   post "course-builder/:step", to: "course_builder#create", as: nil
-
-  namespace :registration_closed, path: "registration-closed" do
-    resources :reopening_email_subscriptions, path: "reopening-email-subscriptions" do
-      member do
-        get "unsubscribe"
-        post "unsubscribe"
-      end
-      collection do
-        get "all_users"
-        get "senco"
-      end
-    end
-    resources :closed_registration_users, path: "closed-registration-users" do
-      member do
-        get "destroy"
-        delete "destroy"
-      end
-    end
-  end
 
   resources :courses, only: %i[index edit update] do
     concerns :cohortable, index: "courses#index"

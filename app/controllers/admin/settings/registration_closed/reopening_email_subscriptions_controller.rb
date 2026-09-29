@@ -1,4 +1,4 @@
-class Admin::RegistrationClosed::ReopeningEmailSubscriptionsController < AdminController
+class Admin::Settings::RegistrationClosed::ReopeningEmailSubscriptionsController < AdminController
   before_action :require_super_admin
 
   def index
@@ -20,7 +20,7 @@ class Admin::RegistrationClosed::ReopeningEmailSubscriptionsController < AdminCo
       flash[:success] = "Email '#{@user.email}' unsubscribed"
       @user.update!(email_updates_status: nil)
 
-      redirect_to admin_registration_closed_reopening_email_subscriptions_path
+      redirect_to admin_settings_registration_closed_reopening_email_subscriptions_path
     end
   end
 end

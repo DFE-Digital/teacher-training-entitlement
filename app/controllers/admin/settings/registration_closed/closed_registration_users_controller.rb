@@ -1,4 +1,4 @@
-class Admin::RegistrationClosed::ClosedRegistrationUsersController < AdminController
+class Admin::Settings::RegistrationClosed::ClosedRegistrationUsersController < AdminController
   def index
     @users = ClosedRegistrationUser.all
     @user = ClosedRegistrationUser.new
@@ -12,7 +12,7 @@ class Admin::RegistrationClosed::ClosedRegistrationUsersController < AdminContro
     @user = ClosedRegistrationUser.new(params[:closed_registration_user].permit(:email))
     if @user.save
       flash[:success] = "Added #{@user.email}"
-      redirect_to admin_registration_closed_closed_registration_users_path
+      redirect_to admin_settings_registration_closed_closed_registration_users_path
     else
       flash[:error] = "Cannot add #{@user.email}"
       render :index
@@ -26,7 +26,7 @@ class Admin::RegistrationClosed::ClosedRegistrationUsersController < AdminContro
       Flipper.disable_actor(Feature::REGISTRATION_OPEN, user) if user
       if @user.delete
         flash[:success] = "Access removed for #{@user.email}"
-        redirect_to admin_registration_closed_closed_registration_users_path
+        redirect_to admin_settings_registration_closed_closed_registration_users_path
       else
         flash[:error] = "Cannot remove access for #{@user.email}"
         render :index
