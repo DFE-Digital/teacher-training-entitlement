@@ -140,6 +140,11 @@ namespace :admin do
         end
       end
     end
+    resources :actions_log, path: "actions-log", controller: "actions_log", only: %i[index show] do
+      collection do
+        post :search
+      end
+    end
   end
 
   get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
@@ -168,12 +173,6 @@ namespace :admin do
 
     resources :backfill_declaration_delivery_partners, controller: "backfill_declaration_delivery_partners", only: %i[index create show] do
       post "run", on: :member
-    end
-  end
-
-  resources :actions_log, path: "actions-log", controller: "actions_log", only: %i[index show] do
-    collection do
-      post :search
     end
   end
 end

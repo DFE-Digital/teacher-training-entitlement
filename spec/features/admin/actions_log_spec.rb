@@ -33,16 +33,16 @@ RSpec.feature "actions log", :no_js, :versioning, type: :feature do
   end
 
   scenario "Admin actions log page" do
-    visit admin_actions_log_index_path
+    visit admin_settings_actions_log_index_path
     all_admin_users = AdminUser.order(:full_name).map(&:name_with_email)
     expect(page).to have_select("Admin user", options: ["- select admin user -"] + all_admin_users)
   end
 
   scenario "viewing an admin user's actions" do
-    visit admin_actions_log_index_path
+    visit admin_settings_actions_log_index_path
     click_on "Continue"
 
-    expect(page).to have_current_path(admin_actions_log_index_path)
+    expect(page).to have_current_path(admin_settings_actions_log_index_path)
 
     select "#{admin.full_name} (#{admin.email})", from: "Admin user"
     click_on "Continue"
@@ -57,7 +57,7 @@ RSpec.feature "actions log", :no_js, :versioning, type: :feature do
   end
 
   scenario "when there are no actions for an admin user" do
-    visit admin_actions_log_path(sign_in_as_admin.id)
+    visit admin_settings_actions_log_path(sign_in_as_admin.id)
     expect(page).to have_content "No applications have been updated by this admin user."
   end
 end
