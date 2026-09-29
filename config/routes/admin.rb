@@ -42,6 +42,7 @@ namespace :admin do
           resources :resume, only: %i[index create]
           resources :withdraw, only: %i[index create]
           resources :reject, only: %i[index create]
+          resources :revert_to_pending, only: %i[index create]
           resources :accept, only: %i[index create]
           resources :started_declarations, only: %i[index create]
           resources :completed_declarations, only: %i[index create]

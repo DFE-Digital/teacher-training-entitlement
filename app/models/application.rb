@@ -87,6 +87,7 @@ class Application < ApplicationRecord
   # pending   -> accepted  ; lead provider accepts application
   # pending   -> rejected  ; lead provider rejects application
   # accepted  -> started   ; lead provider sends started declaration
+  # accepted  -> pending   ; lead provider resets application to pending
   # started   -> completed ; lead provider sends completed declaration
   # started   -> deferred  ; lead provider defers application
   # started   -> withdraw  ; lead provider withdraws application
@@ -99,7 +100,7 @@ class Application < ApplicationRecord
   STATUS_TRANSITIONS = {
     nil => [PENDING].freeze,
     PENDING => [ACCEPTED, REJECTED].freeze,
-    ACCEPTED => [STARTED].freeze,
+    ACCEPTED => [STARTED, PENDING].freeze,
     STARTED => [COMPLETED, DEFERRED, WITHDRAWN, ACCEPTED].freeze,
     DEFERRED => [STARTED, WITHDRAWN].freeze,
     REJECTED => [PENDING].freeze,

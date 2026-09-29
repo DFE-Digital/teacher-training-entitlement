@@ -434,6 +434,71 @@ RSpec.describe "Application endpoints", type: :request do
     end
   end
 
+  describe "PUT /api/v1/applications/:ecf_id/revert-to-pending" do
+    let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
+    let(:course_cohort) { create(:course_cohort) }
+    let(:expected_data_id) { resource.ecf_id }
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Applications::RevertToPending }
+    let(:action) { :call }
+    let(:service_args) { { application: resource } }
+
+    def path(id = nil)
+      revert_to_pending_api_v1_application_path(ecf_id: id)
+    end
+
+    it_behaves_like "an API update endpoint"
+
+    context "when the application can be reverted" do
+      before do
+        api_put(revert_to_pending_api_v1_application_path(ecf_id: resource.ecf_id))
+      end
+
+      it_behaves_like "a successful api call"
+
+      it "reverts the application to pending" do
+        expect(resource.reload.status).to eq(Application::PENDING)
+      end
+
+      it "creates a pending event" do
+        pending_event = resource.application_events.find { |event| event.event == Application::PENDING }
+        expect(pending_event).not_to be_nil
+        expect(pending_event.metadata&.symbolize_keys).to eq(reason: "Reverted by lead provider API call")
+        expect(pending_event.lead_provider).to eq(current_lead_provider)
+      end
+    end
+
+    context "when the application is not accepted" do
+      let(:resource) { create(:application, :pending, course_cohort:, lead_provider: current_lead_provider) }
+      let(:error_message) { I18n.t("activemodel.errors.models.applications/revert_to_pending.attributes.status.inclusion") }
+      let(:expected_response) do
+        {
+          "errors" => [
+            { "title" => "status", "detail" => error_message },
+          ],
+        }
+      end
+
+      before do
+        api_put(revert_to_pending_api_v1_application_path(ecf_id: resource.ecf_id))
+      end
+
+      it_behaves_like "an unprocessable content api call"
+    end
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:path) { revert_to_pending_api_v1_application_path(ecf_id: application.ecf_id) }
+
+      it "the old provider cannot revert the application" do
+        expect { api_put(path, lead_provider: old_lead_provider) }
+          .not_to(change { application.reload.status })
+
+        expect(response).to be_forbidden
+      end
+    end
+  end
+
   describe "POST /api/v1/applications/:ecf_id/declarations/started" do
     let(:resource) { create(:application, :accepted, course_cohort:, lead_provider: current_lead_provider) }
     let(:declaration_date) { started_milestone.acceptance_window_start_date_for(training_starts_at: resource.training_starts_at) + 1.hour }
