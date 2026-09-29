@@ -37,7 +37,7 @@ RSpec.feature "admin management", type: :feature do
   end
 
   def and_i_should_be_on_the_add_new_admin_page
-    expect(page).to have_current_path(new_admin_settings_admins_path)
+    expect(page).to have_current_path(new_admin_settings_admin_path)
   end
 
   def then_the_latest_admin_has_the_correct_details(full_name:, email:)
