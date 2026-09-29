@@ -31,7 +31,7 @@ module Questionnaires
     end
 
     def options
-      providers.each_with_index.map do |provider, index|
+      enabled = enabled_providers.each_with_index.map do |provider, index|
         build_option_struct(
           value: provider.id,
           label: provider.name,
@@ -39,6 +39,17 @@ module Questionnaires
           link_errors: index.zero?,
         )
       end
+
+      disabled = disabled_providers.map do |provider|
+        build_option_struct(
+          value: provider.id,
+          label: provider.name,
+          hint: "This provider is not delivering the course start date you've selected - please go back if you wish to train with this provider",
+          disabled: true,
+        )
+      end
+
+      (enabled + disabled).sort_by(&:label)
     end
 
     def after_save
@@ -47,12 +58,16 @@ module Questionnaires
 
   private
 
-    def providers
-      @providers ||= course_cohort.lead_providers.alphabetical
+    def enabled_providers
+      @enabled_providers ||= course_cohort.lead_providers
+    end
+
+    def disabled_providers
+      @disabled_providers ||= course.lead_providers - enabled_providers
     end
 
     def lead_provider
-      providers.find_by(id: lead_provider_id)
+      enabled_providers.find_by(id: lead_provider_id)
     end
 
     delegate :course,
