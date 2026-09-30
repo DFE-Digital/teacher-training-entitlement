@@ -49,7 +49,7 @@
               <div class="govuk-button-group">
                 <%= button_to(
                   provider_data[:seeded] ? "Re-seed data" : "Seed data",
-                  admin_api_test_scenarios_path,
+                  admin_settings_api_test_scenarios_path,
                   method: :post,
                   params: { lead_provider_id: provider_data[:provider].id },
                   class: "govuk-button govuk-button--secondary",
@@ -57,7 +57,7 @@
                 ) %>
               <%= button_to(
                 "create extra data",
-                create_custom_data_admin_api_test_scenarios_path,
+                create_custom_data_admin_settings_api_test_scenarios_path,
                 method: :post,
                 params: { lead_provider_id: provider_data[:provider].id },
                 class: "govuk-button govuk-button--secondary",
