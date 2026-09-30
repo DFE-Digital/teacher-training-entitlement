@@ -111,8 +111,6 @@ private
 
   def registration_period_path(registration_period)
     if @resource
-      return public_send(@base_path, @resource, registration_period) if respond_to?(@base_path)
-
       public_send(:"cohort_#{@base_path}", @resource, registration_period)
     else
       public_send(:"cohort_#{@base_path}", registration_period)
@@ -132,8 +130,6 @@ private
 
   def resource_path
     if @resource
-      return unless respond_to?(@base_path)
-
       public_send(@base_path, @resource)
     else
       public_send(@base_path)
