@@ -11,7 +11,7 @@ RSpec.describe "admin/applications/change_statuses/new", type: :view do
   end
 
   let(:application) { create(:application, :started) }
-  let(:form) { Admin::Applications::ChangeStatusForm.new(id: application.id) }
+  let(:form) { Admin::Applications::ChangeStatusForm.new(ecf_id: application.ecf_id) }
   let(:form_path) { admin_applications_change_status_path(application) }
 
   it { is_expected.to have_css("h1", text: "Change status") }

@@ -22,7 +22,7 @@
           row.with_cell(text: version.item.ecf_id, html_attributes: { class: "nowrap" })
           row.with_cell(text: version.created_at.to_fs(:govuk_short), html_attributes: { class: "nowrap" })
           row.with_cell(text: Hash(version.object_changes).keys.excluding("updated_at").join(", "))
-          row.with_cell(text: govuk_link_to("History", admin_applications_history_path(version.item.id)))
+            row.with_cell(text: govuk_link_to("History", admin_applications_history_path(version.item)))
         end
       end
     end

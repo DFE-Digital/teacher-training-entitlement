@@ -4,14 +4,6 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   include Helpers::AdminLogin
   include Helpers::MailHelper
 
-  RSpec::Matchers.define :have_application do |expected|
-    match do |_actual|
-      within("td:nth-child(1)") do
-        expect(page).to have_text(expected.user.full_name)
-      end
-    end
-  end
-
   let(:applications_per_page) { Pagy::DEFAULT[:limit] }
   let(:applications_in_order) { Application.order(created_at: :asc, id: :asc) }
 
@@ -29,7 +21,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     applications_in_order.limit(applications_per_page).each do |application|
       expect(page).to have_text(application.user.full_name)
       expect(page).to have_text(application.employer_name_to_display)
-      expect(page).to have_link("View", href: admin_application_path(application.id))
+      expect(page).to have_link("View", href: admin_application_path(application))
     end
 
     expect(page).to have_css(".govuk-pagination__item--current", text: 1)
@@ -44,40 +36,32 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_css(".govuk-pagination__item--current", text: "2")
   end
 
-  scenario "searching applications" do
-    visit(admin_applications_path)
-
-    fill_in "Find an application", with: applications_in_order[0].ecf_id
-    click_on "Search"
-
-    expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(applications_in_order[0])
-  end
-
   scenario "filtering applications by application status" do
     application = applications_in_order.last
     application.update_column(:status, Application::DEFERRED)
 
     visit(admin_applications_path)
     select "Deferred", from: "Application status"
-    click_on "Search"
+    click_button "Apply filters"
 
     expect(page).to have_select("Application status", selected: "Deferred")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(application)
+    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_link("View", href: admin_application_path(application))
   end
 
-  scenario "filtering applications by Application status" do
+  scenario "filtering applications by accepted application status" do
     application = applications_in_order.last
     application.update! status: Application::ACCEPTED, funded_place: false
 
     visit(admin_applications_path)
     select "Accepted", from: "Application status"
-    click_on "Search"
+    click_button "Apply filters"
 
     expect(page).to have_select("Application status", selected: "Accepted")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(application)
+    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_link("View", href: admin_application_path(application))
   end
 
   scenario "filtering applications by year of application" do
@@ -90,7 +74,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     click_on cohort.description
 
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(application)
+    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_link("View", href: admin_application_path(application))
   end
 
   scenario "filtering applications by work setting" do
@@ -99,43 +84,15 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     visit(admin_applications_path)
     select "A school", from: "Work setting"
-    click_on "Search"
+    click_button "Apply filters"
 
     expect(page).to have_select("Work setting", selected: "A school")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(application)
-  end
-
-  scenario "simultaneously filtering and searching applications" do
-    application = applications_in_order.last
-
-    search_with_results = application.user.full_name
-    approval_status_with_results = "Pending"
-    search_without_results = "no-match"
-    approval_status_without_results = "Accepted"
-
-    visit(admin_applications_path)
-
-    fill_in "Find an application", with: search_with_results
-    select approval_status_without_results, from: "Application status"
-    click_on "Search"
-    expect(page).to have_text("No applications match the search and filters")
-
-    fill_in "Find an application", with: search_without_results
-    select approval_status_with_results, from: "Application status"
-    click_on "Search"
-    expect(page).to have_text("No applications match the search and filters")
-
-    fill_in "Find an application", with: search_with_results
-    select approval_status_with_results, from: "Application status"
-    click_on "Search"
-    expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(application)
+    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_link("View", href: admin_application_path(application))
   end
 
   scenario "viewing application details" do
-    visit(admin_applications_path)
-
     application = applications_in_order.first
     application.update!(
       eligible_for_funding: true,
@@ -144,9 +101,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       funding_eligiblity_status_code: 123,
     )
 
-    within("tr", text: application.user.full_name) do
-      click_link("View")
-    end
+    visit(admin_application_path(application))
 
     summary_lists = all(".govuk-summary-list")
 
@@ -190,9 +145,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "viewing participant details" do
-    visit(admin_applications_path)
-
     user = applications_in_order.first.user
+    visit(admin_application_path(applications_in_order.first))
 
     expect(page).to have_text(user.full_name)
   end
@@ -359,13 +313,9 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "adding and editing notes" do
-    visit(admin_applications_path)
-
     application = applications_in_order.first
 
-    within("tr", text: application.user.full_name) do
-      click_link("View")
-    end
+    visit(admin_application_path(application))
 
     within(".govuk-summary-list__row", text: "Notes") do
       click_on "Add note"

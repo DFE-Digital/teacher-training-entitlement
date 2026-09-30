@@ -6,6 +6,8 @@ class AdminService::UsersSearch
   end
 
   def call
+    return User.all if q.blank?
+
     chain = default_scope
 
     if q.present?

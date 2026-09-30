@@ -26,7 +26,7 @@ module Admin
       end
 
       def set_application
-        @application = Application.find(params[:id])
+        @application = Application.find_by!(ecf_id: params[:id])
       end
     end
   end

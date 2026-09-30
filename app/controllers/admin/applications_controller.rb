@@ -2,7 +2,7 @@ module Admin
   class ApplicationsController < AdminController
     include Cohortable
 
-    before_action :set_application
+    before_action :set_application, only: :show
 
     def index
       applications = Application
@@ -11,7 +11,6 @@ module Admin
                                  application_lead_providers: %i[lead_provider],
                                  course_cohort: %i[course cohort])
                        .merge(filter_scope)
-                       .merge(search_scope)
                        .order("applications.created_at ASC")
       @pagy, @applications = pagy(applications)
     end
@@ -21,13 +20,11 @@ module Admin
   private
 
     def set_application
-      return if params[:id].nil?
-
       @application = Application
                        .includes(:institution, :user,
                                  application_lead_providers: { lead_provider: :course_cohorts },
                                  course_cohort: %i[course cohort])
-                       .find(params[:id])
+                       .find_by!(ecf_id: params[:id])
     end
 
     def filter_params
@@ -40,8 +37,7 @@ module Admin
 
     def filter_scope
       filters = filter_params.except(:cohort_id)
-      scope = Application
-                .where(filters.compact_blank)
+      scope = Application.where(filters.compact_blank)
 
       if filter_params[:cohort_id].present?
         scope.merge!(
@@ -62,10 +58,6 @@ module Admin
       end
 
       scope
-    end
-
-    def search_scope
-      ::Applications::Search.search(params[:q])
     end
   end
 end

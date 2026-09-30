@@ -10,16 +10,7 @@
 
 <div class="admin-search-box">
   <%= form_with method: :get do |f| %>
-    <%= f.govuk_text_field(
-        :q,
-        value: params[:q],
-        label: { text: "Find an application", size: "m" },
-        hint: { text: "Search by name, application ID or declaration ID", size: "s" },
-      )
-    %>
-
     <div class="govuk-grid-row">
-
       <div class="govuk-grid-column-one-half">
         <%=
           f.govuk_collection_select(
@@ -32,20 +23,22 @@
           )
         %>
       </div>
+
+      <div class="govuk-grid-column-one-half">
+        <%=
+          f.govuk_collection_select(
+            :work_setting,
+            Application.distinct(:work_setting).pluck(:work_setting).compact.sort,
+            :to_s,
+            :humanize,
+            options: { selected: params[:work_setting], include_blank: "All" },
+            label: { text: "Work setting", size: "s" }
+          )
+        %>
+      </div>
     </div>
 
-    <%=
-      f.govuk_collection_select(
-        :work_setting,
-        Application.distinct(:work_setting).pluck(:work_setting).compact.sort,
-        :to_s,
-        :humanize,
-        options: { selected: params[:work_setting], include_blank: "All" },
-        label: { text: "Work setting", size: "s" }
-      )
-    %>
-
-    <%= f.govuk_submit "Search" %>
+    <%= f.govuk_submit "Apply filters" %>
   <% end %>
 </div>
 
@@ -72,7 +65,7 @@
             application_status_badge(application.status)
           end
           row.with_cell(text: application&.lead_provider&.name)
-          row.with_cell(text: govuk_link_to("View", admin_application_path(application.id)))
+          row.with_cell(text: govuk_link_to("View", admin_application_path(application)))
         end
       end
     end
@@ -80,7 +73,7 @@
 %>
 
 <% if @applications.none? %>
-  <p class="govuk-body">No applications match the search and filters.</p>
+  <p class="govuk-body">No applications match the filters.</p>
 <% end %>
 
 <%= govuk_pagination(pagy: @pagy) %>

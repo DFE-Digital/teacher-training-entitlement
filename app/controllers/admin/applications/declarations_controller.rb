@@ -2,7 +2,7 @@ module Admin
   module Applications
     class DeclarationsController < AdminController
       def index
-        @application = Application.find(params[:id])
+        @application = Application.find_by!(ecf_id: params[:id])
 
         @declarations = @application.declarations
                           .includes(:lead_provider,

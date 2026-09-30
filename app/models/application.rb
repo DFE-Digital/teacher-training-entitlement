@@ -133,6 +133,10 @@ class Application < ApplicationRecord
     "Decision made" => "decision_made",
   }, suffix: true
 
+  def to_param
+    ecf_id
+  end
+
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
   validate :eligible_for_funded_place
