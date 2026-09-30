@@ -1,9 +1,9 @@
-class Admin::ActionsLogController < AdminController
+class Admin::Settings::ActionsLogController < AdminController
   def search
     if params[:admin_id].blank?
-      redirect_to admin_actions_log_index_path
+      redirect_to admin_settings_actions_log_index_path
     else
-      redirect_to admin_actions_log_path(params[:admin_id])
+      redirect_to admin_settings_actions_log_path(params[:admin_id])
     end
   end
 

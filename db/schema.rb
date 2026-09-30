@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_131136) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_30_103849) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -145,7 +145,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_131136) do
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
     t.string "teacher_catchment_iso_country_code", limit: 3
-    t.date "training_starts_at"
     t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -153,6 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_131136) do
     t.boolean "works_in_childcare"
     t.boolean "works_in_nursery"
     t.boolean "works_in_school"
+    t.date "training_starts_at"
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
@@ -323,17 +323,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_131136) do
     t.index ["delivery_partner_id", "lead_provider_id", "course_cohort_id"], name: "idx_delivery_partnerships_on_partner_provider_course_cohort", unique: true
     t.index ["delivery_partner_id"], name: "index_delivery_partnerships_on_delivery_partner_id"
     t.index ["lead_provider_id"], name: "index_delivery_partnerships_on_lead_provider_id"
-  end
-
-  create_table "eligibility_list_entries", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "identifier", null: false
-    t.string "identifier_type", null: false
-    t.string "type", null: false
-    t.datetime "updated_at", null: false
-    t.index ["identifier"], name: "index_eligibility_list_entries_on_identifier"
-    t.index ["type", "identifier", "identifier_type"], name: "idx_on_type_identifier_identifier_type_3a4f491990", unique: true
-    t.index ["type"], name: "index_eligibility_list_entries_on_type"
   end
 
   create_table "financial_change_logs", force: :cascade do |t|

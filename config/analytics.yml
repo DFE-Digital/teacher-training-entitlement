@@ -231,13 +231,6 @@ shared:
     - archived_at
     - significantly_updated_at
     - preferred_name
-  :eligibility_list_entries:
-    - id
-    - type
-    - identifier
-    - identifier_type
-    - created_at
-    - updated_at
   :milestones:
     - id
     - declaration_type

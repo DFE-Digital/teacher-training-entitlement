@@ -75,7 +75,7 @@ module NavigationStructures
         ),
         Node.new(
           name: "Action logs",
-          href: admin_actions_log_index_path,
+          href: admin_settings_actions_log_index_path,
         ),
       ]
     end
