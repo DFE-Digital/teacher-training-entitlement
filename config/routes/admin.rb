@@ -21,7 +21,6 @@ namespace :admin do
   resource :dashboard, only: %i[show]
 
   resources :cohorts do
-    resources :schedules, except: :index
     resources :courses, controller: "course_cohorts", only: %i[new create]
   end
 
@@ -110,16 +109,17 @@ namespace :admin do
     end
   end
 
+  resources :glossary, only: %i[index]
+
   resources :settings, only: %i[index]
 
   namespace :settings do
     resources :features, only: %i[index show update]
+    resources :admins, only: %i[index new create destroy]
+    resources :super_admins, only: %i[update]
   end
 
-  resources :admins, only: %i[index new create destroy]
-  resources :super_admins, only: %i[update]
   resources :registration_closed, only: %i[index], path: "registration-closed"
-  resources :glossary, only: %i[index]
 
   get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
   get "course-builder/:step", to: "course_builder#show", as: :course_builder
@@ -155,8 +155,6 @@ namespace :admin do
     resources :cohorts, controller: "course_cohorts", only: %i[show]
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
   end
-
-  resources :admins, only: %i[index]
 
   resources :bulk_operations, only: %i[index], path: "bulk-changes"
 

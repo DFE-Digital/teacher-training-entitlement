@@ -47,7 +47,7 @@ module NavigationStructures
 
         Node.new(
           name: "Admins",
-          href: admin_admins_path,
+          href: admin_settings_admins_path,
         ),
       ]
 
