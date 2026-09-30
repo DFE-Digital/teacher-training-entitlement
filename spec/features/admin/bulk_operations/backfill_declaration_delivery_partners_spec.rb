@@ -26,12 +26,12 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
 
   context "when not logged in" do
     scenario "bulk operations index page is inaccessible" do
-      visit admin_bulk_operations_path
+      visit admin_settings_bulk_operations_path
       expect(page).to have_current_path(sign_in_path)
     end
 
     scenario "Backfill declaration delivery partners page is inaccessible" do
-      visit admin_bulk_operations_backfill_declaration_delivery_partners_path
+      visit admin_settings_bulk_operations_backfill_declaration_delivery_partners_path
       expect(page).to have_current_path(sign_in_path)
     end
   end
@@ -40,7 +40,7 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
     before { sign_in_as(admin) }
 
     scenario "Backfilling declaration delivery partners" do
-      visit admin_bulk_operations_backfill_declaration_delivery_partners_path
+      visit admin_settings_bulk_operations_backfill_declaration_delivery_partners_path
 
       expect(page).to have_content "No files have been uploaded"
 
@@ -56,7 +56,7 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
         expect(summary_list).to have_summary_item("Created by", "#{admin.full_name} (#{admin.email})")
       end
 
-      visit admin_bulk_operations_backfill_declaration_delivery_partners_path
+      visit admin_settings_bulk_operations_backfill_declaration_delivery_partners_path
       perform_enqueued_jobs do
         click_button "Backfill declaration delivery partners"
       end
@@ -76,7 +76,7 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
     end
 
     scenario "when the bulk operation has started but not finished" do
-      visit admin_bulk_operations_backfill_declaration_delivery_partners_path
+      visit admin_settings_bulk_operations_backfill_declaration_delivery_partners_path
       attach_file "file", file.path
       click_button "Upload file"
       click_button "Backfill declaration delivery partners"

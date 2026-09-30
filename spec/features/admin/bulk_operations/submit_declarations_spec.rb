@@ -13,7 +13,7 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
 
   context "when not logged in" do
     scenario "Submit declarations page is inaccessible" do
-      visit admin_bulk_operations_submit_declarations_path
+      visit admin_settings_bulk_operations_submit_declarations_path
       expect(page).to have_current_path(sign_in_path)
     end
   end
@@ -40,7 +40,7 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
         expect(summary_list).to have_summary_item("Created by", "#{admin.full_name} (#{admin.email})")
       end
 
-      visit admin_bulk_operations_submit_declarations_path
+      visit admin_settings_bulk_operations_submit_declarations_path
       perform_enqueued_jobs do
         click_button "Submit declarations"
       end
@@ -67,7 +67,7 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
     end
 
     scenario "when the bulk operation has started but not finished" do
-      visit admin_bulk_operations_submit_declarations_path
+      visit admin_settings_bulk_operations_submit_declarations_path
       attach_file "file", declarations_file.path
       click_button "Upload file"
       click_button "Submit declarations"
@@ -77,7 +77,7 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
     end
 
     scenario "file validation" do
-      visit admin_bulk_operations_submit_declarations_path
+      visit admin_settings_bulk_operations_submit_declarations_path
       attach_file "file", empty_file.path
       click_button "Upload"
       expect(page).to have_content "is empty"
@@ -114,7 +114,7 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
       mixed_file = tempfile_with_bom(mixed_csv_content)
       mixed_filename = File.basename(mixed_file.path)
 
-      visit admin_bulk_operations_submit_declarations_path
+      visit admin_settings_bulk_operations_submit_declarations_path
       attach_file "file", mixed_file.path
       click_button "Upload file"
 

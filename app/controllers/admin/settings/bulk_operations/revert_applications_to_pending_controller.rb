@@ -1,4 +1,4 @@
-module Admin::BulkOperations
+module Admin::Settings::BulkOperations
   class RevertApplicationsToPendingController < BaseController
   private
 
@@ -7,7 +7,7 @@ module Admin::BulkOperations
     end
 
     def bulk_operation_index
-      :admin_bulk_operations_revert_applications_to_pending_index
+      :admin_settings_bulk_operations_revert_applications_to_pending_index
     end
   end
 end

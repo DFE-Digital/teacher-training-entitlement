@@ -141,6 +141,24 @@ namespace :admin do
         post :search
       end
     end
+    resources :bulk_operations, only: %i[index], path: "bulk-changes"
+    namespace :bulk_operations, path: "bulk-changes" do
+      resources :revert_applications_to_pending, controller: "revert_applications_to_pending", only: %i[index create show] do
+        post "run", on: :member
+      end
+
+      resources :reject_applications, controller: "reject_applications", only: %i[index create show] do
+        post "run", on: :member
+      end
+
+      resources :submit_declarations, controller: "submit_declarations", only: %i[index create show] do
+        post "run", on: :member
+      end
+
+      resources :backfill_declaration_delivery_partners, controller: "backfill_declaration_delivery_partners", only: %i[index create show] do
+        post "run", on: :member
+      end
+    end
   end
 
   get "course-builder", to: redirect("/admin/course-builder/course-details"), as: nil
@@ -151,24 +169,5 @@ namespace :admin do
     concerns :cohortable, index: "courses#index"
     resources :cohorts, controller: "course_cohorts", only: %i[show]
     resources :course_cohort_providers, path: "course-providers", only: %i[show update]
-  end
-
-  resources :bulk_operations, only: %i[index], path: "bulk-changes"
-  namespace :bulk_operations, path: "bulk-changes" do
-    resources :revert_applications_to_pending, controller: "revert_applications_to_pending", only: %i[index create show] do
-      post "run", on: :member
-    end
-
-    resources :reject_applications, controller: "reject_applications", only: %i[index create show] do
-      post "run", on: :member
-    end
-
-    resources :submit_declarations, controller: "submit_declarations", only: %i[index create show] do
-      post "run", on: :member
-    end
-
-    resources :backfill_declaration_delivery_partners, controller: "backfill_declaration_delivery_partners", only: %i[index create show] do
-      post "run", on: :member
-    end
   end
 end

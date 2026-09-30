@@ -14,7 +14,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
 
   context "when not logged in" do
     scenario "Reject applications page is inaccessible" do
-      visit admin_bulk_operations_reject_applications_path
+      visit admin_settings_bulk_operations_reject_applications_path
       expect(page).to have_current_path(sign_in_path)
     end
   end
@@ -23,7 +23,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
     before { sign_in_as(admin) }
 
     scenario "reject applications" do
-      visit admin_bulk_operations_reject_applications_path
+      visit admin_settings_bulk_operations_reject_applications_path
 
       expect(page).to have_content "No files have been uploaded"
 
@@ -39,7 +39,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
         expect(summary_list).to have_summary_item("Created by", "#{admin.full_name} (#{admin.email})")
       end
 
-      visit admin_bulk_operations_reject_applications_path
+      visit admin_settings_bulk_operations_reject_applications_path
       perform_enqueued_jobs do
         click_button "Reject applications"
       end
@@ -59,7 +59,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
     end
 
     scenario "when the bulk operation has started but not finished" do
-      visit admin_bulk_operations_reject_applications_path
+      visit admin_settings_bulk_operations_reject_applications_path
       attach_file "file", applications_file.path
       click_button "Upload file"
       click_button "Reject applications"
@@ -69,7 +69,7 @@ RSpec.feature "reject applications", :rack_test_driver, type: :feature do
     end
 
     scenario "file validation" do
-      visit admin_bulk_operations_reject_applications_path
+      visit admin_settings_bulk_operations_reject_applications_path
       attach_file "file", empty_file.path
       click_button "Upload"
       expect(page).to have_content "is empty"

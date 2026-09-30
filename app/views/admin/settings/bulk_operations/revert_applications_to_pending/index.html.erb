@@ -1,10 +1,10 @@
-<h1 class="govuk-heading-l">Reject applications</h1>
+<h1 class="govuk-heading-l">Revert applications to pending</h1>
 
-<%= form_for @bulk_operation, url: admin_bulk_operations_reject_applications_path, method: :post, multipart: true do |f| %>
+<%= form_for @bulk_operation, url: admin_settings_bulk_operations_revert_applications_to_pending_index_path, method: :post, multipart: true do |f| %>
   <%= f.govuk_error_summary %>
 
   <p class="govuk-body">
-    Reject multiple applications by providing their application IDs.
+    Change the status of multiple applications to “pending” by providing their application IDs.
   </p>
 
   <p class="govuk-body">
@@ -51,15 +51,15 @@
       table.with_body do |body|
         @bulk_operations.each do |bulk_operation|
           body.with_row do |row|
-            row.with_cell(text: govuk_link_to(bulk_operation.file.filename, admin_bulk_operations_reject_application_path(bulk_operation)))
+            row.with_cell(text: govuk_link_to(bulk_operation.file.filename, admin_settings_bulk_operations_revert_applications_to_pending_path(bulk_operation)))
             row.with_cell(text: bulk_operation.row_count)
             row.with_cell(text: bulk_operation.created_at.to_formatted_s(:govuk_short))
             row.with_cell(text: bulk_operation.started_at&.to_formatted_s(:govuk_short))
             row.with_cell do
               unless bulk_operation.started?
-                form_with url: run_admin_bulk_operations_reject_application_path(bulk_operation) do |f|
+                form_with url: run_admin_settings_bulk_operations_revert_applications_to_pending_path(bulk_operation) do |f|
                   tag.div(class: "govuk-button-group bulk-operation-action-button-group") do
-                    f.govuk_submit "Reject applications", class: "bulk-operation-action-button"
+                    f.govuk_submit "Revert applications to pending", class: "bulk-operation-action-button"
                   end
                 end
               end

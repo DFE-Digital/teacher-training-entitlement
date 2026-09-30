@@ -15,7 +15,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
 
   context "when not logged in" do
     scenario "Revert applications page is inaccessible" do
-      visit admin_bulk_operations_revert_applications_to_pending_index_path
+      visit admin_settings_bulk_operations_revert_applications_to_pending_index_path
       expect(page).to have_current_path(sign_in_path)
     end
   end
@@ -24,7 +24,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
     before { sign_in_as(admin) }
 
     scenario "reverting applications to pending" do
-      visit admin_bulk_operations_revert_applications_to_pending_index_path
+      visit admin_settings_bulk_operations_revert_applications_to_pending_index_path
 
       expect(page).to have_content "No files have been uploaded"
 
@@ -40,7 +40,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
         expect(summary_list).to have_summary_item("Created by", "#{admin.full_name} (#{admin.email})")
       end
 
-      visit admin_bulk_operations_revert_applications_to_pending_index_path
+      visit admin_settings_bulk_operations_revert_applications_to_pending_index_path
       perform_enqueued_jobs do
         click_button "Revert applications to pending"
       end
@@ -60,7 +60,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
     end
 
     scenario "when the bulk operation has started but not finished" do
-      visit admin_bulk_operations_revert_applications_to_pending_index_path
+      visit admin_settings_bulk_operations_revert_applications_to_pending_index_path
       attach_file "file", applications_file.path
       click_button "Upload file"
       click_button "Revert applications to pending"
@@ -70,7 +70,7 @@ RSpec.feature "revert applications to pending", :rack_test_driver, type: :featur
     end
 
     scenario "file validation" do
-      visit admin_bulk_operations_revert_applications_to_pending_index_path
+      visit admin_settings_bulk_operations_revert_applications_to_pending_index_path
       attach_file "file", empty_file.path
       click_button "Upload"
       expect(page).to have_content "is empty"
