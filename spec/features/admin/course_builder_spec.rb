@@ -9,7 +9,7 @@ RSpec.feature "Building a course", type: :feature do
   before { sign_in_as_super_admin }
 
   scenario "creating a course with the default milestones and minimal provider data" do
-    visit admin_course_builder_path(step: "course-details")
+    visit admin_settings_courses_builder_path(step: "course-details")
 
     fill_in "Name", with: "Minimal course"
     select "Reception", from: "Course group"
@@ -35,7 +35,7 @@ RSpec.feature "Building a course", type: :feature do
       [Milestone::STARTED, BigDecimal("0.6")],
       [Milestone::COMPLETED, BigDecimal("0.4")],
     )
-    expect(page).to have_current_path(admin_settings_path)
+    expect(page).to have_current_path(admin_settings_courses_path)
     expect(page).to have_text("Course created successfully")
   end
 end
