@@ -42,7 +42,7 @@ module NavigationStructures
         ),
         Node.new(
           name: "Feature flags",
-          href: admin_features_path,
+          href: admin_settings_features_path,
         ),
 
         Node.new(

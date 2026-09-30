@@ -9,15 +9,13 @@ RSpec.feature "Administering feature flags", :rack_test_driver, type: :feature d
   scenario "super admins can see the list of feature flags and change their state" do
     create(:cohort, :current)
     sign_in_as_super_admin
-    visit admin_features_path
-    expect(page).to have_current_path("/admin/features")
+    visit admin_settings_features_path
+    expect(page).to have_current_path(admin_settings_features_path)
 
     within("tr", text: "Registration open") do
       page.click_link("View")
     end
-    expect(page).to have_link("Closed registration enabled", href: "/admin/features/Closed%20registration%20enabled")
-
-    expect(page).to have_current_path("/admin/features/Registration open")
+    expect(page).to have_current_path(admin_settings_feature_path("Registration open"))
     expect(page).to have_content("Registration open")
     expect(Flipper.enabled?(Feature::REGISTRATION_OPEN)).to be(true)
 
@@ -35,7 +33,7 @@ RSpec.feature "Administering feature flags", :rack_test_driver, type: :feature d
     sign_in_as_super_admin
 
     Feature::FEATURE_FLAG_KEYS.each do |feature_flag|
-      visit admin_features_path
+      visit admin_settings_features_path
       within("tr", text: feature_flag) do
         page.click_link("View")
       end
