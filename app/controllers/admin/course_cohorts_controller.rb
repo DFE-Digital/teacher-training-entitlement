@@ -1,17 +1,24 @@
 class Admin::CourseCohortsController < AdminController
+  include Admin::Cohortable
+
   before_action :ensure_super_admin, except: :show
-  before_action :course, only: :show
   before_action :course_cohort, only: :show
 
+  def index
+    @resources = Course
+                   .includes(:applications, course_cohorts: :cohort)
+                   .order(name: :asc)
+    @resources.merge!(Course.where(course_cohorts: { cohort: @current_cohort })) if @current_cohort
+    @resources.merge!(Course.where(course_cohorts: { academic_year: @current_academic_year })) if @current_academic_year
+  end
+
   def show
-    @cohort = course_cohort.cohort
-    @course_cohorts = @course.course_cohorts.includes(:cohort).joins(:cohort).order("cohorts.registration_starts_at DESC")
     @delivery_partner_counts = DeliveryPartnership
       .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
       .group(:lead_provider_id)
       .count
-    @contract_years = @course.contract_years.generic.includes(:lead_provider)
-    @contract_financials = @course.contract_years.year(@course_cohort.academic_year).includes(:lead_provider)
+    @contract_years = @course_cohort.course.contract_years.generic.includes(:lead_provider)
+    @contract_financials = @course_cohort.course.contract_years.year(@course_cohort.academic_year).includes(:lead_provider)
     if @contract_financials.blank?
       @contract_financials = @contract_years
     end
@@ -56,15 +63,13 @@ private
   end
 
   def course_cohort
-    @course_cohort ||= course.course_cohorts.includes(:course, :milestones, course_cohort_providers: :lead_provider).find_by!(cohort_id: params[:id])
-  end
+    attrs = {
+      course_id: params[:id],
+      cohort_id: params[:cohort_id],
+      academic_year: params[:academic_year],
+    }.compact
 
-  def cohort
-    @cohort ||= course_cohort.cohort
-  end
-
-  def course
-    @course ||= Course.find(params[:course_id])
+    @course_cohort ||= CourseCohort.includes(:course, :milestones, course_cohort_providers: :lead_provider).find_by!(attrs)
   end
 
   def ensure_super_admin
