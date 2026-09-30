@@ -6,7 +6,7 @@
 
 <% academic_year_keys = @wizard.current_step.academic_year_keys %>
 
-<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path do |f| %>
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path, method: :patch do |f| %>
   <%= f.govuk_error_summary %>
 
   <% @wizard.current_step.academic_years.each do |academic_year| %>
