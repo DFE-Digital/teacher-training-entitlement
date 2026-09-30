@@ -19,7 +19,7 @@ RSpec.feature "Happy journeys", type: :feature do
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
       expect(page).to have_text("Course start")
-      expect(page).to have_text("When do you want to start the course?")
+      expect(page).to have_text("When do you want to start a course?")
     end
   end
 end
