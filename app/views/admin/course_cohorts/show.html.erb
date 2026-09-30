@@ -1,4 +1,4 @@
-<%= govuk_back_link href: request.referrer.presence || admin_courses_path %>
+<%= govuk_back_link href: cohort_admin_course_cohorts_path(@course_cohort.cohort) %>
 
 <% content_for :side_navigation do %>
   <%= render RegistrationPeriodsComponent.new(

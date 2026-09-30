@@ -25,8 +25,8 @@ namespace :admin do
   resources :course_cohorts, path: "courses", only: %i[index] do
     concerns :cohortable, index: "course_cohorts#index", show: "course_cohorts#show"
     collection do
-      get "cohorts/:cohort_id", to: "course_cohorts#new", as: :new
-      get "cohorts/:cohort_id", to: "course_cohorts#create"
+      get "cohorts/:cohort_id/new", to: "course_cohorts#new", as: :new
+      post "cohorts/:cohort_id", to: "course_cohorts#create"
     end
     resource :course_cohort_providers, path: "providers", only: %i[show update], as: :provider
   end

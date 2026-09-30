@@ -1,7 +1,7 @@
 class Admin::CourseCohortsController < AdminController
   include Admin::Cohortable
 
-  before_action :ensure_super_admin, except: :show
+  before_action :ensure_super_admin, only: %i[new create]
   before_action :course_cohort, only: :show
 
   def index
@@ -43,7 +43,7 @@ class Admin::CourseCohortsController < AdminController
     if @form.valid? && service.valid?
       service.call
       flash[:success] = "Course added to registration period"
-      redirect_to admin_course_cohort_path(@course, service.course_cohort.cohort)
+      redirect_to cohort_admin_course_cohort_path(@course, service.course_cohort.cohort)
     else
       @form.add_service_errors(service.errors)
       render :new, status: :unprocessable_content
@@ -75,7 +75,7 @@ private
   def ensure_super_admin
     unless current_admin.super_admin?
       flash[:error] = "You must be a super admin"
-      redirect_to admin_courses_path
+      redirect_to admin_cohort_path(params[:cohort_id])
     end
   end
 end
