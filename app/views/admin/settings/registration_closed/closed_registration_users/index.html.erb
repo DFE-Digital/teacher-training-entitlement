@@ -3,7 +3,7 @@
     <h1 class="govuk-heading-l">Users who can access the service when it’s closed</h1>
     <div class="admin-search-box">
       <h2 class="govuk-heading-m">Add a user</h2>
-      <%= form_for [:admin, :registration_closed, @user] do |f| %>
+      <%= form_for [:admin, :settings, :registration_closed, @user] do |f| %>
         <%= f.govuk_error_summary %>
         <%= f.govuk_text_field :email, label: { text: "Email address" }, legend: { text: 'Provide course start date' } %>
         <%= f.govuk_submit "Add user" %>
@@ -42,7 +42,7 @@
             <% end %>
           </td>
           <td class="govuk-table__cell">
-            <%= govuk_link_to "Remove access", admin_registration_closed_closed_registration_user_path(user) %>
+            <%= govuk_link_to "Remove access", admin_settings_registration_closed_closed_registration_user_path(user) %>
           </td>
         </tr>
       <% end %>

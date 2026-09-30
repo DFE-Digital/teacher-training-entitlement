@@ -52,7 +52,7 @@ RSpec.feature "Service is closed", type: :feature do
 
       sign_in_as(super_admin)
 
-      visit "/admin/registration-closed/closed-registration-users"
+      visit "/admin/settings/registration-closed/closed-registration-users"
       fill_in("Email address", with: email)
       click_on("Add user")
 
@@ -87,7 +87,7 @@ RSpec.feature "Service is closed", type: :feature do
 
       sign_in_as(super_admin)
 
-      visit "/admin/registration-closed/closed-registration-users"
+      visit "/admin/settings/registration-closed/closed-registration-users"
       fill_in("Email", with: email)
       click_on("Add user")
 
@@ -102,7 +102,7 @@ RSpec.feature "Service is closed", type: :feature do
         expect(page).to have_text("When do you want to start the course?")
       end
 
-      visit "/admin/registration-closed/closed-registration-users"
+      visit "/admin/settings/registration-closed/closed-registration-users"
 
       click_link("Remove access")
       click_link("Remove access")
@@ -125,7 +125,7 @@ RSpec.feature "Service is closed", type: :feature do
 
       sign_in_as(super_admin)
 
-      visit "/admin/registration-closed/closed-registration-users"
+      visit "/admin/settings/registration-closed/closed-registration-users"
       fill_in("Email", with: other_email)
       click_on("Add user")
 

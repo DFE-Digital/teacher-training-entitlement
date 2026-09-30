@@ -67,7 +67,7 @@ module NavigationStructures
         *super_admin_service_settings_nodes,
         Node.new(
           name: "Registration closed",
-          href: admin_registration_closed_index_path,
+          href: admin_settings_registration_closed_index_path,
         ),
         Node.new(
           name: "Bulk changes",
