@@ -44,12 +44,12 @@ RSpec.describe RegistrationPeriodsComponent, type: :component do
     )
   end
 
-  let(:current_path) { cohort_admin_courses_path(reg_period_1) }
+  let(:current_path) { cohort_admin_course_cohorts_path(reg_period_1) }
 
   subject do
     described_class.new(
       current_path,
-      base_path: :admin_courses_path,
+      base_path: :admin_course_cohorts_path,
     )
   end
 
@@ -89,13 +89,13 @@ RSpec.describe RegistrationPeriodsComponent, type: :component do
     end
 
     it "links each cohort node to its own resource path" do
-      expect(page.find_link("NPD July 2026")[:href]).to eq(cohort_admin_courses_path(reg_period_1))
-      expect(page.find_link("NPD February 2026")[:href]).to eq(cohort_admin_courses_path(reg_period_2))
+      expect(page.find_link("NPD July 2026")[:href]).to eq(cohort_admin_course_cohorts_path(reg_period_1))
+      expect(page.find_link("NPD February 2026")[:href]).to eq(cohort_admin_course_cohorts_path(reg_period_2))
     end
 
     it "links to the academic-year-scoped route" do
-      expect(page.find_link("2026 / 2027")[:href]).to eq(academic_year_admin_courses_path(2026))
-      expect(page.find_link("2027 / 2028")[:href]).to eq(academic_year_admin_courses_path(2027))
+      expect(page.find_link("2026 / 2027")[:href]).to eq(academic_year_admin_course_cohorts_path(2026))
+      expect(page.find_link("2027 / 2028")[:href]).to eq(academic_year_admin_course_cohorts_path(2027))
     end
 
     describe "current-state highlighting" do
@@ -138,12 +138,12 @@ RSpec.describe RegistrationPeriodsComponent, type: :component do
   end
 
   context "when the controller silently defaults to the current academic year (no cohort_id/academic_year param, no redirect)" do
-    let(:current_path) { admin_courses_path }
+    let(:current_path) { admin_course_cohorts_path }
 
     subject do
       described_class.new(
         current_path,
-        base_path: :admin_courses_path,
+        base_path: :admin_course_cohorts_path,
         current_academic_year: 2027,
       )
     end
@@ -177,7 +177,7 @@ RSpec.describe RegistrationPeriodsComponent, type: :component do
     end
 
     context "when the current_path is not the bare resource path (an explicit cohort/year was navigated to)" do
-      let(:current_path) { cohort_admin_courses_path(reg_period_3) }
+      let(:current_path) { cohort_admin_course_cohorts_path(reg_period_3) }
 
       it "does not additionally mark the defaulted academic year as current" do
         render_inline(subject)
