@@ -12,17 +12,13 @@ class Admin::Settings::Courses::BuilderController < AdminController
         redirect_to admin_settings_courses_builder_path(step: wizard.current_step_name.to_s.dasherize) and return
       end
 
-      redirect_to next_path and return unless wizard.current_step_name == :check_answers
-
-      create_course!
+      redirect_to next_path
     else
       render wizard.current_step_name, status: :unprocessable_content
     end
   end
 
-private
-
-  def create_course!
+  def create
     service = Courses::Create.new(state_store:)
 
     service.call
@@ -35,6 +31,8 @@ private
       redirect_to admin_settings_courses_path, notice: "Course created successfully"
     end
   end
+
+private
 
   def state_store
     wizard.state_store
