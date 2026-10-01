@@ -5,8 +5,6 @@
 
   <%= render Admin::ApplicationNotesInputComponent.new(form: f) %>
 
-  <%= hidden_field_tag :in_review_application, @in_review_application %>
-
   <div class="govuk-button-group">
     <%= f.govuk_submit(@application.notes.present? ? "Edit note" : "Add note") %>
     <%= govuk_link_to "Cancel", @return_path %>
