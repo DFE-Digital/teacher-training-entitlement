@@ -170,3 +170,6 @@ variable "server_version" {
   type        = string
   default     = "17"
 }
+
+# pg_airbyte_enabled used in the postgres module
+variable "pg_airbyte_enabled" { default = false }
