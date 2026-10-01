@@ -6,7 +6,7 @@ module Questionnaires
       end
 
       def question_text
-        "When do you want to start the course?"
+        "When do you want to start a course?"
       end
     end
 
@@ -39,7 +39,7 @@ module Questionnaires
           value: course_cohort.ecf_id,
           label: course_cohort.cohort.name,
           link_errors: true,
-          hint: "You can also select this option if you've already started",
+          hint: "Please be aware that places are now limited.",
         )
       end
 

@@ -58,7 +58,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
     subject { form.options }
 
     let(:form) { described_class.new }
-    let(:expected_providers) { course_cohort.lead_providers.alphabetical }
+    let(:enabled_providers) { course_cohort.lead_providers.alphabetical.pluck(:id) }
 
     before do
       form.wizard = RegistrationWizard.new(
@@ -69,8 +69,31 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
       )
     end
 
-    it "returns all provider options" do
-      expect(subject.map(&:value)).to eq(expected_providers.pluck(:id))
+    context "when all course lead_providers deliver the course for this course_cohort" do
+      it "returns all provider options" do
+        expect(subject.map(&:value)).to eq(enabled_providers)
+      end
+    end
+
+    context "when some providers are not delivering the course for course_cohort" do
+      let(:disabled_providers) { course.lead_providers.pluck(:id) - enabled_providers }
+
+      before do
+        course_cohort.course_cohort_providers.first.destroy!
+        LeadProvider.find_each do |lead_provider|
+          create(:contract_year, :course_details, lead_provider:, course: course_cohort.course)
+        end
+        course_cohort.course.reload
+      end
+
+      it "returns all provider options" do
+        actual_enabled_providers = subject.reject(&:disabled).map(&:value)
+        actual_disabled_providers = subject.select(&:disabled).map(&:value)
+
+        expect(actual_enabled_providers).to eq(enabled_providers)
+        expect(actual_disabled_providers).to eq(disabled_providers)
+        expect(subject.map(&:value)).to match_array(enabled_providers + disabled_providers)
+      end
     end
   end
 end
