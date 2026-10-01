@@ -4,7 +4,7 @@ module Admin
       include ActiveModel::Model
       include ActiveModel::Attributes
 
-      attribute :id, :integer
+      attribute :ecf_id, :string
       attribute :status, :string
       attribute :reason, :string
 
@@ -50,7 +50,7 @@ module Admin
       end
 
       def application
-        @application ||= Application.find(id)
+        @application ||= Application.find_by!(ecf_id:)
       end
     end
   end

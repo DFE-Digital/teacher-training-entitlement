@@ -4,6 +4,7 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
   before do
     freeze_time
     PaperTrail.request.whodunnit = "Admin 1"
+    allow(DfE::Analytics).to receive(:enabled?).and_return(true)
     allow(StreamVersionsToBigQueryJob).to receive(:perform_later).and_call_original
   end
 

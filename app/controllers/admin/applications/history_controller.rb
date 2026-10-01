@@ -8,7 +8,7 @@ module Admin
     private
 
       def set_application
-        @application = Application.eager_load(:application_events).find(params[:id])
+        @application = Application.eager_load(:application_events).find_by!(ecf_id: params[:id])
       end
     end
   end

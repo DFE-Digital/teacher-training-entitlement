@@ -7,6 +7,8 @@ module PaperTrailExtensions
   private
 
     def send_to_dfe_analytics
+      return unless DfE::Analytics.enabled?
+
       StreamVersionsToBigQueryJob.perform_later(attributes["whodunnit"], analytics_data)
     end
 

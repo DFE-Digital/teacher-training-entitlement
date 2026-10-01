@@ -5,17 +5,8 @@ RSpec.describe Admin::UsersController, type: :request do
 
   before { sign_in_as_admin }
 
-  describe "/admin/users" do
-    subject do
-      get admin_users_path
-      response
-    end
-
-    it { is_expected.to have_http_status(:ok) }
-  end
-
   describe "/admin/users/{id}" do
-    let(:user_id) { create(:user).id }
+    let(:user_id) { create(:user).ecf_id }
 
     subject do
       get admin_user_path(user_id)
@@ -25,7 +16,7 @@ RSpec.describe Admin::UsersController, type: :request do
     it { is_expected.to have_http_status(:ok) }
 
     context "when the user cannot be found", :exceptions_app do
-      let(:user_id) { -1 }
+      let(:user_id) { SecureRandom.uuid }
 
       it { is_expected.to have_http_status(:not_found) }
     end

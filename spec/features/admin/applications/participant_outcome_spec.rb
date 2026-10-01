@@ -13,11 +13,7 @@ RSpec.feature "Viewing participant outcomes", type: :feature do
     completed_declaration = create(:declaration, :completed, application:)
     outcome               = create(:participant_outcome, :passed, declaration: completed_declaration)
 
-    visit(admin_applications_path)
-
-    within("tr", text: application.user.full_name) do
-      click_link("View")
-    end
+    visit(admin_application_path(application))
 
     click_link("Course outcome")
 
@@ -30,11 +26,7 @@ RSpec.feature "Viewing participant outcomes", type: :feature do
   scenario "viewing an application without outcomes" do
     application = create(:application)
 
-    visit(admin_applications_path)
-
-    within("tr", text: application.user.full_name) do
-      click_link("View")
-    end
+    visit(admin_application_path(application))
 
     click_link("Course outcome")
 

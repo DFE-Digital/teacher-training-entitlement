@@ -79,6 +79,10 @@ class User < ApplicationRecord
     archived_email.present?
   end
 
+  def to_param
+    ecf_id
+  end
+
   def set_closed_registration_feature_flag
     if Flipper.enabled?(Feature::CLOSED_REGISTRATION_ENABLED) && ClosedRegistrationUser.find_by(email:)
       Flipper.enable_actor(Feature::REGISTRATION_OPEN, self)

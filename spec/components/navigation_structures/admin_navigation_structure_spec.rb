@@ -10,13 +10,13 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
 
     expected_structure =
       {
+        "Search" => "/admin/search",
         "Registration periods" => "/admin/cohorts",
         "Courses" => "/admin/courses",
         "Applications" => "/admin/applications",
         "Providers" => "/admin/providers",
         "Finance" => "/admin/finance/statements",
         "Delivery partners" => "/admin/delivery-partners",
-        "Users" => "/admin/users",
         "Workplaces" => "/admin/schools",
         "Glossary" => "/admin/glossary",
         "Settings" => "/admin/settings",

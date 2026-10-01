@@ -91,6 +91,10 @@ module NavigationStructures
     def admin_nodes
       {
         Node.new(
+          name: "Search",
+          href: admin_search_path,
+        ) => [],
+        Node.new(
           name: "Registration periods",
           href: admin_cohorts_path,
         ) => [],
@@ -114,10 +118,6 @@ module NavigationStructures
         Node.new(
           name: "Delivery partners",
           href: admin_delivery_partners_path,
-        ) => [],
-        Node.new(
-          name: "Users",
-          href: admin_users_path,
         ) => [],
         Node.new(
           name: "Workplaces",

@@ -38,7 +38,7 @@ module Admin
       def status_params
         params.fetch(:form, {})
           .permit(:status, :reason)
-          .merge(id: params[:id])
+          .merge(ecf_id: params[:id])
       end
     end
   end

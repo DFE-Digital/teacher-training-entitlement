@@ -12,41 +12,6 @@ RSpec.feature "User administration", type: :feature do
     sign_in_as(create(:admin))
   end
 
-  feature "listing users" do
-    scenario "viewing the list of users" do
-      visit(admin_users_path)
-
-      expect(page).to have_css("h1", text: "Users")
-
-      User.all.find_each do |user|
-        expect(page).to have_link(user.full_name, href: admin_user_path(user))
-        expect(page).to have_css("td", text: user.trn)
-        expect(page).to have_css("td", text: user.created_at.to_date.to_formatted_s(:govuk))
-      end
-    end
-
-    scenario "navigating to the second page of users" do
-      create :user, :with_one_login_id # exceed pagination threshold
-
-      visit(admin_users_path)
-
-      click_on("Next")
-
-      expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-      expect(page).to have_css(".govuk-pagination__item--current", text: "2")
-    end
-
-    scenario "searching for a user" do
-      visit(admin_users_path)
-
-      fill_in("Find a user", with: user.email)
-      click_on("Search")
-
-      expect(page).to have_css("tbody tr", count: 1)
-      expect(page).to have_css("tbody tr", text: user.full_name)
-    end
-  end
-
   feature "viewing a user" do
     scenario "shows user details" do
       visit admin_user_path(user)

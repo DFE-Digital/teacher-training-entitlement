@@ -1,16 +1,6 @@
 class Admin::UsersController < AdminController
-  def index
-    @pagy, @users = pagy(scope)
-  end
-
   def show
-    @user = User.find(params[:id])
+    @user = User.find_by!(ecf_id: params[:id])
     @applications = @user.applications.includes(:course, :lead_provider, :institution).order(:created_at, :id)
-  end
-
-private
-
-  def scope
-    AdminService::UsersSearch.new(q: params[:q]).call
   end
 end

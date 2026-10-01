@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Admin::Applications::ChangeStatusForm, type: :model do
-  subject(:form) { described_class.new(id: application.id, status:, reason:) }
+  subject(:form) { described_class.new(ecf_id: application.ecf_id, status:, reason:) }
 
   let(:application) { create(:application, :accepted) }
   let(:status) { nil }

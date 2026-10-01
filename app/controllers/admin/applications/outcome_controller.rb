@@ -10,7 +10,7 @@ module Admin
     private
 
       def set_application
-        @application = Application.includes(declarations: :participant_outcomes).find(params[:id])
+        @application = Application.includes(declarations: :participant_outcomes).find_by!(ecf_id: params[:id])
       end
     end
   end

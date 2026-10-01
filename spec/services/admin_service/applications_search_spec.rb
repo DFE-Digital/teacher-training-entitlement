@@ -1,53 +1,105 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe AdminService::ApplicationsSearch do
-  let(:service) { described_class.new(q:) }
-  let(:user) { build(:user, preferred_name: "Jonny D") }
-  let!(:application) { create(:application, user:) }
+  subject(:results) { described_class.new(q:, filters:).call }
 
-  describe "#call" do
-    subject { service.call }
+  let(:filters) { {} }
+  let(:user) { build(:user, preferred_name: "Rasmus Lerdorf") }
+  let(:application) { create(:application, user:) }
+  let(:started_milestone) { course_milestone(application.course, :started) }
+  let(:completed_milestone) { course_milestone(application.course, :completed) }
+  let(:declarations) do
+    [
+      create(:declaration, application:, declaration_type: :started, milestone: started_milestone),
+      create(:declaration, application:, declaration_type: :completed, milestone: completed_milestone),
+    ]
+  end
 
-    context "when email partially matches" do
-      let(:q) { user.email.split("@").first }
+  before do
+    other_application = create(:application, user: create(:user, full_name: "Jane Doe"))
+    create(:declaration, application: other_application, declaration_type: :started, milestone: started_milestone)
+    create(:declaration, application: other_application, declaration_type: :completed, milestone: completed_milestone)
+  end
 
-      it { is_expected.to include(application) }
+  shared_examples "a search returning matching applications" do
+    it { is_expected.to contain_exactly(application) }
+  end
 
-      context "and the application has no school relation" do
-        before { application.update! institution: nil, works_in_school: false }
+  context "when name matches" do
+    let(:q) { application.user.full_name }
 
-        it { is_expected.to include(application) }
-      end
+    it_behaves_like "a search returning matching applications"
+  end
+
+  context "when name partially matches" do
+    let(:q) { application.user.full_name.split(" ").first }
+
+    it_behaves_like "a search returning matching applications"
+  end
+
+  context "when preferred name matches" do
+    let(:q) { application.user.preferred_name }
+
+    it_behaves_like "a search returning matching applications"
+  end
+
+  context "when preferred name partially matches" do
+    let(:q) { application.user.preferred_name.split(" ").first }
+
+    it_behaves_like "a search returning matching applications"
+  end
+
+  context "when application ID matches" do
+    let(:q) { application.ecf_id }
+
+    it_behaves_like "a search returning matching applications"
+  end
+
+  context "when declaration ID matches" do
+    let(:q) { declarations.first.ecf_id }
+
+    it_behaves_like "a search returning matching applications"
+  end
+
+  context "when nothing matches" do
+    let(:q) { "foobarbaz" }
+
+    it { is_expected.to be_empty }
+  end
+
+  context "when query is blank" do
+    let(:q) { nil }
+
+    it { is_expected.to match_array(Application.all) }
+  end
+
+  context "when filters are provided" do
+    let(:q) { nil }
+    let(:filters) { { status: Application::ACCEPTED } }
+
+    before do
+      application.update!(status: Application::ACCEPTED)
     end
 
-    context "when name partially matches" do
-      let(:q) { user.full_name.split(" ").first.upcase }
+    it { is_expected.to contain_exactly(application) }
+  end
 
-      it { is_expected.to include(application) }
-    end
+  context "when blank filters are provided" do
+    let(:q) { nil }
+    let(:filters) { { status: "", work_setting: "" } }
 
-    context "when preferred_name partially matches" do
-      let(:q) { user.preferred_name.split(" ").first.upcase }
+    it { is_expected.to match_array(Application.all) }
+  end
 
-      it { is_expected.to include(application) }
-    end
+  context "when returning results" do
+    let(:q) { nil }
 
-    context "when school name matches" do
-      let(:q) { application.school.name.split(" ").first }
+    it "orders by created_at descending, then user_id descending" do
+      newer_application = create(:application, created_at: 1.hour.from_now)
 
-      it { is_expected.to include(application) }
-    end
-
-    context "when application#ecf_id match" do
-      let(:q) { application.ecf_id }
-
-      it { is_expected.to include(application) }
-    end
-
-    context "when user#ecf_id match" do
-      let(:q) { user.ecf_id }
-
-      it { is_expected.to include(application) }
+      expect(results.first).to eq(newer_application)
     end
   end
 end

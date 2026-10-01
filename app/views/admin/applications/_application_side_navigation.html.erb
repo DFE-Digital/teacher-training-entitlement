@@ -6,27 +6,27 @@
         NavigationStructure::Node.new(
           name: "Application details",
           href: admin_application_path(@application),
-          prefix: %r{/admin/applications/\d+$},
+          prefix: %r{/admin/applications/[^/]+$},
         ),
         NavigationStructure::Node.new(
           name: "Declaration details",
           href: admin_application_declarations_path(@application),
-          prefix: %r{/admin/applications/\d+/declarations$},
+          prefix: %r{/admin/applications/[^/]+/declarations$},
         ),
         NavigationStructure::Node.new(
           name: "Course outcome",
           href: admin_applications_outcome_path(@application),
-          prefix: %r{/admin/applications/\d+/outcome$},
+          prefix: %r{/admin/applications/[^/]+/outcome$},
           ),
         NavigationStructure::Node.new(
           name: "Application history",
           href: admin_applications_history_path(@application),
-          prefix: %r{/admin/applications/\d+/history$},
+          prefix: %r{/admin/applications/[^/]+/history$},
           ),
         Rails.env.production? ? nil : NavigationStructure::Node.new(
           name: "API Testing",
           href: admin_applications_api_tests_path(@application),
-          prefix: %r{/admin/applications/\d+/api_tests$},
+          prefix: %r{/admin/applications/[^/]+/api_tests$},
           )
       ].compact,
     )

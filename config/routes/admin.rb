@@ -79,7 +79,8 @@ namespace :admin do
 
   resources :schools, only: %i[index show]
 
-  resources :users, only: %i[index show]
+  resources :users, only: %i[show]
+  get "search", to: "search#index", as: :search
 
   namespace :finance do
     resources :statements, only: %i[index show] do

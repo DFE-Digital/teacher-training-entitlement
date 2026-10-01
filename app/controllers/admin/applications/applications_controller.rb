@@ -4,7 +4,7 @@ module Admin
     protected
 
       def application
-        @application ||= Application.find(params[:id])
+        @application ||= Application.find_by!(ecf_id: params[:id])
       end
     end
   end
