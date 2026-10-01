@@ -27,19 +27,6 @@
           )
         %>
       </div>
-
-      <div class="govuk-grid-column-one-quarter">
-        <%=
-          f.govuk_collection_select(
-            :work_setting,
-            Application.distinct(:work_setting).pluck(:work_setting).compact.sort,
-            :to_s,
-            :humanize,
-            options: { selected: params[:work_setting], include_blank: "All" },
-            label: { text: "Work setting", size: "s" },
-          )
-        %>
-      </div>
     </div>
 
     <%= f.govuk_submit "Search" %>

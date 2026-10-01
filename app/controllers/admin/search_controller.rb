@@ -33,7 +33,6 @@ module Admin
       @filter_params ||=
         params.permit(%i[
           status
-          work_setting
         ]).to_h
     end
 

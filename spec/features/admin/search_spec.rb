@@ -54,19 +54,6 @@ RSpec.feature "Admin search", type: :feature do
     expect(page).to have_application(application)
   end
 
-  scenario "filtering applications by work setting" do
-    create(:application)
-    application = create(:application, work_setting: "a_school")
-
-    visit(admin_search_path)
-    select "A school", from: "Work setting"
-    click_button "Search"
-
-    expect(page).to have_select("Work setting", selected: "A school")
-    expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_application(application)
-  end
-
   scenario "simultaneously filtering and searching applications" do
     application = create(:application, :pending)
 
