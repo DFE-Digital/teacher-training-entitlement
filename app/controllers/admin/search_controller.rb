@@ -4,14 +4,30 @@ module Admin
       @search_requested = search_requested?
       return unless @search_requested || show_all?
 
-      @pagy_applications, @applications = pagy(AdminService::ApplicationsSearch.new(q: search_param, filters: filter_params).call)
+      @pagy_applications, @applications = pagy(applications_query,
+                                               page_param: :applications_page,
+                                               params: pagination_params_for(:applications))
 
       if search_param.present? || show_all?
-        @pagy_users, @users = pagy(AdminService::UsersSearch.new(q: search_param).call)
+        @pagy_users, @users = pagy(users_query,
+                                   page_param: :users_page,
+                                   params: pagination_params_for(:users))
       end
     end
 
   private
+
+    def applications_query
+      AdminService::ApplicationsSearch.new(q: search_param, filters: filter_params).call
+    end
+
+    def users_query
+      AdminService::UsersSearch.new(q: search_param).call
+    end
+
+    def pagination_params_for(tab)
+      ->(params) { params.merge("tab" => tab.to_s) }
+    end
 
     def filter_params
       @filter_params ||=

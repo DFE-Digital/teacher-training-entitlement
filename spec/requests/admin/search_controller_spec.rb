@@ -75,5 +75,21 @@ RSpec.describe Admin::SearchController, type: :request do
         expect(response.body).not_to include(admin_application_path(pending_application))
       end
     end
+
+    context "when paginating user results" do
+      before do
+        21.times { |index| create(:user, email: "search-user-#{index}@example.com") }
+        get admin_search_path, params: { q: "example.com" }
+      end
+
+      it "keeps the users tab selected when following pagination links" do
+        expect(response.body).to include("users_page=2")
+        expect(response.body).to include("tab=users")
+
+        get admin_search_path, params: { q: "example.com", users_page: 2, tab: "users" }
+
+        expect(response.body.index("Users (21)")).to be < response.body.index("Applications (0)")
+      end
+    end
   end
 end

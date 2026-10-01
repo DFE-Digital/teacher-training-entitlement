@@ -47,20 +47,25 @@
 </div>
 
 <% if @applications&.any? || @users&.any? %>
+  <% tabs_to_render = params[:tab] == "users" ? %w[users applications] : %w[applications users] %>
+
   <%= govuk_tabs do |tabs| %>
-    <%= tabs.with_tab(id: "applications", label: "Applications (#{@pagy_applications.count})") do %>
-      <% if @applications.any? %>
-        <%= render "admin/search/applications_table", applications: @applications, pagy: @pagy_applications %>
+    <% tabs_to_render.each do |tab| %>
+      <% if tab == "applications" %>
+        <%= tabs.with_tab(id: "applications", label: "Applications (#{@pagy_applications.count})") do %>
+          <% if @applications.any? %>
+            <%= render "admin/search/applications_table", applications: @applications, pagy: @pagy_applications %>
+          <% else %>
+            <p class="govuk-body">No applications match the search and filters.</p>
+          <% end %>
+        <% end %>
       <% else %>
-        <p class="govuk-body">No applications match the search and filters.</p>
-      <% end %>
-    <% end %>
-    <%= tabs.with_tab(id: "users", label: "Users (#{@pagy_users&.count || 0})") do %>
-      <% if @users&.any? %>
-        <% if @users.any? %>
-          <%= render "admin/search/users_table", users: @users, pagy: @pagy_users %>
-        <% else %>
-          <p class="govuk-body">No users match the search and filters.</p>
+        <%= tabs.with_tab(id: "users", label: "Users (#{@pagy_users&.count || 0})") do %>
+          <% if @users&.any? %>
+            <%= render "admin/search/users_table", users: @users, pagy: @pagy_users %>
+          <% else %>
+            <p class="govuk-body">No users match the search and filters.</p>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>
