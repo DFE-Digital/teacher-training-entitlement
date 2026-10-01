@@ -7,7 +7,7 @@ module PaperTrailExtensions
   private
 
     def send_to_dfe_analytics
-      StreamVersionsToBigQueryJob.perform_later(attributes["whodunnit"], analytics_data)
+      StreamAnalyticsEventToBigQueryJob.send_event(type: :version, user: attributes["whodunnit"], data: analytics_data)
     end
 
     def analytics_data
