@@ -419,7 +419,7 @@ module ValidTestDataGenerators
 
     def create_started_declaration(application:, statement:, declaration_date: nil)
       milestone = milestone_for(application:, declaration_type: :started)
-      date = declaration_date || milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.day
+      date = declaration_date || declaration_date_for(application:, milestone:)
       value = application.funded_place ? declaration_value(milestone, course_cohort: application.course_cohort) : nil
       declaration = application.declarations.new(
         declaration_type: :started,
@@ -437,7 +437,7 @@ module ValidTestDataGenerators
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       milestone = milestone_for(application:, declaration_type: :completed)
-      date = declaration_date || milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.day
+      date = declaration_date || declaration_date_for(application:, milestone:)
       value = application.funded_place ? declaration_value(milestone, course_cohort: application.course_cohort) : nil
       declaration = application.declarations.build(
         declaration_type: :completed,
@@ -457,6 +457,15 @@ module ValidTestDataGenerators
         outcome.save!(validate: false)
       end
       declaration
+    end
+
+    def declaration_date_for(application:, milestone:)
+      acceptance_window_start_date = milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at)
+      declaration_date = acceptance_window_start_date + 1.day
+
+      return Time.zone.today if acceptance_window_start_date <= Time.zone.today && declaration_date.future?
+
+      declaration_date
     end
 
     def applications_setup(course_cohort:, number: 5)
@@ -496,7 +505,7 @@ module ValidTestDataGenerators
 
       # we cannot create declaration in the future
       # so only creates these applications for past cohorts
-      if acceptance_window_start_date_for(course_cohort:, declaration_type: Milestone::STARTED) <= Time.zone.today
+      if declarations_can_be_created_for?(course_cohort:)
         # create the open statement for started applicatons
         paid_statement = create_open_statement(
           group: course_cohort.course.course_group,
@@ -606,6 +615,12 @@ module ValidTestDataGenerators
           change_provider(application:)
           create_app_event(application:, event: :changed_provider)
         end
+      end
+    end
+
+    def declarations_can_be_created_for?(course_cohort:)
+      [Milestone::STARTED, Milestone::COMPLETED].all? do |declaration_type|
+        acceptance_window_start_date_for(course_cohort:, declaration_type:) <= Time.zone.today
       end
     end
 
