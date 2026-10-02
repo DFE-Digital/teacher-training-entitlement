@@ -24,30 +24,15 @@ module Questionnaires
 
     def ineligible_template
       @ineligible_template ||= case funding_eligiblity_status_code
-                               when FundingEligibility::NOT_IN_ENGLAND
+                               when FundingEligibility::Constants::NOT_IN_ENGLAND
                                  NOT_IN_ENGLAND
-                               when FundingEligibility::PREVIOUSLY_FUNDED
+                               when FundingEligibility::Constants::PREVIOUSLY_FUNDED
                                  PREVIOUSLY_FUNDED
-                               when FundingEligibility::INELIGIBLE_SETTING
+                               when FundingEligibility::Constants::INELIGIBLE_SETTING
                                  INELIGIBLE_SETTING
                                else
                                  raise UnexpectedEligibilityStatusCode, "Missing status code handling: #{funding_eligiblity_status_code}"
                                end
-    end
-
-    def funding_eligiblity_status_code
-      return :ineligible_setting if kind_of_nursery_private? || works_in_other?
-
-      @funding_eligiblity_status_code ||= funding_eligibility.funding_eligiblity_status_code
-    end
-
-    def funding_eligibility
-      @funding_eligibility ||= FundingEligibility.new(
-        course:,
-        institution:,
-        inside_catchment: inside_catchment?,
-        query_store: wizard.query_store,
-      )
     end
 
     delegate :course,
@@ -57,6 +42,7 @@ module Questionnaires
              :works_in_school?,
              :kind_of_nursery_private?,
              :kind_of_nursery_public?,
+             :funding_eligiblity_status_code,
              to: :query_store
   end
 end

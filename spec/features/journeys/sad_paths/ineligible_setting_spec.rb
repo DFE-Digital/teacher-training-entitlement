@@ -17,6 +17,9 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, type: :feature 
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "england",
           "work_setting" => "other",
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "ineligible_setting",
+          "previously_funded" => false,
         },
       )
     end
@@ -48,6 +51,9 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, type: :feature 
           "work_setting" => "a_school",
           "works_in_school" => "yes",
           "institution_id" => school.institution.id.to_s,
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "ineligible_setting",
+          "previously_funded" => false,
         },
       )
     end

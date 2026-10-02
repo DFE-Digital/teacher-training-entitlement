@@ -21,6 +21,18 @@ class RegistrationQueryStore
     store["funding_amount"]
   end
 
+  def ineligible_for_funding?
+    store["eligible_for_funding"].to_s == "false"
+  end
+
+  def previously_funded?
+    store["previously_funded"].to_s == "true"
+  end
+
+  def not_in_england?
+    !inside_catchment?
+  end
+
   def inside_catchment?
     store["teacher_catchment"] == "england"
   end
@@ -47,7 +59,7 @@ class RegistrationQueryStore
   end
 
   def works_in_school?
-    store["works_in_school"] == "yes"
+    store["work_setting"] == Institution::STATE_FUNDED_INSTITUTION
   end
 
   def works_in_childcare?
@@ -76,6 +88,12 @@ class RegistrationQueryStore
 
   def kind_of_nursery_private?
     Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.include?(store["kind_of_nursery"])
+  end
+
+  def institution
+    return nil if store["institution_id"].blank?
+
+    @institution ||= Institution.find(store["institution_id"])
   end
 
   def course
