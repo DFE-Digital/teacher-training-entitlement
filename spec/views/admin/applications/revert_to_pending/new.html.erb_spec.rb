@@ -8,7 +8,7 @@ RSpec.describe "admin/applications/revert_to_pending/new", type: :view do
   end
 
   let(:application) { create(:application, :accepted) }
-  let(:form) { Admin::Applications::RevertToPendingForm.new(id: application.id) }
+  let(:form) { Admin::Applications::RevertToPendingForm.new(application:) }
   let(:form_path) { admin_applications_revert_to_pending_path(application) }
 
   it { is_expected.to have_css("h1", text: /Are you sure/) }
