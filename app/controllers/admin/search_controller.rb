@@ -13,6 +13,10 @@ module Admin
                                    page_param: :users_page,
                                    params: pagination_params_for(:users))
       end
+
+      if search_param.present? || show_all?
+        @pagy_institutions, @institutions = pagy(institutions_query)
+      end
     end
 
   private
@@ -23,6 +27,10 @@ module Admin
 
     def users_query
       AdminService::UsersSearch.new(q: search_param).call
+    end
+
+    def institutions_query
+      AdminService::InstitutionsSearch.new(q: search_param).call
     end
 
     def pagination_params_for(tab)
@@ -48,8 +56,8 @@ module Admin
       search_param.present? || filter_params.compact_blank.present?
     end
 
-    def search_param
-      params[:q]&.gsub(/[^\p{ASCII}]/, "")&.strip
+    def search_param(key: :q)
+      params[key]&.gsub(/[^\p{ASCII}]/, "")&.strip
     end
   end
 end
