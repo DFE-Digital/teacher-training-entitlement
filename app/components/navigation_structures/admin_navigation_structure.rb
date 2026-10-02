@@ -100,7 +100,7 @@ module NavigationStructures
         ) => [],
         Node.new(
           name: "Courses",
-          href: admin_courses_path,
+          href: admin_course_cohorts_path,
         ) => [],
         Node.new(
           name: "Applications",

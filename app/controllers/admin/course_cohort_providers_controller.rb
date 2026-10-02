@@ -1,6 +1,5 @@
 module Admin
   class CourseCohortProvidersController < AdminController
-    before_action :course
     before_action :course_cohort
     before_action :ensure_super_admin
     before_action :lead_providers
@@ -15,7 +14,7 @@ module Admin
       service.call
       if service.errors.blank?
         flash[:success] = "Course providers updated"
-        redirect_to admin_course_cohort_path(@course_cohort.course, @course_cohort.cohort)
+        redirect_to cohort_admin_course_cohort_path(@course_cohort.course, @course_cohort.cohort)
       else
         @course_cohort = service.course_cohort
         @selected_lead_providers = service.selected_lead_providers
@@ -25,12 +24,8 @@ module Admin
 
   private
 
-    def course
-      @course ||= Course.find(params[:course_id])
-    end
-
     def course_cohort
-      @course_cohort ||= @course.course_cohorts.find(params[:id])
+      @course_cohort ||= CourseCohort.find(params[:course_cohort_id])
     end
 
     def course_cohort_params
@@ -58,7 +53,7 @@ module Admin
       return if current_admin.super_admin?
 
       flash[:error] = "You must be a super admin"
-      redirect_to admin_course_cohort_path(@course, @course_cohort.cohort)
+      redirect_to cohort_admin_course_cohort_path(@course_cohort.course, @course_cohort.cohort)
     end
   end
 end
