@@ -3,28 +3,28 @@
 <h1 class="govuk-heading-l">Search</h1>
 
 <div class="admin-search-box">
-  <%= form_with url: admin_search_path, method: :get do |f| %>
-    <h2 class="govuk-heading-m">Find a user or application</h2>
+  <%= form_with url: admin_search_path(anchor: :general), method: :get do |f| %>
+    <h2 class="govuk-heading-m">Find a user, application or institutions</h2>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
         <%= f.govuk_text_field(
-              :q,
-              value: params[:q],              
-              label: { text: "Name, email, TRN, user ID, application ID, declaration ID or URN", size: "s" },
-            )
+          :q,
+          value: params[:q],
+          label: { text: "Name, email, TRN, user ID, application ID, declaration ID or URN", size: "s" },
+        )
         %>
       </div>
 
       <div class="govuk-grid-column-one-quarter">
         <%=
-          f.govuk_collection_select(
-            :status,
-            Application::STATUSES,
-            :to_s,
-            :humanize,
-            options: { selected: params[:status], include_blank: "All" },
-            label: { text: "Application status", size: "s" },
-          )
+        f.govuk_collection_select(
+          :status,
+          Application::STATUSES,
+          :to_s,
+          :humanize,
+          options: { selected: params[:status], include_blank: "All" },
+          label: { text: "Application status", size: "s" },
+        )
         %>
       </div>
     </div>
@@ -33,11 +33,11 @@
   <% end %>
 </div>
 
-<% if @applications&.any? || @users&.any? %>
+<% if @applications&.any? || @users&.any? || @institutions&.any? %>
   <% tabs_to_render = params[:tab] == "users" ? %w[users applications] : %w[applications users] %>
 
   <%= govuk_tabs do |tabs| %>
-    <% tabs_to_render.each do |tab| %>
+  <% tabs_to_render.each do |tab| %>
       <% if tab == "applications" %>
         <%= tabs.with_tab(id: "applications", label: "Applications (#{@pagy_applications.count})") do %>
           <% if @applications.any? %>
@@ -55,7 +55,13 @@
           <% end %>
         <% end %>
       <% end %>
+  <% end %>
+
+  <% if @institutions&.any? %>
+    <%= tabs.with_tab(id: "institutions", label: "Institutions (#{@pagy_institutions.count})")  do %>
+      <%= render "admin/search/institutions_table", institutions: @institutions, pagy: @pagy_institutions %>
     <% end %>
+  <% end %>
   <% end %>
 <% end %>
 

@@ -77,8 +77,6 @@ namespace :admin do
     end
   end
 
-  resources :schools, only: %i[index show]
-
   resources :users, only: %i[show]
   get "search", to: "search#index", as: :search
 
