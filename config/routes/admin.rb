@@ -68,16 +68,6 @@ namespace :admin do
     concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
   end
 
-  resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
-    resource :delivery_partnerships, path: "delivery-partnerships", only: :edit
-    collection do
-      post :continue
-    end
-    member do
-      post :continue
-    end
-  end
-
   resources :schools, only: %i[index show]
 
   resources :users, only: %i[show]
@@ -120,6 +110,12 @@ namespace :admin do
     resources :courses, only: %i[index show] do
       collection do
         resources :builder, only: %i[show update create], param: :step, controller: "courses/builder", as: :courses_builder
+      end
+    end
+    resources :lead_providers, except: %i[edit update destroy] do
+      member do
+        post "test-data", to: "lead_providers/api_integration#create_test_data", as: :test_data
+        post "development-data", to: "lead_providers/api_integration#create_development_data", as: :development_data
       end
     end
     resources :features, only: %i[index show update]

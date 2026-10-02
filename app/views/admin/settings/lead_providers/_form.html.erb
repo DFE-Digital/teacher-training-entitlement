@@ -1,0 +1,8 @@
+<%= form_with model: lead_provider, url: do |f| %>
+  <%= f.govuk_error_summary %>
+  <%= f.govuk_text_field :name,
+   label: { text: "Name" },
+   width: "three-quarters" %>
+
+  <%= f.govuk_submit "Submit" %>
+<% end %>
