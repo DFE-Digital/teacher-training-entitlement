@@ -37,6 +37,13 @@ jobs:
           terraform_version: 1.5.4
           terraform_wrapper: false
 
+      - name: Set Airbyte
+        if: (contains(github.event.pull_request.labels.*.name, 'airbyte'))
+        run: |
+          echo "TF_VAR_pg_airbyte_enabled=true" >> $GITHUB_ENV
+          echo "TF_VAR_airbyte_enabled=true" >> $GITHUB_ENV
+          echo "TF_VAR_connection_status=active" >> $GITHUB_ENV
+
       - name: Set environment variables
         shell: bash
         run: |

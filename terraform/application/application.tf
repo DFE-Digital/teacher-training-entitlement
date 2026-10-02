@@ -32,12 +32,19 @@ module "application_configuration" {
       HOSTING_DOMAIN = "https://${var.service_name}-${local.environment}.${module.cluster_data.ingress_domain}"
     } : {}
   )
-  secret_variables = {
+  secret_variables = merge({
     DATABASE_URL             = module.postgres.url
     REDIS_CACHE_URL          = var.deploy_redis_cache ? module.redis-managed-cache.url : ""
     AZURE_STORAGE_ACCESS_KEY = module.storage_account.primary_access_key
     GOOGLE_CLOUD_CREDENTIALS = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].google_cloud_credentials : null
-  }
+  },
+  {
+    AIRBYTE_CONFIGURATION = var.airbyte_enabled ? jsonencode({
+    SOURCE_ID      = module.airbyte[0].airbyte_source_id
+    DESTINATION_ID = module.airbyte[0].airbyte_destination_id
+    CONNECTION_ID  = module.airbyte[0].airbyte_connection_id
+    }) : null
+  })
 }
 
 module "web_application" {
