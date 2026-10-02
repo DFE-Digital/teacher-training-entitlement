@@ -35,7 +35,11 @@ module NavigationStructures
     def super_admin_service_settings_nodes
       return [] unless @current_admin.super_admin?
 
-      nodes = [
+      [
+        Node.new(
+          name: "Manage lead providers",
+          href: admin_settings_lead_providers_path,
+        ),
         Node.new(
           name: "Manage courses",
           href: admin_settings_courses_path,
@@ -50,16 +54,6 @@ module NavigationStructures
           href: admin_settings_admins_path,
         ),
       ]
-
-      # Only show API Test Scenarios in development, review, and sandbox environments
-      if Rails.env.in?(%w[development review])
-        nodes << Node.new(
-          name: "API Test Scenarios",
-          href: admin_settings_api_test_scenarios_path,
-        )
-      end
-
-      nodes
     end
 
     def service_settings_nodes
@@ -100,7 +94,7 @@ module NavigationStructures
         ) => [],
         Node.new(
           name: "Courses",
-          href: admin_courses_path,
+          href: admin_course_cohorts_path,
         ) => [],
         Node.new(
           name: "Applications",
@@ -114,10 +108,6 @@ module NavigationStructures
           name: "Finance",
           href: admin_finance_statements_path,
           prefix: "/admin/finance",
-        ) => [],
-        Node.new(
-          name: "Delivery partners",
-          href: admin_delivery_partners_path,
         ) => [],
         Node.new(
           name: "Workplaces",

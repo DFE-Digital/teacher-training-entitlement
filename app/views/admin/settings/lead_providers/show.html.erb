@@ -1,0 +1,60 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= govuk_back_link href: admin_settings_lead_providers_path %>
+
+    <h1 class="govuk-heading-l"><%= @lead_provider.name %></h1>
+
+    <%=
+    govuk_summary_list(card: { title: "Account"}) do |sl|
+      sl.with_row do |row|
+        row.with_key(text: "API token")
+        if @active
+          row.with_value(text: govuk_tag(text: "active", colour: "green"))
+        else
+          row.with_value(text: govuk_tag(text: "inactive", colour: "red"))
+        end
+      end
+    end
+    %>
+
+    <% if @display_api_integration_actions %>
+      <%=
+      actions = [
+        govuk_link_to(
+          "Create development data",
+          development_data_admin_settings_lead_provider_path(@lead_provider),
+          method: :post,
+          data: { confirm: "Are you sure? This will development dataset for provider." }
+        ),
+        govuk_link_to(
+          "Refresh test data",
+          test_data_admin_settings_lead_provider_path(@lead_provider),
+          method: :post,
+          data: { confirm: "Are you sure? This will 'delete existing and create new' test data." }
+        ),
+      ]
+      govuk_summary_list(card: { title: "API integration", actions: }) do |sl|
+        @application_data.each do |scenario|
+          sl.with_row do |row|
+            row.with_key(text: scenario[:label])
+            row.with_value(text: scenario[:purpose])
+          end
+        end
+      end
+      %>
+    <% end %>
+
+    <%=
+    actions = [ govuk_link_to("Add delivery partner", "#") ]
+    actions = []
+    govuk_summary_list(card: { title: "Delivery partners", actions: }) do |sl|
+      @delivery_partners.each do |dp|
+        sl.with_row do |row|
+          row.with_key(text: dp.name)
+        end
+      end
+    end
+    %>
+   <%= govuk_pagination(pagy: @pagy) %>
+  </div>
+</div>

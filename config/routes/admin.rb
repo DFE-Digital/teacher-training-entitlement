@@ -20,14 +20,15 @@ namespace :admin do
 
   resource :dashboard, only: %i[show]
 
-  resources :cohorts do
-    resources :courses, controller: "course_cohorts", only: %i[new create]
-  end
+  resources :cohorts
 
-  resources :courses, only: %i[index edit update] do
-    concerns :cohortable, index: "courses#index"
-    resources :cohorts, controller: "course_cohorts", only: %i[show]
-    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
+  resources :course_cohorts, path: "courses", only: %i[index] do
+    concerns :cohortable, index: "course_cohorts#index", show: "course_cohorts#show"
+    collection do
+      get "cohorts/:cohort_id/new", to: "course_cohorts#new", as: :new
+      post "cohorts/:cohort_id", to: "course_cohorts#create"
+    end
+    resource :course_cohort_providers, path: "providers", only: %i[show update], as: :provider
   end
 
   resources :applications, only: %i[index show] do
@@ -65,16 +66,6 @@ namespace :admin do
 
   resources :lead_providers, only: %i[index show edit update], path: "providers" do
     concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
-  end
-
-  resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
-    resource :delivery_partnerships, path: "delivery-partnerships", only: :edit
-    collection do
-      post :continue
-    end
-    member do
-      post :continue
-    end
   end
 
   resources :schools, only: %i[index show]
@@ -119,6 +110,12 @@ namespace :admin do
     resources :courses, only: %i[index show] do
       collection do
         resources :builder, only: %i[show update create], param: :step, controller: "courses/builder", as: :courses_builder
+      end
+    end
+    resources :lead_providers, except: %i[edit update destroy] do
+      member do
+        post "test-data", to: "lead_providers/api_integration#create_test_data", as: :test_data
+        post "development-data", to: "lead_providers/api_integration#create_development_data", as: :development_data
       end
     end
     resources :features, only: %i[index show update]
