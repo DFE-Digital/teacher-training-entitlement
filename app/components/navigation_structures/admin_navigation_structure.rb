@@ -120,10 +120,6 @@ module NavigationStructures
           href: admin_delivery_partners_path,
         ) => [],
         Node.new(
-          name: "Workplaces",
-          href: admin_schools_path,
-        ) => [],
-        Node.new(
           name: "Glossary",
           href: admin_glossary_index_path,
         ) => [],
