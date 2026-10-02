@@ -16,10 +16,13 @@ module Questionnaires
     end
 
     def next_step
-      return :choose_school if no_institution_selected?
-      return :ineligible_for_funding unless eligible_for_funding?
-
-      :possible_funding
+      if no_institution_selected?
+        :choose_school
+      elsif ineligible_for_funding?
+        :ineligible_for_funding
+      else
+        :possible_funding
+      end
     end
 
     def previous_step
@@ -38,15 +41,9 @@ module Questionnaires
             name: :institution_name,
             locale_name: :choose_school_search,
           ),
-          default_value: selected_institution_display_value,
+          default_value: institution&.name_with_address,
         ),
       ]
-    end
-
-    def selected_institution_display_value
-      return nil if institution_id.blank?
-
-      selected_institution&.name_with_address
     end
 
     def possible_institutions
@@ -61,28 +58,6 @@ module Questionnaires
 
     def no_institution_selected?
       institution_id == "other" || institution_id.blank?
-    end
-
-    def eligible_for_funding?
-      selected_institution.in_england? &&
-        selected_institution.eligible_establishment? &&
-        !funding_eligibility.previously_funded? &&
-        funding_eligibility.funded?
-    end
-
-    def selected_institution
-      return nil if institution_id.blank? || institution_id == "other"
-
-      @selected_institution ||= Institution.find(institution_id)
-    end
-
-    def funding_eligibility
-      @funding_eligibility ||= FundingEligibility.new(
-        course: wizard.query_store.course,
-        institution: selected_institution,
-        inside_catchment: wizard.query_store.inside_catchment?,
-        query_store: wizard.query_store,
-      )
     end
 
     def search_term_entered_in_no_js_fallback_form?
@@ -107,5 +82,7 @@ module Questionnaires
 
       errors.add(:institution_id, :blank) if institution_id.blank?
     end
+
+    delegate :ineligible_for_funding?, :institution, to: :query_store
   end
 end

@@ -12,8 +12,8 @@ class HandleSubmissionForStore
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
         institution: (institution_from_store if inside_catchment?),
         ukprn:,
-        eligible_for_funding: funding_eligibility_service.funded?,
-        funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
+        eligible_for_funding: eligible_for_funding?,
+        funding_eligiblity_status_code: store["funding_eligiblity_status_code"],
         funding_choice:,
         teacher_catchment:,
         works_in_school: works_in_school?,
@@ -35,6 +35,10 @@ class HandleSubmissionForStore
   end
 
 private
+
+  def eligible_for_funding?
+    store["eligible_for_funding"].to_s == "true"
+  end
 
   def works_in_school?
     return false if institution_from_store.nil?
@@ -85,7 +89,7 @@ private
     # It is possible that the applicant had chosen a non-funded path and selected a funding choice
     # before going back a few steps and choosing a funded route. We should clear the funding choice
     # to nil here to reduce confusion
-    if funding_eligibility_service.funded?
+    if eligible_for_funding?
       nil
     else
       store["funding"]
@@ -94,15 +98,6 @@ private
 
   def enqueue_send_application_submission_email_job(application)
     Emails::SendApplicationSubmissionEmailJob.perform_later(application:)
-  end
-
-  def funding_eligibility_service
-    @funding_eligibility_service ||= FundingEligibility.new(
-      course:,
-      institution: institution_from_store,
-      inside_catchment: inside_catchment?,
-      query_store:,
-    )
   end
 
   def course

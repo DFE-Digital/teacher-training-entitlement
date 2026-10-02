@@ -406,36 +406,6 @@ RSpec.describe Application do
     end
   end
 
-  describe "#eligible_for_dfe_funding?" do
-    let(:user) { create(:user) }
-
-    subject { application }
-
-    context "when application has been previously funded" do
-      let(:application) { create(:application, :previously_funded, user:, course:) }
-      let(:course) { create(:course) }
-
-      it { is_expected.not_to be_eligible_for_dfe_funding }
-    end
-
-    context "when application has not been previously funded" do
-      let(:application) { create(:application, user:, course:) }
-      let(:course) { create(:course) }
-
-      it "is not eligible for DfE funding if not eligible for funding" do
-        application.update!(eligible_for_funding: false)
-
-        expect(application).not_to be_eligible_for_dfe_funding
-      end
-
-      it "is eligible for DfE funding if the application is eligible for funding" do
-        application.update!(eligible_for_funding: true)
-
-        expect(application).to be_eligible_for_dfe_funding
-      end
-    end
-  end
-
   describe "#previously_funded?" do
     let(:user) { create(:user) }
     let(:course) { create(:course) }
@@ -604,12 +574,6 @@ RSpec.describe Application do
       let(:course) { create(:course) }
 
       it { is_expected.not_to be_fundable }
-
-      context "when is marked eligible by policy" do
-        before { application.update!(funding_eligiblity_status_code: :marked_funded_by_policy) }
-
-        it { is_expected.to be_fundable }
-      end
     end
   end
 

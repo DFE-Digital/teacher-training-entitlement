@@ -150,15 +150,6 @@ private
     @institution_from_store ||= Institution.find(store["institution_id"])
   end
 
-  def funding_eligibility_calculator
-    FundingEligibility.new(
-      course:,
-      institution: institution_from_store,
-      inside_catchment: inside_catchment?,
-      query_store:,
-    )
-  end
-
   def form_class
     @form_class ||= self.class.fetch_step(current_step)
   end

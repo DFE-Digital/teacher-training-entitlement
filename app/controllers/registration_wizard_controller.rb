@@ -7,7 +7,6 @@ class RegistrationWizardController < PublicPagesController
   before_action :check_duplicate_applications, only: %i[update show]
   before_action :ensure_can_render_step, only: :show
 
-  rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
 
   helper_method :course, :course_cohort
@@ -35,13 +34,20 @@ class RegistrationWizardController < PublicPagesController
     return redirect_to root_path unless @form.requirements_met?
 
     if @form.valid?
+      @wizard.save!
+
+      if @wizard.current_step.in?(%i[teacher_catchment work_setting choose_school])
+        FundingEligibility::Reception.new(
+          query_store: @wizard.query_store,
+        ).call
+      end
+
       if @form.redirect_to_change_path?
         redirect_to registration_wizard_show_change_path(@wizard.next_step_path)
       else
         redirect_to registration_wizard_show_path(@wizard.next_step_path)
       end
 
-      @wizard.save!
     else
       render @wizard.current_step
     end
@@ -91,23 +97,6 @@ private
 
   def redirect_to_course_start_date
     redirect_to registration_wizard_show_path("course-start-date")
-  end
-
-  def redirect_to_institution_picker
-    query_store = RegistrationQueryStore.new(store:)
-
-    if query_store.works_in_school?
-      flash[:error] = "Your application requires details of your school."
-      redirect_to registration_wizard_show_path("choose-school")
-    elsif query_store.kind_of_nursery_private?
-      flash[:error] = "Your application requires details of your nursery."
-      redirect_to registration_wizard_show_path("work-setting")
-    elsif query_store.works_in_childcare?
-      flash[:error] = "Your application requires details of your early years setting."
-      redirect_to registration_wizard_show_path("work-setting")
-    else
-      raise "Could not resolve institution picker"
-    end
   end
 
   def set_wizard

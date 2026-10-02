@@ -34,6 +34,9 @@ RSpec.feature "Previously funded participant", type: :feature do
         "work_setting" => "a_school",
         "works_in_school" => "yes",
         "institution_id" => school.institution.id.to_s,
+        "eligible_for_funding" => false,
+        "funding_eligiblity_status_code" => "previously_funded",
+        "previously_funded" => true,
       },
     )
   end

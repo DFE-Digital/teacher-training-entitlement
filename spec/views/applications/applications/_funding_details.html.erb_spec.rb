@@ -20,7 +20,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
   end
   let(:eligible_for_funding) { false }
   let(:funded) { false }
-  let(:funding_eligiblity_status_code) { FundingEligibility::INELIGIBLE_SETTING }
+  let(:funding_eligiblity_status_code) { FundingEligibility::Constants::INELIGIBLE_SETTING }
   let(:raw_application_data) { {} }
 
   before do
@@ -29,7 +29,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
 
   context "when the application is eligible for scholarship funding" do
     let(:eligible_for_funding) { true }
-    let(:funding_eligiblity_status_code) { FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
+    let(:funding_eligiblity_status_code) { FundingEligibility::Constants::ELIGIBLE_FOR_FUNDING }
 
     it "shows the eligible funding details" do
       expect(rendered_partial).to have_css(".govuk-summary-card__title", text: "Funding details")
