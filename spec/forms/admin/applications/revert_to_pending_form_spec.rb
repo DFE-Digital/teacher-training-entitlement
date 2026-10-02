@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Admin::Applications::RevertToPendingForm, type: :model do
-  subject(:form) { described_class.new(id: application.id, change_status_to_pending:) }
+  subject(:form) { described_class.new(application:, change_status_to_pending:) }
 
   let(:application) { create(:application, :accepted) }
   let(:change_status_to_pending) { "yes" }
