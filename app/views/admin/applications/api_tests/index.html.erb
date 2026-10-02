@@ -48,6 +48,13 @@
 
       sl.with_row do |row|
         row.with_key do
+          govuk_link_to "Revert to Pending", admin_applications_api_tests_revert_to_pending_index_path(@application)
+        end
+        row.with_value(text: "- Revert an accepted application to pending")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
           govuk_link_to "Resume", admin_applications_api_tests_resume_index_path(@application)
         end
         row.with_value(text: "- Resume a deferred application with a cohort")
