@@ -18,11 +18,38 @@ module Admin
   private
 
     def applications_query
-      AdminService::ApplicationsSearch.new(q: search_param, filters: filter_params).call
+      return direct_applications_query if search_param.blank? || direct_applications_query.exists?
+
+      applications_for_matching_users_query
     end
 
     def users_query
-      AdminService::UsersSearch.new(q: search_param).call
+      @users_query ||= AdminService::UsersSearch.new(q: search_param).call
+    end
+
+    def direct_applications_query
+      @direct_applications_query ||= AdminService::ApplicationsSearch.new(q: search_param, filters: filter_params).call
+    end
+
+    def applications_for_matching_users_query
+      Application
+        .includes(
+          :institution,
+          :user,
+          :lead_provider,
+          :current_application_lead_provider,
+          application_lead_providers: %i[lead_provider],
+          course_cohort: %i[course cohort],
+        )
+        .where(user_id: users_query.unscope(:order).select(:id))
+        .merge(application_filter_scope)
+        .order(created_at: :desc, user_id: :desc)
+    end
+
+    def application_filter_scope
+      return Application.all if filter_params.compact_blank.blank?
+
+      Application.where(filter_params.compact_blank)
     end
 
     def pagination_params_for(tab)
