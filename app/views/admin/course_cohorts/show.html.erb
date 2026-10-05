@@ -1,35 +1,35 @@
-<%= govuk_back_link href: request.referrer.presence || admin_courses_path %>
+<%= govuk_back_link href: cohort_admin_course_cohorts_path(@course_cohort.cohort) %>
 
 <% content_for :side_navigation do %>
   <%= render RegistrationPeriodsComponent.new(
     request.path,
     base_path: :admin_course_cohort_path,
-    resource: @course,
+    resource: @course_cohort.course,
   ) %>
 <% end %>
 
-<h1 class="govuk-heading-l"><%= @course.name %></h1>
+<h1 class="govuk-heading-l"><%= @course_cohort.course.name %></h1>
 
 <%=
 govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
     row.with_key(text: "Registration period")
-    row.with_value(text: @cohort.registration_period)
+    row.with_value(text: @course_cohort.cohort.registration_period)
   end
 
   summary_list.with_row do |row|
     row.with_key(text: "Registration open")
-    row.with_value(text: boolean_red_green_tag(@cohort.registration_open?))
+    row.with_value(text: boolean_red_green_tag(@course_cohort.cohort.registration_open?))
   end
 
   summary_list.with_row do |row|
-    row.with_key(text: "Cohort description")
-    row.with_value(text: @cohort.description)
+    row.with_key(text: "Registration period description")
+    row.with_value(text: @course_cohort.cohort.description)
   end
 
   summary_list.with_row do |row|
     row.with_key(text: "Identifier")
-    row.with_value(text: @course.identifier)
+    row.with_value(text: @course_cohort.course.identifier)
   end
 
   summary_list.with_row do |row|
@@ -39,12 +39,12 @@ govuk_summary_list do |summary_list|
 
   summary_list.with_row do |row|
     row.with_key(text: "Group")
-    row.with_value(text: @course.course_group)
+    row.with_value(text: @course_cohort.course.course_group)
   end
 
   summary_list.with_row do |row|
     row.with_key(text: "Description")
-    row.with_value(text: @course.description)
+    row.with_value(text: @course_cohort.course.description)
   end
 end
 %>
@@ -113,7 +113,7 @@ end %>
 <h2 class="govuk-heading-m">Providers</h2>
 
 <% if current_admin.super_admin? %>
-  <%= govuk_button_link_to("Add/Remove providers", admin_course_course_cohort_provider_path(@course, @course_cohort)) %>
+  <%= govuk_button_link_to("Add/Remove providers", admin_course_cohort_provider_path(@course_cohort)) %>
 <% end %>
 
 <%=
@@ -130,7 +130,7 @@ govuk_table do |table|
   table.with_body do |body|
     @course_cohort.course_cohort_providers.each do |ccp|
       body.with_row do |row|
-        row.with_cell(text: govuk_link_to(ccp.lead_provider.name, cohort_admin_lead_provider_path(ccp.lead_provider, @cohort)))
+        row.with_cell(text: govuk_link_to(ccp.lead_provider.name, cohort_admin_lead_provider_path(ccp.lead_provider, @course_cohort.cohort)))
         row.with_cell(text: ccp.recruitment_target)
         row.with_cell(text: number_to_currency(ccp.teacher_funding, unit: "£"))
         row.with_cell(text: pluralize(@delivery_partner_counts.fetch(ccp.lead_provider_id, 0), "delivery partner"))

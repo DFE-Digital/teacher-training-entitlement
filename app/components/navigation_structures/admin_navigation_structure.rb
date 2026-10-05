@@ -37,7 +37,7 @@ module NavigationStructures
 
       nodes = [
         Node.new(
-          name: "Manage courses",
+          name: "Manage course frameworks",
           href: admin_settings_courses_path,
         ),
         Node.new(
@@ -100,7 +100,7 @@ module NavigationStructures
         ) => [],
         Node.new(
           name: "Courses",
-          href: admin_courses_path,
+          href: admin_course_cohorts_path,
         ) => [],
         Node.new(
           name: "Applications",
