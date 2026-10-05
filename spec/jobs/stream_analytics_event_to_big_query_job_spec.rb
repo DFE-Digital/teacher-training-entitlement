@@ -26,7 +26,7 @@ RSpec.describe StreamAnalyticsEventToBigQueryJob, type: :job do
       end
 
       before do
-        allow(analytics_event).to receive(:with_namespace).with("npq").and_return(analytics_event)
+        allow(analytics_event).to receive(:with_namespace).with("tte").and_return(analytics_event)
         allow(analytics_event).to receive(:with_user).with(user).and_return(analytics_event)
       end
 
