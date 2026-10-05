@@ -8,6 +8,24 @@ If you have any questions or comments about these notes, please contact DfE via 
 
 <!-- The API V1 is made live for providers. -->
 
+## 5 October 2026
+
+### Revert an accepted application to pending <strong class="govuk-tag govuk-tag--yellow">SANDBOX</strong>
+
+Providers can now revert an accepted application to pending.
+
+**New endpoint:**
+
+* `PUT /applications/{id}/revert-to-pending` — changes the application `status` from `accepted` back to `pending`
+
+**Behaviour:**
+
+* only applications with the `status` `accepted` can be reverted
+* the `funded_place` value is cleared and must be set again when the application is accepted
+* the application cannot be reverted if it has declarations, unless they are all `voided` or `ineligible`
+
+-----
+
 ## 31 March 2026
 
 ### Final API specification <strong class="govuk-tag govuk-tag--yellow">SANDBOX</strong>
