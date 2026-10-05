@@ -907,10 +907,10 @@
   dependencies:
     "@chevrotain/types" "~11.1.2"
 
-"@ministryofjustice/frontend@3.7.2":
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.7.2.tgz#8dc5ed3d7db85c3c0ebe2772a3e7482762faf20e"
-  integrity sha512-px1xC2wnY2JxGspbv+CSFpONvcPzlDs0WICXlktgGkd/1P08pXv8Kprt7YCvRZN4idxXBAkuLX5Um3G4YYpkUQ==
+"@ministryofjustice/frontend@11.0.1":
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-11.0.1.tgz#a04e50a9c5c021de7f71e2b07f9deab4d643143e"
+  integrity sha512-cK7ixMbKBL6DepQEUcMNszsKFipSyBIG7uxBeSBN9MMR/519DM73EjdE2xEDsZf1OTBEgMAPmS06uKqZej7VMw==
 
 "@parcel/watcher-android-arm64@2.5.6":
   version "2.5.6"
