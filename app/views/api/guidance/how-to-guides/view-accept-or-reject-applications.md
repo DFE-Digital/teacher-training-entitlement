@@ -161,6 +161,63 @@ Successful requests will return a response body including updates to the `status
 
 See the ['Reject an application' endpoint documentation](/api/docs/v1#/Applications/put_api_v1_applications__id__reject) for more information.
 
+## Revert an accepted application to pending
+
+```
+PUT /api/v1/applications/{id}/revert-to-pending
+```
+
+Providers can **revert an accepted application to pending** if they need to change the outcome of an application they have accepted. Once the application is pending, the provider can accept or reject it again.
+
+Reasons to revert an application include (but are not limited to):
+
+* accepting the application by mistake
+* the participant having changed their circumstances after the application was accepted
+
+The request parameter must include the `id` of the corresponding application. There is no request body.
+
+Providers should note that:
+
+* only applications with the `status` `accepted` can be reverted. Any other status returns a `422 Unprocessable Content` error
+* the `funded_place` value is cleared (set to `null`). Providers must set it again when they accept the application
+* the application cannot be reverted if it has any declarations, unless every declaration has the state `voided` or `ineligible`. Providers must void any declarations before reverting the application
+* providers cannot revert an application that has been reassigned to another provider
+
+Successful requests will return a response body including updates to the `status` and `funded_place` attributes.
+
+### Example response body
+
+```json
+{
+  "data": {
+    "id": "d0b4a32e-a272-489e-b30a-cb17131457fc",
+    "type": "application",
+    "attributes": {
+      "course_identifier": "tte-early-years",
+      "status": "pending",
+      "funded_place": null
+    }
+  }
+}
+```
+
+The response includes all other application attributes. See [Retrieve multiple applications](#retrieve-multiple-applications) for the full list.
+
+### Example error response body
+
+```json
+{
+  "errors": [
+    {
+      "title": "status",
+      "detail": "Cannot revert application to pending for this application's status"
+    }
+  ]
+}
+```
+
+See the ['Revert an application to pending' endpoint documentation](/api/docs/v1#/Applications/put_api_v1_applications__id__revert_to_pending) for more information.
+
 ## Change funded place value of an application
 
 ```
@@ -313,10 +370,10 @@ There are several reasons why there might be a change in circumstance for an app
 Where there has been a change in circumstance, providers should:
 
 * reject the application if the application `status` is `pending`
-* contact DfE if the application `status` is `accepted`
+* revert the application to `pending` if the application `status` is `accepted`, then reject it. See [Revert an accepted application to pending](#revert-an-accepted-application-to-pending)
 
 For example, if a participant registers for a course but then decides to change to another course, the provider should:
 
-1. Reject that participant's application.
+1. Reject that participant's application. If the application has already been accepted, revert it to pending first.
 2. Ask the participant to re-register on the registration service, entering the correct course details.
 3. Accept the new application once it is available via the API.
