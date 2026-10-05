@@ -28,7 +28,7 @@ module Admin
     end
 
     def direct_applications_query
-      @direct_applications_query ||= AdminService::ApplicationsSearch.new(q: search_param, filters: filter_params).call
+      @direct_applications_query ||= AdminService::ApplicationsSearch.new(q: search_param, filters: application_filters).call
     end
 
     def applications_for_matching_users_query
@@ -47,9 +47,9 @@ module Admin
     end
 
     def application_filter_scope
-      return Application.all if filter_params.compact_blank.blank?
+      return Application.all if status_filter.blank?
 
-      Application.where(filter_params.compact_blank)
+      Application.where(status: status_filter)
     end
 
     def pagination_params_for(tab)
@@ -60,7 +60,17 @@ module Admin
       @filter_params ||=
         params.permit(%i[
           status
-        ]).to_h
+        ]).to_h.with_indifferent_access
+    end
+
+    def status_filter
+      @status_filter ||= Application::STATUSES.find { |status| status == filter_params[:status] }
+    end
+
+    def application_filters
+      @application_filters ||= {}.tap do |filters|
+        filters[:status] = status_filter if status_filter.present?
+      end
     end
 
     def show_all?
