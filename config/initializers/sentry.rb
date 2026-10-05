@@ -22,8 +22,6 @@ Sentry.init do |config|
     event
   end
 
-  config.enable_logs = true
-
   config.excluded_exceptions += %w[
     SessionWizard::InvalidStep
   ]
