@@ -1,0 +1,11 @@
+<h1 class="govuk-heading-m">Revert to Pending API Endpoint</h1>
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %>
+
+<div class="govuk-body">
+  <p>The Revert to Pending endpoint reverts an accepted application to pending.</p>
+  <%=
+    form_for :form, url: admin_applications_api_tests_revert_to_pending_index_path(@application) do |f|
+      f.govuk_submit("Call Revert to Pending API")
+    end
+  %>
+</div>

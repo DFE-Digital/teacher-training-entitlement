@@ -1,32 +1,38 @@
 module Admin
   module Applications
     class RevertToPendingController < AdminController
-      before_action :set_application
-      before_action :set_revert_to_pending_form
+      before_action :set_form
 
       def create
-        if @revert_to_pending_form.revert
-          redirect_to admin_application_path(@application)
-        else
+        if @form.invalid?
+          render :new, status: :unprocessable_content and return
+        end
+
+        service = ::Applications::RevertToPending.new(
+          application: @form.application,
+          admin_user: current_admin,
+        )
+
+        service.call
+
+        if service.errors.any?
+          @form.errors.copy!(service.errors)
           render :new, status: :unprocessable_content
+        else
+          redirect_to admin_application_path(@form.application)
         end
       end
 
     private
 
-      def set_revert_to_pending_form
-        @revert_to_pending_form = ::Applications::RevertToPending.new(form_params)
+      def set_form
+        @form = Admin::Applications::RevertToPendingForm.new(form_params)
       end
 
       def form_params
-        params.fetch(:applications_revert_to_pending, {})
+        params.fetch(:form, {})
           .permit(:change_status_to_pending)
-          .merge(application: @application)
-          .merge(admin_user: current_admin)
-      end
-
-      def set_application
-        @application = Application.find_by!(ecf_id: params[:id])
+          .merge(application: Application.find_by_ecf_id!(params[:id]))
       end
     end
   end
