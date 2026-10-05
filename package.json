@@ -19,7 +19,7 @@
     "rails-ujs": "^5.2.8",
     "sass": "^1.105.1",
     "svg-pan-zoom": "^3.6.2",
-    "swagger-ui-dist": "^5.33.0",
+    "swagger-ui-dist": "^5.33.1",
     "webpack": "^5.111.1",
     "webpack-cli": "^7.2.3"
   },
