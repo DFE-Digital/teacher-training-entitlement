@@ -1,4 +1,4 @@
-<%= govuk_back_link href: admin_course_cohort_path(@course, @course_cohort.cohort_id) %>
+<%= govuk_back_link href: cohort_admin_course_cohort_path(@course_cohort.course, @course_cohort.cohort) %>
 
 <h1 class="govuk-heading-l">Add or remove providers</h1>
 
@@ -6,7 +6,7 @@
 govuk_summary_list do |sl|
   sl.with_row do |row|
     row.with_key(text: "Course")
-    row.with_value(text: @course.name)
+    row.with_value(text: @course_cohort.course.name)
   end
 
   sl.with_row do |row|
@@ -17,7 +17,7 @@ govuk_summary_list do |sl|
 end
 %>
 
-<%= form_with model: @course_cohort, url: admin_course_course_cohort_provider_path(@course, @course_cohort), method: :patch do |f| %>
+<%= form_with model: @course_cohort, url: admin_course_cohort_provider_path(@course_cohort), method: :patch do |f| %>
   <%= f.govuk_error_summary %>
 
   <%= render "admin/course_cohort_providers/lead_providers_form",
@@ -27,6 +27,6 @@ end
 
   <div class="govuk-button-group">
     <%= f.govuk_submit "Save providers" %>
-    <%= govuk_link_to("Cancel", admin_course_cohort_path(@course, @course_cohort.cohort), class: "govuk-link--no-visited-state") %>
+    <%= govuk_link_to("Cancel", cohort_admin_course_cohort_path(@course_cohort.course, @course_cohort.cohort), class: "govuk-link--no-visited-state") %>
   </div>
 <% end %>

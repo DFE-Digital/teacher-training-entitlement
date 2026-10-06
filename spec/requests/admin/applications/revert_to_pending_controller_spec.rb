@@ -23,23 +23,21 @@ RSpec.describe Admin::Applications::RevertToPendingController, type: :request do
       end
 
       context "with valid form params" do
-        let :params do
-          { applications_revert_to_pending: { change_status_to_pending: "yes" } }
-        end
+        let(:params) { { form: { change_status_to_pending: "yes" } } }
 
         it { is_expected.to redirect_to admin_application_path(application) }
       end
 
       context "with invalid form params" do
-        let :params do
-          { applications_revert_to_pending: { change_status_to_pending: "no" } }
-        end
+        let(:params) { { form: { change_status_to_pending: "no" } } }
 
-        it { is_expected.to redirect_to admin_application_path(application) }
+        it { is_expected.to have_http_status :unprocessable_content }
+        it { is_expected.to have_attributes body: /change the status to pending/i }
       end
 
-      context "without form params" do
-        let(:params) { {} }
+      context "when the application cannot be reverted" do
+        let(:application) { create(:application, :pending) }
+        let(:params) { { form: { change_status_to_pending: "yes" } } }
 
         it { is_expected.to have_http_status :unprocessable_content }
         it { is_expected.to have_attributes body: /change the status to pending/i }

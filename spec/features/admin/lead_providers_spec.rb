@@ -22,7 +22,7 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     expect(page).to have_css("h1", text: "Providers")
 
     providers.each do |lead_provider|
-      expect(page).to have_link(lead_provider.name, href: admin_lead_provider_path(lead_provider))
+      expect(page).to have_link(lead_provider.name, href: academic_year_admin_lead_provider_path(lead_provider, Date.current.year))
     end
 
     lead_provider = providers.first

@@ -16,25 +16,14 @@ RSpec.feature "Listing and viewing courses", type: :feature do
     scenario "viewing the list of courses" do
       course = create_course_with_current_cohort(name: "A Course with multiple cohorts")
 
-      visit(admin_courses_path)
+      visit(admin_course_cohorts_path)
 
       expect(page).to have_css("h1", text: "Courses")
       expect(page).to have_text(course.name)
-      expect(page).to have_css(".x-govuk-sub-navigation")
-      expect(page).to have_css(".govuk-pagination__item--current", text: 1)
-    end
-
-    scenario "navigating to the second page of courses" do
-      visit(admin_courses_path)
-
-      click_on("Next")
-
-      expect(page).to have_css("table.govuk-table tbody tr", count: 5)
-      expect(page).to have_css(".govuk-pagination__item--current", text: "2")
     end
 
     scenario "viewing course details for all cohorts and a selected cohort" do
-      visit(admin_courses_path)
+      visit(admin_course_cohorts_path)
 
       course = Course.order(name: :asc).first
       course_cohort = course.course_cohorts.max_by { |cc| cc.cohort.registration_starts_at }
@@ -53,7 +42,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       end
 
       expect(page).to have_css("h2", text: "Providers")
-      expect(page).to have_current_path(admin_course_cohort_path(course, course_cohort.cohort))
+      expect(page).to have_current_path(cohort_admin_course_cohort_path(course, course_cohort.cohort))
     end
 
     scenario "filtering courses by academic year" do
@@ -70,11 +59,11 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       course_2025 = build(:course, name: "Course 2025").tap(&:save!)
       create(:course_cohort, course: course_2025, cohort: cohort_2025, academic_year: 2025)
 
-      visit(admin_courses_path)
+      visit(admin_course_cohorts_path)
 
       click_link("2026 / 2027", exact: true)
 
-      expect(page).to have_current_path(academic_year_admin_courses_path(2026))
+      expect(page).to have_current_path(academic_year_admin_course_cohorts_path(2026))
       expect(page).to have_text(course_2026_a.name)
       expect(page).to have_text(course_2026_b.name)
       expect(page).not_to have_text(course_2025.name)

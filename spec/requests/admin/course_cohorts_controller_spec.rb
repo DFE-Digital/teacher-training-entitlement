@@ -40,21 +40,13 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     describe "#show" do
       before do
         create_list(:delivery_partnership, 2, course_cohort:, lead_provider:)
-        get admin_course_cohort_path(course_cohort.course, cohort)
+        get cohort_admin_course_cohort_path(course_cohort.course, cohort)
       end
 
       it { is_expected.to have_http_status :success }
 
-      it "links back to courses when there is no referrer" do
-        expect(response.body).to include(%(href="#{admin_courses_path}"))
-      end
-
-      it "links back to the referrer when present" do
-        referrer = admin_cohort_path(cohort)
-
-        get admin_course_cohort_path(course_cohort.course, cohort), headers: { "HTTP_REFERER" => referrer }
-
-        expect(response.body).to include(%(href="#{referrer}"))
+      it "links back" do
+        expect(response.body).to include(%(href="#{cohort_admin_course_cohorts_path(course_cohort.cohort)}"))
       end
 
       it "shows the cohort name" do
@@ -70,7 +62,8 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
       end
 
       it "links to add or remove providers" do
-        expect(response.body).to include(admin_course_course_cohort_provider_path(course, course_cohort))
+        expect(response.body).to include("Add/Remove providers")
+        expect(response.body).to include(admin_course_cohort_provider_path(course_cohort))
       end
 
       it "does not link to add a milestone" do
@@ -79,7 +72,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
 
       describe "Showing milestones" do
         it "shows milestones for the course cohort" do
-          get admin_course_cohort_path(course, cohort)
+          get cohort_admin_course_cohort_path(course, cohort)
 
           expect(response.body).to include("40%")
           expect(response.body).not_to include("Edit")
@@ -88,7 +81,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     end
 
     describe "#new" do
-      before { get new_admin_cohort_course_path(cohort) }
+      before { get new_admin_course_cohorts_path(cohort) }
 
       it { is_expected.to have_http_status :success }
 
@@ -99,7 +92,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     end
 
     describe "#create" do
-      let(:request) { post admin_cohort_courses_path(cohort), params: cohort_first_params }
+      let(:request) { post cohort_admin_course_cohorts_path(cohort), params: cohort_first_params }
 
       before do
         create(:contract_year, :generic, course:, lead_provider:, teacher_funding: 1000, recruitment_target: 50)
@@ -107,7 +100,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
 
       it do
         request
-        expect(response).to redirect_to admin_course_cohort_path(course, cohort)
+        expect(response).to redirect_to cohort_admin_course_cohort_path(course, cohort)
         expect(flash[:success]).to match(/Course added/i)
       end
 
@@ -142,7 +135,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     end
 
     describe "#create with invalid params" do
-      before { post admin_cohort_courses_path(cohort), params: invalid_params }
+      before { post cohort_admin_course_cohorts_path(cohort), params: invalid_params }
 
       it { is_expected.to have_http_status :unprocessable_content }
     end
@@ -154,7 +147,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
     shared_examples "inaccessible to normal admins" do
-      it { is_expected.to redirect_to admin_courses_path }
+      it { is_expected.to redirect_to admin_cohort_path(course_cohort.cohort) }
 
       it "flashes the correct error" do
         expect(flash[:error]).to match(/You must be a super admin/i)
@@ -162,19 +155,23 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     end
 
     describe "#show" do
-      before { get admin_course_cohort_path(course_cohort.course, cohort) }
+      before { get cohort_admin_course_cohort_path(course_cohort.course, cohort) }
 
       it { is_expected.to have_http_status :success }
+
+      it "no links to add or remove providers" do
+        expect(response.body).not_to include("Add/Remove providers")
+      end
     end
 
     describe "#new" do
-      before { get new_admin_cohort_course_path(cohort) }
+      before { get new_admin_course_cohorts_path(cohort) }
 
       it_behaves_like "inaccessible to normal admins"
     end
 
     describe "#create" do
-      before { post admin_cohort_courses_path(cohort), params: cohort_first_params }
+      before { post cohort_admin_course_cohorts_path(cohort), params: cohort_first_params }
 
       it_behaves_like "inaccessible to normal admins"
     end
@@ -184,19 +181,19 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
     describe "#show" do
-      before { get admin_course_cohort_path(course_cohort.course, cohort) }
+      before { get cohort_admin_course_cohort_path(course_cohort.course, cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
 
     describe "#new" do
-      before { get new_admin_cohort_course_path(cohort) }
+      before { get new_admin_course_cohorts_path(cohort) }
 
       it { is_expected.to redirect_to sign_in_path }
     end
 
     describe "#create" do
-      before { post admin_cohort_courses_path(cohort), params: cohort_first_params }
+      before { post cohort_admin_course_cohorts_path(cohort), params: cohort_first_params }
 
       it { is_expected.to redirect_to sign_in_path }
     end

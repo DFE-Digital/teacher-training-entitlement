@@ -13,7 +13,7 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
     let(:super_admin) { true }
 
     describe "#show" do
-      before { get admin_course_course_cohort_provider_path(course, course_cohort) }
+      before { get admin_course_cohort_provider_path(course_cohort) }
 
       it { expect(response).to have_http_status(:success) }
     end
@@ -22,7 +22,7 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
       let!(:new_lead_provider) { create(:lead_provider) }
 
       let(:request) do
-        patch admin_course_course_cohort_provider_path(course, course_cohort),
+        patch admin_course_cohort_provider_path(course_cohort),
               params: {
                 course_cohort: {
                   lead_providers: {
@@ -39,7 +39,7 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
       it "updates the providers for the course cohort" do
         expect { request }.to change(course_cohort.course_cohort_providers, :count).by(1)
 
-        expect(response).to redirect_to(admin_course_cohort_path(course, course_cohort.cohort))
+        expect(response).to redirect_to(cohort_admin_course_cohort_path(course, course_cohort.cohort))
       end
     end
   end
@@ -48,10 +48,10 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
     let(:super_admin) { false }
 
     describe "#show" do
-      before { get admin_course_course_cohort_provider_path(course, course_cohort) }
+      before { get admin_course_cohort_provider_path(course_cohort) }
 
       it "redirects to the course page" do
-        expect(response).to redirect_to(admin_course_cohort_path(course, course_cohort.cohort))
+        expect(response).to redirect_to(cohort_admin_course_cohort_path(course_cohort.course, course_cohort.cohort))
         expect(flash[:error]).to match(/You must be a super admin/i)
       end
     end

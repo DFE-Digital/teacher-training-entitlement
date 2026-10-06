@@ -20,14 +20,15 @@ namespace :admin do
 
   resource :dashboard, only: %i[show]
 
-  resources :cohorts do
-    resources :courses, controller: "course_cohorts", only: %i[new create]
-  end
+  resources :cohorts
 
-  resources :courses, only: %i[index edit update] do
-    concerns :cohortable, index: "courses#index"
-    resources :cohorts, controller: "course_cohorts", only: %i[show]
-    resources :course_cohort_providers, path: "course-providers", only: %i[show update]
+  resources :course_cohorts, path: "courses", only: %i[index] do
+    concerns :cohortable, index: "course_cohorts#index", show: "course_cohorts#show"
+    collection do
+      get "cohorts/:cohort_id/new", to: "course_cohorts#new", as: :new
+      post "cohorts/:cohort_id", to: "course_cohorts#create"
+    end
+    resource :course_cohort_providers, path: "providers", only: %i[show update], as: :provider
   end
 
   resources :applications, only: %i[index show] do
@@ -41,6 +42,7 @@ namespace :admin do
           resources :resume, only: %i[index create]
           resources :withdraw, only: %i[index create]
           resources :reject, only: %i[index create]
+          resources :revert_to_pending, only: %i[index create]
           resources :accept, only: %i[index create]
           resources :started_declarations, only: %i[index create]
           resources :completed_declarations, only: %i[index create]

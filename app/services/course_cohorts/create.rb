@@ -30,6 +30,7 @@ module CourseCohorts
     def find_or_create_course_cohort!
       @course_cohort = cohort.course_cohorts.find_or_create_by!(course:) do |course_cohort|
         course_cohort.training_starts_at = training_starts_at
+        course_cohort.academic_year = cohort.start_year
       end
     end
 

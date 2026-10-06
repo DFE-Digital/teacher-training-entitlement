@@ -208,6 +208,25 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
       end
     end
 
+    describe "revert an accepted application to pending" do
+      it_behaves_like "an API update endpoint documentation",
+                      "/api/v1/applications/{id}/revert-to-pending",
+                      "Applications",
+                      "Revert an application to pending",
+                      "The application being reverted to pending",
+                      "#/components/schemas/ApplicationResponse" do
+        let(:application) { create(:application, :accepted, :eligible_for_funding, lead_provider:, course_cohort:) }
+        let(:resource) { application }
+        let(:type) { "application" }
+        let(:response_example) do
+          base_response_example.tap do |example|
+            example[:data][:attributes][:status] = "pending"
+            example[:data][:attributes][:funded_place] = nil
+          end
+        end
+      end
+    end
+
     describe "started declaration" do
       it_behaves_like "an API create on existing resource endpoint documentation",
                       "/api/v1/applications/{id}/declarations/started",

@@ -50,6 +50,11 @@ module API
         call_and_render(service:)
       end
 
+      def revert_to_pending
+        service = Applications::RevertToPending.new(application: updateable_application)
+        call_and_render(service:)
+      end
+
     protected
 
       #

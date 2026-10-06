@@ -2,7 +2,7 @@
 
 <h1 class="govuk-heading-l">Add course to cohort <%= @form.cohort.description %></h1>
 
-<%= form_with model: @form, url: admin_cohort_courses_path(@form.cohort) do |f| %>
+<%= form_with model: @form, url: cohort_admin_course_cohorts_path(@form.cohort) do |f| %>
   <%= f.govuk_error_summary %>
 
   <%=

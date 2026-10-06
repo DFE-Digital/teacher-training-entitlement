@@ -21,7 +21,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
   scenario "adding a course with contract year templates" do
     create(:contract_year, :generic, course:, lead_provider: lead_provider_one, teacher_funding: 1000, recruitment_target: 50)
 
-    visit new_admin_cohort_course_path(cohort)
+    visit new_admin_course_cohorts_path(cohort)
 
     select course.name, from: "Course"
     fill_in_training_starts_at(day: "1", month: "9", year: "2025")
@@ -47,7 +47,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
   scenario "adding a course with a contract year template with no funding details" do
     create(:contract_year, :generic, course:, lead_provider: lead_provider_one, teacher_funding: nil, recruitment_target: nil)
 
-    visit new_admin_cohort_course_path(cohort)
+    visit new_admin_course_cohorts_path(cohort)
 
     select course.name, from: "Course"
     fill_in_training_starts_at(day: "1", month: "9", year: "2025")
