@@ -25,10 +25,28 @@ RSpec.describe Admin::SearchController, type: :request do
       it "groups the user's applications by user" do
         expect(response).to have_http_status(:success)
         expect(response.body).to include("Users (1)")
-        expect(response.body).to include("Applications (0)")
+        expect(response.body).to include("Applications (2)")
         expect(response.body).to include("Jane Search")
         expect(response.body).to include("1234567")
         expect(response.body).to include(admin_user_path(user))
+      end
+    end
+
+    context "when searching by user ID" do
+      let(:user) { create(:user, :with_one_login_id, full_name: "Found User") }
+      let!(:application) { create(:application, user:) }
+
+      before do
+        get admin_search_path, params: { q: "\t#{user.ecf_id}", status: "" }
+      end
+
+      it "shows the applications for the matching user" do
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Users (1)")
+        expect(response.body).to include("Applications (1)")
+        expect(response.body).to include("Found User")
+        expect(response.body).to include(admin_user_path(user))
+        expect(response.body).to include(admin_application_path(application))
       end
     end
 

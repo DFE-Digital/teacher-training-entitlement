@@ -18,11 +18,38 @@ module Admin
   private
 
     def applications_query
-      AdminService::ApplicationsSearch.new(q: search_param, filters: filter_params).call
+      return direct_applications_query if search_param.blank? || direct_applications_query.exists?
+
+      applications_for_matching_users_query
     end
 
     def users_query
-      AdminService::UsersSearch.new(q: search_param).call
+      @users_query ||= AdminService::UsersSearch.new(q: search_param).call
+    end
+
+    def direct_applications_query
+      @direct_applications_query ||= AdminService::ApplicationsSearch.new(q: search_param, filters: application_filters).call
+    end
+
+    def applications_for_matching_users_query
+      Application
+        .includes(
+          :institution,
+          :user,
+          :lead_provider,
+          :current_application_lead_provider,
+          application_lead_providers: %i[lead_provider],
+          course_cohort: %i[course cohort],
+        )
+        .where(user_id: users_query.unscope(:order).select(:id))
+        .merge(application_filter_scope)
+        .order(created_at: :desc, user_id: :desc)
+    end
+
+    def application_filter_scope
+      return Application.all if status_filter.blank?
+
+      Application.where(status: status_filter)
     end
 
     def pagination_params_for(tab)
@@ -33,7 +60,17 @@ module Admin
       @filter_params ||=
         params.permit(%i[
           status
-        ]).to_h
+        ]).to_h.with_indifferent_access
+    end
+
+    def status_filter
+      @status_filter ||= Application::STATUSES.find { |status| status == filter_params[:status] }
+    end
+
+    def application_filters
+      @application_filters ||= {}.tap do |filters|
+        filters[:status] = status_filter if status_filter.present?
+      end
     end
 
     def show_all?
