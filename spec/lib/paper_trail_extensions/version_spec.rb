@@ -5,7 +5,7 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
     freeze_time
     PaperTrail.request.whodunnit = "Admin 1"
     allow(DfE::Analytics).to receive(:enabled?).and_return(true)
-    allow(StreamVersionsToBigQueryJob).to receive(:perform_later).and_call_original
+    allow(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).and_call_original
   end
 
   context "when a model has paper trail enabled" do
@@ -36,8 +36,8 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
 
       before { user }
 
-      it "calls StreamVersionsToBigQueryJob" do
-        expect(StreamVersionsToBigQueryJob).to have_received(:perform_later).with(user_name, expected_data)
+      it "calls StreamAnalyticsEventToBigQueryJob" do
+        expect(StreamAnalyticsEventToBigQueryJob).to have_received(:send_event).with(type: :version, user: user_name, data: expected_data)
       end
     end
 
@@ -61,8 +61,8 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
         user.update!(full_name: "New name")
       end
 
-      it "calls StreamVersionsToBigQueryJob" do
-        expect(StreamVersionsToBigQueryJob).to have_received(:perform_later).with(user_name, expected_data)
+      it "calls StreamAnalyticsEventToBigQueryJob" do
+        expect(StreamAnalyticsEventToBigQueryJob).to have_received(:send_event).with(type: :version, user: user_name, data: expected_data)
       end
     end
 
@@ -84,8 +84,8 @@ RSpec.describe PaperTrailExtensions::Version, :versioning, type: :model do
         user.destroy!
       end
 
-      it "calls StreamVersionsToBigQueryJob" do
-        expect(StreamVersionsToBigQueryJob).to have_received(:perform_later).with(user_name, expected_data)
+      it "calls StreamAnalyticsEventToBigQueryJob" do
+        expect(StreamAnalyticsEventToBigQueryJob).to have_received(:send_event).with(type: :version, user: user_name, data: expected_data)
       end
     end
   end
