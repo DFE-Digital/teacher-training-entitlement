@@ -1,7 +1,7 @@
 module Admin
   class CourseCohortProvidersController < AdminController
     before_action :course_cohort
-    before_action :ensure_super_admin
+    before_action :require_super_admin
     before_action :lead_providers
 
     def show; end
@@ -47,13 +47,6 @@ module Admin
       selected_providers.to_hash.map do |id, contract|
         [LeadProvider.find(id), contract]
       end
-    end
-
-    def ensure_super_admin
-      return if current_admin.super_admin?
-
-      flash[:error] = "You must be a super admin"
-      redirect_to cohort_admin_course_cohort_path(@course_cohort.course, @course_cohort.cohort)
     end
   end
 end

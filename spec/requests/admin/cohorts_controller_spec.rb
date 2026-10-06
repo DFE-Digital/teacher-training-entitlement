@@ -99,11 +99,11 @@ RSpec.describe Admin::CohortsController, :ecf_api_disabled, type: :request do
   context "when logged in as normal admin" do
     before { sign_in_as_admin }
 
-    shared_examples "inaccessible to normal admins" do |error_message: "You must be a super admin"|
-      it { is_expected.to redirect_to admin_cohorts_path }
+    shared_examples "inaccessible to normal admins" do
+      it { is_expected.to redirect_to sign_in_path }
 
-      it "flashes the correct error" do
-        expect(flash[:error]).to match(/#{error_message}/i)
+      it "flashes the unauthorized alert" do
+        expect(flash[:alert]).to eq({ title: "Unauthorized", message: "Sign in with your administrator account" })
       end
     end
 
