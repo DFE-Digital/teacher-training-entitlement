@@ -187,19 +187,6 @@ class Application < ApplicationRecord
     STATUS_TRANSITIONS[status]&.include?(new_status.to_s)
   end
 
-  # `eligible_for_dfe_funding?`  takes into consideration what we know
-  # about user eligibility plus if it has been previously funded. We need
-  # to keep this method in place to keep consistency during the split between
-  # ECF and NPQ. In the mid term we will perform this calculation on NPQ and
-  # store the value in the `eligible_for_funding` attribute.
-  def eligible_for_dfe_funding?(with_funded_place: false)
-    if previously_funded? && funding_eligiblity_status_code != "marked_funded_by_policy"
-      false
-    else
-      funding_eligibility(with_funded_place:)
-    end
-  end
-
   def has_been_accepted?
     !status.to_s.in?([PENDING, REJECTED])
   end
@@ -293,7 +280,9 @@ class Application < ApplicationRecord
   end
 
   def fundable?
-    eligible_for_dfe_funding?(with_funded_place: true)
+    return false if previously_funded?
+
+    eligible_for_funding && (funded_place.nil? || funded_place)
   end
 
   def latest_participant_outcome_state
@@ -321,12 +310,6 @@ private
     if STATUS_TRANSITIONS.fetch(from, []).exclude?(to)
       errors.add(:status, :invalid_status_transition, from: from || "blank", to:)
     end
-  end
-
-  def funding_eligibility(with_funded_place:)
-    return eligible_for_funding unless with_funded_place
-
-    eligible_for_funding && (funded_place.nil? || funded_place)
   end
 
   def validate_funded_place?

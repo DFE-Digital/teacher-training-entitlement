@@ -23,6 +23,9 @@ RSpec.describe HandleSubmissionForStore do
       "works_in_school" => "no",
       "kind_of_nursery" => "private_nursery",
       "teacher_catchment" => "england",
+      "eligible_for_funding" => false,
+      "funding_eligiblity_status_code" => "ineligible_setting",
+      "previously_funded" => false,
     }
   end
 
@@ -86,6 +89,9 @@ RSpec.describe HandleSubmissionForStore do
           "works_in_school" => "yes",
           "teacher_catchment" => "england",
           "work_setting" => "a_school",
+          "eligible_for_funding" => true,
+          "funding_eligiblity_status_code" => "eligible_for_funding",
+          "previously_funded" => false,
           "referred_by_return_to_teaching_adviser" => "no",
           "trn" => "1234321",
         }
@@ -109,7 +115,7 @@ RSpec.describe HandleSubmissionForStore do
           "eligible_for_funding" => true,
           "funded_place" => nil,
           "funding_choice" => nil,
-          "funding_eligiblity_status_code" => "funded",
+          "funding_eligiblity_status_code" => "eligible_for_funding",
           "kind_of_nursery" => nil,
           "status" => "pending",
           "participant_outcome_state" => nil,
@@ -144,8 +150,11 @@ RSpec.describe HandleSubmissionForStore do
       end
 
       context "when there is a funding choice selected and eligible for funding is true" do
-        before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::FUNDED_ELIGIBILITY_RESULT)
+        let(:store) do
+          super().merge(
+            "eligible_for_funding" => true,
+            "funding_eligiblity_status_code" => "eligible_for_funding",
+          )
         end
 
         it "clears the funding choice to nil on the application" do
@@ -155,10 +164,6 @@ RSpec.describe HandleSubmissionForStore do
       end
 
       context "when there is a funding choice selected and eligible for funding is false" do
-        before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_SETTING)
-        end
-
         it "saves the funding choice to school on the application" do
           subject.call
           expect(user.applications.first.reload.funding_choice).to eq "school"
@@ -179,6 +184,9 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => "private_nursery",
           "teacher_catchment" => "another",
           "teacher_catchment_country" => "spain",
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "not_in_england",
+          "previously_funded" => false,
           "work_setting" => "early_years_or_childcare",
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,
@@ -234,6 +242,9 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => "private_nursery",
           "teacher_catchment" => nil,
           "teacher_catchment_country" => nil,
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "not_in_england",
+          "previously_funded" => false,
           "work_setting" => "early_years_or_childcare",
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,
@@ -294,6 +305,9 @@ RSpec.describe HandleSubmissionForStore do
           "kind_of_nursery" => "private_nursery",
           "teacher_catchment" => "another",
           "teacher_catchment_country" => "wonderland",
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "not_in_england",
+          "previously_funded" => false,
           "work_setting" => "early_years_or_childcare",
           "referred_by_return_to_teaching_adviser" => "no",
           "on_submission_trn" => nil,

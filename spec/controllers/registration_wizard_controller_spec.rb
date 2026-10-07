@@ -1,47 +1,11 @@
 require "rails_helper"
 
 RSpec.describe RegistrationWizardController do
-  let(:missing_institution_wizard) do
-    Class.new do
-      def initialize(*args); end
-      def respond_to_missing?(*) = true
-      def method_missing(*) = raise FundingEligibility::MissingMandatoryInstitution
-    end
-  end
-
   let(:current_user) { create(:user) }
 
   before { session["user_id"] = current_user.id }
 
   subject(:page_response) { make_request && response }
-
-  RSpec.shared_examples "it redirects on missing mandatory institution" do
-    before do
-      allow(RegistrationWizard).to receive(:new).and_return(missing_institution_wizard.new)
-      session["registration_store"] = registration_store
-      make_request
-    end
-
-    context "when working in a school" do
-      let(:registration_store) { { "works_in_school" => "yes" } }
-
-      it { is_expected.to redirect_to registration_wizard_show_path("choose-school") }
-    end
-
-    context "when working in a private nursery" do
-      let(:registration_store) do
-        { "works_in_childcare" => "yes", "kind_of_nursery" => "private_nursery" }
-      end
-
-      it { is_expected.to redirect_to registration_wizard_show_path("work-setting") }
-    end
-
-    context "when working in an early years setting" do
-      let(:registration_store) { { "works_in_childcare" => "yes" } }
-
-      it { is_expected.to redirect_to registration_wizard_show_path("work-setting") }
-    end
-  end
 
   describe "#show" do
     let(:make_request) { get(:show, params: { step: "course-start-date" }) }
@@ -51,8 +15,6 @@ RSpec.describe RegistrationWizardController do
     before do
       session["registration_store"] = { "course_cohort_id" => course_cohort.id }
     end
-
-    it_behaves_like "it redirects on missing mandatory institution"
 
     it { is_expected.to have_http_status :success }
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
@@ -108,8 +70,6 @@ RSpec.describe RegistrationWizardController do
   describe "#update" do
     let(:wizard_params) { { course_start_date: "yes" } }
     let(:make_request) { patch :update, params: { step: "course-start-date", registration_wizard: wizard_params } }
-
-    it_behaves_like "it redirects on missing mandatory institution"
 
     context "when the user session is stale" do
       before { session["user_id"] = "999999" }

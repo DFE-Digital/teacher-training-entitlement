@@ -86,6 +86,12 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     context "when school not in england" do
       let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school, :in_wales) }
+      let(:store) do
+        super().merge(
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "not_in_england",
+        )
+      end
 
       it { is_expected.to eq :ineligible_for_funding }
     end
@@ -93,6 +99,12 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     context "when school has ineligible establishment type" do
       let(:institution_id) { school.institution.id.to_s }
       let(:school) { create(:school, :ineligible_establishment_type) }
+      let(:store) do
+        super().merge(
+          "eligible_for_funding" => false,
+          "funding_eligiblity_status_code" => "ineligible_setting",
+        )
+      end
 
       it { is_expected.to eq :ineligible_for_funding }
     end
