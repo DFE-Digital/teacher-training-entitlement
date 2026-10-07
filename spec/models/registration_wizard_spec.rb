@@ -51,7 +51,6 @@ RSpec.describe RegistrationWizard do
         {
           "chosen_provider" => "yes",
           "teacher_catchment" => "england",
-          "teacher_catchment_country" => "",
           "works_in_school" => "no",
           "trn_knowledge" => "yes",
           "trn" => "123456",
@@ -66,7 +65,6 @@ RSpec.describe RegistrationWizard do
           "course_identifier" => "tte-early-years",
           "lead_provider_id" => LeadProvider.all.sample.id,
           "funding" => "self",
-          "referred_by_return_to_teaching_adviser" => "no",
           "course_cohort_ecf_id" => course_cohort.ecf_id,
         }
       end
@@ -91,12 +89,10 @@ RSpec.describe RegistrationWizard do
           "lead_provider_id" => LeadProvider.all.sample.id,
           "national_insurance_number" => "123420",
           "teacher_catchment" => "england",
-          "teacher_catchment_country" => "",
           "trn" => "123456",
           "trn_knowledge" => "yes",
           "works_in_childcare" => "yes",
           "works_in_school" => "no",
-          "referred_by_return_to_teaching_adviser" => "no",
           "course_cohort_ecf_id" => course_cohort.ecf_id,
         }
       end
