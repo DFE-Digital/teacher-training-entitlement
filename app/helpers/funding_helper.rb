@@ -12,15 +12,6 @@ module FundingHelper
     funding_eligibility.get_description_for_funding_status
   end
 
-  def scholarship_eligibility_in_review?(application)
-    return false if application.eligible_for_funding
-    return false if !application.eligible_for_funding && application.funding_choice.present?
-    return false unless application.inside_catchment?
-    return true if application.referred_by_return_to_teaching_adviser == "yes"
-
-    application.work_setting == "another_setting"
-  end
-
   def targeted_support_funding
     I18n.t("funding_details.targeted_funding_eligibility").html_safe
   end
@@ -44,7 +35,7 @@ private
       course: application.course,
       institution: application.institution,
       inside_catchment: application.teacher_catchment == "england",
-      query_store: RegistrationQueryStore.new(store: application.raw_application_data),
+      query_store: RegistrationQueryStore.new(store: application.registration_data),
     )
   end
 end
