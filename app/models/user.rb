@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include EcfIdable
   encrypts :refresh_token
 
   # TO DO: remove after succesful deploy
@@ -77,10 +78,6 @@ class User < ApplicationRecord
 
   def archived?
     archived_email.present?
-  end
-
-  def to_param
-    ecf_id
   end
 
   def set_closed_registration_feature_flag

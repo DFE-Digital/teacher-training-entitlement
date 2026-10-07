@@ -1,4 +1,5 @@
 class Application < ApplicationRecord
+  include EcfIdable
   UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
@@ -19,12 +20,6 @@ class Application < ApplicationRecord
   # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
   delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
 
-  def private_childcare_provider_including_disabled
-    return nil unless institution&.private_childcare_provider?
-
-    PrivateChildcareProvider.including_disabled.find_by(id: institution.institutionable_id)
-  end
-
   has_many :participant_id_changes, through: :user
   has_many :application_events
   has_many :state_changes
@@ -43,11 +38,9 @@ class Application < ApplicationRecord
   has_one :started_declaration, -> { billable_or_changeable.where(declaration_type: Milestone::STARTED) }, class_name: "Declaration"
   has_one :completed_declaration, -> { billable_or_changable.where(declaration_type: Milestone::COMPLETED) }, class_name: "Declaration"
 
-  scope :expired_applications, -> { where(status: [REJECTED, WITHDRAWN]).where("created_at < ?", cut_off_date_for_expired_applications) }
-  scope :active_applications, -> { where.not(id: expired_applications).not_withdrawn }
+  scope :active_applications, -> { not_withdrawn }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
-  scope :for_manual_review, -> { where.not(review_status: nil) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
   scope :previous_valid_applications, -> { where(status: [PENDING, ACCEPTED, STARTED, DEFERRED]) }
@@ -112,14 +105,6 @@ class Application < ApplicationRecord
        STATUSES.index_with(&:itself),
        suffix: true
 
-  enum :kind_of_nursery, {
-    local_authority_maintained_nursery: "local_authority_maintained_nursery",
-    preschool_class_as_part_of_school: "preschool_class_as_part_of_school",
-    private_nursery: "private_nursery",
-    another_early_years_setting: "another_early_years_setting",
-    childminder: "childminder",
-  }, suffix: true
-
   enum :funding_choice, {
     school: "school",
     trust: "trust",
@@ -127,17 +112,6 @@ class Application < ApplicationRecord
     another: "another",
     employer: "employer",
   }, suffix: true
-
-  enum :review_status, {
-    "Needs review" => "needs_review",
-    "Awaiting information" => "awaiting_information",
-    "Re-register" => "reregister",
-    "Decision made" => "decision_made",
-  }, suffix: true
-
-  def to_param
-    ecf_id
-  end
 
   validates :funded_place, inclusion: { in: [true, false] }, if: :validate_funded_place?
   validate :funded_place_nil_for_cohort_with_ineligible_for_funding_cap
@@ -188,19 +162,6 @@ class Application < ApplicationRecord
     STATUS_TRANSITIONS[status]&.include?(new_status.to_s)
   end
 
-  # `eligible_for_dfe_funding?`  takes into consideration what we know
-  # about user eligibility plus if it has been previously funded. We need
-  # to keep this method in place to keep consistency during the split between
-  # ECF and NPQ. In the mid term we will perform this calculation on NPQ and
-  # store the value in the `eligible_for_funding` attribute.
-  def eligible_for_dfe_funding?(with_funded_place: false)
-    if previously_funded? && funding_eligiblity_status_code != "marked_funded_by_policy"
-      false
-    else
-      funding_eligibility(with_funded_place:)
-    end
-  end
-
   def has_been_accepted?
     !status.to_s.in?([PENDING, REJECTED])
   end
@@ -242,63 +203,18 @@ class Application < ApplicationRecord
     "establishment-ineligible" unless eligible_for_funding
   end
 
-  def private_nursery?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.include?(kind_of_nursery)
-  end
-
-  def public_nursery?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(kind_of_nursery)
-  end
-
   def inside_uk_catchment?
     teacher_catchment.in?(UK_CATCHMENT_AREA)
   end
 
   def inside_catchment?
-    %w[england].include?(teacher_catchment) || (cohort.start_year < 2024 && !!school&.urn&.starts_with?("1"))
-  end
-
-  def employer_name_to_display
-    institution&.name || ""
-  end
-
-  def long_employer_name_to_display
-    institution&.name_with_address || ""
-  end
-
-  def employer_urn
-    institution&.urn || ""
-  end
-
-  def school_urn
-    school&.urn
-  end
-
-  def get_approval_status
-    case status
-    when ACCEPTED then REJECTED
-    when REJECTED then PENDING
-    else ACCEPTED
-    end
-  end
-
-  def get_participant_outcome_state
-    case participant_outcome_state
-    when "passed" then "failed"
-    else "passed"
-    end
-  end
-
-  def self.cut_off_date_for_expired_applications
-    Time.zone.local(2024, 6, 30)
+    %w[england].include?(teacher_catchment)
   end
 
   def fundable?
-    eligible_for_dfe_funding?(with_funded_place: true)
-  end
+    return false if previously_funded?
 
-  def latest_participant_outcome_state
-    declarations.completed.billable_or_voidable.latest_first.first&.participant_outcomes&.latest&.state
+    eligible_for_funding && (funded_place.nil? || funded_place)
   end
 
   def transition_status!(status, reason: nil, metadata: {}, **attributes)

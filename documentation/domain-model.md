@@ -168,29 +168,29 @@ erDiagram
     enum funding_choice
     string funding_eligiblity_status_code
     integer institution_id
-    enum kind_of_nursery
     string notes
-    integer number_of_pupils
-    string on_submission_trn
-    text participant_outcome_state
-    boolean primary_establishment
-    jsonb raw_application_data
-    string referred_by_return_to_teaching_adviser
-    enum review_status
     enum status
-    boolean targeted_support_funding_eligibility
     text teacher_catchment
     text teacher_catchment_country
-    string teacher_catchment_iso_country_code
-    text ukprn
     datetime updated_at
     integer user_id
     text work_setting
-    boolean works_in_childcare
-    boolean works_in_nursery
-    boolean works_in_school
     date training_starts_at
     jsonb registration_data
+    boolean targeted_support_funding_eligibility
+    string referred_by_return_to_teaching_adviser
+    enum review_status
+    boolean works_in_school
+    boolean works_in_nursery
+    boolean works_in_childcare
+    string teacher_catchment_iso_country_code
+    boolean primary_establishment
+    string on_submission_trn
+    text ukprn
+    integer number_of_pupils
+    enum kind_of_nursery
+    text participant_outcome_state
+    jsonb raw_application_data
   }
   Application }o--|| User : belongs_to
   Application }o--|| CourseCohort : belongs_to
