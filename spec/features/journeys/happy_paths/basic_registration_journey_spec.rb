@@ -152,6 +152,20 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
         "teacher_catchment_country" => nil,
         "work_setting" => "state_funded_institution",
       },
+      "registration_data" => {
+        "can_share_choices" => "1",
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "course_cohort_id" => course_cohort.id,
+        "course_start_date" => course_cohort.ecf_id,
+        "funding_amount" => nil,
+        "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
+        "institution_name" => js ? "" : "open",
+        "lead_provider_id" => LeadProvider.first.id.to_s,
+        "submitted" => true,
+        "teacher_catchment" => "england",
+        "teacher_catchment_country" => nil,
+        "work_setting" => "state_funded_institution",
+      },
     )
   end
 end
