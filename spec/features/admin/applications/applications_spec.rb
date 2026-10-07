@@ -20,7 +20,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     applications_in_order.limit(applications_per_page).each do |application|
       expect(page).to have_text(application.user.full_name)
-      expect(page).to have_text(application.employer_name_to_display)
+      expect(page).to have_text(application.institution.name)
       expect(page).to have_link("View", href: admin_application_path(application))
     end
 
@@ -138,9 +138,8 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_css("h2", text: "Workplace")
 
     within(summary_lists[2]) do |summary_list|
-      expect(summary_list).to have_summary_item("UK Provider Reference Number (UKPRN)", application.ukprn)
-      expect(summary_list).to have_summary_item("Unique reference number (URN)", application.school_urn)
-      expect(summary_list).to have_summary_item("Country", application.teacher_catchment_country)
+      expect(summary_list).to have_summary_item("UK Provider Reference Number (UKPRN)", application.institution.ukprn)
+      expect(summary_list).to have_summary_item("Unique reference number (URN)", application.institution.urn)
     end
   end
 
