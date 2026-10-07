@@ -16,7 +16,7 @@ on:
         description: Ruby version
         type: string
         required: false
-        default: "3.4.9"
+        default: "3.4.11"
       node-version:
         description: Node version
         type: string
@@ -45,7 +45,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.9' }}
+          ruby-version: ${{ inputs.ruby-version || '3.4.11' }}
           bundler-cache: true
 
       - name: Lint Ruby
@@ -67,7 +67,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.9' }}
+          ruby-version: ${{ inputs.ruby-version || '3.4.11' }}
           bundler-cache: true
 
       - name: Lint SCSS
@@ -115,7 +115,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.9' }}
+          ruby-version: ${{ inputs.ruby-version || '3.4.11' }}
           bundler-cache: true
 
       - name: Set up Node

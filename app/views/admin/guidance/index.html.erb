@@ -1,0 +1,39 @@
+<h1 class="govuk-heading-l">Admin console guidance</h1>
+
+<p class="govuk-body">The admin console is where DfE staff manage the teacher training entitlement service. It is for the support team, contract managers, finance team, assurance team and super admins.</p>
+
+<p class="govuk-body">This guidance explains how to use the admin console and what the terms in it mean.</p>
+
+<h2 class="govuk-heading-m">What you can do in the admin console</h2>
+
+<p class="govuk-body">Use the main navigation to:</p>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li>find <%= govuk_link_to "applications", admin_applications_path %>, view their history and declarations, and make changes to them</li>
+  <li>manage <%= govuk_link_to "registration periods", admin_cohorts_path %>, which set when people can register for courses</li>
+  <li>view <%= govuk_link_to "courses", admin_course_cohorts_path %> and the lead providers that deliver them</li>
+  <li>view <%= govuk_link_to "lead providers", admin_lead_providers_path %></li>
+  <li>view and manage <%= govuk_link_to "finance statements", admin_finance_statements_path %></li>
+  <li>change <%= govuk_link_to "service settings", admin_settings_path %>, such as registration closed, bulk changes and action logs</li>
+</ul>
+
+<p class="govuk-body">Registration periods are also called cohorts in some parts of the service and in the API.</p>
+
+<h2 class="govuk-heading-m">Guidance in this section</h2>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    <%= govuk_link_to "Registration periods", admin_guidance_path("registration-periods") %>:
+    what registration periods are for, how to manage them and how to move an application to a different one.
+  </li>
+  <li>
+    <%= govuk_link_to "Glossary", admin_guidance_path("glossary") %>:
+    the meaning of terms used in the admin console.
+  </li>
+</ul>
+
+<h2 class="govuk-heading-m">Who can do what</h2>
+
+<p class="govuk-body">Most guidance applies to all admin users. Some actions are for super admins only, for example creating, editing and deleting registration periods.</p>
+
+<p class="govuk-body">See <%= govuk_link_to "who can do what for registration periods", "#{admin_guidance_path("registration-periods")}#who-can-do-what" %>.</p>

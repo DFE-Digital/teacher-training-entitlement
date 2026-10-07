@@ -18,7 +18,7 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
         "Finance" => "/admin/finance/statements",
         "Delivery partners" => "/admin/delivery-partners",
         "Workplaces" => "/admin/schools",
-        "Glossary" => "/admin/glossary",
+        "Guidance" => "/admin/guidance",
         "Settings" => "/admin/settings",
       }
     expected_structure.each_with_index do |(name, href), i|

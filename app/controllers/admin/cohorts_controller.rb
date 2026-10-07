@@ -1,5 +1,5 @@
 class Admin::CohortsController < AdminController
-  before_action :ensure_super_admin, except: %i[index show]
+  before_action :require_super_admin, except: %i[index show]
   before_action :cohort, only: %i[show edit update destroy]
 
   def index
@@ -60,12 +60,5 @@ private
 
   def cohort
     @cohort ||= Cohort.find(params[:id])
-  end
-
-  def ensure_super_admin
-    unless current_admin.super_admin?
-      flash[:error] = "You must be a super admin"
-      redirect_to action: :index
-    end
   end
 end

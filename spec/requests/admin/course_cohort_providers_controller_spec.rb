@@ -50,9 +50,12 @@ RSpec.describe Admin::CourseCohortProvidersController, type: :request do
     describe "#show" do
       before { get admin_course_cohort_provider_path(course_cohort) }
 
-      it "redirects to the course page" do
-        expect(response).to redirect_to(cohort_admin_course_cohort_path(course_cohort.course, course_cohort.cohort))
-        expect(flash[:error]).to match(/You must be a super admin/i)
+      it "redirects to the sign in page" do
+        expect(response).to redirect_to(sign_in_path)
+      end
+
+      it "flashes the unauthorized alert" do
+        expect(flash[:alert]).to eq({ title: "Unauthorized", message: "Sign in with your administrator account" })
       end
     end
   end

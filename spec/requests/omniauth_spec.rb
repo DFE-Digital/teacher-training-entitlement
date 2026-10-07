@@ -53,6 +53,12 @@ RSpec.describe "Omniauth callbacks", type: :request do
         end
 
         it "signs in the user and redirects" do
+          expect(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).with(
+            type: :one_login_completed,
+            request: an_instance_of(ActionDispatch::Request),
+            user:,
+          )
+
           make_request
           expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
         end
@@ -86,6 +92,16 @@ RSpec.describe "Omniauth callbacks", type: :request do
       context "when the service raises an error" do
         before do
           allow(Users::FindOrCreateFromTeacherAuth).to receive(:new).and_raise(StandardError, "Something went wrong")
+        end
+
+        it "sends a failed event" do
+          expect(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).with(
+            type: :one_login_failed,
+            request: an_instance_of(ActionDispatch::Request),
+            data: { error_type: "callback_error" },
+          )
+
+          make_request
         end
 
         it "redirects to the failed sign in path" do

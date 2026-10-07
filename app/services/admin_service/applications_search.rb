@@ -3,7 +3,7 @@ class AdminService::ApplicationsSearch
 
   def initialize(q:, filters: {})
     @query = q
-    @filters = filters.to_h.compact_blank
+    @filters = filters.to_h.with_indifferent_access.compact_blank
   end
 
   def call
@@ -28,9 +28,13 @@ private
   end
 
   def application_filter_scope
-    return Application.all if filters.blank?
+    return Application.all if status_filter.blank?
 
-    Application.where(filters)
+    Application.where(status: status_filter)
+  end
+
+  def status_filter
+    @status_filter ||= Application::STATUSES.find { |status| status == filters[:status] }
   end
 
   def search_scope

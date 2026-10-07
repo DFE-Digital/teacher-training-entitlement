@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Guidance::GuidancePage do
-  subject(:guidance_page) { described_class.new("test", content:) }
+  subject(:guidance_page) { described_class.new("test", content:, template_dir: "api/guidance") }
 
   describe "#sections" do
     context "when there are no subheadings" do

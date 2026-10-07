@@ -1,5 +1,5 @@
 class Admin::Settings::Courses::BuilderController < AdminController
-  before_action :ensure_super_admin
+  before_action :require_super_admin
 
   def show
     render wizard.current_step_name
@@ -66,12 +66,5 @@ private
       academic_year_to_add: nil,
       academic_years: academic_years.compact_blank.uniq,
     )
-  end
-
-  def ensure_super_admin
-    unless current_admin.super_admin?
-      flash[:error] = "You must be a super admin to use the course builder"
-      redirect_to admin_path
-    end
   end
 end
