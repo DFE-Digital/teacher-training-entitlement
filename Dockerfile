@@ -12,8 +12,7 @@ RUN apk add --update --no-cache tzdata && \
 # build-base: complication tools for bundle
 # yarn: node package manager
 # postgresql-dev: postgres driver and libraries
-RUN apk add --no-cache build-base git postgresql-dev yaml-dev yarn linux-headers
-
+RUN apk add --no-cache build-base git postgresql-dev yaml-dev yarn linux-headers "zlib>=1.3.2-r1"
 # Install bundler to run bundle exec
 # This should be the same version as the Gemfile.lock
 RUN gem install bundler:2.5.15 --no-document
@@ -69,7 +68,7 @@ WORKDIR /app
 
 # Add the timezone as it's not configured by default in Alpine
 ARG EXTRA_PACKAGES=""
-RUN apk add --update --no-cache libpq tzdata yaml ${EXTRA_PACKAGES} && \
+RUN apk add --update --no-cache libpq tzdata yaml "zlib>=1.3.2-r1" ${EXTRA_PACKAGES} && \
     cp /usr/share/zoneinfo/Europe/London /etc/localtime && \
     echo "Europe/London" > /etc/timezone
 
