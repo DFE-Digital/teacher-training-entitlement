@@ -114,7 +114,7 @@ namespace :admin do
     end
   end
 
-  resources :glossary, only: %i[index]
+  resources :guidance, only: %i[index show], param: :page
 
   resources :settings, only: %i[index]
   namespace :settings do

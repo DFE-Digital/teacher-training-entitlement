@@ -13,15 +13,23 @@ module NavigationStructures
     end
 
     def sub_navigation_structure(path)
-      return [] unless settings_path?(path)
-
-      service_settings_nodes
+      if settings_path?(path)
+        service_settings_nodes
+      elsif guidance_path?(path)
+        guidance_nodes
+      else
+        []
+      end
     end
 
     def sub_navigation_heading(path)
-      return {} unless settings_path?(path)
-
-      { text: "Service settings", visible: true }
+      if settings_path?(path)
+        { text: "Service settings", visible: true }
+      elsif guidance_path?(path)
+        { text: "Categories", visible: true }
+      else
+        {}
+      end
     end
 
   private
@@ -30,6 +38,19 @@ module NavigationStructures
     # sub nodes nested with the 'nodes: key'
     def structure
       admin_nodes
+    end
+
+    def guidance_nodes
+      [
+        Node.new(
+          name: "Registration periods",
+          href: admin_guidance_path("registration-periods"),
+        ),
+        Node.new(
+          name: "Glossary",
+          href: admin_guidance_path("glossary"),
+        ),
+      ]
     end
 
     def super_admin_service_settings_nodes
@@ -88,6 +109,10 @@ module NavigationStructures
       service_settings_prefixes.any? { |prefix| path.start_with?(prefix) }
     end
 
+    def guidance_path?(path)
+      path.start_with?(admin_guidance_index_path)
+    end
+
     def admin_nodes
       {
         Node.new(
@@ -124,8 +149,8 @@ module NavigationStructures
           href: admin_schools_path,
         ) => [],
         Node.new(
-          name: "Glossary",
-          href: admin_glossary_index_path,
+          name: "Guidance",
+          href: admin_guidance_index_path,
         ) => [],
         Node.new(
           name: "Settings",

@@ -206,7 +206,7 @@ en:
               blank: Enter a description for the cohort
               too_long: Description must be shorter than %{count} characters
               too_short: Description must be longer than %{count} characters
-              aken: Description is used by another cohort already
+              taken: Description is used by another cohort already
             start_year:
               blank: Enter the start year for the cohort
             identifier:

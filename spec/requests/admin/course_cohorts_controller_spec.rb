@@ -147,10 +147,10 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
     let(:course_cohort) { create(:course_cohort, cohort:, course:, lead_provider:) }
 
     shared_examples "inaccessible to normal admins" do
-      it { is_expected.to redirect_to admin_cohort_path(course_cohort.cohort) }
+      it { is_expected.to redirect_to sign_in_path }
 
-      it "flashes the correct error" do
-        expect(flash[:error]).to match(/You must be a super admin/i)
+      it "flashes the unauthorized alert" do
+        expect(flash[:alert]).to eq({ title: "Unauthorized", message: "Sign in with your administrator account" })
       end
     end
 

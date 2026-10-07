@@ -7,7 +7,7 @@ module API
     end
 
     def show
-      @page = Guidance::GuidancePage.new(params[:page])
+      @page = Guidance::GuidancePage.new(params[:page], template_dir: "api/guidance")
 
       render template: @page.template
     rescue ActionView::MissingTemplate

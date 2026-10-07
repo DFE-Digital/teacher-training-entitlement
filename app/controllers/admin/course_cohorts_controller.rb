@@ -1,7 +1,7 @@
 class Admin::CourseCohortsController < AdminController
   include Admin::Cohortable
 
-  before_action :ensure_super_admin, only: %i[new create]
+  before_action :require_super_admin, only: %i[new create]
   before_action :course_cohort, only: :show
 
   def index
@@ -70,12 +70,5 @@ private
     }.compact
 
     @course_cohort ||= CourseCohort.includes(:course, :milestones, course_cohort_providers: :lead_provider).find_by!(attrs)
-  end
-
-  def ensure_super_admin
-    unless current_admin.super_admin?
-      flash[:error] = "You must be a super admin"
-      redirect_to admin_cohort_path(params[:cohort_id])
-    end
   end
 end

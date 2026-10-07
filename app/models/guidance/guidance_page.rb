@@ -1,7 +1,8 @@
 module Guidance
   class GuidancePage
-    def initialize(path, content: nil)
+    def initialize(path, template_dir:, content: nil)
       @path = path
+      @template_dir = template_dir
       @content = content
     end
 
@@ -12,7 +13,7 @@ module Guidance
     end
 
     def template
-      "api/guidance/#{path}"
+      [template_dir, path].join("/")
     end
 
     def index_page?
@@ -21,7 +22,7 @@ module Guidance
 
   private
 
-    attr_reader :path
+    attr_reader :path, :template_dir
 
     def page_contents
       @content || File.read(Rails.root.join("app", "views", "#{template}.md"))
