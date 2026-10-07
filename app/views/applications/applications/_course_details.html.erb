@@ -48,7 +48,7 @@ govuk_summary_list(card: { title: "Course details" }) do |sl|
     sl.with_row do |row|
       row.with_key(text: "Course start")
       row.with_value do
-        concat application.raw_application_data['course_start']
+        concat application.registration_data["course_start"]
 
         if application.pending_status? || application.accepted_status? || application.rejected_status?
           text = application.eligible_for_funding ? "eligible_for_funding" : "not_eligible_for_funding"
