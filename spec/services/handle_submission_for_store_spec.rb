@@ -52,30 +52,7 @@ RSpec.describe HandleSubmissionForStore do
       return if record.nil?
 
       record
-        .as_json(except: %i[
-          id
-          created_at
-          updated_at
-          significantly_updated_at
-          updated_from_tra_at
-          DEPRECATED_school_urn
-          email_updates_status
-          email_updates_unsubscribe_key
-          registration_data
-          raw_application_data
-          kind_of_nursery
-          number_of_pupils
-          on_submission_trn
-          participant_outcome_state
-          primary_establishment
-          referred_by_return_to_teaching_adviser
-          review_status
-          targeted_support_funding_eligibility
-          ukprn
-          works_in_childcare
-          works_in_nursery
-          works_in_school
-        ])
+        .as_json(except: %i[id created_at updated_at significantly_updated_at updated_from_tra_at DEPRECATED_school_urn email_updates_status email_updates_unsubscribe_key registration_data])
         .except(*Application.column_names.grep(/teacher.*country/))
     end
 

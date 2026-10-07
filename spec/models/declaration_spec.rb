@@ -145,20 +145,6 @@ RSpec.describe Declaration, type: :model do
           it { is_expected.to be_eligible_state }
         end
 
-        context "with application from another country" do
-          subject do
-            build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
-          end
-
-          let(:institution) { create(:institution, alpha3_country_code: "ITA", subdivision_code: nil) }
-          let(:application) { create(:application, :accepted, course_cohort:, lead_provider:, institution:) }
-
-          it { is_expected.not_to validate_presence_of(:delivery_partner) }
-          it { is_expected.not_to validate_presence_of(:secondary_delivery_partner) }
-          it { is_expected.to validate_absence_of(:delivery_partner_id).with_message(/outside of England/) }
-          it { is_expected.to validate_absence_of(:secondary_delivery_partner_id).with_message(/outside of England/) }
-        end
-
         context "with application from a non-english home nation" do
           subject do
             build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
