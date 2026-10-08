@@ -99,6 +99,9 @@ jobs:
       pull-requests: write
 
     steps:
+      - uses: actions/checkout@v7
+        name: Checkout
+        
       - uses: google-github-actions/auth@v2
         with:
           project_id: ecf-bq
