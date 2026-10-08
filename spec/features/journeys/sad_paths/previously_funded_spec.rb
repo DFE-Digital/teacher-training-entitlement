@@ -14,7 +14,7 @@ RSpec.feature "Previously funded participant", type: :feature do
     previous_course_cohort = create(:course_cohort, course: course_cohort.course, cohort: previous_cohort)
 
     create(:application,
-           :accepted,
+           :completed,
            :eligible_for_funding,
            user:,
            school:,
@@ -26,7 +26,6 @@ RSpec.feature "Previously funded participant", type: :feature do
       "user_id" => user.id,
       "registration_store" => {
         "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_cohort_id" => course_cohort.id,
         "course_start_date" => course_cohort.ecf_id,
         "course_identifier" => course_cohort.course.identifier,
         "lead_provider_id" => lead_provider.id,

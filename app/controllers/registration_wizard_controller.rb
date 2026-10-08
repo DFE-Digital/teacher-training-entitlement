@@ -4,8 +4,8 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_wizard
   before_action :redirect_to_closed_if_no_course_cohort, only: :show
   before_action :set_form
-  before_action :check_duplicate_applications, only: %i[update show]
   before_action :ensure_can_render_step, only: :show
+  before_action :check_allowed_to_apply
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
@@ -118,21 +118,6 @@ private
     @form = @wizard.form
   end
 
-  def check_duplicate_applications
-    return if %w[course_start_date registration_submitted].include?(@wizard.current_step.to_s)
-    return unless course_cohort
-
-    active_applications = current_user.applications.active_applications.where(course_cohort:)
-    return if active_applications.empty?
-
-    flash[:alert] = {
-      title: "Application already registered",
-      message: "You have already made an application for #{course.name}",
-    }
-
-    redirect_to application_path(active_applications.last.ecf_id)
-  end
-
   def registration_closed
     return if request.path == registration_wizard_show_path(:closed)
 
@@ -161,5 +146,19 @@ private
 
   def course_cohort
     @course_cohort ||= @wizard.query_store.course_cohort
+  end
+
+  def check_allowed_to_apply
+    return unless current_user
+    return if params[:step].in?(%w[registration-submitted share-provider])
+    return if current_user.allowed_to_apply?
+
+    application = current_user.applications.last
+    flash[:alert] = {
+      title: "Application already registered",
+      message: "You have already made an application for #{application.course.name}",
+    }
+
+    redirect_to application_path(application.ecf_id)
   end
 end
