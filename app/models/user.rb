@@ -107,6 +107,10 @@ class User < ApplicationRecord
     update!(refresh_token: nil, refresh_token_updated_at: nil)
   end
 
+  def allowed_to_apply?
+    applications.previous_valid_applications.empty?
+  end
+
 private
 
   def change_unsubscribe_key_on_update_email_status

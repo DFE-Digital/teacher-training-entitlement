@@ -50,6 +50,7 @@ class Application < ApplicationRecord
   scope :for_manual_review, -> { where.not(review_status: nil) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
+  scope :previous_valid_applications, -> { where(status: [PENDING, ACCEPTED, STARTED, DEFERRED]) }
 
   attr_accessor :version_note, :admin_user, :assignment
 

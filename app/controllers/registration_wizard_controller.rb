@@ -6,6 +6,7 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_form
   before_action :check_duplicate_applications, only: %i[update show]
   before_action :ensure_can_render_step, only: :show
+  before_action :check_allowed_to_apply
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
@@ -161,5 +162,17 @@ private
 
   def course_cohort
     @course_cohort ||= @wizard.query_store.course_cohort
+  end
+
+  def check_allowed_to_apply
+    return if current_user.allowed_to_apply?
+
+    application = current_user.applications.last
+    flash[:alert] = {
+      title: "Application already registered",
+      message: "You have already made an application for #{application.course.name}",
+    }
+
+    redirect_to application_path(application.ecf_id)
   end
 end
