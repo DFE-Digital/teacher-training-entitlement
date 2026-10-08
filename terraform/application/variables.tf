@@ -88,6 +88,11 @@ locals {
   #access_external_domain = try(local.environment_variables["ACCESS_EXTERNAL_DOMAIN"], local.access_domain)
 
   postgres_ssl_mode = var.enable_postgres_ssl ? "require" : "disable"
+
+  gcp_taxonomy_id   = "6302091323314055162"
+  gcp_policy_tag_id = "301313311867345339"
+  gcp_keyring       = "ecf-key-ring"
+  gcp_key           = "ecf-key"
 }
 
 variable "enable_logit" { default = true }
