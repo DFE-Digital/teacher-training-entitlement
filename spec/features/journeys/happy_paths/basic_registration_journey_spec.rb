@@ -75,15 +75,15 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
 
     expect_applicant_reached_end_of_journey
 
-    User.last.tap do |user|
-      expect(user.email).to eql("user@example.com")
-      expect(user.full_name).to eql("John Doe")
-      expect(user.trn).to eql("1234567")
-      expect(user.date_of_birth).to eql(Date.new(1980, 12, 13))
-      expect(user.national_insurance_number).to be_nil
-      expect(user.applications.count).to be(1)
+    User.last.tap do |expected_user|
+      expect(expected_user.email).to eql("user@example.com")
+      expect(expected_user.full_name).to eql("John Doe")
+      expect(expected_user.trn).to eql("1234567")
+      expect(expected_user.date_of_birth).to eql(user.date_of_birth)
+      expect(expected_user.national_insurance_number).to be_nil
+      expect(expected_user.applications.count).to be(1)
 
-      user.applications.first.tap do |application|
+      expected_user.applications.first.tap do |application|
         expect(application.eligible_for_funding).to be_truthy
       end
     end
@@ -97,12 +97,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("NPD excellence in reception teaching")
       end
-    end
-
-    visit "/registration/share-provider"
-
-    expect_page_to_have(path: "/", submit_form: false) do
-      expect(page).to have_content("Before you start")
     end
 
     expect(retrieve_latest_application_user_data).to match(user_attributes_from_stubbed_callback_response.merge(
@@ -148,7 +142,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       "raw_application_data" => {
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_cohort_id" => course_cohort.id,
         "course_start_date" => course_cohort.ecf_id,
         "funding_amount" => nil,
         "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,

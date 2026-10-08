@@ -84,7 +84,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
 
           it "redirects to user registrations path" do
             make_request
-            expect(response).to redirect_to(applications_path)
+            expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
           end
         end
       end

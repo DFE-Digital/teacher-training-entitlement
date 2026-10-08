@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe RegistrationWizardController do
+  include Helpers::TeacherLogin
+
   let(:missing_institution_wizard) do
     Class.new do
       def initialize(*args); end
@@ -70,6 +72,8 @@ RSpec.describe RegistrationWizardController do
         let(:make_request) { get(:show, params: { step: "start" }) }
 
         it "renders the start page" do
+          teacher_sign_in
+
           make_request
 
           expect(response).to be_successful
@@ -82,6 +86,7 @@ RSpec.describe RegistrationWizardController do
       let(:step) { nil }
 
       before do
+        teacher_sign_in(user: current_user)
         session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_ecf_id" => course_cohort.ecf_id }
         patch(:update, params: { step: })
       end
@@ -90,7 +95,7 @@ RSpec.describe RegistrationWizardController do
         let(:step) { "course-start-date" }
 
         it "redirects to account/registration page with alert" do
-          expect(response).to be_successful
+          expect(response).to redirect_to application_path(current_user.applications.last)
         end
       end
 

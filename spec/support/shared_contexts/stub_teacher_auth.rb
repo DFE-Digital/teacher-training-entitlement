@@ -1,4 +1,6 @@
 RSpec.shared_context("Stub Teacher Auth Responses") do
+  include Helpers::TeacherLogin
+
   let(:user_first_name) { "John" }
   let(:user_last_name) { "Doe" }
   let(:user_preferred_name) { "#{user_first_name} #{user_last_name}" }
@@ -10,6 +12,15 @@ RSpec.shared_context("Stub Teacher Auth Responses") do
   let(:user_trn) { "1234567" }
   let(:user_trn_lookup_status) { "Found" }
   let(:user_verified_name) { [user_first_name, user_last_name] }
+  let(:user) do
+    create(
+      :user,
+      full_name: "#{user_first_name} #{user_last_name}",
+      email: user_email,
+      trn: user_trn,
+      date_of_birth: user_date_of_birth_parsed,
+    )
+  end
 
   let(:provider) { "teacher_auth" }
 
@@ -72,5 +83,7 @@ RSpec.shared_context("Stub Teacher Auth Responses") do
   before do
     OmniAuth.config.test_mode = true
     OmniAuth.config.add_mock(:teacher_auth, stubbed_callback_response)
+
+    teacher_sign_in(user:)
   end
 end

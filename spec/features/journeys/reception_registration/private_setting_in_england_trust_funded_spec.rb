@@ -46,7 +46,6 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       expect(application.raw_application_data).to match(
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_cohort_id" => course_cohort.id,
         "course_start_date" => course_cohort.ecf_id,
         "funding" => "trust",
         "funding_amount" => nil,

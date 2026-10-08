@@ -47,7 +47,7 @@ module Helpers
 
       page.set_rack_session(
         "registration_store" => {
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
         },
       )
     end
