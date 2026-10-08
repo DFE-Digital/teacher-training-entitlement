@@ -99,6 +99,11 @@ jobs:
       pull-requests: write
 
     steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          project_id: ecf-bq
+          workload_identity_provider: projects/808138694727/locations/global/workloadIdentityPools/azure-cip-identity-pool/providers/azure-cip-oidc-provider
+
       - name: Set Airbyte
         if: (contains(github.event.pull_request.labels.*.name, 'airbyte'))
         run: |
