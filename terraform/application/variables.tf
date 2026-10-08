@@ -78,6 +78,10 @@ variable "send_traffic_to_maintenance_page" {
 locals {
   environment_variables = yamldecode(file("${path.module}/config/${var.config}.yml"))
 
+  BIGQUERY_AIRBYTE_DATASET = var.airbyte_enabled ? local.gcp_dataset_name : null
+  AIRBYTE_SERVER_URL       = var.airbyte_enabled ? "https://airbyte-${var.namespace}.${module.cluster_data.ingress_domain}" : null
+  BIGQUERY_POLICY_TAGS     = var.airbyte_enabled ? "{\"hidden\":\"projects/ecf-bq/locations/europe-west2/taxonomies/6302091323314055162/policyTags/301313311867345339\"}" : null
+
   #azure_credentials = try(jsondecode(var.azure_credentials_json), null)
   ## not used anywhere?
   #access_domain          = "${var.service_name}-${var.environment}${var.app_suffix}-web.${module.cluster_data.ingress_domain}"
