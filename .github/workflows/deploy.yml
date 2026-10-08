@@ -105,6 +105,7 @@ jobs:
           echo "TF_VAR_pg_airbyte_enabled=true" >> $GITHUB_ENV
           echo "TF_VAR_airbyte_enabled=true" >> $GITHUB_ENV
           echo "TF_VAR_connection_status=active" >> $GITHUB_ENV
+          echo "TF_VAR_pr-number=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - name: Deploy App to Review
         id: deploy_review
