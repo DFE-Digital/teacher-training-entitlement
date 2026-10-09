@@ -14,14 +14,14 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
       lead_provider:,
       eligible_for_funding:,
       funding_eligiblity_status_code:,
-      raw_application_data:,
+      registration_data:,
       registration_starts_at: Date.new(2025, 4, 1),
     )
   end
   let(:eligible_for_funding) { false }
   let(:funded) { false }
   let(:funding_eligiblity_status_code) { FundingEligibility::INELIGIBLE_SETTING }
-  let(:raw_application_data) { {} }
+  let(:registration_data) { {} }
 
   before do
     assign(:application, application)
@@ -39,31 +39,8 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
     end
   end
 
-  context "when scholarship eligibility needs review" do
-    let(:raw_application_data) do
-      {
-        "teacher_catchment" => "england",
-        "referred_by_return_to_teaching_adviser" => "yes",
-      }
-    end
-
-    before do
-      application.update!(
-        funding_choice: nil,
-        teacher_catchment: "england",
-        referred_by_return_to_teaching_adviser: "yes",
-      )
-    end
-
-    it "shows the in-review funding details" do
-      expect(rendered_partial).to have_css(".govuk-tag", text: "Not eligible")
-      expect(rendered_partial).to have_text("The Department for Education (DfE) will review your registration")
-      expect(rendered_partial).to have_text("Contact Test Provider to check if they can offer you a scholarship-funded place")
-    end
-  end
-
   context "when the application is not eligible because of setting" do
-    let(:raw_application_data) { { "funding" => "self" } }
+    let(:registration_data) { { "funding" => "self" } }
 
     it "shows the course funding row with ineligible_setting text" do
       expect(rendered_partial).to have_css(".govuk-tag", text: "Not eligible")
@@ -75,7 +52,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
   end
 
   context "when the application is not eligible because of being previously funded" do
-    let(:raw_application_data) { { "funding" => "self" } }
+    let(:registration_data) { { "funding" => "self" } }
 
     before do
       # An application funded on a different course

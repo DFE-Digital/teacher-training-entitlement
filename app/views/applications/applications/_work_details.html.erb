@@ -2,14 +2,7 @@
   govuk_summary_list(card: { title: "Work details" }) do |sl|
     sl.with_row do |row|
       row.with_key(text: "Workplace in England")
-      row.with_value(text: boolean_tag(application.teacher_catchment == "england"))
-    end
-
-    if application.referred_by_return_to_teaching_adviser.present?
-      sl.with_row do |row|
-        row.with_key(text: "Referred by return to teaching adviser")
-        row.with_value(text: I18n.t(application.referred_by_return_to_teaching_adviser, scope: "helpers.label.registration_wizard.referred_by_return_to_teaching_adviser_options"))
-      end
+      row.with_value(text: boolean_tag(application.inside_catchment?))
     end
 
     if application.work_setting.present?
@@ -22,7 +15,7 @@
     if application.inside_catchment? && application.school.present?
       sl.with_row do |row|
         row.with_key(text: "Workplace")
-        row.with_value(text: application.long_employer_name_to_display)
+        row.with_value(text: application.institution&.name_with_address || "")
       end
     end
   end
