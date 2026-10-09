@@ -24,6 +24,7 @@ class HandleSubmissionForStore
         work_setting: store["work_setting"],
         referred_by_return_to_teaching_adviser: store["referred_by_return_to_teaching_adviser"],
         raw_application_data: raw_application_data.except("current_user", "current_user_id"),
+        registration_data: raw_application_data.except("current_user", "current_user_id"),
         on_submission_trn: store["trn"],
         teacher_catchment_country:,
         teacher_catchment_iso_country_code:,
