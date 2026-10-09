@@ -149,16 +149,6 @@ RSpec.describe Application do
 
   describe "enums" do
     it {
-      expect(subject).to define_enum_for(:kind_of_nursery).with_values(
-        local_authority_maintained_nursery: "local_authority_maintained_nursery",
-        preschool_class_as_part_of_school: "preschool_class_as_part_of_school",
-        private_nursery: "private_nursery",
-        another_early_years_setting: "another_early_years_setting",
-        childminder: "childminder",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-
-    it {
       expect(subject).to define_enum_for(:funding_choice).with_values(
         school: "school",
         trust: "trust",
@@ -167,15 +157,6 @@ RSpec.describe Application do
         employer: "employer",
       ).backed_by_column_of_type(:enum).with_suffix
     }
-
-    it "defines an enum for review_status" do
-      expect(subject).to define_enum_for(:review_status).with_values(
-        "Needs review" => "needs_review",
-        "Awaiting information" => "awaiting_information",
-        "Re-register" => "reregister",
-        "Decision made" => "decision_made",
-      ).backed_by_column_of_type(:enum).with_suffix
-    end
   end
 
   describe "#can_change_provider?" do
@@ -228,25 +209,6 @@ RSpec.describe Application do
       end
     end
 
-    describe ".for_manual_review" do
-      subject { described_class.for_manual_review.to_a }
-
-      before { application }
-
-      let(:application) { create(:application, review_status:) }
-      let(:review_status) { nil }
-
-      it { is_expected.not_to include(application) }
-
-      Application.review_statuses.each_value do |enum_value|
-        context "with review_status of #{enum_value}" do
-          let(:review_status) { enum_value }
-
-          it { is_expected.to include(application) }
-        end
-      end
-    end
-
     describe ".not_withdrawn" do
       subject { described_class.not_withdrawn.to_a }
 
@@ -278,73 +240,8 @@ RSpec.describe Application do
   describe "#inside_catchment?" do
     subject { application.inside_catchment? }
 
-    let(:application) do
-      if school
-        create(:application, course_cohort:, school_record: school, teacher_catchment:)
-      else
-        create(:application, course_cohort:, institution: nil, teacher_catchment:, works_in_school: false)
-      end
-    end
-    let(:course_cohort) { create(:course_cohort, cohort:) }
-
-    context "when the application is in the 2023 cohort or earlier" do
-      let(:cohort) { create(:cohort, registration_starts_at: Date.new(2023, 4, 1)) }
-
-      context "when the teacher_catchment is not set" do
-        let(:teacher_catchment) { nil }
-
-        context "when the application has an English school" do
-          let(:school) { create(:school, urn: "100000") }
-
-          it { is_expected.to be true }
-        end
-
-        context "when the application has a Welsh school" do
-          let(:school) { create(:school, urn: "401344") }
-
-          it { is_expected.to be false }
-        end
-
-        context "when the application has a school that is a children's centre" do
-          let(:school) { create(:school, urn: "20001") }
-
-          it { is_expected.to be false }
-        end
-
-        context "when the application has no school" do
-          let(:school) { nil }
-
-          it { is_expected.to be false }
-        end
-      end
-    end
-
-    context "when the application is in the 2024 cohort or later" do
-      let(:cohort) { create(:cohort, registration_starts_at: Date.new(2024, 4, 1)) }
-      let(:school) { nil }
-
-      context "when the teacher_catchment is not set" do
-        let(:teacher_catchment) { nil }
-
-        context "when the application has an English school" do
-          let(:school) { create(:school, urn: "100000") }
-
-          it { is_expected.to be false }
-        end
-      end
-
-      context "when the teacher_catchment is set to England" do
-        let(:teacher_catchment) { "england" }
-
-        it { is_expected.to be true }
-      end
-
-      context "when the teacher_catchment is set to Scotland" do
-        let(:teacher_catchment) { "scotland" }
-
-        it { is_expected.to be false }
-      end
-    end
+    it { expect(build(:application, teacher_catchment: "england")).to be_inside_catchment }
+    it { expect(build(:application, teacher_catchment: "other")).not_to be_inside_catchment }
   end
 
   describe "#inside_uk_catchment?" do
@@ -356,82 +253,19 @@ RSpec.describe Application do
     it { expect(build(:application, teacher_catchment: "other")).not_to be_inside_uk_catchment }
   end
 
-  describe "#employer_name" do
-    shared_examples "employer_name" do
-      it "displays proper employer_name" do
-        expect(application.employer_name_to_display).to eq(name)
-      end
-    end
-
-    context "when the application has school attached" do
-      let(:school) { create(:school) }
-      let(:name) { school.name }
-      let(:application) { build(:application, school_record: school) }
-
-      include_examples "employer_name"
-    end
-
-    context "when the application has private childcare provider" do
-      let(:private_childcare_provider) { create(:private_childcare_provider) }
-      let(:name) { private_childcare_provider.name }
-      let(:application) { build(:application, :with_private_childcare_provider, provider_record: private_childcare_provider) }
-
-      include_examples "employer_name"
-    end
-
-    context "when no institution is available" do
-      let(:name) { "" }
-      let(:application) { build(:application, institution: nil, works_in_school: false) }
-
-      include_examples "employer_name"
-    end
-  end
-
   describe "versioning", :versioning do
     context "when changing versioned fields" do
-      let(:application) { create(:application, status: Application::PENDING, participant_outcome_state: nil) }
+      let(:application) { create(:application, status: Application::PENDING) }
 
       before do
-        application.update!(status: Application::ACCEPTED, participant_outcome_state: "passed", funded_place: false)
+        application.update!(status: Application::ACCEPTED, funded_place: false)
       end
 
       it "has history of changes" do
-        previous_application = application.versions.last.reify
         expect(application.status).to eq(Application::ACCEPTED)
-        expect(application.participant_outcome_state).to eq("passed")
 
+        previous_application = application.versions.last.reify
         expect(previous_application.status).to eq(Application::PENDING)
-        expect(previous_application.participant_outcome_state).to be_nil
-      end
-    end
-  end
-
-  describe "#eligible_for_dfe_funding?" do
-    let(:user) { create(:user) }
-
-    subject { application }
-
-    context "when application has been previously funded" do
-      let(:application) { create(:application, :previously_funded, user:, course:) }
-      let(:course) { create(:course) }
-
-      it { is_expected.not_to be_eligible_for_dfe_funding }
-    end
-
-    context "when application has not been previously funded" do
-      let(:application) { create(:application, user:, course:) }
-      let(:course) { create(:course) }
-
-      it "is not eligible for DfE funding if not eligible for funding" do
-        application.update!(eligible_for_funding: false)
-
-        expect(application).not_to be_eligible_for_dfe_funding
-      end
-
-      it "is eligible for DfE funding if the application is eligible for funding" do
-        application.update!(eligible_for_funding: true)
-
-        expect(application).to be_eligible_for_dfe_funding
       end
     end
   end
@@ -604,12 +438,6 @@ RSpec.describe Application do
       let(:course) { create(:course) }
 
       it { is_expected.not_to be_fundable }
-
-      context "when is marked eligible by policy" do
-        before { application.update!(funding_eligiblity_status_code: :marked_funded_by_policy) }
-
-        it { is_expected.to be_fundable }
-      end
     end
   end
 
@@ -638,45 +466,6 @@ RSpec.describe Application do
             expect(user.reload.updated_at).to be_within(1.second).of(old_datetime)
           end
         end
-      end
-    end
-  end
-
-  describe "#latest_participant_outcome_state" do
-    subject { application.latest_participant_outcome_state }
-
-    let(:application) { create(:application, :accepted, participant_outcome_state: "anything") }
-    let(:declaration) { create(:declaration, :completed, application:) }
-    let!(:participant_outcome) { create(:participant_outcome, declaration:) }
-
-    it "returns the state from latest outcome" do
-      expect(subject).to eq("passed")
-    end
-
-    context "when no completed declaration exists" do
-      before { declaration.update!(application: create(:application)) }
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-
-    context "when other type of declaration exists" do
-      before { declaration.update!(declaration_type: "retained-1") }
-
-      it "returns nil" do
-        expect(subject).to be_nil
-      end
-    end
-
-    context "when completed declaration is voided" do
-      before do
-        declaration.update!(state: "voided")
-        participant_outcome.update!(state: "voided")
-      end
-
-      it "returns nil" do
-        expect(subject).to be_nil
       end
     end
   end

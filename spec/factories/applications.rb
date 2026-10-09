@@ -14,11 +14,8 @@ FactoryBot.define do
     end
 
     course_cohort { course.course_cohorts.last || create(:course_cohort, course:, cohort:) }
-    teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
-    teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
-    teacher_catchment_iso_country_code { "GBR" }
+    teacher_catchment { "england" }
     funding_choice { Application.funding_choices.keys.first }
-    ukprn { rand(10_000_000..99_999_999).to_s }
     funded_place { course_cohort.cohort.funding_cap ? !!eligible_for_funding : nil }
 
     after(:create) do |application, evaluator|
@@ -56,11 +53,6 @@ FactoryBot.define do
       end
 
       institution { school_record.institution }
-      ukprn { school_record.ukprn }
-
-      works_in_school { true }
-      works_in_childcare { false }
-      kind_of_nursery { nil }
     end
 
     trait :with_private_childcare_provider do
@@ -69,10 +61,6 @@ FactoryBot.define do
       end
 
       institution { provider_record.institution }
-
-      works_in_school { false }
-      works_in_childcare { true }
-      kind_of_nursery { Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.first }
     end
 
     trait :with_public_childcare_provider do
@@ -81,10 +69,6 @@ FactoryBot.define do
       end
 
       institution { school_record.institution }
-
-      works_in_school { false }
-      works_in_childcare { true }
-      kind_of_nursery { Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.first }
     end
 
     trait :eligible_for_funding do
@@ -128,26 +112,6 @@ FactoryBot.define do
 
         create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, user: application.user, course:, registration_starts_at: previous_cohort.registration_starts_at)
       end
-    end
-
-    trait :with_random_work_setting do
-      work_setting { "a_school" }
-    end
-
-    trait :with_random_participant_outcome_state do
-      participant_outcome_state { "passed" }
-    end
-
-    trait :with_random_user do
-      user { build(:user, :with_random_name) }
-    end
-
-    trait :with_teacher_auth_user do
-      user { create(:user, :with_one_login_id) }
-    end
-
-    trait :without_teacher_auth_user do
-      user { create(:user, provider: nil) }
     end
 
     trait :with_participant_id_change do
@@ -244,10 +208,6 @@ FactoryBot.define do
           metadata: { reason: "other" },
         )
       end
-    end
-
-    trait :manual_review do
-      review_status { "Needs review" }
     end
   end
 end

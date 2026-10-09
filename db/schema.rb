@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_07_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_07_091000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -28,9 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_090000) do
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
   create_enum "email_updates_statuses", ["npd_registration_open"]
   create_enum "funding_choices", ["school", "trust", "self", "another", "employer"]
-  create_enum "kind_of_nurseries", ["local_authority_maintained_nursery", "preschool_class_as_part_of_school", "private_nursery", "another_early_years_setting", "childminder"]
   create_enum "outcome_states", ["passed", "failed", "voided"]
-  create_enum "review_statuses", ["needs_review", "awaiting_information", "reregister", "decision_made"]
   create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "statements_frequency_types", ["monthly"]
   create_enum "term_identifiers", ["autumn", "spring", "summer"]
@@ -131,27 +129,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_07_090000) do
     t.enum "funding_choice", enum_type: "funding_choices"
     t.string "funding_eligiblity_status_code"
     t.bigint "institution_id"
-    t.enum "kind_of_nursery", enum_type: "kind_of_nurseries"
     t.string "notes"
-    t.integer "number_of_pupils", default: 0
-    t.string "on_submission_trn"
-    t.text "participant_outcome_state"
-    t.boolean "primary_establishment", default: false
-    t.jsonb "raw_application_data", default: {}
-    t.string "referred_by_return_to_teaching_adviser"
-    t.enum "review_status", enum_type: "review_statuses"
     t.enum "status", enum_type: "application_statuses"
-    t.boolean "targeted_support_funding_eligibility", default: false
     t.text "teacher_catchment"
     t.text "teacher_catchment_country"
-    t.string "teacher_catchment_iso_country_code", limit: 3
-    t.text "ukprn"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.text "work_setting"
-    t.boolean "works_in_childcare"
-    t.boolean "works_in_nursery"
-    t.boolean "works_in_school"
     t.date "training_starts_at"
     t.jsonb "registration_data", default: {}, null: false
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
