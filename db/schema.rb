@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_103849) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_111758) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -380,15 +380,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_103849) do
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
   end
 
-  create_table "legacy_passed_participant_outcomes", force: :cascade do |t|
-    t.date "completion_date", null: false
-    t.string "course_short_code", null: false
-    t.datetime "created_at", null: false
-    t.string "trn", null: false
-    t.datetime "updated_at", null: false
-    t.index ["trn"], name: "index_legacy_passed_participant_outcomes_on_trn"
-  end
-
   create_table "local_authorities", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "high_pupil_premium", default: false, null: false
@@ -417,21 +408,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_103849) do
     t.index ["from_participant_id"], name: "index_participant_id_changes_on_from_participant_id"
     t.index ["to_participant_id"], name: "index_participant_id_changes_on_to_participant_id"
     t.index ["user_id"], name: "index_participant_id_changes_on_user_id"
-  end
-
-  create_table "participant_outcome_api_requests", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
-    t.bigint "participant_outcome_id", null: false
-    t.jsonb "request_body"
-    t.jsonb "request_headers"
-    t.string "request_path"
-    t.jsonb "response_body"
-    t.jsonb "response_headers"
-    t.integer "status_code"
-    t.datetime "updated_at", null: false
-    t.index ["ecf_id"], name: "index_participant_outcome_api_requests_on_ecf_id", unique: true
-    t.index ["participant_outcome_id"], name: "index_participant_outcome_api_requests_on_participant_outcome"
   end
 
   create_table "participant_outcomes", force: :cascade do |t|
@@ -595,7 +571,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_103849) do
   add_foreign_key "delivery_partnerships", "lead_providers"
   add_foreign_key "milestones", "courses"
   add_foreign_key "participant_id_changes", "users"
-  add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"
   add_foreign_key "statements", "lead_providers"
 end
