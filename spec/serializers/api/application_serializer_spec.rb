@@ -37,7 +37,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `works_in_school`" do
-      expect(attributes["works_in_school"]).to eq(true)
+      expect(attributes["works_in_school"]).to be(true)
     end
 
     it "serializes the `email_validated`" do
