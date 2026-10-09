@@ -5,7 +5,7 @@ Sentry.init do |config|
   config.enabled_environments = %w[production sandbox staging review]
   config.dsn = config.enabled_environments.include?(Rails.env) ? ENV["SENTRY_DSN"] : "disabled"
   config.breadcrumbs_logger = %i[active_support_logger http_logger]
-  config.release = Rails.env.review? ? ENV["HOSTNAME"].match(/.*-(\d+)-/)[1] : ENV["COMMIT_SHA"]
+  config.release = Rails.env.review? ? ENV["HOSTNAME"].match(/.*-(\d+)-/)&.values_at(1) : ENV["COMMIT_SHA"]
 
   filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
   config.before_send = lambda do |event, _hint|
