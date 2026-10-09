@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Sentry.init do |config|
+  config.rails.structured_logging.enabled = true
   config.enabled_environments = %w[production sandbox staging review]
   config.dsn = config.enabled_environments.include?(Rails.env) ? ENV["SENTRY_DSN"] : "disabled"
   config.breadcrumbs_logger = %i[active_support_logger http_logger]
@@ -21,8 +22,6 @@ Sentry.init do |config|
     event.contexts = filter.filter(event.contexts) if event.contexts
     event
   end
-
-  config.enable_logs = true
 
   config.excluded_exceptions += %w[
     SessionWizard::InvalidStep
