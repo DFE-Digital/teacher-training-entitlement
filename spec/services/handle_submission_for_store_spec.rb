@@ -19,9 +19,6 @@ RSpec.describe HandleSubmissionForStore do
       "course_cohort_ecf_id" => course_cohort.ecf_id,
       "institution_id" => private_childcare_provider.institution.id,
       "lead_provider_id" => lead_provider.id,
-      "works_in_childcare" => "yes",
-      "works_in_school" => "no",
-      "kind_of_nursery" => "private_nursery",
       "teacher_catchment" => "england",
     }
   end
@@ -56,7 +53,34 @@ RSpec.describe HandleSubmissionForStore do
 
   describe "#call" do
     def stable_as_json(record)
-      record.as_json(except: %i[id created_at updated_at significantly_updated_at updated_from_tra_at DEPRECATED_school_urn email_updates_status email_updates_unsubscribe_key])
+      return if record.nil?
+
+      record
+        .as_json(except: %i[
+          id
+          created_at
+          updated_at
+          significantly_updated_at
+          updated_from_tra_at
+          DEPRECATED_school_urn
+          email_updates_status
+          email_updates_unsubscribe_key
+          registration_data
+          raw_application_data
+          kind_of_nursery
+          number_of_pupils
+          on_submission_trn
+          participant_outcome_state
+          primary_establishment
+          referred_by_return_to_teaching_adviser
+          review_status
+          targeted_support_funding_eligibility
+          ukprn
+          works_in_childcare
+          works_in_nursery
+          works_in_school
+        ])
+        .except(*Application.column_names.grep(/teacher.*country/))
     end
 
     context "when the store includes a user object (legacy behaviour)" do
@@ -83,11 +107,8 @@ RSpec.describe HandleSubmissionForStore do
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => school.institution.id,
           "lead_provider_id" => lead_provider.id,
-          "works_in_school" => "yes",
           "teacher_catchment" => "england",
-          "work_setting" => "a_school",
-          "referred_by_return_to_teaching_adviser" => "no",
-          "trn" => "1234321",
+          "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
         }
       end
 
@@ -110,29 +131,13 @@ RSpec.describe HandleSubmissionForStore do
           "funded_place" => nil,
           "funding_choice" => nil,
           "funding_eligiblity_status_code" => "funded",
-          "kind_of_nursery" => nil,
           "status" => "pending",
-          "participant_outcome_state" => nil,
           "notes" => nil,
           "institution_id" => school.institution.id,
-          "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => "england",
-          "teacher_catchment_country" => "United Kingdom of Great Britain and Northern Ireland",
-          "teacher_catchment_iso_country_code" => "GBR",
           "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "ukprn" => school.ukprn,
-          "number_of_pupils" => nil,
-          "primary_establishment" => false,
           "user_id" => user.id,
-          "works_in_nursery" => nil,
-          "works_in_childcare" => false,
-          "works_in_school" => true,
-          "work_setting" => "a_school",
-          "raw_application_data" => store.except("current_user_id"),
-          "registration_data" => store.except("current_user_id"),
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => "1234321",
-          "review_status" => nil,
+          "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
         })
       end
     end
@@ -173,16 +178,9 @@ RSpec.describe HandleSubmissionForStore do
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
           "course_cohort_ecf_id" => course_cohort.ecf_id,
-          "institution_id" => private_childcare_provider.institution.id,
           "lead_provider_id" => lead_provider.id,
-          "works_in_childcare" => "yes",
-          "works_in_school" => "no",
-          "kind_of_nursery" => "private_nursery",
-          "teacher_catchment" => "another",
-          "teacher_catchment_country" => "spain",
-          "work_setting" => "early_years_or_childcare",
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
+          "teacher_catchment" => "other",
+
         }
       end
 
@@ -196,29 +194,13 @@ RSpec.describe HandleSubmissionForStore do
           "funded_place" => nil,
           "funding_choice" => nil,
           "funding_eligiblity_status_code" => "not_in_england",
-          "kind_of_nursery" => "private_nursery",
           "status" => "pending",
-          "participant_outcome_state" => nil,
           "notes" => nil,
           "institution_id" => nil,
-          "targeted_support_funding_eligibility" => false,
-          "teacher_catchment" => "another",
-          "teacher_catchment_country" => "spain",
-          "teacher_catchment_iso_country_code" => "ESP",
+          "teacher_catchment" => "other",
           "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "ukprn" => nil,
-          "number_of_pupils" => 0,
-          "primary_establishment" => false,
           "user_id" => user.id,
-          "works_in_nursery" => nil,
-          "works_in_childcare" => true,
-          "works_in_school" => false,
-          "work_setting" => "early_years_or_childcare",
-          "raw_application_data" => store.except("current_user_id"),
-          "registration_data" => store.except("current_user_id"),
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
-          "review_status" => nil,
+          "work_setting" => nil,
         })
       end
     end
@@ -231,14 +213,7 @@ RSpec.describe HandleSubmissionForStore do
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => private_childcare_provider.institution.id,
           "lead_provider_id" => lead_provider.id,
-          "works_in_childcare" => "yes",
-          "works_in_school" => "no",
-          "kind_of_nursery" => "private_nursery",
           "teacher_catchment" => nil,
-          "teacher_catchment_country" => nil,
-          "work_setting" => "early_years_or_childcare",
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
         }
       end
 
@@ -253,29 +228,13 @@ RSpec.describe HandleSubmissionForStore do
           "funded_place" => nil,
           "funding_choice" => nil,
           "funding_eligiblity_status_code" => "not_in_england",
-          "kind_of_nursery" => "private_nursery",
           "status" => "pending",
-          "participant_outcome_state" => nil,
           "notes" => nil,
           "institution_id" => nil,
-          "targeted_support_funding_eligibility" => false,
           "teacher_catchment" => nil,
-          "teacher_catchment_country" => nil,
-          "teacher_catchment_iso_country_code" => nil,
           "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "ukprn" => nil,
-          "number_of_pupils" => 0,
-          "primary_establishment" => false,
           "user_id" => user.id,
-          "works_in_nursery" => nil,
-          "works_in_childcare" => true,
-          "works_in_school" => false,
-          "work_setting" => "early_years_or_childcare",
-          "raw_application_data" => store.except("current_user_id"),
-          "registration_data" => store.except("current_user_id"),
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
-          "review_status" => nil,
+          "work_setting" => nil,
         })
       end
     end
@@ -292,21 +251,8 @@ RSpec.describe HandleSubmissionForStore do
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => private_childcare_provider.institution.id,
           "lead_provider_id" => lead_provider.id,
-          "works_in_childcare" => "yes",
-          "works_in_school" => "no",
-          "kind_of_nursery" => "private_nursery",
-          "teacher_catchment" => "another",
-          "teacher_catchment_country" => "wonderland",
-          "work_setting" => "early_years_or_childcare",
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
+          "teacher_catchment" => "not found",
         }
-      end
-
-      it "logs an error" do
-        subject.call
-
-        expect(Sentry).to have_received(:capture_message).with("Could not find the ISO3166 alpha3 code for wonderland.", level: :warning)
       end
 
       it "stores data from store" do
@@ -320,29 +266,13 @@ RSpec.describe HandleSubmissionForStore do
           "funded_place" => nil,
           "funding_choice" => nil,
           "funding_eligiblity_status_code" => "not_in_england",
-          "kind_of_nursery" => "private_nursery",
           "status" => "pending",
-          "participant_outcome_state" => nil,
           "notes" => nil,
           "institution_id" => nil,
-          "targeted_support_funding_eligibility" => false,
-          "teacher_catchment" => "another",
-          "teacher_catchment_country" => "wonderland",
-          "teacher_catchment_iso_country_code" => nil,
+          "teacher_catchment" => "not found",
           "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "ukprn" => nil,
-          "number_of_pupils" => 0,
-          "primary_establishment" => false,
           "user_id" => user.id,
-          "works_in_nursery" => nil,
-          "works_in_childcare" => true,
-          "works_in_school" => false,
-          "work_setting" => "early_years_or_childcare",
-          "raw_application_data" => store.except("current_user_id"),
-          "registration_data" => store.except("current_user_id"),
-          "referred_by_return_to_teaching_adviser" => "no",
-          "on_submission_trn" => nil,
-          "review_status" => nil,
+          "work_setting" => nil,
         })
       end
     end

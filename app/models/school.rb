@@ -1,4 +1,8 @@
 class School < ApplicationRecord
+  A_SCHOOL = "a_school".freeze
+  AN_ACADEMY_TRUST = "an_academy_trust".freeze
+  A_16_TO_19_EDUCATIONAL_SETTING = "a_16_to_19_educational_setting".freeze
+
   has_one :institution, as: :institutionable, touch: true
 
   delegate :name, :address, :address_string, :display_name, :name_with_address,
@@ -93,7 +97,7 @@ class School < ApplicationRecord
   end
 
   def pp50?(work_setting)
-    if work_setting == Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING
+    if work_setting == A_16_TO_19_EDUCATIONAL_SETTING
       !!PP50_FE_UKPRN_HASH[ukprn.to_s]
     else
       !!PP50_SCHOOLS_URN_HASH[urn.to_s]
