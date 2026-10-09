@@ -1,6 +1,6 @@
 module Questionnaires
   class TeacherCatchment < Base
-    attr_accessor :teacher_catchment, :teacher_catchment_country
+    attr_accessor :teacher_catchment
 
     OPTIONS = [
       ENGLAND = "england".freeze,
@@ -10,10 +10,7 @@ module Questionnaires
     validates :teacher_catchment, presence: true, inclusion: { in: OPTIONS }
 
     def self.permitted_params
-      %i[
-        teacher_catchment
-        teacher_catchment_country
-      ]
+      %i[teacher_catchment]
     end
 
     def after_save

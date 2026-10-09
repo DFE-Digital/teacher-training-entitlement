@@ -51,8 +51,6 @@ class FundingEligibility
 
       case work_setting
       when Institution::STATE_FUNDED_INSTITUTION then school_policy
-      when *Questionnaires::WorkSetting::CHILDCARE_SETTINGS then childcare_policy
-      when *Questionnaires::WorkSetting::SCHOOL_SETTINGS then school_policy
       else INELIGIBLE_SETTING
       end
     end
@@ -64,15 +62,6 @@ class FundingEligibility
   end
 
 private
-
-  def childcare_policy
-    kind_of_nursery = query_store.store["kind_of_nursery"]
-
-    return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?
-    return FUNDED_ELIGIBILITY_RESULT if kind_of_nursery.in?(ELIGIBLE_NURSERY_TYPES)
-
-    INELIGIBLE_SETTING
-  end
 
   def school_policy
     return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?

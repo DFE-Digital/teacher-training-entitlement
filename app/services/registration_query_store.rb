@@ -9,10 +9,6 @@ class RegistrationQueryStore
     store["current_user"] || User.find_by(id: store["current_user_id"])
   end
 
-  def trn_set_via_fallback_verification_question?
-    store["trn_set_via_fallback_verification_question"]
-  end
-
   def funding
     store["funding"]
   end
@@ -29,29 +25,8 @@ class RegistrationQueryStore
     store["funding_eligiblity_status_code"]
   end
 
-  def teacher_catchment_humanized
-    case store["teacher_catchment"]
-    when "another"
-      "No"
-    when "england"
-      "Yes"
-    end
-  end
-
-  def teacher_catchment_england?
-    store["teacher_catchment"] == "england"
-  end
-
-  def valid_employent_type_for_england?
-    teacher_catchment_england?
-  end
-
   def works_in_school?
-    store["works_in_school"] == "yes"
-  end
-
-  def works_in_childcare?
-    store["works_in_childcare"] == "yes"
+    work_setting == Institution::STATE_FUNDED_INSTITUTION
   end
 
   def works_in_another_setting?
@@ -60,22 +35,6 @@ class RegistrationQueryStore
 
   def works_in_other?
     store["work_setting"] == "other"
-  end
-
-  def has_ofsted_urn?
-    store["has_ofsted_urn"] == "yes"
-  end
-
-  def referred_by_return_to_teaching_adviser?
-    store["referred_by_return_to_teaching_adviser"] == "yes"
-  end
-
-  def kind_of_nursery_public?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(store["kind_of_nursery"])
-  end
-
-  def kind_of_nursery_private?
-    Questionnaires::KindOfNursery::KIND_OF_NURSERY_PRIVATE_OPTIONS.include?(store["kind_of_nursery"])
   end
 
   def course
@@ -92,18 +51,6 @@ class RegistrationQueryStore
 
   def date_of_birth
     store["date_of_birth"]
-  end
-
-  def formatted_date_of_birth
-    date_of_birth&.to_fs(:govuk)
-  end
-
-  def maths_understanding?
-    store["maths_understanding"]
-  end
-
-  def childminder?
-    store["kind_of_nursery"] == "childminder"
   end
 
   def work_setting
