@@ -21,11 +21,11 @@ module API
         field(:ukprn) { |a| a.institution&.ukprn }
         field(:status)
         field(:reason_for_rejection)
-        field(:works_in_school)
+        field(:works_in_school) { true }
         field(:cohort) { |a| a.course_cohort.academic_year.to_s }
         field(:inside_uk_catchment?, name: :teacher_catchment)
-        field(:teacher_catchment_country)
-        field(:teacher_catchment_iso_country_code)
+        field(:teacher_catchment_country) { "england" }
+        field(:teacher_catchment_iso_country_code) { "GBR" }
         field(:funded_place)
         field(:schedule_identifier) { |a| a.course_cohort.schedule_identifier }
         field(:assigned_at)
