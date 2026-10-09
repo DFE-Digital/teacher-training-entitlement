@@ -155,7 +155,6 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       "registration_data" => {
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_cohort_id" => course_cohort.id,
         "course_start_date" => course_cohort.ecf_id,
         "funding_amount" => nil,
         "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
