@@ -25,23 +25,9 @@ RSpec.describe RegistrationWizardController do
     end
 
     context "when working in a school" do
-      let(:registration_store) { { "works_in_school" => "yes" } }
+      let(:registration_store) { { "work_setting" => Institution::STATE_FUNDED_INSTITUTION } }
 
       it { is_expected.to redirect_to registration_wizard_show_path("choose-school") }
-    end
-
-    context "when working in a private nursery" do
-      let(:registration_store) do
-        { "works_in_childcare" => "yes", "kind_of_nursery" => "private_nursery" }
-      end
-
-      it { is_expected.to redirect_to registration_wizard_show_path("work-setting") }
-    end
-
-    context "when working in an early years setting" do
-      let(:registration_store) { { "works_in_childcare" => "yes" } }
-
-      it { is_expected.to redirect_to registration_wizard_show_path("work-setting") }
     end
   end
 
