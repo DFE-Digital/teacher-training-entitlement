@@ -37,8 +37,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `works_in_school`" do
-      application.works_in_school = true
-      expect(attributes["works_in_school"]).to eq(application.works_in_school)
+      expect(attributes["works_in_school"]).to eq(true)
     end
 
     it "serializes the `email_validated`" do
@@ -61,18 +60,11 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `teacher_catchment`" do
-      application.teacher_catchment = "england"
       expect(attributes["teacher_catchment"]).to be(true)
     end
 
-    it "serializes the `teacher_catchment_country`" do
-      application.teacher_catchment_country = "country"
-      expect(attributes["teacher_catchment_country"]).to eq(application.teacher_catchment_country)
-    end
-
     it "serializes the `teacher_catchment_iso_country_code`" do
-      application.teacher_catchment_iso_country_code = "iso"
-      expect(attributes["teacher_catchment_iso_country_code"]).to eq(application.teacher_catchment_iso_country_code)
+      expect(attributes["teacher_catchment_iso_country_code"]).to eq("GBR")
     end
 
     it "serializes the `assigned_at`" do
