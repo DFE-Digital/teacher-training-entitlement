@@ -1,29 +1,5 @@
 module Questionnaires
   class WorkSetting < Base
-    A_SCHOOL = "a_school".freeze
-    AN_ACADEMY_TRUST = "an_academy_trust".freeze
-    A_16_TO_19_EDUCATIONAL_SETTING = "a_16_to_19_educational_setting".freeze
-
-    SCHOOL_SETTINGS = [
-      A_SCHOOL,
-      AN_ACADEMY_TRUST,
-      A_16_TO_19_EDUCATIONAL_SETTING,
-    ].freeze
-
-    CHILDCARE_SETTINGS = %w[
-      early_years_or_childcare
-    ].freeze
-
-    ANOTHER_SETTING_SETTINGS = %w[
-      another_setting
-    ].freeze
-
-    OTHER_SETTINGS = %w[
-      other
-    ].freeze
-
-    ALL_SETTINGS = [SCHOOL_SETTINGS, CHILDCARE_SETTINGS, ANOTHER_SETTING_SETTINGS, OTHER_SETTINGS].flatten
-
     attr_accessor :work_setting
 
     validates :work_setting, presence: true, inclusion: { in: Institution::ALL_SETTINGS }
@@ -75,22 +51,6 @@ module Questionnaires
     end
 
   private
-
-    def works_in_school?
-      SCHOOL_SETTINGS.include?(work_setting)
-    end
-
-    def works_in_childcare?
-      CHILDCARE_SETTINGS.include?(work_setting)
-    end
-
-    def works_in_another_setting?
-      ANOTHER_SETTING_SETTINGS.include?(work_setting)
-    end
-
-    def works_in_other?
-      OTHER_SETTINGS.include?(work_setting)
-    end
 
     def state_funded_instition?
       work_setting == Institution::STATE_FUNDED_INSTITUTION
