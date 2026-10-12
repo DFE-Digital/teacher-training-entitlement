@@ -51,6 +51,7 @@ Rails/FindEach:
 RSpec/VariableName:
   Exclude:
     - 'spec/requests/api/docs/**/*'
+    - 'spec/requests/webhooks/**/*'
     - 'spec/support/shared_contexts/api_doc_request_auth.rb'
 
 RSpec/EmptyExampleGroup:

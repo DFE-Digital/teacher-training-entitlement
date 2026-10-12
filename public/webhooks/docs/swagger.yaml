@@ -1,0 +1,43 @@
+---
+openapi: 3.0.1
+info:
+  title: Teacher Training Entitlement (TTE) Webhooks
+  version: v1
+paths:
+  "/webhooks/trs/qualifications/{trn}":
+    get:
+      summary: show qualification
+      tags:
+      - webhooks
+      parameters:
+      - name: trn
+        in: path
+        required: true
+        description: Teacher reference number
+        schema:
+          type: string
+      security:
+      - api_key: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              example:
+                data:
+                  trn: '0000001'
+                  qualifications:
+                  - award_date: '2026-10-05'
+                    course_type: NPDEIRT
+        '404':
+          description: not found - unknown TRN
+servers:
+- url: "/"
+  description: API endpoint
+components:
+  securitySchemes:
+    api_key:
+      description: Bearer token
+      type: apiKey
+      name: Authorization
+      in: header
