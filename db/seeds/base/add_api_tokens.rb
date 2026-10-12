@@ -7,3 +7,6 @@ LEAD_PROVIDER_CONFIG.each do |name, config|
   lead_provider = LeadProvider.where(name:).first!
   APIToken.create_with_known_token!(token, lead_provider:)
 end
+
+# TRS
+APIToken.create_with_known_token!("trs-token", scope: APIToken.scopes[:teacher_record_service])
