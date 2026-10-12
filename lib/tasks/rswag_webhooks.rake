@@ -1,19 +1,25 @@
-require "rspec/core/rake_task"
+# This task runs rswag specs and is only available where the rspec and
+# rswag-specs gems are installed (development/test). In production builds
+# (BUNDLE_WITHOUT="development test", e.g. Docker assets:precompile) the
+# require would raise LoadError while Rails loads lib/tasks.
+if Rails.env.development? || Rails.env.test?
+  require "rspec/core/rake_task"
 
-namespace :rswag do
-  namespace :specs do
-    desc "Generate Swagger YAML file for the webhooks from integration specs"
-    RSpec::Core::RakeTask.new("swaggerize_webhooks") do |t|
-      # Switch rswag to the webhooks document/root (see spec/swagger_helper.rb).
-      ENV["RSWAG_WEBHOOKS"] = "1"
+  namespace :rswag do
+    namespace :specs do
+      desc "Generate Swagger YAML file for the webhooks from integration specs"
+      RSpec::Core::RakeTask.new("swaggerize_webhooks") do |t|
+        # Switch rswag to the webhooks document/root (see spec/swagger_helper.rb).
+        ENV["RSWAG_WEBHOOKS"] = "1"
 
-      t.pattern = ENV.fetch("WEBHOOKS_PATTERN", "spec/requests/webhooks/**/*_spec.rb")
+        t.pattern = ENV.fetch("WEBHOOKS_PATTERN", "spec/requests/webhooks/**/*_spec.rb")
 
-      t.rspec_opts = if Rswag::Specs.config.rswag_dry_run
-                       ["--format Rswag::Specs::SwaggerFormatter", "--dry-run", "--order defined"]
-                     else
-                       ["--format Rswag::Specs::SwaggerFormatter", "--order defined"]
-                     end
+        t.rspec_opts = if Rswag::Specs.config.rswag_dry_run
+                         ["--format Rswag::Specs::SwaggerFormatter", "--dry-run", "--order defined"]
+                       else
+                         ["--format Rswag::Specs::SwaggerFormatter", "--order defined"]
+                       end
+      end
     end
   end
 end
