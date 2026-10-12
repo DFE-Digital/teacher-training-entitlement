@@ -29,6 +29,8 @@ paths:
                   qualifications:
                   - award_date: '2026-10-05'
                     course_type: NPDEIRT
+        '403':
+          description: forbidden - invalid token
         '404':
           description: not found - unknown TRN
 servers:

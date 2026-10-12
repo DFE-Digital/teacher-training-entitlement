@@ -36,6 +36,13 @@ RSpec.describe "webhooks/trs/qualifications", document: ENV["RSWAG_WEBHOOKS"].pr
         run_test!
       end
 
+      response(403, "forbidden - invalid token") do
+        let(:token) { "bad-token" }
+        let(:trn) { "bad-trn" }
+
+        run_test!
+      end
+
       response(404, "not found - unknown TRN") do
         let(:trn) { "bad-trn" }
 
