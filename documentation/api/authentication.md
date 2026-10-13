@@ -123,7 +123,7 @@ sequenceDiagram
 | Concern                                       | Where it lives                                                                            |
 |-----------------------------------------------|-------------------------------------------------------------------------------------------|
 | Scope check (`lead_provider` )                | `APIToken.find_by_unhashed_token`; `API::BaseController#api_token_scope`                  |
-| Webhook endpoints (`/webhooks/*`)             | Not matched by the path regex — they authenticate in `WebhooksController` with a `teacher_record_service`-scoped token; see [`../webhooks.md`](../webhooks.md) |
+| Webhook endpoints (`/webhooks/*`)             | Not matched by the path regex — they authenticate in `WebhooksController` with a `webhook`-scoped token; see [`../webhooks.md`](../webhooks.md) |
 | Per-endpoint authorisation (record ownership) | Individual controllers — they filter queries by `current_lead_provider.id`                |
 | Rate limiting                                 | `Rack::Attack` in `config/initializers/rack_attack.rb` — 1,000 req / 5 min per auth token |
 | Response caching                              | None — `set_cache_headers` sets `Cache-Control: no-store`                                 |

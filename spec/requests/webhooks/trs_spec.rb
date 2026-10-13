@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Webhooks::TRS", type: :request do
   describe "GET /webhooks/trs/qualifications/:trn" do
     let(:user) { create(:user) }
-    let(:token) { APIToken.create_with_random_token!(scope: :teacher_record_service) }
+    let(:token) { APIToken.create_with_random_token!(scope: :webhook) }
     let!(:outcome) { create(:outcome, user:) }
     let(:trn) { user.trn }
 

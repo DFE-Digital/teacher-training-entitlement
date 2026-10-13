@@ -31,7 +31,7 @@ private
   end
 
   def find_api_token(unhashed_token)
-    APIToken.find_by_unhashed_token(unhashed_token, scope: :teacher_record_service)
+    APIToken.find_by_unhashed_token(unhashed_token, scope: :webhook)
   rescue ActiveRecord::RecordNotFound
     nil
   end

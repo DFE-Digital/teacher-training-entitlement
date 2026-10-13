@@ -39,7 +39,7 @@ Tables are grouped by domain. Column types are abbreviated: `PK` (primary key),
 | **LeadProvider**        | A third-party training provider. Authenticates via Bearer token.                                                | `name`, `email`, `url`, `hint`, `ecf_id`                                                                        |
 | **DeliveryPartner**     | A sub-organisation working under a LeadProvider to deliver training.                                            | `name`, `ecf_id`                                                                                                |
 | **DeliveryPartnership** | Join between LeadProvider, DeliveryPartner, and CourseCohort. A provider works with certain partners on a given course cohort; a declaration's delivery partner must be one of them. | `lead_provider_id` (FK), `delivery_partner_id` (FK), `course_cohort_id` (FK) — unique on the triple            |
-| **ApiToken**            | Bearer token for provider API access. Hashed for storage; tracks last usage.                                    | `lead_provider_id` (FK), `hashed_token`, `last_used_at`, `scope` (enum: lead_provider / teacher_record_service) |
+| **ApiToken**            | Bearer token for provider API access. Hashed for storage; tracks last usage.                                    | `lead_provider_id` (FK), `hashed_token`, `last_used_at`, `scope` (enum: lead_provider / webhook) |
 
 ---
 

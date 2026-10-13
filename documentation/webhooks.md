@@ -41,7 +41,7 @@ root:
 ## Authentication
 
 Every webhook endpoint inherits `WebhooksController#authenticate`. Callers
-authenticate with an `APIToken` scoped **`teacher_record_service`** — Lead
+authenticate with an `APIToken` scoped **`webhook`** — Lead
 Provider tokens (`scope: lead_provider`) are rejected. The
 `Middleware::ApiAuthentication` layer used by the Lead Provider API does not
 apply here: it only matches paths under `^/api/v\d+`, so webhook

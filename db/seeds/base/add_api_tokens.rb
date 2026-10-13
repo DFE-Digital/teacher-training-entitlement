@@ -9,4 +9,4 @@ LEAD_PROVIDER_CONFIG.each do |name, config|
 end
 
 # TRS
-APIToken.create_with_known_token!("trs-token", scope: APIToken.scopes[:teacher_record_service])
+APIToken.create_with_known_token!("trs-token", scope: APIToken.scopes[:webhook])

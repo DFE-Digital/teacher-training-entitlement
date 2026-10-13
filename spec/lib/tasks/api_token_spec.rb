@@ -3,16 +3,16 @@ require "rails_helper"
 RSpec.describe "API Token tasks" do
   before { allow(Rails.logger).to receive(:info).and_call_original }
 
-  describe "api_token:teacher_record_service:generate_token" do
-    subject(:run_task) { Rake::Task["api_token:teacher_record_service:generate_token"].invoke }
+  describe "api_token:webhook:generate_token" do
+    subject(:run_task) { Rake::Task["api_token:webhook:generate_token"].invoke }
 
     after do
-      Rake::Task["api_token:teacher_record_service:generate_token"].reenable
+      Rake::Task["api_token:webhook:generate_token"].reenable
     end
 
-    let(:api_tokens) { APIToken.where(scope: APIToken.scopes[:teacher_record_service]) }
+    let(:api_tokens) { APIToken.where(scope: APIToken.scopes[:webhook]) }
 
-    it "creates a new API token for the Teacher Record Service" do
+    it "creates a new API token for the webhooks" do
       expect { run_task }.to change(api_tokens, :count).by(1)
     end
 

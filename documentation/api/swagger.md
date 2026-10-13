@@ -160,7 +160,7 @@ Webhook doc specs follow two conventions (see
   operations are only documented when the webhooks task runs, so they never
   leak into `public/api/docs/v1/swagger.yaml` under the default task.
 - The bearer token is provided through rswag's `let(:Authorization)`
-  convention with an `APIToken` scoped `:teacher_record_service`. The shared
+  convention with an `APIToken` scoped `:webhook`. The shared
   `with authorization for api doc request` context mints a *lead-provider*
   token, which webhook endpoints (correctly) reject.
 

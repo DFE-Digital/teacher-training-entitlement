@@ -27,7 +27,7 @@ paths:
                 data:
                   trn: '0000001'
                   qualifications:
-                  - award_date: '2026-10-05'
+                  - award_date: '2026-10-06'
                     course_type: NPDEIRT
         '403':
           description: forbidden - invalid token

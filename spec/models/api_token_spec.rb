@@ -12,7 +12,7 @@ RSpec.describe APIToken, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:hashed_token) }
     it { is_expected.to validate_presence_of(:scope) }
-    it { is_expected.to define_enum_for(:scope).with_values(lead_provider: "lead_provider", teacher_record_service: "teacher_record_service").backed_by_column_of_type(:enum) }
+    it { is_expected.to define_enum_for(:scope).with_values(lead_provider: "lead_provider", webhook: "webhook").backed_by_column_of_type(:enum) }
   end
 
   describe ".create_with_random_token!" do
@@ -30,8 +30,8 @@ RSpec.describe APIToken, type: :model do
       end
     end
 
-    context "when the scope is teacher_record_service" do
-      let(:scope) { "teacher_record_service" }
+    context "when the scope is webhook" do
+      let(:scope) { "webhook" }
 
       context "when a lead provider is not specified" do
         it "creates an APIToken without a lead provider" do
@@ -50,7 +50,7 @@ RSpec.describe APIToken, type: :model do
     end
 
     context "when token is in another scope" do
-      before { APIToken.create_with_known_token!(unhashed_token, scope: "teacher_record_service") }
+      before { APIToken.create_with_known_token!(unhashed_token, scope: "webhook") }
 
       it "doesn't find the APIToken" do
         expect { APIToken.find_by_unhashed_token(unhashed_token, scope:) }.to raise_error(ActiveRecord::RecordNotFound)

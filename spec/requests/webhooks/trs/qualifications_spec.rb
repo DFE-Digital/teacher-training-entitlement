@@ -5,7 +5,7 @@ require "swagger_helper"
 # `rswag:specs:swaggerize_webhooks` task sets RSWAG_WEBHOOKS to generate
 # public/webhooks/docs/swagger.yaml instead.
 RSpec.describe "webhooks/trs/qualifications", document: ENV["RSWAG_WEBHOOKS"].present?, type: :request do
-  let(:token) { APIToken.create_with_random_token!(scope: :teacher_record_service) }
+  let(:token) { APIToken.create_with_random_token!(scope: :webhook) }
   let(:Authorization) { "Bearer #{token}" }
 
   path "/webhooks/trs/qualifications/{trn}" do
