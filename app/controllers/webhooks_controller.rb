@@ -21,19 +21,11 @@ private
 
   def authenticate
     authenticate_or_request_with_http_token do |unhashed_token|
-      @current_api_token = find_api_token(unhashed_token)
-      if @current_api_token
-        @current_api_token.update!(last_used_at: Time.zone.now)
-      else
-        raise ForbiddenError, "token not found"
-      end
+      @current_api_token = APIToken.find_by_unhashed_token(unhashed_token, scope: :webhook)
+      @current_api_token.update!(last_used_at: Time.zone.now)
     end
-  end
-
-  def find_api_token(unhashed_token)
-    APIToken.find_by_unhashed_token(unhashed_token, scope: :webhook)
   rescue ActiveRecord::RecordNotFound
-    nil
+    raise ForbiddenError, "token not found"
   end
 
   def set_cache_headers
