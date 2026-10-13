@@ -74,15 +74,84 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     end
   end
 
-  describe "a summary card for a minimal application" do
-    let(:application_attributes) { { institution: nil } }
+  describe "funding eligibility summary card" do
+    subject(:summary_card) { Capybara.string(render).find(".govuk-summary-card", text: "Funding eligibility") }
 
+    context "with a funding eligibility status code" do
+      let(:application_attributes) { { funding_eligiblity_status_code: "previously_funded" } }
+
+      it { is_expected.to have_summary_item "Status code", "Previously Funded" }
+    end
+
+    context "without a funding eligibility status code" do
+      let(:application_attributes) { { funding_eligiblity_status_code: nil } }
+
+      it { is_expected.to have_summary_item "Status code", "-" }
+    end
+
+    context "with funding choice data from the registration journey" do
+      let(:application_attributes) { { raw_application_data: { "funding" => "school" } } }
+
+      it { is_expected.to have_summary_item "Funding choice", "My workplace is covering the cost" }
+    end
+
+    context "without funding choice data from the registration journey" do
+      let(:application_attributes) { { raw_application_data: {} } }
+
+      it "does not show the funding choice row" do
+        expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "Funding choice", exact_text: true)
+      end
+    end
+  end
+
+  describe "workplace summary card" do
+    subject(:summary_card) { Capybara.string(render).find(".govuk-summary-card", text: "Workplace") }
+
+    context "with a work setting" do
+      let(:application_attributes) { { work_setting: "state_funded_institution" } }
+
+      it { is_expected.to have_summary_item "Setting", "State-funded nursery, pre-school, school or academy trust" }
+    end
+
+    context "without a work setting" do
+      let(:application_attributes) { { work_setting: nil } }
+
+      it "does not show the setting row" do
+        expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "Setting", exact_text: true)
+      end
+    end
+
+    context "with an institution" do
+      before do
+        allow(application).to receive_messages(
+          institution_id: 123,
+          employer_name_to_display: "Test school",
+          employer_urn: "123456",
+          ukprn: "",
+        )
+      end
+
+      it { is_expected.to have_summary_item "Name", "Test school" }
+      it { is_expected.to have_summary_item "Unique reference number (URN)", "123456" }
+      it { is_expected.to have_summary_item "UK Provider Reference Number (UKPRN)", "" }
+    end
+
+    context "without an institution" do
+      let(:application_attributes) { { institution: nil } }
+
+      it "does not show institution rows" do
+        expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "Name", exact_text: true)
+        expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "Unique reference number (URN)", exact_text: true)
+        expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "UK Provider Reference Number (UKPRN)", exact_text: true)
+      end
+    end
+  end
+
+  describe "a summary card for a minimal application" do
     it { is_expected.to have_css "h1", text: "Application details" }
     it { is_expected.to have_summary_item "Application ID", application.ecf_id }
     it { is_expected.to have_summary_item "Provider", application.lead_provider.name }
     it { is_expected.to have_summary_item "Course", application.course.name }
-    it { is_expected.to have_summary_item "Unique reference number (URN)", "" }
-    it { is_expected.to have_summary_item "UK Provider Reference Number (UKPRN)", "" }
     it { is_expected.to have_summary_item "Schedule identifier", "-" }
   end
 

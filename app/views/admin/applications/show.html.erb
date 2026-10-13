@@ -91,7 +91,7 @@ govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
   end
   sl.with_row do |row|
     row.with_key(text: "Status code")
-    row.with_value(text: @application.funding_eligiblity_status_code.presence || "-")
+    row.with_value(text: @application.funding_eligiblity_status_code.presence&.titleize || "-")
   end
   sl.with_row do |row|
     row.with_key(text: "Schedule cohort")
@@ -102,9 +102,11 @@ govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
     row.with_key(text: "Schedule identifier")
     row.with_value(text: @application.course_cohort.schedule_identifier)
   end
-  sl.with_row do |row|
-    row.with_key(text: "Funding choice")
-    row.with_value(text: @application.funding_choice.try(:humanize))
+  if @application.raw_application_data["funding"].present?
+    sl.with_row do |row|
+      row.with_key(text: "Funding choice")
+      row.with_value(text: I18n.t(@application.raw_application_data["funding"], scope: "helpers.label.registration_wizard.funding_options"))
+    end
   end
   sl.with_row do |row|
     row.with_key(text: "Notes")
@@ -117,26 +119,35 @@ end
 
 <%=
 govuk_summary_list(card: { title: "Workplace" }) do |sl|
-  sl.with_row do |row|
-    row.with_key(text: "Name")
-    if @application.employer_urn.present?
-      row.with_value(text: govuk_link_to(@application.employer_name_to_display, admin_schools_path(q: @application.employer_urn)))
-    else
-      row.with_value(text: @application.employer_name_to_display)
+  if @application.work_setting.present?
+    sl.with_row do |row|
+      row.with_key(text: "Setting")
+      row.with_value(text: I18n.t(@application.work_setting, scope: "helpers.label.registration_wizard.work_setting_options"))
     end
   end
-  sl.with_row do |row|
-    row.with_key(text: "UK Provider Reference Number (UKPRN)")
-    row.with_value(text: @application.ukprn)
-  end
-  sl.with_row do |row|
-    row.with_key(text: "Unique reference number (URN)")
-    row.with_value(text: @application.employer_urn)
+  if @application.institution_id.present?
+    sl.with_row do |row|
+      row.with_key(text: "Name")
+      if @application.employer_urn.present?
+        row.with_value(text: govuk_link_to(@application.employer_name_to_display, admin_schools_path(q: @application.employer_urn)))
+      else
+        row.with_value(text: @application.employer_name_to_display)
+      end
+    end
+    sl.with_row do |row|
+      row.with_key(text: "UK Provider Reference Number (UKPRN)")
+      row.with_value(text: @application.ukprn)
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Unique reference number (URN)")
+      row.with_value(text: @application.employer_urn)
+    end
   end
   sl.with_row do |row|
     row.with_key(text: "Country")
     row.with_value(text: @application.teacher_catchment_country.presence || "-")
   end
+
 end
 %>
 
