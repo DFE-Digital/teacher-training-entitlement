@@ -16,6 +16,10 @@ This directory is organised by domain.
 - [`endpoints.md`](api/endpoints.md) — all endpoints, request/response schemas, status transitions
 - [`swagger.md`](api/swagger.md) — Swagger/OpenAPI spec, RSwag, schema drift check
 
+## Webhooks (Service integration)
+
+- [`webhooks.md`](webhooks.md) — Webhook endpoints, bearer-token auth, Swagger UI
+
 ## Admin console
 
 - [`overview.md`](admin/overview.md) — role model, feature flag page, cohort/course management

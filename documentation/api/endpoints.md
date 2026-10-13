@@ -4,6 +4,9 @@ Method-by-method reference for every route exposed under `/api/v1/*`. Read
 [`overview.md`](./overview.md) for the big picture and
 [`authentication.md`](./authentication.md) for the bearer token contract.
 
+> The webhook endpoints lives outside `/api/v1` and uses a different token scope
+> it is documented separately in [`../webhooks.md`](../webhooks.md).
+
 ## Conventions
 
 - **Auth**: `Authorization: Bearer <token>` (see

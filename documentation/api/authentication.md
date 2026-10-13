@@ -20,12 +20,12 @@ Accept: application/json
 
 ## The token
 
-| Field              | Notes                                                                                 |
-|--------------------|---------------------------------------------------------------------------------------|
-| `hashed_token`     | SHA-256 (via `Devise.token_generator.digest`). The plaintext is never persisted.      |
-| `lead_provider_id` | Tenant the token is bound to.                                                         |
-| `scope`            | Enum: `lead_provider` (this API) or `teacher_record_service` (internal integrations). |
-| `last_used_at`     | Updated when the token is **resolved**, i.e. on cache miss (~every 15 min).           |
+| Field              | Notes                                                                                              |
+|--------------------|----------------------------------------------------------------------------------------------------|
+| `hashed_token`     | SHA-256 (via `Devise.token_generator.digest`). The plaintext is never persisted.                   |
+| `lead_provider_id` | Tenant the token is bound to.                                                                      |
+| `scope`            | Enum: `lead_provider` (this API) or `webhook` (webhooks — see [`../webhooks.md`](../webhooks.md)). |
+| `last_used_at`     | Updated when the token is **resolved**, i.e. on cache miss (~every 15 min).                        |
 
 `APIToken` (`app/models/api_token.rb`):
 
@@ -123,6 +123,7 @@ sequenceDiagram
 | Concern                                       | Where it lives                                                                            |
 |-----------------------------------------------|-------------------------------------------------------------------------------------------|
 | Scope check (`lead_provider` )                | `APIToken.find_by_unhashed_token`; `API::BaseController#api_token_scope`                  |
+| Webhook endpoints (`/webhooks/*`)             | Not matched by the path regex — they authenticate in `WebhooksController` with a `teacher_record_service`-scoped token; see [`../webhooks.md`](../webhooks.md) |
 | Per-endpoint authorisation (record ownership) | Individual controllers — they filter queries by `current_lead_provider.id`                |
 | Rate limiting                                 | `Rack::Attack` in `config/initializers/rack_attack.rb` — 1,000 req / 5 min per auth token |
 | Response caching                              | None — `set_cache_headers` sets `Cache-Control: no-store`                                 |

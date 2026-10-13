@@ -1,17 +1,21 @@
-# Lead Provider API — Swagger / OpenAPI pipeline
+# Swagger / OpenAPI pipeline
 
-How the TTE Lead Provider API documentation is generated, where the schemas
-live, how to extend the spec when a new endpoint ships, and how the Swagger UI
-is rendered at `/api/docs/v1`.
+How the TTE OpenAPI documentation is generated, where the schemas live, how to
+extend the specs when a new endpoint ships, and how the Swagger UIs are
+rendered.
 
-Lead Providers consume two artefacts:
+The service publishes **two** OpenAPI documents, each with its own Swagger UI:
 
-- **OpenAPI 3 spec** at `/api/docs/v1/swagger.yaml` — machine-readable, drives
-  client code generation and contract tests.
-- **Swagger UI** at `/api/docs/v1` — browsable reference rendered by the app.
+| Document          | Audience       | YAML                                | UI               |
+|-------------------|----------------|-------------------------------------|------------------|
+| Lead Provider API | Lead Providers | `public/api/docs/v1/swagger.yaml`   | `/api/docs/v1`   |
+| Webhooks          | 3rd parties    | `public/webhooks/docs/swagger.yaml` | `/webhooks/docs` |
 
-Both are generated from the same source: RSpec request specs using the rswag
-DSL.
+Both are generated from the same kind of source — RSpec request specs using
+the rswag DSL — but by two separate rake tasks (see
+[Webhooks OpenAPI document](#webhooks-openapi-document)). The bulk of this
+page covers the Lead Provider pipeline; the webhooks section only describes
+what differs.
 
 ## Pipeline at a glance
 
@@ -21,6 +25,9 @@ flowchart LR
     YAML -->|"GET /api/docs/v1/swagger.yaml"| UI["API::DocumentationController<br/>/api/docs/v1 (Swagger UI)"]
     Schemas["spec/swagger_schemas/<br/>attributes · requests · filters · models · responses · sorting · concerns"] -->|"compose components"| Spec
     Helper["spec/swagger_helper.rb"] -->|"openapi_specs loop"| Spec
+    Helper -->|"RSWAG_WEBHOOKS switch"| WSpec["spec/requests/webhooks/**/*_spec.rb<br/>(document: ENV[RSWAG_WEBHOOKS].present?)"]
+    WSpec -->|"bundle exec rake rswag:specs:swaggerize_webhooks"| WYAML["public/webhooks/docs/swagger.yaml"]
+    WYAML -->|"GET /webhooks/docs/swagger.yaml"| WUI["Webhooks::DocumentationController<br/>/webhooks/docs (Swagger UI)"]
 ```
 
 ## Versioning and the spec helper
@@ -116,9 +123,50 @@ Re-runs every spec in `spec/requests/api/docs/` and writes
 `public/api/docs/v1/swagger.yaml`. Commit the regenerated YAML alongside the
 spec and schema changes, then open `/api/docs/v1` or the YAML to confirm the
 new path appears. A CI check
-(`.github/workflows/lead_provider_openapi_check.yml`) compares the generated
-YAML's SHA-256 against the committed one and fails on drift, so running
-`rswag:specs:swaggerize` locally before pushing is required.
+(`.github/workflows/lead_provider_openapi_check.yml`) regenerates both
+documents and compares their SHA-256 checksums against the committed files —
+it covers `public/api/docs/` **and** `public/webhooks/docs/` — and fails on
+drift. Running `rswag:specs:swaggerize` (and, if webhook specs changed,
+`rswag:specs:swaggerize_webhooks`) locally before pushing is required.
+
+## Webhooks OpenAPI document
+
+The [webhooks surface](../webhooks.md) gets its own document because rswag
+supports exactly **one `openapi_root` per process**. A dedicated rake task
+switches configuration via an environment variable:
+
+```bash
+bundle exec rake rswag:specs:swaggerize_webhooks
+```
+
+`lib/tasks/rswag_webhooks.rake`:
+
+- sets `ENV["RSWAG_WEBHOOKS"] = "1"` and runs only
+  `spec/requests/webhooks/**/*_spec.rb` (override with `WEBHOOKS_PATTERN`);
+- is defined **only in development/test** — production builds
+  (`BUNDLE_WITHOUT="development test"`, e.g. the Docker `assets:precompile`
+  step) install neither rspec nor rswag-specs, so requiring them while Rails
+  loads `lib/tasks` would raise `LoadError`.
+
+In `spec/swagger_helper.rb`, `RSWAG_WEBHOOKS` switches `openapi_root` to
+`public/webhooks/docs` and registers a single `swagger.yaml` document with its
+own `securitySchemes.api_key` component — the `API::Version` loop that builds
+the Lead Provider documents is skipped entirely.
+
+Webhook doc specs follow two conventions (see
+`spec/requests/webhooks/trs/qualifications_spec.rb`):
+
+- `RSpec.describe "…", document: ENV["RSWAG_WEBHOOKS"].present?` — the
+  operations are only documented when the webhooks task runs, so they never
+  leak into `public/api/docs/v1/swagger.yaml` under the default task.
+- The bearer token is provided through rswag's `let(:Authorization)`
+  convention with an `APIToken` scoped `:teacher_record_service`. The shared
+  `with authorization for api doc request` context mints a *lead-provider*
+  token, which webhook endpoints (correctly) reject.
+
+Because the `Rakefile` sets `rswag_dry_run = false` (workaround for rswag
+issue #359), the specs execute for real during generation — response examples
+in the YAML come from actual `run_test!` calls.
 
 ## Serving the spec and rendering the UI
 
@@ -128,22 +176,33 @@ from `public/api/docs/<version>/swagger.yaml`. The sibling
 `API::GuidanceController` renders LP-facing Markdown guides at
 `/api/guidance/*` — the human companion to the spec.
 
-The UI uses **`swagger-ui-dist`** (the standalone bundle), imported in
-`app/javascript/swagger-ui.js`. `swagger-ui-dist` is used instead of
-`swagger-ui` because the latter did not transpile cleanly under the older
-webpacker/webpack toolchain; the dist package renders identically for our
-purposes. A cache-buster query string in the JS forces the browser to reload
-the YAML each visit.
+The webhooks UI works the same way: `Webhooks::DocumentationController` (a
+`PublicPagesController`, so no sign-in required) renders `/webhooks/docs`,
+with the YAML served from `public/webhooks/docs/swagger.yaml`.
+
+Both UIs share the `api_docs` layout and **`swagger-ui-dist`** (the standalone
+bundle), imported in `app/javascript/swagger-ui.js`. The script reads the YAML
+directory from the view's `data-path` attribute — `/api/docs/<version>` in
+`app/views/api/documentation/index.html.erb`, `/webhooks/docs` in
+`app/views/webhooks/documentation/index.html.erb` — so the same bundle serves
+both pages. `swagger-ui-dist` is used instead of `swagger-ui` because the
+latter did not transpile cleanly under the older webpacker/webpack toolchain;
+the dist package renders identically for our purposes. A cache-buster query
+string in the JS forces the browser to reload the YAML each visit.
 
 ## Build-time note
 
-`rswag:specs:swaggerize` writes to `public/api/docs/**/swagger.yaml`. The
-`Dockerfile` chowns that path to `appuser:appgroup` so the runtime image can
-regenerate the YAML in-place without permission errors:
+`rswag:specs:swaggerize` writes to `public/api/docs/**/swagger.yaml`; the
+webhooks task writes `public/webhooks/docs/swagger.yaml`. The `Dockerfile`
+chowns both paths to `appuser:appgroup` so the runtime image can regenerate
+the YAML in-place without permission errors:
 
 ```dockerfile
-RUN chown -R appuser:appgroup /app/tmp /app/public/api/docs/**/swagger.yaml
+RUN chown -R appuser:appgroup /app/tmp /app/public/api/docs/**/swagger.yaml /app/public/webhooks/docs/swagger.yaml
 ```
+
+The webhooks path is listed explicitly because it has no version directory —
+the `**/swagger.yaml` glob cannot match it.
 
 In local development the spec is regenerated against the working tree, so no
 special permission handling is needed.
@@ -165,13 +224,15 @@ special permission handling is needed.
 | UI package                           | `swagger-ui-dist` in `package.json`                                                     |
 | CI drift check                       | `.github/workflows/lead_provider_openapi_check.yml`                                     |
 | Route (`docs/:version`)              | `config/routes/api/v1.rb`                                                               |
-| Dockerfile chown                     | `Dockerfile` (line 84)                                                                  |
+| Dockerfile chown                     | `Dockerfile` (line 83)                                                                  |
+| Webhooks rake task                   | `lib/tasks/rswag_webhooks.rake`                                                         |
+| Webhook doc-spec source              | `spec/requests/webhooks/trs/qualifications_spec.rb`                                     |
+| Generated webhooks YAML              | `public/webhooks/docs/swagger.yaml`                                                     |
+| Webhooks UI controller / route       | `app/controllers/webhooks/documentation_controller.rb` · `config/routes/webhooks.rb`    |
 
 ## Related documentation
 
 - [`overview.md`](./overview.md) — Lead Provider API surface
 - [`endpoints.md`](./endpoints.md) — full endpoint reference
 - [`authentication.md`](./authentication.md) — bearer token flow
-
-  / `rswag` / one-version-at-a-time narrative has been folded into this page,
-  the multi-version commentary there is stale.
+- [`../webhooks.md`](../webhooks.md) — Webhooks documentation
