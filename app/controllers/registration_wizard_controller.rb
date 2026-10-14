@@ -1,4 +1,6 @@
 class RegistrationWizardController < PublicPagesController
+  include HtmlRequestsOnly
+
   before_action :registration_closed
   before_action :redirect_to_start_if_signed_out, except: :development_login
   before_action :set_wizard

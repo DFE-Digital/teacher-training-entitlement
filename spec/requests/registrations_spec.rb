@@ -1,12 +1,18 @@
 require "rails_helper"
 
-RSpec.describe "Applications::ApplicationsController", type: :request do
+RSpec.describe "Registrations", type: :request do
   let(:user) { create(:user) }
 
   before do
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
       .and_return({ user_id: user.id })
+  end
+
+  it "returns not found for non-HTML requests" do
+    get "/registration/course-start-date.json"
+
+    expect(response).to have_http_status(:not_found)
   end
 
   describe "User wants to create an application for a subsequent course_cohort" do
