@@ -1,8 +1,8 @@
 namespace :api_token do
-  namespace :teacher_record_service do
-    desc "Generate a new API token for the Teacher Record Service"
+  namespace :webhook do
+    desc "Generate a new API token for the webhooks"
     task generate_token: :environment do
-      scope = APIToken.scopes[:teacher_record_service]
+      scope = APIToken.scopes[:webhook]
       logger = Rails.env.test? ? Rails.logger : Logger.new($stdout)
       token = APIToken.create_with_random_token!(scope:)
       logger.info "API Token created: #{token}"

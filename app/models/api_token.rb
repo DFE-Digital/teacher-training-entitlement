@@ -3,7 +3,7 @@ class APIToken < ApplicationRecord
 
   enum :scope, {
     lead_provider: "lead_provider",
-    teacher_record_service: "teacher_record_service",
+    webhook: "webhook",
   }
 
   validates :hashed_token, presence: true

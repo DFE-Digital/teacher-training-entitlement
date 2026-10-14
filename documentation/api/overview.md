@@ -21,6 +21,10 @@ External **Lead Providers**. Each token is bound to one `LeadProvider` record, s
 the API only ever returns data belonging to that provider — no cross-tenant
 access.
 
+> Not covered on this page: the **webhooks** surface under `/webhooks/*` —
+> read-only endpoints consumed by the Teacher Record Service, with a different
+> token scope. See [`../webhooks.md`](../webhooks.md).
+
 ## Base URL and versioning
 
 - Base path: `/api/v1/*` — routes live in `config/routes/api/v1.rb`, mounted
@@ -200,6 +204,7 @@ workflow, schemas and how to add new endpoints are in
 - [`authentication.md`](./authentication.md) — bearer token details
 - [`endpoints.md`](./endpoints.md) — full endpoint reference
 - [`swagger.md`](./swagger.md) — OpenAPI workflow
+- [`../webhooks.md`](../webhooks.md) — Webhook endpoints
 
 - [Data model](../data_model.md) — entities the API exposes
 - [Public LP guidance site](/api/guidance) — rendered at runtime
