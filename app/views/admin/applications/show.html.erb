@@ -144,8 +144,8 @@ govuk_summary_list(card: { title: "Workplace" }) do |sl|
     end
   end
   sl.with_row do |row|
-    row.with_key(text: "Country")
-    row.with_value(text: @application.teacher_catchment_country.presence || "-")
+    row.with_key(text: "Workplace in England")
+    row.with_value(text: boolean_tag(@application.inside_catchment?))
   end
 
 end

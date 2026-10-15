@@ -2,7 +2,7 @@
   govuk_summary_list(card: { title: "Work details" }) do |sl|
     sl.with_row do |row|
       row.with_key(text: "Workplace in England")
-      row.with_value(text: boolean_tag(application.teacher_catchment == "england"))
+      row.with_value(text: boolean_tag(application.inside_catchment?))
     end
 
     if application.referred_by_return_to_teaching_adviser.present?
