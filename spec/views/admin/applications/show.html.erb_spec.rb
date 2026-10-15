@@ -90,13 +90,13 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     end
 
     context "with funding choice data from the registration journey" do
-      let(:application_attributes) { { raw_application_data: { "funding" => "school" } } }
+      let(:application_attributes) { { registration_data: { "funding" => "school" } } }
 
       it { is_expected.to have_summary_item "Funding choice", "My workplace is covering the cost" }
     end
 
     context "without funding choice data from the registration journey" do
-      let(:application_attributes) { { raw_application_data: {} } }
+      let(:application_attributes) { { registration_data: {} } }
 
       it "does not show the funding choice row" do
         expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "Funding choice", exact_text: true)
