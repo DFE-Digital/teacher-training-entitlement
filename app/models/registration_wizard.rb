@@ -93,7 +93,7 @@ class RegistrationWizard
     array << Answer.new("Course start", course_cohort.cohort.name, :course_start_date)
     array << Answer.new("Course", course.name)
     array << Answer.new("Provider", lead_provider&.name, :choose_your_provider)
-    array << Answer.new("Workplace in England", teacher_catchment_humanized, :teacher_catchment)
+    array << Answer.new("Workplace in England", inside_catchment? ? "Yes" : "No", :teacher_catchment)
 
     if store["work_setting"].present?
       array << Answer.new("Work setting", t("work_setting"), :work_setting)
@@ -118,20 +118,12 @@ private
 
   delegate :course,
            :course_cohort,
-           :formatted_date_of_birth,
-           :has_ofsted_urn?,
            :inside_catchment?,
-           :kind_of_nursery_private?,
-           :kind_of_nursery_public?,
            :lead_provider,
-           :teacher_catchment_humanized,
-           :trn_set_via_fallback_verification_question?,
            :works_in_another_setting?,
-           :works_in_childcare?,
            :works_in_other?,
            :works_in_school?,
            :work_setting,
-           :young_offender_institution?,
            to: :query_store
 
   def form_for_step(step)
