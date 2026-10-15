@@ -22,10 +22,11 @@ module "airbyte" {
 
   cluster           = var.cluster
   namespace         = var.namespace
-  gcp_taxonomy_id   = "69524444121704657"
-  gcp_policy_tag_id = "6523652585511281766"
-  gcp_keyring       = "bat-key-ring"
-  gcp_key           = "bat-key"
+  gcp_taxonomy_id   = local.gcp_taxonomy_id
+  gcp_policy_tag_id = local.gcp_policy_tag_id
+  gcp_keyring       = local.gcp_keyring
+  gcp_key           = local.gcp_key
+
 
   config_map_ref = module.application_configuration.kubernetes_config_map_name
   secret_ref     = module.application_configuration.kubernetes_secret_name
