@@ -153,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_13_075815) do
     t.boolean "works_in_nursery"
     t.boolean "works_in_school"
     t.date "training_starts_at"
+    t.jsonb "registration_data", default: {}, null: false
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
