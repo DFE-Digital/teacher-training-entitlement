@@ -29,12 +29,8 @@ class RegistrationQueryStore
     work_setting == Institution::STATE_FUNDED_INSTITUTION
   end
 
-  def works_in_another_setting?
-    store["work_setting"] == "another_setting"
-  end
-
   def works_in_other?
-    store["work_setting"] == "other"
+    work_setting == Institution::OTHER
   end
 
   def course

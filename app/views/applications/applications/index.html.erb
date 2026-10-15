@@ -12,12 +12,4 @@
   <%= render "active_application_table", application: %>
 <% end %>
 
-<% if @expired_applications.any? %>
-  <h3 class="govuk-heading-l">Expired registrations</h3>
-
-  <% @expired_applications.each do |application| %>
-    <%= render "expired_application_table", application: %>
-  <% end %>
-<% end %>
-
 <%= render partial: 'register_for_a_npd' %>
