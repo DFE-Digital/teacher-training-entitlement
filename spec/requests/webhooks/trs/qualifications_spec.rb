@@ -23,7 +23,7 @@ RSpec.describe "webhooks/trs/qualifications", document: ENV["RSWAG_WEBHOOKS"].pr
         let(:user) { create(:user) }
         let(:trn) { user.trn }
 
-        before { create(:outcome, user:) }
+        before { create(:outcome, user:, completion_date: Date.new(2026, 10, 6)) }
 
         after do |example|
           example.metadata[:response][:content] = {
