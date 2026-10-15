@@ -40,6 +40,14 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes["works_in_school"]).to be(true)
     end
 
+    context "when the application does not have an institution" do
+      before { application.institution = nil }
+
+      it "serializes `works_in_school` as false" do
+        expect(attributes["works_in_school"]).to be(false)
+      end
+    end
+
     it "serializes the `email_validated`" do
       expect(attributes["email_validated"]).to be(true)
     end
@@ -65,6 +73,22 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
 
     it "serializes the `teacher_catchment_iso_country_code`" do
       expect(attributes["teacher_catchment_iso_country_code"]).to eq("GBR")
+    end
+
+    it "serializes the `teacher_catchment_country`" do
+      expect(attributes["teacher_catchment_country"]).to eq("United Kingdom of Great Britain and Northern Ireland")
+    end
+
+    context "when the application is outside the catchment area" do
+      before { application.teacher_catchment = "another" }
+
+      it "does not serialize a teacher catchment country" do
+        expect(attributes["teacher_catchment_country"]).to be_nil
+      end
+
+      it "does not serialize a teacher catchment ISO country code" do
+        expect(attributes["teacher_catchment_iso_country_code"]).to be_nil
+      end
     end
 
     it "serializes the `assigned_at`" do
