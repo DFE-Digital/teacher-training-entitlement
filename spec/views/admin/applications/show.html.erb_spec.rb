@@ -122,17 +122,8 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     end
 
     context "with an institution" do
-      before do
-        allow(application).to receive_messages(
-          institution_id: 123,
-          employer_name_to_display: "Test school",
-          employer_urn: "123456",
-          ukprn: "",
-        )
-      end
-
-      it { is_expected.to have_summary_item "Name", "Test school" }
-      it { is_expected.to have_summary_item "Unique reference number (URN)", "123456" }
+      it { is_expected.to have_summary_item "Name", application.institution.name }
+      it { is_expected.to have_summary_item "Unique reference number (URN)", application.institution.urn }
       it { is_expected.to have_summary_item "UK Provider Reference Number (UKPRN)", "" }
     end
 
