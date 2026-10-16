@@ -331,7 +331,7 @@ module ValidTestDataGenerators
       create_or_update_lead_provider_contract(course_cohort:, lead_provider:)
 
       delivery_partners.each do |dp|
-        dp.delivery_partnerships.find_or_create_by!(lead_provider:, course_cohort:)
+        dp.delivery_partnerships.find_or_create_by!(lead_provider:, course:)
       end
 
       course_cohort

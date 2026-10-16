@@ -73,7 +73,10 @@ RSpec.describe Declaration, type: :model do
     end
 
     context "with delivery_partners" do
-      before { delivery_partner && old_cohort_partner }
+      before do
+        delivery_partner && old_cohort_partner
+        application.course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
+      end
 
       let(:lead_provider) { create(:lead_provider) }
       let :delivery_partner do
@@ -731,6 +734,9 @@ RSpec.describe Declaration, type: :model do
       subject { Declaration.for_delivery_partners(delivery_partner) }
 
       let(:course_cohort) { create(:course_cohort) }
+      let(:declaration_as_primary) do
+        create :declaration, lead_provider:, application:, delivery_partner:, milestone:
+      end
       let(:milestone) do
         course_cohort.course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
           record.acceptance_window_start_offset = 0
@@ -747,9 +753,7 @@ RSpec.describe Declaration, type: :model do
         create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}", lead_providers: { course_cohort => lead_provider })
       end
 
-      let(:declaration_as_primary) do
-        create :declaration, lead_provider:, application:, delivery_partner:, milestone:
-      end
+      before { course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:) }
 
       it { is_expected.to include declaration_as_primary }
 
@@ -781,7 +785,7 @@ RSpec.describe Declaration, type: :model do
     let :lead_provider do
       create :lead_provider, delivery_partners: {
         course_cohort => twenty_three_partner,
-        create(:course_cohort, cohort: create(:cohort, registration_starts_at: Date.new(2024, 4, 1))) => twenty_four_partner,
+        create(:course_cohort, course: create(:course), cohort: create(:cohort, registration_starts_at: Date.new(2024, 4, 1))) => twenty_four_partner,
       }
     end
 
@@ -797,6 +801,8 @@ RSpec.describe Declaration, type: :model do
     let(:declaration) { build(:declaration, application:, lead_provider:, milestone:, delivery_partner: nil) }
     let(:twenty_three_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}") }
     let(:twenty_four_partner) { create(:delivery_partner, name: "Delivery Partner #{SecureRandom.uuid}") }
+
+    before { create(:course_cohort_provider, course_cohort:, lead_provider:) }
 
     it { is_expected.to include twenty_three_partner.id }
     it { is_expected.not_to include twenty_four_partner.id }

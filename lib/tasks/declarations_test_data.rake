@@ -61,7 +61,7 @@ namespace :declarations do
       end
 
       CourseCohortProvider.find_or_create_by!(course_cohort:, lead_provider:)
-      DeliveryPartnership.find_or_create_by!(course_cohort:, lead_provider:, delivery_partner:)
+      DeliveryPartnership.find_or_create_by!(course:, lead_provider:, delivery_partner:)
 
       applications = 3.times.map do |index|
         unique_id = "#{run_id}-#{course.identifier.parameterize}-#{index + 1}"

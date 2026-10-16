@@ -37,13 +37,6 @@ module CourseCohorts
         teacher_funding: contract["teacher_funding"].presence,
         recruitment_target: contract["recruitment_target"].presence,
       )
-
-      lead_provider.delivery_partners.each do |delivery_partner|
-        @course_cohort.delivery_partnerships.create!(
-          lead_provider:,
-          delivery_partner:,
-        )
-      end
     end
 
     def update_contract(ccp, contract)

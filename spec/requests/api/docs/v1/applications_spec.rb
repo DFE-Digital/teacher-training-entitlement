@@ -245,6 +245,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
           create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
         end
 
+        before { create(:course_cohort_provider, course_cohort:, lead_provider:) }
+
         let(:type) { "declaration" }
         let(:attributes) do
           {
@@ -397,6 +399,8 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
         let(:secondary_delivery_partner_id) do
           create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
         end
+
+        before { create(:course_cohort_provider, course_cohort:, lead_provider:) }
 
         let(:type) { "declaration" }
         let(:attributes) do

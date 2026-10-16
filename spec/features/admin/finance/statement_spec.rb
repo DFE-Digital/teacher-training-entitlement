@@ -21,7 +21,7 @@ RSpec.feature "Statement", type: :feature do
   before do
     application = create(:application, :accepted, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider)
     create(:declaration, state: :eligible, application:, course: course_cohort.course, course_cohort:, lead_provider: statement.lead_provider, statement:)
-    create(:course_cohort_provider, course_cohort:, lead_provider: statement.lead_provider, recruitment_target: 100, teacher_funding: 900)
+    course_cohort.course_cohort_providers.find_or_create_by!(lead_provider: statement.lead_provider).update!(recruitment_target: 100, teacher_funding: 900)
 
     sign_in_as(create(:admin))
   end

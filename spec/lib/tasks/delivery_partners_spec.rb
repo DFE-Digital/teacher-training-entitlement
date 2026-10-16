@@ -129,15 +129,14 @@ RSpec.describe "Delivery Partners rake tasks" do
     after { Rake::Task["delivery_partners:partnerships:import"].reenable }
 
     let(:lead_provider) { create :lead_provider }
-    let(:cohort) { create(:cohort, :current) }
-    let(:course_cohort) { create(:course_cohort, cohort:, lead_provider:) }
+    let(:course) { create(:course) }
     let(:delivery_partners) { create_list(:delivery_partner, 3) }
     let(:dry_run) { "false" }
     let(:csv_path) { csv_file.path }
 
     let :partnerships do
       delivery_partners.map do |partner|
-        [lead_provider.ecf_id, course_cohort.ecf_id, partner.ecf_id]
+        [lead_provider.ecf_id, course.ecf_id, partner.ecf_id]
       end
     end
 
@@ -146,7 +145,7 @@ RSpec.describe "Delivery Partners rake tasks" do
         CSV.open(tmp.path, "w") do |csv|
           csv << [
             "Lead Provider ECF Id",
-            "Course Cohort ECF Id",
+            "Course ECF Id",
             "Delivery Partner ECF Id",
           ]
 
@@ -160,7 +159,7 @@ RSpec.describe "Delivery Partners rake tasks" do
 
       let :imported_partnership do
         DeliveryPartnership.find_by(delivery_partner: delivery_partners[0],
-                                    course_cohort:,
+                                    course:,
                                     lead_provider:)
       end
 
@@ -193,7 +192,7 @@ RSpec.describe "Delivery Partners rake tasks" do
     context "with invalid file" do
       let :partnerships do
         delivery_partners.map do
-          [lead_provider.ecf_id, course_cohort.ecf_id, delivery_partners[0].ecf_id]
+          [lead_provider.ecf_id, course.ecf_id, delivery_partners[0].ecf_id]
         end
       end
 
@@ -242,7 +241,7 @@ RSpec.describe "Delivery Partners rake tasks" do
       subject { csv_data[0].to_h.keys }
 
       let :expected_header do
-        ["Lead Provider ECF Id", "Course Cohort ECF Id", "Delivery Partner ECF Id"]
+        ["Lead Provider ECF Id", "Course ECF Id", "Delivery Partner ECF Id"]
       end
 
       it { is_expected.to eq expected_header }
@@ -251,11 +250,11 @@ RSpec.describe "Delivery Partners rake tasks" do
     context "with data row" do
       subject { csv_data[0].to_h }
 
-      let(:partnership) { partnerships.min_by(&:id) }
+      let(:partnership) { partnerships.min_by(&:id).reload }
 
       it { is_expected.to have_attributes length: 3 }
       it { is_expected.to include "Lead Provider ECF Id" => partnership.lead_provider.ecf_id }
-      it { is_expected.to include "Course Cohort ECF Id" => partnership.course_cohort.ecf_id }
+      it { is_expected.to include "Course ECF Id" => partnership.course.ecf_id }
       it { is_expected.to include "Delivery Partner ECF Id" => partnership.delivery_partner.ecf_id }
     end
 

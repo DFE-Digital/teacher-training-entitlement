@@ -9,6 +9,8 @@ class Course < ApplicationRecord
   TTE_RECEPTION = "tte-reception".freeze # used to keep backward compatibility with API v1 on schedule endpoint
 
   has_many :milestones, dependent: :destroy
+  has_many :delivery_partnerships, dependent: :destroy
+  has_many :delivery_partners, through: :delivery_partnerships
   has_many :course_cohorts, dependent: :destroy
   has_many :course_cohort_providers, through: :course_cohorts
   has_many :cohorts, through: :course_cohorts

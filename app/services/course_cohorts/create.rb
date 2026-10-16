@@ -21,7 +21,6 @@ module CourseCohorts
       CourseCohort.transaction do
         find_or_create_course_cohort!
         create_course_cohort_providers!
-        create_delivery_partnerships!
       end
     end
 
@@ -41,23 +40,8 @@ module CourseCohorts
       end
     end
 
-    def create_delivery_partnerships!
-      contract_years.each do |contract_year|
-        contract_year.lead_provider.delivery_partners.each do |delivery_partner|
-          @course_cohort.delivery_partnerships.find_or_create_by!(
-            lead_provider: contract_year.lead_provider,
-            delivery_partner:,
-          )
-        end
-      end
-    end
-
     def contract_years
-      @contract_years ||= @course.contract_years.includes(lead_provider: :delivery_partners).generic
-    end
-
-    def month_offset_between(from_date, to_date)
-      (to_date.year * 12 + to_date.month) - (from_date.year * 12 + from_date.month)
+      @contract_years ||= @course.contract_years.includes(:lead_provider).generic
     end
   end
 end

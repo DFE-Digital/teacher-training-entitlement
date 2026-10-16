@@ -8,7 +8,7 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
   let(:contracts) { create_list(:course_cohort_provider, 5, course_cohort:) }
   let(:providers) { contracts.map(&:lead_provider) }
   let!(:delivery_partner) do
-    create(:delivery_partner).tap { |dp| dp.delivery_partnerships.create!(lead_provider: providers.first, course_cohort:) }
+    create(:delivery_partner).tap { |dp| dp.delivery_partnerships.create!(lead_provider: providers.first, course: course_cohort.course) }
   end
 
   before do
