@@ -16,7 +16,6 @@ RSpec.describe NavigationStructures::AdminNavigationStructure, type: :component 
         "Applications" => "/admin/applications",
         "Providers" => "/admin/providers",
         "Finance" => "/admin/finance/statements",
-        "Delivery partners" => "/admin/delivery-partners",
         "Workplaces" => "/admin/schools",
         "Guidance" => "/admin/guidance",
         "Settings" => "/admin/settings",
