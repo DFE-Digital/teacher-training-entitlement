@@ -77,16 +77,6 @@ namespace :admin do
     concerns :cohortable, index: "lead_providers#index", show: "lead_providers#show"
   end
 
-  resources :delivery_partners, path: "delivery-partners", except: %i[show destroy] do
-    resource :delivery_partnerships, path: "delivery-partnerships", only: :edit
-    collection do
-      post :continue
-    end
-    member do
-      post :continue
-    end
-  end
-
   resources :schools, only: %i[index show]
 
   resources :users, only: %i[show]

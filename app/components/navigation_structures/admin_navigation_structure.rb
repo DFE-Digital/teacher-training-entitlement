@@ -141,10 +141,6 @@ module NavigationStructures
           prefix: "/admin/finance",
         ) => [],
         Node.new(
-          name: "Delivery partners",
-          href: admin_delivery_partners_path,
-        ) => [],
-        Node.new(
           name: "Workplaces",
           href: admin_schools_path,
         ) => [],
