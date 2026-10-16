@@ -39,7 +39,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
 
     describe "#show" do
       before do
-        create_list(:delivery_partnership, 2, course_cohort:, lead_provider:)
+        create_list(:delivery_partnership, 2, course:, lead_provider:)
         get cohort_admin_course_cohort_path(course_cohort.course, cohort)
       end
 
@@ -110,7 +110,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
         course_cohort = cohort.course_cohorts.find_by(course:)
         expect(course_cohort).to be_present
         expect(course_cohort.course_cohort_providers.find_by(lead_provider:)).to be_present
-        expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_present
+        expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_nil
       end
 
       context "when the cohort academic year differs from the training start year" do

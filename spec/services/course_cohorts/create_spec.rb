@@ -149,11 +149,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
         let(:delivery_partner) { create(:delivery_partner) }
         let(:lead_provider) { create(:lead_provider, delivery_partner:) }
 
-        it "creates a delivery partnership linking the lead provider and delivery partner to the new course cohort" do
-          expect { service.call }.to change(DeliveryPartnership, :count).by(1)
-
-          partnership = service.course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)
-          expect(partnership).to be_present
+        it "does not create any delivery partnerships" do
+          expect { service.call }.not_to change(DeliveryPartnership, :count)
         end
       end
     end

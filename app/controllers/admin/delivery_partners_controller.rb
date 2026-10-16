@@ -60,7 +60,7 @@ private
       delivery_partnerships_attributes: %i[
         id
         lead_provider_id
-        course_cohort_id
+        course_id
         _destroy
       ],
     )

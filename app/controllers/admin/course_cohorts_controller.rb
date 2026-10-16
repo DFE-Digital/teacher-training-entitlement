@@ -13,8 +13,8 @@ class Admin::CourseCohortsController < AdminController
   end
 
   def show
-    @delivery_partner_counts = DeliveryPartnership
-      .where(course_cohort: @course_cohort, lead_provider_id: @course_cohort.lead_provider_ids)
+    @delivery_partner_counts = @course_cohort.delivery_partnerships
+      .where(lead_provider_id: @course_cohort.lead_provider_ids)
       .group(:lead_provider_id)
       .count
     @contract_years = @course_cohort.course.contract_years.generic.includes(:lead_provider)

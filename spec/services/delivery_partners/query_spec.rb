@@ -7,9 +7,9 @@ RSpec.describe DeliveryPartners::Query do
   let(:cohort_22) { create :cohort, registration_starts_at: Date.new(2022, 9, 1) }
   let(:cohort_23) { create :cohort, registration_starts_at: Date.new(2023, 9, 1) }
   let(:cohort_21_2) { create :cohort, registration_starts_at: Date.new(2021, 10, 1) }
-  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21) }
-  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22) }
-  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23) }
+  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course)) }
+  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course)) }
+  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, course: create(:course)) }
   let(:sort) { nil }
 
   subject(:query) { described_class.new(lead_provider: lead_provider_1, sort: sort) }
@@ -67,7 +67,7 @@ RSpec.describe DeliveryPartners::Query do
       before do
         course_cohort = create(:course_cohort, cohort: cohort_21_2, lead_provider: lead_provider_1)
         create(:delivery_partnership, delivery_partner: delivery_partner_1,
-                                      course_cohort:,
+                                      course: course_cohort.course,
                                       lead_provider: lead_provider_1)
       end
 

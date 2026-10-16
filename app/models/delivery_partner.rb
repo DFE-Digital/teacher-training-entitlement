@@ -6,7 +6,8 @@ class DeliveryPartner < ApplicationRecord
 
   has_many :delivery_partnerships
   has_many :lead_providers, through: :delivery_partnerships
-  has_many :course_cohorts, through: :delivery_partnerships
+  has_many :courses, through: :delivery_partnerships
+  has_many :course_cohorts, through: :courses
 
   accepts_nested_attributes_for :delivery_partnerships, allow_destroy: true
 
@@ -28,9 +29,9 @@ class DeliveryPartner < ApplicationRecord
   end
 
   def course_cohorts_for_lead_provider(lead_provider)
-    delivery_partnerships
-      .select { |delivery_partnership| delivery_partnership.lead_provider_id == lead_provider.id }
-      .map(&:course_cohort)
-      .uniq
+    CourseCohort
+      .joins(course: :delivery_partnerships)
+      .where(delivery_partnerships: { delivery_partner: self, lead_provider: })
+      .distinct
   end
 end

@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:other_lead_provider) { create(:lead_provider) }
-  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21) }
-  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22) }
-  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23) }
+  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course)) }
+  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course)) }
+  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, course: create(:course)) }
   let(:delivery_partner) do
     create(:delivery_partner,
            lead_providers: {
@@ -41,7 +41,8 @@ RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
       end
 
       it "serializes the cohorts" do
-        expect(attributes["cohort"]).to eq([cohort_21.start_year, cohort_22.start_year])
+        expect(attributes["cohort"]).to include(cohort_21.start_year, cohort_22.start_year)
+        expect(attributes["cohort"]).not_to include(cohort_23.start_year)
       end
 
       it "serializes the `created_at`" do

@@ -89,7 +89,10 @@ RSpec.describe APITests::ResumeApplication, type: :model do
 
       let(:application) { create(:application, :deferred, lead_provider:, course_cohort:) }
 
-      before { course_cohort.course_cohort_providers.delete_all }
+      before do
+        application
+        course_cohort.course_cohort_providers.delete_all
+      end
 
       it "raises an error" do
         expect { service.call }

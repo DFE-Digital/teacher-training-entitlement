@@ -6,9 +6,7 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
   let(:admin) { create(:admin) }
   let!(:delivery_partner) { create(:delivery_partner) }
   let!(:lead_providers) { create_list(:lead_provider, 3) }
-  let(:course) { create(:course) }
-  let!(:cohorts) { [create(:cohort, :current), create(:cohort, :next)] }
-  let!(:course_cohorts) { cohorts.map { |cohort| create(:course_cohort, cohort:, course:) } }
+  let!(:courses) { create_list(:course, 2) }
 
   context "when not logged in" do
     scenario "delivery partnerships interface is inaccessible" do
@@ -34,53 +32,53 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
           expect(page).to have_content(lead_provider.name)
         end
 
-        # Course cohorts are hidden until a course provider is selected
-        expect(page).not_to have_content(course_cohort_label(course_cohorts.first))
+        # Courses are hidden until a course provider is selected
+        expect(page).not_to have_content(courses.first.name)
       end
     end
 
-    scenario "assigning course providers and cohorts to a delivery partner" do
+    scenario "assigning course providers and courses to a delivery partner" do
       lead_provider = lead_providers.first
-      course_cohort = course_cohorts.first
+      course = courses.first
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
 
       # Check the course provider checkbox
       check lead_provider.name, visible: :all
 
-      # Check the cohort checkbox for this course provider
+      # Check the course checkbox for this course provider
       within("#delivery-partner-lead-provider-id-#{lead_provider.id}-conditional") do
-        check course_cohort_label(course_cohort), visible: :all
+        check course.name, visible: :all
       end
 
       click_button "Save"
 
       expect(page).to have_current_path(admin_delivery_partners_path)
       expect(page).to have_content("Delivery partner updated")
-      expect(DeliveryPartnership.where(delivery_partner:, lead_provider:, course_cohort:)).to exist
+      expect(DeliveryPartnership.where(delivery_partner:, lead_provider:, course:)).to exist
     end
 
     scenario "removing a course provider partnership" do
       # Create an existing partnership
       lead_provider = lead_providers.first
-      course_cohort = course_cohorts.first
+      course = courses.first
 
       delivery_partnership = create(:delivery_partnership,
                                     delivery_partner:,
                                     lead_provider:,
-                                    course_cohort:)
+                                    course:)
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
 
       # The course provider should be checked
       expect(page).to have_field("delivery_partner[lead_provider_id][]", with: lead_provider.id.to_s, checked: true, visible: :all)
 
-      # The cohort should be checked
+      # The course should be checked
       within("#delivery-partner-lead-provider-id-#{lead_provider.id}-conditional") do
-        expect(page).to have_field(course_cohort_label(course_cohort), checked: true, visible: :all)
+        expect(page).to have_field(course.name, checked: true, visible: :all)
       end
 
-      # Uncheck the course provider (this should also uncheck all cohorts via JS)
+      # Uncheck the course provider (this should also uncheck all courses via JS)
       uncheck lead_provider.name, visible: :all
 
       click_button "Save"
@@ -90,77 +88,76 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
       expect(DeliveryPartnership.find_by(id: delivery_partnership.id)).to be_nil
     end
 
-    scenario "assigning two course cohorts in the same cohort" do
+    scenario "assigning two courses to a delivery partner" do
       lead_provider = lead_providers.first
-      cohort = cohorts.first
-      first_course_cohort = course_cohorts.first
-      second_course_cohort = create(:course_cohort, cohort:, course: create(:course))
+      first_course = courses.first
+      second_course = create(:course)
 
       create(:delivery_partnership,
              delivery_partner:,
              lead_provider:,
-             course_cohort: first_course_cohort)
+             course: first_course)
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
 
       within("#delivery-partner-lead-provider-id-#{lead_provider.id}-conditional") do
-        check course_cohort_label(second_course_cohort), visible: :all
+        check second_course.name, visible: :all
       end
 
       click_button "Save"
 
       expect(page).to have_current_path(admin_delivery_partners_path)
-      expect(delivery_partner.course_cohorts.reload).to contain_exactly(first_course_cohort, second_course_cohort)
+      expect(delivery_partner.courses.reload).to contain_exactly(first_course, second_course)
     end
 
-    scenario "assigning a course cohort when another delivery partner has a similar name" do
+    scenario "assigning a course when another delivery partner has a similar name" do
       delivery_partner.update!(name: "Delivery partner 1")
       create(:delivery_partner, name: "Delivery partner 2")
       lead_provider = lead_providers.first
-      course_cohort = course_cohorts.first
+      course = courses.first
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
 
       check lead_provider.name, visible: :all
       within("#delivery-partner-lead-provider-id-#{lead_provider.id}-conditional") do
-        check course_cohort_label(course_cohort), visible: :all
+        check course.name, visible: :all
       end
 
       click_button "Save"
 
       expect(page).to have_current_path(admin_delivery_partners_path)
       expect(page).not_to have_content("We found similar delivery partners")
-      expect(DeliveryPartnership.where(delivery_partner:, lead_provider:, course_cohort:)).to exist
+      expect(DeliveryPartnership.where(delivery_partner:, lead_provider:, course:)).to exist
     end
 
-    scenario "removing a specific cohort from a course provider partnership" do
-      # Create existing partnerships for two cohorts
+    scenario "removing a specific course from a course provider partnership" do
+      # Create existing partnerships for two courses
       lead_provider = lead_providers.first
-      course_cohort1 = course_cohorts.first
-      course_cohort2 = course_cohorts.second
+      course1 = courses.first
+      course2 = courses.second
 
       partnership1 = create(:delivery_partnership,
-                            delivery_partner: delivery_partner,
-                            lead_provider: lead_provider,
-                            course_cohort: course_cohort1)
+                            delivery_partner:,
+                            lead_provider:,
+                            course: course1)
 
       partnership2 = create(:delivery_partnership,
-                            delivery_partner: delivery_partner,
-                            lead_provider: lead_provider,
-                            course_cohort: course_cohort2)
+                            delivery_partner:,
+                            lead_provider:,
+                            course: course2)
 
       visit edit_admin_delivery_partner_delivery_partnerships_path(delivery_partner)
 
       # The course provider should be checked
       expect(page).to have_field("delivery_partner[lead_provider_id][]", with: lead_provider.id.to_s, checked: true, visible: :all)
 
-      # Both cohorts should be checked
+      # Both courses should be checked
       within("#delivery-partner-lead-provider-id-#{lead_provider.id}-conditional") do
-        expect(page).to have_field(course_cohort_label(course_cohort1), checked: true, visible: :all)
-        expect(page).to have_field(course_cohort_label(course_cohort2), checked: true, visible: :all)
+        expect(page).to have_field(course1.name, checked: true, visible: :all)
+        expect(page).to have_field(course2.name, checked: true, visible: :all)
 
-        # Uncheck just the first cohort
-        uncheck course_cohort_label(course_cohort1), visible: :all
+        # Uncheck just the first course
+        uncheck course1.name, visible: :all
       end
 
       click_button "Save"
@@ -177,13 +174,5 @@ RSpec.feature "NPQ Separation Admin Delivery Partnerships", type: :feature do
       click_link "Cancel"
       expect(page).to have_current_path(admin_delivery_partners_path)
     end
-  end
-
-private
-
-  def course_cohort_label(course_cohort)
-    course_cohort.reload
-
-    "#{course_cohort.course.name} – #{course_cohort.cohort.description}"
   end
 end

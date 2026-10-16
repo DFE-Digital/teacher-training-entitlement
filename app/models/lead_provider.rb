@@ -19,6 +19,8 @@ class LeadProvider < ApplicationRecord
   scope :alphabetical, -> { order(name: :asc) }
 
   def delivery_partners_for_course_cohort(course_cohort:)
-    delivery_partners.where(delivery_partnerships: { course_cohort: })
+    return DeliveryPartner.none unless course_cohort_providers.where(course_cohort:).exists?
+
+    delivery_partners.where(delivery_partnerships: { course: course_cohort.course })
   end
 end

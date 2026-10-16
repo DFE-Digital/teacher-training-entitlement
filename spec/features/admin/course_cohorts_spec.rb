@@ -38,7 +38,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
     expect(course_cohort_provider.teacher_funding).to eq(1000)
     expect(course_cohort_provider.recruitment_target).to eq(50)
 
-    expect(course_cohort.delivery_partnerships.find_by(lead_provider: lead_provider_one, delivery_partner:)).to be_present
+    expect(course_cohort.delivery_partnerships.find_by(lead_provider: lead_provider_one, delivery_partner:)).to be_nil
 
     # the unchecked provider is not added
     expect(course_cohort.course_cohort_providers.find_by(lead_provider: lead_provider_two)).to be_nil

@@ -94,7 +94,8 @@ RSpec.describe DeliveryPartner, type: :model do
   describe "relationships" do
     it { is_expected.to have_many(:delivery_partnerships) }
     it { is_expected.to have_many(:lead_providers).through(:delivery_partnerships) }
-    it { is_expected.to have_many(:course_cohorts).through(:delivery_partnerships) }
+    it { is_expected.to have_many(:courses).through(:delivery_partnerships) }
+    it { is_expected.to have_many(:course_cohorts).through(:courses) }
   end
 
   describe "validations" do
@@ -111,14 +112,25 @@ RSpec.describe DeliveryPartner, type: :model do
   describe "#course_cohorts_for_lead_provider" do
     subject { delivery_partner.course_cohorts_for_lead_provider(lead_provider) }
 
-    let(:delivery_partner) { create :delivery_partner, lead_providers: { course_cohort => lead_provider, other_course_cohort => other_lead_provider } }
+    let(:delivery_partner) { create :delivery_partner, lead_providers: { course => lead_provider, other_course => other_lead_provider } }
     let(:lead_provider) { create :lead_provider }
     let(:other_lead_provider) { create :lead_provider }
+    let(:course) { create(:course) }
+    let(:other_course) { create(:course) }
     let(:cohort) { create :cohort }
     let(:other_cohort) { create :cohort, registration_starts_at: Date.new(2024, 5, 1) }
-    let(:course_cohort) { create(:course_cohort, cohort:) }
-    let(:other_course_cohort) { create(:course_cohort, cohort: other_cohort) }
 
-    it { is_expected.to eq [course_cohort] }
+    before do
+      create(:course_cohort, course:, cohort:)
+      create(:course_cohort, course:, cohort: other_cohort)
+    end
+
+    it "returns every course cohort of courses the partner delivers for the lead provider" do
+      expect(subject).to match_array(course.course_cohorts)
+    end
+
+    it "does not return course cohorts of courses delivered for other lead providers" do
+      expect(subject).not_to include(*other_course.course_cohorts)
+    end
   end
 end

@@ -228,7 +228,7 @@ RSpec.describe Declarations::Create, type: :model do
         end
 
         before do
-          create(:course_cohort_provider, course_cohort:, lead_provider:)
+          course_cohort.course_cohort_providers.find_or_create_by!(lead_provider:)
           application.update!(course_cohort:)
         end
 
