@@ -17,7 +17,7 @@
     "hmrc-frontend": "^7.40.0",
     "mermaid": "^12.2.0",
     "rails-ujs": "^5.2.8",
-    "sass": "^1.105.1",
+    "sass": "^1.105.2",
     "svg-pan-zoom": "^3.6.2",
     "swagger-ui-dist": "^5.33.2",
     "webpack": "^5.111.1",
