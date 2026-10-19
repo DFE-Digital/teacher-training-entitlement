@@ -114,7 +114,7 @@ GEM
       axe-core-api (= 4.13.0)
     axe-core-rspec (4.13.0)
       axe-core-api (= 4.13.0)
-    azure-blob (0.8.0)
+    azure-blob (0.9.0)
       cgi
       rexml
     base64 (0.3.0)
@@ -144,7 +144,7 @@ GEM
     capybara-screenshot (1.0.27)
       capybara (>= 1.0, < 4)
       launchy
-    cgi (0.5.1)
+    cgi (0.5.2)
     childprocess (5.1.0)
       logger (~> 1.5)
     choice (0.2.0)
