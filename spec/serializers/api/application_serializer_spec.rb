@@ -79,8 +79,32 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes["teacher_catchment_country"]).to eq("United Kingdom of Great Britain and Northern Ireland")
     end
 
-    context "when the application is outside the catchment area" do
-      before { application.teacher_catchment = "another" }
+    context "when the institution is outside the catchment area" do
+      before { institution.school.update!(la_code: "704") }
+
+      it "does not serialize a teacher catchment country" do
+        expect(attributes["teacher_catchment_country"]).to be_nil
+      end
+
+      it "does not serialize a teacher catchment ISO country code" do
+        expect(attributes["teacher_catchment_iso_country_code"]).to be_nil
+      end
+    end
+
+    context "when the institution is a Welsh school" do
+      before { institution.school.update!(establishment_type_code: "30") }
+
+      it "serializes the United Kingdom teacher catchment country" do
+        expect(attributes["teacher_catchment_country"]).to eq("United Kingdom of Great Britain and Northern Ireland")
+      end
+
+      it "serializes the United Kingdom teacher catchment ISO country code" do
+        expect(attributes["teacher_catchment_iso_country_code"]).to eq("GBR")
+      end
+    end
+
+    context "when the application has no institution" do
+      let(:institution) { nil }
 
       it "does not serialize a teacher catchment country" do
         expect(attributes["teacher_catchment_country"]).to be_nil

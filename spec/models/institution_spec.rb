@@ -1,6 +1,55 @@
 require "rails_helper"
 
 RSpec.describe Institution do
+  describe "teacher catchment country details" do
+    subject(:institution) { build(:institution, institutionable:) }
+
+    context "with a school" do
+      let(:institutionable) { build(:school) }
+
+      it "returns the United Kingdom country details" do
+        expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
+        expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
+      end
+
+      context "when the school is in Wales" do
+        let(:institutionable) { build(:school, establishment_type_code: "30") }
+
+        it "returns the United Kingdom country details" do
+          expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
+          expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
+        end
+      end
+
+      context "when the school is overseas" do
+        let(:institutionable) { build(:school, la_code: "704") }
+
+        it "does not return country details" do
+          expect(institution.teacher_catchment_country).to be_nil
+          expect(institution.teacher_catchment_iso_country_code).to be_nil
+        end
+      end
+    end
+
+    context "with a private childcare provider" do
+      let(:institutionable) { build(:private_childcare_provider) }
+
+      it "returns the United Kingdom country details" do
+        expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
+        expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
+      end
+    end
+
+    context "with a local authority" do
+      let(:institutionable) { build(:local_authority) }
+
+      it "returns the United Kingdom country details" do
+        expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
+        expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
+      end
+    end
+  end
+
   describe ".search" do
     context "when searching by name" do
       before { create(:school, name: "a school") }
