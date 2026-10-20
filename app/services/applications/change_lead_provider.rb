@@ -18,6 +18,7 @@ module Applications
       return unless valid?
 
       Application.transaction do
+        @application.transition_status!(Application::PENDING, reason:) if @application.rejected_status?
         @application.change_provider!(to: @new_provider)
         @application.application_events.create!(
           event: :changed_provider,

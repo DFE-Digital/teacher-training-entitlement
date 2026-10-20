@@ -39,6 +39,17 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
       end
     end
 
+    context "when the application is rejected" do
+      let(:application) { create(:application, :rejected, lead_provider: old_provider) }
+
+      it "resets the application to pending" do
+        service.call
+
+        expect(application.reload).to be_pending_status
+        expect(application.lead_provider).to eq(new_provider)
+      end
+    end
+
     context "when application provider is same as new provider" do
       let(:application) { create(:application, :pending, lead_provider: new_provider) }
 
