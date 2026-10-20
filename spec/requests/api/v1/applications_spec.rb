@@ -525,7 +525,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:service_args) do
       {
         application: resource,
-        declaration_type: :started,
+        declaration_type: "started",
         declaration_date: declaration_date.rfc3339,
         delivery_partner_id:,
         secondary_delivery_partner_id:,
@@ -536,14 +536,14 @@ RSpec.describe "Application endpoints", type: :request do
     let(:serializer) { API::DeclarationSerializer }
 
     def path(id = resource_id)
-      started_declaration_api_v1_application_path(ecf_id: id)
+      declaration_api_v1_application_path(ecf_id: id, declaration_type: "started")
     end
 
     it_behaves_like "an API create endpoint"
 
     context "when an application changed provider" do
       include_context "with application which changed provider"
-      let(:path) { started_declaration_api_v1_application_path(ecf_id: application.ecf_id) }
+      let(:path) { declaration_api_v1_application_path(ecf_id: application.ecf_id, declaration_type: "started") }
       let(:params) { { data: { attributes: } } }
 
       it "the old provider cannot create the declaration" do
@@ -583,7 +583,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:service_args) do
       {
         application: resource,
-        declaration_type: :completed,
+        declaration_type: "completed",
         declaration_date: declaration_date.rfc3339,
         has_passed:,
         delivery_partner_id:,
@@ -595,7 +595,7 @@ RSpec.describe "Application endpoints", type: :request do
     let(:serializer) { API::DeclarationSerializer }
 
     def path(id = resource_id)
-      completed_declaration_api_v1_application_path(ecf_id: id)
+      declaration_api_v1_application_path(ecf_id: id, declaration_type: "completed")
     end
 
     it_behaves_like "an API create endpoint"
@@ -605,7 +605,124 @@ RSpec.describe "Application endpoints", type: :request do
       let(:params) { { data: { attributes: } } }
 
       it "the old provider cannot create the declaration" do
-        path = completed_declaration_api_v1_application_path(ecf_id: application.ecf_id)
+        path = declaration_api_v1_application_path(ecf_id: application.ecf_id, declaration_type: "completed")
+        params
+
+        expect { api_post(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change(Declaration, :count))
+
+        expect(response).to be_forbidden
+      end
+    end
+  end
+
+  describe "POST /api/v1/applications/:ecf_id/declarations/retained-1" do
+    let(:resource) { create(:application, :with_declaration, course_cohort:, lead_provider: current_lead_provider) }
+    let(:declaration_date) { started_milestone.acceptance_window_start_date_for(training_starts_at: resource.training_starts_at) + 1.hour }
+    let(:course_cohort) { create(:course_cohort) }
+    let(:started_milestone) { course_milestone(course_cohort.course, :started) }
+    let(:has_passed) { true }
+    let(:delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+    end
+    let(:secondary_delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+    end
+
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Declarations::Create }
+    let(:action) { :call }
+
+    let(:attributes) do
+      {
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
+    end
+    let(:service_args) do
+      {
+        application: resource,
+        declaration_type: "retained-1",
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
+    end
+    let(:declaration) { create(:declaration) }
+    let(:service_methods) { { declaration: } }
+    let(:serializer) { API::DeclarationSerializer }
+
+    def path(id = resource_id)
+      declaration_api_v1_application_path(ecf_id: id, declaration_type: "retained-1")
+    end
+
+    it_behaves_like "an API create endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot create the declaration" do
+        path = declaration_api_v1_application_path(ecf_id: application.ecf_id, declaration_type: "retained-1")
+        params
+
+        expect { api_post(path, lead_provider: old_lead_provider, params:) }
+          .not_to(change(Declaration, :count))
+
+        expect(response).to be_forbidden
+      end
+    end
+  end
+
+  describe "POST /api/v1/applications/:ecf_id/declarations/retained-2" do
+    let(:resource) { create(:application, :with_declaration, course_cohort:, lead_provider: current_lead_provider) }
+    let(:declaration_date) { started_milestone.acceptance_window_start_date_for(training_starts_at: resource.training_starts_at) + 1.hour }
+    let(:course_cohort) { create(:course_cohort) }
+    let(:started_milestone) { course_milestone(course_cohort.course, :started) }
+    let(:delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+    end
+    let(:secondary_delivery_partner_id) do
+      create(:delivery_partner, lead_providers: { course_cohort.cohort => current_lead_provider }).ecf_id
+    end
+
+    let(:resource_id) { resource.ecf_id }
+    let(:service) { Declarations::Create }
+    let(:action) { :call }
+
+    let(:attributes) do
+      {
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
+    end
+    let(:service_args) do
+      {
+        application: resource,
+        declaration_type: "retained-2",
+        declaration_date: declaration_date.rfc3339,
+        delivery_partner_id:,
+        secondary_delivery_partner_id:,
+      }
+    end
+    let(:declaration) { create(:declaration) }
+    let(:service_methods) { { declaration: } }
+    let(:serializer) { API::DeclarationSerializer }
+
+    def path(id = resource_id)
+      declaration_api_v1_application_path(ecf_id: id, declaration_type: "retained-2")
+    end
+
+    it_behaves_like "an API create endpoint"
+
+    context "when an application changed provider" do
+      include_context "with application which changed provider"
+      let(:params) { { data: { attributes: } } }
+
+      it "the old provider cannot create the declaration" do
+        path = declaration_api_v1_application_path(ecf_id: application.ecf_id, declaration_type: "retained-2")
         params
 
         expect { api_post(path, lead_provider: old_lead_provider, params:) }

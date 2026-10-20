@@ -1,0 +1,12 @@
+<h1 class="govuk-heading-m"><%= @declaration_type.humanize %> Declarations API Endpoint</h1>
+<%= render GovukComponent::BackLinkComponent.new(text: "Back", href: admin_applications_api_tests_path(@application)) %>
+
+<div class="govuk-body">
+  <p>The <%= @declaration_type.humanize %> Declarations endpoint creates a '<%= @declaration_type %>' declaration for a started application.</p>
+  <p class="govuk-heading-s">List of delivery partners for <%= @application.lead_provider.name %></p>
+  <p>The <%= @declaration_type.humanize %> Declarations endpoint requires a delivery partner to be chosen.</p>
+  <%= form_for :form, url: @form_url do |f| %>
+    <%= f.govuk_select :delivery_partner_id, options_for_select(@delivery_partners.map { |delivery_partner| [delivery_partner.name, delivery_partner.id] }), label: { text: "Delivery partner", size: "s" } %>
+    <%= f.govuk_submit("Call #{@declaration_type.humanize} Declarations API") %>
+  <% end %>
+</div>
