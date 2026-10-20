@@ -28,7 +28,7 @@ RSpec.describe APITests::StartedDeclaration, type: :model do
   end
 
   let(:expected_path) do
-    Rails.application.routes.url_helpers.started_declaration_api_v1_application_path(application.ecf_id)
+    Rails.application.routes.url_helpers.declaration_api_v1_application_path(application.ecf_id, declaration_type: Milestone::STARTED)
   end
 
   before do

@@ -11,7 +11,7 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to belong_to(:application) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:milestone).without_validating_presence }
-    it { is_expected.to belong_to(:statement) }
+    it { is_expected.to belong_to(:statement).without_validating_presence }
     it { is_expected.to belong_to(:superseded_by).optional }
     it { is_expected.to have_many(:participant_outcomes).dependent(:destroy) }
     it { is_expected.to belong_to(:delivery_partner).without_validating_presence }
@@ -44,6 +44,30 @@ RSpec.describe Declaration, type: :model do
 
         it { is_expected.to have_attributes delivery_partners: [primary_partner] }
       end
+    end
+  end
+
+  describe "statement assignment" do
+    subject(:declaration) { build(:declaration, application:, lead_provider: application.lead_provider, statement: nil) }
+
+    it "assigns the current statement before validation" do
+      declaration.validate
+
+      expect(declaration.statement).to eq(
+        Statement.current(
+          lead_provider: application.lead_provider,
+          course_group: application.course.course_group,
+        ).first,
+      )
+    end
+
+    it "does not replace an explicitly assigned statement" do
+      statement = create(:statement, lead_provider: application.lead_provider)
+      declaration.statement = statement
+
+      declaration.validate
+
+      expect(declaration.statement).to eq(statement)
     end
   end
 
