@@ -24,8 +24,8 @@ module API
         field(:works_in_school) { |a| a.institution_id.present? }
         field(:cohort) { |a| a.course_cohort.academic_year.to_s }
         field(:inside_uk_catchment?, name: :teacher_catchment)
-        field(:teacher_catchment_country) { |a| a.inside_catchment? ? "United Kingdom of Great Britain and Northern Ireland" : nil }
-        field(:teacher_catchment_iso_country_code) { |a| a.inside_catchment? ? "GBR" : nil }
+        field(:teacher_catchment_country) { |a| a.institution&.teacher_catchment_country }
+        field(:teacher_catchment_iso_country_code) { |a| a.institution&.teacher_catchment_iso_country_code }
         field(:funded_place)
         field(:schedule_identifier) { |a| a.course_cohort.schedule_identifier }
         field(:assigned_at)

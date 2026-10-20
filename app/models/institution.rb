@@ -8,6 +8,8 @@ class Institution < ApplicationRecord
 
   REDACTED_DATA_STRING = "REDACTED".freeze
   TYPES = %w[School PrivateChildcareProvider LocalAuthority].freeze
+  UK_COUNTRY = "United Kingdom of Great Britain and Northern Ireland".freeze
+  UK_COUNTRY_CODE = "GBR".freeze
 
   delegated_type :institutionable, types: TYPES, dependent: :destroy
 
@@ -49,6 +51,14 @@ class Institution < ApplicationRecord
     institution_reference_number
   end
 
+  def teacher_catchment_country
+    UK_COUNTRY if within_uk_teacher_catchment?
+  end
+
+  def teacher_catchment_iso_country_code
+    UK_COUNTRY_CODE if within_uk_teacher_catchment?
+  end
+
   def ukprn
     return institution_reference_number if local_authority?
 
@@ -74,5 +84,11 @@ class Institution < ApplicationRecord
 
   def name_with_address
     [name, address_string].join(" – ")
+  end
+
+private
+
+  def within_uk_teacher_catchment?
+    !school? || school.in_uk?
   end
 end
