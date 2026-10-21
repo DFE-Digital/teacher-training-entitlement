@@ -27,6 +27,9 @@ module "application_configuration" {
       BIGQUERY_PROJECT_ID        = "ecf-bq"
       BIGQUERY_TABLE_NAME        = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].bigquery_table_name : null
       BIGQUERY_DATASET           = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].bigquery_dataset : null
+      BIGQUERY_AIRBYTE_DATASET   = var.airbyte_enabled ? local.gcp_dataset_name : null
+      AIRBYTE_SERVER_URL         = var.airbyte_enabled ? "https://airbyte-${var.namespace}.${module.cluster_data.ingress_domain}" : null
+      BIGQUERY_HIDDEN_POLICY_TAG = var.airbyte_enabled ? "projects/ecf-bq/locations/europe-west2/taxonomies/6302091323314055162/policyTags/301313311867345339" : null
     },
     var.environment == "review" ? {
       HOSTING_DOMAIN = "https://${var.service_name}-${local.environment}.${module.cluster_data.ingress_domain}"
@@ -37,13 +40,13 @@ module "application_configuration" {
     REDIS_CACHE_URL          = var.deploy_redis_cache ? module.redis-managed-cache.url : ""
     AZURE_STORAGE_ACCESS_KEY = module.storage_account.primary_access_key
     GOOGLE_CLOUD_CREDENTIALS = var.enable_dfe_analytics_federated_auth ? module.dfe_analytics[0].google_cloud_credentials : null
-  },
-  {
-    AIRBYTE_CONFIGURATION = var.airbyte_enabled ? jsonencode({
-    SOURCE_ID      = module.airbyte[0].airbyte_source_id
-    DESTINATION_ID = module.airbyte[0].airbyte_destination_id
-    CONNECTION_ID  = module.airbyte[0].airbyte_connection_id
-    }) : null
+    },
+    {
+      AIRBYTE_CONFIGURATION = var.airbyte_enabled ? jsonencode({
+        SOURCE_ID      = module.airbyte[0].airbyte_source_id
+        DESTINATION_ID = module.airbyte[0].airbyte_destination_id
+        CONNECTION_ID  = module.airbyte[0].airbyte_connection_id
+      }) : null
   })
 }
 
