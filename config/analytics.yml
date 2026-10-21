@@ -212,6 +212,7 @@ shared:
     - on_submission_trn
     - review_status
     - training_starts_at
+    - registration_data
   :users:
     - id
     - created_at
