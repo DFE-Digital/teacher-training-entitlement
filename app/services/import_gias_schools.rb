@@ -9,8 +9,7 @@ class ImportGiasSchools
 
   def call
     CSV.foreach(csv_file, headers: true, converters: [gias_converter]) do |row|
-      institution = Institution.find_by(institution_reference_number: row["URN"])
-      school = institution&.institutionable
+      school = School.joins(:institution).find_by(institutions: { institution_reference_number: row["URN"] })
 
       if school.nil?
         school = School.create!(school_attributes_from_row(row))
