@@ -94,12 +94,8 @@ private
     attributes = institution_attributes_from_row(row).merge(country_code_attributes_for(school))
 
     if school.institution
-      # GIAS contains public institution data published by DfE.
-      # codeql[rb/clear-text-storage-sensitive-data]
       school.institution.update!(attributes)
     else
-      # GIAS contains public institution data published by DfE.
-      # codeql[rb/clear-text-storage-sensitive-data]
       school.create_institution!(attributes)
     end
   end
