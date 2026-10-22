@@ -7,6 +7,6 @@ class Crons::UpdateSchoolsJob < CronJob
   sentry_monitor_check_ins slug: "update-schools"
 
   def perform
-    ImportGiasSchools.new.call
+    Importers::GiasSchools.new.call
   end
 end

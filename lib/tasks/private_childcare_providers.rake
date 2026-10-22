@@ -14,7 +14,7 @@ namespace :private_childcare_providers do
 
     logger.info("Importing Childcare providers from CSV file: #{file_name}")
 
-    importer = Importers::ImportPrivateChildcareProviders
+    importer = Importers::PrivateChildcareProviders
     csv_row_parser = case parser
                      when "childminder_agencies"
                        importer::ChildminderAgencyWrappedCSVRow

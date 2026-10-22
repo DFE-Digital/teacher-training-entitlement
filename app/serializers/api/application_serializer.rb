@@ -23,9 +23,9 @@ module API
         field(:reason_for_rejection)
         field(:works_in_school) { |a| a.institution_id.present? }
         field(:cohort) { |a| a.course_cohort.academic_year.to_s }
-        field(:inside_uk_catchment?, name: :teacher_catchment)
-        field(:teacher_catchment_country) { |a| a.institution&.teacher_catchment_country }
-        field(:teacher_catchment_iso_country_code) { |a| a.institution&.teacher_catchment_iso_country_code }
+        field(:teacher_catchment) { |a| a.institution&.within_the_uk? }
+        field(:teacher_catchment_country) { |a| a.institution&.country_long_name }
+        field(:teacher_catchment_iso_country_code) { |a| a.institution&.alpha3_country_code }
         field(:funded_place)
         field(:schedule_identifier) { |a| a.course_cohort.schedule_identifier }
         field(:assigned_at)
