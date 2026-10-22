@@ -2,6 +2,8 @@ FactoryBot.define do
   factory :institution do
     sequence(:name) { |n| "Institution #{n}" }
     sequence(:institution_reference_number) { |n| sprintf("IRN%08d", n) }
+    alpha3_country_code { Institution::UK_COUNTRY_CODE }
+    subdivision_code { Institution::ENGLAND_SUBDIVISION_CODE }
 
     after(:build) do |institution|
       institution.institutionable ||= build(:school, institution: institution)

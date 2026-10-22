@@ -1,52 +1,39 @@
 require "rails_helper"
 
 RSpec.describe Institution do
-  describe "teacher catchment country details" do
-    subject(:institution) { build(:institution, institutionable:) }
+  describe "#country_long_name" do
+    subject(:institution) { build(:institution, alpha3_country_code:) }
 
-    context "with a school" do
-      let(:institutionable) { build(:school) }
+    context "with a recognized country code" do
+      let(:alpha3_country_code) { "GBR" }
 
-      it "returns the United Kingdom country details" do
-        expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
-        expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
-      end
-
-      context "when the school is in Wales" do
-        let(:institutionable) { build(:school, establishment_type_code: "30") }
-
-        it "returns the United Kingdom country details" do
-          expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
-          expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
-        end
-      end
-
-      context "when the school is overseas" do
-        let(:institutionable) { build(:school, la_code: "704") }
-
-        it "does not return country details" do
-          expect(institution.teacher_catchment_country).to be_nil
-          expect(institution.teacher_catchment_iso_country_code).to be_nil
-        end
+      it "returns the ISO short name to preserve the API value" do
+        expect(institution.country_long_name).to eq("United Kingdom of Great Britain and Northern Ireland")
       end
     end
 
-    context "with a private childcare provider" do
-      let(:institutionable) { build(:private_childcare_provider) }
+    context "without a country code" do
+      let(:alpha3_country_code) { nil }
 
-      it "returns the United Kingdom country details" do
-        expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
-        expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
+      it { expect(institution.country_long_name).to be_nil }
+    end
+  end
+
+  describe "#within_the_uk?" do
+    subject(:institution) { build(:institution, alpha3_country_code:) }
+
+    %w[GBR JEY GGY IMN].each do |country_code|
+      context "with country code #{country_code}" do
+        let(:alpha3_country_code) { country_code }
+
+        it { is_expected.to be_within_the_uk }
       end
     end
 
-    context "with a local authority" do
-      let(:institutionable) { build(:local_authority) }
+    context "with another country code" do
+      let(:alpha3_country_code) { "ESP" }
 
-      it "returns the United Kingdom country details" do
-        expect(institution.teacher_catchment_country).to eq("United Kingdom of Great Britain and Northern Ireland")
-        expect(institution.teacher_catchment_iso_country_code).to eq("GBR")
-      end
+      it { is_expected.not_to be_within_the_uk }
     end
   end
 

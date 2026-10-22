@@ -18,10 +18,10 @@ RSpec.describe Crons::UpdateSchoolsJob, type: :job do
   end
 
   describe "#perform_now" do
-    it "calls ImportGiasSchools#call" do
-      mock = instance_double(ImportGiasSchools, call: nil)
+    it "calls Importers::GiasSchools#call" do
+      mock = instance_double(Importers::GiasSchools, call: nil)
 
-      allow(ImportGiasSchools).to receive(:new).and_return(mock)
+      allow(Importers::GiasSchools).to receive(:new).and_return(mock)
       described_class.perform_now
       expect(mock).to have_received(:call)
     end

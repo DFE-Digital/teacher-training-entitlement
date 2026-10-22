@@ -83,6 +83,8 @@ shared:
     - postcode_without_spaces
     - region
     - institution_reference_number
+    - alpha3_country_code
+    - subdivision_code
     - created_at
     - updated_at
   :lead_providers:
