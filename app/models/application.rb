@@ -206,10 +206,6 @@ class Application < ApplicationRecord
     "establishment-ineligible" unless eligible_for_funding
   end
 
-  def inside_uk_catchment?
-    teacher_catchment.in?(UK_CATCHMENT_AREA)
-  end
-
   def fundable?
     return false if previously_funded?
 

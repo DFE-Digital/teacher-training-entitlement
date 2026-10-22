@@ -237,54 +237,6 @@ RSpec.describe Application do
     end
   end
 
-<<<<<<< HEAD
-  describe "#employer_name" do
-    shared_examples "employer_name" do
-      it "displays proper employer_name" do
-        expect(application.employer_name_to_display).to eq(name)
-      end
-    end
-
-    context "when the application has school attached" do
-      let(:school) { create(:school) }
-      let(:name) { school.name }
-      let(:application) { build(:application, school_record: school) }
-
-      include_examples "employer_name"
-    end
-
-    context "when the application has private childcare provider" do
-      let(:private_childcare_provider) { create(:private_childcare_provider) }
-      let(:name) { private_childcare_provider.name }
-      let(:application) { build(:application, :with_private_childcare_provider, provider_record: private_childcare_provider) }
-
-      include_examples "employer_name"
-    end
-
-    context "when no institution is available" do
-      let(:name) { "" }
-      let(:application) { build(:application, institution: nil, works_in_school: false) }
-
-      include_examples "employer_name"
-    end
-=======
-  describe "#inside_catchment?" do
-    subject { application.inside_catchment? }
-
-    it { expect(build(:application, teacher_catchment: "england")).to be_inside_catchment }
-    it { expect(build(:application, teacher_catchment: "other")).not_to be_inside_catchment }
-  end
-
-  describe "#inside_uk_catchment?" do
-    it { expect(build(:application, teacher_catchment: "england")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "scotland")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "wales")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "northern_ireland")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "jersey_guernsey_isle_of_man")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "other")).not_to be_inside_uk_catchment }
->>>>>>> 2197c5364 ([776] Registration data - db & model cleanup)
-  end
-
   describe "versioning", :versioning do
     context "when changing versioned fields" do
       let(:application) { create(:application, status: Application::PENDING) }
