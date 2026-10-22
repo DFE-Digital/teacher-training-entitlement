@@ -147,8 +147,8 @@ RSpec.describe HandleSubmissionForStore do
         subject.call
 
         application = user.applications.last
-        expect(application.teacher_catchment_country).to eq("Jersey")
-        expect(application.teacher_catchment_iso_country_code).to eq("JEY")
+        expect(application.institution.country_long_name).to eq("Jersey")
+        expect(application.institution.alpha3_country_code).to eq("JEY")
       end
     end
 
