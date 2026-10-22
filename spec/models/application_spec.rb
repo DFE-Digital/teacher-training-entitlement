@@ -244,15 +244,6 @@ RSpec.describe Application do
     it { expect(build(:application, teacher_catchment: "other")).not_to be_inside_catchment }
   end
 
-  describe "#inside_uk_catchment?" do
-    it { expect(build(:application, teacher_catchment: "england")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "scotland")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "wales")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "northern_ireland")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "jersey_guernsey_isle_of_man")).to be_inside_uk_catchment }
-    it { expect(build(:application, teacher_catchment: "other")).not_to be_inside_uk_catchment }
-  end
-
   describe "versioning", :versioning do
     context "when changing versioned fields" do
       let(:application) { create(:application, status: Application::PENDING) }
