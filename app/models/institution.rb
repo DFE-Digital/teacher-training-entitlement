@@ -30,7 +30,7 @@ class Institution < ApplicationRecord
     where.not(institutionable_type: "School").or(where(id: open_school_institution_ids))
   }
 
-  delegate :in_england?, :identifier, :eligible_establishment?, to: :institutionable
+  delegate :identifier, :eligible_establishment?, to: :institutionable
 
   def self.search(search_term)
     return none if search_term.blank?
@@ -62,6 +62,10 @@ class Institution < ApplicationRecord
 
   def within_the_uk?
     alpha3_country_code.in?([UK_COUNTRY_CODE, *CROWN_DEPENDENCY_COUNTRY_CODES])
+  end
+
+  def in_england?
+    alpha3_country_code == UK_COUNTRY_CODE && subdivision_code == ENGLAND_SUBDIVISION_CODE
   end
 
   def ukprn
