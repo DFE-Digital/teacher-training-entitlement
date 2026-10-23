@@ -19,10 +19,6 @@ class PrivateChildcareProvider < ApplicationRecord
     nil
   end
 
-  def in_england?
-    true # Needs filling in
-  end
-
   def identifier
     "PrivateChildcareProvider-#{urn}"
   end

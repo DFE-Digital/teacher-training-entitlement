@@ -12,10 +12,6 @@ class LocalAuthority < ApplicationRecord
     "LocalAuthority-#{id}"
   end
 
-  def in_england?
-    true
-  end
-
   def eligible_establishment?
     true
   end
