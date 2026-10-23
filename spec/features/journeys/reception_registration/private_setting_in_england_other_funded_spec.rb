@@ -36,14 +36,10 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         funding_eligiblity_status_code: "ineligible_setting",
         institution_id: nil,
         teacher_catchment: "england",
-        teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
-        teacher_catchment_iso_country_code: "GBR",
-        targeted_support_funding_eligibility: false,
-        ukprn: nil,
         work_setting: Institution::PRIVATE_INSTITUTION,
       )
 
-      expect(application.raw_application_data).to match(
+      expect(application.registration_data).to match(
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,
         "course_start_date" => course_cohort.ecf_id,
@@ -52,7 +48,6 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         "lead_provider_id" => lead_provider.id.to_s,
         "submitted" => true,
         "teacher_catchment" => "england",
-        "teacher_catchment_country" => nil,
         "work_setting" => Institution::PRIVATE_INSTITUTION,
       )
     end

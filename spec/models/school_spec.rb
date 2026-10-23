@@ -135,7 +135,7 @@ RSpec.describe School do
       end
 
       context "when school is chosen as work setting" do
-        let(:work_setting) { Questionnaires::WorkSetting::A_SCHOOL }
+        let(:work_setting) { School::A_SCHOOL }
 
         it "is a pp50_institution" do
           expect(institution.pp50?(work_setting)).to be true
@@ -143,7 +143,7 @@ RSpec.describe School do
       end
 
       context "when FE is chosen as work setting" do
-        let(:work_setting) { Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING }
+        let(:work_setting) { School::A_16_TO_19_EDUCATIONAL_SETTING }
 
         it "is not a pp50_institution" do
           expect(institution.pp50?(work_setting)).to be false
@@ -157,7 +157,7 @@ RSpec.describe School do
       end
 
       context "when FE is chosen as work setting" do
-        let(:work_setting) { Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING }
+        let(:work_setting) { School::A_16_TO_19_EDUCATIONAL_SETTING }
 
         it "is a pp50_institution" do
           expect(institution.pp50?(work_setting)).to be true
@@ -165,7 +165,7 @@ RSpec.describe School do
       end
 
       context "when school is chosen as work setting" do
-        let(:work_setting) { Questionnaires::WorkSetting::A_SCHOOL }
+        let(:work_setting) { School::A_SCHOOL }
 
         it "is not a pp50_institution" do
           expect(institution.pp50?(work_setting)).to be false
@@ -204,7 +204,7 @@ RSpec.describe School do
     end
 
     context "PP50 Schools (PP50_SCHOOLS_URN_HASH)" do
-      subject { school.pp50?(Questionnaires::WorkSetting::A_SCHOOL) }
+      subject { school.pp50?(School::A_SCHOOL) }
 
       let(:urn) { "100006" } # URN taken from data file
 
@@ -212,7 +212,7 @@ RSpec.describe School do
     end
 
     context "PP50 Further Education (PP50_FE_UKPRN_HASH)" do
-      subject { school.pp50?(Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING) }
+      subject { school.pp50?(School::A_16_TO_19_EDUCATIONAL_SETTING) }
 
       let(:school) { create(:school, ukprn: "10000599") } # UKPRN taken from data file
 
