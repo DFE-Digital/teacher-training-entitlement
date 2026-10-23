@@ -30,6 +30,19 @@ RSpec.describe ImportGiasSchools do
       }.to change(School, :count).by(99)
     end
 
+    context "when another institution type has the same reference number" do
+      let!(:private_childcare_provider) { create(:private_childcare_provider, provider_urn: "100000") }
+
+      it "creates the school without updating the other institution type" do
+        expect { subject.call }.to change(School, :count).by(99)
+
+        matching_institutions = Institution.where(institution_reference_number: "100000")
+
+        expect(matching_institutions.pluck(:institutionable_type)).to contain_exactly("PrivateChildcareProvider", "School")
+        expect(private_childcare_provider.reload).to be_persisted
+      end
+    end
+
     it "imports schools correctly" do
       subject.call
 
