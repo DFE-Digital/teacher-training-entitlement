@@ -125,6 +125,8 @@ class Declaration < ApplicationRecord
   validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true, if: -> { type.blank? }
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
 
+  before_validation :set_statement, on: :create
+
   def clawback_statement
     Statement.clawback(lead_provider:, course_group:).first ||
       Statement.create_clawback!(lead_provider:, course_group:)
@@ -199,6 +201,13 @@ class Declaration < ApplicationRecord
   end
 
 private
+
+  def set_statement
+    return if statement || application.blank? || lead_provider.blank?
+
+    self.statement = Statement.current(lead_provider:, course_group:).first ||
+      Statement.create_current!(lead_provider:, course_group:)
+  end
 
   def validate_declaration_date_within_acceptance_window
     return unless application && declaration_date.present?

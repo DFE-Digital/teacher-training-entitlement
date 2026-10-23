@@ -45,6 +45,14 @@ namespace :admin do
           resources :revert_to_pending, only: %i[index create]
           resources :accept, only: %i[index create]
           resources :started_declarations, only: %i[index create]
+          resources :retained_1_declarations,
+                    controller: "retained_declarations",
+                    only: %i[index create],
+                    defaults: { declaration_type: "retained-1" }
+          resources :retained_2_declarations,
+                    controller: "retained_declarations",
+                    only: %i[index create],
+                    defaults: { declaration_type: "retained-2" }
           resources :completed_declarations, only: %i[index create]
           resources :change_funded_place, only: %i[index create]
           resources :change_delivery_partner, only: %i[index create]
