@@ -3,8 +3,8 @@ module Questionnaires
     attr_accessor :teacher_catchment, :teacher_catchment_country
 
     OPTIONS = [
-      ENGLAND = "england".freeze,
-      NOT_ENGLAND = "another".freeze,
+      ENGLAND = Institution::ENGLAND_SUBDIVISION_CODE,
+      NOT_ENGLAND = Institution::OTHER,
     ].freeze
 
     validates :teacher_catchment, presence: true, inclusion: { in: OPTIONS }
