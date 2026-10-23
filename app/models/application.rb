@@ -1,5 +1,4 @@
 class Application < ApplicationRecord
-  UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
     establishment-ineligible

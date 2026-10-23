@@ -123,13 +123,8 @@ private
     @user ||= store["current_user"].presence || User.find(store["current_user_id"])
   end
 
-  def uk_country
-    @uk_country ||= ISO3166::Country.find_country_by_any_name("United Kingdom")
-  end
-
   def teacher_catchment_country
     return country_long_name if selected_institution
-    return uk_country.iso_short_name if in_uk_catchement_area?
 
     store["teacher_catchment_country"]
   end
@@ -138,14 +133,9 @@ private
     store["teacher_catchment"]
   end
 
-  def in_uk_catchement_area?
-    teacher_catchment.in?(Application::UK_CATCHMENT_AREA)
-  end
-
   def teacher_catchment_iso_country_code
     return alpha3_country_code if selected_institution
     return if teacher_catchment_country.blank?
-    return uk_country.alpha3 if in_uk_catchement_area?
 
     if (country = ISO3166::Country.find_country_by_any_name(teacher_catchment_country))
       country.alpha3
