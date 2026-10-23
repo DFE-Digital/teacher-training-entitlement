@@ -250,10 +250,6 @@ class Application < ApplicationRecord
     Questionnaires::KindOfNursery::KIND_OF_NURSERY_PUBLIC_OPTIONS.include?(kind_of_nursery)
   end
 
-  def inside_uk_catchment?
-    teacher_catchment.in?(UK_CATCHMENT_AREA)
-  end
-
   def inside_catchment?
     %w[england].include?(teacher_catchment) || (cohort.start_year < 2024 && !!school&.urn&.starts_with?("1"))
   end

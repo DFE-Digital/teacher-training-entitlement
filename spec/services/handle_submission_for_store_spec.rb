@@ -135,6 +135,16 @@ RSpec.describe HandleSubmissionForStore do
           "review_status" => nil,
         })
       end
+
+      it "uses country attributes from the selected institution" do
+        school.institution.update!(alpha3_country_code: "JEY", subdivision_code: nil)
+
+        subject.call
+
+        application = user.applications.last
+        expect(application.teacher_catchment_country).to eq("Jersey")
+        expect(application.teacher_catchment_iso_country_code).to eq("JEY")
+      end
     end
 
     context "when there is a funding choice selected" do

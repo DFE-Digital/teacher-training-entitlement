@@ -10,7 +10,7 @@ class HandleSubmissionForStore
       @application = user.applications.create!(
         course_cohort:,
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
-        institution: (institution_from_store if inside_catchment?),
+        institution: selected_institution,
         ukprn:,
         eligible_for_funding: funding_eligibility_service.funded?,
         funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
@@ -58,6 +58,11 @@ private
            :inside_catchment?,
            to: :query_store
 
+  delegate :country_long_name,
+           :alpha3_country_code,
+           to: :selected_institution,
+           allow_nil: true
+
   def primary_establishment
     institution_from_store&.school? && institution_from_store.school.primary_education_phase?
   end
@@ -70,6 +75,10 @@ private
     return nil if store["institution_id"].blank?
 
     @institution_from_store ||= Institution.find(store["institution_id"])
+  end
+
+  def selected_institution
+    institution_from_store if inside_catchment?
   end
 
   def store_ukprn?
@@ -119,6 +128,7 @@ private
   end
 
   def teacher_catchment_country
+    return country_long_name if selected_institution
     return uk_country.iso_short_name if in_uk_catchement_area?
 
     store["teacher_catchment_country"]
@@ -133,6 +143,7 @@ private
   end
 
   def teacher_catchment_iso_country_code
+    return alpha3_country_code if selected_institution
     return if teacher_catchment_country.blank?
     return uk_country.alpha3 if in_uk_catchement_area?
 

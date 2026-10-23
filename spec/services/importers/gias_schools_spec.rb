@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ImportGiasSchools do
+RSpec.describe Importers::GiasSchools do
   let(:date_string) { Time.zone.today.strftime("%Y%m%d") }
 
   describe "#call" do
@@ -28,6 +28,19 @@ RSpec.describe ImportGiasSchools do
         described_class.new.call
         described_class.new.call
       }.to change(School, :count).by(99)
+    end
+
+    context "when another institution type has the same reference number" do
+      let!(:private_childcare_provider) { create(:private_childcare_provider, provider_urn: "100000") }
+
+      it "creates the school without updating the other institution type" do
+        expect { subject.call }.to change(School, :count).by(99)
+
+        matching_institutions = Institution.where(institution_reference_number: "100000")
+
+        expect(matching_institutions.pluck(:institutionable_type)).to contain_exactly("PrivateChildcareProvider", "School")
+        expect(private_childcare_provider.reload).to be_persisted
+      end
     end
 
     it "imports schools correctly" do
@@ -71,6 +84,7 @@ RSpec.describe ImportGiasSchools do
         expect(school.institution.postcode).to eql(row["Postcode"])
         expect(school.institution.postcode_without_spaces).to eql(row["Postcode"]&.gsub(" ", ""))
         expect(school.institution.region).to eql(row["RSCRegion (name)"])
+        expect(school.institution.attributes.symbolize_keys).to include(Importers::CountryCodeAttributes.country_code_attributes_for(school))
       end
     end
 
@@ -139,7 +153,7 @@ RSpec.describe ImportGiasSchools do
       end
 
       it "raises a custom error" do
-        expect { subject.call }.to raise_error(ImportGiasSchools::FileNotAvailableError).with_message(/Error from GIAS/)
+        expect { subject.call }.to raise_error(described_class::FileNotAvailableError).with_message(/Error from GIAS/)
       end
     end
   end

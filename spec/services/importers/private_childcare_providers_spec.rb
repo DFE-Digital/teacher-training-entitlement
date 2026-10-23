@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Importers::ImportPrivateChildcareProviders do
+RSpec.describe Importers::PrivateChildcareProviders do
   subject do
     described_class.new(
       file_name:,
@@ -35,8 +35,8 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
       }
     end
 
-    context "private childcare providers" do
-      let(:csv_row_parser) { Importers::ImportPrivateChildcareProviders::ChildcareProviderWrappedCSVRow }
+    context "with private childcare providers" do
+      let(:csv_row_parser) { Importers::PrivateChildcareProviders::ChildcareProviderWrappedCSVRow }
 
       context "with all rows valid" do
         # File contains sample of real data
@@ -163,6 +163,13 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
             "town" => "Cricklade",
             "urn" => "EY426358",
           })
+        end
+
+        it "stores the institution geography" do
+          run_import
+
+          institution = Institution.find_by!(institution_reference_number: "520917")
+          expect(institution).to have_attributes(alpha3_country_code: "GBR", subdivision_code: "ENG")
         end
 
         it "returns the correct number of imported records" do
@@ -333,8 +340,8 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
       end
     end
 
-    context "private childminder agencies" do
-      let(:csv_row_parser) { Importers::ImportPrivateChildcareProviders::ChildminderAgencyWrappedCSVRow }
+    context "with private childminder agencies" do
+      let(:csv_row_parser) { Importers::PrivateChildcareProviders::ChildminderAgencyWrappedCSVRow }
 
       context "with all rows valid" do
         # File contains sample of real data
@@ -519,7 +526,7 @@ RSpec.describe Importers::ImportPrivateChildcareProviders do
 
     context "with file that doesn't exist" do
       let(:file_name) { "spec/fixtures/files/fake_file.csv" }
-      let(:csv_row_parser) { Importers::ImportPrivateChildcareProviders::ChildcareProviderWrappedCSVRow }
+      let(:csv_row_parser) { Importers::PrivateChildcareProviders::ChildcareProviderWrappedCSVRow }
 
       it "returns an error and creates no records" do
         expect {

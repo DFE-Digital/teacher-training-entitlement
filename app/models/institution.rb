@@ -8,6 +8,10 @@ class Institution < ApplicationRecord
 
   REDACTED_DATA_STRING = "REDACTED".freeze
   TYPES = %w[School PrivateChildcareProvider LocalAuthority].freeze
+  UK_COUNTRY_CODE = "GBR".freeze
+  CROWN_DEPENDENCY_COUNTRY_CODES = %w[JEY GGY IMN].freeze
+  ENGLAND_SUBDIVISION_CODE = "ENG".freeze
+  WALES_SUBDIVISION_CODE = "WLS".freeze
 
   delegated_type :institutionable, types: TYPES, dependent: :destroy
 
@@ -15,6 +19,7 @@ class Institution < ApplicationRecord
   SEARCH_LIMIT = 100
 
   validates :institution_reference_number, presence: true
+  validates :alpha3_country_code, :subdivision_code, length: { is: 3 }, allow_nil: true
 
   pg_search_scope :base_search,
                   against: %i[name postcode postcode_without_spaces],
@@ -47,6 +52,16 @@ class Institution < ApplicationRecord
 
   def urn
     institution_reference_number
+  end
+
+  def country_long_name
+    return if alpha3_country_code.blank?
+
+    ISO3166::Country.find_country_by_alpha3(alpha3_country_code)&.iso_short_name
+  end
+
+  def within_the_uk?
+    alpha3_country_code.in?([UK_COUNTRY_CODE, *CROWN_DEPENDENCY_COUNTRY_CODES])
   end
 
   def ukprn

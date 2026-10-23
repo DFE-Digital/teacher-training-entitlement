@@ -97,6 +97,33 @@ RSpec.describe School do
     end
   end
 
+  describe "#in_uk?" do
+    subject(:school) { build(:school, establishment_type_code:, la_code:) }
+
+    let(:establishment_type_code) { "1" }
+    let(:la_code) { nil }
+
+    it "returns true for an English school" do
+      expect(school).to be_in_uk
+    end
+
+    context "with a Welsh establishment" do
+      let(:establishment_type_code) { "30" }
+
+      it "returns true" do
+        expect(school).to be_in_uk
+      end
+    end
+
+    context "with an overseas establishment" do
+      let(:la_code) { "704" }
+
+      it "returns false" do
+        expect(school).not_to be_in_uk
+      end
+    end
+  end
+
   describe "#pp50?" do
     let(:urn) { "123" }
     let(:ukprn) { "123" }

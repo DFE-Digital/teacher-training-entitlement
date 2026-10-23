@@ -73,6 +73,10 @@ class School < ApplicationRecord
     [MIDDLE_DEEMED_PRIMARY_PHASE, PRIMARY_PHASE].include?(phase_name)
   end
 
+  def in_uk?
+    in_england? || establishment_type_code == "30"
+  end
+
   def in_england?
     return if establishment_type_code.in?(NOT_IN_ENGLAND_CODES[:establishment_type_code])
     return if la_code.in?(NOT_IN_ENGLAND_CODES[:la_code])
