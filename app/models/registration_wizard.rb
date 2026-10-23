@@ -57,14 +57,12 @@ class RegistrationWizard
   end
 
   def initialize(current_step:, store:, request:, current_user:, params: {})
-    set_current_step(current_step)
-
     @current_user = current_user
     @params = params
     @store = store
     @request = request
-
-    load_current_user_into_store
+    store["current_user_id"] = current_user&.id
+    @current_step = self.class.validate_step!(current_step)
   end
 
   def form
@@ -120,7 +118,6 @@ private
            :course_cohort,
            :inside_catchment?,
            :lead_provider,
-           :works_in_another_setting?,
            :works_in_other?,
            :works_in_school?,
            :work_setting,
@@ -130,10 +127,6 @@ private
     form_class = self.class.fetch_step(step)
     hash = store.slice(*form_class.permitted_params.map(&:to_s))
     form_class.new hash.merge(wizard: self)
-  end
-
-  def load_current_user_into_store
-    store["current_user_id"] = current_user&.id
   end
 
   def institution_from_store
@@ -153,10 +146,6 @@ private
 
   def form_class
     @form_class ||= self.class.fetch_step(current_step)
-  end
-
-  def set_current_step(step)
-    @current_step = self.class.validate_step!(step)
   end
 
   def t(key)
