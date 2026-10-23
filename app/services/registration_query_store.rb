@@ -22,7 +22,7 @@ class RegistrationQueryStore
   end
 
   def inside_catchment?
-    store["teacher_catchment"] == "england"
+    store["teacher_catchment"] == Institution::ENGLAND_SUBDIVISION_CODE
   end
 
   def funding_eligiblity_status_code
@@ -33,13 +33,13 @@ class RegistrationQueryStore
     case store["teacher_catchment"]
     when "another"
       "No"
-    when "england"
+    when Institution::ENGLAND_SUBDIVISION_CODE
       "Yes"
     end
   end
 
   def teacher_catchment_england?
-    store["teacher_catchment"] == "england"
+    store["teacher_catchment"] == Institution::ENGLAND_SUBDIVISION_CODE
   end
 
   def valid_employent_type_for_england?
