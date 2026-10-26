@@ -13,6 +13,9 @@ on:
           - production
   schedule:
     - cron: "0 0,6,12,18 * * *"
+  push:
+    branches:
+      - 3153-tte-airbyte-postgres-monitor
 
 permissions:
   id-token: write

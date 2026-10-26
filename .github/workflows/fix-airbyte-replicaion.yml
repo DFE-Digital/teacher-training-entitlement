@@ -21,6 +21,9 @@ on:
           - 'false'
   schedule: # hourly every Sunday midnight until 9am
     - cron: '0 0-9 * * 0'
+  push:
+    branches:
+      - 3153-tte-airbyte-postgres-monitor
 
 permissions:
   id-token: write
