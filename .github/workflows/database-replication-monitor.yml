@@ -23,7 +23,7 @@ permissions:
 env:
   SERVICE_NAME: teacher-training-entitlement
   SERVICE_SHORT: cpdtte
-  TF_VARS_PATH: terraform/aks/workspace-variables
+  TF_VARS_PATH: terraform/application/config/${{ inputs.environment }}.tfvars.json
 
 jobs:
   monitor-wal-usage:
