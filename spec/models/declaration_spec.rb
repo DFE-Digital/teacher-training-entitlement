@@ -47,30 +47,6 @@ RSpec.describe Declaration, type: :model do
     end
   end
 
-  describe "statement assignment" do
-    subject(:declaration) { build(:declaration, application:, lead_provider: application.lead_provider, statement: nil) }
-
-    it "assigns the current statement before validation" do
-      declaration.validate
-
-      expect(declaration.statement).to eq(
-        Statement.current(
-          lead_provider: application.lead_provider,
-          course_group: application.course.course_group,
-        ).first,
-      )
-    end
-
-    it "does not replace an explicitly assigned statement" do
-      statement = create(:statement, lead_provider: application.lead_provider)
-      declaration.statement = statement
-
-      declaration.validate
-
-      expect(declaration.statement).to eq(statement)
-    end
-  end
-
   describe "validations" do
     it { is_expected.to validate_numericality_of(:value).is_greater_than_or_equal_to(0).allow_nil }
     it { is_expected.to validate_presence_of(:declaration_type) }

@@ -124,6 +124,12 @@ RSpec.describe Declarations::Create, type: :model do
       end
     end
 
+    context "when has_passed is given" do
+      let(:params) { super().merge(has_passed: true) }
+
+      it { is_expected.to have_error(:has_passed, :present) }
+    end
+
     describe "error scenarios" do
       context "when application already started" do
         before { application.update_column(:status, :started) }

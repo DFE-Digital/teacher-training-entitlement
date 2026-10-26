@@ -14,7 +14,7 @@ module Declarations
     validates :delivery_partner_id, presence: true
     validate :application_is_declarable, if: -> { application }
     validate :validate_has_passed_field, if: :completed_declaration?
-    validates :has_passed, absence: true, if: :retained_1_declaration?
+    validates :has_passed, absence: true, unless: :completed_declaration?
     validate :no_duplicate_billable_declaration
     validate :delivery_partners_exist
     validate :declaration_valid
@@ -139,6 +139,11 @@ module Declarations
       @secondary_delivery_partner ||= DeliveryPartner.find_by(ecf_id: secondary_delivery_partner_id)
     end
 
+    def statement
+      Statement.current(lead_provider:, course_group:).first ||
+        Statement.create_current!(lead_provider:, course_group:)
+    end
+
     def course_group
       course_cohort.course.course_group
     end
@@ -150,6 +155,7 @@ module Declarations
         lead_provider:,
         application:,
         milestone:,
+        statement:,
         value:,
       }
       params.merge!(delivery_partner:) if delivery_partner_id
