@@ -49,7 +49,7 @@ jobs:
 
     - name: Set environment variables
       run: |
-        tf_vars_file=${TF_VARS_PATH}/${DEPLOY_ENV}.tfvars.json
+        tf_vars_file=terraform/application/config/${{ inputs.environment }}.tfvars.json
         echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
         echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
 
