@@ -42,31 +42,7 @@ FactoryBot.define do
     end
 
     trait :ineligible do
-      establishment_type_code { School::NOT_IN_ENGLAND_CODES[:establishment_type_code].sample }
-    end
-
-    trait :non_pp50 do
-      urn do
-        urn = nil
-
-        loop do
-          urn = generate(:urn)
-          break unless PP50_SCHOOLS_URN_HASH[urn.to_s]
-        end
-
-        urn
-      end
-
-      ukprn do
-        ukprn = nil
-
-        loop do
-          ukprn = generate(:ukprn)
-          break unless PP50_FE_UKPRN_HASH[ukprn.to_s]
-        end
-
-        ukprn
-      end
+      establishment_type_code { School::WALES_ESTABLISHMENT_TYPE_CODE }
     end
 
     trait :funding_eligible_establishment_type_code do
