@@ -1,8 +1,4 @@
 class School < ApplicationRecord
-  A_SCHOOL = "a_school".freeze
-  AN_ACADEMY_TRUST = "an_academy_trust".freeze
-  A_16_TO_19_EDUCATIONAL_SETTING = "a_16_to_19_educational_setting".freeze
-
   has_one :institution, as: :institutionable, touch: true
 
   delegate :name, :address, :address_string, :display_name, :name_with_address,
