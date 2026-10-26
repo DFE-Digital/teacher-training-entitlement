@@ -23,7 +23,6 @@ class Declaration < ApplicationRecord
   has_many :participant_outcomes, dependent: :destroy
 
   delegate :course, :user, to: :application
-  delegate :inside_catchment?, to: :application, prefix: true, allow_nil: true
   delegate :identifier, to: :course, prefix: true
   delegate :name, to: :lead_provider, prefix: true
 
@@ -104,7 +103,7 @@ class Declaration < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   validates :delivery_partner_id, absence: { message: :overseas },
-                                  unless: :application_inside_catchment?
+                                  unless: :application_in_england?
   validates :delivery_partner_id, inclusion: { in: :available_delivery_partner_ids },
                                   if: -> { delivery_partner && delivery_partner_changed? }
 
@@ -112,7 +111,7 @@ class Declaration < ApplicationRecord
 
   validates :secondary_delivery_partner_id,
             absence: { message: :overseas },
-            if: -> { delivery_partner_id && !application_inside_catchment? }
+            if: -> { delivery_partner_id && !application_in_england? }
 
   validates :secondary_delivery_partner_id,
             inclusion: { in: :available_delivery_partner_ids },
@@ -124,6 +123,10 @@ class Declaration < ApplicationRecord
 
   validates :value, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true, if: -> { type.blank? }
   validate :delivery_partners_are_not_the_same, if: :delivery_partner
+
+  def application_in_england?
+    application&.institution&.in_england?
+  end
 
   def clawback_statement
     Statement.clawback(lead_provider:, course_group:).first ||

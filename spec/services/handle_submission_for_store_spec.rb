@@ -22,7 +22,7 @@ RSpec.describe HandleSubmissionForStore do
       "works_in_childcare" => "yes",
       "works_in_school" => "no",
       "kind_of_nursery" => "private_nursery",
-      "teacher_catchment" => "england",
+      "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
     }
   end
 
@@ -84,7 +84,7 @@ RSpec.describe HandleSubmissionForStore do
           "institution_id" => school.institution.id,
           "lead_provider_id" => lead_provider.id,
           "works_in_school" => "yes",
-          "teacher_catchment" => "england",
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
           "work_setting" => "a_school",
           "referred_by_return_to_teaching_adviser" => "no",
           "trn" => "1234321",
@@ -116,7 +116,7 @@ RSpec.describe HandleSubmissionForStore do
           "notes" => nil,
           "institution_id" => school.institution.id,
           "targeted_support_funding_eligibility" => false,
-          "teacher_catchment" => "england",
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
           "teacher_catchment_country" => "United Kingdom of Great Britain and Northern Ireland",
           "teacher_catchment_iso_country_code" => "GBR",
           "training_starts_at" => course_cohort.training_starts_at.to_s,

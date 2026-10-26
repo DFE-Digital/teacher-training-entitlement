@@ -74,7 +74,11 @@ class School < ApplicationRecord
   end
 
   def in_uk?
-    in_england? || establishment_type_code == "30"
+    return true if establishment_type_code == "30"
+    return false if establishment_type_code.in?(NOT_IN_ENGLAND_CODES[:establishment_type_code])
+    return false if la_code.in?(NOT_IN_ENGLAND_CODES[:la_code])
+
+    true
   end
 
   def identifier

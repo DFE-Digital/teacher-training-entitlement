@@ -154,7 +154,7 @@ RSpec.describe RegistrationWizardController do
     end
 
     context "when teacher catchment is outside England" do
-      let(:wizard_params) { { teacher_catchment: "another" } }
+      let(:wizard_params) { { teacher_catchment: Institution::OTHER } }
       let(:make_request) { patch :update, params: { step: "teacher-catchment", registration_wizard: wizard_params } }
 
       before do

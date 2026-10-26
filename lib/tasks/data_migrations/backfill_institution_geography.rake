@@ -14,6 +14,6 @@ namespace :data_migrations do
       end
     end
 
-    puts "Updated institutions: #{updated_count}"
+    puts "Updated institutions: #{updated_count}" unless Rails.env.test?
   end
 end

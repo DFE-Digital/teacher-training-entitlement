@@ -31,73 +31,53 @@ RSpec.describe School do
     end
   end
 
-  describe "#in_england?" do
-    it "returns true" do
-      expect(subject).to be_in_england
-    end
-
-    context "when school establishment_type_code is 30 (Welsh establishment)" do
-      before do
-        subject.establishment_type_code = "30"
-      end
-
-      it "returns false" do
-        expect(subject).not_to be_in_england
-      end
-    end
-
-    context "when school la_code is '673' (Vale of Glamorgan)" do
-      before do
-        subject.la_code = "673"
-      end
-
-      it "returns false" do
-        expect(subject).not_to be_in_england
-      end
-    end
-
-    context "when school la_code is '702' (BFPO Overseas Establishments)" do
-      before do
-        subject.la_code = "702"
-      end
-
-      it "returns false" do
-        expect(subject).not_to be_in_england
-      end
-    end
-
-    context "when school la_code is '000' (Does not apply)" do
-      before do
-        subject.la_code = "000"
-      end
-
-      it "returns false" do
-        expect(subject).not_to be_in_england
-      end
-    end
-
-    context "when school la_code is '704' (Fieldwork Overseas Establishments)" do
-      before do
-        subject.la_code = "704"
-      end
-
-      it "returns false" do
-        expect(subject).not_to be_in_england
-      end
-    end
-
-    context "when school la_code is '708' (Gibraltar Overseas Establishments)" do
-      before do
-        subject.la_code = "708"
-      end
-
-      it "returns false" do
-        expect(subject).not_to be_in_england
-      end
-    end
-  end
-
   describe "#in_uk?" do
+    describe "when in england" do
+      it "returns true" do
+        expect(subject).to be_in_uk
+      end
+
+      context "when school la_code is '702' (BFPO Overseas Establishments)" do
+        before do
+          subject.la_code = "702"
+        end
+
+        it "returns false" do
+          expect(subject).not_to be_in_uk
+        end
+      end
+
+      context "when school la_code is '000' (Does not apply)" do
+        before do
+          subject.la_code = "000"
+        end
+
+        it "returns false" do
+          expect(subject).not_to be_in_uk
+        end
+      end
+
+      context "when school la_code is '704' (Fieldwork Overseas Establishments)" do
+        before do
+          subject.la_code = "704"
+        end
+
+        it "returns false" do
+          expect(subject).not_to be_in_uk
+        end
+      end
+
+      context "when school la_code is '708' (Gibraltar Overseas Establishments)" do
+        before do
+          subject.la_code = "708"
+        end
+
+        it "returns false" do
+          expect(subject).not_to be_in_uk
+        end
+      end
+    end
+
     subject(:school) { build(:school, establishment_type_code:, la_code:) }
 
     let(:establishment_type_code) { "1" }
