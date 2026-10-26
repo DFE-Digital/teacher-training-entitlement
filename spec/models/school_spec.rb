@@ -32,6 +32,9 @@ RSpec.describe School do
   end
 
   describe "#in_uk?" do
+    let(:la_code) { nil }
+    let(:establishment_type_code) { "1" }
+
     describe "when in england" do
       it "returns true" do
         expect(subject).to be_in_uk
@@ -79,9 +82,6 @@ RSpec.describe School do
     end
 
     subject(:school) { build(:school, establishment_type_code:, la_code:) }
-
-    let(:establishment_type_code) { "1" }
-    let(:la_code) { nil }
 
     it "returns true for an English school" do
       expect(school).to be_in_uk
