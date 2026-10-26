@@ -29,8 +29,8 @@ permissions:
   id-token: write
 
 env:
-  SERVICE_NAME: register
-  SERVICE_SHORT: rtt
+  SERVICE_NAME: teacher-training-entitlement
+  SERVICE_SHORT: cpdtte
   TF_VARS_PATH: terraform/aks/workspace-variables
 
 jobs:
