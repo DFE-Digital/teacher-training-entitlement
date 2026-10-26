@@ -1,9 +1,6 @@
 class Application < ApplicationRecord
-<<<<<<< HEAD
-=======
   include EcfIdable
-  UK_CATCHMENT_AREA = %w[jersey_guernsey_isle_of_man england northern_ireland scotland wales].freeze
->>>>>>> 2197c5364 ([776] Registration data - db & model cleanup)
+
   INELIGIBLE_FOR_FUNDING_REASONS = %w[
     previously-funded
     establishment-ineligible
