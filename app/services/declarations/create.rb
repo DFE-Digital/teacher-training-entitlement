@@ -72,10 +72,6 @@ module Declarations
       declaration_type == Milestone::STARTED
     end
 
-    def retained_1_declaration?
-      declaration_type == Milestone::RETAINED_1
-    end
-
     def milestone
       return if declaration_type.blank?
       return unless declaration_type.in?(allowed_declaration_types)
