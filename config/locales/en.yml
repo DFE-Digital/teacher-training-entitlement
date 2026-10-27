@@ -641,6 +641,8 @@ en:
                 back.
               application_status_completed: A started declaration cannot be
                 voided when application is completed.
+              application_status_deferred: A declaration cannot be voided when
+                the application is deferred.
         declarations/void:
           attributes:
             base:
@@ -658,6 +660,8 @@ en:
                 back.
               application_status_completed: A started declaration cannot be
                 voided when application is completed.
+              application_status_deferred: A declaration cannot be voided when
+                the application is deferred.
         declarations/create:
           attributes:
             base:

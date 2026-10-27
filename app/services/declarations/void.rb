@@ -13,6 +13,7 @@ module Declarations
 
     validate :declaration_not_already_voided
     validate :application_status_not_completed
+    validate :application_not_deferred
     validate :application_updateable
 
     def call
@@ -42,6 +43,10 @@ module Declarations
 
     def declaration_not_already_voided
       errors.add(:base, :already_voided) if @declaration.voided_state?
+    end
+
+    def application_not_deferred
+      errors.add(:base, :application_status_deferred) if @application.deferred_status?
     end
 
     def application_updateable
