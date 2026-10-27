@@ -228,11 +228,13 @@ RSpec.describe Application do
 
       let!(:pending_application) { create(:application, :pending) }
       let!(:accepted_application) { create(:application, :accepted) }
+      let!(:no_status_application) { create(:application, status: nil) }
+      let!(:rejected_application) { create(:application, :rejected) }
       let!(:withdrawn_application) { create(:application, :withdrawn) }
 
-      it "excludes withdrawn applications" do
-        expect(subject).to contain_exactly(pending_application, accepted_application)
-        expect(subject).not_to include(withdrawn_application)
+      it "excludes rejected and withdrawn applications" do
+        expect(subject).to contain_exactly(pending_application, accepted_application, no_status_application)
+        expect(subject).not_to include(rejected_application, withdrawn_application)
       end
     end
   end

@@ -38,7 +38,7 @@ class Application < ApplicationRecord
   has_one :started_declaration, -> { billable_or_changeable.where(declaration_type: Milestone::STARTED) }, class_name: "Declaration"
   has_one :completed_declaration, -> { billable_or_changable.where(declaration_type: Milestone::COMPLETED) }, class_name: "Declaration"
 
-  scope :active_applications, -> { not_withdrawn }
+  scope :active_applications, -> { where.not(status: [REJECTED, WITHDRAWN]).or(where(status: nil)) }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
   scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }

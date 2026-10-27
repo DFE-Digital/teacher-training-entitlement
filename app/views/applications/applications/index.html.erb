@@ -1,4 +1,4 @@
-<% title = "Your TTE #{"registration".pluralize(@applications.size)}" %>
+<% title = "Your NPD #{"registration".pluralize(@applications.size)}" %>
 
 <% content_for :title, title %>
 <h1 class="govuk-heading-xl"><%= title %></h1>
@@ -10,6 +10,10 @@
 
 <% @active_applications.each do |application| %>
   <%= render "active_application_table", application: %>
+<% end %>
+
+<% @rejected_applications.each do |application| %>
+  <%= render "rejected_application_table", application: %>
 <% end %>
 
 <%= render partial: 'register_for_a_npd' %>
