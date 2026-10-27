@@ -30,7 +30,7 @@ permissions:
 env:
   SERVICE_NAME: teacher-training-entitlement
   SERVICE_SHORT: cpdtte
-  TF_VARS_PATH: terraform/application/config/${{ inputs.environment }}.tfvars.json
+  TF_VARS_PATH: terraform/application/config
 
 jobs:
   fix-replication:
