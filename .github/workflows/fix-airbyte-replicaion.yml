@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - production
+          - 
       dry-run:
         description: Check slot status only do not create slot
         required: false
