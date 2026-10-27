@@ -1,6 +1,8 @@
 require "csv"
 
-class ImportGiasSchools
+class Importers::GiasSchools
+  include Importers::CountryCodeAttributes
+
   class FileNotAvailableError < StandardError; end
 
   def initialize(refresh_all: false)
@@ -9,8 +11,7 @@ class ImportGiasSchools
 
   def call
     CSV.foreach(csv_file, headers: true, converters: [gias_converter]) do |row|
-      institution = Institution.find_by(institution_reference_number: row["URN"])
-      school = institution&.institutionable
+      school = School.joins(:institution).find_by(institutions: { institution_reference_number: row["URN"] })
 
       if school.nil?
         school = School.create!(school_attributes_from_row(row))
@@ -90,10 +91,12 @@ private
   end
 
   def update_institution!(school, row)
+    attributes = institution_attributes_from_row(row).merge(country_code_attributes_for(school))
+
     if school.institution
-      school.institution.update!(institution_attributes_from_row(row))
+      school.institution.update!(attributes)
     else
-      school.create_institution!(institution_attributes_from_row(row))
+      school.create_institution!(attributes)
     end
   end
 
@@ -112,7 +115,7 @@ private
       request = Net::HTTP::Get.new uri
       http.request request do |response|
         if response.code != "200"
-          raise ImportGiasSchools::FileNotAvailableError, "Response body: #{response.body}"
+          raise FileNotAvailableError, "Response body: #{response.body}"
         end
 
         File.open tempfile.path, "w" do |io|

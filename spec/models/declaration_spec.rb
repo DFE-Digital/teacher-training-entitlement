@@ -150,11 +150,8 @@ RSpec.describe Declaration, type: :model do
             build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
           end
 
-          let :application do
-            create(:application, teacher_catchment: nil,
-                                 teacher_catchment_country: "Italy",
-                                 teacher_catchment_iso_country_code: "ITA")
-          end
+          let(:institution) { create(:institution, alpha3_country_code: "ITA", subdivision_code: nil) }
+          let(:application) { create(:application, :accepted, course_cohort:, lead_provider:, institution:) }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner) }
@@ -167,7 +164,12 @@ RSpec.describe Declaration, type: :model do
             build(:declaration, milestone:, application:, delivery_partner: DeliveryPartner.first)
           end
 
-          let(:application) { create(:application, :accepted, course_cohort:, lead_provider:, teacher_catchment: "wales") }
+          let(:institution) do
+            create(:institution,
+                   alpha3_country_code: Institution::UK_COUNTRY_CODE,
+                   subdivision_code: Institution::WALES_SUBDIVISION_CODE)
+          end
+          let(:application) { create(:application, :accepted, course_cohort:, lead_provider:, institution:) }
 
           it { is_expected.not_to validate_presence_of(:delivery_partner) }
           it { is_expected.not_to validate_presence_of(:secondary_delivery_partner) }

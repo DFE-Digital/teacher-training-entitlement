@@ -1,6 +1,42 @@
 require "rails_helper"
 
 RSpec.describe Institution do
+  describe "#country_long_name" do
+    subject(:institution) { build(:institution, alpha3_country_code:) }
+
+    context "with a recognized country code" do
+      let(:alpha3_country_code) { "GBR" }
+
+      it "returns the ISO short name to preserve the API value" do
+        expect(institution.country_long_name).to eq("United Kingdom of Great Britain and Northern Ireland")
+      end
+    end
+
+    context "without a country code" do
+      let(:alpha3_country_code) { nil }
+
+      it { expect(institution.country_long_name).to be_nil }
+    end
+  end
+
+  describe "#within_the_uk?" do
+    subject(:institution) { build(:institution, alpha3_country_code:) }
+
+    %w[GBR JEY GGY IMN].each do |country_code|
+      context "with country code #{country_code}" do
+        let(:alpha3_country_code) { country_code }
+
+        it { is_expected.to be_within_the_uk }
+      end
+    end
+
+    context "with another country code" do
+      let(:alpha3_country_code) { "ESP" }
+
+      it { is_expected.not_to be_within_the_uk }
+    end
+  end
+
   describe ".search" do
     context "when searching by name" do
       before { create(:school, name: "a school") }

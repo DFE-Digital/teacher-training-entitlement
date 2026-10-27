@@ -37,8 +37,15 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `works_in_school`" do
-      application.works_in_school = true
-      expect(attributes["works_in_school"]).to eq(application.works_in_school)
+      expect(attributes["works_in_school"]).to be(true)
+    end
+
+    context "when the application does not have an institution" do
+      before { application.institution = nil }
+
+      it "serializes `works_in_school` as false" do
+        expect(attributes["works_in_school"]).to be(false)
+      end
     end
 
     it "serializes the `email_validated`" do
@@ -61,18 +68,55 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `teacher_catchment`" do
-      application.teacher_catchment = "england"
       expect(attributes["teacher_catchment"]).to be(true)
     end
 
-    it "serializes the `teacher_catchment_country`" do
-      application.teacher_catchment_country = "country"
-      expect(attributes["teacher_catchment_country"]).to eq(application.teacher_catchment_country)
+    it "serializes the `teacher_catchment_iso_country_code`" do
+      expect(attributes["teacher_catchment_iso_country_code"]).to eq("GBR")
     end
 
-    it "serializes the `teacher_catchment_iso_country_code`" do
-      application.teacher_catchment_iso_country_code = "iso"
-      expect(attributes["teacher_catchment_iso_country_code"]).to eq(application.teacher_catchment_iso_country_code)
+    it "serializes the `teacher_catchment_country`" do
+      expect(attributes["teacher_catchment_country"]).to eq("United Kingdom of Great Britain and Northern Ireland")
+    end
+
+    context "when the institution is outside the catchment area" do
+      before { institution.update!(alpha3_country_code: nil, subdivision_code: nil) }
+
+      it "does not serialize a teacher catchment country" do
+        expect(attributes["teacher_catchment_country"]).to be_nil
+      end
+
+      it "does not serialize a teacher catchment ISO country code" do
+        expect(attributes["teacher_catchment_iso_country_code"]).to be_nil
+      end
+    end
+
+    context "when the institution is a Welsh school" do
+      before { institution.update!(alpha3_country_code: "GBR", subdivision_code: "WLS") }
+
+      it "serializes the United Kingdom teacher catchment country" do
+        expect(attributes["teacher_catchment_country"]).to eq("United Kingdom of Great Britain and Northern Ireland")
+      end
+
+      it "serializes the United Kingdom teacher catchment ISO country code" do
+        expect(attributes["teacher_catchment_iso_country_code"]).to eq("GBR")
+      end
+    end
+
+    context "when the application has no institution" do
+      let(:institution) { nil }
+
+      it "does not serialize a teacher catchment value" do
+        expect(attributes["teacher_catchment"]).to be_nil
+      end
+
+      it "does not serialize a teacher catchment country" do
+        expect(attributes["teacher_catchment_country"]).to be_nil
+      end
+
+      it "does not serialize a teacher catchment ISO country code" do
+        expect(attributes["teacher_catchment_iso_country_code"]).to be_nil
+      end
     end
 
     it "serializes the `assigned_at`" do
