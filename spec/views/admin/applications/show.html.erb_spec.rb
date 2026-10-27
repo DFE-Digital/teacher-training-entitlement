@@ -121,14 +121,18 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       end
     end
 
-    context "when the teacher is in England" do
-      let(:application_attributes) { { teacher_catchment: "england" } }
+    context "when the workplace is in England" do
+      let(:application_attributes) do
+        { institution: build_stubbed(:institution, subdivision_code: Institution::ENGLAND_SUBDIVISION_CODE) }
+      end
 
       it { is_expected.to have_summary_item "Workplace in England", "Yes" }
     end
 
-    context "when the teacher catchment is not present" do
-      let(:application_attributes) { { teacher_catchment: nil } }
+    context "when the workplace is not in England" do
+      let(:application_attributes) do
+        { institution: build_stubbed(:institution, subdivision_code: Institution::WALES_SUBDIVISION_CODE) }
+      end
 
       it { is_expected.to have_summary_item "Workplace in England", "No" }
     end
