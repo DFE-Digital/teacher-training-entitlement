@@ -46,6 +46,24 @@ RSpec.describe Declarations::Void, type: :model do
         }
       end
 
+      context "when the application has been deferred" do
+        let(:declaration_trait) { :completed }
+        let(:application) { create(:application, status: Application::DEFERRED, course_cohort:, lead_provider: statement.lead_provider) }
+
+        it "does not void the declaration or update the application" do
+          expect { service.call }.to(
+            not_change { declaration.reload.state }
+              .and(not_change { application.reload.status }),
+          )
+
+          expect(service).to have_error(
+            :base,
+            :application_status_deferred,
+            I18n.t("activemodel.errors.models.declarations/void.attributes.base.application_status_deferred"),
+          )
+        end
+      end
+
       context "when the declaration is already voided" do
         let(:declaration_trait) { :voided }
 

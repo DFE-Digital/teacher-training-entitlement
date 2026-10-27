@@ -14,6 +14,7 @@ module Declarations
     validate :declaration_not_clawbacked
     validate :declaration_is_paid
     validate :application_status_not_completed
+    validate :application_not_deferred
     validate :application_updateable
 
     def call
@@ -50,6 +51,10 @@ module Declarations
       return if errors.any? || @declaration.paid_state?
 
       errors.add(:base, :must_be_paid)
+    end
+
+    def application_not_deferred
+      errors.add(:base, :application_status_deferred) if @application.deferred_status?
     end
 
     def application_updateable
