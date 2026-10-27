@@ -3,15 +3,7 @@
 module Declarations
   class Create
     include ActiveModel::Model
-    include ActiveModel::Attributes
     include Applications::Validations::StatusTransitionValidation
-
-    attribute :application
-    attribute :declaration_type, :string
-    attribute :declaration_date, :datetime
-    attribute :has_passed
-    attribute :delivery_partner_id
-    attribute :secondary_delivery_partner_id
 
     validates :application, presence: true
     validates :declaration_type, presence: true
@@ -22,15 +14,37 @@ module Declarations
     validates :delivery_partner_id, presence: true
     validate :application_is_declarable, if: -> { application }
     validate :validate_has_passed_field, if: :completed_declaration?
+    validates :has_passed, absence: true, unless: :completed_declaration?
     validate :no_duplicate_billable_declaration
-    validate :delivery_partner_exists, if: :delivery_partner_id
-    validate :secondary_delivery_partner_exists, if: :secondary_delivery_partner_id
+    validate :delivery_partners_exist
     validate :declaration_valid
     validate :application_updateable
 
     delegate :lead_provider, :course_cohort, :contract, to: :application
 
-    attr_reader :raw_declaration_date, :declaration
+    attr_reader :application,
+                :declaration_type,
+                :declaration_date,
+                :delivery_partner_id,
+                :secondary_delivery_partner_id,
+                :raw_declaration_date,
+                :declaration,
+                :has_passed
+
+    def initialize(application: nil,
+                   declaration_type: nil,
+                   declaration_date: nil,
+                   has_passed: nil,
+                   delivery_partner_id: nil,
+                   secondary_delivery_partner_id: nil)
+      @application = application
+      @declaration_type = declaration_type&.to_s
+      @raw_declaration_date = declaration_date
+      @declaration_date = ActiveModel::Type::DateTime.new.cast(declaration_date)
+      @has_passed = has_passed.to_s
+      @delivery_partner_id = delivery_partner_id
+      @secondary_delivery_partner_id = secondary_delivery_partner_id
+    end
 
     def call
       return false unless valid?
@@ -50,23 +64,6 @@ module Declarations
       true
     end
 
-    def application_completed!
-      application.transition_status!(Application::COMPLETED)
-    end
-
-    def application_started!
-      application.transition_status!(Application::STARTED)
-    end
-
-    def declaration_date=(raw_declaration_date)
-      self.raw_declaration_date = raw_declaration_date
-      super
-    end
-
-    def active_declarations
-      @active_declarations ||= application.declarations.billable_or_changeable
-    end
-
     def completed_declaration?
       declaration_type == Milestone::COMPLETED
     end
@@ -83,7 +80,7 @@ module Declarations
     end
 
     def allowed_declaration_types
-      course_cohort.milestones.pluck(:declaration_type)
+      @allowed_declaration_types ||= course_cohort.milestones.pluck(:declaration_type)
     end
 
     def value
@@ -100,6 +97,18 @@ module Declarations
 
   private
 
+    def application_completed!
+      application.transition_status!(Application::COMPLETED)
+    end
+
+    def application_started!
+      application.transition_status!(Application::STARTED)
+    end
+
+    def active_declarations
+      @active_declarations ||= application.declarations.billable_or_changeable
+    end
+
     def application_updateable
       if completed_declaration?
         validate_status_transition(
@@ -107,23 +116,23 @@ module Declarations
           to: Application::COMPLETED,
           error: :not_completable,
         )
-      else
+      elsif started_declaration?
         validate_status_transition(
           application:,
           to: Application::STARTED,
           error: :not_startable,
         )
+      elsif !application.started_status?
+        errors.add(:application, :in_wrong_state)
       end
     end
 
-    attr_writer :raw_declaration_date
-
     def delivery_partner
-      @delivery_partner ||= DeliveryPartner.find_by!(ecf_id: delivery_partner_id)
+      @delivery_partner ||= DeliveryPartner.find_by(ecf_id: delivery_partner_id)
     end
 
     def secondary_delivery_partner
-      @secondary_delivery_partner ||= DeliveryPartner.find_by!(ecf_id: secondary_delivery_partner_id)
+      @secondary_delivery_partner ||= DeliveryPartner.find_by(ecf_id: secondary_delivery_partner_id)
     end
 
     def statement
@@ -142,21 +151,12 @@ module Declarations
         lead_provider:,
         application:,
         milestone:,
-        delivery_partner:,
-        value:,
         statement:,
+        value:,
       }
+      params.merge!(delivery_partner:) if delivery_partner_id
       params.merge!(secondary_delivery_partner:) if secondary_delivery_partner_id
       params
-    end
-
-    def output_fee_statement_available
-      return if errors.any?
-      return if existing_declaration&.submitted_state?
-      return if existing_declaration.nil? && !application.fundable?
-      return if lead_provider.next_output_fee_statement(course_cohort.cohort).present?
-
-      errors.add(:cohort, :no_output_fee_statement, cohort: cohort.start_year)
     end
 
     def no_duplicate_billable_declaration
@@ -167,9 +167,7 @@ module Declarations
     end
 
     def validate_has_passed_field
-      self.has_passed = has_passed.to_s
-
-      return unless has_passed.blank? || !%w[true false].include?(has_passed)
+      return unless @has_passed.blank? || !%w[true false].include?(@has_passed)
 
       errors.add(:has_passed, :invalid)
     end
@@ -179,7 +177,7 @@ module Declarations
 
       service = ParticipantOutcomes::Create.new(
         application:,
-        state: has_passed.to_s == "true" ? "passed" : "failed",
+        state: @has_passed == "true" ? "passed" : "failed",
         completion_date: declaration_date.rfc3339,
       )
 
@@ -197,16 +195,9 @@ module Declarations
       errors.merge!(declaration.errors) unless declaration.valid?
     end
 
-    def delivery_partner_exists
-      delivery_partner
-    rescue ActiveRecord::RecordNotFound
-      errors.add(:delivery_partner_id, :not_found)
-    end
-
-    def secondary_delivery_partner_exists
-      secondary_delivery_partner
-    rescue ActiveRecord::RecordNotFound
-      errors.add(:secondary_delivery_partner_id, :not_found)
+    def delivery_partners_exist
+      errors.add(:delivery_partner_id, :not_found) if delivery_partner_id.present? && delivery_partner.nil?
+      errors.add(:secondary_delivery_partner_id, :not_found) if secondary_delivery_partner_id.present? && secondary_delivery_partner.nil?
     end
 
     def application_is_declarable

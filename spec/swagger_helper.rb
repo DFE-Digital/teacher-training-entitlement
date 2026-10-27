@@ -136,7 +136,7 @@ RSpec.configure do |config|
           DeclarationsResponse: DECLARATIONS_RESPONSE[version],
           DeclarationRequest: DECLARATION_REQUEST,
           DeclarationStartedRequest: DECLARATION_STARTED_REQUEST,
-          # DeclarationRetainedRequest: DECLARATION_RETAINED_REQUEST,
+          DeclarationRetainedRequest: DECLARATION_RETAINED_REQUEST,
           DeclarationCompletedRequest: DECLARATION_COMPLETED_REQUEST,
           DeclarationChangeDeliveryPartnerRequest: DECLARATION_CHANGE_DELIVERY_PARTNER_REQUEST,
 

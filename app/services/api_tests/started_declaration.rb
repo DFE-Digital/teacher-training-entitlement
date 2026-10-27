@@ -23,7 +23,7 @@ module APITests
         },
       }.to_json
 
-      path = started_declaration_api_v1_application_path(application.ecf_id)
+      path = declaration_api_v1_application_path(application.ecf_id, declaration_type: Milestone::STARTED)
 
       api_post(lead_provider: application.lead_provider, path:, body:, with_server_date: declaration_date)
     end

@@ -20,6 +20,7 @@ DECLARATION_REQUEST = {
           required: true,
           anyOf: [
             { "$ref": "#/components/schemas/DeclarationStartedRequest" },
+            { "$ref": "#/components/schemas/DeclarationRetainedRequest" },
             { "$ref": "#/components/schemas/DeclarationCompletedRequest" },
           ],
         },

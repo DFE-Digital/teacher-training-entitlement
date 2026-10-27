@@ -11,7 +11,7 @@ RSpec.describe Declaration, type: :model do
     it { is_expected.to belong_to(:application) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:milestone).without_validating_presence }
-    it { is_expected.to belong_to(:statement) }
+    it { is_expected.to belong_to(:statement).without_validating_presence }
     it { is_expected.to belong_to(:superseded_by).optional }
     it { is_expected.to have_many(:participant_outcomes).dependent(:destroy) }
     it { is_expected.to belong_to(:delivery_partner).without_validating_presence }

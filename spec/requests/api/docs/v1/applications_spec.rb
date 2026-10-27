@@ -258,6 +258,121 @@ RSpec.describe "Applications endpoint", openapi_spec: "v1/swagger.yaml", type: :
       end
     end
 
+    describe "retained-1 declaration" do
+      it_behaves_like "an API create on existing resource endpoint documentation",
+                      "/api/v1/applications/{id}/declarations/retained-1",
+                      "Applications",
+                      "Declare an application has reached the first retained milestone",
+                      "The retained declaration being created",
+                      "#/components/schemas/DeclarationResponse",
+                      "#/components/schemas/DeclarationRetainedRequest" do
+        let(:application) do
+          create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
+        end
+        let(:resource) { application }
+        let!(:retained_milestone) do
+          create(
+            :milestone,
+            course: course_cohort.course,
+            declaration_type: Milestone::RETAINED_1,
+            acceptance_window_start_offset: 1,
+            acceptance_window_end_offset: 2,
+          )
+        end
+        let(:declaration_date) do
+          retained_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.hour
+        end
+        let(:delivery_partner_id) do
+          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+        end
+        let(:secondary_delivery_partner_id) do
+          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+        end
+        let(:type) { "declaration" }
+        let(:attributes) do
+          {
+            declaration_date: declaration_date.rfc3339,
+            delivery_partner_id:,
+            secondary_delivery_partner_id:,
+          }
+        end
+        let(:invalid_attributes) { { declaration_date: nil } }
+
+        before do
+          course_milestone(course_cohort.course, :completed).update!(
+            acceptance_window_start_offset: 3,
+            acceptance_window_end_offset: 4,
+          )
+        end
+      end
+    end
+
+    describe "retained-2 declaration" do
+      it_behaves_like "an API create on existing resource endpoint documentation",
+                      "/api/v1/applications/{id}/declarations/retained-2",
+                      "Applications",
+                      "Declare an application has reached the second retained milestone",
+                      "The retained declaration being created",
+                      "#/components/schemas/DeclarationResponse",
+                      "#/components/schemas/DeclarationRetainedRequest" do
+        let(:application) do
+          create(:application, :started, :with_declaration, course_cohort:, lead_provider:)
+        end
+        let(:resource) { application }
+        let!(:retained_1_milestone) do
+          create(
+            :milestone,
+            course: course_cohort.course,
+            declaration_type: Milestone::RETAINED_1,
+            acceptance_window_start_offset: 1,
+            acceptance_window_end_offset: 2,
+          )
+        end
+        let!(:retained_2_milestone) do
+          create(
+            :milestone,
+            course: course_cohort.course,
+            declaration_type: Milestone::RETAINED_2,
+            acceptance_window_start_offset: 2,
+            acceptance_window_end_offset: 3,
+          )
+        end
+        let(:declaration_date) do
+          retained_2_milestone.acceptance_window_start_date_for(training_starts_at: application.training_starts_at) + 1.hour
+        end
+        let(:delivery_partner_id) do
+          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+        end
+        let(:secondary_delivery_partner_id) do
+          create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+        end
+        let(:type) { "declaration" }
+        let(:attributes) do
+          {
+            declaration_date: declaration_date.rfc3339,
+            delivery_partner_id:,
+            secondary_delivery_partner_id:,
+          }
+        end
+        let(:invalid_attributes) { { declaration_date: nil } }
+
+        before do
+          create(
+            :declaration,
+            :eligible,
+            application:,
+            lead_provider:,
+            milestone: retained_1_milestone,
+            declaration_type: Milestone::RETAINED_1,
+          )
+          course_milestone(course_cohort.course, :completed).update!(
+            acceptance_window_start_offset: 4,
+            acceptance_window_end_offset: 5,
+          )
+        end
+      end
+    end
+
     describe "completed declaration" do
       it_behaves_like "an API create on existing resource endpoint documentation",
                       "/api/v1/applications/{id}/declarations/completed",

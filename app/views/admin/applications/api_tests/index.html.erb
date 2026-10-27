@@ -90,6 +90,20 @@
 
       sl.with_row do |row|
         row.with_key do
+          govuk_link_to "Retained 1 Declaration", admin_applications_api_tests_retained_1_declarations_path(@application)
+        end
+        row.with_value(text: "- Send a Retained 1 Declaration for an application which has started")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
+          govuk_link_to "Retained 2 Declaration", admin_applications_api_tests_retained_2_declarations_path(@application)
+        end
+        row.with_value(text: "- Send a Retained 2 Declaration after Retained 1")
+      end
+
+      sl.with_row do |row|
+        row.with_key do
           govuk_link_to "Completed Declaration", admin_applications_api_tests_completed_declarations_path(@application)
         end
         row.with_value(text: "- Send a Completed Declaration for an application which has started")
