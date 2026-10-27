@@ -300,6 +300,10 @@ class Application < ApplicationRecord
     end
   end
 
+  def teacher_catchment_england?
+    teacher_catchment == Institution::ENGLAND_SUBDIVISION_CODE
+  end
+
 private
 
   def not_admin_user?

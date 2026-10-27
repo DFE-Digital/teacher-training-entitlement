@@ -30,12 +30,7 @@ class RegistrationQueryStore
   end
 
   def teacher_catchment_humanized
-    case store["teacher_catchment"]
-    when "another"
-      "No"
-    when Institution::ENGLAND_SUBDIVISION_CODE
-      "Yes"
-    end
+    teacher_catchment_england? ? "Yes" : "No"
   end
 
   def teacher_catchment_england?

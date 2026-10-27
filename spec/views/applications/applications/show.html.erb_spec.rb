@@ -30,4 +30,28 @@ RSpec.describe "applications/applications/show.html.erb", type: :view do
 
     it { is_expected.not_to have_link "Register with a different provider" }
   end
+
+  describe "work details" do
+    subject(:work_details) { Capybara.string(render).find(".govuk-summary-card", text: "Work details") }
+
+    context "when the workplace is in England" do
+      let(:application) { build_stubbed(:application, teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE) }
+
+      it { is_expected.to have_summary_item "Workplace in England", "Yes" }
+    end
+
+    context "when the workplace is not in England" do
+      let(:application) { build_stubbed(:application, teacher_catchment: "another") }
+
+      it { is_expected.to have_summary_item "Workplace in England", "No" }
+    end
+
+    context "without an institution" do
+      let(:application) { build_stubbed(:application, institution: nil) }
+
+      it "does not show the workplace row" do
+        expect(work_details).to have_no_css(".govuk-summary-list__key", text: "Workplace", exact_text: true)
+      end
+    end
+  end
 end
