@@ -1,21 +1,8 @@
 name: Monitor Database logical replication
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: Environment to fix
-        required: true
-        default: sandbox
-        type: choice
-        options:
-          - sandbox
-          - production
   schedule:
     - cron: "0 0,6,12,18 * * *"
-  push:
-    branches:
-      - 3153-tte-airbyte-postgres-monitor
 
 permissions:
   id-token: write
@@ -23,7 +10,7 @@ permissions:
 env:
   SERVICE_NAME: teacher-training-entitlement
   SERVICE_SHORT: cpdtte
-  TF_VARS_PATH: terraform/application/config/$${{ inputs.environment || 'sandbox' }}.tfvars.json
+  TF_VARS_PATH: terraform/application/config
 
 jobs:
   monitor-wal-usage:

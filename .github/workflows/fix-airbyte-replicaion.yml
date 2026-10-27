@@ -6,10 +6,9 @@ on:
       environment:
         description: Environment to fix
         required: true
-        default: sandbox
+        default: production
         type: choice
         options:
-          - sandbox
           - production
       dry-run:
         description: Check slot status only do not create slot
@@ -38,10 +37,10 @@ jobs:
     name: Fix Airbyte replication slot
     runs-on: ubuntu-latest
     environment:
-      name: ${{ inputs.environment || 'production' }}
+      name: 'production'
     env:
-      DEPLOY_ENV: ${{ inputs.environment || 'production' }}
-      DRY_RUN: ${{ inputs.dry-run || 'false' }}
+      DEPLOY_ENV: 'production'
+      DRY_RUN: 'false'
 
     steps:
     - name: Checkout
@@ -49,7 +48,7 @@ jobs:
 
     - name: Set environment variables
       run: |
-        tf_vars_file=terraform/application/config/${{ inputs.environment }}.tfvars.json
+        tf_vars_file=${TF_VARS_PATH}/${DEPLOY_ENV}.tfvars.json
         echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
         echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
 
