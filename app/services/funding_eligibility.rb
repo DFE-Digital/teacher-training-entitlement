@@ -27,12 +27,14 @@ class FundingEligibility
 
   def initialize(institution:,
                  course:,
-                 inside_catchment:,
+                 inside_catchment:, # rubocop:disable Lint/UnusedMethodArgument
                  query_store:,
                  **)
     @institution = institution
     @course = course
-    @inside_catchment = inside_catchment
+    # catchment determined from institution
+    # @inside_catchment = inside_catchment
+    @inside_catchment = nil
     @query_store = query_store
   end
 
@@ -46,7 +48,7 @@ class FundingEligibility
 
   def funding_eligiblity_status_code
     @funding_eligiblity_status_code ||= begin
-      return NOT_IN_ENGLAND unless @inside_catchment
+      return NOT_IN_ENGLAND if @institution && !@institution.in_england?
       return PREVIOUSLY_FUNDED if previously_funded?
 
       case work_setting

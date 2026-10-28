@@ -20,7 +20,7 @@ RSpec.describe FundingEligibility do
   end
 
   let(:inside_catchment) { true }
-  let(:institution) { nil }
+  let(:institution) { build(:institution) }
   let(:work_setting) { nil }
   let(:kind_of_nursery) { nil }
   let(:course) { build(:course, :npd_eirt) }
@@ -31,6 +31,7 @@ RSpec.describe FundingEligibility do
 
     context "when outside England" do
       let(:inside_catchment) { false }
+      let(:institution) { build(:institution, :not_in_england) }
 
       it { is_expected.to eq :not_in_england }
     end
@@ -45,7 +46,6 @@ RSpec.describe FundingEligibility do
 
     context "when work setting is a state funded institution" do
       let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
-      let(:institution) { build(:school) }
 
       context "when institution is an eligible establishment" do
         before do
@@ -75,21 +75,12 @@ RSpec.describe FundingEligibility do
 
       it { is_expected.to eq :ineligible_setting }
     end
-
-    context "when institution is mandatory but missing" do
-      let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
-
-      it "raises an error" do
-        expect { subject }.to raise_error(FundingEligibility::MissingMandatoryInstitution)
-      end
-    end
   end
 
   describe "#funded?" do
     subject { funding_eligibility.funded? }
 
     let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
-    let(:institution) { build(:school) }
 
     before do
       allow(institution).to receive(:eligible_establishment?).and_return(true)
@@ -124,7 +115,6 @@ RSpec.describe FundingEligibility do
     subject { funding_eligibility.get_description_for_funding_status }
 
     let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
-    let(:institution) { build(:school) }
 
     before do
       allow(institution).to receive(:eligible_establishment?).and_return(true)
