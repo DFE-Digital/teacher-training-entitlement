@@ -654,6 +654,22 @@ RSpec.describe Application do
     end
   end
 
+  describe "#teacher_catchment_england?" do
+    subject { build(:application, teacher_catchment:).teacher_catchment_england? }
+
+    context "when the teacher catchment is England" do
+      let(:teacher_catchment) { Institution::ENGLAND_SUBDIVISION_CODE }
+
+      it { is_expected.to be true }
+    end
+
+    context "when the teacher catchment is not England" do
+      let(:teacher_catchment) { "another" }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "auditable field for change provider" do
     context "when set" do
       let(:application_lead_provider) { create(:application_lead_provider, :unassigned) }
