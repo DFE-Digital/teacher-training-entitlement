@@ -6,6 +6,10 @@ CSV.foreach(Rails.root.join("db/seeds/data/schools.csv"), headers: true).each_sl
   school_ids = result.map { |row| row["id"] }
 
   institution_records = batch.each_with_index.map do |row, index|
+    country_code_attributes = Importers::CountryCodeAttributes.country_code_attributes_for(
+      School.new(school_records[index]),
+    )
+
     {
       institutionable_type: "School",
       institutionable_id: school_ids[index],
@@ -21,7 +25,7 @@ CSV.foreach(Rails.root.join("db/seeds/data/schools.csv"), headers: true).each_sl
       institution_reference_number: row["urn"],
       created_at: Time.current,
       updated_at: Time.current,
-    }
+    }.merge(country_code_attributes)
   end
 
   Institution.insert_all(institution_records)

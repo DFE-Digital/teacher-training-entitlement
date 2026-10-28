@@ -15,7 +15,6 @@ FactoryBot.define do
     works_in_school { "yes" }
     teacher_catchment { "england" }
     work_setting { "a_school" }
-    referred_by_return_to_teaching_adviser { "no" }
     trn { current_user.trn }
   end
 end
