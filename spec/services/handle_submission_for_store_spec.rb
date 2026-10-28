@@ -163,9 +163,10 @@ RSpec.describe HandleSubmissionForStore do
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "other",
-
+          "institution_id" => institution.id,
         }
       end
+      let(:institution) { create(:institution, :not_in_england) }
 
       it "stores data from store" do
         subject.call
@@ -189,12 +190,13 @@ RSpec.describe HandleSubmissionForStore do
     end
 
     context "when teacher catchment is empty" do
+      let(:institution) { create(:institution, :not_in_england) }
       let(:store) do
         {
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
           "course_cohort_ecf_id" => course_cohort.ecf_id,
-          "institution_id" => private_childcare_provider.institution.id,
+          "institution_id" => institution.id,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => nil,
         }
@@ -227,12 +229,13 @@ RSpec.describe HandleSubmissionForStore do
         allow(Sentry).to receive(:capture_message)
       end
 
+      let(:institution) { create(:institution, :not_in_england) }
       let(:store) do
         {
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
           "course_cohort_ecf_id" => course_cohort.ecf_id,
-          "institution_id" => private_childcare_provider.institution.id,
+          "institution_id" => institution.id,
           "lead_provider_id" => lead_provider.id,
           "teacher_catchment" => "not found",
         }
