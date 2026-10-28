@@ -1,6 +1,8 @@
 require "csv"
 
 class Importers::LocalAuthorities
+  include Importers::CountryCodeAttributes
+
   attr_reader :path_to_csv
 
   def initialize(path_to_csv:)
@@ -35,7 +37,7 @@ private
       postcode: row["postcode"],
       postcode_without_spaces: row["postcode"]&.gsub(" ", ""),
       institution_reference_number: row["ukprn"],
-    }
+    }.merge(country_code_attributes_for(la))
 
     if la.institution
       la.institution.update!(institution_attrs)

@@ -22,7 +22,7 @@ RSpec.describe HandleSubmissionForStore do
       "works_in_childcare" => "yes",
       "works_in_school" => "no",
       "kind_of_nursery" => "private_nursery",
-      "teacher_catchment" => "england",
+      "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
     }
   end
 
@@ -48,10 +48,6 @@ RSpec.describe HandleSubmissionForStore do
       "trn_requested_at" => nil,
       "feature_flag_id" => user.feature_flag_id,
     }
-  end
-
-  before do
-    allow_any_instance_of(School).to receive(:pp50?).and_return(false)
   end
 
   describe "#call" do
@@ -84,7 +80,7 @@ RSpec.describe HandleSubmissionForStore do
           "institution_id" => school.institution.id,
           "lead_provider_id" => lead_provider.id,
           "works_in_school" => "yes",
-          "teacher_catchment" => "england",
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
           "work_setting" => "a_school",
           "referred_by_return_to_teaching_adviser" => "no",
           "trn" => "1234321",
@@ -116,7 +112,7 @@ RSpec.describe HandleSubmissionForStore do
           "notes" => nil,
           "institution_id" => school.institution.id,
           "targeted_support_funding_eligibility" => false,
-          "teacher_catchment" => "england",
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
           "teacher_catchment_country" => "United Kingdom of Great Britain and Northern Ireland",
           "teacher_catchment_iso_country_code" => "GBR",
           "training_starts_at" => course_cohort.training_starts_at.to_s,
@@ -134,6 +130,16 @@ RSpec.describe HandleSubmissionForStore do
           "on_submission_trn" => "1234321",
           "review_status" => nil,
         })
+      end
+
+      it "uses country attributes from the selected institution" do
+        school.institution.update!(alpha3_country_code: "JEY", subdivision_code: nil)
+
+        subject.call
+
+        application = user.applications.last
+        expect(application.teacher_catchment_country).to eq("Jersey")
+        expect(application.teacher_catchment_iso_country_code).to eq("JEY")
       end
     end
 

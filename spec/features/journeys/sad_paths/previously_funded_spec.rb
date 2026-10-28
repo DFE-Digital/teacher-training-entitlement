@@ -29,7 +29,7 @@ RSpec.feature "Previously funded participant", type: :feature do
         "course_start_date" => course_cohort.ecf_id,
         "course_identifier" => course_cohort.course.identifier,
         "lead_provider_id" => lead_provider.id,
-        "teacher_catchment" => "england",
+        "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
         "work_setting" => "a_school",
         "works_in_school" => "yes",
         "institution_id" => school.institution.id.to_s,

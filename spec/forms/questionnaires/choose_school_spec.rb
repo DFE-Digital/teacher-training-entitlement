@@ -66,7 +66,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
       {
         "course_cohort_ecf_id" => course_cohort.ecf_id,
         "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
-        "teacher_catchment" => "england",
+        "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
       }
     end
 
@@ -78,7 +78,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     end
 
     context "when selecting other" do
-      let(:institution_id) { "other" }
+      let(:institution_id) { Institution::OTHER }
 
       it { is_expected.to eq :choose_school }
     end

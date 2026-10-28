@@ -21,6 +21,8 @@ RSpec.describe Importers::LocalAuthorities do
       expect(institution.county).to eql("Surrey")
       expect(institution.postcode).to eql("KT1 1EU")
       expect(institution.postcode_without_spaces).to eql("KT11EU")
+      expect(institution.alpha3_country_code).to eq("GBR")
+      expect(institution.subdivision_code).to eq("ENG")
     end
 
     it "does not create dupes called multiple times" do

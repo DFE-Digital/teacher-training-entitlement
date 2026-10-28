@@ -1,7 +1,9 @@
 require "csv"
 
 module Importers
-  class ImportPrivateChildcareProviders
+  class PrivateChildcareProviders
+    include CountryCodeAttributes
+
     attr_reader :file_name, :import_errors, :imported_records, :updated_records, :csv_row_parser
 
     def initialize(file_name:, csv_row_parser:)
@@ -105,7 +107,7 @@ module Importers
         postcode_without_spaces: strip_whitespace(wrapped_csv_row.postcode_without_spaces),
         region: wrapped_csv_row.column(:region),
         institution_reference_number: wrapped_csv_row.column(:provider_urn),
-      }
+      }.merge(country_code_attributes_for(provider))
 
       if provider.institution
         provider.institution.update!(institution_attrs)

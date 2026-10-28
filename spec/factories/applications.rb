@@ -14,7 +14,7 @@ FactoryBot.define do
     end
 
     course_cohort { course.course_cohorts.last || create(:course_cohort, course:, cohort:) }
-    teacher_catchment { course_cohort.cohort.start_year > 2023 ? "england" : nil }
+    teacher_catchment { Institution::ENGLAND_SUBDIVISION_CODE }
     teacher_catchment_country { "United Kingdom of Great Britain and Northern Ireland" }
     teacher_catchment_iso_country_code { "GBR" }
     funding_choice { Application.funding_choices.keys.first }

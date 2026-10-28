@@ -46,21 +46,13 @@ class School < ApplicationRecord
   # 3 => establishment_status_name: "Open, but proposed to close"
   # 4 => establishment_status_name: "Proposed to open"
 
-  NOT_IN_ENGLAND_CODES = {
-    # Welsh establishment
-    establishment_type_code: %w[30],
-    # 000-"Does not appyl"
-    # 673-"Vale of Glamorgan"
-    # 702-"BFPO Overseas Establishments"
-    # 704-"Fieldwork Overseas Establishments"
-    # 708-"Gibraltar Overseas Establishments"
-    la_code: %w[000 673 702 704 708],
-  }.freeze
+  WALES_ESTABLISHMENT_TYPE_CODE = "30".freeze
+  NOT_IN_ENGLAND_LA_CODES = %w[000 673 702 704 708].freeze
 
   scope :open, -> { where(establishment_status_code: %w[1 3 4]) }
   scope :not_in_england, lambda {
-    where(establishment_type_code: NOT_IN_ENGLAND_CODES[:establishment_type_code])
-      .or(where(la_code: NOT_IN_ENGLAND_CODES[:la_code]))
+    where(establishment_type_code: WALES_ESTABLISHMENT_TYPE_CODE)
+      .or(where(la_code: NOT_IN_ENGLAND_LA_CODES))
   }
 
   ELIGIBLE_ESTABLISHMENT_TYPE_CODES.each do |code, name|
@@ -73,42 +65,11 @@ class School < ApplicationRecord
     [MIDDLE_DEEMED_PRIMARY_PHASE, PRIMARY_PHASE].include?(phase_name)
   end
 
-  def in_england?
-    return if establishment_type_code.in?(NOT_IN_ENGLAND_CODES[:establishment_type_code])
-    return if la_code.in?(NOT_IN_ENGLAND_CODES[:la_code])
-
-    true
-  end
-
   def identifier
     "School-#{urn}"
   end
 
-  def long_name
-    [display_name, address_string].join(" - ")
-  end
-
   def eligible_establishment?
     ELIGIBLE_ESTABLISHMENT_TYPE_CODES.keys.include?(establishment_type_code)
-  end
-
-  def pp50?(work_setting)
-    if work_setting == Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING
-      !!PP50_FE_UKPRN_HASH[ukprn.to_s]
-    else
-      !!PP50_SCHOOLS_URN_HASH[urn.to_s]
-    end
-  end
-
-  def eyl_disadvantaged?
-    !!EY_OFSTED_URN_HASH[urn.to_s]
-  end
-
-  def la_disadvantaged_nursery?
-    !!LA_DISADVANTAGED_NURSERIES[urn.to_s]
-  end
-
-  def rise?
-    FundingEligibilityData.rise_school?(urn.to_s)
   end
 end

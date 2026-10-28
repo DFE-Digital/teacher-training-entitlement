@@ -17,7 +17,11 @@
     "mermaid": "^12.2.0",
     "hmrc-frontend": "^7.41.0",
     "rails-ujs": "^5.2.8",
+<<<<<<< HEAD
     "sass": "^1.105.2",
+=======
+    "sass": "^1.106.0",
+>>>>>>> refs/remotes/origin/dependabot-pr-927
     "svg-pan-zoom": "^3.6.2",
     "swagger-ui-dist": "^5.34.0",
     "webpack": "^5.112.0",

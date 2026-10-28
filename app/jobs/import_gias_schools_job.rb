@@ -2,6 +2,6 @@ class ImportGiasSchoolsJob < ApplicationJob
   queue_as :default
 
   def perform
-    ImportGiasSchools.new.call
+    Importers::GiasSchools.new.call
   end
 end

@@ -124,6 +124,12 @@ RSpec.describe Declarations::Create, type: :model do
       end
     end
 
+    context "when has_passed is given" do
+      let(:params) { super().merge(has_passed: true) }
+
+      it { is_expected.to have_error(:has_passed, :present) }
+    end
+
     describe "error scenarios" do
       context "when application already started" do
         before { application.update_column(:status, :started) }
@@ -257,7 +263,7 @@ RSpec.describe Declarations::Create, type: :model do
         let(:has_passed) { "bad-value" }
         let(:error_message) { "Enter 'true' or 'false' in the '#/has_passed' field to indicate whether this participant has passed or failed their course." }
 
-        it { is_expected.to validate_presence_of(:has_passed).with_message(error_message) }
+        it { is_expected.to have_error(:has_passed, :invalid, error_message) }
       end
 
       context "when no started declaration exists" do
@@ -274,7 +280,7 @@ RSpec.describe Declarations::Create, type: :model do
     context "when application missing" do
       let(:application) { nil }
 
-      it { is_expected.to validate_presence_of(:application).with_message("The entered '#/application' is missing from your request. Check details and try again.") }
+      it { is_expected.to have_error(:application, :blank) }
     end
 
     context "when application has status different from `accepted`" do
@@ -325,7 +331,7 @@ RSpec.describe Declarations::Create, type: :model do
       context "when value unknown" do
         let(:declaration_type) { "foo" }
 
-        it { is_expected.to validate_inclusion_of(:declaration_type).in_array(%w[started completed]).with_message("The entered '#/declaration_type' is not recognised.") }
+        it { is_expected.to have_error(:declaration_type, :inclusion) }
 
         it_behaves_like "does not update the application"
       end
@@ -340,6 +346,13 @@ RSpec.describe Declarations::Create, type: :model do
                            acceptance_window_end_offset: started_milestone.acceptance_window_start_offset + 2)
       end
 
+      before do
+        completed_milestone.update!(
+          acceptance_window_start_offset: retained_milestone.acceptance_window_start_offset + 1,
+          acceptance_window_end_offset: retained_milestone.acceptance_window_end_offset + 1,
+        )
+      end
+
       context "when previous milestone has no declaration" do
         it { is_expected.to have_error(:declaration_type, :out_of_order) }
 
@@ -347,11 +360,41 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       context "when previous milestone has a billable declaration" do
+        let(:has_passed) { nil }
+
         before do
           application.declarations << create(:declaration, :eligible, declaration_type: "started", application:, milestone: started_milestone)
+          application.update_column(:status, :started)
         end
 
-        it { is_expected.to be_invalid }
+        it { expect { service.call }.to change(Declaration, :count).by(1) }
+
+        it "creates the retained declaration with delivery partners" do
+          service.call
+
+          expect(service.declaration).to have_attributes(
+            delivery_partner: have_attributes(ecf_id: delivery_partner_id),
+            secondary_delivery_partner: have_attributes(ecf_id: secondary_delivery_partner_id),
+          )
+        end
+
+        context "when has_passed is given" do
+          let(:has_passed) { true }
+
+          it { is_expected.to have_error(:has_passed, :present) }
+        end
+
+        context "when delivery_partner_id is omitted" do
+          let(:delivery_partner_id) { nil }
+
+          it { is_expected.to have_error(:delivery_partner_id, :blank) }
+        end
+
+        context "when secondary_delivery_partner_id is omitted" do
+          let(:secondary_delivery_partner_id) { nil }
+
+          it { expect { service.call }.to change(Declaration, :count).by(1) }
+        end
       end
     end
   end

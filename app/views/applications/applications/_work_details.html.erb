@@ -2,7 +2,7 @@
   govuk_summary_list(card: { title: "Work details" }) do |sl|
     sl.with_row do |row|
       row.with_key(text: "Workplace in England")
-      row.with_value(text: boolean_tag(application.inside_catchment?))
+      row.with_value(text: boolean_tag(application.institution&.in_england?))
     end
 
     if application.work_setting.present?
@@ -12,11 +12,9 @@
       end
     end
 
-    if application.inside_catchment? && application.school.present?
-      sl.with_row do |row|
-        row.with_key(text: "Workplace")
-        row.with_value(text: application.institution&.name_with_address || "")
-      end
+    sl.with_row do |row|
+      row.with_key(text: "Workplace")
+      row.with_value(text: application.institution&.name_with_address || "")
     end
   end
 %>

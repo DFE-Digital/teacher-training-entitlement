@@ -10,7 +10,7 @@ RSpec.describe Questionnaires::TeacherCatchment, type: :model do
     describe "next_step" do
       subject { instance.next_step }
 
-      let(:instance) { described_class.new(teacher_catchment: "england") }
+      let(:instance) { described_class.new(teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE) }
 
       it { is_expected.to eq :work_setting }
     end
@@ -26,7 +26,7 @@ RSpec.describe Questionnaires::TeacherCatchment, type: :model do
     describe "next_step" do
       subject { instance.next_step }
 
-      let(:instance) { described_class.new(teacher_catchment: "another") }
+      let(:instance) { described_class.new(teacher_catchment: Institution::OTHER) }
 
       it { is_expected.to eq :ineligible_for_funding }
     end

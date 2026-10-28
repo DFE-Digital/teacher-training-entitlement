@@ -190,6 +190,7 @@ erDiagram
     boolean works_in_nursery
     boolean works_in_school
     date training_starts_at
+    jsonb registration_data
   }
   Application }o--|| User : belongs_to
   Application }o--|| CourseCohort : belongs_to
@@ -211,6 +212,8 @@ erDiagram
     tsvector search_vector
     string town
     datetime updated_at
+    string alpha3_country_code
+    string subdivision_code
   }
   User {
     integer id
