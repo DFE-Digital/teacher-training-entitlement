@@ -1,5 +1,9 @@
 return if PrivateChildcareProvider.exists?
 
+country_code_attributes = Importers::CountryCodeAttributes.country_code_attributes_for(
+  PrivateChildcareProvider.new,
+)
+
 CSV.foreach(Rails.root.join("db/seeds/data/private_childcare_providers.csv"), headers: true).each_slice(1000) do |batch|
   provider_records = batch.map { |row| row.to_h.slice(*PrivateChildcareProvider.column_names) }
   PrivateChildcareProvider.insert_all(provider_records)
@@ -19,7 +23,7 @@ CSV.foreach(Rails.root.join("db/seeds/data/private_childcare_providers.csv"), he
       institution_reference_number: row["provider_urn"],
       created_at: Time.current,
       updated_at: Time.current,
-    }
+    }.merge(country_code_attributes)
   end
 
   Institution.insert_all(institution_records)

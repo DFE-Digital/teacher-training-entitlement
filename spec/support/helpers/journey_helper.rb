@@ -25,9 +25,9 @@ module Helpers
     def deep_compare_application_data(expected_data)
       latest_application_data = retrieve_latest_application_data
 
-      # Doing these separately lets us get proper diffs on raw_application_data
-      expect(latest_application_data.except("raw_application_data")).to match(default_application_data.merge(expected_data).except("raw_application_data"))
-      expect(latest_application_data["raw_application_data"]).to match(expected_data["raw_application_data"])
+      # Doing these separately lets us get proper diffs on registration_data
+      expect(latest_application_data.except("registration_data")).to match(default_application_data.merge(expected_data).except("registration_data"))
+      expect(latest_application_data["registration_data"]).to match(expected_data["registration_data"])
     end
   end
 end

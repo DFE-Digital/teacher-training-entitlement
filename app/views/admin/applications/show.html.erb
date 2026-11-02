@@ -102,10 +102,10 @@ govuk_summary_list(card: { title: "Funding eligibility" }) do |sl|
     row.with_key(text: "Schedule identifier")
     row.with_value(text: @application.course_cohort.schedule_identifier)
   end
-  if @application.raw_application_data["funding"].present?
+  if @application.registration_data["funding"].present?
     sl.with_row do |row|
       row.with_key(text: "Funding choice")
-      row.with_value(text: I18n.t(@application.raw_application_data["funding"], scope: "helpers.label.registration_wizard.funding_options"))
+      row.with_value(text: I18n.t(@application.registration_data["funding"], scope: "helpers.label.registration_wizard.funding_options"))
     end
   end
   sl.with_row do |row|

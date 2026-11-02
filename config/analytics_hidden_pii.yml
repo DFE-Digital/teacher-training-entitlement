@@ -1,7 +1,5 @@
 ---
 shared:
-  :applications:
-    - on_submission_trn
   :private_childcare_providers:
     - registered_person_name
   :registration_interests:

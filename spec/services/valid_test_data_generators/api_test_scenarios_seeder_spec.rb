@@ -11,7 +11,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
     create_list(:institution, 2, :for_school)
     create_list(:institution, 2, :for_private_childcare_provider)
     create_list(:institution, 2, :for_local_authority)
-    create(:school, :ineligible)
+    create(:school, :ineligible).institution.update!(subdivision_code: Institution::WALES_SUBDIVISION_CODE)
     allow(Rails).to receive(:env).and_return(environment.inquiry)
   end
 
@@ -46,6 +46,18 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
         statements = Statement.where(lead_provider: lead_provider)
         expect(statements.pluck(:state)).to match_array(%w[paid open])
+      end
+
+      it "only assigns delivery partners to declarations for applications in England" do
+        declarations = Declaration.joins(:application).where(applications: { id: lead_provider.applications.select(:id) })
+
+        declarations.each do |declaration|
+          if declaration.application.institution.in_england?
+            expect(declaration.delivery_partner).to be_present
+          else
+            expect(declaration.delivery_partner).to be_nil
+          end
+        end
       end
     end
 

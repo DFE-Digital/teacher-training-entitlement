@@ -20,7 +20,7 @@ RSpec.describe FundingEligibility do
   end
 
   let(:inside_catchment) { true }
-  let(:institution) { nil }
+  let(:institution) { build(:institution) }
   let(:work_setting) { nil }
   let(:kind_of_nursery) { nil }
   let(:course) { build(:course, :npd_eirt) }
@@ -31,6 +31,7 @@ RSpec.describe FundingEligibility do
 
     context "when outside England" do
       let(:inside_catchment) { false }
+      let(:institution) { build(:institution, :not_in_england) }
 
       it { is_expected.to eq :not_in_england }
     end
@@ -43,9 +44,8 @@ RSpec.describe FundingEligibility do
       it { is_expected.to eq :previously_funded }
     end
 
-    context "when work setting is school" do
-      let(:work_setting) { Questionnaires::WorkSetting::A_SCHOOL }
-      let(:institution) { build(:school) }
+    context "when work setting is a state funded institution" do
+      let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
 
       context "when institution is an eligible establishment" do
         before do
@@ -56,77 +56,6 @@ RSpec.describe FundingEligibility do
       end
 
       context "when institution is not an eligible establishment" do
-        before do
-          allow(institution).to receive(:eligible_establishment?).and_return(false)
-        end
-
-        it { is_expected.to eq :ineligible_setting }
-      end
-    end
-
-    context "when work setting is academy trust" do
-      let(:work_setting) { Questionnaires::WorkSetting::AN_ACADEMY_TRUST }
-      let(:institution) { build(:school) }
-
-      before do
-        allow(institution).to receive(:eligible_establishment?).and_return(true)
-      end
-
-      it { is_expected.to eq :funded }
-    end
-
-    context "when work setting is 16 to 19 educational setting" do
-      let(:work_setting) { Questionnaires::WorkSetting::A_16_TO_19_EDUCATIONAL_SETTING }
-      let(:institution) { build(:school) }
-
-      before do
-        allow(institution).to receive(:eligible_establishment?).and_return(true)
-      end
-
-      it { is_expected.to eq :funded }
-    end
-
-    context "when work setting is early years or childcare" do
-      let(:work_setting) { "early_years_or_childcare" }
-      let(:institution) { build(:school) }
-
-      before do
-        allow(institution).to receive(:eligible_establishment?).and_return(true)
-      end
-
-      context "when kind of nursery is local_authority_maintained_nursery" do
-        let(:kind_of_nursery) { "local_authority_maintained_nursery" }
-
-        it { is_expected.to eq :funded }
-      end
-
-      context "when kind of nursery is preschool_class_as_part_of_school" do
-        let(:kind_of_nursery) { "preschool_class_as_part_of_school" }
-
-        it { is_expected.to eq :funded }
-      end
-
-      context "when kind of nursery is private_nursery" do
-        let(:kind_of_nursery) { "private_nursery" }
-
-        it { is_expected.to eq :ineligible_setting }
-      end
-
-      context "when kind of nursery is childminder" do
-        let(:kind_of_nursery) { "childminder" }
-
-        it { is_expected.to eq :ineligible_setting }
-      end
-
-      context "when kind of nursery is another_early_years_setting" do
-        let(:kind_of_nursery) { "another_early_years_setting" }
-
-        it { is_expected.to eq :ineligible_setting }
-      end
-
-      context "when institution has ineligible establishment type" do
-        let(:kind_of_nursery) { "preschool_class_as_part_of_school" }
-
         before do
           allow(institution).to receive(:eligible_establishment?).and_return(false)
         end
@@ -146,21 +75,12 @@ RSpec.describe FundingEligibility do
 
       it { is_expected.to eq :ineligible_setting }
     end
-
-    context "when institution is mandatory but missing" do
-      let(:work_setting) { Questionnaires::WorkSetting::A_SCHOOL }
-
-      it "raises an error" do
-        expect { subject }.to raise_error(FundingEligibility::MissingMandatoryInstitution)
-      end
-    end
   end
 
   describe "#funded?" do
     subject { funding_eligibility.funded? }
 
-    let(:work_setting) { Questionnaires::WorkSetting::A_SCHOOL }
-    let(:institution) { build(:school) }
+    let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
 
     before do
       allow(institution).to receive(:eligible_establishment?).and_return(true)
@@ -194,8 +114,7 @@ RSpec.describe FundingEligibility do
   describe "#get_description_for_funding_status" do
     subject { funding_eligibility.get_description_for_funding_status }
 
-    let(:work_setting) { Questionnaires::WorkSetting::A_SCHOOL }
-    let(:institution) { build(:school) }
+    let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
 
     before do
       allow(institution).to receive(:eligible_establishment?).and_return(true)

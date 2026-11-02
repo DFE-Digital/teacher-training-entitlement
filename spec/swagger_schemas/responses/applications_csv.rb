@@ -12,12 +12,12 @@ APPLICATIONS_CSV_RESPONSE = {
             "eligible_for_funding,funded_place,funding_choice,course_identifier,\n" \
             "status,works_in_school,created_at,updated_at,\n" \
             "cohort,ineligible_for_funding_reason,\n" \
-            "teacher_catchment,teacher_catchment_country,teacher_catchment_iso_country_code\n"\
+            "teacher_catchment,teacher_catchment_iso_country_code\n"\
             "db3a7848-7308-4879-942a-c4a70ced400a,7a8fef46-3c43-42c0-b3d5-1ba5904ba562,\n" \
             "Isabelle MacDonald,isabelle.macdonald2@some-school.example.com,true,1234567,\n" \
             "false,100015,10005549,,false,true,trust,npq-early-headship-coaching-offer,\n" \
             "accepted,true,2024-04-23T15:52:03Z,2024-04-23T15:52:03Z,2021,\n" \
-            "establishment-ineligible,true,United Kingdom of Great Britain and Northern Ireland,GBR\n",
+            "establishment-ineligible,true,GBR\n",
   },
 }.tap { |h|
   h[:v2] = h[:v1].deep_dup

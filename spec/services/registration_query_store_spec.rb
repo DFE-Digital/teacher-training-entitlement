@@ -5,6 +5,38 @@ RSpec.describe RegistrationQueryStore do
 
   let(:store) { {} }
 
+  describe "#teacher_catchment_humanized" do
+    subject { query_store.teacher_catchment_humanized }
+
+    context "when the teacher catchment is England" do
+      let(:store) { { "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE } }
+
+      it { is_expected.to eq("Yes") }
+    end
+
+    context "when the teacher catchment is not England" do
+      let(:store) { { "teacher_catchment" => "another" } }
+
+      it { is_expected.to eq("No") }
+    end
+  end
+
+  describe "#teacher_catchment_england?" do
+    subject { query_store.teacher_catchment_england? }
+
+    context "when the teacher catchment is England" do
+      let(:store) { { "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE } }
+
+      it { is_expected.to be true }
+    end
+
+    context "when the teacher catchment is not England" do
+      let(:store) { { "teacher_catchment" => "another" } }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#course_cohort" do
     context "when the store has a valid course_cohort_id" do
       let(:course_cohort) { create(:course_cohort) }

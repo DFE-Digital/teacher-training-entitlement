@@ -395,11 +395,7 @@ module ValidTestDataGenerators
         funding_eligiblity_status_code:,
         ecf_id: SecureRandom.uuid,
         teacher_catchment: "england",
-        teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
-        teacher_catchment_iso_country_code: "GBR",
         funding_choice:,
-        works_in_school: institution.school?,
-        works_in_childcare: institution.private_childcare_provider?,
       )
       application
     end
@@ -425,7 +421,7 @@ module ValidTestDataGenerators
         declaration_type: :started,
         declaration_date: date,
         state: :eligible,
-        delivery_partner: application.lead_provider.delivery_partners.sample,
+        delivery_partner: delivery_partner_for(application),
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
@@ -443,7 +439,7 @@ module ValidTestDataGenerators
         declaration_type: :completed,
         declaration_date: date,
         state: :eligible,
-        delivery_partner: application.lead_provider.delivery_partners.sample,
+        delivery_partner: delivery_partner_for(application),
         milestone:,
         lead_provider: application.lead_provider,
         statement:,
@@ -457,6 +453,12 @@ module ValidTestDataGenerators
         outcome.save!(validate: false)
       end
       declaration
+    end
+
+    def delivery_partner_for(application)
+      return unless application.institution&.in_england?
+
+      application.lead_provider.delivery_partners.sample
     end
 
     def declaration_date_for(application:, milestone:)

@@ -9,6 +9,11 @@ FactoryBot.define do
       institution.institutionable ||= build(:school, institution: institution)
     end
 
+    trait :not_in_england do
+      alpha3_country_code { Institution::UK_COUNTRY_CODE }
+      subdivision_code { Institution::WALES_SUBDIVISION_CODE }
+    end
+
     trait :for_school do
       after(:build) do |institution|
         institution.institutionable ||= build(:school, institution: institution)

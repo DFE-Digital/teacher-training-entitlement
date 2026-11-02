@@ -58,8 +58,8 @@ RSpec.describe AdminService::UsersSearch do
       end
     end
 
-    context "when application#school_urn match" do
-      let(:q) { application.school_urn }
+    context "when institution#school_urn match" do
+      let(:q) { application.institution.urn }
 
       it "returns the hit" do
         expect(subject.call).to include(user)
