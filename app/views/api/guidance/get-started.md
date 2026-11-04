@@ -51,7 +51,7 @@ Provider development teams can also access the OpenAPI spec in YAML format:
 
 * [view the OpenAPI version 3 spec](/api/docs/v1/swagger.yaml)
 
-Providers can use API testing tools such as Postman to make test API calls. Providers can import the API as a collection by using [Postman’s](https://www.postman.com/) import feature and copying in the YAML URL of the API spec.
+Providers can import the API specification into their preferred API client by using its import feature and pasting the YAML URL.
 
 ### Rate limits
 
