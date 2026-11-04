@@ -54,6 +54,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         declarations.each do |declaration|
           if declaration.application.institution.in_england?
             expect(declaration.delivery_partner).to be_present
+
+            valid_partner_ids = declaration.lead_provider
+              .delivery_partners_for_course_cohort(course_cohort: declaration.course_cohort)
+              .map(&:id)
+            expect(valid_partner_ids).to include(declaration.delivery_partner_id)
           else
             expect(declaration.delivery_partner).to be_nil
           end
@@ -186,6 +191,16 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
             .to all(match_array(%w[started completed]))
         end
 
+        it "creates course-level delivery partnerships for the lead provider" do
+          seeder.call
+
+          course = Course.find_by!(identifier: "tte-early-years")
+          partnerships = DeliveryPartnership.where(lead_provider:, course:)
+
+          expect(partnerships.count).to eq(5)
+          expect(partnerships.map(&:delivery_partner)).to all(be_present)
+        end
+
         it "creates 11 applications in primary course_cohort and 1 in secondary course_cohort" do
           seeder.call
 
@@ -244,6 +259,10 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
         it "deletes and recreates users with no other applications" do
           expect { seeder.call }.not_to change(User, :count)
+        end
+
+        it "does not duplicate delivery partnerships" do
+          expect { seeder.call }.not_to change(DeliveryPartnership, :count)
         end
 
         it "maintains the same test emails" do

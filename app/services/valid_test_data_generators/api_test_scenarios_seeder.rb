@@ -458,7 +458,7 @@ module ValidTestDataGenerators
     def delivery_partner_for(application)
       return unless application.institution&.in_england?
 
-      application.lead_provider.delivery_partners.sample
+      application.lead_provider.delivery_partners_for_course_cohort(course_cohort: application.course_cohort).sample
     end
 
     def declaration_date_for(application:, milestone:)

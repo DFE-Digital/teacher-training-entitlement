@@ -32,14 +32,18 @@ module APITests
   private
 
     def secondary_delivery_partner_id
-      return @secondary_delivery_partner if @secondary_delivery_partner
-      return nil unless lead_provider.delivery_partners.many?
+      return @secondary_delivery_partner.ecf_id if @secondary_delivery_partner
+      return nil unless available_delivery_partners.many?
 
-      lead_provider.delivery_partners.last.ecf_id
+      available_delivery_partners.last.ecf_id
     end
 
     def delivery_partner_id
-      @delivery_partner&.ecf_id || lead_provider.delivery_partners.first.ecf_id
+      @delivery_partner&.ecf_id || available_delivery_partners.first.ecf_id
+    end
+
+    def available_delivery_partners
+      lead_provider.delivery_partners_for_course_cohort(course_cohort: declaration.course_cohort)
     end
 
     def lead_provider
