@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:other_lead_provider) { create(:lead_provider) }
-  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course)) }
-  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course)) }
-  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, course: create(:course)) }
+  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course), lead_provider: current_lead_provider) }
+  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course), lead_provider: current_lead_provider) }
+  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, course: create(:course), lead_provider: other_lead_provider) }
   let(:delivery_partner) do
     create(:delivery_partner,
            lead_providers: {
