@@ -30,7 +30,8 @@ class DeliveryPartner < ApplicationRecord
 
   def course_cohorts_for_lead_provider(lead_provider)
     CourseCohort
-      .joins(course: :delivery_partnerships)
+      .joins(:course_cohort_providers, course: :delivery_partnerships)
+      .where(course_cohort_providers: { lead_provider: })
       .where(delivery_partnerships: { delivery_partner: self, lead_provider: })
       .distinct
   end

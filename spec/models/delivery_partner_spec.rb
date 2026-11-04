@@ -115,14 +115,14 @@ RSpec.describe DeliveryPartner, type: :model do
     let(:delivery_partner) { create :delivery_partner, lead_providers: { course => lead_provider, other_course => other_lead_provider } }
     let(:lead_provider) { create :lead_provider }
     let(:other_lead_provider) { create :lead_provider }
-    let(:course) { create(:course) }
+    let(:course) { create(:course, lead_provider:) }
     let(:other_course) { create(:course) }
-    let(:cohort) { create :cohort }
+    let(:cohort) { create :cohort, registration_starts_at: Date.new(2023, 9, 1) }
     let(:other_cohort) { create :cohort, registration_starts_at: Date.new(2024, 5, 1) }
 
     before do
-      create(:course_cohort, course:, cohort:)
-      create(:course_cohort, course:, cohort: other_cohort)
+      create(:course_cohort, course:, cohort:, lead_provider:)
+      create(:course_cohort, course:, cohort: other_cohort, lead_provider:)
     end
 
     it "returns every course cohort of courses the partner delivers for the lead provider" do
@@ -131,6 +131,18 @@ RSpec.describe DeliveryPartner, type: :model do
 
     it "does not return course cohorts of courses delivered for other lead providers" do
       expect(subject).not_to include(*other_course.course_cohorts)
+    end
+
+    context "when the lead provider has no course cohort provider for one of the course's cohorts" do
+      let(:uncontracted_course_cohort) { CourseCohort.find_by!(course:, cohort: other_cohort) }
+
+      before do
+        CourseCohortProvider.where(course_cohort: uncontracted_course_cohort, lead_provider:).delete_all
+      end
+
+      it "does not return that course cohort" do
+        expect(subject).to match_array(course.course_cohorts - [uncontracted_course_cohort])
+      end
     end
   end
 end
