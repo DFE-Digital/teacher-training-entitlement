@@ -10,7 +10,7 @@ RSpec.describe APITests::RetainedDeclaration, type: :model do
   end
 
   let!(:application) { create(:application, :started, lead_provider:, course_cohort:) }
-  let(:course_cohort) { create(:course_cohort, training_starts_at: 1.day.ago.to_date) }
+  let(:course_cohort) { create(:course_cohort, training_starts_at: 1.day.ago.to_date, lead_provider:) }
   let(:lead_provider) { create(:lead_provider, delivery_partner: default_delivery_partner) }
   let(:default_delivery_partner) { create(:delivery_partner) }
   let(:delivery_partner) { create(:delivery_partner) }
