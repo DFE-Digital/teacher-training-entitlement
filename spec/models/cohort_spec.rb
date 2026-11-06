@@ -7,7 +7,7 @@ RSpec.describe Cohort, type: :model do
     (2024..2026).to_a.shuffle.flat_map do |start_year|
       [5, 8].shuffle.map do |month|
         registration_starts_at = Date.new(start_year, month, 10)
-        exist = Cohort.find_by(identifier: registration_starts_at.strftime("%Y-%B"))
+        exist = Cohort.find_by(identifier: registration_starts_at.strftime("%Y-%B").downcase)
         exist || create(:cohort, registration_starts_at:)
       end
     end
@@ -26,6 +26,7 @@ RSpec.describe Cohort, type: :model do
       create(:cohort, registration_starts_at: Date.new(2026, 1, 3))
       duplicate = Cohort.new(
         registration_starts_at: Date.new(2026, 1, 20),
+        start_year: 2026,
         description: "Another January 2026 cohort",
         funding_cap: true,
       )
@@ -66,7 +67,7 @@ RSpec.describe Cohort, type: :model do
 
     before { cohorts }
 
-    it { is_expected.to eq %w[2026-August 2026-May 2025-August 2025-May 2024-August 2024-May] }
+    it { is_expected.to eq %w[2026-august 2026-may 2025-august 2025-may 2024-august 2024-may] }
   end
 
   describe ".order_by_oldest" do
@@ -74,15 +75,15 @@ RSpec.describe Cohort, type: :model do
 
     before { cohorts }
 
-    it { is_expected.to eq %w[2024-May 2024-August 2025-May 2025-August 2026-May 2026-August] }
+    it { is_expected.to eq %w[2024-may 2024-august 2025-may 2025-august 2026-may 2026-august] }
   end
 
   describe ".prior_to" do
     subject { described_class.where(id: cohorts.map(&:id)).prior_to(cohort_2025).pluck(:identifier) }
 
-    let(:cohort_2025) { cohorts && Cohort.find_by!(identifier: "2025-August") }
+    let(:cohort_2025) { cohorts && Cohort.find_by!(identifier: "2025-august") }
 
-    it { is_expected.to match_array %w[2025-May 2024-May 2024-August] }
+    it { is_expected.to match_array %w[2025-may 2024-may 2024-august] }
   end
 
   describe ".current" do

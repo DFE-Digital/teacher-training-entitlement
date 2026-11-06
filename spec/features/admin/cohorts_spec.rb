@@ -70,7 +70,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       end
 
       cohort = Cohort.order(created_at: :desc, id: :desc).first
-      expect(cohort.identifier).to eq("2029-March")
+      expect(cohort.identifier).to eq("2029-march")
       expect(cohort.name).to eq("2029 to 2030")
       expect(cohort.description).to eq("2029 to 2030")
       expect(cohort.start_year).to be(2029)
@@ -98,7 +98,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       cohort.reload
 
-      expect(cohort.identifier).to eq("2025-May")
+      expect(cohort.identifier).to eq("2025-may")
       expect(cohort.name).to eq(new_description)
       expect(cohort.description).to eq(new_description)
       expect(cohort.start_year).to be(2025)
