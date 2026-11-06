@@ -112,4 +112,5 @@ applications:
     cohort_offset: 0
     funding_eligible: true
     participant_id: 13
+    change_provider: true
     purpose: "Provider read-only application"

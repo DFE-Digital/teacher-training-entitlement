@@ -60,13 +60,13 @@ private
   def set_identifier
     return if registration_starts_at.blank?
 
-    self.identifier = registration_starts_at.strftime("%Y-%B")
+    self.identifier = [start_year, registration_starts_at.strftime("%B")].join("-").downcase
   end
 
   def set_description
     return if description.present? || registration_starts_at.blank?
 
-    self.description = registration_starts_at.strftime("%B %Y")
+    self.description = [registration_starts_at.strftime("%B"), start_year].join(" ")
   end
 
   def identifier_is_unique
