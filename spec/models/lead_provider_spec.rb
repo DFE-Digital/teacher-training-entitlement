@@ -54,4 +54,59 @@ RSpec.describe LeadProvider do
       it { is_expected.to be_empty }
     end
   end
+
+  describe "#cohort_start_years_by_delivery_partner" do
+    subject(:years_by_partner) { lead_provider.cohort_start_years_by_delivery_partner }
+
+    let(:lead_provider) { create(:lead_provider) }
+    let(:course) { create(:course) }
+    let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 9, 1)) }
+    let(:cohort_2024) { create(:cohort, registration_starts_at: Date.new(2024, 9, 1)) }
+    let!(:delivery_partner) { create(:delivery_partner, lead_providers: { course => lead_provider }) }
+
+    before do
+      create(:course_cohort, course:, cohort: cohort_2024, lead_provider:)
+      create(:course_cohort, course:, cohort: cohort_2023, lead_provider:)
+    end
+
+    it "maps each delivery partner to its provided academic years" do
+      expect(years_by_partner).to eq(delivery_partner.id => [2023, 2024])
+    end
+
+    context "when several of the partner's courses share an academic year" do
+      let(:other_course) { create(:course) }
+
+      before do
+        create(:course_cohort, course: other_course, cohort: cohort_2023, lead_provider:)
+        create(:delivery_partnership, delivery_partner:, course: other_course, lead_provider:)
+      end
+
+      it "lists the year once, sorted" do
+        expect(years_by_partner[delivery_partner.id]).to eq([2023, 2024])
+      end
+    end
+
+    context "when the partner has no provided cohorts" do
+      let(:unprovided_course) { create(:course) }
+      let!(:unprovided_partner) { create(:delivery_partner, lead_providers: { unprovided_course => lead_provider }) }
+
+      before { create(:course_cohort, course: unprovided_course, cohort: cohort_2023, lead_provider: create(:lead_provider)) }
+
+      it "omits the partner from the map" do
+        expect(years_by_partner).not_to have_key(unprovided_partner.id)
+      end
+    end
+
+    context "when the cohort is provided by another lead provider" do
+      let(:other_lead_provider) { create(:lead_provider) }
+      let(:other_course) { create(:course) }
+      let!(:other_partner) { create(:delivery_partner, lead_providers: { other_course => lead_provider }) }
+
+      before { create(:course_cohort, course: other_course, cohort: cohort_2023, lead_provider: other_lead_provider) }
+
+      it "excludes the other lead provider's cohorts" do
+        expect(years_by_partner).not_to have_key(other_partner.id)
+      end
+    end
+  end
 end

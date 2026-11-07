@@ -9,10 +9,7 @@ module API
       view :v1 do
         field(:name)
         field(:cohort) do |object, options|
-          object.course_cohorts_for_lead_provider(options[:lead_provider])
-                .map(&:academic_year)
-                .uniq
-                .sort
+          options[:cohort_start_years_by_delivery_partner].fetch(object.id, [])
         end
         field(:created_at)
         field(:updated_at)

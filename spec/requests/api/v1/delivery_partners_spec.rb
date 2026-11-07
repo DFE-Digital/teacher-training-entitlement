@@ -2,10 +2,11 @@ require "rails_helper"
 
 RSpec.describe "Delivery Partner endpoints", type: :request do
   let(:current_lead_provider) { create(:lead_provider) }
-  let(:query) { DeliveryPartners::Query }
+  let(:query) { DeliveryPartnerships::Query }
   let(:serializer) { API::DeliveryPartnerSerializer }
   let(:serializer_version) { :v1 }
   let(:serializer_lead_provider) { current_lead_provider }
+  let(:serializer_cohort_start_years_by_delivery_partner) { current_lead_provider.cohort_start_years_by_delivery_partner }
 
   describe "GET /api/v1/delivery_partners/:id" do
     let(:resource) { create(:delivery_partner, lead_provider: current_lead_provider) }

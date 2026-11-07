@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe DeliveryPartners::Query do
+RSpec.describe DeliveryPartnerships::Query do
   let(:lead_provider_1) { create(:lead_provider) }
   let(:lead_provider_2) { create(:lead_provider) }
   let(:cohort_21) { create :cohort, registration_starts_at: Date.new(2021, 9, 1) }
