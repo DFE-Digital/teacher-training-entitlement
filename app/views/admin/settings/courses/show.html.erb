@@ -102,5 +102,20 @@
       end
     end
     %>
+
+    <h2 class="govuk-heading-m">Delivery partners</h2>
+
+    <% if @course.delivery_partnerships.any? %>
+      <% @course.delivery_partnerships.group_by(&:lead_provider).sort_by { |lead_provider, _partnerships| lead_provider.name }.each do |lead_provider, partnerships| %>
+        <h3 class="govuk-heading-s"><%= lead_provider.name %></h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <% partnerships.map(&:delivery_partner).sort_by(&:name).each do |delivery_partner| %>
+            <li><%= delivery_partner.name %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% else %>
+      <p class="govuk-body">No delivery partners.</p>
+    <% end %>
   </div>
 </div>

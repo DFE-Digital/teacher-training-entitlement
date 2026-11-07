@@ -1,0 +1,38 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path, method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <% selected_providers = @wizard.state_store.selected_lead_providers %>
+
+  <% if selected_providers.none? %>
+    <p class="govuk-body">No lead providers were selected.</p>
+  <% else %>
+    <% delivery_partners = DeliveryPartner.order(name: :asc) %>
+
+    <% selected_providers.each do |selected_provider| %>
+      <% lead_provider = selected_provider.lead_provider %>
+
+      <%= f.govuk_check_boxes_fieldset :"lead_provider_#{lead_provider.id}",
+                                       multiple: false,
+                                       legend: { text: "Delivery partners for #{lead_provider.name}", size: "m" } do %>
+        <% delivery_partners.each_with_index do |delivery_partner, index| %>
+          <%= f.govuk_check_box :"lead_provider_#{lead_provider.id}",
+                                delivery_partner.id.to_s,
+                                "0",
+                                multiple: false,
+                                checked: @wizard.current_step.delivery_partner_selected?(lead_provider, delivery_partner),
+                                link_errors: index.zero?,
+                                name: "#{f.object_name}[delivery_partners][#{lead_provider.id}][#{delivery_partner.id}]",
+                                label: { text: delivery_partner.name } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

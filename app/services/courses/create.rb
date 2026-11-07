@@ -9,11 +9,15 @@ module Courses
     end
 
     def call
+      add_delivery_partner_errors
+      return if errors.any?
+
       Course.transaction do
         create_course!
         create_milestones!
         create_generic_contract_years!
         create_contract_financials!
+        create_delivery_partnerships!
       end
     rescue ActiveRecord::RecordInvalid => e
       errors.add(:base, "#{e.record.class.model_name.human}: #{e.record.errors.full_messages.to_sentence}")
@@ -22,6 +26,17 @@ module Courses
   private
 
     attr_reader :state_store
+
+    def add_delivery_partner_errors
+      partnership_lead_provider_ids = state_store.selected_delivery_partnerships.map { _1.lead_provider.id }
+
+      state_store.selected_lead_providers.each do |selected_provider|
+        lead_provider = selected_provider.lead_provider
+        next if lead_provider.id.in?(partnership_lead_provider_ids)
+
+        errors.add(:"lead_provider_#{lead_provider.id}", "Select at least one delivery partner for #{lead_provider.name}")
+      end
+    end
 
     def create_course!
       @course = Course.create!(
@@ -71,6 +86,15 @@ module Courses
           email: selected_provider.email.presence,
         )
         contract_year.save!
+      end
+    end
+
+    def create_delivery_partnerships!
+      state_store.selected_delivery_partnerships.each do |delivery_partnership|
+        course.delivery_partnerships.create!(
+          lead_provider: delivery_partnership.lead_provider,
+          delivery_partner: delivery_partnership.delivery_partner,
+        )
       end
     end
 

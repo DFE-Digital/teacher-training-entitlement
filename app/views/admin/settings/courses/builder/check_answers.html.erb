@@ -86,6 +86,26 @@
         <%= govuk_link_to "Change", @wizard.resolve_step_path(:contract_financials) %>
       <% end %>
     <% end %>
+
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Delivery partners") %>
+      <% row.with_cell do %>
+        <% delivery_partnerships = state_store.selected_delivery_partnerships %>
+        <% if delivery_partnerships.any? %>
+          <% delivery_partnerships.group_by(&:lead_provider).sort_by { |lead_provider, _partnerships| lead_provider.name }.each do |lead_provider, partnerships| %>
+            <p class="govuk-body">
+              <%= lead_provider.name %><br>
+              <%= partnerships.map { _1.delivery_partner.name }.sort.join(", ") %>
+            </p>
+          <% end %>
+        <% else %>
+          None selected
+        <% end %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change <span class=\"govuk-visually-hidden\"> delivery partners</span>".html_safe, @wizard.resolve_step_path(:delivery_partners) %>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>
 
