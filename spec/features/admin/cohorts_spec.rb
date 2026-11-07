@@ -5,7 +5,11 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   include Helpers::FileHelper
 
   let(:admin) { create :admin }
-  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, registration_starts_at: Date.new(2026, 4, 1)) }
+  let(:cohort_registration_starts_at) { Date.new(2026, 4, 1) }
+  let!(:cohort) do
+    Cohort.find_by(identifier: Cohort.identifier_for(start_year: 2026, registration_starts_at: cohort_registration_starts_at)) ||
+      create(:cohort, registration_starts_at: cohort_registration_starts_at)
+  end
 
   let(:new_button_text)    { "New registration period" }
   let(:edit_button_text)   { "Edit cohort details" }

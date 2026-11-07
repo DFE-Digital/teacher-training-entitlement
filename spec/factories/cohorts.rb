@@ -4,7 +4,7 @@ FactoryBot.define do
     registration_ends_at { registration_starts_at.advance(months: 2) }
     funding_cap { true }
     description { registration_starts_at.strftime("%B %Y") }
-    identifier { [start_year, registration_starts_at.strftime("%B")].join("-").downcase }
+    identifier { Cohort.identifier_for(start_year:, registration_starts_at:) }
     start_year { registration_starts_at.year }
 
     initialize_with do

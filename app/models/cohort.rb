@@ -35,6 +35,10 @@ class Cohort < ApplicationRecord
     order(registration_starts_at: :desc).where(registration_starts_at: ..timestamp).first!
   end
 
+  def self.identifier_for(start_year:, registration_starts_at:)
+    [start_year, registration_starts_at.strftime("%B")].join("-").downcase
+  end
+
   def registration_open?
     Time.zone.today >= registration_starts_at &&
       (registration_ends_at.nil? || Time.zone.today <= registration_ends_at)
@@ -60,7 +64,7 @@ private
   def set_identifier
     return if registration_starts_at.blank?
 
-    self.identifier = [start_year, registration_starts_at.strftime("%B")].join("-").downcase
+    self.identifier = self.class.identifier_for(start_year:, registration_starts_at:)
   end
 
   def set_description

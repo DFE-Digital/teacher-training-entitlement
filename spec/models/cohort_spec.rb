@@ -7,7 +7,7 @@ RSpec.describe Cohort, type: :model do
     (2024..2026).to_a.shuffle.flat_map do |start_year|
       [5, 8].shuffle.map do |month|
         registration_starts_at = Date.new(start_year, month, 10)
-        exist = Cohort.find_by(identifier: registration_starts_at.strftime("%Y-%B").downcase)
+        exist = Cohort.find_by(identifier: Cohort.identifier_for(start_year:, registration_starts_at:))
         exist || create(:cohort, registration_starts_at:)
       end
     end
@@ -59,6 +59,20 @@ RSpec.describe Cohort, type: :model do
 
         expect(cohort.description).to eq("Custom cohort")
       end
+    end
+  end
+
+  describe ".identifier_for" do
+    it "builds the identifier from the start year and registration month" do
+      expect(
+        described_class.identifier_for(start_year: 2026, registration_starts_at: Date.new(2026, 1, 20)),
+      ).to eq("2026-january")
+    end
+
+    it "downcases the month name" do
+      expect(
+        described_class.identifier_for(start_year: 2026, registration_starts_at: Date.new(2026, 4, 1)),
+      ).to eq("2026-april")
     end
   end
 

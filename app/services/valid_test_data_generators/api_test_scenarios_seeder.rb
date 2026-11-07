@@ -276,7 +276,7 @@ module ValidTestDataGenerators
     end
 
     def find_or_create_cohort(registration_starts_at:, academic_year:)
-      identifier = Cohort.new(registration_starts_at:, start_year: academic_year).tap(&:valid?).identifier
+      identifier = Cohort.identifier_for(start_year: academic_year, registration_starts_at:)
       Cohort.find_by(identifier:) || Cohort.create!(registration_starts_at:, funding_cap: true, start_year: academic_year)
     end
 
