@@ -7,6 +7,7 @@ module Admin
       MilestoneConfig = Struct.new(:declaration_type, :acceptance_window_start_offset, :acceptance_window_end_offset, :payment_percentage, keyword_init: true)
       SelectedLeadProvider = Struct.new(:lead_provider, :url, :email, keyword_init: true)
       SelectedContractFinancial = Struct.new(:lead_provider, :academic_year, :teacher_funding, :recruitment_target, keyword_init: true)
+      SelectedDeliveryPartnership = Struct.new(:lead_provider, :delivery_partner, keyword_init: true)
 
       def course_details
         CourseDetails.new(
@@ -64,7 +65,34 @@ module Admin
         end
       end
 
+      def selected_delivery_partnerships
+        selected_providers_by_id = selected_lead_providers.index_by { _1.lead_provider.id.to_s }
+        delivery_partner_ids = delivery_partner_selections.values.flat_map(&:keys).uniq
+        delivery_partners_by_id = DeliveryPartner.where(id: delivery_partner_ids).index_by { _1.id.to_s }
+
+        delivery_partner_selections.flat_map do |lead_provider_id, partner_selections|
+          selected_provider = selected_providers_by_id[lead_provider_id.to_s]
+          next [] unless selected_provider
+
+          partner_selections.filter_map do |delivery_partner_id, selected|
+            next if selected.to_s == "0"
+
+            delivery_partner = delivery_partners_by_id[delivery_partner_id.to_s]
+            next unless delivery_partner
+
+            SelectedDeliveryPartnership.new(
+              lead_provider: selected_provider.lead_provider,
+              delivery_partner:,
+            )
+          end
+        end
+      end
+
     private
+
+      def delivery_partner_selections
+        read.fetch(:delivery_partners, {})
+      end
 
       def academic_year_from_key(key)
         return if key.blank? || key == Admin::CourseBuilder::Steps::ContractFinancials::GENERIC_ACADEMIC_YEAR_KEY

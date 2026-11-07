@@ -11,6 +11,7 @@ module Admin
         milestones: Steps::Milestones,
         lead_providers: Steps::LeadProviders,
         contract_financials: Steps::ContractFinancials,
+        delivery_partners: Steps::DeliveryPartners,
         check_answers: Steps::CheckAnswers,
       }.freeze
 
@@ -19,6 +20,7 @@ module Admin
         milestones: "Milestones",
         lead_providers: "Lead providers",
         contract_financials: "Contract financials",
+        delivery_partners: "Delivery partners",
         check_answers: "Check answers",
       }.freeze
 
@@ -32,7 +34,8 @@ module Admin
           graph.add_edge from: :course_details, to: :milestones
           graph.add_edge from: :milestones, to: :lead_providers
           graph.add_edge from: :lead_providers, to: :contract_financials
-          graph.add_edge from: :contract_financials, to: :check_answers
+          graph.add_edge from: :contract_financials, to: :delivery_partners
+          graph.add_edge from: :delivery_partners, to: :check_answers
         end
       end
 
