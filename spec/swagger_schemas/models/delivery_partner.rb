@@ -24,11 +24,11 @@ DELIVERY_PARTNER = {
             example: "Awesome Delivery Partner Ltd",
           },
           cohort: {
-            description: "The starting years of the cohorts the delivery partner is valid for",
+            description: "The starting years of the cohorts the delivery partner is valid for, derived from the lead provider's course cohorts",
             type: :array,
             items: {
-              type: :string,
-              example: "2025",
+              type: :integer,
+              example: 2025,
             },
           },
           created_at: {

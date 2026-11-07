@@ -4,7 +4,7 @@ module API
       include Pagination
 
       def index
-        conditions = { cohort_start_years:, sort: }
+        conditions = { cohort_start_years:, course_identifier:, sort: }
         delivery_partners = query(conditions:).delivery_partners
 
         render json: to_json(paginate(delivery_partners))
@@ -29,8 +29,12 @@ module API
         delivery_partner_params.dig(:filter, :cohort)
       end
 
+      def course_identifier
+        delivery_partner_params.dig(:filter, :course)
+      end
+
       def delivery_partner_params
-        params.permit(:ecf_id, :sort, filter: %i[cohort])
+        params.permit(:ecf_id, :sort, filter: %i[cohort course])
       end
 
       def sort
