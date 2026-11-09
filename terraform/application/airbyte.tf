@@ -46,5 +46,6 @@ variable "connection_status" {
 }
 
 locals {
-  gcp_dataset_name = replace("${var.service_short}_airbyte_${var.environment}", "-", "_")
+  gcp_dataset_name   = replace("${var.service_short}_airbyte_${var.environment}", "-", "_")
+  airbyte_server_url = "https://airbyte-${var.namespace}.${module.cluster_data.ingress_domain}"
 }
