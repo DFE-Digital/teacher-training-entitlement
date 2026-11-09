@@ -5,8 +5,12 @@ en:
       lead_providers_form:
         recruitment_target: Recruitment target
         teacher_funding: Teacher funding
-
     settings:
+      courses:
+        providers:
+          show:
+            course_url: Course url
+            email: Email
       admins:
         new:
           title: Add a new admin

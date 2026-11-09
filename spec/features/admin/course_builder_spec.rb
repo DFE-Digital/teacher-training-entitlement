@@ -62,9 +62,9 @@ RSpec.feature "Building a course", type: :feature do
     expect(page).to have_text("Course created successfully")
 
     visit admin_settings_course_path(course)
-    expect(page).to have_css("h2", text: "Delivery partners")
+    expect(page).to have_css("h2", text: "Providers")
     expect(page).to have_text(lead_provider.name)
-    expect(page).to have_text(delivery_partner.name)
+    expect(page).to have_link("View details", href: admin_settings_course_provider_path(course, lead_provider))
   end
 
   scenario "showing a delivery partners check answer row with a change link that keeps the ticks" do
