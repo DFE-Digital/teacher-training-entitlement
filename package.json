@@ -14,7 +14,7 @@
     "file-loader": "^6.2.0",
     "govuk-country-and-territory-autocomplete": "^2.0.0",
     "govuk-frontend": "^6.6.0",
-    "hmrc-frontend": "^7.43.0",
+    "hmrc-frontend": "^7.44.0",
     "mermaid": "^12.2.0",
     "rails-ujs": "^5.2.8",
     "sass": "^1.107.1",
