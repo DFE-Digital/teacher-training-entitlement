@@ -375,7 +375,6 @@ GEM
       jwt (>= 1.5, < 4)
     oj (3.17.8)
       bigdecimal (>= 3.0)
-      ostruct (>= 0.2)
     omniauth (2.3.1)
       hashie (>= 3.5.2)
       logger
@@ -402,6 +401,7 @@ GEM
       webfinger (~> 2.0)
     orm_adapter (0.5.0)
     os (1.1.4)
+    ostruct (0.6.3)
     pagy (9.4.0)
     paper_trail (17.0.0)
       activerecord (>= 7.1)
@@ -775,6 +775,7 @@ DEPENDENCIES
   omniauth
   omniauth-rails_csrf_protection
   omniauth_openid_connect
+  ostruct
   pagy
   paper_trail
   parallel_tests
