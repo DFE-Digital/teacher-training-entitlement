@@ -1,3 +1,5 @@
+require "ostruct"
+
 class AutocompleteCountries
   def self.as_open_structs
     names.map do |name|
