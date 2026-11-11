@@ -1,6 +1,51 @@
 require "rails_helper"
 
 RSpec.describe Institution do
+  describe "INSTITUTION_TYPES" do
+    it "lists the slugs in selector evaluation order" do
+      expect(described_class::INSTITUTION_TYPES).to eq(
+        %w[state_funded
+           further_education
+           young_offender_institution
+           hospital
+           mod_overseas
+           virtual_school
+           local_authority
+           private_childcare_provider],
+      )
+    end
+  end
+
+  describe "API_INSTITUTION_TYPE_MAPPING" do
+    subject(:mapping) { described_class::API_INSTITUTION_TYPE_MAPPING }
+
+    it "maps state_funded to school" do
+      expect(mapping[described_class::STATE_FUNDED]).to eq("school")
+    end
+
+    it "maps local_authority to localauthority" do
+      expect(mapping[described_class::LOCAL_AUTHORITY]).to eq("localauthority")
+    end
+
+    it "maps private_childcare_provider to privatechildcareprovider" do
+      expect(mapping[described_class::PRIVATE_CHILDCARE_PROVIDER]).to eq("privatechildcareprovider")
+    end
+
+    it "emits other slugs unchanged" do
+      expect(described_class::INSTITUTION_TYPES - mapping.keys).to all(satisfy { |slug| mapping[slug] == slug })
+    end
+  end
+
+  describe "columns" do
+    it "has a nullable institution_type string" do
+      expect(described_class.columns_hash["institution_type"]).to have_attributes(type: :string, null: true)
+    end
+
+    it "has an open boolean" do
+      expect(described_class.columns_hash["open"].type).to eq(:boolean)
+    end
+  end
+
   describe "#country_long_name" do
     subject(:institution) { build(:institution, alpha3_country_code:) }
 

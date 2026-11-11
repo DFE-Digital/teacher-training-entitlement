@@ -13,6 +13,37 @@ class Institution < ApplicationRecord
   ENGLAND_SUBDIVISION_CODE = "ENG".freeze
   WALES_SUBDIVISION_CODE = "WLS".freeze
 
+  STATE_FUNDED = "state_funded".freeze
+  FURTHER_EDUCATION = "further_education".freeze
+  YOUNG_OFFENDER_INSTITUTION = "young_offender_institution".freeze
+  HOSPITAL = "hospital".freeze
+  MOD_OVERSEAS = "mod_overseas".freeze
+  VIRTUAL_SCHOOL = "virtual_school".freeze
+  LOCAL_AUTHORITY = "local_authority".freeze
+  PRIVATE_CHILDCARE_PROVIDER = "private_childcare_provider".freeze
+
+  # Ordered list of institution_type slugs. This is the selector evaluation order:
+  # the first selector that matches a row assigns its slug. A GIAS row matching
+  # no selector defaults to STATE_FUNDED.
+  INSTITUTION_TYPES = [
+    STATE_FUNDED,
+    FURTHER_EDUCATION,
+    YOUNG_OFFENDER_INSTITUTION,
+    HOSPITAL,
+    MOD_OVERSEAS,
+    VIRTUAL_SCHOOL,
+    LOCAL_AUTHORITY,
+    PRIVATE_CHILDCARE_PROVIDER,
+  ].freeze
+
+  # Maps institution_type to the legacy API v1 institution_type value.
+  # Any slug not listed here is emitted unchanged.
+  API_INSTITUTION_TYPE_MAPPING = {
+    STATE_FUNDED => "school",
+    LOCAL_AUTHORITY => "localauthority",
+    PRIVATE_CHILDCARE_PROVIDER => "privatechildcareprovider",
+  }.tap { |mapping| mapping.default_proc = ->(_hash, slug) { slug } }.freeze
+
   delegated_type :institutionable, types: TYPES, dependent: :destroy
 
   NAME_SYNONYMS = { "saint" => "st", "st" => "saint" }.freeze
