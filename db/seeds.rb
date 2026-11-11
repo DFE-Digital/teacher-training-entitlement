@@ -26,7 +26,28 @@ def with_versioning
   end
 end
 
+def monotonic_now
+  Process.clock_gettime(Process::CLOCK_MONOTONIC)
+end
+
+def format_duration(seconds)
+  seconds < 60 ? sprintf("%.1fs", seconds) : sprintf("%dm %02ds", seconds / 60, seconds % 60)
+end
+
+def report_progress(label)
+  started_at = monotonic_now
+  $stdout.print("  #{label.ljust(32, '.')} ")
+  $stdout.flush
+  yield
+  $stdout.puts("done (#{format_duration(monotonic_now - started_at)})")
+rescue StandardError
+  $stdout.puts("FAILED after #{format_duration(monotonic_now - started_at)}")
+  raise
+end
+
 Rails.logger.info("Seeding database")
+$stdout.puts("Seeding #{Rails.env} database")
+seeding_started_at = monotonic_now
 
 # Due to migrations modifying the tables, we need to reset column informations before running seeds
 ApplicationRecord.descendants.each(&:reset_column_information)
@@ -47,10 +68,14 @@ ApplicationRecord.descendants.each(&:reset_column_information)
   "process_statements.rb",
 ].each do |seed_file|
   Rails.logger.info("seeding #{seed_file}")
-  ApplicationRecord.transaction do
-    load_base_file(seed_file)
-  rescue StandardError => e
-    Rails.logger.error("Seed error #{seed_file}: #{e.message}")
-    raise
+  report_progress(File.basename(seed_file, ".rb").humanize) do
+    ApplicationRecord.transaction do
+      load_base_file(seed_file)
+    rescue StandardError => e
+      Rails.logger.error("Seed error #{seed_file}: #{e.message}")
+      raise
+    end
   end
 end
+
+$stdout.puts("Seeded in #{format_duration(monotonic_now - seeding_started_at)}")
