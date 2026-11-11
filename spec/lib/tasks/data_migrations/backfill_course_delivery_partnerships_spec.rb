@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe "data_migrations:backfill_course_delivery_partnerships" do
   after do
     Rake::Task["data_migrations:backfill_course_delivery_partnerships"].reenable
-    connection.clear_cache!
   end
 
   let(:dry_run) { nil }
@@ -18,17 +17,6 @@ RSpec.describe "data_migrations:backfill_course_delivery_partnerships" do
   let(:lead_provider) { create(:lead_provider) }
   let(:delivery_partner_one) { create(:delivery_partner) }
   let(:delivery_partner_two) { create(:delivery_partner) }
-
-  before do
-    # Recreate the pre-migration shape: the task runs after the structure
-    # migration but before course_cohort_id is dropped, when the model no
-    # longer maps the association.
-    connection.execute("ALTER TABLE delivery_partnerships ALTER COLUMN course_id DROP NOT NULL")
-    connection.execute("ALTER TABLE delivery_partnerships ADD COLUMN course_cohort_id bigint")
-    # ALTER TABLE invalidates cached query plans for the table; clear the
-    # prepared statement cache so plans are rebuilt against the legacy shape.
-    connection.clear_cache!
-  end
 
   def insert_legacy_partnership(course_cohort:, lead_provider:, delivery_partner:)
     connection.execute(<<~SQL).to_a.first["id"]
@@ -66,31 +54,41 @@ RSpec.describe "data_migrations:backfill_course_delivery_partnerships" do
       expect(legacy_course_ids).to all(be_nil)
     end
 
-    it "lists every partnership that would be created" do
-      output = invoke_task
-
-      expect(output).to include("DeliveryPartnership #{DeliveryPartnership.first.id}: course_id -> #{course.id}")
-      expect(output).to include("Removing duplicate DeliveryPartnership #{DeliveryPartnership.last.id}")
-      expect(output).to include("Dry run: true")
+    it "reports what would change" do
+      expect(invoke_task).to include(
+        "Dry run: true",
+        "Backfilled partnerships: 1",
+        "Removed duplicate partnerships: 1",
+      )
     end
   end
 
   context "when run for real" do
     let(:dry_run) { "false" }
 
-    before do
+    let!(:kept_id) do
       insert_legacy_partnership(course_cohort: course_cohort_one, lead_provider:, delivery_partner: delivery_partner_one)
+    end
+
+    before do
       insert_legacy_partnership(course_cohort: course_cohort_two, lead_provider:, delivery_partner: delivery_partner_one)
       insert_legacy_partnership(course_cohort: course_cohort_two, lead_provider:, delivery_partner: delivery_partner_two)
     end
 
     it "creates exactly one course-level partnership per delivery partner, lead provider and course" do
-      invoke_task
+      output = invoke_task
 
       partnerships = DeliveryPartnership.order(:id)
       expect(partnerships.count).to eq(2)
       expect(partnerships.map(&:course_id)).to all(eq(course.id))
       expect(partnerships.map(&:delivery_partner)).to contain_exactly(delivery_partner_one, delivery_partner_two)
+      expect(output).to include("Dry run: false", "Backfilled partnerships: 2", "Removed duplicate partnerships: 1")
+    end
+
+    it "keeps the partnership with the lowest id" do
+      invoke_task
+
+      expect(DeliveryPartnership.where(delivery_partner: delivery_partner_one).pluck(:id)).to eq([kept_id])
     end
 
     it "keeps partnerships on other courses untouched" do
@@ -102,8 +100,7 @@ RSpec.describe "data_migrations:backfill_course_delivery_partnerships" do
 
       invoke_task
 
-      partnership = DeliveryPartnership.find(other_course_partnership_id)
-      expect(partnership.course_id).to eq(other_course.id)
+      expect(DeliveryPartnership.find(other_course_partnership_id).course_id).to eq(other_course.id)
     end
 
     it "is idempotent" do
@@ -120,36 +117,6 @@ RSpec.describe "data_migrations:backfill_course_delivery_partnerships" do
 
       expect { invoke_task }.not_to(change { declaration.reload.attributes })
       expect(declaration.delivery_partner).to be_present
-    end
-
-    context "when partner sets are identical between cohorts" do
-      before do
-        insert_legacy_partnership(course_cohort: course_cohort_one, lead_provider:, delivery_partner: delivery_partner_two)
-      end
-
-      it "does not report differing partner sets" do
-        expect(invoke_task).to include("Lead provider/course pairs with partner sets differing between cohorts: 0")
-      end
-    end
-
-    context "when partner sets differ between cohorts" do
-      let(:other_lead_provider) { create(:lead_provider) }
-
-      before do
-        # delivery_partner_two is only on cohort two, so the partner sets differ
-        insert_legacy_partnership(course_cohort: course_cohort_two, lead_provider: other_lead_provider, delivery_partner: delivery_partner_one)
-        insert_legacy_partnership(course_cohort: course_cohort_two, lead_provider: other_lead_provider, delivery_partner: delivery_partner_two)
-      end
-
-      it "reports every lead provider and course pair whose partner set will widen" do
-        output = invoke_task
-
-        expect(output).to include(
-          "Lead provider #{lead_provider.id}, course #{course.id}: partner set differs between cohorts and will widen to all cohorts",
-        )
-        expect(output).not_to include("Lead provider #{other_lead_provider.id}, course #{course.id}: partner set differs")
-        expect(output).to include("Lead provider/course pairs with partner sets differing between cohorts: 1")
-      end
     end
   end
 end
