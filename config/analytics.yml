@@ -85,6 +85,8 @@ shared:
     - institution_reference_number
     - alpha3_country_code
     - subdivision_code
+    - institution_type
+    - open
     - created_at
     - updated_at
   :lead_providers:
