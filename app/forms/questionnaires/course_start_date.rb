@@ -39,7 +39,6 @@ module Questionnaires
           value: course_cohort.ecf_id,
           label: course_cohort.cohort.name,
           link_errors: true,
-          hint: "Please be aware that places are now limited.",
         )
       end
 
