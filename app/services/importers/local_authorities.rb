@@ -37,6 +37,7 @@ private
       postcode: row["postcode"],
       postcode_without_spaces: row["postcode"]&.gsub(" ", ""),
       institution_reference_number: row["ukprn"],
+      institution_type: Institution::LOCAL_AUTHORITY,
     }.merge(country_code_attributes_for(la))
 
     if la.institution

@@ -25,6 +25,12 @@ RSpec.describe Importers::LocalAuthorities do
       expect(institution.subdivision_code).to eq("ENG")
     end
 
+    it "sets institution_type to local_authority" do
+      subject.call
+
+      expect(Institution.local_authorities.pluck(:institution_type).uniq).to eq(%w[local_authority])
+    end
+
     it "does not create dupes called multiple times" do
       expect {
         subject.call

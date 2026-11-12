@@ -53,6 +53,7 @@ class Institution < ApplicationRecord
   SEARCH_LIMIT = 100
 
   validates :institution_reference_number, presence: true
+  validates :institution_type, inclusion: { in: INSTITUTION_TYPES }
   validates :alpha3_country_code, :subdivision_code, length: { is: 3 }, allow_nil: true
 
   pg_search_scope :base_search,

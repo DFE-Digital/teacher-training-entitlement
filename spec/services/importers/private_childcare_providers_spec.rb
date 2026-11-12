@@ -42,6 +42,12 @@ RSpec.describe Importers::PrivateChildcareProviders do
         # File contains sample of real data
         let(:file_name) { "spec/fixtures/files/private_childcare_providers_sample.csv" }
 
+        it "sets institution_type to private_childcare_provider" do
+          run_import
+
+          expect(Institution.private_childcare_providers.pluck(:institution_type).uniq).to eq(%w[private_childcare_provider])
+        end
+
         it "imports rows as PrivateChildcareProvider records" do
           expect { run_import }.to change(PrivateChildcareProvider, :count).by(7)
 

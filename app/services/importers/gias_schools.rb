@@ -91,7 +91,9 @@ private
   end
 
   def update_institution!(school, row)
-    attributes = institution_attributes_from_row(row).merge(country_code_attributes_for(school))
+    attributes = institution_attributes_from_row(row)
+                   .merge(country_code_attributes_for(school))
+                   .merge(institution_type: Institutions::ClassifyType.new(institutionable: school, name: row["EstablishmentName"]).call)
 
     if school.institution
       school.institution.update!(attributes)

@@ -87,6 +87,25 @@ shared:
     - subdivision_code
     - institution_type
     - open
+    - close_date
+    - establishment_status_code
+    - establishment_status_name
+    - establishment_type_code
+    - establishment_type_name
+    - eyl_funding_eligible
+    - high_pupil_premium
+    - la_code
+    - la_name
+    - last_changed_date
+    - number_of_pupils
+    - phase_name
+    - phase_type
+    - ukprn
+    - disabled_at
+    - early_years_individual_registers
+    - local_authority_name
+    - provider_compulsory_childcare_register_flag
+    - provider_early_years_register_flag
     - created_at
     - updated_at
   :lead_providers:

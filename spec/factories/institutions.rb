@@ -9,6 +9,12 @@ FactoryBot.define do
       institution.institutionable ||= build(:school, institution: institution)
     end
 
+    after(:build) do |institution|
+      institution.institution_type ||= Institutions::ClassifyType.new(
+        institutionable: institution.institutionable, name: institution.name,
+      ).call
+    end
+
     trait :not_in_england do
       alpha3_country_code { Institution::UK_COUNTRY_CODE }
       subdivision_code { Institution::WALES_SUBDIVISION_CODE }

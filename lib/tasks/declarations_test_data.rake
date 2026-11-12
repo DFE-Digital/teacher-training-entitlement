@@ -79,6 +79,7 @@ namespace :declarations do
         institution = Institution.create!(
           institutionable: school,
           institution_reference_number: unique_id.hash.abs.to_s.first(6),
+          institution_type: Institution::STATE_FUNDED,
           name: "Declaration Test School #{unique_id}",
           postcode: "SW1A 1AA",
           postcode_without_spaces: "SW1A1AA",

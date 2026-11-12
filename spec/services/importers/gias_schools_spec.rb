@@ -23,6 +23,12 @@ RSpec.describe Importers::GiasSchools do
       expect { subject.call }.to change(School, :count).by(99)
     end
 
+    it "sets a valid institution_type on every imported institution" do
+      subject.call
+
+      expect(Institution.schools.pluck(:institution_type) - Institution::INSTITUTION_TYPES).to be_empty
+    end
+
     it "does not create duplicates" do
       expect {
         described_class.new.call
