@@ -22,19 +22,22 @@ class Institution < ApplicationRecord
   LOCAL_AUTHORITY = "local_authority".freeze
   PRIVATE_CHILDCARE_PROVIDER = "private_childcare_provider".freeze
 
-  # Ordered list of institution_type slugs. This is the selector evaluation order:
-  # the first selector that matches a row assigns its slug. A GIAS row matching
-  # no selector defaults to STATE_FUNDED.
-  INSTITUTION_TYPES = [
-    STATE_FUNDED,
-    FURTHER_EDUCATION,
-    YOUNG_OFFENDER_INSTITUTION,
-    HOSPITAL,
-    MOD_OVERSEAS,
-    VIRTUAL_SCHOOL,
-    LOCAL_AUTHORITY,
-    PRIVATE_CHILDCARE_PROVIDER,
-  ].freeze
+  # institution_type slugs, in selector evaluation order: the first selector that
+  # matches a row assigns its slug. A GIAS row matching no selector defaults to
+  # STATE_FUNDED. The column stays a nullable string; the prefix avoids clashing
+  # with delegated_type predicates such as #local_authority?.
+  enum :institution_type, {
+    STATE_FUNDED => STATE_FUNDED,
+    FURTHER_EDUCATION => FURTHER_EDUCATION,
+    YOUNG_OFFENDER_INSTITUTION => YOUNG_OFFENDER_INSTITUTION,
+    HOSPITAL => HOSPITAL,
+    MOD_OVERSEAS => MOD_OVERSEAS,
+    VIRTUAL_SCHOOL => VIRTUAL_SCHOOL,
+    LOCAL_AUTHORITY => LOCAL_AUTHORITY,
+    PRIVATE_CHILDCARE_PROVIDER => PRIVATE_CHILDCARE_PROVIDER,
+  }, prefix: true
+
+  INSTITUTION_TYPES = institution_types.keys.freeze
 
   # Maps institution_type to the legacy API v1 institution_type value.
   # Any slug not listed here is emitted unchanged.

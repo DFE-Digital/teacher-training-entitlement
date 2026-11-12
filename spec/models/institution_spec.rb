@@ -16,6 +16,47 @@ RSpec.describe Institution do
     end
   end
 
+  describe "institution_type enum" do
+    it "is backed by the slug strings" do
+      expect(described_class.institution_types).to eq(described_class::INSTITUTION_TYPES.index_with(&:itself))
+    end
+
+    it "keeps INSTITUTION_TYPES in the same order as the enum" do
+      expect(described_class::INSTITUTION_TYPES).to eq(described_class.institution_types.keys)
+    end
+
+    described_class::INSTITUTION_TYPES.each do |slug|
+      context "with #{slug}" do
+        subject(:institution) { build(:institution, institution_type: slug) }
+
+        it { is_expected.to be_valid }
+        it { expect(institution.public_send(:"institution_type_#{slug}?")).to be(true) }
+
+        it "provides a prefixed scope" do
+          institution.save!
+          expect(described_class.public_send(:"institution_type_#{slug}")).to include(institution)
+        end
+
+        it "stores the slug string" do
+          institution.save!
+          expect(institution.reload.read_attribute_before_type_cast("institution_type")).to eq(slug)
+        end
+      end
+    end
+
+    it "rejects unknown values" do
+      expect { build(:institution, institution_type: "bogus") }.to raise_error(ArgumentError, /bogus/)
+    end
+
+    it "allows nil" do
+      expect(build(:institution, institution_type: nil)).to be_valid
+    end
+
+    it "does not override delegated_type predicates" do
+      expect(build(:institution, institution_type: "hospital")).not_to be_local_authority
+    end
+  end
+
   describe "API_INSTITUTION_TYPE_MAPPING" do
     subject(:mapping) { described_class::API_INSTITUTION_TYPE_MAPPING }
 
