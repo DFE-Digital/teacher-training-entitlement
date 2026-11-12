@@ -48,8 +48,11 @@ RSpec.describe Institution do
       expect { build(:institution, institution_type: "bogus") }.to raise_error(ArgumentError, /bogus/)
     end
 
-    it "allows nil" do
-      expect(build(:institution, institution_type: nil)).to be_valid
+    it "requires an institution_type" do
+      institution = build(:institution)
+      institution.institution_type = nil
+
+      expect(institution).not_to be_valid
     end
 
     it "does not override delegated_type predicates" do
@@ -78,8 +81,8 @@ RSpec.describe Institution do
   end
 
   describe "columns" do
-    it "has a nullable institution_type string" do
-      expect(described_class.columns_hash["institution_type"]).to have_attributes(type: :string, null: true)
+    it "has a non-null institution_type string" do
+      expect(described_class.columns_hash["institution_type"]).to have_attributes(type: :string, null: false)
     end
 
     it "has an open boolean" do

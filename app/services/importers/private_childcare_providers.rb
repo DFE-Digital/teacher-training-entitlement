@@ -107,6 +107,7 @@ module Importers
         postcode_without_spaces: strip_whitespace(wrapped_csv_row.postcode_without_spaces),
         region: wrapped_csv_row.column(:region),
         institution_reference_number: wrapped_csv_row.column(:provider_urn),
+        institution_type: Institution::PRIVATE_CHILDCARE_PROVIDER,
       }.merge(country_code_attributes_for(provider))
 
       if provider.institution

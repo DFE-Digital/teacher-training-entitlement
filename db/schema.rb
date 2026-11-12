@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_100200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -351,8 +351,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_100000) do
     t.datetime "updated_at", null: false
     t.string "alpha3_country_code", limit: 3
     t.string "subdivision_code", limit: 3
-    t.string "institution_type"
+    t.string "institution_type", null: false
     t.boolean "open"
+    t.date "close_date"
+    t.text "establishment_status_code"
+    t.text "establishment_status_name"
+    t.text "establishment_type_code"
+    t.text "establishment_type_name"
+    t.boolean "eyl_funding_eligible", default: false
+    t.boolean "high_pupil_premium", default: false, null: false
+    t.text "la_code"
+    t.text "la_name"
+    t.date "last_changed_date"
+    t.integer "number_of_pupils"
+    t.string "phase_name"
+    t.integer "phase_type"
+    t.text "ukprn"
+    t.datetime "disabled_at"
+    t.jsonb "early_years_individual_registers", default: []
+    t.text "local_authority_name"
+    t.boolean "provider_compulsory_childcare_register_flag"
+    t.boolean "provider_early_years_register_flag"
     t.index ["institution_reference_number"], name: "index_institutions_on_institution_reference_number"
     t.index ["institution_type"], name: "index_institutions_on_institution_type"
     t.index ["institutionable_type", "institutionable_id"], name: "idx_on_institutionable_type_institutionable_id_e617e86838", unique: true

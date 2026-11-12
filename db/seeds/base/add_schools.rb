@@ -23,6 +23,7 @@ CSV.foreach(Rails.root.join("db/seeds/data/schools.csv"), headers: true).each_sl
       postcode_without_spaces: row["postcode_without_spaces"],
       region: row["region"],
       institution_reference_number: row["urn"],
+      institution_type: Institutions::ClassifyType.new(institutionable: School.new(school_records[index]), name: row["name"]).call,
       created_at: Time.current,
       updated_at: Time.current,
     }.merge(country_code_attributes)
