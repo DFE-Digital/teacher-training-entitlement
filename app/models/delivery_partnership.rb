@@ -8,5 +8,5 @@ class DeliveryPartnership < ApplicationRecord
   validates :delivery_partner_id, presence: true
   validates :lead_provider_id, presence: true
   validates :course_id, presence: true
-  validates :delivery_partner_id, uniqueness: { scope: %i[lead_provider_id course_id] } # rubocop:disable Rails/UniqueValidationWithoutIndex
+  validates :delivery_partner_id, uniqueness: { scope: %i[lead_provider_id course_id] }
 end

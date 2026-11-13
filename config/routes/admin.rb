@@ -117,6 +117,7 @@ namespace :admin do
   resources :settings, only: %i[index]
   namespace :settings do
     resources :courses, only: %i[index show] do
+      resources :providers, only: %i[show], controller: "courses/providers"
       collection do
         resources :builder, only: %i[show update create], param: :step, controller: "courses/builder", as: :courses_builder
       end

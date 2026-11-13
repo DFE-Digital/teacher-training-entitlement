@@ -123,4 +123,38 @@ RSpec.describe Admin::CourseBuilder::StateStore do
       expect(state_store.selected_contract_financials.map(&:academic_year)).to contain_exactly(nil, 2027, 2028)
     end
   end
+
+  describe "#selected_delivery_partnerships" do
+    let(:selected_lead_provider) { create(:lead_provider) }
+    let(:removed_lead_provider) { create(:lead_provider) }
+    let(:delivery_partner) { create(:delivery_partner) }
+
+    before do
+      repository.save(
+        {
+          lead_providers: {
+            selected_lead_provider.id.to_s => { "selected" => "1" },
+            removed_lead_provider.id.to_s => { "selected" => "0" },
+          },
+          delivery_partners: {
+            selected_lead_provider.id.to_s => {
+              delivery_partner.id.to_s => delivery_partner.id.to_s,
+              "999999" => "999999",
+            },
+            removed_lead_provider.id.to_s => {
+              delivery_partner.id.to_s => delivery_partner.id.to_s,
+            },
+          },
+        },
+      )
+    end
+
+    it "only returns partnerships for lead providers still selected" do
+      expect(state_store.selected_delivery_partnerships.map(&:lead_provider)).to contain_exactly(selected_lead_provider)
+    end
+
+    it "only returns partnerships for delivery partners that exist" do
+      expect(state_store.selected_delivery_partnerships.map(&:delivery_partner)).to contain_exactly(delivery_partner)
+    end
+  end
 end
