@@ -1,4 +1,19 @@
-name: "RSpec"
+name: "CI and deploy"
+
+# Single owner of tests, lint and main deployment.
+# - Every branch push runs lint and the RSpec suite once, then aggregates the
+#   results in "All checks passed" (the check to require on pull requests).
+# - Pushes to main additionally build the image and deploy it through
+#   staging -> sandbox -> production (+ domains). Staging needs both the build and
+#   "All checks passed" from this same run, so the tested commit is the built commit.
+# - Ordering: tests for an older main commit can finish after a newer one. There is
+#   deliberately no workflow-level concurrency (it would cancel queued CI runs).
+#   Each deploy stage instead runs inside its per-environment lock and first checks
+#   that its commit is still the tip of main; an obsolete run skips the deploy and
+#   every later stage, so it can never overwrite a newer deployment.
+# - This workflow is intentionally NOT reusable (no workflow_call): a reusable call
+#   would inherit the caller's ref and could deploy incidentally.
+# - PR review apps live in deploy.yml; manual rollbacks in manual_deploy.yml.
 
 permissions:
   contents: read
@@ -7,23 +22,10 @@ on:
   push:
     branches:
       - '**'  # Runs on every branch
-  pull_request:
-    branches:
-      - '**'  # Runs on PRs targeting any branch
-  workflow_call:
-    inputs:
-      ruby-version:
-        description: Ruby version
-        type: string
-        required: false
-        default: "3.4.12"
-      node-version:
-        description: Node version
-        type: string
-        required: false
-        default: "24.13.0"
 
 env:
+  RUBY_VERSION: '3.4.12'
+  NODE_VERSION: '24.13.0'
   code-coverage-artifact-name: code_coverage_${{github.run_number}}
   unit-tests-artifact-name: unit_tests_${{github.run_number}}
   rubocop-artifact-name: rubocop_results_${{github.run_number}}
@@ -45,7 +47,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.12' }}
+          ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
 
       - name: Lint Ruby
@@ -67,7 +69,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.12' }}
+          ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
 
       - name: Lint SCSS
@@ -115,13 +117,13 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ inputs.ruby-version || '3.4.12' }}
+          ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
 
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: ${{ inputs.node-version || '24.13.0' }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
       - name: Create screenshots directory
@@ -156,6 +158,309 @@ jobs:
           path: ./test-report/*
           include-hidden-files: true
 
+  all-checks-passed:
+    name: All checks passed
+    # Runs on every branch push, even when an upstream job failed or was cancelled,
+    # and succeeds only when every needed job succeeded (skipped counts as failure).
+    if: ${{ always() }}
+    needs: [ruby_linting, scss_linting, rspec]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require every needed job to have succeeded
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          if echo "$NEEDS" | jq -e 'to_entries | all(.value.result == "success")' > /dev/null; then
+            echo "Linting and tests passed, this branch is ready to be merged"
+          else
+            echo "::error::Not every required job succeeded"
+            exit 1
+          fi
+
+  openapi:
+    name: Lead Provider OpenAPI Check
+    # Same check Deploy ran on main pushes. Deliberately not a dependency of
+    # all-checks-passed or staging (it was never part of that gate).
+    if: ${{ github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/lead_provider_openapi_check.yml
+
+  build:
+    name: Build main image
+    # Main only; runs in parallel with tests and is gated by all-checks-passed at staging
+    if: ${{ github.ref == 'refs/heads/main' }}
+    env:
+      DOCKER_REPOSITORY: ghcr.io/dfe-digital/teacher-training-entitlement
+    outputs:
+      docker-image-tag: ${{ steps.build-image.outputs.tag }}
+      docker-image: ${{ steps.build-image.outputs.image }}
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        name: Checkout
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Verify checkout is the pushed commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Build and push docker image
+        id: build-image
+        uses: DFE-Digital/github-actions/build-docker-image@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          docker-repository: ${{ env.DOCKER_REPOSITORY }}
+          max-cache: true
+          reuse-cache: true
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Verify built image tag is the tested commit
+        env:
+          IMAGE_TAG: ${{ steps.build-image.outputs.tag }}
+          IMAGE: ${{ steps.build-image.outputs.image }}
+        run: |
+          if [ "$IMAGE_TAG" != "$GITHUB_SHA" ] || [ "${IMAGE##*:}" != "$GITHUB_SHA" ]; then
+            echo "::error::Built image '${IMAGE}' (tag '${IMAGE_TAG}') is not the tested commit ${GITHUB_SHA}"
+            exit 1
+          fi
+
+  deploy-staging:
+    name: Deploy staging
+    concurrency: deploy_app_staging
+    needs: [build, all-checks-passed]
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: staging
+    outputs:
+      docker-image: ${{ needs.build.outputs.docker-image }}
+      fresh: ${{ steps.freshness.outputs.fresh }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
+      - name: Verify image is the tested commit
+        if: steps.freshness.outputs.fresh == 'true'
+        env:
+          IMAGE_TAG: ${{ needs.build.outputs.docker-image-tag }}
+          IMAGE: ${{ needs.build.outputs.docker-image }}
+        run: |
+          if [ "$IMAGE_TAG" != "$GITHUB_SHA" ] || [ "${IMAGE##*:}" != "$GITHUB_SHA" ]; then
+            echo "::error::Image '${IMAGE}' is not the tested commit ${GITHUB_SHA}"
+            exit 1
+          fi
+
+      - uses: ./.github/actions/deploy-environment-to-aks
+        id: deploy
+        if: steps.freshness.outputs.fresh == 'true'
+        with:
+          environment: staging
+          docker-image: ${{ needs.build.outputs.docker-image }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
+          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Notify teams channel failure
+        if: ${{ failure() }}
+        uses: DFE-Digital/github-actions/send-to-teams-channel@master
+        with:
+          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          title: Failure deploying to staging
+          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
+          message: |
+            Failure deploying to staging - Docker tag ${{ needs.build.outputs.docker-image }}
+
+  deploy-sandbox:
+    name: Deploy sandbox
+    concurrency: deploy_app_sandbox
+    needs: [build, deploy-staging]
+    runs-on: ubuntu-24.04
+    # An obsolete run (superseded main tip) stops here instead of overtaking a newer deploy
+    if: github.ref == 'refs/heads/main' && needs.deploy-staging.outputs.fresh == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: sandbox
+    outputs:
+      docker-image: ${{ needs.build.outputs.docker-image }}
+      fresh: ${{ steps.freshness.outputs.fresh }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
+      - uses: ./.github/actions/deploy-environment-to-aks
+        id: deploy
+        if: steps.freshness.outputs.fresh == 'true'
+        with:
+          environment: sandbox
+          docker-image: ${{ needs.build.outputs.docker-image }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
+          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Notify teams channel failure
+        if: ${{ failure() }}
+        uses: DFE-Digital/github-actions/send-to-teams-channel@master
+        with:
+          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          title: Failure deploying to sandbox
+          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
+          message: |
+            Failure deploying to sandbox - Docker tag ${{ needs.build.outputs.docker-image }}
+
+  deploy-production:
+    name: Deploy production
+    concurrency: deploy_app_production
+    needs: [build, deploy-sandbox]
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main' && needs.deploy-sandbox.outputs.fresh == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: production
+    outputs:
+      fresh: ${{ steps.freshness.outputs.fresh }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
+      - uses: ./.github/actions/deploy-environment-to-aks
+        id: deploy
+        if: steps.freshness.outputs.fresh == 'true'
+        with:
+          environment: production
+          docker-image: ${{ needs.build.outputs.docker-image }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
+          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          gcp-wip: ${{ vars.GCP_WIP }}
+          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Notify teams channel failure
+        if: ${{ failure() }}
+        uses: DFE-Digital/github-actions/send-to-teams-channel@master
+        with:
+          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          title: Failure deploying to production
+          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
+          message: |
+            Failure deploying to production - Docker tag ${{ needs.build.outputs.docker-image }}
+
+  deploy_domains_infra:
+    name: Deploy Domains Infrastructure
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && needs.deploy-production.outputs.fresh == 'true'
+    concurrency: domains_infra
+    needs: [deploy-production]
+    environment:
+      name: production
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      fresh: ${{ steps.freshness.outputs.fresh }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Same commit the composite action below checks out (the event SHA)
+          ref: ${{ github.sha }}
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
+      - name: Deploy Domains Infrastructure
+        id: deploy_domains_infra
+        if: steps.freshness.outputs.fresh == 'true'
+        uses: DFE-Digital/github-actions/deploy-domains-infra@master
+        with:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID   }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
+          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
+
+  deploy_domains_env:
+    name: Deploy Domains
+    runs-on: ubuntu-latest
+    # Skipped when the infra stage found this run obsolete; each matrix member also
+    # re-checks below, inside its own lock, immediately before applying.
+    if: github.ref == 'refs/heads/main' && needs.deploy_domains_infra.outputs.fresh == 'true'
+    concurrency: domains_env_${{ matrix.domain_environment }}
+    needs: [deploy_domains_infra]
+    strategy:
+      max-parallel: 1
+      matrix:
+        domain_environment: [staging, sandbox, production]
+    environment:
+      name: production
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Same commit the composite action below checks out (the event SHA)
+          ref: ${{ github.sha }}
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
+      - name: Deploy Domains Environment
+        id: deploy_domains_env
+        if: steps.freshness.outputs.fresh == 'true'
+        uses: DFE-Digital/github-actions/deploy-domains-env@master
+        with:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID   }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
+          environment: ${{ matrix.domain_environment }}
+          healthcheck: healthcheck
+          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
+
   # sonar-scanner:
   #   name: Sonar Scanner
   #   runs-on: ubuntu-24.04
@@ -170,7 +475,7 @@ jobs:
   #     - name: Set up Ruby
   #       uses: ruby/setup-ruby@v1
   #       with:
-  #         ruby-version: ${{ inputs.ruby-version }}
+  #         ruby-version: ${{ env.RUBY_VERSION }}
   #         bundler-cache: true
 
   #     - name: Setup sonarqube

@@ -52,6 +52,7 @@ This directory is organised by domain.
 - [`local-setup.md`](development/local-setup.md) — Docker Compose, local dev, Codespaces, Tilt
 - [`azure-access.md`](development/azure-access.md) — Azure CLI, AKS/kubectl, Konduit DB tunnels
 - [`specs-and-linting.md`](development/specs-and-linting.md) — RSpec, RuboCop, SCSS-Lint, test config
+- [`ci-single-run-rollout.md`](development/ci-single-run-rollout.md) — one-suite-per-push CI rollout tasks
 - [`feature-flags.md`](development/feature-flags.md) — Flipper, admin UI, Feature service object
 - [`data-imports.md`](development/data-imports.md) — GIAS schools, childcare providers, NPQ eligibility lists
 - [`ways-of-working.md`](development/ways-of-working.md) — branching, PR workflow, CI, Dependabot

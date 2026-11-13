@@ -8,20 +8,31 @@ update Azure infrastructure, and deploys the application to Azure Kubernetes Ser
 
 ```mermaid
 flowchart LR
-    A[Push to main] --> B[Build & push Docker image]
-    A --> C[RSpec & lint]
-    B --> D[Staging\ndeploy]
-    C --> D
-    D --> E[Sandbox\ndeploy]
-    E --> F[Production\ndeploy]
-    F --> G[Domains infra\n& DNS environment]
+    subgraph CI["rspec.yml: CI and deploy (every branch push)"]
+        L[Lint ruby / Lint SCSS / Run Rspec x6] --> A[All checks passed]
+    end
+    subgraph MAIN["same run, main only"]
+        B[Build main image] --> D[Deploy staging]
+        A --> D
+        D --> E[Deploy sandbox]
+        E --> F[Deploy production]
+        F --> H2[Domains infra & env]
+    end
 
-    H[PR labeled deploy] --> B
-    B --> I[Review app\ndeploy]
-    I --> J[DB seed]
+    subgraph PR["deploy.yml (PR to main)"]
+        H[Label deploy] --> PB[Build PR head image]
+        PB --> I[Review app deploy] --> J[DB seed]
+    end
 
-    K[Manual dispatch] --> L[Any environment\ndeploy]
+    K[Manual deploy workflow] --> M[Chosen environment]
 ```
+
+Tests and lint run once per push in `rspec.yml`; on `main`, staging uses native
+`needs` on the build and `All checks passed` of the same run. Staging, sandbox,
+production and each domains job check inside their lock that the commit is still the tip of
+`main` (`.github/scripts/check-main-freshness.sh`) and skip when superseded. See
+[Specs and Linting](../development/specs-and-linting.md#ci), including the accepted
+cross-state limitation for domains (not claimed atomic). Review apps do not depend on the test gate.
 
 Each environment deployment runs `terraform apply` from `terraform/application/`. The
 staging, sandbox, and production stages execute sequentially on push to `main` — a
@@ -192,7 +203,8 @@ wired into CI. Run manually or re-enable per environment.)
 
 | File                                         | Purpose                                            |
 |----------------------------------------------|----------------------------------------------------|
-| `.github/workflows/deploy.yml`               | Main CI/CD: build, test, deploy on push/PR         |
+| `.github/workflows/deploy.yml`               | PR review app build and deploy                     |
+| `.github/workflows/rspec.yml`                | CI, main build and deploy chain                    |
 | `.github/workflows/manual_deploy.yml`        | Manual deploy for rollbacks                        |
 | `.github/actions/deploy-environment-to-aks/` | Composite action: terraform-apply + seed           |
 | `Dockerfile`                                 | Multi-stage container build (builder → production) |
