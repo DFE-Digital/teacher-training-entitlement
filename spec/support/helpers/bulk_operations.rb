@@ -21,7 +21,7 @@ module Helpers
         course = course_cohort.course
 
         # Create required partnerships
-        create(:delivery_partnership, course_cohort:, delivery_partner:, lead_provider:)
+        create(:delivery_partnership, course:, delivery_partner:, lead_provider:)
 
         participant1 = create(:user)
         participant2 = create(:user)

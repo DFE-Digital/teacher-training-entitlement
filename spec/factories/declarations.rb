@@ -40,6 +40,14 @@ FactoryBot.define do
       end
     end
 
+    # Declarations can only be made by the lead provider delivering the
+    # course cohort, so make sure the contract (course cohort provider) exists.
+    after(:build) do |declaration|
+      if declaration.application && declaration.lead_provider
+        declaration.application.course_cohort.course_cohort_providers.find_or_create_by!(lead_provider: declaration.lead_provider)
+      end
+    end
+
     trait :submitted_or_eligible do
       state do
         if application && application.eligible_for_funding && application.funded_place

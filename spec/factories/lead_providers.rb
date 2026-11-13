@@ -19,11 +19,11 @@ FactoryBot.define do
                        {}
                      end
 
-      partnerships.each do |course_cohort, delivery_partners|
-        course_cohort = CourseCohort.find_by(cohort: course_cohort) || create(:course_cohort, cohort: course_cohort) if course_cohort.is_a?(Cohort)
+      partnerships.each do |course_key, delivery_partners|
+        course = FactoryCourseResolution.course_for(course_key)
 
         Array.wrap(delivery_partners).each do |delivery_partner|
-          lead_provider.delivery_partnerships.create! delivery_partner:, course_cohort:
+          lead_provider.delivery_partnerships.create! delivery_partner:, course:
         end
       end
     end

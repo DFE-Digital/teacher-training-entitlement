@@ -1,15 +1,15 @@
 require "rails_helper"
 
-RSpec.describe DeliveryPartners::Query do
+RSpec.describe DeliveryPartnerships::Query do
   let(:lead_provider_1) { create(:lead_provider) }
   let(:lead_provider_2) { create(:lead_provider) }
   let(:cohort_21) { create :cohort, registration_starts_at: Date.new(2021, 9, 1) }
   let(:cohort_22) { create :cohort, registration_starts_at: Date.new(2022, 9, 1) }
   let(:cohort_23) { create :cohort, registration_starts_at: Date.new(2023, 9, 1) }
   let(:cohort_21_2) { create :cohort, registration_starts_at: Date.new(2021, 10, 1) }
-  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21) }
-  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22) }
-  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23) }
+  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course), lead_provider: lead_provider_1) }
+  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course), lead_provider: lead_provider_1) }
+  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, course: create(:course), lead_provider: lead_provider_1) }
   let(:sort) { nil }
 
   subject(:query) { described_class.new(lead_provider: lead_provider_1, sort: sort) }
@@ -67,7 +67,7 @@ RSpec.describe DeliveryPartners::Query do
       before do
         course_cohort = create(:course_cohort, cohort: cohort_21_2, lead_provider: lead_provider_1)
         create(:delivery_partnership, delivery_partner: delivery_partner_1,
-                                      course_cohort:,
+                                      course: course_cohort.course,
                                       lead_provider: lead_provider_1)
       end
 
@@ -87,6 +87,87 @@ RSpec.describe DeliveryPartners::Query do
 
       it "returns delivery partners matching any of the specified years" do
         expect(query.delivery_partners).to contain_exactly(delivery_partner_1, delivery_partner_2, delivery_partner_an_hour_ago)
+      end
+    end
+
+    context "when the lead provider has no course cohort provider for the partnership's course" do
+      let!(:delivery_partner_without_contract) do
+        create :delivery_partner, name: "b", lead_providers: { uncontracted_course_cohort => lead_provider_1 }
+      end
+      let(:uncontracted_course_cohort) { create(:course_cohort, cohort: cohort_21, course: create(:course), lead_provider: lead_provider_2) }
+
+      it "still returns the partner" do
+        expect(query.delivery_partners).to include(delivery_partner_without_contract)
+      end
+
+      context "when filtering by the cohort of that course" do
+        subject(:query) { described_class.new(lead_provider: lead_provider_1, cohort_start_years: cohort_21.start_year) }
+
+        it "does not return the partner" do
+          expect(query.delivery_partners).not_to include(delivery_partner_without_contract)
+        end
+      end
+
+      context "when filtering by the course identifier of that course" do
+        subject(:query) { described_class.new(lead_provider: lead_provider_1, course_identifier: uncontracted_course_cohort.course.identifier) }
+
+        it "returns the partner" do
+          expect(query.delivery_partners).to contain_exactly(delivery_partner_without_contract)
+        end
+      end
+    end
+
+    context "when filtering by course identifier" do
+      subject(:query) { described_class.new(lead_provider: lead_provider_1, course_identifier:) }
+
+      context "with a single course identifier" do
+        let(:course_identifier) { course_cohort_21.course.identifier }
+
+        it "returns only partners the lead provider has on that course" do
+          expect(query.delivery_partners).to contain_exactly(delivery_partner_1, delivery_partner_2)
+        end
+      end
+
+      context "with several comma-separated course identifiers" do
+        let(:course_identifier) { "#{course_cohort_21.course.identifier},#{course_cohort_23.course.identifier}" }
+
+        it "returns partners matching any of the courses, each once" do
+          expect(query.delivery_partners).to contain_exactly(delivery_partner_1, delivery_partner_2, delivery_partner_an_hour_ago)
+        end
+      end
+
+      context "with an identifier that matches no course" do
+        let(:course_identifier) { "unknown-course-identifier" }
+
+        it "returns no partners" do
+          expect(query.delivery_partners).to be_empty
+        end
+      end
+
+      context "when combined with a cohort filter" do
+        subject(:query) do
+          described_class.new(
+            lead_provider: lead_provider_1,
+            cohort_start_years: cohort_22.start_year,
+            course_identifier:,
+          )
+        end
+
+        context "when the course has a matching cohort" do
+          let(:course_identifier) { course_cohort_22.course.identifier }
+
+          it "returns partners matching both filters" do
+            expect(query.delivery_partners).to contain_exactly(delivery_partner_2)
+          end
+        end
+
+        context "when the course has no matching cohort" do
+          let(:course_identifier) { course_cohort_21.course.identifier }
+
+          it "returns no partners" do
+            expect(query.delivery_partners).to be_empty
+          end
+        end
       end
     end
   end

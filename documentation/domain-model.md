@@ -46,10 +46,11 @@ erDiagram
     integer delivery_partner_id
     integer lead_provider_id
     datetime updated_at
+    integer course_id
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
-  DeliveryPartnership }o--|| CourseCohort : belongs_to
+  DeliveryPartnership }o--|| Course : belongs_to
   DeliveryPartner {
     integer id
     datetime created_at
@@ -168,27 +169,13 @@ erDiagram
     enum funding_choice
     string funding_eligiblity_status_code
     integer institution_id
-    enum kind_of_nursery
     string notes
-    integer number_of_pupils
-    string on_submission_trn
-    text participant_outcome_state
-    boolean primary_establishment
-    jsonb raw_application_data
-    string referred_by_return_to_teaching_adviser
-    enum review_status
     enum status
-    boolean targeted_support_funding_eligibility
     text teacher_catchment
     text teacher_catchment_country
-    string teacher_catchment_iso_country_code
-    text ukprn
     datetime updated_at
     integer user_id
     text work_setting
-    boolean works_in_childcare
-    boolean works_in_nursery
-    boolean works_in_school
     date training_starts_at
     jsonb registration_data
   }

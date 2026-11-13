@@ -129,15 +129,14 @@ RSpec.describe "Delivery Partners rake tasks" do
     after { Rake::Task["delivery_partners:partnerships:import"].reenable }
 
     let(:lead_provider) { create :lead_provider }
-    let(:cohort) { create(:cohort, :current) }
-    let(:course_cohort) { create(:course_cohort, cohort:, lead_provider:) }
+    let(:course) { create(:course) }
     let(:delivery_partners) { create_list(:delivery_partner, 3) }
     let(:dry_run) { "false" }
     let(:csv_path) { csv_file.path }
 
-    let :partnerships do
+    let :partnership_rows do
       delivery_partners.map do |partner|
-        [lead_provider.ecf_id, course_cohort.ecf_id, partner.ecf_id]
+        [lead_provider.ecf_id, course.identifier, partner.ecf_id]
       end
     end
 
@@ -146,11 +145,11 @@ RSpec.describe "Delivery Partners rake tasks" do
         CSV.open(tmp.path, "w") do |csv|
           csv << [
             "Lead Provider ECF Id",
-            "Course Cohort ECF Id",
+            "Course Identifier",
             "Delivery Partner ECF Id",
           ]
 
-          partnerships.each { |partnership| csv << partnership }
+          partnership_rows.each { |row| csv << row }
         end
       end
     end
@@ -160,12 +159,21 @@ RSpec.describe "Delivery Partners rake tasks" do
 
       let :imported_partnership do
         DeliveryPartnership.find_by(delivery_partner: delivery_partners[0],
-                                    course_cohort:,
+                                    course:,
                                     lead_provider:)
       end
 
       it { expect { run_task }.to change(DeliveryPartnership, :count).from(0).to(3) }
       it { is_expected.not_to be_nil }
+    end
+
+    context "when run a second time" do
+      before { run_task }
+
+      it "creates no duplicates" do
+        expect { Rake::Task["delivery_partners:partnerships:import"].tap(&:reenable).invoke(csv_path, dry_run) }
+          .not_to change(DeliveryPartnership, :count)
+      end
     end
 
     context "without specifying import file" do
@@ -180,27 +188,48 @@ RSpec.describe "Delivery Partners rake tasks" do
       it { expect { run_task }.to raise_exception "Import file is empty" }
     end
 
-    context "with Delivery Partnerships already present" do
-      before { create :delivery_partner, lead_provider: create(:lead_provider) }
+    context "with the old course cohort column" do
+      let :csv_file do
+        Tempfile.new.tap do |tmp|
+          CSV.open(tmp.path, "w") do |csv|
+            csv << [
+              "Lead Provider ECF Id",
+              "Course Cohort ECF Id",
+              "Delivery Partner ECF Id",
+            ]
 
-      it "rejects the import" do
+            partnership_rows.each { |row| csv << row }
+          end
+        end
+      end
+
+      it "stops with a message naming the expected column" do
         expect { run_task }
-          .to raise_exception("Delivery Partnerships already exist")
+          .to raise_exception("Import file is missing expected column(s): Course Identifier")
               .and(not_change(DeliveryPartnership, :count))
       end
     end
 
-    context "with invalid file" do
-      let :partnerships do
-        delivery_partners.map do
-          [lead_provider.ecf_id, course_cohort.ecf_id, delivery_partners[0].ecf_id]
-        end
+    context "with a row referencing an unknown course, lead provider or delivery partner" do
+      let :partnership_rows do
+        [
+          [lead_provider.ecf_id, "unknown-course", delivery_partners[0].ecf_id],
+          ["unknown-lead-provider", course.identifier, delivery_partners[1].ecf_id],
+          [lead_provider.ecf_id, course.identifier, "unknown-delivery-partner"],
+          [lead_provider.ecf_id, course.identifier, delivery_partners[2].ecf_id],
+        ]
       end
 
-      it "rejects the import" do
-        expect { run_task }
-          .to raise_exception(ActiveRecord::RecordInvalid)
-              .and(not_change(DeliveryPartnership, :count))
+      it "imports the valid rows only" do
+        expect { run_task }.to change(DeliveryPartnership, :count).by(1)
+      end
+
+      it "reports the skipped rows" do
+        run_task
+
+        expect(Rails.logger).to have_received(:info).with(/Row 2 skipped: unknown Course Identifier 'unknown-course'/)
+        expect(Rails.logger).to have_received(:info).with(/Row 3 skipped: unknown Lead Provider ECF Id 'unknown-lead-provider'/)
+        expect(Rails.logger).to have_received(:info).with(/Row 4 skipped: unknown Delivery Partner ECF Id 'unknown-delivery-partner'/)
       end
     end
 
@@ -212,7 +241,7 @@ RSpec.describe "Delivery Partners rake tasks" do
 
         expect(Rails.logger)
           .to have_received(:info)
-                .with("DRY RUN: Imported 3 Delivery Partnerships, now rolling back")
+                .with("DRY RUN: Imported 3 Delivery Partnerships (0 skipped), now rolling back")
       end
 
       it "rolls back" do
@@ -242,7 +271,7 @@ RSpec.describe "Delivery Partners rake tasks" do
       subject { csv_data[0].to_h.keys }
 
       let :expected_header do
-        ["Lead Provider ECF Id", "Course Cohort ECF Id", "Delivery Partner ECF Id"]
+        ["Lead Provider ECF Id", "Course Identifier", "Delivery Partner ECF Id"]
       end
 
       it { is_expected.to eq expected_header }
@@ -255,7 +284,7 @@ RSpec.describe "Delivery Partners rake tasks" do
 
       it { is_expected.to have_attributes length: 3 }
       it { is_expected.to include "Lead Provider ECF Id" => partnership.lead_provider.ecf_id }
-      it { is_expected.to include "Course Cohort ECF Id" => partnership.course_cohort.ecf_id }
+      it { is_expected.to include "Course Identifier" => partnership.course.identifier }
       it { is_expected.to include "Delivery Partner ECF Id" => partnership.delivery_partner.ecf_id }
     end
 
@@ -263,6 +292,27 @@ RSpec.describe "Delivery Partners rake tasks" do
       let(:csv_file) { nil }
 
       it { expect { csv_data }.to raise_exception "Export file not specified" }
+    end
+
+    context "when the export is imported again" do
+      subject :round_trip do
+        Rake::Task["delivery_partners:partnerships:export"].invoke(csv_file)
+        Rake::Task["delivery_partners:partnerships:import"].invoke(csv_file, "false")
+      end
+
+      after { Rake::Task["delivery_partners:partnerships:import"].reenable }
+
+      it "results in the same course-level partnerships" do
+        expect { round_trip }.not_to change(DeliveryPartnership, :count)
+
+        partnerships.each do |partnership|
+          expect(DeliveryPartnership.exists?(
+                   lead_provider: partnership.lead_provider,
+                   course: partnership.course,
+                   delivery_partner: partnership.delivery_partner,
+                 )).to be true
+        end
+      end
     end
   end
 end

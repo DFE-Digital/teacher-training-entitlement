@@ -4,7 +4,7 @@ module API
       include Pagination
 
       def index
-        conditions = { cohort_start_years:, sort: }
+        conditions = { cohort_start_years:, course_identifier:, sort: }
         delivery_partners = query(conditions:).delivery_partners
 
         render json: to_json(paginate(delivery_partners))
@@ -18,7 +18,7 @@ module API
 
       def query(conditions: {})
         conditions.merge!(lead_provider: current_lead_provider)
-        DeliveryPartners::Query.new(**conditions.compact)
+        DeliveryPartnerships::Query.new(**conditions.compact)
       end
 
       def delivery_partner
@@ -29,8 +29,12 @@ module API
         delivery_partner_params.dig(:filter, :cohort)
       end
 
+      def course_identifier
+        delivery_partner_params.dig(:filter, :course)
+      end
+
       def delivery_partner_params
-        params.permit(:ecf_id, :sort, filter: %i[cohort])
+        params.permit(:ecf_id, :sort, filter: %i[cohort course])
       end
 
       def sort
@@ -38,7 +42,17 @@ module API
       end
 
       def to_json(obj)
-        DeliveryPartnerSerializer.render(obj, view: :v1, root: "data", lead_provider: current_lead_provider)
+        DeliveryPartnerSerializer.render(
+          obj,
+          view: :v1,
+          root: "data",
+          lead_provider: current_lead_provider,
+          cohort_start_years_by_delivery_partner:,
+        )
+      end
+
+      def cohort_start_years_by_delivery_partner
+        @cohort_start_years_by_delivery_partner ||= current_lead_provider.cohort_start_years_by_delivery_partner
       end
     end
   end

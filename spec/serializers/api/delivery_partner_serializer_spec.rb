@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
   let(:current_lead_provider) { create(:lead_provider) }
   let(:other_lead_provider) { create(:lead_provider) }
-  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21) }
-  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22) }
-  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23) }
+  let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course), lead_provider: current_lead_provider) }
+  let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course), lead_provider: current_lead_provider) }
+  let(:course_cohort_23) { create(:course_cohort, cohort: cohort_23, course: create(:course), lead_provider: other_lead_provider) }
   let(:delivery_partner) do
     create(:delivery_partner,
            lead_providers: {
@@ -34,14 +34,49 @@ RSpec.describe API::DeliveryPartnerSerializer, type: :serializer do
 
   context "when serializing the v3 view" do
     describe "nested attributes" do
-      subject(:attributes) { JSON.parse(described_class.render(delivery_partner, view: :v1, lead_provider: current_lead_provider))["attributes"] }
+      subject(:attributes) do
+        JSON.parse(
+          described_class.render(
+            delivery_partner,
+            view: :v1,
+            lead_provider: current_lead_provider,
+            cohort_start_years_by_delivery_partner: current_lead_provider.cohort_start_years_by_delivery_partner,
+          ),
+        )["attributes"]
+      end
 
       it "serializes the `name`" do
         expect(attributes["name"]).to eq(delivery_partner.name)
       end
 
       it "serializes the cohorts" do
+        expect(attributes["cohort"]).to include(cohort_21.start_year, cohort_22.start_year)
+        expect(attributes["cohort"]).not_to include(cohort_23.start_year)
+      end
+
+      it "serializes the cohorts as a unique, sorted list of start years" do
         expect(attributes["cohort"]).to eq([cohort_21.start_year, cohort_22.start_year])
+      end
+
+      context "when the partner is on several courses sharing a cohort" do
+        let(:other_course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course), lead_provider: current_lead_provider) }
+
+        before do
+          create(:delivery_partnership, delivery_partner:, course: other_course_cohort_21.course, lead_provider: current_lead_provider)
+        end
+
+        it "lists the shared cohort once" do
+          expect(attributes["cohort"]).to eq([cohort_21.start_year, cohort_22.start_year])
+        end
+      end
+
+      context "when the lead provider has no course cohort provider for the partner's courses" do
+        let(:course_cohort_21) { create(:course_cohort, cohort: cohort_21, course: create(:course), lead_provider: other_lead_provider) }
+        let(:course_cohort_22) { create(:course_cohort, cohort: cohort_22, course: create(:course), lead_provider: other_lead_provider) }
+
+        it "serializes an empty cohort" do
+          expect(attributes["cohort"]).to eq([])
+        end
       end
 
       it "serializes the `created_at`" do

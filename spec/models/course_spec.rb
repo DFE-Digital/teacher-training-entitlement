@@ -5,6 +5,8 @@ RSpec.describe Course do
 
   describe "relationships" do
     it { is_expected.to have_many(:milestones) }
+    it { is_expected.to have_many(:delivery_partnerships).dependent(:destroy) }
+    it { is_expected.to have_many(:delivery_partners).through(:delivery_partnerships) }
     it { is_expected.to have_many(:course_cohorts) }
     it { is_expected.to have_many(:course_cohort_providers).through(:course_cohorts) }
     it { is_expected.to have_many(:cohorts).through(:course_cohorts) }

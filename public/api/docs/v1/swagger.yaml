@@ -2353,6 +2353,11 @@ components:
           description: Return only delivery partners from the specified cohort.
           type: string
           example: '2022'
+        course:
+          description: Return only delivery partners for the specified course or courses.
+            This is a comma delimited string of course identifiers.
+          type: string
+          example: tte-early-years
     DeliveryPartner:
       description: A single delivery partner
       type: object
@@ -2378,11 +2383,11 @@ components:
               example: Awesome Delivery Partner Ltd
             cohort:
               description: The starting years of the cohorts the delivery partner
-                is valid for
+                is valid for, derived from the lead provider's course cohorts
               type: array
               items:
-                type: string
-                example: '2025'
+                type: integer
+                example: 2025
             created_at:
               description: The date the delivery partner was created
               type: string

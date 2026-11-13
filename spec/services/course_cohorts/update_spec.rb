@@ -69,6 +69,15 @@ RSpec.describe CourseCohorts::Update, type: :model do
         expect(new_ccp.teacher_funding).to eq(33)
         expect(new_ccp.recruitment_target).to eq(880)
       end
+
+      context "when the newly selected lead provider has delivery partners" do
+        let(:new_lead_provider) { create(:lead_provider, delivery_partner: create(:delivery_partner)) }
+
+        it "does not create any delivery partnerships" do
+          selected_lead_providers
+          expect { service.call }.not_to change(DeliveryPartnership, :count)
+        end
+      end
     end
   end
 end

@@ -31,6 +31,7 @@ RSpec.shared_examples "an API index endpoint" do
         serializer_params = { root: "data" }
         serializer_params[:view] = serializer_version if defined?(serializer_version)
         serializer_params[:lead_provider] = serializer_lead_provider if defined?(serializer_lead_provider)
+        serializer_params[:cohort_start_years_by_delivery_partner] = serializer_cohort_start_years_by_delivery_partner if defined?(serializer_cohort_start_years_by_delivery_partner)
 
         expect(serializer).to receive(:render).with([resource1, resource2], **serializer_params).and_call_original
         expect(query).to receive(:new).with(a_hash_including(lead_provider: current_lead_provider)).and_call_original

@@ -5,7 +5,11 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   include Helpers::FileHelper
 
   let(:admin) { create :admin }
-  let!(:cohort) { Cohort.find_by(identifier: "2026-April") || create(:cohort, registration_starts_at: Date.new(2026, 4, 1)) }
+  let(:cohort_registration_starts_at) { Date.new(2026, 4, 1) }
+  let!(:cohort) do
+    Cohort.find_by(identifier: Cohort.identifier_for(start_year: 2026, registration_starts_at: cohort_registration_starts_at)) ||
+      create(:cohort, registration_starts_at: cohort_registration_starts_at)
+  end
 
   let(:new_button_text)    { "New registration period" }
   let(:edit_button_text)   { "Edit cohort details" }
@@ -70,7 +74,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
       end
 
       cohort = Cohort.order(created_at: :desc, id: :desc).first
-      expect(cohort.identifier).to eq("2029-March")
+      expect(cohort.identifier).to eq("2029-march")
       expect(cohort.name).to eq("2029 to 2030")
       expect(cohort.description).to eq("2029 to 2030")
       expect(cohort.start_year).to be(2029)
@@ -98,7 +102,7 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
 
       cohort.reload
 
-      expect(cohort.identifier).to eq("2025-May")
+      expect(cohort.identifier).to eq("2025-may")
       expect(cohort.name).to eq(new_description)
       expect(cohort.description).to eq(new_description)
       expect(cohort.start_year).to be(2025)

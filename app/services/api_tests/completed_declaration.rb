@@ -38,7 +38,11 @@ module APITests
     end
 
     def delivery_partner_id
-      @delivery_partner&.ecf_id || application.course_cohort.delivery_partners.first.ecf_id
+      @delivery_partner&.ecf_id || available_delivery_partners.first.ecf_id
+    end
+
+    def available_delivery_partners
+      application.lead_provider.delivery_partners_for_course_cohort(course_cohort: application.course_cohort)
     end
 
     def application

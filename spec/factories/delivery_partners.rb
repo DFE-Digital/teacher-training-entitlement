@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :delivery_partner do
     transient do
-      # either an array or a hash of course cohort + array of lead providers
+      # either an array or a hash of course (or course cohort / cohort) + array of lead providers
       lead_providers { Array.wrap(lead_provider) }
       lead_provider { nil }
     end
@@ -18,12 +18,12 @@ FactoryBot.define do
                        {}
                      end
 
-      partnerships.each do |course_cohort, lead_providers|
-        course_cohort = CourseCohort.find_by(cohort: course_cohort) || create(:course_cohort, cohort: course_cohort) if course_cohort.is_a?(Cohort)
+      partnerships.each do |course_key, lead_providers|
+        course = FactoryCourseResolution.course_for(course_key)
 
         Array.wrap(lead_providers).each do |lead_provider|
           if LeadProvider.where(id: lead_provider.id).exists?
-            delivery_partner.delivery_partnerships.create! lead_provider:, course_cohort:
+            delivery_partner.delivery_partnerships.create! lead_provider:, course:
           end
         end
       end

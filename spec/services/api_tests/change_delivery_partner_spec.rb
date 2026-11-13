@@ -74,6 +74,22 @@ RSpec.describe APITests::ChangeDeliveryPartner, type: :model do
           headers: hash_including("Authorization" => "Bearer test-token"),
         )
       end
+
+      context "when the lead provider has delivery partners on other courses" do
+        before do
+          create(:delivery_partnership, delivery_partner: create(:delivery_partner), lead_provider:, course: create(:course))
+        end
+
+        it "only picks partners valid for the declaration's course" do
+          service.call
+
+          expect(HTTParty).to have_received(:put).with(
+            expected_url,
+            body: expected_body,
+            headers: hash_including("Authorization" => "Bearer test-token"),
+          )
+        end
+      end
     end
 
     context "when there is only one delivery partner" do

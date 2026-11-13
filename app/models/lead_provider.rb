@@ -19,6 +19,20 @@ class LeadProvider < ApplicationRecord
   scope :alphabetical, -> { order(name: :asc) }
 
   def delivery_partners_for_course_cohort(course_cohort:)
-    delivery_partners.where(delivery_partnerships: { course_cohort: })
+    return DeliveryPartner.none unless course_cohort_providers.where(course_cohort:).exists?
+
+    delivery_partners.where(delivery_partnerships: { course: course_cohort.course })
+  end
+
+  def cohort_start_years_by_delivery_partner
+    delivery_partnerships
+      .joins(course_cohorts: :course_cohort_providers)
+      .where(course_cohort_providers: { lead_provider: self })
+      .distinct
+      .pluck("delivery_partnerships.delivery_partner_id", "course_cohorts.academic_year")
+      .each_with_object(Hash.new { |hash, key| hash[key] = [] }) { |(delivery_partner_id, academic_year), years|
+        years[delivery_partner_id] << academic_year if academic_year
+      }
+      .transform_values(&:sort)
   end
 end
