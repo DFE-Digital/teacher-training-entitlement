@@ -1,30 +1,10 @@
 name: "Deploy"
+
+# Pull request review apps. Tests and lint run once per push in rspec.yml (CI and deploy), which also owns main builds and deployments.
+# Review apps remain build-only dependent, as before: they do not wait for the push checks.
 concurrency: build_and_deploy_${{ github.ref_name }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "Deploy environment"
-        required: true
-        type: choice
-        default: review
-        options:
-          - review
-          - staging
-          - sandbox
-          - production
-      docker-image-tag:
-        description: "Docker image tag to deploy (optional)"
-        required: true
-        type: string
-      pull-request-number:
-        description: "Pull request number (required for review environment)"
-        required: false
-        type: string
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -41,25 +21,12 @@ permissions:
   packages: write
 
 jobs:
-  rspec:
-    name: RSpec
-    uses: ./.github/workflows/rspec.yml
-    secrets: inherit
-
   openapi:
     name: Lead Provider OpenAPI Check
     uses: ./.github/workflows/lead_provider_openapi_check.yml
 
-  all-checks-passed:
-    name: All checks passed
-    needs: [rspec]
-    runs-on: ubuntu-24.04
-    steps:
-      - run: "echo 'Linting and tests passed, this branch is ready to be merged'"
-
   build:
     name: Build
-    if: ${{ github.event_name != 'workflow_dispatch' }}
     env:
       DOCKER_REPOSITORY: ghcr.io/dfe-digital/teacher-training-entitlement
     outputs:
@@ -73,6 +40,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         name: Checkout
+        with:
+          # The image is tagged with the PR head SHA, so build that commit (not the
+          # synthetic merge commit) to keep contents and tag aligned.
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Build and push docker image
         id: build-image
@@ -115,159 +86,3 @@ jobs:
           # smoke-test: true
           gcp-wip: ${{ vars.GCP_WIP }}
           gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
-
-  deploy-staging:
-    name: Deploy staging
-    concurrency: deploy_app_staging
-    needs: [build, all-checks-passed]
-    runs-on: ubuntu-24.04
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: staging
-    outputs:
-      docker-image: ${{ needs.build.outputs.docker-image }}
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: ./.github/actions/deploy-environment-to-aks
-        id: deploy
-        with:
-          environment: staging
-          docker-image: ${{ needs.build.outputs.docker-image }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
-          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
-          gcp-wip: ${{ vars.GCP_WIP }}
-          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
-
-      - name: Notify teams channel failure
-        if: ${{ failure() }}
-        uses: DFE-Digital/github-actions/send-to-teams-channel@master
-        with:
-          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          title: Failure deploying to staging
-          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
-          message: |
-            Failure deploying to staging - Docker tag ${{ needs.build.outputs.docker-image }}
-
-  deploy-sandbox:
-    name: Deploy sandbox
-    concurrency: deploy_app_sandbox
-    needs: [build, deploy-staging]
-    runs-on: ubuntu-24.04
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: sandbox
-    outputs:
-      docker-image: ${{ needs.build.outputs.docker-image }}
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: ./.github/actions/deploy-environment-to-aks
-        id: deploy
-        with:
-          environment: sandbox
-          docker-image: ${{ needs.build.outputs.docker-image }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
-          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
-          gcp-wip: ${{ vars.GCP_WIP }}
-          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
-
-      - name: Notify teams channel failure
-        if: ${{ failure() }}
-        uses: DFE-Digital/github-actions/send-to-teams-channel@master
-        with:
-          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          title: Failure deploying to sandbox
-          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
-          message: |
-            Failure deploying to sandbox - Docker tag ${{ needs.build.outputs.docker-image }}
-
-  deploy-production:
-    name: Deploy production
-    concurrency: deploy_app_production
-    needs: [build, deploy-sandbox]
-    runs-on: ubuntu-24.04
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: production
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: ./.github/actions/deploy-environment-to-aks
-        id: deploy
-        with:
-          environment: production
-          docker-image: ${{ needs.build.outputs.docker-image }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploy-commit-sha: ${{ needs.build.outputs.docker-image-tag }}
-          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
-          gcp-wip: ${{ vars.GCP_WIP }}
-          gcp-project-id: ${{ vars.GCP_PROJECT_ID }}
-
-      - name: Notify teams channel failure
-        if: ${{ failure() }}
-        uses: DFE-Digital/github-actions/send-to-teams-channel@master
-        with:
-          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          title: Failure deploying to production
-          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
-          message: |
-            Failure deploying to production - Docker tag ${{ needs.build.outputs.docker-image }}
-
-  deploy_domains_infra:
-    name: Deploy Domains Infrastructure
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    concurrency: deploy_production
-    needs: [deploy-production]
-    environment:
-      name: production
-    permissions:
-      id-token: write
-
-    steps:
-      - name: Deploy Domains Infrastructure
-        id: deploy_domains_infra
-        uses: DFE-Digital/github-actions/deploy-domains-infra@master
-        with:
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID   }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
-          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
-
-  deploy_domains_env:
-    name: Deploy Domains to ${{ matrix.domain_environment }} environment
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    concurrency: deploy_${{ matrix.domain_environment }}
-    needs: [deploy_domains_infra]
-    strategy:
-      max-parallel: 1
-      matrix:
-        domain_environment: [staging, sandbox, production]
-    environment:
-      name: production
-    permissions:
-      id-token: write
-
-    steps:
-      - name: Deploy Domains Environment
-        id: deploy_domains_env
-        uses: DFE-Digital/github-actions/deploy-domains-env@master
-        with:
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID   }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID   }}
-          environment: ${{ matrix.domain_environment }}
-          healthcheck: healthcheck
-          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
