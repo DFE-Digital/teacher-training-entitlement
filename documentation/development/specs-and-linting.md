@@ -163,7 +163,8 @@ Pushes to `main` additionally run, in the same run:
 
 There is **no workflow-level `concurrency`**, because that would cancel queued CI
 runs and every push must keep its checks. Instead each of `Deploy staging`,
-`Deploy sandbox` and `Deploy production` runs
+`Deploy sandbox`, `Deploy production`, `Deploy Domains Infrastructure` and every
+`Deploy Domains` matrix member runs
 `.github/scripts/check-main-freshness.sh` inside its per-environment concurrency
 lock. It makes one `git ls-remote` call and compares the tip of `main` with the
 commit being deployed (not a check poll). It writes `fresh=true|false`:
@@ -171,7 +172,12 @@ commit being deployed (not a check poll). It writes `fresh=true|false`:
 - `fresh=false`: the commit is superseded. A notice and step summary are written,
   the deploy steps are skipped, and `fresh=false` stops sandbox, production and
   domains for that run, so an older run cannot overwrite a newer deployment.
-- The tip cannot be read: the step fails (never deploys, never silently skips).
+  Domains infra uses the group `domains_infra`; each `Deploy Domains` member uses
+  `domains_env_<environment>`. The check runs inside the locked job, after
+  checking out the event SHA and before any Terraform. `fresh=false` from infra
+  blocks the whole matrix, and each member validates again separately.
+- The tip cannot be read: the step fails (fails closed: never deploys, never silently skips),
+  including for domains jobs.
 
 Consequences to know about:
 
@@ -183,11 +189,14 @@ Consequences to know about:
   concurrency group, which may show as a red or cancelled run. The CI suite for
   that commit still ran.
 
-**Known follow-up (not resolved):** `Deploy Domains Infrastructure` uses the
-concurrency group `deploy_production`, which collides with the
-`deploy_production` group of the production matrix entry in `Deploy Domains`,
-and the domains jobs have no per-domain freshness check. Domains could therefore
-be stale or interleaved between runs. The chain is not claimed to be race-free.
+**Remaining limitation (accepted, not race-free):** the same-lock freshness
+check plus ordering stops a stale run overwriting a newer commit **within one
+lock**. It does not give cross-state atomicity. `domains_infra` and the
+`domains_env_*` groups are distinct, so dependent resources in different
+Terraform states can overlap between runs; state locking applies per state, not
+globally. Infra and environments can therefore be at mixed versions until the
+next fresh run. The chain is not claimed to be race-free or atomic. A shared
+domains group (serialization) is a future option only if this proves necessary.
 
 ### PR review apps (`deploy.yml`)
 

@@ -28,11 +28,11 @@ flowchart LR
 ```
 
 Tests and lint run once per push in `rspec.yml`; on `main`, staging uses native
-`needs` on the build and `All checks passed` of the same run. Staging, sandbox and
-production each check inside their lock that the commit is still the tip of
+`needs` on the build and `All checks passed` of the same run. Staging, sandbox,
+production and each domains job check inside their lock that the commit is still the tip of
 `main` (`.github/scripts/check-main-freshness.sh`) and skip when superseded. See
-[Specs and Linting](../development/specs-and-linting.md#ci), including a known
-follow-up on domains concurrency. Review apps do not depend on the test gate.
+[Specs and Linting](../development/specs-and-linting.md#ci), including the accepted
+cross-state limitation for domains (not claimed atomic). Review apps do not depend on the test gate.
 
 Each environment deployment runs `terraform apply` from `terraform/application/`. The
 staging, sandbox, and production stages execute sequentially on push to `main` — a

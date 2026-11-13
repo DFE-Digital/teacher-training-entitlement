@@ -385,16 +385,31 @@ jobs:
     name: Deploy Domains Infrastructure
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && needs.deploy-production.outputs.fresh == 'true'
-    concurrency: deploy_production
+    concurrency: domains_infra
     needs: [deploy-production]
     environment:
       name: production
     permissions:
+      contents: read
       id-token: write
+    outputs:
+      fresh: ${{ steps.freshness.outputs.fresh }}
 
     steps:
+      - uses: actions/checkout@v7
+        with:
+          # Same commit the composite action below checks out (the event SHA)
+          ref: ${{ github.sha }}
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
       - name: Deploy Domains Infrastructure
         id: deploy_domains_infra
+        if: steps.freshness.outputs.fresh == 'true'
         uses: DFE-Digital/github-actions/deploy-domains-infra@master
         with:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
@@ -404,10 +419,12 @@ jobs:
           service: ${{ vars.TEAMS_MSG_SERVICE_NAME }}
 
   deploy_domains_env:
-    name: Deploy Domains to ${{ matrix.domain_environment }} environment
+    name: Deploy Domains
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    concurrency: deploy_${{ matrix.domain_environment }}
+    # Skipped when the infra stage found this run obsolete; each matrix member also
+    # re-checks below, inside its own lock, immediately before applying.
+    if: github.ref == 'refs/heads/main' && needs.deploy_domains_infra.outputs.fresh == 'true'
+    concurrency: domains_env_${{ matrix.domain_environment }}
     needs: [deploy_domains_infra]
     strategy:
       max-parallel: 1
@@ -416,11 +433,24 @@ jobs:
     environment:
       name: production
     permissions:
+      contents: read
       id-token: write
 
     steps:
+      - uses: actions/checkout@v7
+        with:
+          # Same commit the composite action below checks out (the event SHA)
+          ref: ${{ github.sha }}
+
+      - name: Check this commit is still the tip of main
+        id: freshness
+        env:
+          SHA: ${{ github.sha }}
+        run: .github/scripts/check-main-freshness.sh
+
       - name: Deploy Domains Environment
         id: deploy_domains_env
+        if: steps.freshness.outputs.fresh == 'true'
         uses: DFE-Digital/github-actions/deploy-domains-env@master
         with:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID  }}
