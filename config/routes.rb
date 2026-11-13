@@ -68,7 +68,7 @@ Rails.application.routes.draw do
     end
   end
 
-  draw("/api/v1")
+  draw("/api")
 
   draw("/admin")
 
