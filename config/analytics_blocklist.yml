@@ -152,3 +152,15 @@
   - created_at
   - key
   - updated_at
+  :trs_webhook_messages:
+  - id
+  - message_id
+  - message_type
+  - message_source
+  - sent_at
+  - message
+  - status
+  - status_comment
+  - processed_at
+  - created_at
+  - updated_at
