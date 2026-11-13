@@ -11,6 +11,11 @@ RSpec.describe "Error responses", type: :request do
       expect(response.content_type).to match(/application\/json.*/)
     end
 
+    it "keeps the V1 envelope for unknown V1 paths" do
+      api_get "/api/v1/thisdoesnotexist"
+      expect(JSON.parse(response.body)).to have_key("error")
+    end
+
     context "when the request is for API guidance docs" do
       it "returns an HTML response" do
         api_get "/api/guidance/thisdoesnotexist"

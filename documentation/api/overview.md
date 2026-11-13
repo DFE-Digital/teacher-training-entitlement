@@ -31,7 +31,8 @@ access.
   from `config/routes.rb` via `draw("/api/v1")`.
 - Available versions are listed in `API::Version` (`lib/api/version.rb`).
   Adding one there automatically generates a matching `/api/docs/<version>` UI.
-  Today only `v1` exists.
+  Today only `v1` is published. An interim, unpublished `/api/v2/training`
+  exists; see [`v2-usage.md`](./v2-usage.md).
 
 ## Authentication at a glance
 
@@ -204,6 +205,7 @@ workflow, schemas and how to add new endpoints are in
 - [`authentication.md`](./authentication.md) — bearer token details
 - [`endpoints.md`](./endpoints.md) — full endpoint reference
 - [`swagger.md`](./swagger.md) — OpenAPI workflow
+- [`v2-usage.md`](./v2-usage.md) — API V2 usage guide
 - [`../webhooks.md`](../webhooks.md) — Webhook endpoints
 
 - [Data model](../data_model.md) — entities the API exposes

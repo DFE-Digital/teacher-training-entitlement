@@ -15,6 +15,11 @@ This directory is organised by domain.
 - [`authentication.md`](api/authentication.md) — Bearer token auth, token management
 - [`endpoints.md`](api/endpoints.md) — all endpoints, request/response schemas, status transitions
 - [`swagger.md`](api/swagger.md) — Swagger/OpenAPI spec, RSwag, schema drift check
+- [`v2-usage.md`](api/v2-usage.md) — interim API V2 `GET /api/v2/training` guide
+
+## Architecture decisions
+
+- [`0001`](decisions/0001-api-v2-jsonapi-serializer-and-opt-in-includes.md) — API V2 serializer and opt-in includes
 
 ## Webhooks (Service integration)
 

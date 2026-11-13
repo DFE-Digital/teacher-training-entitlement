@@ -4,6 +4,7 @@ namespace :api do
   get "docs/:version", to: "documentation#index", as: :documentation
 
   draw("/api/v1")
+  draw("/api/v2")
 
   match "*", to: "errors#not_found", via: :all
 end
