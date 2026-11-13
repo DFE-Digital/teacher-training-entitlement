@@ -121,6 +121,22 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       end
     end
 
+    context "when the workplace is in England" do
+      let(:application_attributes) do
+        { institution: build_stubbed(:institution, subdivision_code: Institution::ENGLAND_SUBDIVISION_CODE) }
+      end
+
+      it { is_expected.to have_summary_item "Workplace in England", "Yes" }
+    end
+
+    context "when the workplace is not in England" do
+      let(:application_attributes) do
+        { institution: build_stubbed(:institution, subdivision_code: Institution::WALES_SUBDIVISION_CODE) }
+      end
+
+      it { is_expected.to have_summary_item "Workplace in England", "No" }
+    end
+
     context "with an institution" do
       it { is_expected.to have_summary_item "Name", application.institution.name }
       it { is_expected.to have_summary_item "Unique reference number (URN)", application.institution.urn }

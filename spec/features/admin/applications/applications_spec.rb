@@ -139,6 +139,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     within(summary_lists[2]) do |summary_list|
       expect(summary_list).to have_summary_item("UK Provider Reference Number (UKPRN)", application.institution.ukprn)
       expect(summary_list).to have_summary_item("Unique reference number (URN)", application.institution.urn)
+      expect(summary_list).to have_summary_item("Workplace in England", "Yes")
     end
   end
 
