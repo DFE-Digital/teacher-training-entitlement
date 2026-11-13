@@ -124,8 +124,8 @@ Number (TRN). The strategy is configured in `config/initializers/devise.rb` usin
 ### Admin (OTP-based)
 
 Internal DfE users (`AdminUser`) sign in via a custom wizard at `/admin` — no
-password, no Devise, no Teacher Auth. Authentication uses a time-limited OTP sent
-by email (via GOV.UK Notify). See [`../admin/overview.md`](../admin/overview.md) and
+password, no Devise, no Teacher Auth. Authentication uses a single-use, 8-character OTP
+(10-minute expiry) sent by email (via GOV.UK Notify). See [`../admin/overview.md`](../admin/overview.md) and
 [`../admin/authentication.md`](../admin/authentication.md).
 
 ### Lead Provider API (Bearer token)

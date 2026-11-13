@@ -44,7 +44,7 @@ This approach differs from a multi-template architecture where each email type w
 |----------------------------------|------------------------------------------------------|----------------------------------------------------------------|
 | `eligible_for_funding`           | Participant notified of funding eligibility change   | `Applications::ChangeFundingEligibility`                       |
 | `application_submitted`          | Confirmation after application submission            | `Emails::SendApplicationSubmissionEmailJob`                    |
-| `confirmation_code`              | Magic-link / OTP confirmation code for admin sign-in | `SessionWizardSteps::SignIn` form                              |
+| `confirmation_code`              | 8-character OTP code for admin sign-in               | `SessionWizardSteps::SignIn` form                              |
 | `email_updates_confirmation`     | Confirmation of email subscription preferences       | `EmailUpdatesController`                                       |
 | `change_provider`                | Participant notified of provider change              | `Applications::ChangeLeadProvider`                             |
 | `deferral_notification`          | Application has been deferred                        | `Applications::Defer`                                          |
