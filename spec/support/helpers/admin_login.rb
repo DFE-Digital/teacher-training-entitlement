@@ -12,7 +12,7 @@ module Helpers
       visit("/admin")
       expect(page).to have_current_path(sign_in_path)
 
-      allow_any_instance_of(OtpCodeGenerator).to receive(:call).and_return(otp_code)
+      allow(OTP).to receive(:generate).and_return(OTP.new(code: otp_code, expires_at: 10.minutes.from_now))
       page.fill_in "What’s your email address?", with: admin_account.email
       page.click_button "Sign in"
       expect(page).to have_current_path("/session/sign-in-code")
@@ -24,7 +24,7 @@ module Helpers
     end
 
     def otp_code
-      "123456"
+      "ABCD2345"
     end
   end
 end

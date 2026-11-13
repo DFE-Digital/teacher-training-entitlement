@@ -19,18 +19,18 @@ password.
 
 ### AdminUser schema
 
-| Column           | Type      | Purpose                                       |
-|------------------|-----------|-----------------------------------------------|
-| `email`          | string    | Identifies the admin; OTP is sent here        |
-| `full_name`      | string    | Display name in the console                   |
-| `super_admin`    | boolean   | Grants elevated permissions (default `false`) |
-| `otp_hash`       | text      | One-time code (set on each sign-in attempt)   |
-| `otp_expires_at` | timestamp | 10-minute expiry on the OTP code              |
+| Column           | Type      | Purpose                                                                         |
+|------------------|-----------|---------------------------------------------------------------------------------|
+| `email`          | string    | Identifies the admin; OTP is sent here                                          |
+| `full_name`      | string    | Display name in the console                                                     |
+| `super_admin`    | boolean   | Grants elevated permissions (default `false`)                                   |
+| `otp_hash`       | text      | Current one-time code (plain text, despite the name); `nil` when none is active |
+| `otp_expires_at` | timestamp | Expiry of the code (10 minutes after issue); `nil` when none is active          |
 
 ## Sign-in wizard
 
-The sign-in wizard (`SessionWizardController`) collects an email address, sends a
-6-digit OTP, then validates the code. The wizard does **not** use a password.
+The sign-in wizard (`SessionWizardController`) collects an email address, sends an
+8-character OTP, then validates the code. The wizard does **not** use a password.
 
 ```mermaid
 sequenceDiagram
@@ -59,9 +59,10 @@ sequenceDiagram
 The admin enters their email address.
 
 - The `SessionWizardSteps::SignIn` form validates the email format.
-- `after_save` looks up the `AdminUser`, generates a 6-digit OTP via
-  `OtpCodeGenerator`, stores `otp_hash` and `otp_expires_at` (10 minutes from now)
-  on the record, and sends the code via `GenericMailer`.
+- `after_save` looks up the `AdminUser`, generates an OTP via `OTP.generate`,
+  stores `otp_hash` and `otp_expires_at` (10 minutes from now) on the record, and
+  sends the code via `GenericMailer`.
+- Each request replaces any previous code, so only the most recent code works.
 - If the email has no matching `AdminUser`, **no error is shown** — the code is
   simply not sent. This prevents email enumeration.
 
@@ -73,21 +74,51 @@ PATCH /session/sign-in  (email=admin@...)  → validate, send OTP, redirect
 
 ### Step 2 — Check your email (`/session/sign-in-code`)
 
-The admin enters the 6-digit code they received.
+The admin enters the 8-character code they received.
 
-- The `SessionWizardSteps::SignInCode` form validates the code against the
-  `otp_hash` stored on the `AdminUser` record (looked up via the email saved in
+- The `SessionWizardSteps::SignInCode` form validates the code with
+  `UserOTPCodeValidator` against `AdminUser#otp` (looked up via the email saved in
   the wizard store during step 1).
 - The code must match **and** be within the 10-minute window (`otp_expires_at`).
-- On success, the controller calls `reset_session` (clears any remnants of a
+  Missing, mismatched or malformed codes fail as incorrect; a matching code past
+  its expiry fails as expired.
+- Entry is forgiving: input is case-insensitive and `O`/`o` is read as `0` and
+  `I`/`i`/`L`/`l` as `1`.
+- A failed attempt does **not** consume the code. There is no attempt limit or
+  account locking.
+- On success, `AdminUser#clear_otp!` clears `otp_hash` and `otp_expires_at`, so the
+  code cannot be reused. The controller calls `reset_session` (clears any remnants of a
   previous session), then sets `session["admin_id"]` and
   `session["admin_sign_in_at"]`.
 
 ```
 # Typical flow:
 GET  /session/sign-in-code                 → show code form
-PATCH /session/sign-in-code  (code=123456) → verify, create session, redirect to /admin
+PATCH /session/sign-in-code  (code=K7M2QX9D) → verify, create session, redirect to /admin
 ```
+
+### OTP codes
+
+`OTP` (`app/services/otp.rb`) generates and checks codes.
+
+| Property | Value                                                                                                         |
+|----------|---------------------------------------------------------------------------------------------------------------|
+| Format   | 8 characters of [Crockford Base32](https://www.crockford.com/base32.html): `0123456789ABCDEFGHJKMNPQRSTVWXYZ` |
+| Source   | `SecureRandom`                                                                                                |
+| Lifetime | 10 minutes                                                                                                    |
+| Matching | Entry normalised (upcased, `O`→`0`, `I`/`L`→`1`), then constant-time compare                                  |
+
+```ruby
+otp = OTP.generate        # otp.code => "K7M2QX9D", otp.expires_at => 10 minutes from now
+otp.matches?("k7m2qx9d")  # => true
+otp.expired?              # => false
+```
+
+Redemption is not atomic: concurrent submissions of the same valid code are not
+guarded against.
+
+> **Deployment note:** codes issued before the switch were 6 digits and are no
+> longer accepted. Admins mid sign-in must request a fresh code.
 
 ## Session management
 
@@ -184,7 +215,8 @@ Neither can an admin delete themselves or another super admin via the console
 | Sign-in views         | `app/views/session_wizard/sign_in.html.erb`        |
 | Code-entry view       | `app/views/session_wizard/sign_in_code.html.erb`   |
 | Sign-out              | `app/controllers/sessions_controller.rb`           |
-| OTP generator         | `app/services/otp_code_generator.rb`               |
+| OTP service           | `app/services/otp.rb`                              |
+| OTP code validator    | `app/validators/user_otp_code_validator.rb`        |
 | Routes (public)       | `config/routes.rb` (lines 41–46)                   |
 | Routes (admin)        | `config/routes/admin.rb`                           |
 
