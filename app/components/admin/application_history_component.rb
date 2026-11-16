@@ -87,7 +87,7 @@ module Admin
       case key
       when "notes"
         { details_summary: "Review notes", details: simple_format(value[1]) }
-      when "eligible_for_funding"
+      when "eligible_for_funding" # legacy versions, before funding_eligibility replaced the boolean
         { bullet: "Status code changed to #{object_changes.dig('funding_eligiblity_status_code', 1)}" }
       end
     end

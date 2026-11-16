@@ -19,7 +19,7 @@ RSpec.describe Applications::Accept, type: :model do
 
   describe "#accept happy path" do
     context "when application eligible for funding" do
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true) }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded) }
 
       context "with funded place" do
         let(:funded_place) { true }
@@ -53,7 +53,7 @@ RSpec.describe Applications::Accept, type: :model do
     end
 
     context "when application not eligible for funding" do
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: false) }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :ineligible_setting) }
 
       context "with funded place" do
         let(:funded_place) { true }
@@ -96,7 +96,7 @@ RSpec.describe Applications::Accept, type: :model do
 
     context "when user has no TRN" do
       let(:user) { create(:user, trn: nil, refresh_token: "token") }
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true, user:) }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded, user:) }
       let(:funded_place) { true }
 
       it "enqueues RequestTrnJob" do
@@ -106,7 +106,7 @@ RSpec.describe Applications::Accept, type: :model do
 
     context "when user has TRN" do
       let(:user) { create(:user, trn: "1234567") }
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: true, user:) }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded, user:) }
       let(:funded_place) { true }
 
       it "does not enqueue RequestTrnJob" do

@@ -78,13 +78,13 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     subject(:summary_card) { Capybara.string(render).find(".govuk-summary-card", text: "Funding eligibility") }
 
     context "with a funding eligibility status code" do
-      let(:application_attributes) { { funding_eligiblity_status_code: "previously_funded" } }
+      let(:application_attributes) { { funding_eligibility: "previously_funded" } }
 
       it { is_expected.to have_summary_item "Status code", "Previously Funded" }
     end
 
     context "without a funding eligibility status code" do
-      let(:application_attributes) { { funding_eligiblity_status_code: nil } }
+      let(:application_attributes) { { funding_eligibility: nil } }
 
       it { is_expected.to have_summary_item "Status code", "-" }
     end

@@ -57,14 +57,28 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       expect(attributes["status"]).to eq(application.status)
     end
 
-    it "serializes the `eligible_for_funding` (previously funded)" do
-      application.eligible_for_funding = true
-      expect(attributes["eligible_for_funding"]).to be(true)
+    context "when funding_eligibility is funded" do
+      before { application.funding_eligibility = FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
+
+      it "serializes `eligible_for_funding` as true" do
+        expect(attributes["eligible_for_funding"]).to be(true)
+      end
+
+      it "serializes `ineligible_for_funding_reason` as nil" do
+        expect(attributes["ineligible_for_funding_reason"]).to be_nil
+      end
     end
 
-    it "serializes the `ineligible_for_funding_reason`" do
-      application.funding_eligiblity_status_code = "ineligible_setting"
-      expect(attributes["ineligible_for_funding_reason"]).to eq("ineligible_setting")
+    context "when funding_eligibility is not funded" do
+      before { application.funding_eligibility = FundingEligibility::INELIGIBLE_SETTING }
+
+      it "serializes `eligible_for_funding` as false" do
+        expect(attributes["eligible_for_funding"]).to be(false)
+      end
+
+      it "serializes `ineligible_for_funding_reason` as the funding_eligibility" do
+        expect(attributes["ineligible_for_funding_reason"]).to eq("ineligible_setting")
+      end
     end
 
     it "serializes the `teacher_catchment`" do

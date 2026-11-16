@@ -126,7 +126,7 @@ RSpec.describe Application do
 
         it "validates funded_place eligibility" do
           subject.funded_place = true
-          subject.eligible_for_funding = false
+          subject.funding_eligibility = FundingEligibility::INELIGIBLE_SETTING
 
           expect(subject).to have_error(:funded_place, :not_eligible, "The participant is not eligible for funding, so '#/funded_place' cannot be set to true.")
         end
@@ -203,7 +203,7 @@ RSpec.describe Application do
     describe ".eligible_for_funding" do
       it "returns applications that are eligible for funding" do
         application_eligible_for_funding = create(:application, :eligible_for_funding)
-        create(:application, eligible_for_funding: false)
+        create(:application, funding_eligibility: :ineligible_setting)
 
         expect(described_class.eligible_for_funding).to contain_exactly(application_eligible_for_funding)
       end
@@ -253,177 +253,6 @@ RSpec.describe Application do
         previous_application = application.versions.last.reify
         expect(previous_application.status).to eq(Application::PENDING)
       end
-    end
-  end
-
-  describe "#previously_funded?" do
-    let(:user) { create(:user) }
-    let(:course) { create(:course) }
-    let(:course_cohort) { create(:course_cohort, course:, cohort: cohort_with_funding_cap) }
-    let(:application) { create(:application, :previously_funded, user:, course_cohort:) }
-    let(:cohort_with_funding_cap) { create(:cohort, :with_funding_cap, registration_starts_at: Date.new(2024, 5, 1)) }
-    let(:cohort_without_funding_cap) { create(:cohort, :without_funding_cap, registration_starts_at: Date.new(2024, 6, 1)) }
-    let(:previous_application) { user.applications.where.not(id: application.id).first! }
-    let(:course_cohort_no_cap) { create(:course_cohort, course:, cohort: cohort_without_funding_cap) }
-
-    subject { application }
-
-    context "when the application has been previously funded" do
-      it { is_expected.to be_previously_funded }
-
-      context "when funded place is `nil`" do
-        before do
-          previous_application.update!(
-            course_cohort: course_cohort_no_cap,
-            funded_place: nil,
-          )
-        end
-
-        it { is_expected.to be_previously_funded }
-      end
-
-      context "when funded place is `false`" do
-        before { previous_application.update!(funded_place: false) }
-
-        it { is_expected.not_to be_previously_funded }
-      end
-
-      context "when funded place is `true`" do
-        before { previous_application.update!(funded_place: true) }
-
-        it { is_expected.to be_previously_funded }
-      end
-    end
-
-    context "when the application has not been previously funded (previous application not accepted)" do
-      before { previous_application.update_column(:status, Application::REJECTED) }
-
-      it { is_expected.not_to be_previously_funded }
-    end
-
-    context "when the application has not been previously funded (previous application is not eligible for funding)" do
-      before { previous_application.update!(eligible_for_funding: false, funded_place: false) }
-
-      it { is_expected.not_to be_previously_funded }
-    end
-
-    context "when transient_previously_funded is declared on the model" do
-      subject { create(:application, eligible_for_funding: false) }
-
-      before do
-        def subject.transient_previously_funded
-          false
-        end
-      end
-
-      it "does not make a query to determine the previously_funded status" do
-        expect(Application).not_to receive(:connection)
-        expect(subject).not_to be_previously_funded
-      end
-
-      context "when transient_previously_funded is true" do
-        before do
-          def subject.transient_previously_funded
-            true
-          end
-        end
-
-        it "does not make a query to determine the previously_funded status" do
-          expect(Application).not_to receive(:connection)
-          expect(subject).to be_previously_funded
-        end
-      end
-    end
-  end
-
-  describe "#ineligible_for_funding_reason" do
-    subject { application.ineligible_for_funding_reason }
-
-    context "when not previously funded or eligible_for_funding" do
-      let(:application) { create(:application) }
-
-      it { is_expected.to eq("establishment-ineligible") }
-    end
-
-    context "when not previously funded and eligible_for_funding" do
-      let(:application) { create(:application, :eligible_for_funding) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when previously funded" do
-      let(:application) { create(:application, :previously_funded) }
-
-      it { is_expected.to eq("previously-funded") }
-    end
-
-    context "when transient_previously_funded is declared on the model" do
-      subject { create(:application, eligible_for_funding: false) }
-
-      before do
-        def subject.transient_previously_funded
-          false
-        end
-      end
-
-      it "does not make a query to determine the previously_funded status" do
-        expect(Application).not_to receive(:connection)
-        expect(subject.ineligible_for_funding_reason).to eq("establishment-ineligible")
-      end
-
-      context "when transient_previously_funded is true" do
-        before do
-          def subject.transient_previously_funded
-            true
-          end
-        end
-
-        it "does not make a query to determine the previously_funded status" do
-          expect(Application).not_to receive(:connection)
-          expect(subject.ineligible_for_funding_reason).to eq("previously-funded")
-        end
-      end
-    end
-  end
-
-  describe "#fundable?" do
-    context "when it is eligible_for_funding" do
-      subject { create(:application, eligible_for_funding: true, funded_place: nil) }
-
-      it { is_expected.to be_fundable }
-    end
-
-    context "when it is not eligible_for_funding" do
-      subject { create(:application, eligible_for_funding: false, funded_place: nil) }
-
-      it { is_expected.not_to be_fundable }
-    end
-
-    context "when it is eligible_for_funding but has no funded place" do
-      subject { create(:application, eligible_for_funding: true, funded_place: false) }
-
-      it { is_expected.not_to be_fundable }
-    end
-
-    context "when it is eligible_for_funding but and has a funded place" do
-      subject { create(:application, eligible_for_funding: true, funded_place: true) }
-
-      it { is_expected.to be_fundable }
-    end
-
-    context "when it is not eligible_for_funding but and has a funded false" do
-      subject { create(:application, eligible_for_funding: false, funded_place: false) }
-
-      it { is_expected.not_to be_fundable }
-    end
-
-    context "when it was previously funded" do
-      subject(:application) { create(:application, :eligible_for_funding, :previously_funded, user:, course:) }
-
-      let(:user) { create(:user) }
-      let(:course) { create(:course) }
-
-      it { is_expected.not_to be_fundable }
     end
   end
 
@@ -595,6 +424,27 @@ RSpec.describe Application do
 
       expect(application.reload.current_application_lead_provider.lead_provider).to eq(lead_provider)
       expect(application.application_lead_providers.current.count).to eq(1)
+    end
+  end
+
+  describe "#eligible_for_funding?" do
+    it "is true when funding_eligibility is funded" do
+      expect(build(:application, funding_eligibility: :funded)).to be_eligible_for_funding
+    end
+
+    it "is false for any other funding_eligibility" do
+      expect(build(:application, funding_eligibility: :ineligible_setting)).not_to be_eligible_for_funding
+      expect(build(:application, funding_eligibility: nil)).not_to be_eligible_for_funding
+    end
+  end
+
+  describe "#funding_ineligible_reason" do
+    it "is nil when funded" do
+      expect(build(:application, funding_eligibility: :funded).funding_ineligible_reason).to be_nil
+    end
+
+    it "is the funding_eligibility otherwise" do
+      expect(build(:application, funding_eligibility: :previously_funded).funding_ineligible_reason).to eq("previously_funded")
     end
   end
 end

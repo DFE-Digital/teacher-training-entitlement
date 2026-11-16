@@ -12,15 +12,13 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
       :application,
       :for_cohort_starting_on,
       lead_provider:,
-      eligible_for_funding:,
-      funding_eligiblity_status_code:,
+      funding_eligibility:,
       registration_data:,
       registration_starts_at: Date.new(2025, 4, 1),
     )
   end
-  let(:eligible_for_funding) { false }
   let(:funded) { false }
-  let(:funding_eligiblity_status_code) { FundingEligibility::INELIGIBLE_SETTING }
+  let(:funding_eligibility) { FundingEligibility::INELIGIBLE_SETTING }
   let(:registration_data) { {} }
 
   before do
@@ -28,8 +26,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
   end
 
   context "when the application is eligible for scholarship funding" do
-    let(:eligible_for_funding) { true }
-    let(:funding_eligiblity_status_code) { FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
+    let(:funding_eligibility) { FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
 
     it "shows the eligible funding details" do
       expect(rendered_partial).to have_css(".govuk-summary-card__title", text: "Funding details")
@@ -58,8 +55,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
       # An application funded on a different course
       create(:application,
              user: application.user,
-             eligible_for_funding: true,
-             funding_eligiblity_status_code: "funded",
+             funding_eligibility: "funded",
              status: Application::COMPLETED,
              course_cohort: create(:course_cohort,
                                    course: create(:course),

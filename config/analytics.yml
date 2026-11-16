@@ -190,11 +190,10 @@ shared:
     - created_at
     - updated_at
     - ecf_id
-    - eligible_for_funding
     - funding_choice
     - teacher_catchment
     - teacher_catchment_country
-    - funding_eligiblity_status_code
+    - funding_eligibility
     - work_setting
     - status
     - institution_id

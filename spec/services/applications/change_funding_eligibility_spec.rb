@@ -21,7 +21,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       let(:service) { described_class.new(application:, eligible_for_funding: false) }
 
       let :application do
-        create(:application, :accepted, eligible_for_funding: false).tap do |application|
+        create(:application, :accepted, funding_eligibility: :ineligible_setting).tap do |application|
           create(:declaration, :eligible, application:)
         end
       end
@@ -35,7 +35,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       let(:service) { described_class.new(application:, eligible_for_funding: false) }
 
       let :application do
-        create(:application, :accepted, eligible_for_funding: false).tap do |application|
+        create(:application, :accepted, funding_eligibility: :ineligible_setting).tap do |application|
           create(:declaration, :submitted, application:)
         end
       end
@@ -49,7 +49,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       let(:service) { described_class.new(application:, eligible_for_funding: false) }
 
       let :application do
-        create(:application, :accepted, funded_place: true, eligible_for_funding: true)
+        create(:application, :accepted, funded_place: true, funding_eligibility: :funded)
       end
 
       it { is_expected.to include(/application is funded/i) }
@@ -74,7 +74,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
 
           expect(subject.errors).to be_blank
           expect(application.reload.eligible_for_funding).to be_truthy
-          expect(application.funding_eligiblity_status_code).to eq("marked_funded_by_policy")
+          expect(application.funding_eligibility).to eq("funded")
         end
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
 
           expect(subject.errors).to be_blank
           expect(application.reload.eligible_for_funding).to be_falsey
-          expect(application.funding_eligiblity_status_code).to eq("marked_ineligible_by_policy")
+          expect(application.funding_eligibility).to eq("marked_ineligible_by_policy")
         end
       end
     end
@@ -109,7 +109,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
 
           expect(subject.errors).to be_blank
           expect(application.reload.eligible_for_funding).to be_truthy
-          expect(application.funding_eligiblity_status_code).to eq("marked_funded_by_policy")
+          expect(application.funding_eligibility).to eq("funded")
         end
       end
     end

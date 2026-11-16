@@ -4,6 +4,7 @@ module FundingHelper
     FundingEligibility::NOT_IN_ENGLAND => "red",
     FundingEligibility::PREVIOUSLY_FUNDED => "red",
     FundingEligibility::INELIGIBLE_SETTING => "red",
+    FundingEligibility::MARKED_INELIGIBLE_BY_POLICY => "red",
   }.freeze
 
   def scholarship_funding_eligibility(application)
@@ -21,11 +22,8 @@ module FundingHelper
   end
 
   def funding_status_badge(application)
-    text = "Not eligible"
-    if application.funding_eligiblity_status_code.to_s == FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s
-      text = "Eligible"
-    end
-    govuk_tag(text:, colour: funding_status_colour(application.funding_eligiblity_status_code))
+    text = application.eligible_for_funding? ? "Eligible" : "Not eligible"
+    govuk_tag(text:, colour: funding_status_colour(application.funding_eligibility))
   end
 
 private

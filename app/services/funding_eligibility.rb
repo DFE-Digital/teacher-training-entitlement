@@ -5,6 +5,7 @@ class FundingEligibility
   NOT_IN_ENGLAND = :not_in_england
   PREVIOUSLY_FUNDED = :previously_funded
   INELIGIBLE_SETTING = :ineligible_setting
+  MARKED_INELIGIBLE_BY_POLICY = :marked_ineligible_by_policy
 
   ELIGIBLE_NURSERY_TYPES = %w[
     local_authority_maintained_nursery

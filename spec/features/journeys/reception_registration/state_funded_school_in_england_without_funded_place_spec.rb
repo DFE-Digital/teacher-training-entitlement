@@ -40,10 +40,9 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       expect(application.user.email).to eq(user_email)
 
       expect(application).to have_attributes(
-        eligible_for_funding: false,
         funded_place: nil,
         funding_choice: "school",
-        funding_eligiblity_status_code: "ineligible_setting",
+        funding_eligibility: "ineligible_setting",
         institution_id: institution.id,
         teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE,
         work_setting: Institution::STATE_FUNDED_INSTITUTION,

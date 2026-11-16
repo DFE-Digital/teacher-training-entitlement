@@ -164,10 +164,9 @@ erDiagram
     integer course_cohort_id
     datetime created_at
     uuid ecf_id
-    boolean eligible_for_funding
     boolean funded_place
     enum funding_choice
-    string funding_eligiblity_status_code
+    string funding_eligibility
     integer institution_id
     string notes
     enum status

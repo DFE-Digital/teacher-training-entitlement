@@ -186,11 +186,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           seeder.call
 
           eligible_count = lead_provider.updateable_applications.joins(:user)
-                                      .where(eligible_for_funding: true)
+                                      .where(funding_eligibility: :funded)
                                       .count
 
           not_eligible_count = lead_provider.updateable_applications.joins(:user)
-                                          .where(eligible_for_funding: false)
+                                          .where.not(funding_eligibility: :funded)
                                           .count
 
           expect(eligible_count).to eq(11) # All except APP-004
