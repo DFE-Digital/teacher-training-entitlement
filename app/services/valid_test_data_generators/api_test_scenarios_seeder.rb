@@ -25,6 +25,8 @@ module ValidTestDataGenerators
       [Application::ACCEPTED].freeze, # withdraw after acceptance
     ].freeze
 
+    INSTITUTION_SAMPLE_SIZE = 200
+
     attr_reader :lead_provider, :academic_year, :logger
 
     class << self
@@ -352,18 +354,19 @@ module ValidTestDataGenerators
     end
 
     def institutions_eligible
-      Institution
-        .open_school_or_non_school
-        .order("RANDOM()")
-        .first
+      @eligible_institutions ||= random_institutions(Institution.open_school_or_non_school)
+      @eligible_institutions.sample
     end
 
     def institutions_ineligible
-      Institution
-        .schools
-        .where(institutionable_id: School.not_in_england)
-        .order("RANDOM()")
-        .first
+      @ineligible_institutions ||= random_institutions(
+        Institution.schools.where(institutionable_id: School.not_in_england),
+      )
+      @ineligible_institutions.sample
+    end
+
+    def random_institutions(scope)
+      scope.order("RANDOM()").limit(INSTITUTION_SAMPLE_SIZE).to_a
     end
 
     def create_app(course_cohort:, status:, eligible_for_funding:, user:)

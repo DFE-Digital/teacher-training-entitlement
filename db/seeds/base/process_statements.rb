@@ -16,10 +16,14 @@ LeadProvider.all.find_each do |lead_provider|
     claw_back_from_statement = statement_scope.with_output_fee.where(state: :paid).where("deadline_date < ?", latest_statement.deadline_date).first
     next unless claw_back_from_statement
 
-    claw_back_from_statement.declarations.where.not(state: "voided").limit(2).each do |declaration|
-      errors = Declarations::Clawback.new(declaration:).tap(&:call).errors
-      fail(errors.full_messages.join(", ")) if errors.any?
-    end
+    claw_back_from_statement.declarations.where.not(state: "voided").includes(:application).find_each.lazy
+      .map { |declaration| Declarations::Clawback.new(declaration:) }
+      .select(&:valid?)
+      .first(2)
+      .each do |clawback|
+        clawback.call
+        fail(clawback.errors.full_messages.join(", ")) if clawback.errors.any?
+      end
   end
 end
 
