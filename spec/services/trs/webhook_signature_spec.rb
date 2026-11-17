@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Trs::WebhookSignature do
-  subject(:verify) { described_class.verify!(trs_webhook_request(body: delivered_body, headers: delivered_headers)) }
+  subject(:verify) { described_class.new(trs_webhook_request(body: delivered_body, headers: delivered_headers)).call }
 
   let(:body) { { trnRequest: { oneLoginUserSubject: "one-login-id", trn: "1234567" } }.to_json }
   let(:delivered_body) { body }
@@ -39,7 +39,7 @@ RSpec.describe Trs::WebhookSignature do
   end
 
   context "when the signing key is unknown" do
-    before { allow(Trs::WebhookSigningKeys).to receive(:verification_key).and_return(nil) }
+    before { stub_trs_webhook_jwks([]) }
 
     it { expect { verify }.to raise_error(described_class::InvalidSignature, "Unknown signing key") }
   end

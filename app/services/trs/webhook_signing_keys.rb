@@ -5,11 +5,11 @@ module Trs
     CACHE_KEY = "trs_webhook_jwks".freeze
     CACHE_DURATION = 1.hour
 
-    def self.verification_key(key_id)
-      new.verification_key(key_id)
+    def initialize(key_id)
+      @key_id = key_id
     end
 
-    def verification_key(key_id)
+    def call
       jwk = JWT::JWK::Set.new(jwks).find { |key| key[:kid] == key_id }
       return unless jwk
 
@@ -17,6 +17,8 @@ module Trs
     end
 
   private
+
+    attr_reader :key_id
 
     def jwks
       Rails.cache.fetch(CACHE_KEY, expires_in: CACHE_DURATION) do

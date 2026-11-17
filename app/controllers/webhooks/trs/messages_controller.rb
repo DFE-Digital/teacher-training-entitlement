@@ -19,7 +19,7 @@ class Webhooks::Trs::MessagesController < WebhooksController
 private
 
   def verify_signature
-    Trs::WebhookSignature.verify!(request)
+    Trs::WebhookSignature.new(request).call
   rescue Trs::WebhookSignature::InvalidSignature => e
     Rails.logger.warn("[TRS webhook] Rejected message #{request.headers['ce-id']}: #{e.message}")
     head :unauthorized

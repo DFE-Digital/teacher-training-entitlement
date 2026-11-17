@@ -4,7 +4,15 @@ module Helpers
     TRS_WEBHOOK_URL = "http://www.example.com/webhooks/trs/messages".freeze
 
     def trust_trs_webhook_signing_key
-      allow(Trs::WebhookSigningKeys).to receive(:verification_key).with(TRS_WEBHOOK_KEY_ID).and_return(trs_webhook_signing_key)
+      stub_trs_webhook_jwks([JWT::JWK.new(trs_webhook_signing_key.material, kid: TRS_WEBHOOK_KEY_ID).export])
+    end
+
+    def stub_trs_webhook_jwks(keys)
+      stub_request(:get, "#{Rails.application.config.x.trs_api_url}/webhook-jwks").to_return(
+        status: 200,
+        headers: { "Content-Type" => "application/json" },
+        body: { keys: }.to_json,
+      )
     end
 
     def signed_trs_webhook_headers(body:, headers: {}, signed_at: Time.current, components: Trs::WebhookSignature::REQUIRED_COMPONENTS)

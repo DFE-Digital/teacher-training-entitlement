@@ -7,15 +7,11 @@ module Trs
     REQUIRED_COMPONENTS = %w[@target-uri content-digest content-length ce-id ce-type ce-time].freeze
     MAX_AGE = 5.minutes
 
-    def self.verify!(request)
-      new(request).verify!
-    end
-
     def initialize(request)
       @request = request
     end
 
-    def verify!
+    def call
       signature = Linzer::Signature.build(
         "signature-input" => header!("signature-input"),
         "signature" => header!("signature"),
@@ -24,7 +20,7 @@ module Trs
       missing_components = REQUIRED_COMPONENTS - signature.components
       raise InvalidSignature, "Signature does not cover #{missing_components.join(', ')}" if missing_components.any?
 
-      key = WebhookSigningKeys.verification_key(signature.parameters["keyid"])
+      key = WebhookSigningKeys.new(signature.parameters["keyid"]).call
       raise InvalidSignature, "Unknown signing key" unless key
 
       Linzer.verify(key, Linzer::Message.new(request.rack_request), signature, no_older_than: MAX_AGE.to_i)

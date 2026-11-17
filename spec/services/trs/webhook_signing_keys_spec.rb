@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Trs::WebhookSigningKeys do
-  subject(:verification_key) { described_class.verification_key(key_id) }
+  subject(:verification_key) { described_class.new(key_id).call }
 
   let(:key_id) { "trs-key-1" }
   let(:ec_key) { OpenSSL::PKey::EC.generate("secp384r1") }
