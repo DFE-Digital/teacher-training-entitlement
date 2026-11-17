@@ -65,6 +65,20 @@ module Admin
         end
       end
 
+      def uplift_percentage
+        read[:uplift_percentage].presence
+      end
+
+      def uplift_incentive?
+        uplift_percentage.present?
+      end
+
+      def selected_uplift_institutions
+        return [] unless uplift_incentive?
+
+        Institution.where(id: read.fetch(:uplift_institution_ids, [])).order(:name).to_a
+      end
+
       def selected_delivery_partnerships
         selected_providers_by_id = selected_lead_providers.index_by { _1.lead_provider.id.to_s }
         delivery_partner_ids = delivery_partner_selections.values.flat_map(&:keys).uniq

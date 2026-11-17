@@ -6,6 +6,8 @@ class Admin::Settings::Courses::BuilderController < AdminController
   end
 
   def update
+    return search_uplift_institutions if searching_uplift_institutions?
+
     if wizard.save_current_step
       if adding_contract_financial_academic_year?
         save_contract_financial_academic_year!
@@ -66,5 +68,20 @@ private
       academic_year_to_add: nil,
       academic_years: academic_years.compact_blank.uniq,
     )
+  end
+
+  def searching_uplift_institutions?
+    wizard.current_step_name == :uplift_institutions && params[:search_institutions].present?
+  end
+
+  # Keeps the ticked institutions and the search term without validating,
+  # so the admin can search before any institution is selected.
+  def search_uplift_institutions
+    state_store.write(
+      uplift_institution_ids: wizard.current_step.uplift_institution_ids,
+      uplift_institution_search: wizard.current_step.uplift_institution_search,
+    )
+
+    redirect_to admin_settings_courses_builder_path(step: wizard.current_step_name.to_s.dasherize)
   end
 end
