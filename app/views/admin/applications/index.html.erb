@@ -28,7 +28,7 @@
         <%=
           f.govuk_collection_select(
             :work_setting,
-            Application.distinct(:work_setting).pluck(:work_setting).compact.sort,
+            Application.distinct.pluck(Arel.sql("registration_data->>'work_setting'")).compact_blank.sort,
             :to_s,
             :humanize,
             options: { selected: params[:work_setting], include_blank: "All" },

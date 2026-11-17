@@ -33,8 +33,6 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         funding_choice: "another",
         funding_eligibility: "ineligible_setting",
         institution_id: nil,
-        teacher_catchment: Institution::OTHER,
-        work_setting: nil,
       )
 
       expect(application.registration_data).to match(

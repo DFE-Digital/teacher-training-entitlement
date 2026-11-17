@@ -13,8 +13,6 @@ class HandleSubmissionForStore
         institution: (institution_from_store if inside_catchment?),
         funding_eligibility: funding_eligibility_service.funding_eligibility,
         funding_choice:,
-        teacher_catchment: store["teacher_catchment"],
-        work_setting: store["work_setting"],
         registration_data: store.except("generated_confirmation_code", "current_user", "current_user_id"),
         status: Application::PENDING,
       )

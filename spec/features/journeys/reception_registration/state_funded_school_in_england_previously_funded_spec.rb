@@ -39,9 +39,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         funded_place: nil,
         funding_choice: "self",
         funding_eligibility: "previously_funded",
-        institution_id: institution.id, status: Application::PENDING,
-        teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE,
-        work_setting: Institution::STATE_FUNDED_INSTITUTION
+        institution_id: institution.id, status: Application::PENDING
       )
 
       expect(application.registration_data).to match(

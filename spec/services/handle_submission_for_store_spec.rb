@@ -106,10 +106,8 @@ RSpec.describe HandleSubmissionForStore do
           "status" => "pending",
           "notes" => nil,
           "institution_id" => school.institution.id,
-          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
           "training_starts_at" => course_cohort.training_starts_at.to_s,
           "user_id" => user.id,
-          "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
         })
       end
 
@@ -179,10 +177,8 @@ RSpec.describe HandleSubmissionForStore do
           "status" => "pending",
           "notes" => nil,
           "institution_id" => nil,
-          "teacher_catchment" => "other",
           "training_starts_at" => course_cohort.training_starts_at.to_s,
           "user_id" => user.id,
-          "work_setting" => nil,
         })
       end
     end
@@ -213,10 +209,8 @@ RSpec.describe HandleSubmissionForStore do
           "status" => "pending",
           "notes" => nil,
           "institution_id" => nil,
-          "teacher_catchment" => nil,
           "training_starts_at" => course_cohort.training_starts_at.to_s,
           "user_id" => user.id,
-          "work_setting" => nil,
         })
       end
     end
@@ -251,10 +245,8 @@ RSpec.describe HandleSubmissionForStore do
           "status" => "pending",
           "notes" => nil,
           "institution_id" => nil,
-          "teacher_catchment" => "not found",
           "training_starts_at" => course_cohort.training_starts_at.to_s,
           "user_id" => user.id,
-          "work_setting" => nil,
         })
       end
     end

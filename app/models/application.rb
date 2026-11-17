@@ -41,6 +41,7 @@ class Application < ApplicationRecord
   scope :active_applications, -> { where.not(status: [REJECTED, WITHDRAWN]).or(where(status: nil)) }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
   scope :eligible_for_funding, -> { where(funding_eligibility: FundingEligibility::FUNDED_ELIGIBILITY_RESULT) }
+  scope :with_work_setting, ->(work_setting) { where("registration_data->>'work_setting' = ?", work_setting) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
   scope :previous_valid_applications, -> { where(status: [PENDING, ACCEPTED, STARTED, DEFERRED]) }
@@ -202,7 +203,11 @@ class Application < ApplicationRecord
   end
 
   def teacher_catchment_england?
-    teacher_catchment == Institution::ENGLAND_SUBDIVISION_CODE
+    !!institution&.in_england?
+  end
+
+  def work_setting
+    registration_data["work_setting"]
   end
 
 private

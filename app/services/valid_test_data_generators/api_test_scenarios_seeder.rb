@@ -378,7 +378,6 @@ module ValidTestDataGenerators
       application.update!(
         **funding_attributes(status:, eligible_for_funding:),
         status:,
-        teacher_catchment: "england",
       )
       application
     end

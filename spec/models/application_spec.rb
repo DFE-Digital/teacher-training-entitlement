@@ -340,18 +340,41 @@ RSpec.describe Application do
   end
 
   describe "#teacher_catchment_england?" do
-    subject { build(:application, teacher_catchment:).teacher_catchment_england? }
+    subject { application.teacher_catchment_england? }
 
-    context "when the teacher catchment is England" do
-      let(:teacher_catchment) { Institution::ENGLAND_SUBDIVISION_CODE }
+    context "when the institution is in England" do
+      let(:application) { build(:application) }
 
       it { is_expected.to be true }
     end
 
-    context "when the teacher catchment is not England" do
-      let(:teacher_catchment) { "another" }
+    context "when the institution is not in England" do
+      let(:application) { build(:application, institution: build(:institution, :not_in_england)) }
 
       it { is_expected.to be false }
+    end
+
+    context "without an institution" do
+      let(:application) { build(:application, institution: nil) }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#work_setting" do
+    it "reads the work setting from registration_data" do
+      application = build(:application, registration_data: { "work_setting" => Institution::OTHER })
+
+      expect(application.work_setting).to eq(Institution::OTHER)
+    end
+  end
+
+  describe ".with_work_setting" do
+    it "filters on the registration_data work setting" do
+      school_application = create(:application, registration_data: { "work_setting" => "a_school" })
+      create(:application, registration_data: { "work_setting" => Institution::OTHER })
+
+      expect(described_class.with_work_setting("a_school")).to contain_exactly(school_application)
     end
   end
 

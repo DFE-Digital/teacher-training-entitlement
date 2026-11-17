@@ -14,7 +14,6 @@ FactoryBot.define do
     end
 
     course_cohort { course.course_cohorts.last || create(:course_cohort, course:, cohort:) }
-    teacher_catchment { Institution::ENGLAND_SUBDIVISION_CODE }
     funding_choice { Application.funding_choices.keys.first }
     funded_place { course_cohort.cohort.funding_cap ? FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s == funding_eligibility.to_s : nil }
 

@@ -32,7 +32,7 @@ private
     FundingEligibility.new(
       course: application.course,
       institution: application.institution,
-      inside_catchment: application.teacher_catchment == Institution::ENGLAND_SUBDIVISION_CODE,
+      inside_catchment: application.teacher_catchment_england?,
       query_store: RegistrationQueryStore.new(store: application.registration_data),
     )
   end

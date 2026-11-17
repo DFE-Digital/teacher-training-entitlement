@@ -123,9 +123,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       "status" => "pending",
       "notes" => nil,
       "institution_id" => Institution.find_by(institution_reference_number: "100000").id,
-      "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
       "training_starts_at" => latest_application.course_cohort.training_starts_at.to_s,
-      "work_setting" => "state_funded_institution",
       "registration_data" => {
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,

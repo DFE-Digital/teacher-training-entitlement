@@ -113,7 +113,7 @@ ActiveRecord::Base.transaction do
     funding_eligibility: funding_eligibility_service.funding_eligibility,
     status: Application::PENDING,
     raw_application_data: raw_application_data.except("current_user", "current_user_id"),
-    # …teacher_catchment, work_setting, kind_of_nursery, …
+    # work setting and catchment answers stay in registration_data; catchment is derived from institution
   )
   enqueue_send_application_submission_email_job(application)
 end

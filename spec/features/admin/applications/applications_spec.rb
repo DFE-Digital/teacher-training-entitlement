@@ -80,7 +80,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "filtering applications by work setting" do
     application = applications_in_order.last
-    application.update!(work_setting: "a_school")
+    application.update!(registration_data: { "work_setting" => "a_school" })
 
     visit(admin_applications_path)
     select "A school", from: "Work setting"

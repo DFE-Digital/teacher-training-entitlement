@@ -25,7 +25,7 @@ RSpec.describe Admin::ApplicationsController, type: :request do
     end
 
     it "filters applications by work setting" do
-      school_application = create(:application, work_setting: "a_school")
+      school_application = create(:application, registration_data: { "work_setting" => "a_school" })
 
       get admin_applications_path, params: { work_setting: "a_school" }
 
