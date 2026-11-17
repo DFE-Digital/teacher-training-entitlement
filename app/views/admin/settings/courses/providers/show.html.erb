@@ -21,6 +21,13 @@
           row.with_value(text: @contract_generic&.public_send(key).presence || "-")
         end
       end
+
+      sl.with_row do |row|
+        uplift_percentage = @contract_generic&.uplift_percentage
+
+        row.with_key(text: t(".uplift_percentage"))
+        row.with_value(text: uplift_percentage ? number_to_percentage(uplift_percentage * 100, precision: 2, strip_insignificant_zeros: true) : "-")
+      end
     end
     %>
 

@@ -20,6 +20,11 @@
         row.with_key(text: "Description")
         row.with_value(text: @course.description)
       end
+
+      summary_list.with_row do |row|
+        row.with_key(text: "Uplift incentive")
+        row.with_value(text: @course.uplift_incentive? ? "Yes" : "No")
+      end
     end
     %>
 
@@ -70,5 +75,15 @@
       end
     end
     %>
+
+    <% if @course.uplift_incentive? %>
+      <%= govuk_details(summary_text: "Uplift institutions", id: "uplift-institutions") do %>
+        <ul class="govuk-list govuk-list--bullet">
+          <% @course.uplift_institutions.order(:name).each do |institution| %>
+            <li><%= institution.name_with_address %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
   </div>
 </div>

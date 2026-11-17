@@ -8,8 +8,10 @@ RSpec.describe Admin::Settings::Courses::ProvidersController, type: :request do
   let(:course_url) { "https://provider.example.com" }
   let(:email) { "contact@provider.example.com" }
 
+  let(:uplift_percentage) { nil }
+
   before do
-    create(:contract_year, :generic, course:, lead_provider:, course_url:, email:)
+    create(:contract_year, :generic, course:, lead_provider:, course_url:, email:, uplift_percentage:)
     create(:contract_year, course:, lead_provider:, academic_year: 2024, recruitment_target: 100, teacher_funding: 900)
   end
 
@@ -71,6 +73,24 @@ RSpec.describe Admin::Settings::Courses::ProvidersController, type: :request do
         end
       end
 
+      context "when the generic contract has an uplift percentage" do
+        let(:uplift_percentage) { BigDecimal("0.15") }
+
+        it "shows the uplift percentage" do
+          get admin_settings_course_provider_path(course, lead_provider)
+
+          expect(overview_value("Uplift percentage")).to eq("15%")
+        end
+      end
+
+      context "when the generic contract has no uplift percentage" do
+        it "shows the placeholder for the uplift percentage" do
+          get admin_settings_course_provider_path(course, lead_provider)
+
+          expect(overview_value("Uplift percentage")).to eq("-")
+        end
+      end
+
       context "when the generic contract has blank course url and email" do
         let(:course_url) { nil }
         let(:email) { nil }
@@ -122,5 +142,14 @@ RSpec.describe Admin::Settings::Courses::ProvidersController, type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+  end
+
+  def overview_value(key)
+    Nokogiri::HTML(response.body)
+      .css(".govuk-summary-list__row")
+      .find { |row| row.at_css(".govuk-summary-list__key").text.strip == key }
+      .at_css(".govuk-summary-list__value")
+      .text
+      .strip
   end
 end
