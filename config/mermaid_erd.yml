@@ -4,6 +4,7 @@ only:
   - Schedule
   - CourseCohort
   - CourseCohortProvider
+  - CourseUpliftInstitution
   - Institution
   - School
   - PrivateChildcareProvider
