@@ -25,6 +25,7 @@ flowchart LR
     TA -->|Auth Request| OL[GOV.UK One Login]
     TA -->|Token Exchange| TTE
     TTE -->|PUT /v3/trn-request/activate| TRS[TRS API]
+    TRS -->|POST /webhooks/trs/messages<br/>trn_request.completed| TTE
 ```
 
 ## 3. OIDC configuration
@@ -139,9 +140,34 @@ service activates a TRN via TRS.
      `refresh_token` (rotated), sets `trn_requested_at`.
   5. On `RefreshTokenError`: retries up to 5× with polynomial backoff.
 
+- **TRS `trn_request.completed` webhook**: when TRS completes an asynchronous
+  TRN request it pushes the TRN to `POST /webhooks/trs/messages`.
+  1. `Trs::WebhookSignature` verifies the [HTTP Message Signature](https://www.rfc-editor.org/rfc/rfc9421.html)
+     against the keys TRS publishes at `{TRS_API_URL}/webhook-jwks`
+     (fetched by `Trs::WebhookSigningKeys`, cached for an hour). It also
+     requires the signature to cover the `content-digest` header and checks
+     that digest against the body, and rejects signatures over 5 minutes old.
+     Unverified requests return `401`.
+  2. The message is stored as a `TrsWebhookMessage`, keyed on the CloudEvent
+     `ce-id`, so TRS redeliveries are acknowledged but not processed twice.
+  3. `ProcessTrsWebhookMessageJob` dispatches by `ce-type`.
+     `Trs::TrnRequestCompletedProcessor` finds the user by
+     `trnRequest.oneLoginUserSubject` (`User#one_login_id`), sets
+     `trnRequest.trn` on them, clears their `refresh_token`, and merges in any
+     other users with that TRN. `ping` messages (sent by TRS developers to
+     test the endpoint) are marked processed. Other types are marked ignored.
+  4. Failures (no matching user, no TRN in the message) are marked `failed`
+     with a `status_comment` and reported to Sentry.
+
+  The endpoint must be registered with TRS at API version **20260515 or
+  later**, the first version whose payload includes `oneLoginUserSubject`.
+  See the [TRS webhook docs](https://github.com/DFE-Digital/teaching-record-system/blob/main/docs/api-designs/webhooks.md).
+
 - **`Crons::EnqueueTrnActivationChecksJob`** (`app/jobs/crons/enqueue_trn_activation_checks_job.rb`):
   runs **daily at 06:00** (`0 6 * * *`). Re-polls TRS for users who have
   `trn_requested_at` set but TRN still blank (`User.needing_trn_activation_check`).
+  This is a fallback for webhooks that don't arrive: TRS stops retrying a
+  failed delivery after about 3.5 days.
 
 ## 9. Sign-out flow
 
@@ -170,6 +196,11 @@ do not participate in OIDC logout).
 | `app/jobs/refresh_user_token_job.rb`                     | Single-user token refresh job                         |
 | `app/jobs/crons/enqueue_token_refreshes_job.rb`          | Hourly cron to queue token refreshes                  |
 | `app/jobs/crons/enqueue_trn_activation_checks_job.rb`    | Daily 06:00 cron to re-poll TRS                       |
+| `app/controllers/webhooks/trs/messages_controller.rb`    | Receives TRS webhook messages                         |
+| `app/services/trs/webhook_signature.rb`                  | Verifies TRS webhook HTTP Message Signatures          |
+| `app/services/trs/webhook_signing_keys.rb`               | Fetches and caches TRS webhook signing keys (JWKS)    |
+| `app/jobs/process_trs_webhook_message_job.rb`            | Dispatches stored TRS webhook messages by type        |
+| `app/services/trs/trn_request_completed_processor.rb`    | Applies a `trn_request.completed` TRN to the user     |
 | `app/controllers/sessions_controller.rb`                 | Sign-out with OIDC `id_token_hint` logout             |
 | `config/initializers/teacher_auth.rb`                    | Reads env vars into `Rails.configuration.x`           |
 | `config/initializers/devise.rb`                          | OmniAuth strategy configuration                       |
