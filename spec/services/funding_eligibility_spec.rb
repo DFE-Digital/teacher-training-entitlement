@@ -26,8 +26,8 @@ RSpec.describe FundingEligibility do
   let(:course) { build(:course, :npd_eirt) }
   let(:query_store) { RegistrationQueryStore.new(store:) }
 
-  describe "#funding_eligiblity_status_code" do
-    subject { funding_eligibility.funding_eligiblity_status_code }
+  describe "#funding_eligibility" do
+    subject { funding_eligibility.funding_eligibility }
 
     context "when outside England" do
       let(:inside_catchment) { false }

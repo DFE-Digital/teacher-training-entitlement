@@ -77,7 +77,7 @@ interface:
 
 ```ruby
 FundingEligibility.call(user:, course_cohort:)
-  # => { funded?: true|false, funding_eligibility_status_code: "..." }
+  # => { funded?: true|false, funding_eligibility: "..." }
 ```
 
 It decides whether a user can register for a given `CourseCohort`. The wizard

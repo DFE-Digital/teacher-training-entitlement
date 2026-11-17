@@ -40,15 +40,15 @@ class FundingEligibility
   end
 
   def funded?
-    funding_eligiblity_status_code == FUNDED_ELIGIBILITY_RESULT
+    funding_eligibility == FUNDED_ELIGIBILITY_RESULT
   end
 
   def previously_funded?
     accepted_applications.any?
   end
 
-  def funding_eligiblity_status_code
-    @funding_eligiblity_status_code ||= begin
+  def funding_eligibility
+    @funding_eligibility ||= begin
       return NOT_IN_ENGLAND if @institution && !@institution.in_england?
       return PREVIOUSLY_FUNDED if previously_funded?
 
@@ -60,7 +60,7 @@ class FundingEligibility
   end
 
   def get_description_for_funding_status
-    key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligiblity_status_code)
+    key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligibility)
     I18n.t(key, course_name: course.name).html_safe if key
   end
 

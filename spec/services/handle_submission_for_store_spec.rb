@@ -133,7 +133,7 @@ RSpec.describe HandleSubmissionForStore do
 
       context "when there is a funding choice selected and eligible for funding is true" do
         before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::FUNDED_ELIGIBILITY_RESULT)
+          allow_any_instance_of(FundingEligibility).to receive(:funding_eligibility).and_return(FundingEligibility::FUNDED_ELIGIBILITY_RESULT)
         end
 
         it "clears the funding choice to nil on the application" do
@@ -144,7 +144,7 @@ RSpec.describe HandleSubmissionForStore do
 
       context "when there is a funding choice selected and eligible for funding is false" do
         before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_SETTING)
+          allow_any_instance_of(FundingEligibility).to receive(:funding_eligibility).and_return(FundingEligibility::INELIGIBLE_SETTING)
         end
 
         it "saves the funding choice to school on the application" do

@@ -38,7 +38,7 @@ module Questionnaires
     def funding_eligiblity_status_code
       return :ineligible_setting if works_in_other?
 
-      @funding_eligiblity_status_code ||= funding_eligibility.funding_eligiblity_status_code
+      @funding_eligiblity_status_code ||= funding_eligibility.funding_eligibility
     end
 
     def funding_eligibility
