@@ -45,7 +45,6 @@ module Questionnaires
       @funding_eligibility ||= FundingEligibility.new(
         course:,
         institution:,
-        inside_catchment: inside_catchment?,
         query_store: wizard.query_store,
       )
     end

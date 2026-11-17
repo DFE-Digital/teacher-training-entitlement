@@ -5,7 +5,6 @@ RSpec.describe FundingEligibility do
     described_class.new(
       institution:,
       course:,
-      inside_catchment:,
       query_store:,
     )
   end
@@ -19,7 +18,6 @@ RSpec.describe FundingEligibility do
     }.stringify_keys
   end
 
-  let(:inside_catchment) { true }
   let(:institution) { build(:institution) }
   let(:work_setting) { nil }
   let(:kind_of_nursery) { nil }
@@ -30,7 +28,6 @@ RSpec.describe FundingEligibility do
     subject { funding_eligibility.funding_eligibility }
 
     context "when outside England" do
-      let(:inside_catchment) { false }
       let(:institution) { build(:institution, :not_in_england) }
 
       it { is_expected.to eq :not_in_england }

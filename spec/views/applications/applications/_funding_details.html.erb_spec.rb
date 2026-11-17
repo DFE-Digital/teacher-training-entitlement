@@ -43,13 +43,15 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
       expect(rendered_partial).to have_css(".govuk-tag", text: "Not eligible")
       expect(rendered_partial).to have_text("Course funding")
 
-      expected_funding_text = ActionView::Base.full_sanitizer.sanitize(I18n.t("funding_details.ineligible_setting"))
-      expect(rendered_partial).to have_text(expected_funding_text)
+      I18n.t("funding_details.ineligible_setting").each do |text|
+        expect(rendered_partial).to have_text(text)
+      end
     end
   end
 
   context "when the application is not eligible because of being previously funded" do
     let(:registration_data) { { "funding" => "self" } }
+    let(:funding_eligibility) { FundingEligibility::PREVIOUSLY_FUNDED }
 
     before do
       # An application funded on a different course
@@ -66,8 +68,9 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
       expect(rendered_partial).to have_css(".govuk-tag", text: "Not eligible")
       expect(rendered_partial).to have_text("Course funding")
 
-      expected_funding_text = ActionView::Base.full_sanitizer.sanitize(I18n.t("funding_details.previously_funded"))
-      expect(rendered_partial).to have_text(expected_funding_text)
+      I18n.t("funding_details.previously_funded").each do |text|
+        expect(rendered_partial).to have_text(text)
+      end
     end
   end
 end

@@ -12,23 +12,13 @@ class FundingEligibility
     preschool_class_as_part_of_school
   ].freeze
 
-  attr_reader :institution,
-              :course,
-              :query_store
+  attr_reader :institution, :course, :query_store
 
-  delegate :work_setting,
-           to: :query_store
+  delegate :work_setting, to: :query_store
 
-  def initialize(institution:,
-                 course:,
-                 inside_catchment:, # rubocop:disable Lint/UnusedMethodArgument
-                 query_store:,
-                 **)
+  def initialize(institution:, course:, query_store:)
     @institution = institution
     @course = course
-    # catchment determined from institution
-    # @inside_catchment = inside_catchment
-    @inside_catchment = nil
     @query_store = query_store
   end
 

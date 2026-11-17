@@ -143,7 +143,7 @@ What matters from outside:
 `HandleSubmissionForStore`. Interface:
 
 ```ruby
-funding = FundingEligibility.new(course:, institution:, inside_catchment:, query_store:)
+funding = FundingEligibility.new(course:, institution:, query_store:)
 funding.funded?                              # => true / false
 funding.funding_eligibility       # => :funded | :not_in_england
                                              #    | :previously_funded | :ineligible_setting
