@@ -11,6 +11,7 @@ en:
           show:
             course_url: Course url
             email: Email
+            uplift_percentage: Uplift percentage
       admins:
         new:
           title: Add a new admin

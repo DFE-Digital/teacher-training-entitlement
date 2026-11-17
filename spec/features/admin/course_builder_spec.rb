@@ -318,6 +318,20 @@ RSpec.feature "Building a course", type: :feature do
       course = Course.find_by!(name: "Uplift course")
       expect(course.uplift_institutions).to contain_exactly(sunny_school)
       expect(ContractYear.find_by!(course:, lead_provider:, academic_year: nil).uplift_percentage).to eq(BigDecimal("0.15"))
+
+      visit admin_settings_course_path(course)
+      within(find(".govuk-summary-list__row", text: "Uplift incentive")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "Yes")
+      end
+      find("summary", text: "Uplift institutions").click
+      within("#uplift-institutions") do
+        expect(page).to have_text(sunny_school.name)
+      end
+
+      click_on "View details"
+      within(find(".govuk-summary-list__row", text: "Uplift percentage")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "15%")
+      end
     end
 
     scenario "creating a course without an uplift percentage" do
@@ -336,6 +350,17 @@ RSpec.feature "Building a course", type: :feature do
       course = Course.find_by!(name: "No uplift course")
       expect(course.uplift_institutions).to be_empty
       expect(ContractYear.find_by!(course:, lead_provider:, academic_year: nil).uplift_percentage).to be_nil
+
+      visit admin_settings_course_path(course)
+      within(find(".govuk-summary-list__row", text: "Uplift incentive")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "No")
+      end
+      expect(page).not_to have_css("summary", text: "Uplift institutions")
+
+      click_on "View details"
+      within(find(".govuk-summary-list__row", text: "Uplift percentage")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "-")
+      end
     end
 
     scenario "rejecting an uplift percentage above 100" do
