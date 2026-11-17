@@ -7,12 +7,6 @@ module FundingHelper
     FundingEligibility::MARKED_INELIGIBLE_BY_POLICY => "red",
   }.freeze
 
-  def scholarship_funding_eligibility(application)
-    funding_eligibility = funding_eligibility_calculator(application)
-
-    funding_eligibility.get_description_for_funding_status
-  end
-
   def targeted_support_funding
     I18n.t("funding_details.targeted_funding_eligibility").html_safe
   end
@@ -24,16 +18,5 @@ module FundingHelper
   def funding_status_badge(application)
     text = application.eligible_for_funding? ? "Eligible" : "Not eligible"
     govuk_tag(text:, colour: funding_status_colour(application.funding_eligibility))
-  end
-
-private
-
-  def funding_eligibility_calculator(application)
-    FundingEligibility.new(
-      course: application.course,
-      institution: application.institution,
-      inside_catchment: application.teacher_catchment_england?,
-      query_store: RegistrationQueryStore.new(store: application.registration_data),
-    )
   end
 end

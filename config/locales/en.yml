@@ -42,7 +42,7 @@ en:
     change_provider: Registration updated for %{course_name} - next steps
     deferral_notification: Notification of deferral - %{course_name}
     registration_open_notification: Registration open - %{course_name}
-    registration_interest: Registration open for Excellence in reception teaching course 
+    registration_interest: Registration open for Excellence in reception teaching course
     deferral_expiring_notification: Registration about to expire - %{course_name}
     provider_rejected: Registration status updated for %{course_name} – next steps
     previous_provider: Change provider notification
@@ -69,7 +69,7 @@ en:
     not_completable: This application cannot be completed
     not_withdrawable: This application cannot be withdrawn
     application_is_readonly: This application can no longer be updated
-  
+
   applications:
     change_provider:
       contact_us:
@@ -84,7 +84,7 @@ en:
 
       start:
         title: "%{course_name} course: register with a different provider"
-        text: 
+        text:
           application_pending: You can only register with a different provider if you haven't started the course yet.
           application_rejected: ""
         what_happens:
@@ -109,7 +109,7 @@ en:
             blank: Please confirm you have not started the course and want to change
               provider
       providers:
-        current_provider: 
+        current_provider:
           - You are currently registered with %{current_provider}.
           - Select a different provider.
         form:
@@ -784,6 +784,9 @@ en:
       <p>This means that you would need to pay for the course another way.</p>
     inside_catchment: You're not eligible for scholarship funding as you do
       not work in England.
+    marked_ineligible_by_policy: You're not eligiblie for scholarship funding.
+    not_in_england: You're not eligible for scholarship funding as you do
+      not work in England.
     no_Ofsted: You're not eligible for schools funding as you or your employer
       is not registered on the Ofsted Early Years Register or with a registered Childminder
       Agency.
@@ -800,7 +803,7 @@ en:
     not_entitled_childminder: You're not eligible for scholarship funding for
       the NPQ as you or your employer is not registered on the Ofsted early years
       register or with a registered Childminder Agency.
-    scholarship_eligibility: 	You're not eligible for scholarship funding as you do not work in one of the eligible settings, such as state-funded schools.
+    scholarship_eligibility:    You're not eligible for scholarship funding as you do not work in one of the eligible settings, such as state-funded schools.
     subject_to_review: You may be eligible for scholarship funding, subject
       to review of your application by DfE.
   provider_details:
@@ -823,9 +826,9 @@ en:
   course_start_details:
     accepted: When we receive confirmation from your provider that you have completed the course
       you will be able to download your certificate.
-    unsuccessful: This means your chosen provider is not able to offer you a place. 
+    unsuccessful: This means your chosen provider is not able to offer you a place.
       If you want to continue with your current registration you can register with a different provider.
-    eligible_for_funding: If your provider does not confirm you've started the course by %{date}, 
+    eligible_for_funding: If your provider does not confirm you've started the course by %{date},
       your registration will expire. You can register again for a future start date.
     not_eligible_for_funding: If your provider does not confirm you’ve started the
       course by %{date}, your registration will expire. You can register again for a future start date.
@@ -939,16 +942,16 @@ en:
         funding_options:
           another: For example, I am sharing the costs with my workplace
         can_share_choices:
-        - All the information you enter for your NPD registration will be shared with external organisations 
+        - All the information you enter for your NPD registration will be shared with external organisations
           including auditors, evaluators, relevant bodies and training providers — this allows your provider
           to register you onto their course.
         - For more information about who we share your data with read our <a href="%{privacy_notice_url}"
           class="govuk-link" target="_blank" rel="noopener noreferrer">privacy notice</a>.
         - If you do not agree to share your information you will not be able to progress with your NPD course.
-        choose_school_html: 
-          Search for your workplace by postcode, unique reference number (URN) or name. 
+        choose_school_html:
+          Search for your workplace by postcode, unique reference number (URN) or name.
           <br/>
-          If you work for a trust, use the details of one of its schools.          
+          If you work for a trust, use the details of one of its schools.
         choose_school_search: Start typing to search by name, URN or postcode
         institution_location_html: Enter <strong>just the first part of your workplace
           postcode</strong>, for example SW19. If you work for a trust, use the postcode
@@ -964,8 +967,8 @@ en:
         national_insurance_number: This will help us match your details. It's on your
           National Insurance card, benefit letter, payslip or P60. For example, ‘QQ
           12 34 56 C'.
-        work_setting: 
-          Make sure the information you provide is correct, as your provider will check your details. 
+        work_setting:
+          Make sure the information you provide is correct, as your provider will check your details.
           <br/>
           Register using your current workplace details, even if they will change soon.
     label:

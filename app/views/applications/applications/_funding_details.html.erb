@@ -8,7 +8,7 @@
         if application.eligible_for_funding
           concat render("eligible_for_funding_details", application: @application)
         else
-          concat tag.p(scholarship_funding_eligibility(application), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
+          concat tag.p(t(application.funding_eligibility, scope: :funding_details), class: "govuk-!-margin-top-2 govuk-!-margin-bottom-0")
         end
       end
     end
