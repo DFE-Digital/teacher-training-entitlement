@@ -202,10 +202,6 @@ class Application < ApplicationRecord
     end
   end
 
-  def teacher_catchment_england?
-    !!institution&.in_england?
-  end
-
   def work_setting
     registration_data["work_setting"]
   end

@@ -12,13 +12,6 @@ class FundingEligibility
     preschool_class_as_part_of_school
   ].freeze
 
-  FUNDING_STATUS_CODE_DESCRIPTIONS = {
-    FUNDED_ELIGIBILITY_RESULT => "funding_details.scholarship_eligibility",
-    NOT_IN_ENGLAND => "funding_details.inside_catchment",
-    PREVIOUSLY_FUNDED => "funding_details.previously_funded",
-    INELIGIBLE_SETTING => "funding_details.ineligible_setting",
-  }.freeze
-
   attr_reader :institution,
               :course,
               :query_store
@@ -57,11 +50,6 @@ class FundingEligibility
       else INELIGIBLE_SETTING
       end
     end
-  end
-
-  def get_description_for_funding_status
-    key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligibility)
-    I18n.t(key, course_name: course.name).html_safe if key
   end
 
 private

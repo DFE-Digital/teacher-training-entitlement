@@ -110,16 +110,4 @@ RSpec.describe FundingEligibility do
       it { is_expected.to be true }
     end
   end
-
-  describe "#get_description_for_funding_status" do
-    subject { funding_eligibility.get_description_for_funding_status }
-
-    let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
-
-    before do
-      allow(institution).to receive(:eligible_establishment?).and_return(true)
-    end
-
-    it { is_expected.to eq I18n.t("funding_details.scholarship_eligibility") }
-  end
 end

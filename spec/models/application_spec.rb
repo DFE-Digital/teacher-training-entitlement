@@ -339,28 +339,6 @@ RSpec.describe Application do
     end
   end
 
-  describe "#teacher_catchment_england?" do
-    subject { application.teacher_catchment_england? }
-
-    context "when the institution is in England" do
-      let(:application) { build(:application) }
-
-      it { is_expected.to be true }
-    end
-
-    context "when the institution is not in England" do
-      let(:application) { build(:application, institution: build(:institution, :not_in_england)) }
-
-      it { is_expected.to be false }
-    end
-
-    context "without an institution" do
-      let(:application) { build(:application, institution: nil) }
-
-      it { is_expected.to be false }
-    end
-  end
-
   describe "#work_setting" do
     it "reads the work setting from registration_data" do
       application = build(:application, registration_data: { "work_setting" => Institution::OTHER })
