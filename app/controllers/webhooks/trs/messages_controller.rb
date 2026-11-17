@@ -22,6 +22,7 @@ private
     Trs::WebhookSignature.new(request).call
   rescue Trs::WebhookSignature::InvalidSignature => e
     Rails.logger.warn("[TRS webhook] Rejected message #{request.headers['ce-id']}: #{e.message}")
+    Sentry.capture_message("[TRS webhook] Rejected message: #{e.message}", level: :warning, extra: { message_id: request.headers["ce-id"] })
     head :unauthorized
   end
 end

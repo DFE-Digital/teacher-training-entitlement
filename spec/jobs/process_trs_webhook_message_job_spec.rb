@@ -34,6 +34,14 @@ RSpec.describe ProcessTrsWebhookMessageJob do
 
       expect(webhook_message.reload).to have_attributes(status: "ignored", status_comment: "No processor for message type alert.created")
     end
+
+    it "reports to Sentry" do
+      allow(Sentry).to receive(:capture_message)
+
+      perform
+
+      expect(Sentry).to have_received(:capture_message).with("[TRS webhook] No processor for message type alert.created", hash_including(level: :warning))
+    end
   end
 
   context "when the message has already been processed" do

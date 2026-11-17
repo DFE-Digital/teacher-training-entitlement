@@ -64,5 +64,13 @@ RSpec.describe "POST /webhooks/trs/messages", type: :request do
       expect(response).to have_http_status(:unauthorized)
       expect(TrsWebhookMessage.count).to eq(0)
     end
+
+    it "reports to Sentry" do
+      allow(Sentry).to receive(:capture_message)
+
+      deliver
+
+      expect(Sentry).to have_received(:capture_message).with(/\A\[TRS webhook\] Rejected message: /, hash_including(level: :warning, extra: { message_id: }))
+    end
   end
 end

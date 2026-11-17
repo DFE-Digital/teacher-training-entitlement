@@ -20,10 +20,17 @@ class TrsWebhookMessage < ApplicationRecord
 
   def mark_ignored!(comment)
     update!(status: :ignored, status_comment: comment, processed_at: Time.current)
+    report_to_sentry(comment, level: :warning)
   end
 
   def mark_failed!(comment)
     update!(status: :failed, status_comment: comment, processed_at: Time.current)
-    Sentry.capture_message("[TRS webhook] #{comment}", extra: { trs_webhook_message_id: id, message_type: })
+    report_to_sentry(comment, level: :error)
+  end
+
+private
+
+  def report_to_sentry(comment, level:)
+    Sentry.capture_message("[TRS webhook] #{comment}", level:, extra: { trs_webhook_message_id: id, message_type: })
   end
 end
