@@ -14,6 +14,20 @@ RSpec.describe Course do
     it { is_expected.to have_many(:contract_years) }
     it { is_expected.to have_many(:lead_provider_profiles) }
     it { is_expected.to have_many(:lead_providers).through(:lead_provider_profiles) }
+    it { is_expected.to have_many(:course_uplift_institutions).dependent(:destroy) }
+    it { is_expected.to have_many(:uplift_institutions).through(:course_uplift_institutions).source(:institution) }
+  end
+
+  describe "#uplift_incentive?" do
+    subject(:course) { create(:course) }
+
+    it { is_expected.not_to be_uplift_incentive }
+
+    context "when the course has uplift institutions" do
+      before { create(:course_uplift_institution, course:) }
+
+      it { is_expected.to be_uplift_incentive }
+    end
   end
 
   describe "validations" do
