@@ -140,6 +140,12 @@ shared:
     - course_group
     - short_code
     - position
+  :course_uplift_institutions:
+    - id
+    - course_id
+    - institution_id
+    - created_at
+    - updated_at
   :course_cohorts:
     - id
     - academic_year

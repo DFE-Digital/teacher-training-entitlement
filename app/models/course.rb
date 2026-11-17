@@ -18,6 +18,8 @@ class Course < ApplicationRecord
   has_many :contract_years
   has_many :lead_provider_profiles, -> { where(academic_year: nil) }, class_name: "ContractYear"
   has_many :lead_providers, through: :lead_provider_profiles
+  has_many :course_uplift_institutions, dependent: :destroy
+  has_many :uplift_institutions, through: :course_uplift_institutions, source: :institution
 
   scope :displayable, -> { where(display: true).order(:position) }
 
@@ -30,6 +32,10 @@ class Course < ApplicationRecord
   def self.reception
     find_by(identifier: "npd-excellence-in-reception-teaching") ||
       find_by(identifier: "tte-early-years")
+  end
+
+  def uplift_incentive?
+    uplift_institutions.any?
   end
 
   def rebranded_alternative_courses
