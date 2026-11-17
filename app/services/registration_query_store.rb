@@ -21,10 +21,6 @@ class RegistrationQueryStore
     store["teacher_catchment"] == Institution::ENGLAND_SUBDIVISION_CODE
   end
 
-  def funding_eligiblity_status_code
-    store["funding_eligiblity_status_code"]
-  end
-
   def teacher_catchment_humanized
     teacher_catchment_england? ? "Yes" : "No"
   end
