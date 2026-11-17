@@ -106,6 +106,27 @@
         <%= govuk_link_to "Change <span class=\"govuk-visually-hidden\"> delivery partners</span>".html_safe, @wizard.resolve_step_path(:delivery_partners) %>
       <% end %>
     <% end %>
+
+    <% body.with_row do |row| %>
+      <% row.with_cell(text: "Uplift incentive") %>
+      <% row.with_cell do %>
+        <% if state_store.uplift_incentive? %>
+          <p class="govuk-body">
+            Uplift percentage: <%= number_to_percentage(state_store.uplift_percentage, precision: 2, strip_insignificant_zeros: true) %>
+          </p>
+          <ul class="govuk-list govuk-list--bullet">
+            <% state_store.selected_uplift_institutions.each do |institution| %>
+              <li><%= institution.name %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          None
+        <% end %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= govuk_link_to "Change", @wizard.resolve_step_path(:uplift_incentive), visually_hidden_suffix: "uplift incentive" %>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>
 
