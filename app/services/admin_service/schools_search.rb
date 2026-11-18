@@ -19,6 +19,6 @@ class AdminService::SchoolsSearch
 private
 
   def default_scope
-    School.joins(:institution).order("institutions.name ASC")
+    Institution.schools_of_any_type.order("institutions.name ASC")
   end
 end

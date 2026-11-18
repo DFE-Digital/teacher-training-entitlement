@@ -152,7 +152,20 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     describe "institution serialization" do
       it "serializes the `institution_reference_number`" do
         expect(attributes["institution_reference_number"]).to eq(institution.institution_reference_number)
-        expect(attributes["institution_type"]).to eq(institution.institutionable_type.downcase)
+        expect(attributes["institution_type"]).to eq("school")
+      end
+
+      {
+        "state_funded" => "school",
+        "local_authority" => "localauthority",
+        "private_childcare_provider" => "privatechildcareprovider",
+        "further_education" => "further_education",
+      }.each do |slug, api_value|
+        context "when the institution_type is #{slug}" do
+          let(:institution) { create(:institution, institution_type: slug) }
+
+          it { expect(attributes["institution_type"]).to eq(api_value) }
+        end
       end
 
       it "serializes the `ukprn`" do

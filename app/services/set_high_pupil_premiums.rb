@@ -8,7 +8,7 @@ class SetHighPupilPremiums
   end
 
   def call
-    School.where(urn: urns).update_all(high_pupil_premium: true)
+    Institution.schools_of_any_type.where(institution_reference_number: urns).update_all(high_pupil_premium: true)
   end
 
 private

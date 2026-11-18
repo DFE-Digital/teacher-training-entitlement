@@ -360,7 +360,7 @@ module ValidTestDataGenerators
 
     def institutions_ineligible
       @ineligible_institutions ||= random_institutions(
-        Institution.schools.where(institutionable_id: School.not_in_england),
+        Institution.schools_of_any_type.not_in_england,
       )
       @ineligible_institutions.sample
     end

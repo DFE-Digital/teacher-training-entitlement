@@ -44,20 +44,44 @@ RSpec.describe FundingEligibility do
     context "when work setting is a state funded institution" do
       let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
 
-      context "when institution is an eligible establishment" do
-        before do
-          allow(institution).to receive(:eligible_establishment?).and_return(true)
+      FundingEligibility::ELIGIBLE_ESTABLISHMENT_TYPE_CODES.each_key do |code|
+        context "when a state funded institution has eligible establishment type code #{code}" do
+          let(:institution) { build(:institution, institution_type: Institution::STATE_FUNDED, establishment_type_code: code) }
+
+          it { is_expected.to eq :funded }
         end
+      end
+
+      context "when a state funded institution has an ineligible establishment type code" do
+        let(:institution) { build(:institution, institution_type: Institution::STATE_FUNDED, establishment_type_code: "11") }
+
+        it { is_expected.to eq :ineligible_setting }
+      end
+
+      context "when a state funded institution has no establishment type code" do
+        let(:institution) { build(:institution, institution_type: Institution::STATE_FUNDED).tap { |i| i.establishment_type_code = nil } }
+
+        it { is_expected.to eq :ineligible_setting }
+      end
+
+      context "when institution is a further education institution with an eligible code" do
+        let(:institution) { build(:institution, institution_type: Institution::FURTHER_EDUCATION, establishment_type_code: "18") }
 
         it { is_expected.to eq :funded }
       end
 
-      context "when institution is not an eligible establishment" do
-        before do
-          allow(institution).to receive(:eligible_establishment?).and_return(false)
-        end
+      context "when institution is a local authority" do
+        let(:institution) { build(:institution, :for_local_authority, institution_type: Institution::LOCAL_AUTHORITY) }
 
-        it { is_expected.to eq :ineligible_setting }
+        it { is_expected.to eq :funded }
+      end
+
+      (Institution::INSTITUTION_TYPES - [Institution::STATE_FUNDED, Institution::FURTHER_EDUCATION, Institution::LOCAL_AUTHORITY]).each do |slug|
+        context "when institution type is #{slug}" do
+          let(:institution) { build(:institution, institution_type: slug, establishment_type_code: "1") }
+
+          it { is_expected.to eq :ineligible_setting }
+        end
       end
     end
 
@@ -79,16 +103,12 @@ RSpec.describe FundingEligibility do
 
     let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
 
-    before do
-      allow(institution).to receive(:eligible_establishment?).and_return(true)
-    end
+    let(:institution) { build(:institution, institution_type: Institution::STATE_FUNDED, establishment_type_code: "1") }
 
     it { is_expected.to be true }
 
     context "when ineligible" do
-      before do
-        allow(institution).to receive(:eligible_establishment?).and_return(false)
-      end
+      let(:institution) { build(:institution, institution_type: Institution::STATE_FUNDED, establishment_type_code: "11") }
 
       it { is_expected.to be false }
     end

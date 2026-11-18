@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe API::ParticipantSerializer, type: :serializer do
   let(:lead_provider) { create(:lead_provider) }
   let(:course) { application.course }
-  let(:school) { application.school }
+  let(:school) { application.institution }
   let(:participant_id_change) { application.participant_id_changes.last }
   let(:cohort) { application.cohort }
   let(:application) { create(:application, :accepted, :with_state_change, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
@@ -83,7 +83,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
             application_id: application.ecf_id,
             eligible_for_funding: application.eligible_for_funding,
             status: application.status,
-            school_urn: application.school.urn,
+            school_urn: application.institution.urn,
             withdrawal: nil,
             deferral: nil,
             created_at: accepted_event.created_at.rfc3339,
@@ -108,7 +108,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
               status: application.status,
-              school_urn: application.school.urn,
+              school_urn: application.institution.urn,
               withdrawal: {
                 reason: withdrawal.reason,
                 date: withdrawal.created_at.rfc3339,
@@ -144,7 +144,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
               application_id: application.ecf_id,
               eligible_for_funding: application.eligible_for_funding,
               status: application.status,
-              school_urn: application.school.urn,
+              school_urn: application.institution.urn,
               withdrawal: nil,
               deferral: {
                 reason: deferral.reason,

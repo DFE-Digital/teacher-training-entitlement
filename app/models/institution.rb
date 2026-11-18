@@ -7,7 +7,7 @@ class Institution < ApplicationRecord
   ALL_SETTINGS = [PRIVATE_INSTITUTION, STATE_FUNDED_INSTITUTION, OTHER].freeze
 
   REDACTED_DATA_STRING = "REDACTED".freeze
-  TYPES = %w[School PrivateChildcareProvider LocalAuthority].freeze
+  TYPES = %w[School PrivateChildcareProvider LocalAuthority].freeze # delegated_type only, removed in a later ticket
   UK_COUNTRY_CODE = "GBR".freeze
   CROWN_DEPENDENCY_COUNTRY_CODES = %w[JEY GGY IMN].freeze
   ENGLAND_SUBDIVISION_CODE = "ENG".freeze
@@ -39,6 +39,12 @@ class Institution < ApplicationRecord
 
   INSTITUTION_TYPES = institution_types.keys.freeze
 
+  NON_SCHOOL_INSTITUTION_TYPES = [LOCAL_AUTHORITY, PRIVATE_CHILDCARE_PROVIDER].freeze
+  SCHOOL_INSTITUTION_TYPES = (INSTITUTION_TYPES - NON_SCHOOL_INSTITUTION_TYPES).freeze
+
+  # Institution types a participant can pick when registering.
+  WORKPLACE_INSTITUTION_TYPES = [*SCHOOL_INSTITUTION_TYPES, LOCAL_AUTHORITY].freeze
+
   # Maps institution_type to the legacy API v1 institution_type value.
   # Any slug not listed here is emitted unchanged.
   API_INSTITUTION_TYPE_MAPPING = {
@@ -60,12 +66,15 @@ class Institution < ApplicationRecord
                   against: %i[name postcode postcode_without_spaces],
                   using: { tsearch: { prefix: true, dictionary: "english", tsvector_column: "search_vector" } }
 
+  scope :workplaces, -> { where(institution_type: WORKPLACE_INSTITUTION_TYPES) }
+  scope :schools_of_any_type, -> { where(institution_type: SCHOOL_INSTITUTION_TYPES) }
   scope :open_school_or_non_school, lambda {
-    open_school_institution_ids = School.open.joins(:institution).select("institutions.id")
-    where.not(institutionable_type: "School").or(where(id: open_school_institution_ids))
+    where(open: true).or(where(institution_type: NON_SCHOOL_INSTITUTION_TYPES))
   }
-
-  delegate :identifier, :eligible_establishment?, to: :institutionable
+  scope :not_in_england, lambda {
+    where("alpha3_country_code IS DISTINCT FROM ? OR subdivision_code IS DISTINCT FROM ?",
+          UK_COUNTRY_CODE, ENGLAND_SUBDIVISION_CODE)
+  }
 
   def self.search(search_term)
     return none if search_term.blank?
@@ -104,9 +113,9 @@ class Institution < ApplicationRecord
   end
 
   def ukprn
-    return institution_reference_number if local_authority?
+    return institution_reference_number if institution_type_local_authority?
 
-    school&.ukprn
+    self[:ukprn]
   end
 
   def name

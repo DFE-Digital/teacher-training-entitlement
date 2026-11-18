@@ -51,7 +51,7 @@ module Questionnaires
 
     def possible_institutions
       @possible_institutions ||= Institution
-        .where(institutionable_type: %w[School LocalAuthority])
+        .workplaces
         .open_school_or_non_school
         .search(institution_name)
         .limit(10)
@@ -65,7 +65,6 @@ module Questionnaires
 
     def eligible_for_funding?
       selected_institution.in_england? &&
-        selected_institution.eligible_establishment? &&
         !funding_eligibility.previously_funded? &&
         funding_eligibility.funded?
     end

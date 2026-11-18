@@ -44,7 +44,7 @@
           row.with_cell(text: institution.id)
           row.with_cell(text: institution.urn)
           row.with_cell(text: institution.ukprn)
-          row.with_cell(text: institution.school? ? institution.institutionable.la_name : nil)
+          row.with_cell(text: institution.la_name)
           row.with_cell(text: institution.address_string)
         end
       end

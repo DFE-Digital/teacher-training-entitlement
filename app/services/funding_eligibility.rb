@@ -12,6 +12,46 @@ class FundingEligibility
     preschool_class_as_part_of_school
   ].freeze
 
+  # GIAS establishment type codes whose institutions can be funded.
+  ELIGIBLE_ESTABLISHMENT_TYPE_CODES = {
+    "1" => "Community school",
+    "2" => "Voluntary aided school",
+    "3" => "Voluntary controlled school",
+    "5" => "Foundation school",
+    "6" => "City technology college",
+    "7" => "Community special school",
+    "8" => "Non-maintained special school",
+    "10" => "Other independent special school",
+    "12" => "Foundation special school",
+    "14" => "Pupil referral unit",
+    "15" => "Local authority nursery school",
+    "18" => "Further education",
+    "24" => "Secure units",
+    "26" => "Service children's education",
+    "28" => "Academy sponsor led",
+    "31" => "Sixth form centres",
+    "32" => "Special post 16 institution",
+    "33" => "Academy special sponsor led",
+    "34" => "Academy converter",
+    "35" => "Free schools",
+    "36" => "Free schools special",
+    "38" => "Free schools alternative provision",
+    "39" => "Free schools 16 to 19",
+    "40" => "University technical college",
+    "41" => "Studio schools",
+    "42" => "Academy alternative provision converter",
+    "43" => "Academy alternative provision sponsor led",
+    "44" => "Academy special converter",
+    "45" => "Academy 16-19 converter",
+    "46" => "Academy 16 to 19 sponsor led",
+  }.freeze
+
+  # institution_type slugs whose funding depends on the GIAS establishment type code.
+  ESTABLISHMENT_TYPE_CODE_CHECKED_INSTITUTION_TYPES = [
+    Institution::STATE_FUNDED,
+    Institution::FURTHER_EDUCATION,
+  ].freeze
+
   attr_reader :institution, :course, :query_store
 
   delegate :work_setting, to: :query_store
@@ -45,9 +85,20 @@ class FundingEligibility
 private
 
   def school_policy
-    return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?
+    return INELIGIBLE_SETTING unless eligible_establishment?(mandatory_institution)
 
     FUNDED_ELIGIBILITY_RESULT
+  end
+
+  def eligible_establishment?(institution)
+    case institution.institution_type
+    when Institution::LOCAL_AUTHORITY
+      true
+    when *ESTABLISHMENT_TYPE_CODE_CHECKED_INSTITUTION_TYPES
+      ELIGIBLE_ESTABLISHMENT_TYPE_CODES.key?(institution.establishment_type_code)
+    else
+      false
+    end
   end
 
   def users

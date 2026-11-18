@@ -10,7 +10,7 @@ RSpec.describe AdminService::SchoolsSearch do
       let(:q) { school.name.split(" ").first }
 
       it "returns the hit" do
-        expect(subject.call).to include(school)
+        expect(subject.call).to include(school.institution)
       end
     end
 
@@ -18,7 +18,7 @@ RSpec.describe AdminService::SchoolsSearch do
       let(:q) { school.urn }
 
       it "returns the hit" do
-        expect(subject.call).to include(school)
+        expect(subject.call).to include(school.institution)
       end
     end
   end

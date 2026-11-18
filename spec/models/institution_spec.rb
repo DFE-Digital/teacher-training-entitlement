@@ -90,6 +90,62 @@ RSpec.describe Institution do
     end
   end
 
+  describe ".open_school_or_non_school" do
+    let!(:open_school) { create(:school).institution }
+    let!(:closed_school) { create(:school, :closed).institution }
+    let!(:local_authority) { create(:local_authority).institution }
+    let!(:private_childcare_provider) { create(:private_childcare_provider, :disabled).institution }
+
+    it "includes open schools and non-school institutions" do
+      expect(described_class.open_school_or_non_school).to contain_exactly(open_school, local_authority, private_childcare_provider)
+    end
+
+    it "excludes closed schools" do
+      expect(described_class.open_school_or_non_school).not_to include(closed_school)
+    end
+  end
+
+  describe ".workplaces" do
+    let!(:school) { create(:school).institution }
+    let!(:local_authority) { create(:local_authority).institution }
+
+    before { create(:private_childcare_provider) }
+
+    it "returns schools of any type and local authorities only" do
+      expect(described_class.workplaces).to contain_exactly(school, local_authority)
+    end
+  end
+
+  describe ".not_in_england" do
+    let!(:in_england) { create(:institution) }
+    let!(:in_wales) { create(:institution, :not_in_england) }
+    let!(:abroad) { create(:institution, alpha3_country_code: "FRA", subdivision_code: nil) }
+
+    it "returns institutions outside England" do
+      expect(described_class.not_in_england).to contain_exactly(in_wales, abroad)
+    end
+
+    it "excludes institutions in England" do
+      expect(described_class.not_in_england).not_to include(in_england)
+    end
+  end
+
+  describe "#ukprn" do
+    it "reads the institution column for a school" do
+      expect(build(:institution, ukprn: "10000001").ukprn).to eq("10000001")
+    end
+
+    it "uses the institution reference number for a local authority" do
+      institution = build(:institution, :for_local_authority, institution_type: described_class::LOCAL_AUTHORITY, institution_reference_number: "10000002")
+
+      expect(institution.ukprn).to eq("10000002")
+    end
+
+    it "is nil for a private childcare provider" do
+      expect(create(:private_childcare_provider).institution.ukprn).to be_nil
+    end
+  end
+
   describe "#country_long_name" do
     subject(:institution) { build(:institution, alpha3_country_code:) }
 

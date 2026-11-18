@@ -17,7 +17,7 @@ module API
         field(:participant_id) { |a| a.user.ecf_id }
         field(:teacher_reference_number) { |a| a.user.trn }
         field(:institution_reference_number) { |a| a.institution&.institution_reference_number }
-        field(:institution_type) { |a| a.institution&.institutionable_type&.downcase }
+        field(:institution_type) { |a| Institution::API_INSTITUTION_TYPE_MAPPING[a.institution&.institution_type] }
         field(:ukprn) { |a| a.institution&.ukprn }
         field(:status)
         field(:reason_for_rejection)

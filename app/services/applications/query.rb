@@ -23,7 +23,6 @@ module Applications
                                  { course_cohort: %i[course cohort] },
                                  { declarations: %i[milestone course_cohort] }],
                  )
-                 .preload(application: { institution: :institutionable })
       @sort = sort
 
       where_cohort_start_year_in(cohort_start_years)

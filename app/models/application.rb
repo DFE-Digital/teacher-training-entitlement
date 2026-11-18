@@ -16,10 +16,6 @@ class Application < ApplicationRecord
   has_one :cohort, through: :course_cohort
   has_many :milestones, through: :course_cohort
 
-  # Convenience methods to access the institutionable through institution
-  # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
-  delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
-
   has_many :participant_id_changes, through: :user
   has_many :application_events
   has_many :state_changes

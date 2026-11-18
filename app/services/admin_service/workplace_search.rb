@@ -29,7 +29,7 @@ private
 
   def scope
     @scope ||= begin
-      base = Institution.includes(:institutionable).order(:name)
+      base = Institution.order(:name)
 
       if q.present?
         name_matches = Institution.search(q)

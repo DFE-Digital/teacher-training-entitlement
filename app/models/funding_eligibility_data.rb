@@ -14,7 +14,7 @@ class FundingEligibilityData
   end
 
   def rise_school?(school_or_urn)
-    urn = school_or_urn.is_a?(School) ? school_or_urn.urn : school_or_urn
+    urn = school_or_urn.respond_to?(:urn) ? school_or_urn.urn : school_or_urn
 
     rise_urns.include?(urn.to_i)
   end

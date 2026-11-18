@@ -75,8 +75,8 @@ APPLICATION = {
           institution_type: {
             description: "The type of institution where this participant is employed",
             type: :string,
-            example: Institution::TYPES.first,
-            enum: Institution::TYPES.map(&:downcase),
+            example: Institution::API_INSTITUTION_TYPE_MAPPING.values.first,
+            enum: Institution::API_INSTITUTION_TYPE_MAPPING.values,
           },
           ukprn: {
             description: "The UK Provider Reference Number (UK Provider Reference Number) of the institution where this participant is employed",
