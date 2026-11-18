@@ -95,7 +95,6 @@ namespace :declarations do
           course_cohort:,
           institution:,
           status: Application::PENDING,
-          teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
           teacher_catchment_iso_country_code: "GBR",
           works_in_school: true,
           works_in_childcare: false,

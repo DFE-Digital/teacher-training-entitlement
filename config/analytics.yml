@@ -191,7 +191,6 @@ shared:
     - updated_at
     - ecf_id
     - funding_choice
-    - teacher_catchment_country
     - funding_eligibility
     - status
     - institution_id

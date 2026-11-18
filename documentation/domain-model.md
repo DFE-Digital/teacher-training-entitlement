@@ -170,7 +170,6 @@ erDiagram
     integer institution_id
     string notes
     enum status
-    text teacher_catchment_country
     datetime updated_at
     integer user_id
     date training_starts_at
