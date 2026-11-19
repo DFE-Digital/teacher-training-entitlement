@@ -47,6 +47,10 @@ module NavigationStructures
           href: admin_guidance_path("registration-periods"),
         ),
         Node.new(
+          name: "Courses management",
+          href: admin_guidance_path("courses-management"),
+        ),
+        Node.new(
           name: "Glossary",
           href: admin_guidance_path("glossary"),
         ),
