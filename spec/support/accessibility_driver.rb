@@ -1,4 +1,14 @@
 require "selenium-webdriver"
+require "capybara/selenium/driver_specializations/chrome_driver"
+
+# Capybara's Chrome reset uses Storage.clearDataForOrigin with origin "*".
+# Recent Chrome versions reject that as an invalid URL, so use Selenium's
+# standard reset, which clears cookies and storage for the current origin.
+module Capybara::Selenium::Driver::ChromeDriver
+  def reset!
+    Capybara::Selenium::Driver.instance_method(:reset!).bind(self).call
+  end
+end
 
 Capybara.register_driver :selenium_headless do |app|
   options = Selenium::WebDriver::Chrome::Options.new
