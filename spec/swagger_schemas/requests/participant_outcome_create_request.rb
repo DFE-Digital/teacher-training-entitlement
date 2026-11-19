@@ -24,8 +24,8 @@ PARTICIPANT_OUTCOME_CREATE_REQUEST = {
               required: true,
               nullable: false,
               type: :string,
-              example: ParticipantOutcomes::Create::PERMITTED_COURSES.first,
-              enum: ParticipantOutcomes::Create::PERMITTED_COURSES,
+              example: Course::IDENTIFIERS.first,
+              enum: Course::IDENTIFIERS,
             },
             state: {
               description: "The state of the outcome (passed or failed)",

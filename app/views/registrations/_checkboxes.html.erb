@@ -1,0 +1,5 @@
+<%= form.govuk_check_boxes_fieldset(:step_answer, legend: nil, multiple: registration_step.multiple_answers?) do %>
+  <% registration_step.registration_step_answers.each do |answer| %>
+    <%= form.govuk_check_box(:step_answer, answer.value, multiple: registration_step.multiple_answers?, label: { text: answer.name }) %>
+  <% end %>
+<% end  %>

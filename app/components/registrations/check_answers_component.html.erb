@@ -1,0 +1,22 @@
+<% if course.present? || captured_values.any? %>
+  <%= helpers.govuk_summary_list do |summary_list| %>
+    <% if course.present? %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: "Course") %>
+        <% row.with_value(text: course.name) %>
+      <% end %>
+    <% end %>
+
+    <% answer_rows.each do |key, value, registration_step| %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: answer_label(key:, registration_step:)) %>
+        <% row.with_value { display_value(registration_step:, value:) } %>
+        <% if registration_step %>
+          <% row.with_action(text: "Change", href: change_path(registration_step)) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="govuk-body">No answers have been captured yet.</p>
+<% end %>
