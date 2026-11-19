@@ -24,6 +24,11 @@ This directory is organised by domain.
 
 - [`overview.md`](admin/overview.md) — role model, feature flag page, cohort/course management
 - [`authentication.md`](admin/authentication.md) — OTP-based sign-in wizard, session handling
+- [`delivery-partnerships.md`](admin/delivery-partnerships.md) — archiving, audit trail, super-admin edit flow
+
+## Architecture decisions
+
+- [`decisions/0001-archive-delivery-partnerships.md`](decisions/0001-archive-delivery-partnerships.md) — archive rather than delete
 
 ## Finance domain
 

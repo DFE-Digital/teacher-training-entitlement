@@ -149,6 +149,7 @@ graph TD
 
 - [Authentication flow](./authentication.md) — how admins sign in and how sessions work
 - [Applications management](./applications.md) — detailed application lifecycle and admin capabilities
+- [Delivery partnerships](./delivery-partnerships.md) — archiving, audit trail, super-admin edit flow
 - [Change of provider](../registration/change-of-provider.md) — participant-side provider changes (admin-side equivalent)
 
 
