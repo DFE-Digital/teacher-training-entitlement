@@ -10,7 +10,7 @@ RSpec.describe Admin::CourseBuilder::Steps::UpliftIncentive do
       it { is_expected.to be_valid }
     end
 
-    %w[0 15 12.5 100].each do |valid_percentage|
+    %w[0 15 12.5 12.34 12.340 0.01 100].each do |valid_percentage|
       context "when the uplift percentage is #{valid_percentage}" do
         let(:uplift_percentage) { valid_percentage }
 
@@ -25,6 +25,17 @@ RSpec.describe Admin::CourseBuilder::Steps::UpliftIncentive do
         it "is not valid" do
           expect(step).not_to be_valid
           expect(step.errors[:uplift_percentage]).to contain_exactly("Enter an uplift percentage between 0 and 100")
+        end
+      end
+    end
+
+    %w[12.345 0.001 99.999].each do |too_precise_percentage|
+      context "when the uplift percentage is #{too_precise_percentage}" do
+        let(:uplift_percentage) { too_precise_percentage }
+
+        it "is not valid because it would be rounded when stored" do
+          expect(step).not_to be_valid
+          expect(step.errors[:uplift_percentage]).to contain_exactly("Enter an uplift percentage with no more than 2 decimal places")
         end
       end
     end
