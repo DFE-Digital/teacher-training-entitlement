@@ -93,8 +93,8 @@ RSpec.describe DeliveryPartner, type: :model do
 
   describe "relationships" do
     it { is_expected.to have_many(:delivery_partnerships) }
-    it { is_expected.to have_many(:lead_providers).through(:delivery_partnerships) }
-    it { is_expected.to have_many(:courses).through(:delivery_partnerships) }
+    it { is_expected.to have_many(:lead_providers).through(:active_delivery_partnerships) }
+    it { is_expected.to have_many(:courses).through(:active_delivery_partnerships) }
     it { is_expected.to have_many(:course_cohorts).through(:courses) }
   end
 
@@ -144,5 +144,27 @@ RSpec.describe DeliveryPartner, type: :model do
         expect(subject).to match_array(course.course_cohorts - [uncontracted_course_cohort])
       end
     end
+  end
+
+  describe "archived delivery partnerships" do
+    let(:delivery_partner) { create(:delivery_partner) }
+    let(:lead_provider) { create(:lead_provider) }
+    let(:course) { create(:course) }
+    let(:other_lead_provider) { create(:lead_provider) }
+    let(:other_course) { create(:course) }
+
+    before do
+      create(:delivery_partnership, delivery_partner:, lead_provider:, course:)
+      create(:delivery_partnership, delivery_partner:, lead_provider: other_lead_provider, course: other_course, archived_at: 1.day.ago)
+    end
+
+    it { expect(delivery_partner.lead_providers).to contain_exactly(lead_provider) }
+    it { expect(delivery_partner.courses).to contain_exactly(course) }
+    it { expect(delivery_partner.delivery_partnerships.count).to eq(2) }
+    it { expect(course.delivery_partners).to contain_exactly(delivery_partner) }
+    it { expect(other_course.delivery_partners).to be_empty }
+    it { expect(other_lead_provider.delivery_partners).to be_empty }
+    it { expect(lead_provider.delivery_partners).to contain_exactly(delivery_partner) }
+    it { expect(other_course.active_delivery_partnerships).to be_empty }
   end
 end

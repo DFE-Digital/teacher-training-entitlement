@@ -96,6 +96,24 @@ RSpec.describe Declaration, type: :model do
 
       it { is_expected.not_to validate_presence_of(:secondary_delivery_partner_id) }
 
+      context "when the delivery partnership is archived" do
+        before { delivery_partner.delivery_partnerships.each(&:archive!) }
+
+        it "is rejected as not available" do
+          declaration.valid?
+          expect(declaration.errors).to include :delivery_partner_id
+        end
+
+        it "leaves an already persisted declaration valid and unchanged" do
+          saved = create(:declaration, application:, lead_provider:, delivery_partner: nil)
+          saved.update_column(:delivery_partner_id, delivery_partner.id)
+          saved.reload
+
+          expect(saved).to be_valid
+          expect(saved.delivery_partner).to eq(delivery_partner)
+        end
+      end
+
       context "when no delivery partner provided" do
         subject(:declaration) { build(:declaration, application:, lead_provider:, delivery_partner: nil) }
 

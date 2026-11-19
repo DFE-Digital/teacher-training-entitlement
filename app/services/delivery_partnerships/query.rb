@@ -69,7 +69,7 @@ module DeliveryPartnerships
     end
 
     def all_delivery_partnerships
-      DeliveryPartnership.distinct.joins(:course)
+      DeliveryPartnership.active.distinct.joins(:course)
     end
   end
 end

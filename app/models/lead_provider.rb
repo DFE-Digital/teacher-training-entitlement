@@ -4,7 +4,8 @@ class LeadProvider < ApplicationRecord
   has_many :course_cohorts, through: :course_cohort_providers
   has_many :courses, through: :course_cohorts
   has_many :delivery_partnerships
-  has_many :delivery_partners, -> { distinct }, through: :delivery_partnerships
+  has_many :active_delivery_partnerships, -> { active }, class_name: "DeliveryPartnership"
+  has_many :delivery_partners, -> { distinct }, through: :active_delivery_partnerships, source: :delivery_partner
   has_many :application_lead_providers
   has_many :updateable_applications,
            -> { merge(ApplicationLeadProvider.current) },
@@ -25,7 +26,7 @@ class LeadProvider < ApplicationRecord
   end
 
   def cohort_start_years_by_delivery_partner
-    delivery_partnerships
+    active_delivery_partnerships
       .joins(course_cohorts: :course_cohort_providers)
       .where(course_cohort_providers: { lead_provider: self })
       .distinct

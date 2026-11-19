@@ -5,8 +5,9 @@ class DeliveryPartner < ApplicationRecord
   scope :begins_with, ->(name) { where("name ILIKE ?", "#{name}%") }
 
   has_many :delivery_partnerships
-  has_many :lead_providers, through: :delivery_partnerships
-  has_many :courses, through: :delivery_partnerships
+  has_many :active_delivery_partnerships, -> { active }, class_name: "DeliveryPartnership"
+  has_many :lead_providers, through: :active_delivery_partnerships
+  has_many :courses, through: :active_delivery_partnerships
   has_many :course_cohorts, through: :courses
 
   accepts_nested_attributes_for :delivery_partnerships, allow_destroy: true
@@ -32,7 +33,7 @@ class DeliveryPartner < ApplicationRecord
     CourseCohort
       .joins(:course_cohort_providers, course: :delivery_partnerships)
       .where(course_cohort_providers: { lead_provider: })
-      .where(delivery_partnerships: { delivery_partner: self, lead_provider: })
+      .where(delivery_partnerships: { delivery_partner: self, lead_provider:, archived_at: nil })
       .distinct
   end
 end
