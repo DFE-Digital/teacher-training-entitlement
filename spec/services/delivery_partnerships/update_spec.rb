@@ -86,4 +86,13 @@ RSpec.describe DeliveryPartnerships::Update do
   it "records versions", :versioning do
     expect { result }.to change { PaperTrail::Version.where(item_type: "DeliveryPartnership").count }.by(1)
   end
+
+  it "locks the course and lead provider partnerships in id order" do
+    queries = []
+    callback = ->(*, payload) { queries << payload[:sql] if payload[:sql].include?("FOR UPDATE") }
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { result }
+
+    expect(queries.size).to eq(1)
+    expect(queries.first).to include('"delivery_partnerships"."lead_provider_id"', "ORDER BY")
+  end
 end

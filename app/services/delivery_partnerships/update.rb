@@ -16,11 +16,11 @@ module DeliveryPartnerships
     end
 
     def call
-      ActiveRecord::Base.transaction do
-        partnerships = DeliveryPartnership.where(course: @course, lead_provider: @lead_provider).lock.index_by(&:delivery_partner_id)
-        changes = PendingChanges.new(course: @course, lead_provider: @lead_provider, selected_ids: @selected_ids).call
+      return failure(NONE_SELECTED_ERROR) if valid_selection.empty?
 
-        return failure(NONE_SELECTED_ERROR) if changes.selected_ids.empty?
+      ActiveRecord::Base.transaction do
+        partnerships = locked_partnerships.index_by(&:delivery_partner_id)
+        changes = PendingChanges.new(course: @course, lead_provider: @lead_provider, selected_ids: valid_selection).call
 
         changes.added.each { add(_1, partnerships[_1.id]) }
         changes.removed.each { partnerships.fetch(_1.id).archive! }
@@ -32,6 +32,14 @@ module DeliveryPartnerships
     end
 
   private
+
+    def valid_selection
+      @valid_selection ||= DeliveryPartner.where(id: Array(@selected_ids).compact_blank).ids
+    end
+
+    def locked_partnerships
+      DeliveryPartnership.where(course: @course, lead_provider: @lead_provider).order(:id).lock
+    end
 
     def add(delivery_partner, partnership)
       if partnership

@@ -1,4 +1,4 @@
-<%= govuk_back_link href: admin_settings_course_provider_path(@course, @lead_provider) %>
+<% content_for :title, "You have unsaved changes - #{@lead_provider.name}" %>
 
 <h1 class="govuk-heading-l">You have unsaved changes</h1>
 

@@ -36,13 +36,18 @@ RSpec.describe "Admin delivery partnership management", type: :request do
     before { get edit_path }
 
     it "orders checked partners first then others, alphabetically ignoring case" do
-      names = response.body.scan(/for="delivery-partner-\d+">([^<]+)</).flatten
+      names = response.body.scan(/for="delivery-partner-[\w-]+">([^<]+)</).flatten
 
       expect(names).to eq(["Alpha partner", "zed partner", "Archived partner", "beta partner"])
     end
 
     it "checks only active partners" do
       expect(response.body.scan(/checked="checked"/).size).to eq(2)
+    end
+
+    it "renders a fieldset legend for each group" do
+      expect(response.body).to include("Current delivery partners", "Other delivery partners")
+      expect(response.body.scan("<legend").size).to eq(2)
     end
 
     it "shows add new and two save buttons" do
@@ -103,6 +108,19 @@ RSpec.describe "Admin delivery partnership management", type: :request do
       expect(DeliveryPartnership.active.where(course:, lead_provider:).count).to eq(2)
     end
 
+    it "ignores unknown ids mixed with valid ones" do
+      patch update_path, params: { commit: "save", delivery_partner_ids: [zed.id, 0, 999_999] }
+
+      expect(response).to redirect_to(show_path)
+      expect(alpha_partnership.reload).to be_archived
+    end
+
+    it "links the error summary to the first checkbox and describes the fieldset" do
+      patch update_path, params: { commit: "save", delivery_partner_ids: [""] }
+
+      expect(response.body).to include('href="#delivery-partner-ids"', 'id="delivery-partner-ids"', 'aria-describedby="delivery-partner-ids-error"', "Error: Edit delivery partners")
+    end
+
     it "blocks a crafted request with only unknown ids" do
       patch update_path, params: { commit: "save", delivery_partner_ids: [0, 999_999] }
 
@@ -122,6 +140,13 @@ RSpec.describe "Admin delivery partnership management", type: :request do
   describe "add new delivery partners button" do
     it "goes straight to the new page without changes" do
       patch update_path, params: { commit: "add_new", delivery_partner_ids: [zed.id, alpha.id] }
+
+      expect(response).to redirect_to(new_path)
+    end
+
+    it "goes straight to the new page with only a blank selection and no active partners" do
+      DeliveryPartnership.where(course:, lead_provider:).delete_all
+      patch update_path, params: { commit: "add_new", delivery_partner_ids: [""] }
 
       expect(response).to redirect_to(new_path)
     end
@@ -164,7 +189,24 @@ RSpec.describe "Admin delivery partnership management", type: :request do
     end
   end
 
+  describe "provider not attached to the course" do
+    let(:other_provider) { create(:lead_provider) }
+
+    it "returns not found" do
+      get edit_admin_settings_course_provider_delivery_partnerships_path(course, other_provider)
+      expect(response).to have_http_status(:not_found)
+      post admin_settings_course_provider_delivery_partners_path(course, other_provider), params: { commit: "save", names: %w[Y] }
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe "new delivery partners page" do
+    it "labels inputs distinctly and describes errors" do
+      post create_path, params: { commit: "save", names: ["Alpha partner", "Fresh"] }
+
+      expect(response.body).to include("Delivery partner name 1", "Delivery partner name 2", 'aria-describedby="delivery-partner-name-0-error"', "Error: Add new delivery partners")
+    end
+
     it "shows one input" do
       get new_path
 
