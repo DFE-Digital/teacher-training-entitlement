@@ -1,0 +1,27 @@
+<% provider_path = admin_settings_course_provider_path(@course, @lead_provider) %>
+<%= govuk_back_link href: provider_path %>
+<%= render "admin/settings/courses/providers/delivery_partnerships/error_summary", errors: @error ? { "delivery-partner-ids" => @error } : {} %>
+
+<h1 class="govuk-heading-l">Edit delivery partners</h1>
+<p class="govuk-body"><%= @lead_provider.name %> - <%= @course.name %></p>
+
+<%= form_with url: admin_settings_course_provider_delivery_partnerships_path(@course, @lead_provider), method: :patch do %>
+  <%= hidden_field_tag "delivery_partner_ids[]", "", id: nil %>
+  <%= render "admin/settings/courses/providers/delivery_partnerships/buttons", add_new: true %>
+
+  <div class="govuk-form-group <%= "govuk-form-group--error" if @error %>" id="delivery-partner-ids">
+    <% if @error %>
+      <p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> <%= @error %></p>
+    <% end %>
+    <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+      <% (@active_partners + @other_partners).each do |partner| %>
+        <div class="govuk-checkboxes__item">
+          <%= check_box_tag "delivery_partner_ids[]", partner.id, @selected_ids.include?(partner.id), id: "delivery-partner-#{partner.id}", class: "govuk-checkboxes__input" %>
+          <label class="govuk-label govuk-checkboxes__label" for="delivery-partner-<%= partner.id %>"><%= partner.name %></label>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "admin/settings/courses/providers/delivery_partnerships/buttons", add_new: false %>
+<% end %>

@@ -1,0 +1,25 @@
+<% errors = (@errors || {}) %>
+<%= govuk_back_link href: edit_admin_settings_course_provider_delivery_partnerships_path(@course, @lead_provider) %>
+<%= render "admin/settings/courses/providers/delivery_partnerships/error_summary",
+           errors: errors.transform_keys { _1 == :base ? "delivery-partner-name-0" : "delivery-partner-name-#{_1}" } %>
+
+<h1 class="govuk-heading-l">Add new delivery partners</h1>
+<p class="govuk-body"><%= @lead_provider.name %> - <%= @course.name %></p>
+
+<%= form_with url: admin_settings_course_provider_delivery_partners_path(@course, @lead_provider), method: :post do %>
+  <% @names.each_with_index do |name, index| %>
+    <% error = errors[index] || (errors[:base] if index.zero?) %>
+    <div class="govuk-form-group <%= "govuk-form-group--error" if error %>">
+      <label class="govuk-label" for="delivery-partner-name-<%= index %>">Delivery partner name</label>
+      <% if error %>
+        <p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> <%= error %></p>
+      <% end %>
+      <%= text_field_tag "names[]", name, id: "delivery-partner-name-#{index}", class: "govuk-input #{"govuk-input--error" if error}" %>
+    </div>
+  <% end %>
+
+  <div class="govuk-button-group">
+    <%= button_tag "add more", type: "submit", name: "commit", value: "add_more", class: "govuk-button govuk-button--secondary", data: { module: "govuk-button" } %>
+    <%= button_tag "save", type: "submit", name: "commit", value: "save", class: "govuk-button", data: { module: "govuk-button" } %>
+  </div>
+<% end %>
