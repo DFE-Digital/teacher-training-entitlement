@@ -36,6 +36,31 @@ RSpec.describe Admin::LeadProviderShowQuery do
       end
     end
 
+    context "when a partnership is archived" do
+      before do
+        delivery_partner.delivery_partnerships.each(&:archive!)
+        service.call
+      end
+
+      it "does not return the delivery partner" do
+        expect(service.details[:delivery_partners]).to be_empty
+      end
+    end
+
+    context "when the partner has an archived partnership and another lead provider has an active one on the same cohort" do
+      let(:archived_partner) { create(:delivery_partner) }
+
+      before do
+        create(:delivery_partnership, delivery_partner: archived_partner, lead_provider:, course:, archived_at: 1.day.ago)
+        create(:delivery_partnership, delivery_partner: archived_partner, lead_provider: other_lead_provider, course:)
+        service.call
+      end
+
+      it "returns only the lead provider's active partners" do
+        expect(service.details[:delivery_partners]).to contain_exactly(delivery_partner)
+      end
+    end
+
     context "when the partnership's course has no course cohort matching the filter" do
       subject(:service) { described_class.new(lead_provider:, cohort: other_cohort) }
 

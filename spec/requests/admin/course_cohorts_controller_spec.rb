@@ -61,6 +61,13 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
         expect(response.body).to include("2 delivery partners")
       end
 
+      it "does not count archived delivery partnerships" do
+        create(:delivery_partnership, course:, lead_provider:, archived_at: 1.day.ago)
+        get cohort_admin_course_cohort_path(course_cohort.course, cohort)
+
+        expect(response.body).to include("2 delivery partners")
+      end
+
       it "links to add or remove providers" do
         expect(response.body).to include("Add/Remove providers")
         expect(response.body).to include(admin_course_cohort_provider_path(course_cohort))
@@ -110,7 +117,7 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
         course_cohort = cohort.course_cohorts.find_by(course:)
         expect(course_cohort).to be_present
         expect(course_cohort.course_cohort_providers.find_by(lead_provider:)).to be_present
-        expect(course_cohort.delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_nil
+        expect(course_cohort.active_delivery_partnerships.find_by(lead_provider:, delivery_partner:)).to be_nil
       end
 
       context "when the cohort academic year differs from the training start year" do

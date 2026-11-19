@@ -22,10 +22,9 @@ module Admin
 
       applications.merge!(Application.where(course_cohorts: @search_scope)) if @search_scope
 
-      delivery_partners = @lead_provider.delivery_partners
-                            .joins(delivery_partnerships: { course: :course_cohorts })
-                            .where(courses: { course_cohorts: @search_scope })
-                            .distinct
+      partnerships = @lead_provider.active_delivery_partnerships.joins(course: :course_cohorts)
+      partnerships = partnerships.where(course_cohorts: @search_scope) if @search_scope
+      delivery_partners = DeliveryPartner.where(id: partnerships.select(:delivery_partner_id))
 
       statements = @lead_provider.statements.order(start_date: :desc)
 

@@ -7,10 +7,7 @@ module Admin::Settings
     end
 
     def show
-      @course = Course.includes(
-        contract_years: :lead_provider,
-        active_delivery_partnerships: %i[lead_provider delivery_partner],
-      ).find(params[:id])
+      @course = Course.includes(contract_years: :lead_provider).find(params[:id])
     end
   end
 end

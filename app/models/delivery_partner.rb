@@ -33,7 +33,8 @@ class DeliveryPartner < ApplicationRecord
     CourseCohort
       .joins(:course_cohort_providers, course: :delivery_partnerships)
       .where(course_cohort_providers: { lead_provider: })
-      .where(delivery_partnerships: { delivery_partner: self, lead_provider:, archived_at: nil })
+      .where(delivery_partnerships: { delivery_partner: self, lead_provider: })
+      .merge(DeliveryPartnership.active)
       .distinct
   end
 end

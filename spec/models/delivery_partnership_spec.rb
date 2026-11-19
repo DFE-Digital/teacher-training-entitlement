@@ -20,7 +20,9 @@ RSpec.describe DeliveryPartnership, type: :model do
     subject(:partnership) { create(:delivery_partnership) }
 
     it "sets archived_at" do
-      expect { partnership.archive! }.to change { partnership.reload.archived_at }.from(nil)
+      freeze_time do
+        expect { partnership.archive! }.to change { partnership.reload.archived_at }.from(nil).to(Time.current)
+      end
     end
   end
 
