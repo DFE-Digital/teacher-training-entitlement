@@ -24,7 +24,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
                :accepted,
                lead_provider:,
                course_cohort:,
-               eligible_for_funding: true,
+               funding_eligibility: :funded,
                funded_place: true)
       end
 
@@ -51,7 +51,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
                :accepted,
                lead_provider:,
                course_cohort:,
-               eligible_for_funding: false,
+               funding_eligibility: :ineligible_setting,
                funded_place: false)
       end
 
@@ -93,7 +93,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
     end
 
     context "when application is not eligible for funding" do
-      let(:application) { create(:application, lead_provider:, course_cohort:, eligible_for_funding: false) }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :ineligible_setting) }
 
       it "returns an error" do
         expect(service).to have_error(
@@ -111,7 +111,7 @@ RSpec.describe Applications::ChangeFundedPlace, type: :model do
                :with_declaration,
                lead_provider:,
                course_cohort:,
-               eligible_for_funding: true,
+               funding_eligibility: :funded,
                funded_place: true)
       end
 

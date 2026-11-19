@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_18_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -124,18 +124,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_130000) do
     t.bigint "course_cohort_id"
     t.datetime "created_at", null: false
     t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
-    t.boolean "eligible_for_funding", default: false, null: false
     t.boolean "funded_place"
     t.enum "funding_choice", enum_type: "funding_choices"
-    t.string "funding_eligiblity_status_code"
+    t.string "funding_eligibility"
     t.bigint "institution_id"
     t.string "notes"
     t.enum "status", enum_type: "application_statuses"
-    t.text "teacher_catchment"
-    t.text "teacher_catchment_country"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.text "work_setting"
     t.date "training_starts_at"
     t.jsonb "registration_data", default: {}, null: false
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"

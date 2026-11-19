@@ -36,8 +36,9 @@ module Admin
     end
 
     def filter_scope
-      filters = filter_params.except(:cohort_id)
+      filters = filter_params.except(:cohort_id, :work_setting)
       scope = Application.where(filters.compact_blank)
+      scope = scope.with_work_setting(filter_params[:work_setting]) if filter_params[:work_setting].present?
 
       if filter_params[:cohort_id].present?
         scope.merge!(

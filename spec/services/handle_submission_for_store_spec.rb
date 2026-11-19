@@ -100,17 +100,14 @@ RSpec.describe HandleSubmissionForStore do
         expect(stable_as_json(last_application)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
-          "eligible_for_funding" => true,
           "funded_place" => nil,
           "funding_choice" => nil,
-          "funding_eligiblity_status_code" => "funded",
+          "funding_eligibility" => "funded",
           "status" => "pending",
           "notes" => nil,
           "institution_id" => school.institution.id,
-          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
           "training_starts_at" => course_cohort.training_starts_at.to_s,
           "user_id" => user.id,
-          "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
         })
       end
 
@@ -134,7 +131,7 @@ RSpec.describe HandleSubmissionForStore do
 
       context "when there is a funding choice selected and eligible for funding is true" do
         before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::FUNDED_ELIGIBILITY_RESULT)
+          allow_any_instance_of(FundingEligibility).to receive(:funding_eligibility).and_return(FundingEligibility::FUNDED_ELIGIBILITY_RESULT)
         end
 
         it "clears the funding choice to nil on the application" do
@@ -145,121 +142,13 @@ RSpec.describe HandleSubmissionForStore do
 
       context "when there is a funding choice selected and eligible for funding is false" do
         before do
-          allow_any_instance_of(FundingEligibility).to receive(:funding_eligiblity_status_code).and_return(FundingEligibility::INELIGIBLE_SETTING)
+          allow_any_instance_of(FundingEligibility).to receive(:funding_eligibility).and_return(FundingEligibility::INELIGIBLE_SETTING)
         end
 
         it "saves the funding choice to school on the application" do
           subject.call
           expect(user.applications.first.reload.funding_choice).to eq "school"
         end
-      end
-    end
-
-    context "when teacher catchment is not in the UK catchment area" do
-      let(:store) do
-        {
-          "current_user_id" => user.id,
-          "course_identifier" => course.identifier,
-          "course_cohort_ecf_id" => course_cohort.ecf_id,
-          "lead_provider_id" => lead_provider.id,
-          "teacher_catchment" => "other",
-          "institution_id" => institution.id,
-        }
-      end
-      let(:institution) { create(:institution, :not_in_england) }
-
-      it "stores data from store" do
-        subject.call
-        expect(user.applications.last.lead_provider).to eq(lead_provider)
-        expect(stable_as_json(user.applications.last)).to match({
-          "course_cohort_id" => course_cohort.id,
-          "ecf_id" => user.applications.last.ecf_id,
-          "eligible_for_funding" => false,
-          "funded_place" => nil,
-          "funding_choice" => nil,
-          "funding_eligiblity_status_code" => "not_in_england",
-          "status" => "pending",
-          "notes" => nil,
-          "institution_id" => nil,
-          "teacher_catchment" => "other",
-          "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "user_id" => user.id,
-          "work_setting" => nil,
-        })
-      end
-    end
-
-    context "when teacher catchment is empty" do
-      let(:institution) { create(:institution, :not_in_england) }
-      let(:store) do
-        {
-          "current_user_id" => user.id,
-          "course_identifier" => course.identifier,
-          "course_cohort_ecf_id" => course_cohort.ecf_id,
-          "institution_id" => institution.id,
-          "lead_provider_id" => lead_provider.id,
-          "teacher_catchment" => nil,
-        }
-      end
-
-      it "stores data from store" do
-        subject.call
-
-        expect(user.applications.last.lead_provider).to eq(lead_provider)
-        expect(stable_as_json(user.applications.last)).to match({
-          "course_cohort_id" => course_cohort.id,
-          "ecf_id" => user.applications.last.ecf_id,
-          "eligible_for_funding" => false,
-          "funded_place" => nil,
-          "funding_choice" => nil,
-          "funding_eligiblity_status_code" => "not_in_england",
-          "status" => "pending",
-          "notes" => nil,
-          "institution_id" => nil,
-          "teacher_catchment" => nil,
-          "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "user_id" => user.id,
-          "work_setting" => nil,
-        })
-      end
-    end
-
-    context "when teacher catchment is not found" do
-      before do
-        allow(Sentry).to receive(:capture_message)
-      end
-
-      let(:institution) { create(:institution, :not_in_england) }
-      let(:store) do
-        {
-          "current_user_id" => user.id,
-          "course_identifier" => course.identifier,
-          "course_cohort_ecf_id" => course_cohort.ecf_id,
-          "institution_id" => institution.id,
-          "lead_provider_id" => lead_provider.id,
-          "teacher_catchment" => "not found",
-        }
-      end
-
-      it "stores data from store" do
-        subject.call
-
-        expect(user.applications.last.lead_provider).to eq(lead_provider)
-        expect(stable_as_json(user.applications.last)).to match({
-          "course_cohort_id" => course_cohort.id,
-          "ecf_id" => user.applications.last.ecf_id,
-          "eligible_for_funding" => false,
-          "funded_place" => nil,
-          "funding_choice" => nil,
-          "funding_eligiblity_status_code" => "not_in_england",
-          "status" => "pending",
-          "notes" => nil,
-          "institution_id" => nil,
-          "teacher_catchment" => "not found",
-          "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "user_id" => user.id,
-          "work_setting" => nil,
-        })
       end
     end
   end

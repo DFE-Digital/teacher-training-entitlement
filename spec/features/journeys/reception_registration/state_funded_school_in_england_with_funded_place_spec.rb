@@ -32,13 +32,10 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       expect(application.user.email).to eq(user_email)
 
       expect(application).to have_attributes(
-        eligible_for_funding: true,
         funded_place: nil,
         funding_choice: nil,
-        funding_eligiblity_status_code: "funded",
-        institution_id: institution.id, status: Application::PENDING,
-        teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE,
-        work_setting: Institution::STATE_FUNDED_INSTITUTION
+        funding_eligibility: "funded",
+        institution_id: institution.id, status: Application::PENDING
       )
 
       expect(application.registration_data).to match(

@@ -110,11 +110,10 @@ ActiveRecord::Base.transaction do
     course_cohort: CourseCohort.find_by!(course:, cohort: Cohort.current),
     application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"])],
     institution: (institution_from_store if inside_catchment?),
-    eligible_for_funding: funding_eligibility_service.funded?,
-    funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
+    funding_eligibility: funding_eligibility_service.funding_eligibility,
     status: Application::PENDING,
     raw_application_data: raw_application_data.except("current_user", "current_user_id"),
-    # …teacher_catchment, work_setting, kind_of_nursery, …
+    # work setting and catchment answers stay in registration_data; catchment is derived from institution
   )
   enqueue_send_application_submission_email_job(application)
 end
@@ -144,9 +143,9 @@ What matters from outside:
 `HandleSubmissionForStore`. Interface:
 
 ```ruby
-funding = FundingEligibility.new(course:, institution:, inside_catchment:, query_store:)
+funding = FundingEligibility.new(course:, institution:, query_store:)
 funding.funded?                              # => true / false
-funding.funding_eligiblity_status_code       # => :funded | :not_in_england
+funding.funding_eligibility       # => :funded | :not_in_england
                                              #    | :previously_funded | :ineligible_setting
 funding.previously_funded?                   # prior accepted, eligible-for-funding app?
 ```

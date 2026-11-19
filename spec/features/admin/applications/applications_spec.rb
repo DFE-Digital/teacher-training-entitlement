@@ -80,7 +80,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
   scenario "filtering applications by work setting" do
     application = applications_in_order.last
-    application.update!(work_setting: "a_school")
+    application.update!(registration_data: { "work_setting" => "a_school" })
 
     visit(admin_applications_path)
     select "A school", from: "Work setting"
@@ -95,10 +95,9 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   scenario "viewing application details" do
     application = applications_in_order.first
     application.update!(
-      eligible_for_funding: true,
+      funding_eligibility: "funded",
       funded_place: true,
       status: Application::ACCEPTED,
-      funding_eligiblity_status_code: "funded",
     )
 
     visit(admin_application_path(application))
@@ -128,7 +127,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     within(summary_lists[1]) do |summary_list|
       expect(summary_list).to have_summary_item("Eligible for funding", "Yes")
       expect(summary_list).to have_summary_item("Funded place", "Yes")
-      expect(summary_list).to have_summary_item("Status code", application.funding_eligiblity_status_code.titleize)
+      expect(summary_list).to have_summary_item("Status code", application.funding_eligibility.titleize)
       expect(summary_list).to have_summary_item("Schedule cohort", application.cohort.name)
       expect(summary_list).to have_summary_item("Schedule identifier", "-")
       expect(summary_list).to have_summary_item("Notes", "No notes")

@@ -156,6 +156,23 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).call
     end
 
+    it "shows the funding eligibility change" do
+      expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
+                                  text: "Funding eligibility changed to funded")
+    end
+  end
+
+  context "when there is a legacy version with eligible_for_funding and status code changes" do
+    before do
+      application.versions.create!(
+        event: "update",
+        object_changes: {
+          "eligible_for_funding" => [false, true],
+          "funding_eligiblity_status_code" => [nil, "marked_funded_by_policy"],
+        },
+      )
+    end
+
     it "shows the eligibility funding change" do
       expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
                                   text: "Eligible for funding changed to yes")
@@ -163,7 +180,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
 
     it "does not show the funding eligibility status code change as a separate item" do
       expect(subject).not_to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
-                                      text: "Funding eligibility status code changed to marked_funded_by_policy")
+                                      text: /status code changed/i)
     end
 
     it "shows the funding eligibility status code change as a bullet point" do

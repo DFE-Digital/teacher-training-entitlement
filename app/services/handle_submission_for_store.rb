@@ -10,12 +10,9 @@ class HandleSubmissionForStore
       @application = user.applications.create!(
         course_cohort:,
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
-        institution: (institution_from_store if inside_catchment?),
-        eligible_for_funding: funding_eligibility_service.funded?,
-        funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
+        institution:,
+        funding_eligibility: funding_eligibility_service.funding_eligibility,
         funding_choice:,
-        teacher_catchment: store["teacher_catchment"],
-        work_setting: store["work_setting"],
         registration_data: store.except("generated_confirmation_code", "current_user", "current_user_id"),
         status: Application::PENDING,
       )
@@ -29,14 +26,12 @@ private
     @query_store ||= RegistrationQueryStore.new(store:)
   end
 
-  delegate :course_cohort,
-           :inside_catchment?,
-           to: :query_store
+  delegate :course_cohort, to: :query_store
 
-  def institution_from_store
+  def institution
     return nil if store["institution_id"].blank?
 
-    @institution_from_store ||= Institution.find(store["institution_id"])
+    @institution ||= Institution.find(store["institution_id"])
   end
 
   def funding_choice
@@ -57,8 +52,7 @@ private
   def funding_eligibility_service
     @funding_eligibility_service ||= FundingEligibility.new(
       course:,
-      institution: institution_from_store,
-      inside_catchment: inside_catchment?,
+      institution:,
       query_store:,
     )
   end

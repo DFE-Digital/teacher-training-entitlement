@@ -5,49 +5,33 @@ class FundingEligibility
   NOT_IN_ENGLAND = :not_in_england
   PREVIOUSLY_FUNDED = :previously_funded
   INELIGIBLE_SETTING = :ineligible_setting
+  MARKED_INELIGIBLE_BY_POLICY = :marked_ineligible_by_policy
 
   ELIGIBLE_NURSERY_TYPES = %w[
     local_authority_maintained_nursery
     preschool_class_as_part_of_school
   ].freeze
 
-  FUNDING_STATUS_CODE_DESCRIPTIONS = {
-    FUNDED_ELIGIBILITY_RESULT => "funding_details.scholarship_eligibility",
-    NOT_IN_ENGLAND => "funding_details.inside_catchment",
-    PREVIOUSLY_FUNDED => "funding_details.previously_funded",
-    INELIGIBLE_SETTING => "funding_details.ineligible_setting",
-  }.freeze
+  attr_reader :institution, :course, :query_store
 
-  attr_reader :institution,
-              :course,
-              :query_store
+  delegate :work_setting, to: :query_store
 
-  delegate :work_setting,
-           to: :query_store
-
-  def initialize(institution:,
-                 course:,
-                 inside_catchment:, # rubocop:disable Lint/UnusedMethodArgument
-                 query_store:,
-                 **)
+  def initialize(institution:, course:, query_store:)
     @institution = institution
     @course = course
-    # catchment determined from institution
-    # @inside_catchment = inside_catchment
-    @inside_catchment = nil
     @query_store = query_store
   end
 
   def funded?
-    funding_eligiblity_status_code == FUNDED_ELIGIBILITY_RESULT
+    funding_eligibility == FUNDED_ELIGIBILITY_RESULT
   end
 
   def previously_funded?
     accepted_applications.any?
   end
 
-  def funding_eligiblity_status_code
-    @funding_eligiblity_status_code ||= begin
+  def funding_eligibility
+    @funding_eligibility ||= begin
       return NOT_IN_ENGLAND if @institution && !@institution.in_england?
       return PREVIOUSLY_FUNDED if previously_funded?
 
@@ -56,11 +40,6 @@ class FundingEligibility
       else INELIGIBLE_SETTING
       end
     end
-  end
-
-  def get_description_for_funding_status
-    key = FUNDING_STATUS_CODE_DESCRIPTIONS.fetch(funding_eligiblity_status_code)
-    I18n.t(key, course_name: course.name).html_safe if key
   end
 
 private

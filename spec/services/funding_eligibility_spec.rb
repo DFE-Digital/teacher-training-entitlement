@@ -5,7 +5,6 @@ RSpec.describe FundingEligibility do
     described_class.new(
       institution:,
       course:,
-      inside_catchment:,
       query_store:,
     )
   end
@@ -19,18 +18,16 @@ RSpec.describe FundingEligibility do
     }.stringify_keys
   end
 
-  let(:inside_catchment) { true }
   let(:institution) { build(:institution) }
   let(:work_setting) { nil }
   let(:kind_of_nursery) { nil }
   let(:course) { build(:course, :npd_eirt) }
   let(:query_store) { RegistrationQueryStore.new(store:) }
 
-  describe "#funding_eligiblity_status_code" do
-    subject { funding_eligibility.funding_eligiblity_status_code }
+  describe "#funding_eligibility" do
+    subject { funding_eligibility.funding_eligibility }
 
     context "when outside England" do
-      let(:inside_catchment) { false }
       let(:institution) { build(:institution, :not_in_england) }
 
       it { is_expected.to eq :not_in_england }
@@ -109,17 +106,5 @@ RSpec.describe FundingEligibility do
 
       it { is_expected.to be true }
     end
-  end
-
-  describe "#get_description_for_funding_status" do
-    subject { funding_eligibility.get_description_for_funding_status }
-
-    let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
-
-    before do
-      allow(institution).to receive(:eligible_establishment?).and_return(true)
-    end
-
-    it { is_expected.to eq I18n.t("funding_details.scholarship_eligibility") }
   end
 end

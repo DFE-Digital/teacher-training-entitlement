@@ -139,7 +139,6 @@ private
     FundingEligibility.new(
       course:,
       institution: institution_from_store,
-      inside_catchment: inside_catchment?,
       query_store:,
     )
   end

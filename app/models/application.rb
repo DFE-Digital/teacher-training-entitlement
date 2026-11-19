@@ -40,7 +40,8 @@ class Application < ApplicationRecord
 
   scope :active_applications, -> { where.not(status: [REJECTED, WITHDRAWN]).or(where(status: nil)) }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
-  scope :eligible_for_funding, -> { where(eligible_for_funding: true) }
+  scope :eligible_for_funding, -> { where(funding_eligibility: FundingEligibility::FUNDED_ELIGIBILITY_RESULT) }
+  scope :with_work_setting, ->(work_setting) { where("registration_data->>'work_setting' = ?", work_setting) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
   scope :previous_valid_applications, -> { where(status: [PENDING, ACCEPTED, STARTED, DEFERRED]) }
@@ -184,29 +185,13 @@ class Application < ApplicationRecord
     rejected_event&.reason
   end
 
-  def previously_funded?
-    # This is an optimization used by the API Applications::Query in order
-    # to speed up the bulk-retrieval of Applications.
-    return transient_previously_funded if respond_to?(:transient_previously_funded)
-
-    @previously_funded ||= user.applications
-      .where.not(id:)
-      .has_been_accepted
-      .eligible_for_funding
-      .where(funded_place: [nil, true])
-      .exists?
+  def eligible_for_funding?
+    funding_eligibility.to_s == FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s
   end
+  alias_method :eligible_for_funding, :eligible_for_funding?
 
-  def ineligible_for_funding_reason
-    return "previously-funded" if previously_funded?
-
-    "establishment-ineligible" unless eligible_for_funding
-  end
-
-  def fundable?
-    return false if previously_funded?
-
-    eligible_for_funding && (funded_place.nil? || funded_place)
+  def funding_ineligible_reason
+    funding_eligibility unless eligible_for_funding?
   end
 
   def transition_status!(status, reason: nil, metadata: {}, **attributes)
@@ -217,8 +202,8 @@ class Application < ApplicationRecord
     end
   end
 
-  def teacher_catchment_england?
-    teacher_catchment == Institution::ENGLAND_SUBDIVISION_CODE
+  def work_setting
+    registration_data["work_setting"]
   end
 
 private
@@ -234,12 +219,6 @@ private
     if STATUS_TRANSITIONS.fetch(from, []).exclude?(to)
       errors.add(:status, :invalid_status_transition, from: from || "blank", to:)
     end
-  end
-
-  def funding_eligibility(with_funded_place:)
-    return eligible_for_funding unless with_funded_place
-
-    eligible_for_funding && (funded_place.nil? || funded_place)
   end
 
   def validate_funded_place?

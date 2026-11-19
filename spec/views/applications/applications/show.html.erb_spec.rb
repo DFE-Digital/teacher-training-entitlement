@@ -35,13 +35,13 @@ RSpec.describe "applications/applications/show.html.erb", type: :view do
     subject(:work_details) { Capybara.string(render).find(".govuk-summary-card", text: "Work details") }
 
     context "when the workplace is in England" do
-      let(:application) { build_stubbed(:application, teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE) }
+      let(:application) { build_stubbed(:application) }
 
       it { is_expected.to have_summary_item "Workplace in England", "Yes" }
     end
 
     context "when the workplace is not in England" do
-      let(:application) { build_stubbed(:application, teacher_catchment: "another") }
+      let(:application) { build_stubbed(:application, institution: build_stubbed(:institution, :not_in_england)) }
 
       it { is_expected.to have_summary_item "Workplace in England", "No" }
     end

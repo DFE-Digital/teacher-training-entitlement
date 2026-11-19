@@ -48,9 +48,9 @@ RSpec.feature "actions log", :no_js, :versioning, type: :feature do
     click_on "Continue"
 
     expect(page).to have_table rows: [
-      [application_1.ecf_id, application_1.versions.last.created_at.to_fs(:govuk_short), "eligible_for_funding, funding_eligiblity_status_code", "History"],
-      [application_2.ecf_id, application_2.updated_at.to_fs(:govuk_short), "eligible_for_funding, funding_eligiblity_status_code", "History"],
-      [application_1.ecf_id, application_1.versions.first.created_at.to_fs(:govuk_short), "eligible_for_funding, funding_eligiblity_status_code", "History"],
+      [application_1.ecf_id, application_1.versions.last.created_at.to_fs(:govuk_short), "funding_eligibility", "History"],
+      [application_2.ecf_id, application_2.updated_at.to_fs(:govuk_short), "funding_eligibility", "History"],
+      [application_1.ecf_id, application_1.versions.first.created_at.to_fs(:govuk_short), "funding_eligibility", "History"],
     ]
     expect(page).to have_link("History", href: admin_applications_history_path(application_1))
     expect(page).to have_link("History", href: admin_applications_history_path(application_2))

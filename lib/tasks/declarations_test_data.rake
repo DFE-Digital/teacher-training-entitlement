@@ -95,14 +95,12 @@ namespace :declarations do
           course_cohort:,
           institution:,
           status: Application::PENDING,
-          teacher_catchment: "england",
-          teacher_catchment_country: "United Kingdom of Great Britain and Northern Ireland",
           teacher_catchment_iso_country_code: "GBR",
           works_in_school: true,
           works_in_childcare: false,
           funding_choice: Application.funding_choices.keys.first,
           ukprn: institution.ukprn,
-          eligible_for_funding: true,
+          funding_eligibility: FundingEligibility::FUNDED_ELIGIBILITY_RESULT,
         )
 
         ApplicationLeadProvider.create!(

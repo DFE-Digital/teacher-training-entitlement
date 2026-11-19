@@ -78,13 +78,13 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     subject(:summary_card) { Capybara.string(render).find(".govuk-summary-card", text: "Funding eligibility") }
 
     context "with a funding eligibility status code" do
-      let(:application_attributes) { { funding_eligiblity_status_code: "previously_funded" } }
+      let(:application_attributes) { { funding_eligibility: "previously_funded" } }
 
       it { is_expected.to have_summary_item "Status code", "Previously Funded" }
     end
 
     context "without a funding eligibility status code" do
-      let(:application_attributes) { { funding_eligiblity_status_code: nil } }
+      let(:application_attributes) { { funding_eligibility: nil } }
 
       it { is_expected.to have_summary_item "Status code", "-" }
     end
@@ -108,13 +108,13 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
     subject(:summary_card) { Capybara.string(render).find(".govuk-summary-card", text: "Workplace") }
 
     context "with a work setting" do
-      let(:application_attributes) { { work_setting: "state_funded_institution" } }
+      let(:application_attributes) { { registration_data: { "work_setting" => "state_funded_institution" } } }
 
       it { is_expected.to have_summary_item "Setting", "State-funded nursery, pre-school, school or academy trust" }
     end
 
     context "without a work setting" do
-      let(:application_attributes) { { work_setting: nil } }
+      let(:application_attributes) { { registration_data: {} } }
 
       it "does not show the setting row" do
         expect(summary_card).to have_no_css(".govuk-summary-list__key", text: "Setting", exact_text: true)

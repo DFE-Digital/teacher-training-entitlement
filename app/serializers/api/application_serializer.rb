@@ -12,7 +12,7 @@ module API
         field(:email_validated) { true }
         field(:full_name) { |a| a.user.full_name }
         field(:funding_choice)
-        field(:funding_eligiblity_status_code, name: :ineligible_for_funding_reason)
+        field(:funding_ineligible_reason, name: :ineligible_for_funding_reason)
         field(:eligible_for_funding)
         field(:participant_id) { |a| a.user.ecf_id }
         field(:teacher_reference_number) { |a| a.user.trn }

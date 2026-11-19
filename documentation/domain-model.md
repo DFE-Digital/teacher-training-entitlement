@@ -164,18 +164,14 @@ erDiagram
     integer course_cohort_id
     datetime created_at
     uuid ecf_id
-    boolean eligible_for_funding
     boolean funded_place
     enum funding_choice
-    string funding_eligiblity_status_code
+    string funding_eligibility
     integer institution_id
     string notes
     enum status
-    text teacher_catchment
-    text teacher_catchment_country
     datetime updated_at
     integer user_id
-    text work_setting
     date training_starts_at
     jsonb registration_data
   }
