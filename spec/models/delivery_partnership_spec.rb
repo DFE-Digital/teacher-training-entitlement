@@ -1,6 +1,53 @@
 require "rails_helper"
 
 RSpec.describe DeliveryPartnership, type: :model do
+  describe "auditing", :versioning do
+    before { PaperTrail.request.whodunnit = "AdminUser 42" }
+
+    after { PaperTrail.request.whodunnit = nil }
+
+    it { is_expected.to be_versioned }
+
+    context "when created" do
+      let!(:partnership) { create(:delivery_partnership) }
+
+      it "records a create version attributed to the admin" do
+        version = partnership.versions.last
+        expect([version.event, version.whodunnit]).to eq(["create", "AdminUser 42"])
+      end
+    end
+
+    context "when archived" do
+      let(:partnership) { create(:delivery_partnership) }
+
+      before { partnership.archive! }
+
+      it "records an update version with the archived_at change" do
+        version = partnership.versions.last
+        expect([version.event, version.whodunnit, version.object_changes.keys]).to eq(["update", "AdminUser 42", %w[archived_at]])
+      end
+    end
+
+    context "when unarchived" do
+      let(:partnership) { create(:delivery_partnership, archived_at: 1.day.ago) }
+
+      before { partnership.unarchive! }
+
+      it "records an update version resetting archived_at" do
+        version = partnership.versions.last
+        expect([version.event, version.whodunnit, version.object_changes["archived_at"].last]).to eq(["update", "AdminUser 42", nil])
+      end
+    end
+
+    context "when destroyed" do
+      let!(:partnership) { create(:delivery_partnership) }
+
+      it "records a destroy version" do
+        expect { partnership.destroy! }.to change { PaperTrail::Version.where(item_type: "DeliveryPartnership", event: "destroy").count }.by(1)
+      end
+    end
+  end
+
   describe "relationships" do
     it { is_expected.to belong_to :delivery_partner }
     it { is_expected.to belong_to :lead_provider }
