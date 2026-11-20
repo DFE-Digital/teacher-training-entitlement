@@ -1,0 +1,35 @@
+<div id="registrations">
+  <% content_for :before_content do %>
+    <% if router.previous_step_slug %>
+      <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: step_registration_path(current_step.registration_journey_slug, router.previous_step_slug)) %>
+    <% end %>
+  <% end %>
+
+  <% unless current_step.registration_step.is_a?(RegistrationSteps::HtmlPartial) %>
+    <h3 class="govuk-heading-xl"><%= current_step.name %></h3>
+
+    <% current_step.registration_step.text_data.each do |text_data| %>
+      <p class="<%= text_data['text_class'] %>">
+        <% text_data['text'].each do |text| %>
+          <%= text.html_safe %>
+          <br/>
+        <% end %>
+      </p>
+    <% end %>
+  <% end %>
+
+  <% if current_step.registration_step.is_a?(RegistrationSteps::HtmlPartial) %>
+    <%= render current_step.registration_step.type_as_param,
+               form: nil,
+               registration_step: current_step.registration_step,
+               router_step: current_step %>
+  <% else %>
+    <%= render "step_form", current_step: current_step do |form| %>
+      <%= render current_step.registration_step.type_as_param,
+                 form:,
+                 registration_step: current_step.registration_step,
+                 router_step: current_step %>
+      <%= form.govuk_submit %>
+    <% end %>
+  <% end %>
+</div>

@@ -3,7 +3,7 @@ RSpec.shared_context "with default lead provider", shared_context: :metadata do
     cohort = Cohort.current
     lead_provider = LeadProvider.first || create(:lead_provider)
 
-    course = Course.find_by(identifier: "npd-excellence-in-reception-teaching") || create(:course, :npd_eirt)
+    course = Course.find_by(identifier: Courses::ExcellenceInReception::LEGACY_IDENTIFIER) || create(:course, :npd_eirt)
 
     course_cohort = course.course_cohorts.find_by(cohort:) || create(:course_cohort, course:, cohort:)
 

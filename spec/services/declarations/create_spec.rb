@@ -33,12 +33,12 @@ RSpec.describe Declarations::Create, type: :model do
   let(:completed_milestone) { course_milestone(course_cohort.course, :completed) }
   let(:has_passed) { true }
   let(:delivery_partner_id) do
-    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+    create(:delivery_partner, lead_providers: { course_cohort => lead_provider }).ecf_id
   end
   let(:secondary_delivery_partner_id) do
-    create(:delivery_partner, lead_providers: { course_cohort.cohort => lead_provider }).ecf_id
+    create(:delivery_partner, lead_providers: { course_cohort => lead_provider }).ecf_id
   end
-  let!(:statement) { create(:statement, lead_provider:) }
+  let!(:statement) { create(:statement, lead_provider:, course_group: course_cohort.course.course_group) }
 
   RSpec.shared_examples "does not update the application" do
     it do
@@ -217,13 +217,13 @@ RSpec.describe Declarations::Create, type: :model do
         let(:delivery_partner_id) do
           create(:delivery_partner,
                  lead_providers: {
-                   course_cohort.cohort => lead_provider,
+                   course_cohort => lead_provider,
                  }).ecf_id
         end
         let(:secondary_delivery_partner_id) do
           create(:delivery_partner,
                  lead_providers: {
-                   course_cohort.cohort => lead_provider,
+                   course_cohort => lead_provider,
                  }).ecf_id
         end
 

@@ -41,7 +41,6 @@ erDiagram
   }
   DeliveryPartnership {
     integer id
-    integer course_cohort_id
     datetime created_at
     integer delivery_partner_id
     integer lead_provider_id

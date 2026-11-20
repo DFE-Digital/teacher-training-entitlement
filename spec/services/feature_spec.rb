@@ -112,4 +112,20 @@ RSpec.describe Feature do
       end
     end
   end
+
+  describe ".new_registration_journey_enabled?" do
+    after { Flipper.disable(Feature::NEW_REGISTRATION_JOURNEY) }
+
+    it "returns true when the flag is enabled" do
+      Flipper.enable(Feature::NEW_REGISTRATION_JOURNEY)
+
+      expect(described_class).to be_new_registration_journey_enabled
+    end
+
+    it "returns false when the flag is disabled" do
+      Flipper.disable(Feature::NEW_REGISTRATION_JOURNEY)
+
+      expect(described_class).not_to be_new_registration_journey_enabled
+    end
+  end
 end
