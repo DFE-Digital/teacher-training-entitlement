@@ -21,6 +21,8 @@ class Admin::CourseCohortsController < AdminController
     if @contract_financials.blank?
       @contract_financials = @contract_years
     end
+    @generic_contracts_by_lead_provider_id = @contract_years.index_by(&:lead_provider_id)
+    @uplift_institutions = @course_cohort.course.uplift_institutions.order(:name)
   end
 
   def new
