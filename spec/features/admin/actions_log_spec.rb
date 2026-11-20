@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "actions log", :no_js, :versioning, type: :feature do
+RSpec.feature "actions log", :versioning, type: :feature do
   include Helpers::AdminLogin
 
   let(:application_1) { create(:application) }

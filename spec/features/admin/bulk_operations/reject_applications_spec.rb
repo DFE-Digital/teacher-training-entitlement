@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "reject applications", :rack_test_driver, type: :feature do
+RSpec.feature "reject applications", type: :feature do
   include Helpers::AdminLogin
   include Helpers::BulkOperations
 

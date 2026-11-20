@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature do
+RSpec.feature "Backfill declaration delivery partners", type: :feature do
   include Helpers::AdminLogin
   include Helpers::BulkOperations
 

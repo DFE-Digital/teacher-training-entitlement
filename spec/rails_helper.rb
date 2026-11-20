@@ -45,9 +45,9 @@ Capybara.register_driver(:cuprite) do |app|
 end
 
 Capybara.configure do |config|
-  config.default_driver = :cuprite
+  config.default_driver = :rack_test
   config.javascript_driver = :cuprite
-  config.default_max_wait_time = 10 # without this, the default is 2
+  config.default_max_wait_time = 5
 end
 
 require "capybara-screenshot/rspec"
@@ -161,12 +161,6 @@ RSpec.configure do |config|
     allow(ActionView::Base)
       .to receive(:default_form_builder)
           .and_return GOVUKDesignSystemFormBuilder::FormBuilder
-  end
-
-  config.around(:each, :rack_test_driver) do |example|
-    Capybara.current_driver = :rack_test
-    example.run
-    Capybara.current_driver = Capybara.default_driver
   end
 
   config.around(:each, type: :feature) do |example|

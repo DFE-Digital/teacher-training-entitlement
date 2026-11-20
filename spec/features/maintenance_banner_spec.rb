@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.feature "Maintenance banner", :no_js do
+RSpec.feature "Maintenance banner" do
   before do
     Flipper.enable(Feature::MAINTENANCE_BANNER)
   end
