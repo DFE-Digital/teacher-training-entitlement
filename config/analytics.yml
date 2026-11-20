@@ -106,6 +106,7 @@ shared:
     - delivery_partner_id
     - lead_provider_id
     - course_id
+    - archived_at
     - created_at
     - updated_at
   :declarations:

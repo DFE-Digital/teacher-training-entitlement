@@ -91,6 +91,31 @@ RSpec.describe "Declaration endpoints", type: :request do
     end
   end
 
+  describe "declaration whose delivery partnership is later archived" do
+    let(:cohort) { create(:cohort, :current) }
+    let(:delivery_partner) { create(:delivery_partner, lead_providers: { cohort => current_lead_provider }) }
+    let(:statement) { create(:statement, :next_output_fee, lead_provider: current_lead_provider) }
+    let(:course_cohort) { create(:course_cohort, cohort:) }
+    let(:application) { create(:application, status: Application::STARTED, course_cohort:, lead_provider: current_lead_provider) }
+    let!(:declaration) do
+      create(:declaration, :paid, application:, course_cohort:, statement:, lead_provider: current_lead_provider, delivery_partner:)
+    end
+
+    before { delivery_partner.delivery_partnerships.each(&:archive!) }
+
+    it "still returns the delivery partner" do
+      api_get(api_v1_declaration_path(declaration.ecf_id))
+
+      expect(parsed_response["data"]["attributes"]["delivery_partner_name"]).to eq(delivery_partner.name)
+    end
+
+    it "can still be voided" do
+      api_put(void_api_v1_declaration_path(ecf_id: declaration.ecf_id))
+
+      expect(response.status).to eq(200)
+    end
+  end
+
   describe "PUT /api/v1/declarations/:ecf_id/change-delivery-partner" do
     let(:cohort) { create(:cohort, :current) }
 

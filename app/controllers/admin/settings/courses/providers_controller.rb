@@ -11,7 +11,7 @@ class Admin::Settings::Courses::ProvidersController < AdminController
                          .order(academic_year: :asc)
     @contract_generic = contract_details.detect { _1.academic_year.blank? }
     @contract_years = contract_details.select { _1.academic_year.present? }
-    @pagy_delivery_partnerships, @delivery_partnerships = pagy(@course.delivery_partnerships.includes(:delivery_partner).where(lead_provider: @lead_provider))
+    @pagy_delivery_partnerships, @delivery_partnerships = pagy(@course.active_delivery_partnerships.includes(:delivery_partner).where(lead_provider: @lead_provider))
   end
 
 private
