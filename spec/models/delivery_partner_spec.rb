@@ -1,6 +1,33 @@
 require "rails_helper"
 
 RSpec.describe DeliveryPartner, type: :model do
+  describe "auditing", :versioning do
+    before { PaperTrail.request.whodunnit = "AdminUser 42" }
+
+    after { PaperTrail.request.whodunnit = nil }
+
+    it { is_expected.to be_versioned }
+
+    context "when created" do
+      let!(:partner) { create(:delivery_partner) }
+
+      it "records a create version attributed to the admin" do
+        version = partner.versions.last
+        expect([version.event, version.whodunnit]).to eq(["create", "AdminUser 42"])
+      end
+    end
+
+    context "when renamed" do
+      let(:partner) { create(:delivery_partner) }
+
+      before { partner.update!(name: "Renamed Partner") }
+
+      it "records the name change" do
+        expect(partner.versions.last.object_changes["name"].last).to eq("Renamed Partner")
+      end
+    end
+  end
+
   describe "search scopes" do
     describe ".name_similar_to" do
       subject { described_class.name_similar_to(name) }

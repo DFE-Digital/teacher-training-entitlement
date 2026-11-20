@@ -1,4 +1,6 @@
 class DeliveryPartnership < ApplicationRecord
+  has_paper_trail ignore: [:updated_at]
+
   belongs_to :delivery_partner
   belongs_to :lead_provider
   belongs_to :course
