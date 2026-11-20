@@ -3,6 +3,10 @@ Knapsack::Adapters::RSpecAdapter.bind
 
 require "simplecov"
 require "simplecov_json_formatter"
+# Unique name per parallel_tests worker so results are merged, not overwritten.
+if ENV.key?("TEST_ENV_NUMBER")
+  SimpleCov.command_name "rspec-#{ENV['TEST_ENV_NUMBER'].to_s.empty? ? 1 : ENV['TEST_ENV_NUMBER']}"
+end
 SimpleCov.start "rails"
 
 require "webmock/rspec"
