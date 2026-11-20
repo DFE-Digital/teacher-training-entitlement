@@ -47,6 +47,7 @@ end
 Capybara.configure do |config|
   config.default_driver = :rack_test
   config.javascript_driver = :cuprite
+  # Long enough for slow CI and JS-driven specs, short enough to fail fast on genuine misses.
   config.default_max_wait_time = 5
 end
 
