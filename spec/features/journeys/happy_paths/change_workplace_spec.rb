@@ -22,7 +22,7 @@ RSpec.feature "Change workplace", type: :feature do
     )
   end
 
-  scenario "displays previously selected school when returning to choose-school page" do
+  scenario "displays previously selected school when returning to choose-school page", :js do
     visit "/registration/choose-school/change"
 
     within(".npq-js-reveal") do

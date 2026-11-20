@@ -13,7 +13,7 @@ RSpec.feature "Sad journey", :with_default_lead_provider, type: :feature do
     scenario("teacher catchment not in England (with JS)") { run_scenario }
   end
 
-  context "when JavaScript is disabled", :no_js do
+  context "when JavaScript is disabled" do
     scenario("teacher catchment not in England (without JS)") { run_scenario }
   end
 

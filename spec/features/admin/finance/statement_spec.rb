@@ -55,7 +55,7 @@ RSpec.feature "Statement", type: :feature do
     end
   end
 
-  scenario "print views" do
+  scenario "print views", :js do
     visit admin_finance_statement_path(statement)
 
     within(".govuk-inset-text.noprint") do

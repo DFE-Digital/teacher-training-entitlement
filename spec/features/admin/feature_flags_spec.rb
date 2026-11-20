@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Administering feature flags", :rack_test_driver, type: :feature do
+RSpec.feature "Administering feature flags", type: :feature do
   include Helpers::AdminLogin
   include_context "Stub Teacher Auth Responses"
 

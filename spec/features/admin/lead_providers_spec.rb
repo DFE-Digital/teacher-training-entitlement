@@ -16,7 +16,7 @@ RSpec.feature "Listing and viewing course providers", type: :feature do
     sign_in_as(create(:admin))
   end
 
-  scenario "viewing the list of course providers" do
+  scenario "viewing the list of course providers", :js do
     visit(admin_lead_providers_path)
 
     expect(page).to have_css("h1", text: "Providers")

@@ -16,7 +16,7 @@ RSpec.feature "Admin search", type: :feature do
     sign_in_as(create(:admin))
   end
 
-  scenario "searching applications" do
+  scenario "searching applications", :js do
     application = create(:application)
 
     visit(admin_search_path)
@@ -54,7 +54,7 @@ RSpec.feature "Admin search", type: :feature do
     expect(page).to have_application(application)
   end
 
-  scenario "simultaneously filtering and searching applications" do
+  scenario "simultaneously filtering and searching applications", :js do
     application = create(:application, :pending)
 
     search_with_results = application.ecf_id
@@ -81,7 +81,7 @@ RSpec.feature "Admin search", type: :feature do
     expect(page).to have_application(application)
   end
 
-  scenario "searching for a user" do
+  scenario "searching for a user", :js do
     user = create(:user, :with_one_login_id)
     create(:application, user:)
 

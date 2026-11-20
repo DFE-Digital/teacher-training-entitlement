@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "revert applications to pending", :rack_test_driver, type: :feature do
+RSpec.feature "revert applications to pending", type: :feature do
   include Helpers::AdminLogin
   include Helpers::BulkOperations
 

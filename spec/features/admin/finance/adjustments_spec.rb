@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.feature "Adjustments", :no_js, type: :feature do
+RSpec.feature "Adjustments", type: :feature do
   include Helpers::AdminLogin
 
   let(:statement) { create(:statement) }
