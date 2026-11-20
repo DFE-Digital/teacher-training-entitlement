@@ -48,9 +48,23 @@ bundle exec rspec --tag ~npq
 ### Parallel (local)
 
 ```bash
-bundle exec rake parallel:setup   # one-time
-bundle exec rake parallel:spec
+bin/parallel-spec                      # all CPU cores, whole suite
+bin/parallel-spec -n 4                 # choose the worker count
+bin/parallel-spec -n 4 spec/models     # extra args: a spec path
 ```
+
+First-time setup needs nothing extra: the script creates and loads the
+per-worker databases (`cpd_tte_test`, `cpd_tte_test2`, ...) on every run, so
+missing or stale databases are fixed automatically, including after schema
+changes or new migrations (run `bin/rails db:migrate` first so `db/schema.rb`
+is current). If setup fails (e.g. Postgres is not running) the script exits
+non-zero before running any specs.
+
+The first run uses default grouping. Each run writes per-file timings to
+`tmp/parallel_runtime_rspec.log` (gitignored, via `.rspec_parallel`); later
+runs use `--group-by runtime` to balance workers. After the run, per-worker
+SimpleCov results are merged into one report in `coverage/`. Knapsack is only
+used by CI and does not affect these runs.
 
 ---
 

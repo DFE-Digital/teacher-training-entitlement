@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Run the RSpec suite in parallel locally.
+#
+# Usage: bin/parallel-spec [-n WORKERS] [rspec paths/args...]
+#   bin/parallel-spec
+#   bin/parallel-spec -n 4 spec/models
+#
+# Prepares the per-worker test databases (idempotent), then runs parallel_rspec,
+# grouping by runtime when tmp/parallel_runtime_rspec.log exists.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+workers="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+if [[ "${1:-}" == "-n" ]]; then
+  workers="${2:?-n requires a worker count}"
+  shift 2
+fi
+if ! [[ "$workers" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Invalid worker count: $workers" >&2
+  exit 2
+fi
+
+export RAILS_ENV=test
+runtime_log="tmp/parallel_runtime_rspec.log"
+mkdir -p tmp
+
+echo "==> Preparing $workers test database(s)"
+if ! bundle exec rake "parallel:create[$workers]" "parallel:load_schema[$workers]"; then
+  echo "Database setup failed. Is Postgres running and are the credentials in config/database.yml valid?" >&2
+  exit 1
+fi
+
+args=(-n "$workers" --type rspec)
+if [[ -s "$runtime_log" ]]; then
+  args+=(--group-by runtime --runtime-log "$runtime_log")
+  echo "==> Grouping by runtime ($runtime_log)"
+else
+  echo "==> No runtime log yet; using default grouping (the next run will be balanced)"
+fi
+
+status=0
+bundle exec parallel_rspec "${args[@]}" -- "${@:-spec}" || status=$?
+
+echo "==> Merging coverage"
+COVERAGE_DIR=coverage bundle exec rake coverage:collate >/dev/null || echo "Coverage merge failed" >&2
+
+exit "$status"
