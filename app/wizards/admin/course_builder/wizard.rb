@@ -12,6 +12,8 @@ module Admin
         lead_providers: Steps::LeadProviders,
         contract_financials: Steps::ContractFinancials,
         delivery_partners: Steps::DeliveryPartners,
+        uplift_incentive: Steps::UpliftIncentive,
+        uplift_institutions: Steps::UpliftInstitutions,
         check_answers: Steps::CheckAnswers,
       }.freeze
 
@@ -21,6 +23,8 @@ module Admin
         lead_providers: "Lead providers",
         contract_financials: "Contract financials",
         delivery_partners: "Delivery partners",
+        uplift_incentive: "Uplift incentive",
+        uplift_institutions: "Uplift institutions",
         check_answers: "Check answers",
       }.freeze
 
@@ -35,7 +39,9 @@ module Admin
           graph.add_edge from: :milestones, to: :lead_providers
           graph.add_edge from: :lead_providers, to: :contract_financials
           graph.add_edge from: :contract_financials, to: :delivery_partners
-          graph.add_edge from: :delivery_partners, to: :check_answers
+          graph.add_edge from: :delivery_partners, to: :uplift_incentive
+          graph.add_conditional_edge from: :uplift_incentive, when: :uplift_incentive?, then: :uplift_institutions, else: :check_answers
+          graph.add_edge from: :uplift_institutions, to: :check_answers
         end
       end
 

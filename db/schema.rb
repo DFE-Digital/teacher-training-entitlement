@@ -188,6 +188,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_100000) do
     t.decimal "service_fee"
     t.decimal "teacher_funding"
     t.datetime "updated_at", null: false
+    t.decimal "uplift_percentage", precision: 10, scale: 4
     t.index ["course_id"], name: "index_contract_years_on_course_id"
     t.index ["lead_provider_id", "course_id", "academic_year"], name: "idx_on_lead_provider_id_course_id_academic_year_c921fdb2b9", unique: true
     t.index ["lead_provider_id"], name: "index_contract_years_on_lead_provider_id"
@@ -218,6 +219,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_100000) do
     t.index ["course_id", "cohort_id"], name: "index_course_cohorts_on_course_id_and_cohort_id", unique: true
     t.index ["course_id"], name: "index_course_cohorts_on_course_id"
     t.index ["ecf_id"], name: "index_course_cohorts_on_ecf_id", unique: true
+  end
+
+  create_table "course_uplift_institutions", force: :cascade do |t|
+    t.bigint "course_id", null: false
+    t.bigint "institution_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id", "institution_id"], name: "idx_on_course_id_institution_id_43571902cd", unique: true
+    t.index ["institution_id"], name: "index_course_uplift_institutions_on_institution_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -543,6 +553,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_100000) do
   add_foreign_key "course_cohort_providers", "lead_providers"
   add_foreign_key "course_cohorts", "cohorts"
   add_foreign_key "course_cohorts", "courses"
+  add_foreign_key "course_uplift_institutions", "courses"
+  add_foreign_key "course_uplift_institutions", "institutions"
   add_foreign_key "declarations", "applications"
   add_foreign_key "declarations", "cohorts"
   add_foreign_key "declarations", "declarations", column: "superseded_by_id"

@@ -1,0 +1,17 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path, method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <%= f.govuk_text_field :uplift_percentage,
+                         label: { text: "Uplift percentage (optional)", size: "s" },
+                         hint: { text: "For example, 15. Leave blank if this course has no uplift incentive." },
+                         suffix_text: "%",
+                         width: 4 %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

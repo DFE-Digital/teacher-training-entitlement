@@ -124,6 +124,52 @@ RSpec.describe Admin::CourseBuilder::StateStore do
     end
   end
 
+  describe "uplift details" do
+    let(:institution) { create(:institution) }
+
+    context "when an uplift percentage was entered" do
+      before do
+        repository.save(
+          {
+            uplift_percentage: "15",
+            uplift_institution_ids: [institution.id, 0],
+          },
+        )
+      end
+
+      it { is_expected.to be_uplift_incentive }
+
+      it "returns the uplift percentage as entered" do
+        expect(state_store.uplift_percentage).to eq("15")
+      end
+
+      it "returns the selected institutions that exist" do
+        expect(state_store.selected_uplift_institutions).to contain_exactly(institution)
+      end
+    end
+
+    context "when no uplift percentage was entered" do
+      before do
+        repository.save(
+          {
+            uplift_percentage: "",
+            uplift_institution_ids: [institution.id],
+          },
+        )
+      end
+
+      it { is_expected.not_to be_uplift_incentive }
+
+      it "returns no uplift percentage" do
+        expect(state_store.uplift_percentage).to be_nil
+      end
+
+      it "ignores institutions left from an earlier answer" do
+        expect(state_store.selected_uplift_institutions).to be_empty
+      end
+    end
+  end
+
   describe "#selected_delivery_partnerships" do
     let(:selected_lead_provider) { create(:lead_provider) }
     let(:removed_lead_provider) { create(:lead_provider) }

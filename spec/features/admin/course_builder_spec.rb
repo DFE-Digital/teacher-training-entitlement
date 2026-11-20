@@ -21,6 +21,11 @@ RSpec.feature "Building a course", type: :feature do
     find("fieldset", text: "Delivery partners for #{lead_provider.name}")
   end
 
+  def skip_uplift_incentive
+    expect(page).to have_css("h1", text: "Uplift incentive")
+    click_on "Continue"
+  end
+
   scenario "creating a course with the default milestones and minimal provider data" do
     visit admin_settings_courses_builder_path(step: "course-details")
 
@@ -43,6 +48,7 @@ RSpec.feature "Building a course", type: :feature do
       find("label", text: delivery_partner.name).click
     end
     click_on "Continue"
+    skip_uplift_incentive
 
     expect(page).to have_css("h1", text: "Check course configuration")
     expect(page).to have_text("Started and Completed")
@@ -86,6 +92,7 @@ RSpec.feature "Building a course", type: :feature do
       find("label", text: delivery_partner.name).click
     end
     click_on "Continue"
+    skip_uplift_incentive
 
     within(find("tr", text: "Delivery partners")) do
       click_on "Change"
@@ -148,6 +155,7 @@ RSpec.feature "Building a course", type: :feature do
       find("label", text: delivery_partner.name).click
     end
     click_on "Continue"
+    skip_uplift_incentive
 
     expect(page).to have_css("h1", text: "Check course configuration")
 
@@ -171,6 +179,7 @@ RSpec.feature "Building a course", type: :feature do
       find("label", text: delivery_partner.name).click
     end
     click_on "Continue"
+    skip_uplift_incentive
 
     expect(page).to have_css("h1", text: "Check course configuration")
   end
@@ -193,6 +202,7 @@ RSpec.feature "Building a course", type: :feature do
     expect(page).to have_text("No lead providers were selected.")
 
     click_on "Continue"
+    skip_uplift_incentive
 
     expect(page).to have_css("h1", text: "Check course configuration")
     expect(page).to have_text("Delivery partners")
@@ -218,6 +228,7 @@ RSpec.feature "Building a course", type: :feature do
       find("label", text: delivery_partner.name).click
     end
     click_on "Continue"
+    skip_uplift_incentive
 
     within(find("tr", text: "Lead providers")) do
       click_on "Change"
@@ -229,6 +240,7 @@ RSpec.feature "Building a course", type: :feature do
 
     expect(page).to have_text("No lead providers were selected.")
     click_on "Continue"
+    skip_uplift_incentive
 
     expect(page).to have_css("h1", text: "Check course configuration")
     expect(page).not_to have_text(delivery_partner.name)
@@ -238,5 +250,167 @@ RSpec.feature "Building a course", type: :feature do
     expect(page).to have_text("Course created successfully")
     course = Course.find_by!(name: "Removed lead course")
     expect(course.delivery_partnerships).to be_empty
+  end
+
+  context "with uplift details" do
+    let!(:sunny_school) { create(:institution, name: "Sunny Hill School") }
+    let!(:rainy_school) { create(:institution, name: "Rainy Vale School") }
+
+    def go_to_uplift_incentive_step(course_name)
+      visit admin_settings_courses_builder_path(step: "course-details")
+
+      fill_in "Name", with: course_name
+      select "Reception", from: "Course group"
+      click_on "Continue"
+
+      fill_in "milestones-started-payment-percentage-field", with: "60"
+      fill_in "milestones-completed-payment-percentage-field", with: "40"
+      click_on "Continue"
+
+      find("label", text: lead_provider.name).click
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Contract financials")
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Delivery partners")
+      within(lead_provider_group(lead_provider)) do
+        find("label", text: delivery_partner.name).click
+      end
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Uplift incentive")
+    end
+
+    def search_institutions(term)
+      fill_in "Search for an institution", with: term
+      click_on "Search institutions"
+    end
+
+    scenario "creating a course with an uplift percentage and uplift institutions" do
+      go_to_uplift_incentive_step("Uplift course")
+
+      fill_in "Uplift percentage (optional)", with: "15"
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Uplift institutions")
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Uplift institutions")
+      expect(page).to have_css(".govuk-error-summary", text: "Select at least one institution")
+
+      search_institutions("Sunny")
+
+      expect(page).to have_css("label", text: sunny_school.name)
+      expect(page).not_to have_css("label", text: rainy_school.name)
+      find("label", text: sunny_school.name).click
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Check course configuration")
+      within(find("tr", text: "Uplift incentive")) do
+        expect(page).to have_text("Uplift percentage: 15%")
+        expect(page).to have_text(sunny_school.name)
+      end
+
+      click_button "Create course"
+
+      expect(page).to have_text("Course created successfully")
+      course = Course.find_by!(name: "Uplift course")
+      expect(course.uplift_institutions).to contain_exactly(sunny_school)
+      expect(ContractYear.find_by!(course:, lead_provider:, academic_year: nil).uplift_percentage).to eq(BigDecimal("0.15"))
+
+      visit admin_settings_course_path(course)
+      within(find(".govuk-summary-list__row", text: "Uplift incentive")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "Yes")
+      end
+      find("summary", text: "Uplift institutions").click
+      within("#uplift-institutions") do
+        expect(page).to have_text(sunny_school.name)
+      end
+
+      click_on "View details"
+      within(find(".govuk-summary-list__row", text: "Uplift percentage")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "15%")
+      end
+    end
+
+    scenario "creating a course without an uplift percentage" do
+      go_to_uplift_incentive_step("No uplift course")
+
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Check course configuration")
+      within(find("tr", text: "Uplift incentive")) do
+        expect(page).to have_text("None")
+      end
+
+      click_button "Create course"
+
+      expect(page).to have_text("Course created successfully")
+      course = Course.find_by!(name: "No uplift course")
+      expect(course.uplift_institutions).to be_empty
+      expect(ContractYear.find_by!(course:, lead_provider:, academic_year: nil).uplift_percentage).to be_nil
+
+      visit admin_settings_course_path(course)
+      within(find(".govuk-summary-list__row", text: "Uplift incentive")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "No")
+      end
+      expect(page).not_to have_css("summary", text: "Uplift institutions")
+
+      click_on "View details"
+      within(find(".govuk-summary-list__row", text: "Uplift percentage")) do
+        expect(page).to have_css(".govuk-summary-list__value", text: "-")
+      end
+    end
+
+    scenario "rejecting an uplift percentage above 100" do
+      go_to_uplift_incentive_step("Too much uplift course")
+
+      fill_in "Uplift percentage (optional)", with: "150"
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Uplift incentive")
+      expect(page).to have_css(".govuk-error-summary", text: "Enter an uplift percentage between 0 and 100")
+    end
+
+    scenario "keeping ticked institutions when searching again" do
+      go_to_uplift_incentive_step("Two searches course")
+
+      fill_in "Uplift percentage (optional)", with: "10"
+      click_on "Continue"
+
+      search_institutions("Sunny")
+      find("label", text: sunny_school.name).click
+
+      search_institutions("Rainy")
+      expect(find_field(sunny_school.name, visible: :all)).to be_checked
+      find("label", text: rainy_school.name).click
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Check course configuration")
+      within(find("tr", text: "Uplift incentive")) do
+        expect(page).to have_text(sunny_school.name)
+        expect(page).to have_text(rainy_school.name)
+      end
+    end
+
+    scenario "going back from check answers to the uplift steps" do
+      go_to_uplift_incentive_step("Back link course")
+
+      fill_in "Uplift percentage (optional)", with: "20"
+      click_on "Continue"
+
+      search_institutions("Sunny")
+      find("label", text: sunny_school.name).click
+      click_on "Continue"
+
+      expect(page).to have_css("h1", text: "Check course configuration")
+      click_on "Back"
+      expect(page).to have_css("h1", text: "Uplift institutions")
+      click_on "Back"
+      expect(page).to have_css("h1", text: "Uplift incentive")
+      click_on "Back"
+      expect(page).to have_css("h1", text: "Delivery partners")
+    end
   end
 end

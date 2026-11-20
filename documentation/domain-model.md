@@ -41,7 +41,6 @@ erDiagram
   }
   DeliveryPartnership {
     integer id
-    integer course_cohort_id
     datetime created_at
     integer delivery_partner_id
     integer lead_provider_id
@@ -58,6 +57,15 @@ erDiagram
     string name
     datetime updated_at
   }
+  CourseUpliftInstitution {
+    integer id
+    integer course_id
+    integer institution_id
+    datetime created_at
+    datetime updated_at
+  }
+  CourseUpliftInstitution }o--|| Course : belongs_to
+  CourseUpliftInstitution }o--|| Institution : belongs_to
   CourseCohortProvider {
     integer id
     integer course_cohort_id

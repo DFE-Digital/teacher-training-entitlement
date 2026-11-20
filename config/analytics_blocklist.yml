@@ -84,6 +84,7 @@
   - service_fee
   - teacher_funding
   - updated_at
+  - uplift_percentage
   :closed_registration_users:
   - id
   - created_at

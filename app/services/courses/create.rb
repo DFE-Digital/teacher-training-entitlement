@@ -10,6 +10,7 @@ module Courses
 
     def call
       add_delivery_partner_errors
+      add_uplift_institution_errors
       return if errors.any?
 
       Course.transaction do
@@ -18,6 +19,7 @@ module Courses
         create_generic_contract_years!
         create_contract_financials!
         create_delivery_partnerships!
+        create_uplift_institutions!
       end
     rescue ActiveRecord::RecordInvalid => e
       errors.add(:base, "#{e.record.class.model_name.human}: #{e.record.errors.full_messages.to_sentence}")
@@ -36,6 +38,13 @@ module Courses
 
         errors.add(:"lead_provider_#{lead_provider.id}", "Select at least one delivery partner for #{lead_provider.name}")
       end
+    end
+
+    def add_uplift_institution_errors
+      return unless state_store.uplift_incentive?
+      return if state_store.selected_uplift_institutions.any?
+
+      errors.add(:uplift_institution_ids, "Select at least one uplift institution")
     end
 
     def create_course!
@@ -69,7 +78,7 @@ module Courses
           declaration_type: milestone_config.declaration_type,
           acceptance_window_start_offset: milestone_config.acceptance_window_start_offset,
           acceptance_window_end_offset: milestone_config.acceptance_window_end_offset,
-          payment_percentage: payment_percentage(milestone_config.payment_percentage),
+          payment_percentage: fraction_from_percentage(milestone_config.payment_percentage),
         )
       end
     end
@@ -84,6 +93,7 @@ module Courses
         contract_year.assign_attributes(
           course_url: selected_provider.url.presence,
           email: selected_provider.email.presence,
+          uplift_percentage: fraction_from_percentage(state_store.uplift_percentage),
         )
         contract_year.save!
       end
@@ -98,11 +108,17 @@ module Courses
       end
     end
 
+    def create_uplift_institutions!
+      state_store.selected_uplift_institutions.each do |institution|
+        course.course_uplift_institutions.create!(institution:)
+      end
+    end
+
     def course_details
       @course_details ||= state_store.course_details
     end
 
-    def payment_percentage(value)
+    def fraction_from_percentage(value)
       return if value.blank?
 
       BigDecimal(value.to_s) / 100
