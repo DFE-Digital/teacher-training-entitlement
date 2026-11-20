@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Run the RSpec suite in parallel locally.
 #
-# Usage: bin/parallel-spec [-n WORKERS] [rspec paths/args...]
+# Usage: bin/parallel-spec [-n WORKERS] [spec paths...]
+#   Only spec files/directories are accepted, not RSpec options.
 #   bin/parallel-spec
 #   bin/parallel-spec -n 4 spec/models
 #
 # Prepares the per-worker test databases (idempotent), then runs parallel_rspec,
-# grouping by runtime when tmp/parallel_runtime_rspec.log exists.
+# grouping by runtime when tmp/parallel_runtime_rspec.log exists. Files missing
+# from the log are tolerated. Runs on a subset of specs do not overwrite the log.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -32,16 +34,32 @@ fi
 
 args=(-n "$workers" --type rspec)
 if [[ -s "$runtime_log" ]]; then
-  args+=(--group-by runtime --runtime-log "$runtime_log")
+  # --allowed-missing: never abort because the log lacks some spec files.
+  args+=(--group-by runtime --runtime-log "$runtime_log" --allowed-missing 100)
   echo "==> Grouping by runtime ($runtime_log)"
 else
   echo "==> No runtime log yet; using default grouping (the next run will be balanced)"
 fi
 
-status=0
-bundle exec parallel_rspec "${args[@]}" -- "${@:-spec}" || status=$?
+paths=("${@:-spec}")
 
-echo "==> Merging coverage"
-COVERAGE_DIR=coverage bundle exec rake coverage:collate >/dev/null || echo "Coverage merge failed" >&2
+# .rspec_parallel makes every run rewrite the runtime log. Keep a full-suite log
+# safe from subset runs by restoring it afterwards.
+backup=""
+if [[ "${paths[*]}" != "spec" && -s "$runtime_log" ]]; then
+  backup="$(mktemp)"
+  cp "$runtime_log" "$backup"
+fi
+
+# Drop results of earlier (e.g. serial) runs so they cannot leak into the
+# merged report; SimpleCov merges the per-worker results itself.
+rm -f coverage/.resultset.json coverage/.resultset.json.lock
+
+status=0
+bundle exec parallel_rspec "${args[@]}" -- "${paths[@]}" || status=$?
+
+if [[ -n "$backup" ]]; then
+  mv "$backup" "$runtime_log"
+fi
 
 exit "$status"
