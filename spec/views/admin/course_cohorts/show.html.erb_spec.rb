@@ -41,6 +41,8 @@ RSpec.describe "admin/course_cohorts/show.html.erb", type: :view do
     assign(:delivery_partner_counts, {})
     assign(:contract_years, [generic_contract_year, academic_year_contract_year])
     assign(:contract_financials, [academic_year_contract_year])
+    assign(:generic_contracts_by_lead_provider_id, { lead_provider.id => generic_contract_year })
+    assign(:uplift_institutions, course.uplift_institutions)
 
     without_partial_double_verification { allow(view).to receive(:current_admin).and_return(admin) }
 

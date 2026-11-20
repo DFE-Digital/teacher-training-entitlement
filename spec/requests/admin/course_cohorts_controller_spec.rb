@@ -87,6 +87,59 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
       end
     end
 
+    describe "#show uplift details" do
+      let(:other_lead_provider) { create(:lead_provider, name: "Provider Two") }
+
+      before do
+        create(:course_cohort_provider, course_cohort:, lead_provider: other_lead_provider)
+      end
+
+      context "when the course is set up with uplift details" do
+        before do
+          create(:contract_year, :generic, course:, lead_provider:, uplift_percentage: BigDecimal("0.1"))
+          create(:contract_year, :generic, course:, lead_provider: other_lead_provider, uplift_percentage: BigDecimal("0.125"))
+          create(:course_uplift_institution, course:, institution: create(:institution, name: "Uplift School"))
+
+          get cohort_admin_course_cohort_path(course, cohort)
+        end
+
+        it "shows the uplift incentive as yes" do
+          expect(summary_value("Uplift incentive")).to eq("Yes")
+        end
+
+        it "shows the uplift percentage of each provider" do
+          expect(provider_uplift_percentages).to eq("Provider One" => "10%", "Provider Two" => "12.5%")
+        end
+
+        it "lists the uplift institutions in a details section" do
+          details = Nokogiri::HTML(response.body).at_css("details#uplift-institutions")
+
+          expect(details.at_css("summary").text).to include("Uplift institutions")
+          expect(details.text).to include("Uplift School")
+        end
+      end
+
+      context "when the course is not set up with uplift details" do
+        before do
+          create(:contract_year, :generic, course:, lead_provider:)
+
+          get cohort_admin_course_cohort_path(course, cohort)
+        end
+
+        it "shows the uplift incentive as no" do
+          expect(summary_value("Uplift incentive")).to eq("No")
+        end
+
+        it "shows a placeholder for the uplift percentage of each provider" do
+          expect(provider_uplift_percentages).to eq("Provider One" => "-", "Provider Two" => "-")
+        end
+
+        it "has no uplift institutions details section" do
+          expect(response.body).not_to include("Uplift institutions")
+        end
+      end
+    end
+
     describe "#new" do
       before { get new_admin_course_cohorts_path(cohort) }
 
@@ -203,6 +256,29 @@ RSpec.describe Admin::CourseCohortsController, :ecf_api_disabled, type: :request
       before { post cohort_admin_course_cohorts_path(cohort), params: cohort_first_params }
 
       it { is_expected.to redirect_to sign_in_path }
+    end
+  end
+
+  def summary_value(key)
+    Nokogiri::HTML(response.body)
+      .css(".govuk-summary-list__row")
+      .find { |row| row.at_css(".govuk-summary-list__key").text.strip == key }
+      .at_css(".govuk-summary-list__value")
+      .text
+      .strip
+  end
+
+  def provider_uplift_percentages
+    table = Nokogiri::HTML(response.body)
+      .css("table")
+      .find { |t| t.css("thead th").map { |th| th.text.strip }.include?("Uplift percentage") }
+    headers = table.css("thead th").map { |th| th.text.strip }
+    provider_index = headers.index("Provider")
+    uplift_index = headers.index("Uplift percentage")
+
+    table.css("tbody tr").to_h do |row|
+      cells = row.css("td, th").map { |cell| cell.text.strip }
+      [cells[provider_index], cells[uplift_index]]
     end
   end
 end
