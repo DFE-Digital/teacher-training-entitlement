@@ -24,14 +24,11 @@
                registration_step: current_step.registration_step,
                router_step: current_step %>
   <% else %>
-    <%= form_with model: current_step,
-                      url: step_registration_path(current_step.registration_journey_slug, current_step.slug),
-                      scope: current_step.slug,
-                      method: :patch do |form| %>
-      <%= form.govuk_error_summary %>
-
-      <%= render current_step.registration_step.type_as_param, form:, registration_step: current_step.registration_step, router_step: current_step %>
-
+    <%= render "step_form", current_step: current_step do |form| %>
+      <%= render current_step.registration_step.type_as_param,
+                 form:,
+                 registration_step: current_step.registration_step,
+                 router_step: current_step %>
       <%= form.govuk_submit %>
     <% end %>
   <% end %>

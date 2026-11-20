@@ -44,6 +44,11 @@ module Registrations
         return step_params[:step_answer]
       end
 
+      answer_key = registration_step.answer_key
+      if step_params.respond_to?(:key?) && (step_params.key?(answer_key) || step_params.key?(answer_key.to_s))
+        return step_params[answer_key]
+      end
+
       if params.respond_to?(:key?) && (params.key?(:step_answer) || params.key?("step_answer"))
         return params[:step_answer]
       end

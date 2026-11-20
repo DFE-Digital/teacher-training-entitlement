@@ -3,10 +3,12 @@ require "rails_helper"
 RSpec.describe Registrations::RouterStep do
   describe "answer context" do
     let(:journey) { create(:registration_journey, name: "Simple journey", slug: "simple-journey") }
+    let(:state_store_key) { nil }
     let(:step) do
       create(:registration_step,
              registration_journey: journey,
              name: "Choose a drink",
+             state_store_key:,
              slug: "choose-a-drink",
              type: "RegistrationSteps::RadioButtons",
              config: {}).tap do |registration_step|
@@ -28,6 +30,21 @@ RSpec.describe Registrations::RouterStep do
       expect(router_step.step_answer).to eq("coffee")
       expect(router_step.slug).to eq(:"choose-a-drink")
       expect(router_step.registration_journey_slug).to eq("simple-journey")
+    end
+
+    context "when the step params use the configured answer key" do
+      let(:state_store_key) { "drink_choice" }
+      let(:params) do
+        ActionController::Parameters.new(
+          "journey_slug" => journey.slug,
+          "step_slug" => step.slug,
+          "choose-a-drink" => { "drink_choice" => "dave" },
+        )
+      end
+
+      it "reads the answer from that key" do
+        expect(router_step.step_answer).to eq("dave")
+      end
     end
   end
 
