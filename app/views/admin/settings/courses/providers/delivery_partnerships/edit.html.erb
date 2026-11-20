@@ -1,0 +1,22 @@
+<% content_for :title, "#{"Error: " if @error}Edit delivery partners - #{@lead_provider.name}" %>
+<%= govuk_back_link href: admin_settings_course_provider_path(@course, @lead_provider) %>
+<%= render "admin/settings/courses/providers/delivery_partnerships/error_summary", errors: @error ? { "delivery-partner-ids" => @error } : {} %>
+
+<h1 class="govuk-heading-l">Edit delivery partners</h1>
+<p class="govuk-body"><%= @lead_provider.name %> - <%= @course.name %></p>
+
+<%= form_with url: admin_settings_course_provider_delivery_partnerships_path(@course, @lead_provider), method: :patch do %>
+  <%= hidden_field_tag "delivery_partner_ids[]", "", id: nil %>
+  <%= render "admin/settings/courses/providers/delivery_partnerships/buttons", add_new: true %>
+
+  <%# The checkbox targeted by the error summary is the first one rendered; if there is no current group it is in the other group. %>
+  <% current_first = @active_partners.any? %>
+  <% if current_first %>
+    <%= render "admin/settings/courses/providers/delivery_partnerships/checkbox_group", legend: "Current delivery partners", partners: @active_partners, selected_ids: @selected_ids, error: @error, first_group: true %>
+  <% end %>
+  <% if @other_partners.any? || !current_first %>
+    <%= render "admin/settings/courses/providers/delivery_partnerships/checkbox_group", legend: "Other delivery partners", partners: @other_partners, selected_ids: @selected_ids, error: (@error unless current_first), first_group: !current_first %>
+  <% end %>
+
+  <%= render "admin/settings/courses/providers/delivery_partnerships/buttons", add_new: false %>
+<% end %>

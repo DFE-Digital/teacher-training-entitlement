@@ -1,0 +1,33 @@
+<% content_for :title, "You have unsaved changes - #{@lead_provider.name}" %>
+
+<h1 class="govuk-heading-l">You have unsaved changes</h1>
+
+<div class="govuk-warning-text">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-visually-hidden">Warning</span>
+    Your changes to the delivery partners have not been saved.
+  </strong>
+</div>
+
+<% if @changes.added.any? %>
+  <h2 class="govuk-heading-m">Delivery partners to add</h2>
+  <ul class="govuk-list govuk-list--bullet">
+    <% @changes.added.each do |partner| %><li><%= partner.name %></li><% end %>
+  </ul>
+<% end %>
+<% if @changes.removed.any? %>
+  <h2 class="govuk-heading-m">Delivery partners to remove</h2>
+  <ul class="govuk-list govuk-list--bullet">
+    <% @changes.removed.each do |partner| %><li><%= partner.name %></li><% end %>
+  </ul>
+<% end %>
+
+<%= form_with url: admin_settings_course_provider_delivery_partnerships_path(@course, @lead_provider), method: :patch do %>
+  <%= render "admin/settings/courses/providers/delivery_partnerships/hidden_selections", selected_ids: @selected_ids %>
+  <div class="govuk-button-group">
+    <%= button_tag "Save changes and continue", type: "submit", name: "commit", value: "save_and_continue", class: "govuk-button", data: { module: "govuk-button" } %>
+    <%= button_tag "Discard changes and continue", type: "submit", name: "commit", value: "discard", class: "govuk-button govuk-button--secondary", data: { module: "govuk-button" } %>
+    <%= button_tag "Go back", type: "submit", name: "commit", value: "go_back", class: "govuk-button govuk-button--secondary", data: { module: "govuk-button" } %>
+  </div>
+<% end %>

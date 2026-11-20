@@ -164,6 +164,10 @@ Content-Type: application/json
 | GET    | `/api/v1/delivery-partners`      | `delivery_partners#index` | List delivery partners the LP can work with. |
 | GET    | `/api/v1/delivery-partners/{id}` | `delivery_partners#show`  | Show one delivery partner by `ecf_id`.       |
 
+Only **active** partnerships count: partners whose partnership with the LP was archived are not
+returned (`show` returns 404), and declarations cannot use them. Existing declarations are unaffected.
+See [delivery partnerships](../admin/delivery-partnerships.md).
+
 **Filters**: `cohort`. **Sort**: `sort=` (`name`, etc.).
 
 ## Common filters & sorting
