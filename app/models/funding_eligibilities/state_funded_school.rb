@@ -29,14 +29,14 @@ module FundingEligibilities
     end
 
     def submission_attributes(query_store)
-      funded = funded?(query_store)
+      result = evaluate(query_store)
 
       {
-        funding_eligibility: evaluate(query_store),
+        funding_eligibility: result,
         # It is possible that the applicant had chosen a non-funded path and selected a funding choice
         # before going back a few steps and choosing a funded route. We should clear the funding choice
         # to nil here to reduce confusion
-        funding_choice: funded ? nil : query_store.funding,
+        funding_choice: result == FUNDED_ELIGIBILITY_RESULT ? nil : query_store.funding,
       }
     end
 
@@ -57,15 +57,11 @@ module FundingEligibilities
     end
 
     def accepted_applications(query_store)
-      application_ids = users(query_store).flat_map do |user|
-        user.applications
-            .has_been_accepted
-            .eligible_for_funding
-            .where(funded_place: [nil, true])
-            .pluck(:id)
-      end
-
-      Application.where(id: application_ids)
+      Application
+        .where(user: users(query_store))
+        .has_been_accepted
+        .eligible_for_funding
+        .where(funded_place: [nil, true])
     end
   end
 end

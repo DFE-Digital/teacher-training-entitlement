@@ -25,6 +25,8 @@ module FundingEligibilities
   end
 
   def self.for_course(course)
+    raise ArgumentError, "course is required" if course.nil?
+
     available.find { _1.key == course.funding_eligibility } ||
       raise(UnknownRuleSet, "Unknown funding eligibility rule set #{course.funding_eligibility.inspect} for course #{course.name.inspect}")
   end

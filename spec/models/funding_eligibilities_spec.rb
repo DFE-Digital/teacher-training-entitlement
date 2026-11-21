@@ -30,6 +30,10 @@ RSpec.describe FundingEligibilities do
       expect(described_class.for_course(course)).to be_a(described_class::StateFundedSchool)
     end
 
+    it "raises ArgumentError when the course is nil" do
+      expect { described_class.for_course(nil) }.to raise_error(ArgumentError, "course is required")
+    end
+
     it "raises naming the course and the key for an unknown key" do
       course = build(:course, name: "Some course", funding_eligibility: "nope")
 

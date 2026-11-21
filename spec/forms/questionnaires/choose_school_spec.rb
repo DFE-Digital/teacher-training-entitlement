@@ -96,5 +96,18 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
 
       it { is_expected.to eq :ineligible_for_funding }
     end
+
+    context "when the user was previously funded" do
+      let(:institution_id) { school.institution.id.to_s }
+      let(:school) { create(:school) }
+      let(:user) { create(:user) }
+      let(:wizard) do
+        RegistrationWizard.new(current_step:, store:, request:, current_user: user)
+      end
+
+      before { create(:application, :with_funded_place, :accepted, user:, course: course_cohort.course) }
+
+      it { is_expected.to eq :ineligible_for_funding }
+    end
   end
 end

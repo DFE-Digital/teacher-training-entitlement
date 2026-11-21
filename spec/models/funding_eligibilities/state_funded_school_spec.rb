@@ -129,6 +129,19 @@ RSpec.describe FundingEligibilities::StateFundedSchool do
 
       it { is_expected.to eq(funding_eligibility: :ineligible_setting, funding_choice: "school") }
     end
+
+    context "when checking previous funding" do
+      before do
+        allow(User).to receive(:where).and_call_original
+        allow_any_instance_of(Institution).to receive(:eligible_establishment?).and_return(true)
+      end
+
+      it "looks up previous funding only once" do
+        rule_set.submission_attributes(query_store)
+
+        expect(User).to have_received(:where).once
+      end
+    end
   end
 
   describe "#key and #name" do

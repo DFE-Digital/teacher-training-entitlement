@@ -64,10 +64,7 @@ module Questionnaires
     end
 
     def eligible_for_funding?
-      selected_institution.in_england? &&
-        selected_institution.eligible_establishment? &&
-        !rule_set.previously_funded?(wizard.query_store) &&
-        rule_set.funded?(wizard.query_store, institution: selected_institution)
+      rule_set.funded?(wizard.query_store, institution: selected_institution)
     end
 
     def selected_institution
