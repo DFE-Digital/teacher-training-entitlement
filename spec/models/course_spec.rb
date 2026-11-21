@@ -23,6 +23,24 @@ RSpec.describe Course do
 
     it { is_expected.to validate_inclusion_of(:funding_eligibility).in_array(%w[state_funded_school]) }
 
+    describe "identifier" do
+      it "accepts lowercase letters, digits and dashes" do
+        expect(build(:course, identifier: "tte-early-years-2")).to be_valid
+      end
+
+      ["Upper", "under_score", "with.dot", "with/slash", "with space"].each do |identifier|
+        it "rejects the malformed identifier #{identifier.inspect}" do
+          expect(build(:course, identifier:).tap(&:validate).errors[:identifier]).to include("is invalid")
+        end
+      end
+
+      %w[courses start closed check-answers course-start-date sign-in registration-submitted work-setting].each do |identifier|
+        it "rejects the reserved name #{identifier.inspect}" do
+          expect(build(:course, identifier:).tap(&:validate).errors[:identifier]).to include("is reserved")
+        end
+      end
+    end
+
     it "names the field in the error" do
       course = build(:course, funding_eligibility: "unknown")
       course.validate

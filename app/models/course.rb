@@ -6,6 +6,14 @@ class Course < ApplicationRecord
   ].freeze
   # IDENTIFIERS = %w[npd-excellence-in-reception-teaching].freeze
 
+  # Identifiers are public URLs (`/registration/<identifier>`): they must not clash with the
+  # registration pages, legacy or new.
+  RESERVED_IDENTIFIERS = (
+    %w[courses sign-in] +
+    RegistrationWizard::VALID_REGISTRATION_STEPS.map { _1.to_s.dasherize } +
+    (Registration::Wizard::STEPS.keys + FundingEligibilities::StateFundedSchool::STEPS.keys).map { _1.to_s.dasherize }
+  ).uniq.freeze
+
   TTE_RECEPTION = "tte-reception".freeze # used to keep backward compatibility with API v1 on schedule endpoint
 
   has_many :milestones, dependent: :destroy
@@ -26,6 +34,7 @@ class Course < ApplicationRecord
 
   validates :name, presence: true
   validates :identifier, presence: true, uniqueness: true
+  validates :identifier, format: { with: /\A[a-z0-9-]+\z/ }, exclusion: { in: RESERVED_IDENTIFIERS }, allow_blank: true
   validates :funding_eligibility, inclusion: { in: ->(_course) { FundingEligibilities.keys } }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 

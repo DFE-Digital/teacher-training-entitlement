@@ -9,9 +9,9 @@ module Registration
     before_action :set_open_courses, only: %i[index create]
 
     def index
+      flash.keep if @courses.size <= 1
       return redirect_to registration_wizard_show_path(:closed) if @courses.empty?
 
-      flash.keep if @courses.one?
       return redirect_to_course(@courses.first) if @courses.one?
 
       @selection = CourseSelection.new
@@ -32,7 +32,7 @@ module Registration
       course = Course.open_for_registration.find_by(identifier: params[:course_identifier])
       return redirect_to_course(course) if course
 
-      flash[:error] = "That course is not available for registration. Choose from the courses that are open."
+      flash[:notice] = "That course is not available for registration."
       redirect_to registration_courses_path
     end
 

@@ -16,6 +16,11 @@ RSpec.describe "Registration course selection", type: :request do
 
   def start_date_path(course) = registration_step_path(course_identifier: course.identifier, step: "course-start-date")
 
+  def wizard_state(course)
+    session_state = request.session.to_h.deep_stringify_keys.dig("registration", course.identifier)
+    session_state.to_h
+  end
+
   describe "GET /registration/courses" do
     context "when the feature flag is off" do
       let(:flag_enabled) { false }
@@ -148,13 +153,15 @@ RSpec.describe "Registration course selection", type: :request do
       get registration_course_path(course_b.identifier)
 
       expect(response).to redirect_to(start_date_path(course_b))
+      expect(wizard_state(course_b)).to be_empty
+      expect(wizard_state(course_a)).to include("course_start_date" => course_a.course_cohorts.first.ecf_id)
     end
 
     it "sends an unknown identifier to the selector with a message" do
       get "/registration/unknown-course"
 
       expect(response).to redirect_to(registration_courses_path)
-      expect(flash[:error]).to include("not available")
+      expect(flash[:notice]).to eq("That course is not available for registration.")
     end
 
     it "sends a course without an open cohort to the selector" do
@@ -173,6 +180,16 @@ RSpec.describe "Registration course selection", type: :request do
       follow_redirect!
 
       expect(response.body).to include("not available")
+    end
+
+    it "keeps the message when no course is open" do
+      Course.update_all(display: false)
+
+      get "/registration/unknown-course"
+      follow_redirect!
+      follow_redirect!
+
+      expect(response.body).to include("That course is not available for registration.")
     end
 
     it "does not take over the legacy start page" do
