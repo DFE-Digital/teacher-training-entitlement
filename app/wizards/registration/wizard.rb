@@ -48,7 +48,7 @@ module Registration
     def steps_operator
       @steps_operator ||= DfE::Wizard::StepsOperator::Builder.draw(wizard: self) do |builder|
         builder.on_step(:course_start_date, add: [Operations::NotifyForFutureRegistration])
-        builder.on_step(:check_answers, use: [Operations::MarkSubmitted])
+        builder.on_step(:check_answers, add: [Operations::CreateApplication])
       end
     end
 
@@ -70,6 +70,14 @@ module Registration
       CheckAnswersPresenter.new(self).call
     end
 
+    # The answers are cleared once submitted, so the submitted page cannot rely
+    # on the steps before it being valid: it only needs the created application.
+    def valid_path_to?(target_step)
+      return valid?(:registration_submitted) if target_step == :registration_submitted
+
+      super
+    end
+
     # First step of the current flow that the teacher has not completed yet.
     def first_incomplete_step
       step_id = root_step
@@ -77,7 +85,7 @@ module Registration
       while valid?(step_id)
         following = steps_processor.next_step(step_id)
         # A step can lead back to itself, for example when no school was picked.
-        return step_id if following.nil? || following == step_id
+        return step_id if following.nil? || following == step_id || following == :registration_submitted
 
         step_id = following
       end

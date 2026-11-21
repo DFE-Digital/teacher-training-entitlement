@@ -534,6 +534,14 @@ en:
           attributes:
             base:
               not_signed_in: You need to sign in to continue.
+        registration/steps/check_answers:
+          attributes:
+            base:
+              submission_failed: We could not submit your registration. Check you have not already registered for this course and start date, or try again.
+        registration/steps/registration_submitted:
+          attributes:
+            base:
+              not_submitted: Submit your registration to continue.
         registration/steps/share_provider:
           attributes:
             can_share_choices:
@@ -771,6 +779,10 @@ en:
               inclusion: The attribute '#/%{parameterized_attribute}' can only
                 include 'passed' or 'failed' values. If you need to void an outcome,
                 you will need to void the associated 'completed' declaration.
+        applications/create:
+          attributes:
+            application:
+              already_exists: You already have an application for this course and start date.
         applications/accept:
           attributes:
             application:

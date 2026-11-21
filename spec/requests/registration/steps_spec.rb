@@ -160,6 +160,102 @@ RSpec.describe "Registration steps", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    context "when the answers are submitted" do
+      before do
+        pass_funding_steps
+        patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
+      end
+
+      it "creates one pending application" do
+        expect { patch step_path("check-answers") }.to change { user.applications.count }.by(1)
+
+        expect(user.applications.last).to have_attributes(
+          course_cohort:,
+          lead_provider: provider,
+          institution: nil,
+          status: Application::PENDING,
+          funding_eligibility: "ineligible_setting",
+          funding_choice: "self",
+        )
+      end
+
+      it "queues the submission email once" do
+        expect { patch step_path("check-answers") }.to have_enqueued_job(Emails::SendApplicationSubmissionEmailJob).once
+      end
+
+      it "saves the registration data keys of the legacy journey" do
+        patch step_path("check-answers")
+
+        expect(user.applications.last.registration_data).to eq(
+          "can_share_choices" => "1",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_start_date" => course_cohort.ecf_id,
+          "funding" => "self",
+          "funding_amount" => nil,
+          "lead_provider_id" => provider.id.to_s,
+          "submitted" => true,
+          "teacher_catchment" => "other",
+        )
+      end
+
+      it "does not create a second application when going back and submitting again" do
+        patch step_path("check-answers")
+
+        expect {
+          get step_path("check-answers")
+          patch step_path("check-answers")
+        }.not_to(change(Application, :count))
+      end
+
+      it "starts again when going back to check answers" do
+        patch step_path("check-answers")
+
+        get step_path("check-answers")
+
+        expect(response).to redirect_to(step_path("course-start-date"))
+      end
+
+      it "keeps showing the submitted page when it is refreshed" do
+        patch step_path("check-answers")
+
+        get step_path("registration-submitted")
+        get step_path("registration-submitted")
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "does not create an application twice when changing an earlier answer after submitting" do
+        patch step_path("check-answers")
+
+        expect {
+          patch step_path("teacher-catchment"), params: { teacher_catchment: { teacher_catchment: "ENG" } }
+        }.not_to(change(Application, :count))
+      end
+
+      context "when the teacher already has an application for the course cohort" do
+        before { create(:application, user:, course_cohort:) }
+
+        it "creates nothing" do
+          expect { patch step_path("check-answers") }.not_to(change(Application, :count))
+        end
+
+        it "shows an error instead of raising" do
+          patch step_path("check-answers")
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response.body).to include("We could not submit your registration")
+        end
+
+        it "keeps the answers" do
+          patch step_path("check-answers")
+
+          get step_path("check-answers")
+
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+
     it "does not show the submitted page before check answers is submitted" do
       pass_funding_steps
       patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }

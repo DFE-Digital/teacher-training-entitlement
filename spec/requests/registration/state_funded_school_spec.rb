@@ -174,7 +174,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
 
     context "when previously funded" do
       before do
-        create(:application, :with_funded_place, :accepted, user:, course:)
+        create(:application, :with_funded_place, :accepted, user:)
         answer("teacher_catchment", teacher_catchment: "ENG")
         answer("work_setting", work_setting: state_funded)
         answer("choose_school", institution_id: school.id)
@@ -198,7 +198,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
 
     context "when the work setting is other and the teacher was previously funded" do
       it "shows the ineligible setting reason as the legacy journey does" do
-        create(:application, :with_funded_place, :accepted, user:, course:)
+        create(:application, :with_funded_place, :accepted, user:)
         answer("teacher_catchment", teacher_catchment: "ENG")
         answer("work_setting", work_setting: Institution::OTHER)
 

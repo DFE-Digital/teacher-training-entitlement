@@ -2,6 +2,9 @@ module Registration
   class StateStore
     include DfE::Wizard::Core::StateStore
 
+    # Session key of the application created by the teacher's submission.
+    SUBMITTED_APPLICATION_KEY = :submitted_application_id
+
     # Set by the wizard: the course selected before the journey started.
     attr_accessor :course
 
@@ -29,6 +32,15 @@ module Registration
       return if ecf_id.blank? || start_later?
 
       registerable_course_cohorts.find { _1.ecf_id == ecf_id }
+    end
+
+    # The application created when the answers were submitted. The answers are
+    # cleared by then, so this is what tells the teacher has submitted.
+    def submitted_application
+      id = read[SUBMITTED_APPLICATION_KEY]
+      return if id.blank? || current_user.blank?
+
+      current_user.applications.find_by(id:)
     end
 
     def teacher_catchment

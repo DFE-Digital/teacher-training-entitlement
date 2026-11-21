@@ -52,6 +52,39 @@ RSpec.describe Registration::Wizard do
     end
   end
 
+  describe "submitted page" do
+    let(:current_step) { :registration_submitted }
+
+    it { is_expected.not_to be_valid_path_to_current_step }
+    it { expect(wizard.first_incomplete_step).to eq(:course_start_date) }
+
+    context "when the answers are complete but not submitted" do
+      let(:course_cohort) { course.course_cohorts.first }
+
+      before do
+        state_store.write(
+          course_start_date: course_cohort.ecf_id,
+          lead_provider_id: course_cohort.lead_providers.first.id,
+          teacher_catchment: "other",
+          funding: "self",
+          can_share_choices: "1",
+        )
+      end
+
+      it "stops at check answers" do
+        expect(wizard.first_incomplete_step).to eq(:check_answers)
+      end
+
+      it { is_expected.not_to be_valid_path_to_current_step }
+    end
+
+    context "when the answers were cleared after submitting" do
+      before { state_store.write(submitted_application_id: create(:application, user:).id) }
+
+      it { is_expected.to be_valid_path_to_current_step }
+    end
+  end
+
   describe "flow path when starting later" do
     let(:current_step) { :cannot_register_yet }
 
