@@ -20,6 +20,10 @@ module Registration
       @registerable_course_cohorts ||= CourseCohort.registerable.where(course:).includes(:cohort).order(:training_starts_at).to_a
     end
 
+    def registerable_lead_providers
+      LeadProvider.where(id: CourseCohortProvider.where(course_cohort: registerable_course_cohorts).select(:lead_provider_id)).alphabetical
+    end
+
     def course_cohort
       ecf_id = read[:course_start_date]
       return if ecf_id.blank? || start_later?

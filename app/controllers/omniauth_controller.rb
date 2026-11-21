@@ -88,17 +88,18 @@ private
     course = Course.find_by(identifier: session.delete(REGISTRATION_SESSION_KEY)&.dig("course_identifier"))
     return registration_wizard_show_path(:start) unless course
 
-    registration_step_path(course_identifier: course.identifier, step: "sign-in")
+    Registration::Wizard.for_session(course:, session:, current_step: :sign_in).resolve_step_path(:sign_in)
   end
 
   def after_sign_in_path_for(user)
     registration_path = session.delete(REGISTRATION_SESSION_KEY)&.dig("next_step_path")
-    return registration_path if registration_path.present?
 
     if request.env["omniauth.params"] &&
         request.env["omniauth.params"]["request_email_updates"] == "true"
       return new_email_update_path
     end
+
+    return registration_path if registration_path.present?
 
     start_questionnaire_path(user)
   end

@@ -25,10 +25,6 @@ RSpec.describe Registration::Wizard do
     it { is_expected.to have_previous_step(:sign_in).from(:course_start_date) }
     it { expect(wizard.first_incomplete_step).to eq(:sign_in) }
 
-    it "sends the teacher to the sign in step" do
-      expect(wizard.sign_in_path).to eq("/registration/#{course.identifier}/sign-in")
-    end
-
     context "when a later step is asked for" do
       let(:current_step) { :choose_your_provider }
 
@@ -124,6 +120,16 @@ RSpec.describe Registration::Wizard do
 
       it "raises a clear error" do
         expect { wizard }.to raise_error(described_class::AuthenticationOrderError, /course_start_date/)
+      end
+    end
+
+    context "when sign_in is missing from HEAD_STEPS" do
+      before do
+        stub_const("Registration::Wizard::HEAD_STEPS", %i[course_start_date])
+      end
+
+      it "raises a clear error" do
+        expect { wizard }.to raise_error(described_class::AuthenticationOrderError, /sign_in is missing/)
       end
     end
   end

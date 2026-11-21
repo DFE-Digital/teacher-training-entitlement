@@ -68,6 +68,13 @@ RSpec.describe "Registration sign in", type: :request do
         expect(flash[:error]).to include("There was an error")
       end
 
+      it "shows the error message on the sign in page" do
+        post "/users/auth/teacher_auth/callback"
+        follow_redirect!
+
+        expect(response.body).to include("There was an error")
+      end
+
       it "sends the failed event" do
         expect(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).with(
           type: :one_login_failed,
@@ -85,6 +92,16 @@ RSpec.describe "Registration sign in", type: :request do
         post "/users/auth/teacher_auth/callback"
         expect(response).to redirect_to(step_path("sign-in"))
       end
+    end
+  end
+
+  describe "signing in from the email updates page after abandoning a registration sign in" do
+    it "goes to the email updates page" do
+      post one_login_redirect_path(course_identifier: course.identifier)
+      post user_teacher_auth_omniauth_authorize_path(request_email_updates: "true")
+      post "/users/auth/teacher_auth/callback"
+
+      expect(response).to redirect_to(new_email_update_path)
     end
   end
 
@@ -149,10 +166,17 @@ RSpec.describe "Registration sign in", type: :request do
       expect(session[:registration]).to include(course.identifier => hash_including("colour" => "red"))
     end
 
-    it "sends a signed out teacher on to sign in once the earlier step is answered" do
+    it "sends a signed out teacher to the first unanswered step before sign in" do
       get step_path("course-start-date")
 
       expect(response).to redirect_to(step_path("colour"))
+    end
+
+    it "sends a signed out teacher to sign in once the earlier step is answered" do
+      patch step_path("colour"), params: { colour: { colour: "red" } }
+      get step_path("course-start-date")
+
+      expect(response).to redirect_to(step_path("sign-in"))
     end
   end
 end

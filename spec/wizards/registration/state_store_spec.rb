@@ -22,6 +22,19 @@ RSpec.describe Registration::StateStore do
     end
   end
 
+  describe "#registerable_lead_providers" do
+    it "is the providers of the open course cohorts of the course, alphabetically" do
+      expect(state_store.registerable_lead_providers).to eq(course_cohort.lead_providers.alphabetical)
+    end
+
+    it "excludes providers of other courses" do
+      other_provider = create(:lead_provider)
+      create(:course_cohort, course: create(:course), cohort: create(:cohort, :current, registration_starts_at: 2.days.ago.to_date), lead_provider: other_provider)
+
+      expect(state_store.registerable_lead_providers).not_to include(other_provider)
+    end
+  end
+
   describe "#course_cohort" do
     it "is the picked open course cohort" do
       state_store.write(course_start_date: course_cohort.ecf_id)

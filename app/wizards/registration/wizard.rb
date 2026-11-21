@@ -64,11 +64,6 @@ module Registration
       STEPS.keys
     end
 
-    # Step the teacher is sent to when they have to sign in.
-    def sign_in_path
-      resolve_step_path(:sign_in)
-    end
-
     # First step of the current flow that the teacher has not completed yet.
     def first_incomplete_step
       step_id = root_step
@@ -92,6 +87,7 @@ module Registration
         end
 
         # A skipped root is not skipped by the gem, so the root is the first head step to show.
+        # This repeats the `skip_when` rule of the sign_in node: keep both in sync.
         dsl.conditional_root(potential_root: HEAD_STEPS.first(2)) do |state|
           HEAD_STEPS.find { |step_name| !(step_name == :sign_in && state.signed_in?) }
         end
@@ -107,29 +103,31 @@ module Registration
       graph
     end
 
-    # A step that needs a signed-in teacher must not be reachable before `sign_in`.
+    # Steps that need a signed-in teacher must only be reachable through `sign_in`.
     def ensure_authentication_before_steps_needing_it!(graph)
-      early_steps = steps_before(graph.registry, :sign_in)
-      offending = early_steps.select { |step_name| graph.find_step(step_name).requires_user }
+      raise AuthenticationOrderError, "sign_in is missing from HEAD_STEPS" unless HEAD_STEPS.include?(:sign_in)
+
+      offending = reachable_without(graph.registry, HEAD_STEPS.first, :sign_in).select { |step_name| graph.find_step(step_name).requires_user }
       return if offending.empty?
 
-      raise AuthenticationOrderError, "Steps needing a signed-in teacher come before sign_in: #{offending.join(', ')}"
+      raise AuthenticationOrderError, "Steps needing a signed-in teacher can be reached before sign_in: #{offending.join(', ')}"
     end
 
-    # Every step from which `target` can be reached.
-    def steps_before(registry, target)
+    # Every step reachable from `root` without going through `blocked`.
+    def reachable_without(registry, root, blocked)
       successors = Hash.new { |hash, key| hash[key] = [] }
       registry.edges.each { successors[_1.from] << _1.to }
       registry.conditional_edges.each { successors[_1.from].push(_1.then, _1.else) }
       registry.multiple_conditional_edges.each { |edge| successors[edge.from].push(*edge.branches.pluck(:then), edge.default) }
 
-      registry.nodes.keys.select { |step_name| step_name != target && reaches?(successors, step_name, target) }
-    end
+      visited = Set.new
+      pending = [root]
+      while (step_name = pending.pop)
+        next if step_name == blocked || !visited.add?(step_name)
 
-    def reaches?(successors, from, target, visited = Set.new)
-      return false unless visited.add?(from)
-
-      successors[from].compact.any? { |to| to == target || reaches?(successors, to, target, visited) }
+        pending.concat(successors[step_name].compact)
+      end
+      visited.to_a
     end
   end
 end
