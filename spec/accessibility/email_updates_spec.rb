@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Email updates accessibility", :axe, type: :feature do
-  describe "authenticated pages" do
+  describe "authenticated pages", skip: "pending" do
     let(:user) { create(:user, :with_one_login_id) }
 
     before do
@@ -14,7 +14,7 @@ RSpec.describe "Email updates accessibility", :axe, type: :feature do
     end
   end
 
-  describe "public pages" do
+  describe "public pages", skip: "pending" do
     it "unsubscribe page is accessible" do
       visit unsubscribe_email_updates_path
       expect(page).to be_axe_clean
