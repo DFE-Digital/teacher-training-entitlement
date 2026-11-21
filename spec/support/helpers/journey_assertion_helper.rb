@@ -1,13 +1,28 @@
 module Helpers
   module JourneyAssertionHelper
+    # Pages that are not part of the course journey, in both journeys.
+    SHARED_REGISTRATION_PAGES = %w[closed courses start].freeze
+
+    # Paths are written for the legacy journey: `/registration/<step>`. With the dfe-wizard
+    # journey on, a step lives under its course: `/registration/<course>/<step>`.
+    def journey_path(path)
+      return path unless Feature.registration_dfe_wizard?
+
+      path.sub(%r{\A/registration/([\w-]+)\z}) do |match|
+        next match if SHARED_REGISTRATION_PAGES.include?(Regexp.last_match(1))
+
+        "/registration/#{CourseCohort.registerable.first.course.identifier}/#{Regexp.last_match(1)}"
+      end
+    end
+
     def navigate_to_page(path:, submit_form: false, submit_button_text: "Continue", &block)
-      visit(path)
+      visit(journey_path(path))
 
       expect_page_to_have(path:, submit_form:, submit_button_text:, &block)
     end
 
     def expect_page_to_have(path:, submit_form: false, click_continue: false, submit_button_text: "Continue", &block)
-      expect(page).to have_current_path(path)
+      expect(page).to have_current_path(journey_path(path))
 
       @steps_visited ||= []
       @steps_visited << page.current_path unless page.current_path == "/"
@@ -16,6 +31,25 @@ module Helpers
 
       page.click_button(submit_button_text, visible: :visible) if submit_form
       page.click_link("Continue", visible: :visible) if click_continue
+    end
+
+    # Starts from the service root and signs in. The Teacher Auth stub signs every request in,
+    # so the dfe-wizard journey is signed out first to go through its `sign_in` step.
+    def start_registration_from_root
+      if Feature.registration_dfe_wizard?
+        allow_any_instance_of(ApplicationController).to receive(:session).and_call_original
+
+        visit("/")
+        expect(page).to have_current_path(journey_path("/registration/sign-in"))
+        expect(page).to have_text("Before you start")
+        page.click_button("Start now")
+        expect(page).to have_current_path(journey_path("/registration/course-start-date"))
+      else
+        navigate_to_page(path: "/", submit_form: false) do
+          expect(page).to have_text("Before you start")
+          page.click_button("Start now")
+        end
+      end
     end
 
     def expect_check_answers_page_to_have_answers(values)
@@ -54,7 +88,7 @@ module Helpers
 
     def check_back_journey_is_correct
       starting_path = page.current_path
-      until page.current_path == "/registration/course-start-date"
+      until page.current_path == journey_path("/registration/course-start-date")
         page.click_link("Back")
         back_steps ||= []
         back_steps << page.current_path

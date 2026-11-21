@@ -8,134 +8,133 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
   include_context "retrieve latest application data"
   include_context "Stub Teacher Auth Responses"
 
-  let(:course_cohort) { CourseCohort.registerable.first }
-  let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
+  registration_journeys do
+    let(:course_cohort) { CourseCohort.registerable.first }
+    let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
 
-  context "when JavaScript is enabled", :js do
-    scenario("registration journey (with JS)") { run_scenario(js: true) }
-  end
-
-  context "when JavaScript is disabled" do
-    scenario("registration journey (without JS)") { run_scenario(js: false) }
-  end
-
-  def run_scenario(js:)
-    seed_course_cohort_in_registration_store
-
-    navigate_to_page(path: "/", submit_form: false) do
-      expect(page).to have_text("Before you start")
-      page.click_button("Start now")
+    context "when JavaScript is enabled", :js do
+      scenario("registration journey (with JS)") { run_scenario(js: true) }
     end
 
-    expect(page).not_to have_content("Before you start")
-
-    expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      expect(page).to have_text("When do you want to start a course?")
-
-      page.choose(course_cohort.cohort.name, visible: :all)
+    context "when JavaScript is disabled" do
+      scenario("registration journey (without JS)") { run_scenario(js: false) }
     end
 
-    expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
-      expect(page).to have_text("Select your training provider")
-      page.choose(lead_provider.name, visible: :all)
-    end
+    def run_scenario(js:)
+      seed_course_cohort_in_registration_store
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
-      expect(page).to have_text("Do you work in England?")
-      page.choose("Yes", visible: :all)
-    end
+      start_registration_from_root
 
-    expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
-      page.choose("State-funded nursery, pre-school, school or academy trust", visible: :all)
-    end
+      expect(page).not_to have_content("Before you start")
 
-    choose_a_school(js:, name: "open")
+      expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+        expect(page).to have_text("When do you want to start a course?")
 
-    expect_page_to_have(path: "/registration/possible-funding", submit_form: true) do
-      expect(page).to have_text("Funding")
-    end
+        page.choose(course_cohort.cohort.name, visible: :all)
+      end
 
-    expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
-      expect(page).to have_text("Sharing your NPD information")
-      page.check("Yes, I agree to share my information", visible: :all)
-    end
+      expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
+        expect(page).to have_text("Select your training provider")
+        page.choose(lead_provider.name, visible: :all)
+      end
 
-    expect_page_to_have(path: "/registration/check-answers", submit_button_text: "Submit", submit_form: true) do
-      expect_check_answers_page_to_have_answers(
-        {
-          "Course start" => course_cohort.cohort.name,
-          "Course" => course_cohort.course.name,
-          "Provider" => lead_provider.name,
-          "Workplace" => "open manchester school – street 1, manchester",
-          "Work setting" => "State-funded nursery, pre-school, school or academy trust",
-          "Workplace in England" => "Yes",
+      expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+        expect(page).to have_text("Do you work in England?")
+        page.choose("Yes", visible: :all)
+      end
+
+      expect_page_to_have(path: "/registration/work-setting", submit_form: true) do
+        page.choose("State-funded nursery, pre-school, school or academy trust", visible: :all)
+      end
+
+      choose_a_school(js:, name: "open")
+
+      expect_page_to_have(path: "/registration/possible-funding", submit_form: true) do
+        expect(page).to have_text("Funding")
+      end
+
+      expect_page_to_have(path: "/registration/share-provider", submit_form: true) do
+        expect(page).to have_text("Sharing your NPD information")
+        page.check("Yes, I agree to share my information", visible: :all)
+      end
+
+      expect_page_to_have(path: "/registration/check-answers", submit_button_text: "Submit", submit_form: true) do
+        expect_check_answers_page_to_have_answers(
+          {
+            "Course start" => course_cohort.cohort.name,
+            "Course" => course_cohort.course.name,
+            "Provider" => lead_provider.name,
+            "Workplace" => "open manchester school – street 1, manchester",
+            "Work setting" => "State-funded nursery, pre-school, school or academy trust",
+            "Workplace in England" => "Yes",
+          },
+        )
+      end
+
+      expect_applicant_reached_end_of_journey
+
+      User.last.tap do |expected_user|
+        expect(expected_user.email).to eql("user@example.com")
+        expect(expected_user.full_name).to eql("John Doe")
+        expect(expected_user.trn).to eql("1234567")
+        expect(expected_user.date_of_birth).to eql(user.date_of_birth)
+        expect(expected_user.national_insurance_number).to be_nil
+        expect(expected_user.applications.count).to be(1)
+
+        expected_user.applications.first.tap do |application|
+          expect(application.eligible_for_funding).to be_truthy
+        end
+      end
+      if User.last.applications.count == 1
+        navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
+          expect(page).to have_text(LeadProvider.first.name)
+          expect(page).to have_text("NPD excellence in reception teaching")
+        end
+      else
+        navigate_to_page(path: "/applications", submit_form: false) do
+          expect(page).to have_text(LeadProvider.first.name)
+          expect(page).to have_text("NPD excellence in reception teaching")
+        end
+      end
+
+      expect(retrieve_latest_application_user_data).to match(user_attributes_from_stubbed_callback_response.merge(
+                                                               "active_alert" => false,
+                                                               "archived_email" => nil,
+                                                               "archived_at" => nil,
+                                                               "ecf_id" => latest_application_user.ecf_id,
+                                                               "national_insurance_number" => nil,
+                                                               "notify_user_for_future_reg" => false,
+                                                               "preferred_name" => nil,
+                                                               "raw_tra_provider_data" => nil,
+                                                               "refresh_token" => nil,
+                                                               "refresh_token_updated_at" => nil,
+                                                               "trn_lookup_status" => nil,
+                                                               "trn_requested_at" => nil,
+                                                             ))
+
+      deep_compare_application_data(
+        "course_cohort_id" => course_cohort.id,
+        "ecf_id" => latest_application.ecf_id,
+        "funded_place" => nil,
+        "funding_choice" => nil,
+        "funding_eligibility" => "funded",
+        "status" => "pending",
+        "notes" => nil,
+        "institution_id" => Institution.find_by(institution_reference_number: "100000").id,
+        "training_starts_at" => latest_application.course_cohort.training_starts_at.to_s,
+        "registration_data" => {
+          "can_share_choices" => "1",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_start_date" => course_cohort.ecf_id,
+          "funding_amount" => nil,
+          "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
+          "institution_name" => js ? "" : "open",
+          "lead_provider_id" => LeadProvider.first.id.to_s,
+          "submitted" => true,
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
+          "work_setting" => "state_funded_institution",
         },
       )
     end
-
-    expect_applicant_reached_end_of_journey
-
-    User.last.tap do |expected_user|
-      expect(expected_user.email).to eql("user@example.com")
-      expect(expected_user.full_name).to eql("John Doe")
-      expect(expected_user.trn).to eql("1234567")
-      expect(expected_user.date_of_birth).to eql(user.date_of_birth)
-      expect(expected_user.national_insurance_number).to be_nil
-      expect(expected_user.applications.count).to be(1)
-
-      expected_user.applications.first.tap do |application|
-        expect(application.eligible_for_funding).to be_truthy
-      end
-    end
-    if User.last.applications.count == 1
-      navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
-        expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("NPD excellence in reception teaching")
-      end
-    else
-      navigate_to_page(path: "/applications", submit_form: false) do
-        expect(page).to have_text(LeadProvider.first.name)
-        expect(page).to have_text("NPD excellence in reception teaching")
-      end
-    end
-
-    expect(retrieve_latest_application_user_data).to match(user_attributes_from_stubbed_callback_response.merge(
-                                                             "active_alert" => false,
-                                                             "archived_email" => nil,
-                                                             "archived_at" => nil,
-                                                             "ecf_id" => latest_application_user.ecf_id,
-                                                             "national_insurance_number" => nil,
-                                                             "notify_user_for_future_reg" => false,
-                                                             "preferred_name" => nil,
-                                                             "raw_tra_provider_data" => nil,
-                                                             "refresh_token" => nil,
-                                                             "refresh_token_updated_at" => nil,
-                                                             "trn_lookup_status" => nil,
-                                                             "trn_requested_at" => nil,
-                                                           ))
-
-    deep_compare_application_data(
-      "course_cohort_id" => course_cohort.id,
-      "ecf_id" => latest_application.ecf_id,
-      "funded_place" => nil,
-      "funding_choice" => nil,
-      "funding_eligibility" => "funded",
-      "status" => "pending",
-      "notes" => nil,
-      "institution_id" => Institution.find_by(institution_reference_number: "100000").id,
-      "training_starts_at" => latest_application.course_cohort.training_starts_at.to_s,
-      "registration_data" => {
-        "can_share_choices" => "1",
-        "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_start_date" => course_cohort.ecf_id,
-        "funding_amount" => nil,
-        "institution_id" => Institution.find_by(institution_reference_number: "100000").id.to_s,
-        "institution_name" => js ? "" : "open",
-        "lead_provider_id" => LeadProvider.first.id.to_s,
-        "submitted" => true,
-        "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
-        "work_setting" => "state_funded_institution",
-      },
-    )
   end
 end

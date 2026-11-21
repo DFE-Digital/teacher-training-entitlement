@@ -1,8 +1,6 @@
-<% question = step.questions.first %>
-
 <% content_for :title do %>
-  <%= step.errors.present? ? "Error: " : nil %>
-  <%= t("helpers.title.registration_wizard.#{@wizard.current_step_name}", default: question.question_text) %>
+  <%= step.errors.present? ? "Form invalid: " : nil %>
+  <%= step.class.name.demodulize.titleize %>
 <% end %>
 
 <%= render "registration/steps/back_link" %>

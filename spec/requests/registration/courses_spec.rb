@@ -48,7 +48,7 @@ RSpec.describe "Registration course selection", type: :request do
       it "redirects to the closed page" do
         get registration_courses_path
 
-        expect(response).to redirect_to(registration_wizard_show_path(:closed))
+        expect(response).to redirect_to(registration_closed_path)
       end
     end
 

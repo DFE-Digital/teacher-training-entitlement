@@ -8,57 +8,59 @@ RSpec.feature "Registration wizard paths", :with_default_lead_provider, type: :f
 
   include_context "Stub Teacher Auth Responses"
 
-  scenario "state-funded school in England without funded place" do
-    lead_provider = LeadProvider.first
-    school = create(
-      :school,
-      :ineligible_establishment_type,
-      name: "open independent school",
-      address_1: "street 2",
-      town: "manchester",
-    )
-    institution = school.institution
-    course_cohort = CourseCohort.registerable.first
-
-    start_registration
-    choose_current_course_start_date
-    choose_provider(lead_provider)
-    choose_teacher_catchment("Yes")
-    choose_work_setting("State-funded nursery, pre-school, school or academy trust")
-    choose_a_school(js: false, name: "open independent school")
-    continue_past_ineligible_funding
-    choose_course_funding("My workplace is covering the cost")
-    agree_to_share_provider_information
-    submit_check_answers
-
-    application = Application.sole
-
-    aggregate_failures "application fields" do
-      expect(application.course).to eq(Course.reception)
-      expect(application.lead_provider).to eq(lead_provider)
-      expect(application.institution).to eq(institution)
-      expect(application.user.email).to eq(user_email)
-
-      expect(application).to have_attributes(
-        funded_place: nil,
-        funding_choice: "school",
-        funding_eligibility: "ineligible_setting",
-        institution_id: institution.id,
+  registration_journeys do
+    scenario "state-funded school in England without funded place" do
+      lead_provider = LeadProvider.first
+      school = create(
+        :school,
+        :ineligible_establishment_type,
+        name: "open independent school",
+        address_1: "street 2",
+        town: "manchester",
       )
+      institution = school.institution
+      course_cohort = CourseCohort.registerable.first
 
-      expect(application.registration_data).to match(
-        "can_share_choices" => "1",
-        "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_start_date" => course_cohort.ecf_id,
-        "funding" => "school",
-        "funding_amount" => nil,
-        "institution_id" => institution.id.to_s,
-        "institution_name" => "open independent school",
-        "lead_provider_id" => lead_provider.id.to_s,
-        "submitted" => true,
-        "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
-        "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
-      )
+      start_registration
+      choose_current_course_start_date
+      choose_provider(lead_provider)
+      choose_teacher_catchment("Yes")
+      choose_work_setting("State-funded nursery, pre-school, school or academy trust")
+      choose_a_school(js: false, name: "open independent school")
+      continue_past_ineligible_funding
+      choose_course_funding("My workplace is covering the cost")
+      agree_to_share_provider_information
+      submit_check_answers
+
+      application = Application.sole
+
+      aggregate_failures "application fields" do
+        expect(application.course).to eq(Course.reception)
+        expect(application.lead_provider).to eq(lead_provider)
+        expect(application.institution).to eq(institution)
+        expect(application.user.email).to eq(user_email)
+
+        expect(application).to have_attributes(
+          funded_place: nil,
+          funding_choice: "school",
+          funding_eligibility: "ineligible_setting",
+          institution_id: institution.id,
+        )
+
+        expect(application.registration_data).to match(
+          "can_share_choices" => "1",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_start_date" => course_cohort.ecf_id,
+          "funding" => "school",
+          "funding_amount" => nil,
+          "institution_id" => institution.id.to_s,
+          "institution_name" => "open independent school",
+          "lead_provider_id" => lead_provider.id.to_s,
+          "submitted" => true,
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
+          "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
+        )
+      end
     end
   end
 end

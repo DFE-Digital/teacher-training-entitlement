@@ -9,34 +9,34 @@ RSpec.feature "Sad journey", :with_default_lead_provider, type: :feature do
 
   include_context "Stub Teacher Auth Responses"
 
-  context "when JavaScript is enabled", :js do
-    scenario("teacher catchment not in England (with JS)") { run_scenario }
-  end
-
-  context "when JavaScript is disabled" do
-    scenario("teacher catchment not in England (without JS)") { run_scenario }
-  end
-
-  def run_scenario
-    seed_course_cohort_in_registration_store
-    course_cohort = CourseCohort.registerable.first
-
-    navigate_to_page(path: "/", submit_form: false) do
-      page.click_button("Start now")
+  registration_journeys do
+    context "when JavaScript is enabled", :js do
+      scenario("teacher catchment not in England (with JS)") { run_scenario }
     end
 
-    expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      page.choose(course_cohort.cohort.name, visible: :all)
+    context "when JavaScript is disabled" do
+      scenario("teacher catchment not in England (without JS)") { run_scenario }
     end
 
-    expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
-      page.choose(LeadProvider.first.name, visible: :all)
-    end
+    def run_scenario
+      seed_course_cohort_in_registration_store
+      course_cohort = CourseCohort.registerable.first
 
-    expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
-      page.choose("No", visible: :all)
-    end
+      start_registration_from_root
 
-    expect_page_to_have(path: "/registration/ineligible-for-funding")
+      expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+        page.choose(course_cohort.cohort.name, visible: :all)
+      end
+
+      expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do
+        page.choose(LeadProvider.first.name, visible: :all)
+      end
+
+      expect_page_to_have(path: "/registration/teacher-catchment", submit_form: true) do
+        page.choose("No", visible: :all)
+      end
+
+      expect_page_to_have(path: "/registration/ineligible-for-funding")
+    end
   end
 end

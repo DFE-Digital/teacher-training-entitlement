@@ -1,6 +1,7 @@
-<%= form.govuk_check_boxes_fieldset(question.name, multiple: false, **question.style_options) do %>
+<%# Texts are looked up under `registration_wizard`, as the new journey scopes forms by step name. %>
+<%= form.govuk_check_boxes_fieldset(question.name, multiple: false, **question.style_options.merge(legend: question.style_options[:legend].to_h.merge(text: question.question_text))) do %>
   <% question.body.each do |body_text| %>
     <p class="govuk-body"><%= body_text %></p>
   <% end %>
-  <%= form.govuk_check_box question.name, question.checked_value, question.unchecked_value, multiple: false, required: question.required, link_errors: true %>
+  <%= form.govuk_check_box question.name, question.checked_value, question.unchecked_value, multiple: false, required: question.required, link_errors: true, label: { text: t("helpers.label.registration_wizard.#{question.name_locale_key}_options.#{question.checked_value}") } %>
 <% end  %>

@@ -3,9 +3,7 @@ module Helpers
     def start_registration
       seed_course_cohort_in_registration_store
 
-      navigate_to_page(path: "/", submit_form: false) do
-        page.click_button("Start now")
-      end
+      start_registration_from_root
     end
 
     def choose_current_course_start_date

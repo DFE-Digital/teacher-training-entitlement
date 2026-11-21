@@ -7,7 +7,7 @@ module Helpers
             page.fill_in "Select your workplace", with: name
           end
 
-          page.find("#registration-wizard-institution-id-field__option--0").click
+          page.find("##{Feature.registration_dfe_wizard? ? "choose-school" : "registration-wizard"}-institution-id-field__option--0").click
         end
       else
         navigate_to_page(path: "/registration/choose-school", submit_form: true) do

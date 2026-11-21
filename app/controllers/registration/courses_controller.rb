@@ -43,7 +43,7 @@ module Registration
     end
 
     def redirect_to_closed_if_registration_closed
-      redirect_to registration_wizard_show_path(:closed) if Feature.registration_closed?(current_user)
+      redirect_to registration_closed_path if Feature.registration_closed?(current_user)
     end
 
     def set_open_courses

@@ -7,44 +7,46 @@ RSpec.feature "Registration wizard paths", :with_default_lead_provider, type: :f
 
   include_context "Stub Teacher Auth Responses"
 
-  scenario "other setting not in England without funded place" do
-    course_cohort = CourseCohort.registerable.first
-    lead_provider = LeadProvider.first
+  registration_journeys do
+    scenario "other setting not in England without funded place" do
+      course_cohort = CourseCohort.registerable.first
+      lead_provider = LeadProvider.first
 
-    start_registration
-    choose_current_course_start_date
-    choose_provider(lead_provider)
-    choose_teacher_catchment("No")
-    continue_past_ineligible_funding
-    choose_course_funding("My course is being paid for in another way")
-    agree_to_share_provider_information
-    submit_check_answers
+      start_registration
+      choose_current_course_start_date
+      choose_provider(lead_provider)
+      choose_teacher_catchment("No")
+      continue_past_ineligible_funding
+      choose_course_funding("My course is being paid for in another way")
+      agree_to_share_provider_information
+      submit_check_answers
 
-    application = Application.sole
+      application = Application.sole
 
-    aggregate_failures "application fields" do
-      expect(application.course).to eq(Course.reception)
-      expect(application.lead_provider).to eq(lead_provider)
-      expect(application.institution).to be_nil
-      expect(application.user.email).to eq(user_email)
+      aggregate_failures "application fields" do
+        expect(application.course).to eq(Course.reception)
+        expect(application.lead_provider).to eq(lead_provider)
+        expect(application.institution).to be_nil
+        expect(application.user.email).to eq(user_email)
 
-      expect(application).to have_attributes(
-        funded_place: nil,
-        funding_choice: "another",
-        funding_eligibility: "ineligible_setting",
-        institution_id: nil,
-      )
+        expect(application).to have_attributes(
+          funded_place: nil,
+          funding_choice: "another",
+          funding_eligibility: "ineligible_setting",
+          institution_id: nil,
+        )
 
-      expect(application.registration_data).to match(
-        "can_share_choices" => "1",
-        "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_start_date" => course_cohort.ecf_id,
-        "funding" => "another",
-        "funding_amount" => nil,
-        "lead_provider_id" => lead_provider.id.to_s,
-        "submitted" => true,
-        "teacher_catchment" => Institution::OTHER,
-      )
+        expect(application.registration_data).to match(
+          "can_share_choices" => "1",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_start_date" => course_cohort.ecf_id,
+          "funding" => "another",
+          "funding_amount" => nil,
+          "lead_provider_id" => lead_provider.id.to_s,
+          "submitted" => true,
+          "teacher_catchment" => Institution::OTHER,
+        )
+      end
     end
   end
 end

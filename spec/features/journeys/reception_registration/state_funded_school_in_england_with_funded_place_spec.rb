@@ -8,48 +8,50 @@ RSpec.feature "Registration wizard paths", :with_default_lead_provider, :with_de
 
   include_context "Stub Teacher Auth Responses"
 
-  scenario "first path: state-funded school in England with funded place" do
-    lead_provider = LeadProvider.first
-    institution = Institution.find_by!(institution_reference_number: "100000")
-    course_cohort = CourseCohort.registerable.first
+  registration_journeys do
+    scenario "first path: state-funded school in England with funded place" do
+      lead_provider = LeadProvider.first
+      institution = Institution.find_by!(institution_reference_number: "100000")
+      course_cohort = CourseCohort.registerable.first
 
-    start_registration
-    choose_current_course_start_date
-    choose_provider(lead_provider)
-    choose_teacher_catchment("Yes")
-    choose_work_setting("State-funded nursery, pre-school, school or academy trust")
-    choose_a_school(js: false, name: "open")
-    expect_page_to_have(path: "/registration/possible-funding", submit_form: true)
-    agree_to_share_provider_information
-    submit_check_answers
+      start_registration
+      choose_current_course_start_date
+      choose_provider(lead_provider)
+      choose_teacher_catchment("Yes")
+      choose_work_setting("State-funded nursery, pre-school, school or academy trust")
+      choose_a_school(js: false, name: "open")
+      expect_page_to_have(path: "/registration/possible-funding", submit_form: true)
+      agree_to_share_provider_information
+      submit_check_answers
 
-    application = Application.sole
+      application = Application.sole
 
-    aggregate_failures "application fields" do
-      expect(application.course).to eq(Course.reception)
-      expect(application.lead_provider).to eq(lead_provider)
-      expect(application.institution).to eq(institution)
-      expect(application.user.email).to eq(user_email)
+      aggregate_failures "application fields" do
+        expect(application.course).to eq(Course.reception)
+        expect(application.lead_provider).to eq(lead_provider)
+        expect(application.institution).to eq(institution)
+        expect(application.user.email).to eq(user_email)
 
-      expect(application).to have_attributes(
-        funded_place: nil,
-        funding_choice: nil,
-        funding_eligibility: "funded",
-        institution_id: institution.id, status: Application::PENDING
-      )
+        expect(application).to have_attributes(
+          funded_place: nil,
+          funding_choice: nil,
+          funding_eligibility: "funded",
+          institution_id: institution.id, status: Application::PENDING
+        )
 
-      expect(application.registration_data).to match(
-        "can_share_choices" => "1",
-        "course_cohort_ecf_id" => course_cohort.ecf_id,
-        "course_start_date" => course_cohort.ecf_id,
-        "funding_amount" => nil,
-        "institution_id" => institution.id.to_s,
-        "institution_name" => "open",
-        "lead_provider_id" => lead_provider.id.to_s,
-        "submitted" => true,
-        "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
-        "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
-      )
+        expect(application.registration_data).to match(
+          "can_share_choices" => "1",
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
+          "course_start_date" => course_cohort.ecf_id,
+          "funding_amount" => nil,
+          "institution_id" => institution.id.to_s,
+          "institution_name" => "open",
+          "lead_provider_id" => lead_provider.id.to_s,
+          "submitted" => true,
+          "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
+          "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
+        )
+      end
     end
   end
 end

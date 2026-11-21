@@ -8,164 +8,164 @@ RSpec.feature "Service is closed", type: :feature do
 
   include_context "Stub Teacher Auth Responses"
 
-  let!(:course_cohort) { create(:course_cohort) }
+  registration_journeys do
+    let!(:course_cohort) { create(:course_cohort) }
 
-  scenario "Service close date has passed" do
-    close_registration!
+    scenario "Service close date has passed" do
+      close_registration!
 
-    visit "/"
-    expect(page).to have_content("Registration is temporarily closed")
-  end
-
-  scenario "Services closes while registration in progress" do
-    open_registration!
-
-    seed_course_cohort_in_registration_store
-
-    visit "/"
-    expect(page).to have_text("Before you start")
-    page.click_button("Start now")
-
-    expect(page).to have_text("Course start")
-    page.choose(course_cohort.cohort.name, visible: :all)
-
-    # Registration is now closed
-    close_registration!
-    page.click_button("Continue")
-
-    expect(page).to have_content("Registration has closed temporarily")
-  end
-
-  context "when using late registration" do
-    include_context "Stub Teacher Auth Responses"
-
-    let(:super_admin) { create(:super_admin) }
-    let(:email) { "example@example.com" }
-    let(:other_email) { "example2@example.com" }
-    let(:user_email) { email }
-
-    before { close_registration! }
-
-    scenario "Allow user to register" do
       visit "/"
       expect(page).to have_content("Registration is temporarily closed")
-
-      sign_in_as(super_admin)
-
-      visit "/admin/settings/registration-closed/closed-registration-users"
-      fill_in("Email address", with: email)
-      click_on("Add user")
-
-      expect(page).to have_content("Added #{email}")
-
-      click_link("Sign out")
-
-      visit "/closed_registration_exception"
-
-      click_on("Start now")
-
-      expect(page).to have_content("Registration has closed temporarily")
-
-      Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
-
-      seed_course_cohort_in_registration_store
-      visit "/closed_registration_exception"
-      click_on("Start now")
-
-      expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-        expect(page).to have_text("When do you want to start a course?")
-      end
     end
 
-    scenario "When user is deleted" do
-      Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
-      seed_course_cohort_in_registration_store
-      visit "/closed_registration_exception"
+    scenario "Services closes while registration in progress" do
+      open_registration!
 
-      click_on("Start now")
+      seed_course_cohort_in_registration_store
+
+      start_registration_from_root
+
+      expect(page).to have_text("Course start")
+      page.choose(course_cohort.cohort.name, visible: :all)
+
+      # Registration is now closed
+      close_registration!
+      page.click_button("Continue")
+
       expect(page).to have_content("Registration has closed temporarily")
+    end
 
-      sign_in_as(super_admin)
+    context "when using late registration" do
+      include_context "Stub Teacher Auth Responses"
 
-      visit "/admin/settings/registration-closed/closed-registration-users"
-      fill_in("Email", with: email)
-      click_on("Add user")
+      let(:super_admin) { create(:super_admin) }
+      let(:email) { "example@example.com" }
+      let(:other_email) { "example2@example.com" }
+      let(:user_email) { email }
 
-      expect(page).to have_content("Added #{email}")
+      before { close_registration! }
 
-      seed_course_cohort_in_registration_store
-      visit "/closed_registration_exception"
+      scenario "Allow user to register" do
+        visit "/"
+        expect(page).to have_content("Registration is temporarily closed")
 
-      click_on("Start now")
+        sign_in_as(super_admin)
 
-      expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-        expect(page).to have_text("When do you want to start a course?")
-      end
+        visit "/admin/settings/registration-closed/closed-registration-users"
+        fill_in("Email address", with: email)
+        click_on("Add user")
 
-      visit "/admin/settings/registration-closed/closed-registration-users"
+        expect(page).to have_content("Added #{email}")
 
-      click_link("Remove access")
-      click_link("Remove access")
-      expect(page).to have_content("Access removed for #{email}")
+        click_link("Sign out")
 
-      visit "/closed_registration_exception"
+        visit "/closed_registration_exception"
 
-      click_on("Start now")
+        click_on("Start now")
 
-      expect_page_to_have(path: "/registration/closed") do
         expect(page).to have_content("Registration has closed temporarily")
+
+        Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
+
+        seed_course_cohort_in_registration_store
+        visit "/closed_registration_exception"
+        click_on("Start now")
+
+        expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+          expect(page).to have_text("When do you want to start a course?")
+        end
       end
-    end
 
-    scenario "When user is deleted and has no account" do
-      visit "/closed_registration_exception"
+      scenario "When user is deleted" do
+        Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
+        seed_course_cohort_in_registration_store
+        visit "/closed_registration_exception"
 
-      click_on("Start now")
-      expect(page).to have_content("Registration has closed temporarily")
-
-      sign_in_as(super_admin)
-
-      visit "/admin/settings/registration-closed/closed-registration-users"
-      fill_in("Email", with: other_email)
-      click_on("Add user")
-
-      expect(page).to have_content("Added #{other_email}")
-
-      click_link("Remove access")
-      click_link("Remove access")
-
-      expect(page).to have_content("Access removed for #{other_email}")
-
-      visit "/closed_registration_exception"
-
-      click_on("Start now")
-
-      expect_page_to_have(path: "/registration/closed") do
+        click_on("Start now")
         expect(page).to have_content("Registration has closed temporarily")
+
+        sign_in_as(super_admin)
+
+        visit "/admin/settings/registration-closed/closed-registration-users"
+        fill_in("Email", with: email)
+        click_on("Add user")
+
+        expect(page).to have_content("Added #{email}")
+
+        seed_course_cohort_in_registration_store
+        visit "/closed_registration_exception"
+
+        click_on("Start now")
+
+        expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
+          expect(page).to have_text("When do you want to start a course?")
+        end
+
+        visit "/admin/settings/registration-closed/closed-registration-users"
+
+        click_link("Remove access")
+        click_link("Remove access")
+        expect(page).to have_content("Access removed for #{email}")
+
+        visit "/closed_registration_exception"
+
+        click_on("Start now")
+
+        expect_page_to_have(path: "/registration/closed") do
+          expect(page).to have_content("Registration has closed temporarily")
+        end
+      end
+
+      scenario "When user is deleted and has no account" do
+        visit "/closed_registration_exception"
+
+        click_on("Start now")
+        expect(page).to have_content("Registration has closed temporarily")
+
+        sign_in_as(super_admin)
+
+        visit "/admin/settings/registration-closed/closed-registration-users"
+        fill_in("Email", with: other_email)
+        click_on("Add user")
+
+        expect(page).to have_content("Added #{other_email}")
+
+        click_link("Remove access")
+        click_link("Remove access")
+
+        expect(page).to have_content("Access removed for #{other_email}")
+
+        visit "/closed_registration_exception"
+
+        click_on("Start now")
+
+        expect_page_to_have(path: "/registration/closed") do
+          expect(page).to have_content("Registration has closed temporarily")
+        end
+      end
+
+      scenario "When user is not whitelisted" do
+        visit "/"
+        expect(page).to have_content("Registration is temporarily closed")
+
+        visit "/closed_registration_exception"
+
+        click_on("Start now")
+
+        expect_page_to_have(path: "/registration/closed")
       end
     end
 
-    scenario "When user is not whitelisted" do
-      visit "/"
-      expect(page).to have_content("Registration is temporarily closed")
+    context "when using email updates" do
+      before { close_registration! }
 
-      visit "/closed_registration_exception"
+      scenario "Invalid unsubscribe link" do
+        visit "/email_updates/unsubscribe?unsubscribe_key=user.email_updates_unsubscribe_key"
+        expect(page).to have_content("Are you sure you want to unsubscribe?")
+        click_button "Unsubscribe"
 
-      click_on("Start now")
-
-      expect_page_to_have(path: "/registration/closed")
-    end
-  end
-
-  context "when using email updates" do
-    before { close_registration! }
-
-    scenario "Invalid unsubscribe link" do
-      visit "/email_updates/unsubscribe?unsubscribe_key=user.email_updates_unsubscribe_key"
-      expect(page).to have_content("Are you sure you want to unsubscribe?")
-      click_button "Unsubscribe"
-
-      expect(page).to have_content("Invalid unsubscribe link")
+        expect(page).to have_content("Invalid unsubscribe link")
+      end
     end
   end
 

@@ -97,6 +97,29 @@ RSpec.describe "Registration change answers and guards", type: :request do
     end
   end
 
+  describe "submitting the answers", :versioning do
+    it "records the public user in the audit trail" do
+      answer_up_to_check_answers
+      patch step_path("check-answers")
+
+      expect(user.applications.last.versions.last.whodunnit).to eq("Public User #{user.id}")
+    end
+  end
+
+  describe "page titles" do
+    it "match the legacy journey for question pages" do
+      get step_path("course-start-date")
+
+      expect(response.body).to match(/<title>\s*Course Start Date\s*- NPD - GOV.UK<\/title>/)
+    end
+
+    it "match the legacy journey when the answer is invalid" do
+      answer("course_start_date")
+
+      expect(response.body).to include("Form invalid:")
+    end
+  end
+
   describe "closed registration" do
     before { Flipper.disable(Feature::REGISTRATION_OPEN) }
 
@@ -115,7 +138,7 @@ RSpec.describe "Registration change answers and guards", type: :request do
     it "shows the closed page for the course selector" do
       get registration_courses_path
 
-      expect(response).to redirect_to(registration_wizard_show_path(:closed))
+      expect(response).to redirect_to(registration_closed_path)
     end
 
     context "when the teacher is a closed registration user" do
