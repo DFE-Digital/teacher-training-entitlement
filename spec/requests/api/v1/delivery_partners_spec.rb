@@ -47,8 +47,11 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
     let(:path) { api_v1_delivery_partners_path }
     let(:resource_id_key) { :ecf_id }
 
+    # The query sorts by name, so default names must sort in creation order
+    # regardless of the factory sequence (e.g. "10" sorts before "9").
     def create_resource(**attrs)
-      create(:delivery_partner, **attrs)
+      @resource_count = (@resource_count || 0) + 1
+      create(:delivery_partner, name: format("Delivery Partner %05d", @resource_count), **attrs)
     end
 
     it_behaves_like "an API index endpoint"
