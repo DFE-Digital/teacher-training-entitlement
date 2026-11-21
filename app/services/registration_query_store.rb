@@ -17,6 +17,10 @@ class RegistrationQueryStore
     store["funding_amount"]
   end
 
+  def teacher_catchment
+    store["teacher_catchment"]
+  end
+
   def inside_catchment?
     store["teacher_catchment"] == Institution::ENGLAND_SUBDIVISION_CODE
   end

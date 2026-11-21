@@ -15,6 +15,7 @@
     </ol>
 
     <%= form_with model: @wizard.current_step, url: @wizard.current_step_path, scope: @wizard.current_step_name, method: :patch do |f| %>
+      <%= f.hidden_field :funding_amount, value: Registration::Steps::StateFundedSchool::PossibleFunding::FUNDING_AMOUNT %>
       <%= f.govuk_submit %>
     <% end %>
   </div>

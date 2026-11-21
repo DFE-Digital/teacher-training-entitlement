@@ -27,6 +27,12 @@ RSpec.describe FundingEligibilities::StateFundedSchool do
       it { is_expected.to eq :not_in_england }
     end
 
+    context "when the teacher works outside England" do
+      let(:store) { { "teacher_catchment" => Institution::OTHER, "work_setting" => Institution::STATE_FUNDED_INSTITUTION, "current_user" => current_user } }
+
+      it { is_expected.to eq :ineligible_setting }
+    end
+
     context "when previously funded" do
       before do
         create(:application, :with_funded_place, :accepted, user: current_user, course:)

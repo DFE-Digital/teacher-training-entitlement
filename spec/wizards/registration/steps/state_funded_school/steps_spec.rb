@@ -16,6 +16,12 @@ RSpec.describe "Registration state funded school steps" do
     it { expect(step(:teacher_catchment, teacher_catchment: "other")).to be_valid }
     it { expect(step(:teacher_catchment, teacher_catchment: "WLS")).not_to be_valid }
 
+    it "saves with the dependent answers cleared" do
+      expect(step(:teacher_catchment, teacher_catchment: "other").serializable_data).to eq(
+        "teacher_catchment" => "other", "work_setting" => nil, "institution_id" => nil, "funding" => nil,
+      )
+    end
+
     it "asks yes or no" do
       expect(step(:teacher_catchment).questions.first.options.map(&:label)).to eq(%w[Yes No])
     end
@@ -44,6 +50,7 @@ RSpec.describe "Registration state funded school steps" do
     it { expect(step(:choose_school, institution_id: school.id.to_s)).to be_valid }
     it { expect(step(:choose_school, institution_id: "other")).to be_valid }
     it { expect(step(:choose_school, institution_id: "abc")).not_to be_valid }
+    it { expect(step(:choose_school, institution_id: "0")).not_to be_valid }
     it { expect(step(:choose_school, institution_name: "x" * 65, institution_id: "other")).not_to be_valid }
 
     it "accepts a first search without a school" do
@@ -77,10 +84,11 @@ RSpec.describe "Registration state funded school steps" do
   end
 
   describe Registration::Steps::StateFundedSchool::PossibleFunding do
-    it { expect(step(:possible_funding)).to be_valid }
+    it { expect(step(:possible_funding)).not_to be_valid }
+    it { expect(step(:possible_funding, funding_amount: 200)).to be_valid }
 
     it "saves the funding amount and drops the funding choice" do
-      expect(step(:possible_funding).serializable_data).to eq("funding_amount" => 200, "funding" => nil)
+      expect(step(:possible_funding, funding_amount: 1).serializable_data).to eq("funding_amount" => 200, "funding" => nil)
     end
   end
 

@@ -14,6 +14,7 @@ module Registration
 
         validate :school_name_returns_results
         validate :institution_id_selected
+        validate :institution_exists
 
         def self.permitted_params
           %i[institution_name institution_id]
@@ -62,6 +63,12 @@ module Registration
           return unless search_term_entered_in_no_js_fallback_form? && possible_institutions.blank?
 
           errors.add(:institution_name, :no_results, name: institution_name)
+        end
+
+        def institution_exists
+          return if institution_id.blank? || institution_id == OTHER || errors.include?(:institution_id)
+
+          errors.add(:institution_id, :blank) unless selected_institution
         end
 
         def institution_id_selected

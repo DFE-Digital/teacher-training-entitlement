@@ -45,7 +45,7 @@ module FundingEligibilities
     def check_answer_rows(presenter)
       store = presenter.state_store
 
-      presenter.add_row("Workplace in England", store.read[:teacher_catchment] == Institution::ENGLAND_SUBDIVISION_CODE ? "Yes" : "No", :teacher_catchment)
+      presenter.add_row("Workplace in England", store.teacher_catchment == Institution::ENGLAND_SUBDIVISION_CODE ? "Yes" : "No", :teacher_catchment)
 
       if store.work_setting.present?
         presenter.add_row("Work setting", I18n.t(store.work_setting, scope: "helpers.label.registration_wizard.work_setting_options"), :work_setting)
@@ -62,6 +62,7 @@ module FundingEligibilities
     # RegistrationQueryStore. Only the `institution:` keyword is specific to the
     # legacy journey, to evaluate a school that is not stored yet.
     def evaluate(query_store, institution: query_store.institution)
+      return INELIGIBLE_SETTING if query_store.teacher_catchment == Institution::OTHER
       return NOT_IN_ENGLAND if institution && !institution.in_england?
       return PREVIOUSLY_FUNDED if previously_funded?(query_store)
 
@@ -95,7 +96,7 @@ module FundingEligibilities
   private
 
     def outside_england?(store)
-      store.read[:teacher_catchment] == Institution::OTHER
+      store.teacher_catchment == Institution::OTHER
     end
 
     def state_funded_setting?(store)

@@ -84,7 +84,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
         expect(response.body).to include("You are eligible for funding.")
         expect(response.body).to include(%(href="#{step_path('choose-school')}"))
 
-        patch step_path("possible-funding")
+        answer("possible_funding", funding_amount: 200)
         expect_redirect_to("share-provider")
 
         finish_journey
@@ -94,7 +94,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
         answer("teacher_catchment", teacher_catchment: "ENG")
         answer("work_setting", work_setting: state_funded)
         answer("choose_school", institution_id: school.id)
-        patch step_path("possible-funding")
+        answer("possible_funding", funding_amount: 200)
         answer("share_provider", can_share_choices: "1")
 
         get step_path("check-answers")
@@ -159,12 +159,16 @@ RSpec.describe "Registration state funded school steps", type: :request do
     context "with an ineligible establishment" do
       let(:school) { ineligible_school }
 
-      it "goes to the ineligible page" do
+      it "goes to the ineligible page then to funding your course" do
         answer("teacher_catchment", teacher_catchment: "ENG")
         answer("work_setting", work_setting: state_funded)
         answer("choose_school", institution_id: school.id)
-
         expect_redirect_to("ineligible-for-funding")
+
+        answer("funding_your_course", funding: "trust")
+        expect_redirect_to("share-provider")
+
+        finish_journey
       end
     end
 
@@ -176,8 +180,13 @@ RSpec.describe "Registration state funded school steps", type: :request do
         answer("choose_school", institution_id: school.id)
       end
 
-      it "goes to the ineligible page" do
+      it "goes to the ineligible page then to funding your course" do
         expect_redirect_to("ineligible-for-funding")
+
+        answer("funding_your_course", funding: "trust")
+        expect_redirect_to("share-provider")
+
+        finish_journey
       end
 
       it "shows the previously funded reason" do
@@ -220,6 +229,12 @@ RSpec.describe "Registration state funded school steps", type: :request do
         expect(response.body).to include("Hogwarts")
       end
 
+      it "shows a form error when the school does not exist" do
+        answer("choose_school", institution_id: "0")
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
       it "shows an error when nothing is entered" do
         answer("choose_school")
 
@@ -250,6 +265,53 @@ RSpec.describe "Registration state funded school steps", type: :request do
       end
     end
 
+    context "when the teacher changes the workplace in England answer to no after picking a funded school" do
+      before do
+        answer("teacher_catchment", teacher_catchment: "ENG")
+        answer("work_setting", work_setting: state_funded)
+        answer("choose_school", institution_id: school.id)
+        answer("possible_funding", funding_amount: 200)
+        answer("teacher_catchment", teacher_catchment: "other")
+      end
+
+      it "goes to the ineligible page" do
+        expect_redirect_to("ineligible-for-funding")
+
+        get step_path("ineligible-for-funding")
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "clears the dependent answers" do
+        expect(session_store[:registration][course.identifier]).to include("work_setting" => nil, "institution_id" => nil, "funding" => nil)
+      end
+
+      it "only asks the workplace in England and funding rows in check answers" do
+        answer("funding_your_course", funding: "trust")
+        answer("share_provider", can_share_choices: "1")
+        get step_path("check-answers")
+
+        expect(response.body.scan(/govuk-summary-list__key">\s*([^<]+?)\s*</).flatten).to eq(
+          ["Course start", "Course", "Provider", "Workplace in England", "Course funding"],
+        )
+      end
+    end
+
+    context "when possible funding is skipped after a funding choice was made" do
+      before do
+        answer("teacher_catchment", teacher_catchment: "ENG")
+        answer("work_setting", work_setting: state_funded)
+        answer("choose_school", institution_id: ineligible_school.id)
+        answer("funding_your_course", funding: "self")
+        answer("choose_school", institution_id: school.id)
+      end
+
+      it "sends the teacher back to possible funding from share provider" do
+        get step_path("share-provider")
+
+        expect_redirect_to("possible-funding")
+      end
+    end
+
     context "when a funded teacher had chosen a funding choice before" do
       it "clears the funding choice" do
         answer("teacher_catchment", teacher_catchment: "ENG")
@@ -257,7 +319,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
         answer("choose_school", institution_id: ineligible_school.id)
         answer("funding_your_course", funding: "self")
         answer("choose_school", institution_id: school.id)
-        patch step_path("possible-funding")
+        answer("possible_funding", funding_amount: 200)
 
         expect(session_store[:registration][course.identifier]).to include("funding" => nil, "funding_amount" => 200)
       end

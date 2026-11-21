@@ -31,6 +31,10 @@ module Registration
       registerable_course_cohorts.find { _1.ecf_id == ecf_id }
     end
 
+    def teacher_catchment
+      read[:teacher_catchment]
+    end
+
     def work_setting
       read[:work_setting]
     end
