@@ -37,6 +37,18 @@ RSpec.describe Feature do
     end
   end
 
+  describe ".registration_dfe_wizard?" do
+    it "is off by default" do
+      expect(described_class.registration_dfe_wizard?).to be false
+    end
+
+    it "is on when the flag is enabled" do
+      Flipper.enable(Feature::REGISTRATION_DFE_WIZARD)
+
+      expect(described_class.registration_dfe_wizard?).to be true
+    end
+  end
+
   describe "#registration_disabled?" do
     context "when enabled" do
       before do

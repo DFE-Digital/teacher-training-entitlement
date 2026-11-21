@@ -1,0 +1,18 @@
+<% content_for :title, t("helpers.title.registration_wizard.cannot_register_yet") %>
+
+<%= render "registration/steps/back_link" %>
+
+<h1 class="govuk-heading-xl">You cannot register yet</h1>
+<p class="govuk-body">Registrations are currently open for courses starting in <%= @wizard.state_store.registerable_course_cohorts.map(&:name).to_sentence.presence || "Registration closed" %>.</p>
+
+<h2 class="govuk-heading-m">Stay informed</h2>
+
+<p class="govuk-body">You can sign up for email updates to:</p>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li>find out when NPD registration opens</li>
+</ul>
+
+<%= form_for :form, url: email_updates_path do |f| %>
+  <%= f.govuk_submit('Sign up for updates') %>
+<% end %>

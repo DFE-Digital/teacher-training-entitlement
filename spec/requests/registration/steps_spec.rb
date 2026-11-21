@@ -1,0 +1,166 @@
+require "rails_helper"
+
+RSpec.describe "Registration steps", type: :request do
+  let(:user) { create(:user) }
+  let(:course) { create(:course) }
+  let(:course_cohort) { course.course_cohorts.first }
+  let(:provider) { course_cohort.lead_providers.first }
+  let(:flag_enabled) { true }
+  let(:session_store) { { user_id: user.id }.with_indifferent_access }
+
+  before do
+    Flipper.enable(Feature::REGISTRATION_OPEN)
+    Flipper.enable(Feature::REGISTRATION_DFE_WIZARD) if flag_enabled
+    allow_any_instance_of(ApplicationController)
+      .to receive(:session)
+      .and_return(session_store)
+  end
+
+  def step_path(step, identifier: course.identifier)
+    registration_step_path(course_identifier: identifier, step:)
+  end
+
+  context "when the feature flag is off" do
+    let(:flag_enabled) { false }
+
+    it "is not found" do
+      get step_path("course-start-date")
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  context "when signed out" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(nil)
+    end
+
+    it "redirects to the root path" do
+      get step_path("course-start-date")
+
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "course start date" do
+    it "lists the open start dates of the course" do
+      get step_path("course-start-date")
+
+      expect(response.body).to include(course_cohort.cohort.name)
+    end
+
+    it "offers later" do
+      get step_path("course-start-date")
+
+      expect(response.body).to include("I want to start at a later date")
+    end
+
+    it "shows the already started hint for a start date in the past" do
+      course_cohort.update!(training_starts_at: 1.week.ago.to_date)
+
+      get step_path("course-start-date")
+
+      expect(response.body).to include("This course has already started.")
+    end
+
+    it "does not show the hint for a start date in the future" do
+      course_cohort.update!(training_starts_at: 1.week.from_now.to_date)
+
+      get step_path("course-start-date")
+
+      expect(response.body).not_to include("This course has already started.")
+    end
+
+    it "redisplays the step when nothing is picked" do
+      patch step_path("course-start-date")
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "moves on to choose your provider when a start date is picked" do
+      patch step_path("course-start-date"), params: { course_start_date: { course_start_date: course_cohort.ecf_id } }
+
+      expect(response).to redirect_to(step_path("choose-your-provider"))
+    end
+
+    it "moves on to cannot register yet and flags the user when later is picked" do
+      patch step_path("course-start-date"), params: { course_start_date: { course_start_date: "later" } }
+
+      expect(response).to redirect_to(step_path("cannot-register-yet"))
+      expect(user.reload.notify_user_for_future_reg).to be(true)
+    end
+  end
+
+  describe "full journey" do
+    before do
+      patch step_path("course-start-date"), params: { course_start_date: { course_start_date: course_cohort.ecf_id } }
+    end
+
+    it "shows the providers of the course cohort" do
+      get step_path("choose-your-provider")
+
+      expect(response.body).to include(provider.name)
+    end
+
+    it "links back to the previous step" do
+      get step_path("choose-your-provider")
+
+      expect(response.body).to include(%(href="#{step_path('course-start-date')}"))
+    end
+
+    it "reaches the submitted page after the shared steps" do
+      patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+      expect(response).to redirect_to(step_path("share-provider"))
+
+      patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
+      expect(response).to redirect_to(step_path("check-answers"))
+
+      get step_path("check-answers")
+      expect(response.body).to include(provider.name)
+
+      patch step_path("check-answers")
+      expect(response).to redirect_to(step_path("registration-submitted"))
+
+      get step_path("registration-submitted")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "keeps the answers of different courses apart" do
+      other_course = create(:course)
+
+      get step_path("choose-your-provider", identifier: other_course.identifier)
+
+      expect(response).to redirect_to(step_path("course-start-date", identifier: other_course.identifier))
+    end
+  end
+
+  describe "a step that has not been reached" do
+    it "redirects to the first step not completed" do
+      get step_path("share-provider")
+
+      expect(response).to redirect_to(step_path("course-start-date"))
+    end
+
+    it "redirects to the first step not completed when submitting" do
+      patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
+
+      expect(response).to redirect_to(step_path("course-start-date"))
+    end
+  end
+
+  describe "unknown step" do
+    it "is not found" do
+      get step_path("nope")
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "unknown course" do
+    it "is not found" do
+      get step_path("course-start-date", identifier: "unknown")
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+end

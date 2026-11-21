@@ -34,6 +34,9 @@ Rails.application.routes.draw do
   patch "/registration/:step", to: "registration_wizard#update", as: "registration_wizard_update"
   patch "/registration/:step/change", to: "registration_wizard#update", as: "registration_wizard_update_change", changing_answer: "1"
 
+  get "/registration/:course_identifier/:step", to: "registration/steps#show", as: "registration_step"
+  patch "/registration/:course_identifier/:step", to: "registration/steps#update"
+
   get "/registration-interest/sign-up", to: "interest_notification_sign_up#new"
   post "/registration-interest/sign-up", to: "interest_notification_sign_up#create"
   get "/registration-interest/sign-up/confirm", to: "interest_notification_sign_up#confirm"

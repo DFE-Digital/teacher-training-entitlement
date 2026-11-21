@@ -1,0 +1,24 @@
+<% question = step.questions.first %>
+
+<% content_for :title do %>
+  <%= step.errors.present? ? "Error: " : nil %>
+  <%= t("helpers.title.registration_wizard.#{@wizard.current_step_name}", default: question.question_text) %>
+<% end %>
+
+<%= render "registration/steps/back_link" %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= yield :heading %>
+
+    <%= form_with model: step, url: @wizard.current_step_path, scope: @wizard.current_step_name, method: :patch do |f| %>
+      <%= f.govuk_error_summary %>
+
+      <% step.questions.each do |question| %>
+        <%= render "registration_wizard/shared/questions/#{question.type}", form: f, question: %>
+      <% end %>
+
+      <%= f.govuk_submit %>
+    <% end %>
+  </div>
+</div>

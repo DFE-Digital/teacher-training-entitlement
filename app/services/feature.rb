@@ -6,6 +6,7 @@ class Feature
   CLOSED_REGISTRATION_ENABLED = "Closed registration enabled".freeze
   DFE_ANALYTICS_ENABLED = "DfE Analytics Enabled".freeze
   MAINTENANCE_BANNER = "Maintenance banner".freeze
+  REGISTRATION_DFE_WIZARD = "Registration dfe-wizard".freeze
   LP_TRANSFERRED_DECLARATIONS_VISIBILITY = "Lead provider transferred declarations visibility".freeze
 
   # This constant 'registers' all the feature flags we are using. We must not use a feature flag that is
@@ -16,6 +17,7 @@ class Feature
     MAINTENANCE_BANNER,
     DFE_ANALYTICS_ENABLED,
     LP_TRANSFERRED_DECLARATIONS_VISIBILITY,
+    REGISTRATION_DFE_WIZARD,
   ].freeze
 
   class << self
@@ -53,6 +55,10 @@ class Feature
 
     def dfe_analytics_enabled?
       Flipper.enabled?(DFE_ANALYTICS_ENABLED)
+    end
+
+    def registration_dfe_wizard?
+      Flipper.enabled?(REGISTRATION_DFE_WIZARD)
     end
 
     def lp_transferred_declarations_visibility?

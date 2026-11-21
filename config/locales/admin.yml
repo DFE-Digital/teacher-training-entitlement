@@ -53,6 +53,9 @@ en:
             is turned on, events will be sent to DfE Analytics.</p>'
           lead_provider_transferred_declarations_visibility_html: '<p class="govuk-body">When
             this feature is turned on, lead providers can see transferred declarations.</p>'
+          registration_dfe-wizard_html: |
+            <p class="govuk-body">When this feature is turned on, the new registration journey built on dfe-wizard is available at /registration/&lt;course identifier&gt;/&lt;step&gt;.</p>
+            <p class="govuk-body">When this feature is turned off, those pages are not found and the current registration journey is used.</p>
       course_payment_overview_component:
       funded: Funded
       self_funded: Self-funded

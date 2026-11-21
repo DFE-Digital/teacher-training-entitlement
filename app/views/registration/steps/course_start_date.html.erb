@@ -1,0 +1,5 @@
+<% content_for :heading do %>
+  <h1 class="govuk-heading-xl"><%= t("helpers.title.registration_wizard.course_start_date") %></h1>
+<% end %>
+
+<%= render "registration/steps/questions_page", step: @wizard.current_step %>

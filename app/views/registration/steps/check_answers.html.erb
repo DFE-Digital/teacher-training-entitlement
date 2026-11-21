@@ -1,0 +1,29 @@
+<% content_for :title, t("helpers.title.registration_wizard.check_answers") %>
+
+<%= render "registration/steps/back_link" %>
+
+<h1 class="govuk-heading-xl">Check your answers and submit</h1>
+
+<%= render GovukComponent::SummaryListComponent.new do |component|
+      {
+        "Course start" => [@wizard.state_store.course_cohort&.name, :course_start_date],
+        "Course" => [@wizard.course.name, nil],
+        "Provider" => [@wizard.state_store.lead_provider&.name, :choose_your_provider],
+      }.each do |key, (value, change_step)|
+        component.with_row do |row|
+          row.with_key { key }
+          row.with_value { value }
+          if change_step
+            row.with_action(
+              text: "Change",
+              visually_hidden_text: key,
+              href: @wizard.resolve_step_path(change_step),
+            )
+          end
+        end
+      end
+    end %>
+
+<%= form_with url: @wizard.current_step_path, method: :patch do |f| %>
+  <%= f.govuk_submit "Submit" %>
+<% end %>

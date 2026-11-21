@@ -1,0 +1,6 @@
+<% content_for :before_content do %>
+  <%= render GovukComponent::BackLinkComponent.new(
+    text: "Back",
+    href: @wizard.previous_step_path(fallback: root_path),
+  ) %>
+<% end %>
