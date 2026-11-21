@@ -35,10 +35,36 @@ RSpec.describe "Registration steps", type: :request do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(nil)
     end
 
-    it "redirects to the root path" do
+    it "redirects a step after sign in to the sign in step" do
       get step_path("course-start-date")
 
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to(step_path("sign-in"))
+    end
+
+    it "redirects when submitting a step after sign in" do
+      patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+
+      expect(response).to redirect_to(step_path("sign-in"))
+    end
+
+    it "shows the sign in page with the start button for the course" do
+      get step_path("sign-in")
+
+      expect(response.body).to include("Start now").and include(%(action="/one-login?course_identifier=#{course.identifier}"))
+    end
+  end
+
+  context "when signed in" do
+    it "skips the sign in step" do
+      get step_path("sign-in")
+
+      expect(response).to redirect_to(step_path("course-start-date"))
+    end
+
+    it "does not link back to the sign in page from course start date" do
+      get step_path("course-start-date")
+
+      expect(response.body).not_to include(step_path("sign-in"))
     end
   end
 

@@ -1,12 +1,13 @@
 <% hidden ||= false %>
 <% button_text ||= "Continue" %>
 <% secondary ||= false %>
+<% course_identifier ||= nil %>
 
 <span <%= "class=govuk-visually-hidden" if hidden %>>
   <%=
     render GovukComponent::ContinueButtonComponent.new(
       text: button_text,
-      href: one_login_redirect_path,
+      href: one_login_redirect_path(course_identifier:),
       as_button: true,
       classes: secondary ? %w[govuk-button--secondary] : []
     )

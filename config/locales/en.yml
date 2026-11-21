@@ -530,6 +530,10 @@ en:
           attributes:
             declaration_type:
               blank: Please choose a declaration type
+        registration/steps/sign_in:
+          attributes:
+            base:
+              not_signed_in: You need to sign in to continue.
         registration/steps/share_provider:
           attributes:
             can_share_choices:

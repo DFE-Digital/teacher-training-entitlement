@@ -12,7 +12,29 @@ RSpec.describe Registration::Wizard do
   let(:user) { create(:user) }
   let(:state_store) { Registration::StateStore.new(repository: DfE::Wizard::Repository::InMemory.new) }
 
-  it { is_expected.to have_root_step(:course_start_date) }
+  context "when the teacher is signed in" do
+    it { is_expected.to have_root_step(:course_start_date) }
+  end
+
+  context "when the teacher is signed out" do
+    let(:user) { nil }
+    let(:current_step) { :sign_in }
+
+    it { is_expected.to have_root_step(:sign_in) }
+    it { is_expected.to have_next_step(:course_start_date).from(:sign_in) }
+    it { is_expected.to have_previous_step(:sign_in).from(:course_start_date) }
+    it { expect(wizard.first_incomplete_step).to eq(:sign_in) }
+
+    it "sends the teacher to the sign in step" do
+      expect(wizard.sign_in_path).to eq("/registration/#{course.identifier}/sign-in")
+    end
+
+    context "when a later step is asked for" do
+      let(:current_step) { :choose_your_provider }
+
+      it { is_expected.not_to be_valid_path_to_current_step }
+    end
+  end
 
   describe "branching" do
     it { is_expected.to have_next_step(:choose_your_provider).from(:course_start_date).when(course_start_date: "some-ecf-id") }
@@ -53,6 +75,56 @@ RSpec.describe Registration::Wizard do
       names = described_class::STEPS.values.flat_map { _1.attribute_names.map(&:to_s) }
 
       expect(names).to eq(names.uniq)
+    end
+  end
+
+  describe "authentication position" do
+    let(:test_step) do
+      Class.new do
+        include Registration::Steps::Base
+
+        self.requires_user = false
+        attribute :colour
+        validates :colour, presence: true
+
+        def self.permitted_params
+          %i[colour]
+        end
+      end
+    end
+
+    context "when sign_in comes after a step that needs no authentication" do
+      let(:user) { nil }
+
+      before do
+        stub_const("Registration::Wizard::STEPS", described_class::STEPS.merge(colour: test_step))
+        stub_const("Registration::Wizard::HEAD_STEPS", %i[colour sign_in course_start_date])
+      end
+
+      it { is_expected.to have_root_step(:colour) }
+      it { is_expected.to have_next_step(:sign_in).from(:colour) }
+
+      it "stays on the step before sign_in once it is answered" do
+        state_store.write(colour: "red")
+
+        expect(wizard.first_incomplete_step).to eq(:sign_in)
+      end
+
+      context "when the teacher has signed in" do
+        let(:user) { create(:user) }
+
+        it { is_expected.to have_next_step(:course_start_date).from(:colour) }
+      end
+    end
+
+    context "when sign_in comes after a step that needs authentication" do
+      before do
+        stub_const("Registration::Wizard::HEAD_STEPS", %i[course_start_date sign_in])
+      end
+
+      it "raises a clear error" do
+        expect { wizard }.to raise_error(described_class::AuthenticationOrderError, /course_start_date/)
+      end
     end
   end
 

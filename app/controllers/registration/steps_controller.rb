@@ -4,7 +4,6 @@ module Registration
 
     before_action :ensure_feature_enabled
     before_action :redirect_to_closed_if_registration_closed
-    before_action :redirect_to_root_if_signed_out
     before_action :set_course
     before_action :set_wizard
     before_action :ensure_known_step
@@ -34,10 +33,6 @@ module Registration
       redirect_to registration_wizard_show_path(:closed) if Feature.registration_closed?(current_user)
     end
 
-    def redirect_to_root_if_signed_out
-      redirect_to root_path if current_user.blank?
-    end
-
     def set_course
       @course = Course.find_by!(identifier: params[:course_identifier])
     end
@@ -45,14 +40,12 @@ module Registration
     def set_wizard
       raise ActionController::RoutingError, "Not Found" unless params[:step] == params[:step].underscore.dasherize
 
-      @wizard = Registration::Wizard.new(
+      @wizard = Registration::Wizard.for_session(
         course: @course,
+        session:,
         current_user:,
         current_step: params[:step].underscore.to_sym,
         current_step_params: request.get? ? {} : params,
-        state_store: Registration::StateStore.new(
-          repository: DfE::Wizard::Repository::Session.new(session:, key: :registration, state_key: @course.identifier),
-        ),
       )
     end
 

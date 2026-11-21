@@ -3,11 +3,11 @@ class RegistrationWizardController < PublicPagesController
 
   before_action :registration_closed
   before_action :redirect_to_start_if_signed_out, except: :development_login
-  before_action :set_wizard
+  before_action :set_wizard, except: :development_login
   before_action :redirect_to_closed_if_no_course_cohort, only: :show
-  before_action :set_form
+  before_action :set_form, except: :development_login
   before_action :ensure_can_render_step, only: :show
-  before_action :check_allowed_to_apply
+  before_action :check_allowed_to_apply, except: :development_login
 
   rescue_from FundingEligibilities::StateFundedSchool::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
@@ -56,6 +56,8 @@ class RegistrationWizardController < PublicPagesController
     user = User.find_by!(email: params[:user_email])
     session["user_id"] = user.id
     sign_in user
+    return redirect_to_registration_step(user) if params[:course_identifier].present? && Feature.registration_dfe_wizard?
+
     wizard = RegistrationWizard.new(
       current_step: :auth_callback,
       store: session["registration_store"],
@@ -68,6 +70,16 @@ class RegistrationWizardController < PublicPagesController
   end
 
 private
+
+  def redirect_to_registration_step(user)
+    wizard = Registration::Wizard.for_session(
+      course: Course.find_by!(identifier: params[:course_identifier]),
+      session:,
+      current_user: user,
+    )
+
+    redirect_to wizard.resolve_step_path(wizard.first_incomplete_step)
+  end
 
   def ensure_can_render_step
     return redirect_to root_path unless @form.requirements_met?

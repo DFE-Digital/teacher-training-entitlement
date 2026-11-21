@@ -1,0 +1,86 @@
+<% content_for :title, t("helpers.title.registration_wizard.start") %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-heading-l">National professional development (NPD) courses</span>
+      Check funding eligibility and register for excellence in reception teaching course
+    </h1>
+
+    <p>Use this service to:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>check eligibility for DfE funding, or tell us how you will self-fund</li>
+      <li>register with DfE for this course</li>
+      <li>view or change your registration</li>
+    </ul>
+
+    <h2 class="govuk-heading-l">How to register</h2>
+
+    <p>To register, you first need to choose a training provider. All providers have been selected by the DfE.</p>
+
+    <h3 class="govuk-heading-m">1. Choose a training provider</h3>
+
+    <p>All providers deliver the same <%= govuk_link_to "course content", "https://www.gov.uk/government/publications/excellence-in-reception-teaching-content-framework" %>, however there may be differences in how they choose to deliver the course. You can visit their website to learn more.</p>
+
+    <%= govuk_warning_text(text: "You must register with DfE before you apply with a provider.") %>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <% providers = @course.lead_providers.distinct.alphabetical %>
+      <% providers.each do |provider| %>
+        <li><%= govuk_link_to provider.name, provider.url %></li>
+      <% end %>
+    </ul>
+
+    <h3 class="govuk-heading-m">2. Register with DfE</h3>
+
+    <p>When you register with the DfE, we will:</p>
+
+    <ol class="govuk-list govuk-list--number">
+      <li>check and confirm your eligibility for funding</li>
+      <li>notify your chosen training provider</li>
+    </ol>
+
+    <p>Your provider will contact you to complete your application and:</p>
+
+    <ol class="govuk-list govuk-list--number">
+      <li>check your suitability for the course</li>
+      <li>confirm if they can offer you a place</li>
+    </ol>
+
+    <p>If your training provider is unable to offer a funded place, you can log in to register with a different provider.</p>
+
+    <h2 class="govuk-heading-l">Before you start</h2>
+
+    <p>You'll need a GOV One Login account (you'll be prompted to sign in or create one). You should use the same email address to log in, every time you use this service.</p>
+
+    <p class="govuk-body">
+      By continuing, you agree to our <%= govuk_link_to("privacy notice", PRIVACY_NOTICE_URL) %>.
+    </p>
+
+    <% if Feature.registration_enabled? %>
+      <%=
+        render(
+          'shared/teacher_auth/redirect_button',
+          button_text: "Start now",
+          course_identifier: @course.identifier
+        )
+      %>
+    <% end %>
+
+    <h2 class="govuk-heading-m">Already registered?</h2>
+
+    <p>Log in to:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>see the status of your registration</li>
+      <li>change your training provider if you are already registered</li>
+      <li>get your certificate when you have completed the course</li>
+    </ul>
+
+
+    <% if Feature.registration_enabled? %>
+      <%= render 'shared/teacher_auth/redirect_button', button_text: "Log in", secondary: true, course_identifier: @course.identifier %>
+    <% end %>
+  </div>
+</div>

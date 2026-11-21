@@ -1,8 +1,11 @@
 class OmniauthController < Devise::OmniauthCallbacksController
+  REGISTRATION_SESSION_KEY = "registration_sign_in".freeze
+
   skip_before_action :verify_authenticity_token, only: %i[teacher_auth]
   skip_before_action :authenticate_user!
 
   def one_login
+    remember_registration_sign_in
     StreamAnalyticsEventToBigQueryJob.send_event(type: :one_login_started, request:)
 
     redirect_to user_teacher_auth_omniauth_authorize_path, status: :temporary_redirect
@@ -71,11 +74,27 @@ private
     "There was an error. Please try again in a few moments. If this problem persists, contact us at continuing-professional-development@digital.education.gov.uk"
   end
 
+  # The new registration journey: remember the course and where to go once signed in.
+  def remember_registration_sign_in
+    session.delete(REGISTRATION_SESSION_KEY)
+    course = Course.find_by(identifier: params[:course_identifier]) if params[:course_identifier].present?
+    return unless course && Feature.registration_dfe_wizard?
+
+    wizard = Registration::Wizard.for_session(course:, session:, current_user: nil, current_step: :sign_in)
+    session[REGISTRATION_SESSION_KEY] = { "course_identifier" => course.identifier, "next_step_path" => wizard.next_step_path }
+  end
+
   def failed_sign_in_path
-    registration_wizard_show_path(:start)
+    course = Course.find_by(identifier: session.delete(REGISTRATION_SESSION_KEY)&.dig("course_identifier"))
+    return registration_wizard_show_path(:start) unless course
+
+    registration_step_path(course_identifier: course.identifier, step: "sign-in")
   end
 
   def after_sign_in_path_for(user)
+    registration_path = session.delete(REGISTRATION_SESSION_KEY)&.dig("next_step_path")
+    return registration_path if registration_path.present?
+
     if request.env["omniauth.params"] &&
         request.env["omniauth.params"]["request_email_updates"] == "true"
       return new_email_update_path
