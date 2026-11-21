@@ -127,11 +127,11 @@ RSpec.describe "Registration sign in", type: :request do
   end
 
   describe "starting without a course" do
-    it "keeps the legacy return path" do
+    it "sends the teacher to the course selector" do
       post one_login_redirect_path
       post "/users/auth/teacher_auth/callback"
 
-      expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
+      expect(response).to redirect_to(registration_courses_path)
     end
   end
 

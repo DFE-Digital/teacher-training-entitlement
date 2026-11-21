@@ -26,6 +26,9 @@ module Registration
 
     attr_reader :course, :current_user
 
+    # The step the teacher clicked "Change" on in check answers, if they are changing an answer.
+    attr_reader :return_to_review
+
     def self.for_session(course:, session:, **)
       state_store = StateStore.new(
         repository: DfE::Wizard::Repository::Session.new(session:, key: :registration, state_key: course.identifier),
@@ -35,9 +38,10 @@ module Registration
     end
 
     # `course` is set before `super`, as the steps processor is built during initialisation.
-    def initialize(course:, state_store:, current_user: nil, **)
+    def initialize(course:, state_store:, current_user: nil, return_to_review: nil, **)
       @course = course
       @current_user = current_user
+      @return_to_review = return_to_review.to_s.presence&.to_sym
       state_store.course = course
       state_store.current_user = current_user
 
@@ -62,6 +66,14 @@ module Registration
           helpers.registration_step_path(course_identifier: course.identifier, step: step_id.to_s.dasherize, **options)
         },
       )
+    end
+
+    # While changing an answer, every step path keeps the change flag, so the teacher
+    # is sent back to check answers as soon as the answers are complete again.
+    def resolve_step_path(step_id, options = {})
+      options = { return_to_review: }.compact.merge(options) if changing_answer? && step_id != :check_answers
+
+      super
     end
 
     # Shared steps and the steps of the course rule set.
@@ -96,7 +108,22 @@ module Registration
       step_id
     end
 
+    # Sent back to check answers after a change, unless the change opened new questions:
+    # then the path to check answers is not valid yet, and the teacher goes through them first.
+    def return_to_check_answers
+      :check_answers if changing_answer? && valid_path_to?(:check_answers)
+    end
+
+    # Going back from the step being changed leads back to check answers.
+    def back_to_check_answers
+      :check_answers if changing_answer? && current_step_name == return_to_review && valid_path_to?(:check_answers)
+    end
+
   private
+
+    def changing_answer?
+      return_to_review.present? && step_names.include?(return_to_review) && return_to_review != :check_answers
+    end
 
     def draw_steps_processor
       graph = DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |dsl|
@@ -109,6 +136,8 @@ module Registration
         dsl.conditional_root(potential_root: HEAD_STEPS.first(2)) do |state|
           HEAD_STEPS.find { |step_name| !(step_name == :sign_in && state.signed_in?) }
         end
+        dsl.before_next_step(:return_to_check_answers)
+        dsl.before_previous_step(:back_to_check_answers)
         draw_head_edges(dsl)
         FundingEligibilities.for_course(course).draw(RuleSetGraph.new(dsl, state_store:), entry: :choose_your_provider, exit: :share_provider)
         dsl.add_edge from: :share_provider, to: :check_answers

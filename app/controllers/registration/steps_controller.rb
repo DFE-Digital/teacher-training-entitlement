@@ -49,6 +49,7 @@ module Registration
         current_user:,
         current_step: params[:step].underscore.to_sym,
         current_step_params: request.get? ? {} : params,
+        return_to_review: params[:return_to_review],
       )
     end
 

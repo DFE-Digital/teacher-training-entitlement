@@ -147,6 +147,80 @@ RSpec.describe Registration::Wizard do
     it { is_expected.to have_flow_path(%i[course_start_date cannot_register_yet]) }
   end
 
+  describe "changing an answer" do
+    subject(:wizard) do
+      described_class.new(course:, current_user: user, current_step:, state_store:, return_to_review:)
+    end
+
+    let(:return_to_review) { :teacher_catchment }
+    let(:current_step) { :teacher_catchment }
+    let(:school) { create(:institution) }
+    let(:complete_answers) do
+      {
+        course_start_date: course.course_cohorts.first.ecf_id,
+        lead_provider_id: course.course_cohorts.first.lead_providers.first.id.to_s,
+        teacher_catchment: "other",
+        funding: "self",
+        can_share_choices: "1",
+      }
+    end
+
+    before { state_store.write(complete_answers) }
+
+    it "returns to check answers when the answers are still complete" do
+      expect(wizard.next_step).to eq(:check_answers)
+    end
+
+    it "goes back to check answers from the step being changed" do
+      expect(wizard.previous_step).to eq(:check_answers)
+    end
+
+    it "keeps the change flag in the paths of other steps" do
+      expect(wizard.resolve_step_path(:work_setting)).to end_with("/work-setting?return_to_review=teacher_catchment")
+    end
+
+    it "leaves the path to check answers as it is" do
+      expect(wizard.resolve_step_path(:check_answers)).to end_with("/check-answers")
+    end
+
+    context "when the change opens new questions" do
+      before { state_store.write(complete_answers.merge(teacher_catchment: "ENG", funding: nil, work_setting: nil)) }
+
+      it "goes through them first" do
+        expect(wizard.next_step).to eq(:work_setting)
+      end
+
+      it "keeps the change flag on the way" do
+        expect(wizard.next_step_path).to include("return_to_review=teacher_catchment")
+      end
+    end
+
+    context "when the change flag is not a step" do
+      let(:return_to_review) { "nonsense" }
+
+      it { expect(wizard.next_step).to eq(:ineligible_for_funding) }
+    end
+
+    context "when changing from check answers" do
+      let(:return_to_review) { :check_answers }
+
+      it { expect(wizard.next_step).to eq(:ineligible_for_funding) }
+    end
+
+    context "when not changing an answer" do
+      let(:return_to_review) { nil }
+
+      it { expect(wizard.next_step).to eq(:ineligible_for_funding) }
+      it { expect(wizard.previous_step).to eq(:choose_your_provider) }
+    end
+
+    context "when on another step than the one being changed" do
+      let(:current_step) { :funding_your_course }
+
+      it { expect(wizard.previous_step).to eq(:ineligible_for_funding) }
+    end
+  end
+
   describe "previous steps" do
     it { is_expected.to have_previous_step(:course_start_date).from(:choose_your_provider) }
     it { is_expected.to have_previous_step(:funding_your_course).from(:share_provider) }

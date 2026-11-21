@@ -22,6 +22,12 @@ RSpec.describe "Registration state funded school steps" do
       )
     end
 
+    it "keeps the dependent answers when the answer is unchanged" do
+      state_store.write(teacher_catchment: "ENG", work_setting: Institution::OTHER)
+
+      expect(step(:teacher_catchment, teacher_catchment: "ENG").serializable_data).to eq("teacher_catchment" => "ENG")
+    end
+
     it "asks yes or no" do
       expect(step(:teacher_catchment).questions.first.options.map(&:label)).to eq(%w[Yes No])
     end
@@ -36,6 +42,12 @@ RSpec.describe "Registration state funded school steps" do
       expect(step(:work_setting, work_setting: Institution::OTHER).serializable_data).to eq(
         "work_setting" => Institution::OTHER, "funding" => nil, "institution_id" => nil,
       )
+    end
+
+    it "keeps the school and funding answers when the answer is unchanged" do
+      state_store.write(work_setting: Institution::OTHER, funding: "self")
+
+      expect(step(:work_setting, work_setting: Institution::OTHER).serializable_data).to eq("work_setting" => Institution::OTHER)
     end
 
     it "offers the settings" do

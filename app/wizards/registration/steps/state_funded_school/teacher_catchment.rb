@@ -20,7 +20,10 @@ module Registration
           %i[teacher_catchment]
         end
 
+        # Keeping the same answer keeps the answers that depend on it.
         def serializable_data
+          return super if state_store.read[:teacher_catchment] == teacher_catchment
+
           super.merge(CLEARED_ANSWERS.stringify_keys)
         end
 

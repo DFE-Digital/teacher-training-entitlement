@@ -105,6 +105,9 @@ private
   end
 
   def start_questionnaire_path(user)
+    # Signed in without a course, for example from the closed registration page: pick one first.
+    return registration_courses_path if Feature.registration_dfe_wizard?
+
     wizard = RegistrationWizard.new(
       current_step: :auth_callback,
       store: session["registration_store"],

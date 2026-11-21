@@ -17,6 +17,8 @@ module Registration
 
         # Changing the work setting clears the school and funding choice answers.
         def serializable_data
+          return super if state_store.read[:work_setting] == work_setting
+
           super.merge(CLEARED_ANSWERS.stringify_keys)
         end
 
