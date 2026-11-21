@@ -1,6 +1,6 @@
 # ADR 001: Registration journey on dfe-wizard with pluggable funding eligibility rule sets
 
-- **Status:** Accepted
+- **Status:** Proposed
 - **Scope:** Registration journey (`/registration/...`)
 
 ## Context
@@ -46,7 +46,9 @@ from check answers. To change course, the teacher starts again from the selector
 ### 2. Funding eligibility rule sets are Ruby classes in a registry
 
 **Decision.** A funding eligibility rule set is a Ruby class registered in a
-code registry. `courses.funding_eligibility` stores the registry key. Admins pick
+code registry. A new `courses.funding_eligibility` column stores the registry key
+(it does not exist yet: a schema change that needs analytics review, added by
+ticket 002 of the epic). Admins pick
 a key from the list of available rule sets. A rule set can be shared by many
 courses.
 
@@ -76,12 +78,19 @@ Every rule set exposes:
 The shared wizard knows nothing about a rule set's steps. It only knows the two
 anchors.
 
+**Rationale.** Two fixed anchors keep the head (sign in, start date, provider)
+and the tail (share provider, check answers, submission) identical for every
+course, so a rule set cannot break the parts of the journey it does not own.
+The `evaluate` and `submission_attributes` methods keep the mapping to the
+`applications` columns in one place per rule set.
+
 ### 4. Shared graph
 
 ```mermaid
 flowchart TD
   sign_in["sign_in<br/>(default position, set in one place)"] --> course_start_date
   course_start_date --> choose_your_provider
+  course_start_date -- "later" --> cannot_register_yet
   choose_your_provider --> entry((entry anchor))
   subgraph rule_set["Rule set steps (injected by draw)"]
     entry --> rs1["rule set step(s)"]
@@ -94,6 +103,15 @@ flowchart TD
 ```
 
 The rule set may branch between the anchors, but every path must reach `exit`.
+
+`cannot_register_yet` is a terminal branch. Choosing "I want to start at a later
+date" on `course_start_date` sets `notify_user_for_future_reg` on the user and
+ends the journey there (see decision 5, which lists this write as user
+dependent).
+
+**Rationale.** `share_provider` sits after the rule set steps, as it does today,
+because it is asked of every teacher whatever their funding outcome, and it must
+not be duplicated inside each rule set.
 
 ### 5. Authentication is a wizard step
 
@@ -133,6 +151,14 @@ That work is out of scope here.
 The `course_start_date` step is always in the graph. A start date in the past
 shows a hint to the teacher; it does not skip or block the step.
 
+**Options considered.**
+
+| Option | Verdict |
+|--------|---------|
+| Skip the step when only one course cohort is registerable | Rejected. The teacher must explicitly confirm the start date, because it resolves the course cohort. The "later" option (`cannot_register_yet`) must stay reachable. |
+| Block the step when the start date is in the past | Rejected. A late start can still be a valid application; a hint informs without removing the choice. |
+| **Always shown, with a hint for past dates** | **Chosen.** One predictable graph, and the teacher always confirms the cohort. |
+
 ### 7. State
 
 **Decision.** State is stored with `DfE::Wizard::Repository::Session`, with one
@@ -154,6 +180,14 @@ checks it once the teacher is signed in **and** has chosen a start date (which
 resolves the course cohort), wherever `sign_in` sits in the graph. The index
 stays the final guard.
 
+**Options considered.**
+
+| Option | Verdict |
+|--------|---------|
+| Allow a new application after a withdrawn or rejected one | Rejected for now. It needs a policy decision on funding, declarations and the history of the earlier application, and would need a schema change to replace the unique index. Can be revisited by Policy. |
+| Allow several applications per course | Rejected. Duplicates would split declarations and funding for the same training. |
+| **One per course cohort, whatever the status** | **Chosen.** Matches today's behaviour and the existing index, so no schema change. |
+
 ### 9. Migration: strangler behind a feature flag
 
 The new journey is built next to the legacy one, behind a feature flag
@@ -174,10 +208,10 @@ steps below. They exist today as `Questionnaires::*`.
 |------|-------|---------|
 | `teacher_catchment` | England or not. Not England goes to `ineligible_for_funding` | Entry step. Not England branches to `ineligible_for_funding` |
 | `work_setting` | State funded institution continues. Others go to `ineligible_for_funding`. Clears `funding` and `institution_id` on save | Same branch. Clears the same keys |
-| `choose_school` | Institution search. Ineligible (not England, not an eligible establishment, previously funded) goes to `ineligible_for_funding` | Same |
-| `possible_funding` | Funded. Stores `funding_amount` | Same. Leads to the exit anchor |
+| `choose_school` | Institution search. Ineligible (not England, not an eligible establishment, previously funded) goes to `ineligible_for_funding`. Nothing selected, or "other", loops back to `choose_school` | Same, including the loop |
+| `possible_funding` | Funded. Stores `funding_amount` and deletes `funding` from the store | Same, including clearing `funding` (so `funding_choice` stays nil for funded teachers). Leads to the exit anchor |
 | `ineligible_for_funding` | Shows a template per status code (`not_in_england`, `previously_funded`, `ineligible_setting`) | Same, templates chosen from `evaluate` |
-| `funding_your_course` | Asks who pays (`school`, `trust`, `self`, `another`, `employer`). Leads to `share_provider` | Same. Leads to the exit anchor |
+| `funding_your_course` | Offers `school`, `trust`, `self` and `another` (validation also accepts `employer`). Leads to `share_provider` | Same. Leads to the exit anchor |
 
 ```mermaid
 flowchart TD
@@ -219,12 +253,17 @@ Contract mapping:
    one key per course. Answers are not migrated. Mitigation: cut over outside
    peak registration times, and tell users on the start page. Accepted.
 2. **`registration_data` keys must stay stable for analytics.**
-   `HandleSubmissionForStore` saves the whole store (minus session keys) into
+   `HandleSubmissionForStore` saves the whole store (minus
+   `generated_confirmation_code`, `current_user` and `current_user_id`) into
    `applications.registration_data`, which the analytics team consumes. The new
-   journey must write the same keys with the same values, for example
-   `teacher_catchment`, `work_setting`, `institution_id`, `funding`,
-   `funding_amount`, `course_start_date`. Adding keys needs analytics review;
-   renaming or removing them is not allowed without it.
+   journey must write the same keys with the same values. The current key set
+   is the parity contract: `teacher_catchment`, `work_setting`,
+   `institution_id`, `institution_name`, `funding`, `funding_amount`,
+   `course_start_date`, `course_cohort_ecf_id`, `lead_provider_id`,
+   `can_share_choices` and `submitted`. Adding keys needs analytics review;
+   renaming or removing them is not allowed without it. Keys internal to
+   `dfe-wizard` or its session repository must be excluded from
+   `registration_data`, otherwise they leak into the analytics payload.
 3. **Parity gaps while both journeys run.** Fixes to the legacy journey must be
    mirrored until it is removed.
 4. **Attribute name collisions** between rule sets, see decision 7.
