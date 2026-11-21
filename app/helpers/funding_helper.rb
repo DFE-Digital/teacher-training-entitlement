@@ -1,10 +1,10 @@
 module FundingHelper
   FUNDING_STATUS_COLOUR_MAP = {
-    FundingEligibility::FUNDED_ELIGIBILITY_RESULT => "green",
-    FundingEligibility::NOT_IN_ENGLAND => "red",
-    FundingEligibility::PREVIOUSLY_FUNDED => "red",
-    FundingEligibility::INELIGIBLE_SETTING => "red",
-    FundingEligibility::MARKED_INELIGIBLE_BY_POLICY => "red",
+    FundingEligibilities::FUNDED_ELIGIBILITY_RESULT => "green",
+    FundingEligibilities::NOT_IN_ENGLAND => "red",
+    FundingEligibilities::PREVIOUSLY_FUNDED => "red",
+    FundingEligibilities::INELIGIBLE_SETTING => "red",
+    FundingEligibilities::MARKED_INELIGIBLE_BY_POLICY => "red",
   }.freeze
 
   def targeted_support_funding

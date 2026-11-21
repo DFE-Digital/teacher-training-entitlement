@@ -7,7 +7,7 @@ RSpec.describe RegistrationWizardController do
     Class.new do
       def initialize(*args); end
       def respond_to_missing?(*) = true
-      def method_missing(*) = raise FundingEligibility::MissingMandatoryInstitution
+      def method_missing(*) = raise FundingEligibilities::StateFundedSchool::MissingMandatoryInstitution
     end
   end
 

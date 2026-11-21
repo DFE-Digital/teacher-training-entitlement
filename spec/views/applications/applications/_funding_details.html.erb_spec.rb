@@ -18,7 +18,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
     )
   end
   let(:funded) { false }
-  let(:funding_eligibility) { FundingEligibility::INELIGIBLE_SETTING }
+  let(:funding_eligibility) { FundingEligibilities::INELIGIBLE_SETTING }
   let(:registration_data) { {} }
 
   before do
@@ -26,7 +26,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
   end
 
   context "when the application is eligible for scholarship funding" do
-    let(:funding_eligibility) { FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
+    let(:funding_eligibility) { FundingEligibilities::FUNDED_ELIGIBILITY_RESULT }
 
     it "shows the eligible funding details" do
       expect(rendered_partial).to have_css(".govuk-summary-card__title", text: "Funding details")
@@ -51,7 +51,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
 
   context "when the application is not eligible because of being previously funded" do
     let(:registration_data) { { "funding" => "self" } }
-    let(:funding_eligibility) { FundingEligibility::PREVIOUSLY_FUNDED }
+    let(:funding_eligibility) { FundingEligibilities::PREVIOUSLY_FUNDED }
 
     before do
       # An application funded on a different course

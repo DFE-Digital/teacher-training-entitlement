@@ -66,8 +66,8 @@ module Questionnaires
     def eligible_for_funding?
       selected_institution.in_england? &&
         selected_institution.eligible_establishment? &&
-        !funding_eligibility.previously_funded? &&
-        funding_eligibility.funded?
+        !rule_set.previously_funded?(wizard.query_store) &&
+        rule_set.funded?(wizard.query_store, institution: selected_institution)
     end
 
     def selected_institution
@@ -76,12 +76,8 @@ module Questionnaires
       @selected_institution ||= Institution.find(institution_id)
     end
 
-    def funding_eligibility
-      @funding_eligibility ||= FundingEligibility.new(
-        course: wizard.query_store.course,
-        institution: selected_institution,
-        query_store: wizard.query_store,
-      )
+    def rule_set
+      FundingEligibilities.for_course(wizard.query_store.course)
     end
 
     def search_term_entered_in_no_js_fallback_form?

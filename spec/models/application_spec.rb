@@ -126,7 +126,7 @@ RSpec.describe Application do
 
         it "validates funded_place eligibility" do
           subject.funded_place = true
-          subject.funding_eligibility = FundingEligibility::INELIGIBLE_SETTING
+          subject.funding_eligibility = FundingEligibilities::INELIGIBLE_SETTING
 
           expect(subject).to have_error(:funded_place, :not_eligible, "The participant is not eligible for funding, so '#/funded_place' cannot be set to true.")
         end

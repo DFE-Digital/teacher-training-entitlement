@@ -23,7 +23,7 @@ module Applications
   private
 
     def funding_eligibility
-      @eligible_for_funding ? FundingEligibility::FUNDED_ELIGIBILITY_RESULT : FundingEligibility::MARKED_INELIGIBLE_BY_POLICY
+      @eligible_for_funding ? FundingEligibilities::FUNDED_ELIGIBILITY_RESULT : FundingEligibilities::MARKED_INELIGIBLE_BY_POLICY
     end
 
     def validate_funding_eligiblity_status_code_change

@@ -1,17 +1,19 @@
 # Registry of the funding eligibility rule sets a course can be linked to
 # (courses.funding_eligibility holds a rule set key). Not to be confused with
-# the FundingEligibility service, which computes an application's result.
+# Application#funding_eligibility, which stores the result of a rule set.
 module FundingEligibilities
-  RuleSet = Struct.new(:key, :name, keyword_init: true)
+  class UnknownRuleSet < StandardError; end
+
+  FUNDED_ELIGIBILITY_RESULT = :funded
+  NOT_IN_ENGLAND = :not_in_england
+  PREVIOUSLY_FUNDED = :previously_funded
+  INELIGIBLE_SETTING = :ineligible_setting
+  MARKED_INELIGIBLE_BY_POLICY = :marked_ineligible_by_policy
 
   STATE_FUNDED_SCHOOL = "state_funded_school".freeze
 
-  RULE_SETS = [
-    RuleSet.new(key: STATE_FUNDED_SCHOOL, name: "State-funded school"),
-  ].freeze
-
   def self.available
-    RULE_SETS
+    @available ||= [StateFundedSchool.new].freeze
   end
 
   def self.keys
@@ -20,5 +22,10 @@ module FundingEligibilities
 
   def self.name_for(key)
     available.find { _1.key == key }&.name
+  end
+
+  def self.for_course(course)
+    available.find { _1.key == course.funding_eligibility } ||
+      raise(UnknownRuleSet, "Unknown funding eligibility rule set #{course.funding_eligibility.inspect} for course #{course.name.inspect}")
   end
 end

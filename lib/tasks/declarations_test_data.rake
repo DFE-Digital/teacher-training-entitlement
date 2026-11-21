@@ -102,7 +102,7 @@ namespace :declarations do
           works_in_childcare: false,
           funding_choice: Application.funding_choices.keys.first,
           ukprn: institution.ukprn,
-          funding_eligibility: FundingEligibility::FUNDED_ELIGIBILITY_RESULT,
+          funding_eligibility: FundingEligibilities::FUNDED_ELIGIBILITY_RESULT,
         )
 
         ApplicationLeadProvider.create!(

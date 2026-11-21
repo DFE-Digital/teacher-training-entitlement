@@ -24,11 +24,11 @@ module Questionnaires
 
     def ineligible_template
       @ineligible_template ||= case funding_eligiblity_status_code
-                               when FundingEligibility::NOT_IN_ENGLAND
+                               when FundingEligibilities::NOT_IN_ENGLAND
                                  NOT_IN_ENGLAND
-                               when FundingEligibility::PREVIOUSLY_FUNDED
+                               when FundingEligibilities::PREVIOUSLY_FUNDED
                                  PREVIOUSLY_FUNDED
-                               when FundingEligibility::INELIGIBLE_SETTING
+                               when FundingEligibilities::INELIGIBLE_SETTING
                                  INELIGIBLE_SETTING
                                else
                                  raise UnexpectedEligibilityStatusCode, "Missing status code handling: #{funding_eligiblity_status_code}"
@@ -38,15 +38,7 @@ module Questionnaires
     def funding_eligiblity_status_code
       return :ineligible_setting if works_in_other?
 
-      @funding_eligiblity_status_code ||= funding_eligibility.funding_eligibility
-    end
-
-    def funding_eligibility
-      @funding_eligibility ||= FundingEligibility.new(
-        course:,
-        institution:,
-        query_store: wizard.query_store,
-      )
+      @funding_eligiblity_status_code ||= FundingEligibilities.for_course(course).evaluate(wizard.query_store)
     end
 
     delegate :course,

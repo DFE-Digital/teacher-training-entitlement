@@ -11,8 +11,7 @@ class HandleSubmissionForStore
         course_cohort:,
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
         institution:,
-        funding_eligibility: funding_eligibility_service.funding_eligibility,
-        funding_choice:,
+        **rule_set.submission_attributes(query_store),
         registration_data: store.except("generated_confirmation_code", "current_user", "current_user_id"),
         status: Application::PENDING,
       )
@@ -26,39 +25,14 @@ private
     @query_store ||= RegistrationQueryStore.new(store:)
   end
 
-  delegate :course_cohort, to: :query_store
-
-  def institution
-    return nil if store["institution_id"].blank?
-
-    @institution ||= Institution.find(store["institution_id"])
-  end
-
-  def funding_choice
-    # It is possible that the applicant had chosen a non-funded path and selected a funding choice
-    # before going back a few steps and choosing a funded route. We should clear the funding choice
-    # to nil here to reduce confusion
-    if funding_eligibility_service.funded?
-      nil
-    else
-      store["funding"]
-    end
-  end
+  delegate :course_cohort, :institution, to: :query_store
 
   def enqueue_send_application_submission_email_job(application)
     Emails::SendApplicationSubmissionEmailJob.perform_later(application:)
   end
 
-  def funding_eligibility_service
-    @funding_eligibility_service ||= FundingEligibility.new(
-      course:,
-      institution:,
-      query_store:,
-    )
-  end
-
-  def course
-    @course ||= query_store.course
+  def rule_set
+    @rule_set ||= FundingEligibilities.for_course(query_store.course)
   end
 
   def user

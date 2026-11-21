@@ -9,7 +9,7 @@ class RegistrationWizardController < PublicPagesController
   before_action :ensure_can_render_step, only: :show
   before_action :check_allowed_to_apply
 
-  rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
+  rescue_from FundingEligibilities::StateFundedSchool::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
 
   helper_method :course, :course_cohort

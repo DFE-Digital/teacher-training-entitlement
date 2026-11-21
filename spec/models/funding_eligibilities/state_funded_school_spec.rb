@@ -1,13 +1,7 @@
 require "rails_helper"
 
-RSpec.describe FundingEligibility do
-  subject(:funding_eligibility) do
-    described_class.new(
-      institution:,
-      course:,
-      query_store:,
-    )
-  end
+RSpec.describe FundingEligibilities::StateFundedSchool do
+  subject(:rule_set) { described_class.new }
 
   let(:current_user) { create(:user, :with_one_login_id, trn: "1234567") }
   let(:store) do
@@ -24,8 +18,8 @@ RSpec.describe FundingEligibility do
   let(:course) { build(:course, :npd_eirt) }
   let(:query_store) { RegistrationQueryStore.new(store:) }
 
-  describe "#funding_eligibility" do
-    subject { funding_eligibility.funding_eligibility }
+  describe "#evaluate" do
+    subject { rule_set.evaluate(query_store, institution:) }
 
     context "when outside England" do
       let(:institution) { build(:institution, :not_in_england) }
@@ -75,7 +69,7 @@ RSpec.describe FundingEligibility do
   end
 
   describe "#funded?" do
-    subject { funding_eligibility.funded? }
+    subject { rule_set.funded?(query_store, institution:) }
 
     let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
 
@@ -95,7 +89,7 @@ RSpec.describe FundingEligibility do
   end
 
   describe "#previously_funded?" do
-    subject { funding_eligibility.previously_funded? }
+    subject { rule_set.previously_funded?(query_store) }
 
     it { is_expected.to be false }
 
@@ -106,5 +100,39 @@ RSpec.describe FundingEligibility do
 
       it { is_expected.to be true }
     end
+  end
+
+  describe "#evaluate without an institution" do
+    let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
+
+    it "raises MissingMandatoryInstitution" do
+      expect { rule_set.evaluate(query_store, institution: nil) }
+        .to raise_error(described_class::MissingMandatoryInstitution)
+    end
+  end
+
+  describe "#submission_attributes" do
+    subject { rule_set.submission_attributes(query_store) }
+
+    let(:institution) { create(:institution) }
+    let(:work_setting) { Institution::STATE_FUNDED_INSTITUTION }
+    let(:store) { super().merge("institution_id" => institution.id, "funding" => "school") }
+
+    context "when funded" do
+      before { allow_any_instance_of(Institution).to receive(:eligible_establishment?).and_return(true) }
+
+      it { is_expected.to eq(funding_eligibility: :funded, funding_choice: nil) }
+    end
+
+    context "when not funded" do
+      before { allow_any_instance_of(Institution).to receive(:eligible_establishment?).and_return(false) }
+
+      it { is_expected.to eq(funding_eligibility: :ineligible_setting, funding_choice: "school") }
+    end
+  end
+
+  describe "#key and #name" do
+    it { expect(rule_set.key).to eq("state_funded_school") }
+    it { expect(rule_set.name).to eq("State-funded school") }
   end
 end

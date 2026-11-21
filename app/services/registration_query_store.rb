@@ -37,6 +37,12 @@ class RegistrationQueryStore
     work_setting == Institution::OTHER
   end
 
+  def institution
+    return nil if store["institution_id"].blank?
+
+    @institution ||= Institution.find(store["institution_id"])
+  end
+
   def course
     course_cohort.course
   end

@@ -37,6 +37,19 @@ RSpec.describe RegistrationQueryStore do
     end
   end
 
+  describe "#institution" do
+    subject { query_store.institution }
+
+    it { is_expected.to be_nil }
+
+    context "when an institution_id is stored" do
+      let(:institution) { create(:institution) }
+      let(:store) { { "institution_id" => institution.id } }
+
+      it { is_expected.to eq(institution) }
+    end
+  end
+
   describe "#course_cohort" do
     context "when the store has a valid course_cohort_id" do
       let(:course_cohort) { create(:course_cohort) }

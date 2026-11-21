@@ -15,7 +15,7 @@ FactoryBot.define do
 
     course_cohort { course.course_cohorts.last || create(:course_cohort, course:, cohort:) }
     funding_choice { Application.funding_choices.keys.first }
-    funded_place { course_cohort.cohort.funding_cap ? FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s == funding_eligibility.to_s : nil }
+    funded_place { course_cohort.cohort.funding_cap ? FundingEligibilities::FUNDED_ELIGIBILITY_RESULT.to_s == funding_eligibility.to_s : nil }
 
     after(:create) do |application, evaluator|
       lead_provider = evaluator.lead_provider || LeadProvider.first || create(:lead_provider)
@@ -71,11 +71,11 @@ FactoryBot.define do
     end
 
     trait :eligible_for_funding do
-      funding_eligibility { FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
+      funding_eligibility { FundingEligibilities::FUNDED_ELIGIBILITY_RESULT }
     end
 
     trait :ineligible_for_funding do
-      funding_eligibility { FundingEligibility::INELIGIBLE_SETTING }
+      funding_eligibility { FundingEligibilities::INELIGIBLE_SETTING }
     end
 
     trait :eligible_for_funded_place do
@@ -94,7 +94,7 @@ FactoryBot.define do
     end
 
     trait :previously_funded do
-      funding_eligibility { FundingEligibility::PREVIOUSLY_FUNDED }
+      funding_eligibility { FundingEligibilities::PREVIOUSLY_FUNDED }
 
       after(:create) do |application|
         course = application.course.rebranded_alternative_courses.first
@@ -173,7 +173,7 @@ FactoryBot.define do
 
     trait :accepted do
       status { Application::ACCEPTED }
-      funded_place { cohort.funding_cap ? FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s == funding_eligibility.to_s : nil }
+      funded_place { cohort.funding_cap ? FundingEligibilities::FUNDED_ELIGIBILITY_RESULT.to_s == funding_eligibility.to_s : nil }
     end
 
     trait :started do

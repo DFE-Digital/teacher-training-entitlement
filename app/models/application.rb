@@ -40,7 +40,7 @@ class Application < ApplicationRecord
 
   scope :active_applications, -> { where.not(status: [REJECTED, WITHDRAWN]).or(where(status: nil)) }
   scope :has_been_accepted, -> { where(status: [ACCEPTED, STARTED, COMPLETED, DEFERRED, WITHDRAWN]) }
-  scope :eligible_for_funding, -> { where(funding_eligibility: FundingEligibility::FUNDED_ELIGIBILITY_RESULT) }
+  scope :eligible_for_funding, -> { where(funding_eligibility: FundingEligibilities::FUNDED_ELIGIBILITY_RESULT) }
   scope :with_work_setting, ->(work_setting) { where("registration_data->>'work_setting' = ?", work_setting) }
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
@@ -186,7 +186,7 @@ class Application < ApplicationRecord
   end
 
   def eligible_for_funding?
-    funding_eligibility.to_s == FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s
+    funding_eligibility.to_s == FundingEligibilities::FUNDED_ELIGIBILITY_RESULT.to_s
   end
   alias_method :eligible_for_funding, :eligible_for_funding?
 

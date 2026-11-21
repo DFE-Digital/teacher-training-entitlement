@@ -385,7 +385,7 @@ module ValidTestDataGenerators
     def funding_attributes(status:, eligible_for_funding:)
       {
         funded_place: (eligible_for_funding unless status == Application::PENDING),
-        funding_eligibility: eligible_for_funding ? FundingEligibility::FUNDED_ELIGIBILITY_RESULT : FundingEligibility::INELIGIBLE_SETTING,
+        funding_eligibility: eligible_for_funding ? FundingEligibilities::FUNDED_ELIGIBILITY_RESULT : FundingEligibilities::INELIGIBLE_SETTING,
         institution: eligible_for_funding ? institutions_eligible : institutions_ineligible,
         funding_choice: eligible_for_funding ? "school" : (Application.funding_choices.values - %w[school]).sample,
       }

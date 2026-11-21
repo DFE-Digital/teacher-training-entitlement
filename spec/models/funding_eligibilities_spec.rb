@@ -22,4 +22,19 @@ RSpec.describe FundingEligibilities do
       expect(described_class.name_for("unknown")).to be_nil
     end
   end
+
+  describe ".for_course" do
+    it "returns the rule set matching the course key" do
+      course = build(:course, funding_eligibility: "state_funded_school")
+
+      expect(described_class.for_course(course)).to be_a(described_class::StateFundedSchool)
+    end
+
+    it "raises naming the course and the key for an unknown key" do
+      course = build(:course, name: "Some course", funding_eligibility: "nope")
+
+      expect { described_class.for_course(course) }
+        .to raise_error(described_class::UnknownRuleSet, /"nope".*"Some course"/)
+    end
+  end
 end

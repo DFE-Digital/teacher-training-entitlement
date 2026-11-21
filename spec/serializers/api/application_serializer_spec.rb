@@ -58,7 +58,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     context "when funding_eligibility is funded" do
-      before { application.funding_eligibility = FundingEligibility::FUNDED_ELIGIBILITY_RESULT }
+      before { application.funding_eligibility = FundingEligibilities::FUNDED_ELIGIBILITY_RESULT }
 
       it "serializes `eligible_for_funding` as true" do
         expect(attributes["eligible_for_funding"]).to be(true)
@@ -70,7 +70,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     context "when funding_eligibility is not funded" do
-      before { application.funding_eligibility = FundingEligibility::INELIGIBLE_SETTING }
+      before { application.funding_eligibility = FundingEligibilities::INELIGIBLE_SETTING }
 
       it "serializes `eligible_for_funding` as false" do
         expect(attributes["eligible_for_funding"]).to be(false)
