@@ -93,7 +93,7 @@ RSpec.describe "Registration change answers and guards", type: :request do
     it "does not pre-fill the previous answers" do
       get step_path("course-start-date")
 
-      expect(response.body).not_to include("checked")
+      expect(response.body).not_to match(/checked(="checked")?[ >]/)
     end
   end
 

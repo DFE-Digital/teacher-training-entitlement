@@ -208,6 +208,24 @@ RSpec.describe "Registration state funded school steps", type: :request do
       end
     end
 
+    context "when a later step is opened without a school" do
+      before do
+        answer("teacher_catchment", teacher_catchment: "ENG")
+        answer("work_setting", work_setting: state_funded)
+        get step_path("possible-funding")
+      end
+
+      it "redirects to the school picker" do
+        expect_redirect_to("choose-school")
+      end
+
+      it "tells the teacher why" do
+        follow_redirect!
+
+        expect(response.body).to include("Your application requires details of your school.")
+      end
+    end
+
     context "when no school is picked" do
       before do
         answer("teacher_catchment", teacher_catchment: "ENG")

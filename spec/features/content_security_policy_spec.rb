@@ -1,9 +1,11 @@
 require "rails_helper"
 
 RSpec.feature "Happy journeys", type: :feature do
-  scenario "script-src nonce on registration journey pages" do
-    visit "/"
-    expect(page.response_headers["content-security-policy-report-only"]).to match(/script-src .* 'nonce-.*/)
+  registration_journeys do
+    scenario "script-src nonce on registration journey pages" do
+      visit "/"
+      expect(page.response_headers["content-security-policy-report-only"]).to match(/script-src .* 'nonce-.*/)
+    end
   end
 
   context "when showing error pages" do

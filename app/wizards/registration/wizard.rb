@@ -29,6 +29,8 @@ module Registration
     # The step the teacher clicked "Change" on in check answers, if they are changing an answer.
     attr_reader :return_to_review
 
+    TERMINAL_STEPS = %i[check_answers registration_submitted cannot_register_yet already_applied].freeze
+
     def self.for_session(course:, session:, **)
       state_store = StateStore.new(
         repository: DfE::Wizard::Repository::Session.new(session:, key: :registration, state_key: course.identifier),
@@ -70,8 +72,9 @@ module Registration
 
     # While changing an answer, every step path keeps the change flag, so the teacher
     # is sent back to check answers as soon as the answers are complete again.
+    # Terminal steps do not need it.
     def resolve_step_path(step_id, options = {})
-      options = { return_to_review: }.compact.merge(options) if changing_answer? && step_id != :check_answers
+      options = { return_to_review: }.compact.merge(options) if changing_answer? && TERMINAL_STEPS.exclude?(step_id)
 
       super
     end

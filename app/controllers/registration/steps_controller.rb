@@ -2,6 +2,8 @@ module Registration
   class StepsController < PublicPagesController
     include HtmlRequestsOnly
 
+    MISSING_INSTITUTION_MESSAGE = "Your application requires details of your school.".freeze
+
     before_action :ensure_feature_enabled
     before_action :redirect_to_closed_if_registration_closed
     before_action :set_course
@@ -58,7 +60,10 @@ module Registration
     end
 
     def redirect_to_first_incomplete_step
-      redirect_to @wizard.resolve_step_path(@wizard.first_incomplete_step)
+      first_incomplete_step = @wizard.first_incomplete_step
+      flash[:error] = MISSING_INSTITUTION_MESSAGE if first_incomplete_step == :choose_school
+
+      redirect_to @wizard.resolve_step_path(first_incomplete_step)
     end
   end
 end

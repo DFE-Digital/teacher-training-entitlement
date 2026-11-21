@@ -81,6 +81,12 @@ RSpec.feature "Change answers from check answers", :with_default_lead_provider, 
     click_button "Continue"
 
     expect(page).to have_current_path(journey_path("/registration/choose-school"), ignore_query: true)
+    choose_a_school(js: false, name: "open")
+    expect_page_to_have(path: "/registration/possible-funding", submit_form: true)
+    agree_to_share_provider_information
+
+    expect(page).to have_current_path(journey_path("/registration/check-answers"))
+    expect(page).to have_text("State-funded nursery, pre-school, school or academy trust")
   end
 
   scenario "a submitted teacher starting again sees no previous answers" do
