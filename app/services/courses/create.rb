@@ -45,6 +45,7 @@ module Courses
         short_code: course_details.short_code,
         course_group: course_details.course_group,
         description: course_details.description,
+        funding_eligibility: course_details.funding_eligibility,
       )
     end
 

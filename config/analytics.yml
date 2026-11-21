@@ -140,6 +140,7 @@ shared:
     - course_group
     - short_code
     - position
+    - funding_eligibility
   :course_cohorts:
     - id
     - academic_year

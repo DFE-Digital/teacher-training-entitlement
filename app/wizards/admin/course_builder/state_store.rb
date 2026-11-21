@@ -3,7 +3,7 @@ module Admin
     class StateStore
       include DfE::Wizard::Core::StateStore
 
-      CourseDetails = Struct.new(:name, :identifier, :short_code, :course_group, :description, keyword_init: true)
+      CourseDetails = Struct.new(:name, :identifier, :short_code, :course_group, :description, :funding_eligibility, keyword_init: true)
       MilestoneConfig = Struct.new(:declaration_type, :acceptance_window_start_offset, :acceptance_window_end_offset, :payment_percentage, keyword_init: true)
       SelectedLeadProvider = Struct.new(:lead_provider, :url, :email, keyword_init: true)
       SelectedContractFinancial = Struct.new(:lead_provider, :academic_year, :teacher_funding, :recruitment_target, keyword_init: true)
@@ -16,6 +16,7 @@ module Admin
           short_code: read[:short_code],
           course_group: read[:course_group],
           description: read[:description],
+          funding_eligibility: read[:funding_eligibility],
         )
       end
 

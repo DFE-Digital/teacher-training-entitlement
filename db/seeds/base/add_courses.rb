@@ -5,6 +5,7 @@ course.update!(
   # identifier: "npd-excellence-in-reception-teaching",
   identifier: "tte-early-years",
   course_group: "reception",
+  funding_eligibility: "state_funded_school",
   description: "The Excellence in reception teaching course is aimed at teachers who have completed their induction and are currently teaching reception age children, or plan to in the future.",
   short_code: "NPDEIRT",
 )

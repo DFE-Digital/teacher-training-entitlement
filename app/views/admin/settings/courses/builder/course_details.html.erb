@@ -34,6 +34,13 @@
     </div>
   </div>
 
+  <%= f.govuk_collection_select :funding_eligibility,
+                                FundingEligibilities.available,
+                                :key,
+                                :name,
+                                options: { include_blank: true },
+                                label: { text: "Funding eligibility", size: "s" } %>
+
   <%= f.govuk_text_area :description,
                         label: { text: "Description", size: "s" },
                         placeholder: "Optional" %>

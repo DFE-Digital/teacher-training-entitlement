@@ -444,6 +444,8 @@ en:
               blank: Enter a course name
             course_group:
               blank: Choose a course group
+            funding_eligibility:
+              inclusion: Choose a funding eligibility
         admin/adjustments/create_adjustment_form:
           attributes:
             statement:

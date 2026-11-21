@@ -13,6 +13,7 @@ RSpec.describe Courses::Create do
           short_code: "NEWCOUR",
           course_group: "send",
           description: "New course description",
+          funding_eligibility: "state_funded_school",
         )
       end
       let(:selected_lead_provider) do
@@ -75,6 +76,7 @@ RSpec.describe Courses::Create do
           short_code: "NEWCOUR",
           course_group: "send",
           description: "New course description",
+          funding_eligibility: "state_funded_school",
         )
       end
 
@@ -247,6 +249,7 @@ RSpec.describe Courses::Create do
           short_code: "EXIST",
           course_group: "reception",
           description: "Existing course description",
+          funding_eligibility: "state_funded_school",
         )
       end
       let(:state_store) do

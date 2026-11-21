@@ -20,10 +20,19 @@ RSpec.describe Course do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:identifier).with_message("Identifier already exists, enter a unique one") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
+
+    it { is_expected.to validate_inclusion_of(:funding_eligibility).in_array(%w[state_funded_school]) }
+
+    it "names the field in the error" do
+      course = build(:course, funding_eligibility: "unknown")
+      course.validate
+
+      expect(course.errors.full_messages).to include(a_string_matching(/Funding eligibility/))
+    end
   end
 
   describe "defaults" do
-    subject(:course) { described_class.create!(name:, identifier:, short_code:) }
+    subject(:course) { described_class.create!(name:, identifier:, short_code:, funding_eligibility: "state_funded_school") }
 
     let(:name) { "My Course" }
     let(:identifier) { nil }

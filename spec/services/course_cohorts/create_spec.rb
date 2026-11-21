@@ -12,7 +12,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
   end
 
   let(:cohort) { create(:cohort, :next) }
-  let!(:course) { Course.create!(name: "NPD Course", identifier: "npd-course-#{SecureRandom.uuid}", course_group: "reception") }
+  let!(:course) { Course.create!(name: "NPD Course", identifier: "npd-course-#{SecureRandom.uuid}", course_group: "reception", funding_eligibility: "state_funded_school") }
   let(:training_starts_at) { Date.new(2025, 9, 1) }
 
   describe "validations" do

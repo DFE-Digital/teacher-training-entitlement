@@ -25,6 +25,7 @@ class Course < ApplicationRecord
 
   validates :name, presence: true
   validates :identifier, presence: true, uniqueness: true
+  validates :funding_eligibility, inclusion: { in: ->(_course) { FundingEligibilities.keys } }
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
   def self.reception

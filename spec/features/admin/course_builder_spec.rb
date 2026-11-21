@@ -26,6 +26,7 @@ RSpec.feature "Building a course", type: :feature do
 
     fill_in "Name", with: "Minimal course"
     select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
     click_on "Continue"
 
     fill_in "milestones-started-payment-percentage-field", with: "60"
@@ -45,6 +46,7 @@ RSpec.feature "Building a course", type: :feature do
     click_on "Continue"
 
     expect(page).to have_css("h1", text: "Check course configuration")
+    expect(page).to have_text("Funding eligibility: State-funded school")
     expect(page).to have_text("Started and Completed")
     expect(page).to have_text(lead_provider.name)
     expect(page).to have_text("Delivery partners")
@@ -67,11 +69,23 @@ RSpec.feature "Building a course", type: :feature do
     expect(page).to have_link("View details", href: admin_settings_course_provider_path(course, lead_provider))
   end
 
+  scenario "requiring a funding eligibility on the course details step" do
+    visit admin_settings_courses_builder_path(step: "course-details")
+
+    fill_in "Name", with: "No funding course"
+    select "Reception", from: "Course group"
+    click_on "Continue"
+
+    expect(page).to have_css(".govuk-error-summary", text: "Choose a funding eligibility")
+    expect(page).to have_css("h1", text: "Course details")
+  end
+
   scenario "showing a delivery partners check answer row with a change link that keeps the ticks" do
     visit admin_settings_courses_builder_path(step: "course-details")
 
     fill_in "Name", with: "Change link course"
     select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
     click_on "Continue"
 
     fill_in "milestones-started-payment-percentage-field", with: "60"
@@ -100,6 +114,7 @@ RSpec.feature "Building a course", type: :feature do
 
     fill_in "Name", with: "Validation course"
     select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
     click_on "Continue"
 
     fill_in "milestones-started-payment-percentage-field", with: "60"
@@ -134,6 +149,7 @@ RSpec.feature "Building a course", type: :feature do
 
     fill_in "Name", with: "Added lead course"
     select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
     click_on "Continue"
 
     fill_in "milestones-started-payment-percentage-field", with: "60"
@@ -180,6 +196,7 @@ RSpec.feature "Building a course", type: :feature do
 
     fill_in "Name", with: "No providers course"
     select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
     click_on "Continue"
 
     fill_in "milestones-started-payment-percentage-field", with: "60"
@@ -204,6 +221,7 @@ RSpec.feature "Building a course", type: :feature do
 
     fill_in "Name", with: "Removed lead course"
     select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
     click_on "Continue"
 
     fill_in "milestones-started-payment-percentage-field", with: "60"

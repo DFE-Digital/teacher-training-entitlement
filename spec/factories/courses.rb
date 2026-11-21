@@ -4,6 +4,7 @@ FactoryBot.define do
     sequence(:identifier) { |n| "identifier-#{n}" }
     ecf_id { SecureRandom.uuid }
     course_group { "reception" }
+    funding_eligibility { "state_funded_school" }
 
     initialize_with do
       Course.find_by(identifier:) || new(**attributes)
