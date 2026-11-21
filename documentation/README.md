@@ -9,6 +9,10 @@ This directory is organised by domain.
 - [`application-submission.md`](registration/application-submission.md) — submission wizard, validation, workflow
 - [`change-of-provider.md`](registration/change-of-provider.md) — provider transfer process
 
+## Decisions
+
+- [`decisions/001-registration-journey-on-dfe-wizard.md`](decisions/001-registration-journey-on-dfe-wizard.md) — ADR: registration journey on dfe-wizard with pluggable funding rule sets
+
 ## API (Lead Provider)
 
 - [`overview.md`](api/overview.md) — architecture, authentication modes, versioning
