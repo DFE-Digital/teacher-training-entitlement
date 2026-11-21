@@ -23,6 +23,18 @@ module Registration
       @registerable_course_cohorts ||= CourseCohort.registerable.where(course:).includes(:cohort).order(:training_starts_at).to_a
     end
 
+    # The teacher's application for the chosen start date, whatever its status:
+    # `applications(user_id, course_cohort_id)` is unique.
+    def existing_application
+      return if current_user.blank? || course_cohort.blank?
+
+      current_user.applications.find_by(course_cohort:)
+    end
+
+    def already_applied_for_course_cohort?
+      existing_application.present?
+    end
+
     def registerable_lead_providers
       LeadProvider.where(id: CourseCohortProvider.where(course_cohort: registerable_course_cohorts).select(:lead_provider_id)).alphabetical
     end

@@ -542,6 +542,10 @@ en:
           attributes:
             base:
               submission_failed: We could not submit your registration. Check you have not already registered for this course and start date, or try again.
+        registration/steps/already_applied:
+          attributes:
+            base:
+              not_applied: You have not applied for this course and start date.
         registration/steps/registration_submitted:
           attributes:
             base:
@@ -917,6 +921,7 @@ en:
         childcare_provider_not_in_england: Nursery must be in England, Guernsey, Jersey
           or the Isle of Man
         cannot_register_yet: You cannot register yet
+        already_applied: You have already applied
         check_answers: Check your answers and confirm
         institution_location: What is the first part of your workplace postcode?
         find_childcare_provider: What is the first part of your workplace postcode?

@@ -40,6 +40,60 @@ RSpec.describe Registration::Wizard do
     it { is_expected.to have_next_step(:registration_submitted).from(:check_answers) }
   end
 
+  describe "already applied" do
+    let(:course_cohort) { course.course_cohorts.first }
+
+    before { state_store.write(course_start_date: course_cohort.ecf_id) }
+
+    it { is_expected.to have_next_step(:choose_your_provider).from(:course_start_date) }
+
+    context "when the teacher has an application for the start date" do
+      before { create(:application, user:, course_cohort:, status: :withdrawn) }
+
+      it { is_expected.to have_next_step(:already_applied).from(:course_start_date) }
+      it { expect(wizard.first_incomplete_step).to eq(:already_applied) }
+
+      context "when the current step is after the start date" do
+        let(:current_step) { :choose_your_provider }
+
+        it { is_expected.not_to be_valid_path_to_current_step }
+      end
+    end
+
+    context "when the teacher has an application for another course" do
+      before { create(:application, user:, course: create(:course, :npd_eirt)) }
+
+      it { is_expected.to have_next_step(:choose_your_provider).from(:course_start_date) }
+    end
+
+    context "when sign_in comes after course_start_date" do
+      let(:user) { create(:user) }
+
+      before do
+        stub_const("Registration::Wizard::HEAD_STEPS", %i[course_start_date sign_in])
+        allow(Registration::Steps::CourseStartDate).to receive(:requires_user).and_return(false)
+        allow(Registration::Steps::CannotRegisterYet).to receive(:requires_user).and_return(false)
+      end
+
+      it { is_expected.to have_next_step(:choose_your_provider).from(:course_start_date) }
+      it { is_expected.to have_next_step(:choose_your_provider).from(:sign_in) }
+
+      context "when the teacher has an application for the start date" do
+        before { create(:application, user:, course_cohort:) }
+
+        it { is_expected.to have_next_step(:already_applied).from(:sign_in) }
+        it { is_expected.to have_next_step(:already_applied).from(:course_start_date) }
+      end
+
+      context "when the teacher is signed out" do
+        let(:user) { nil }
+
+        it { is_expected.to have_next_step(:sign_in).from(:course_start_date) }
+        it { is_expected.to have_next_step(:choose_your_provider).from(:sign_in) }
+      end
+    end
+  end
+
   describe "flow path" do
     let(:current_step) { :registration_submitted }
 

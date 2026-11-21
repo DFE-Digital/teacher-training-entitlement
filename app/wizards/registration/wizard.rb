@@ -9,6 +9,7 @@ module Registration
       sign_in: Steps::SignIn,
       course_start_date: Steps::CourseStartDate,
       cannot_register_yet: Steps::CannotRegisterYet,
+      already_applied: Steps::AlreadyApplied,
       choose_your_provider: Steps::ChooseYourProvider,
       share_provider: Steps::ShareProvider,
       check_answers: Steps::CheckAnswers,
@@ -18,7 +19,9 @@ module Registration
     # The steps every journey starts with, in order. This is the only place that
     # sets where `sign_in` sits: move it to let teachers answer steps that do not
     # need a signed-in teacher first. `course_start_date` must stay last, it
-    # branches to the rest of the journey.
+    # branches to the rest of the journey, unless `sign_in` comes after it. Whichever
+    # of the two comes last also checks that the teacher has not already applied for
+    # the chosen start date (see `#draw_head_edges`).
     HEAD_STEPS = %i[sign_in course_start_date].freeze
 
     attr_reader :course, :current_user
@@ -106,8 +109,7 @@ module Registration
         dsl.conditional_root(potential_root: HEAD_STEPS.first(2)) do |state|
           HEAD_STEPS.find { |step_name| !(step_name == :sign_in && state.signed_in?) }
         end
-        HEAD_STEPS.each_cons(2) { |from, to| dsl.add_edge from:, to: }
-        dsl.add_conditional_edge from: :course_start_date, when: :start_later?, then: :cannot_register_yet, else: :choose_your_provider
+        draw_head_edges(dsl)
         FundingEligibilities.for_course(course).draw(RuleSetGraph.new(dsl, state_store:), entry: :choose_your_provider, exit: :share_provider)
         dsl.add_edge from: :share_provider, to: :check_answers
         dsl.add_edge from: :check_answers, to: :registration_submitted
@@ -116,6 +118,26 @@ module Registration
       ensure_unique_attribute_names!(graph)
       ensure_authentication_before_steps_needing_it!(graph)
       graph
+    end
+
+    # Edges between the head steps, and from the last one to the rest of the journey.
+    # Whichever of `sign_in` and `course_start_date` is later knows both the teacher
+    # and the start date, so it sends the teacher to `already_applied` when needed.
+    def draw_head_edges(dsl)
+      checking_step = %i[sign_in course_start_date].max_by { HEAD_STEPS.index(_1) || -1 }
+
+      HEAD_STEPS.each_with_index do |step_name, index|
+        following = HEAD_STEPS[index + 1] || :choose_your_provider
+        branches = []
+        branches << { when: :start_later?, then: :cannot_register_yet } if step_name == :course_start_date
+        branches << { when: :already_applied_for_course_cohort?, then: :already_applied } if step_name == checking_step
+
+        if branches.empty?
+          dsl.add_edge(from: step_name, to: following)
+        else
+          dsl.add_multiple_conditional_edges(from: step_name, branches:, default: following)
+        end
+      end
     end
 
     # Answers are stored flat, so two steps with the same attribute would overwrite each other.

@@ -16,6 +16,9 @@ module Registration
     def update
       if @wizard.save_current_step && @wizard.next_step
         redirect_to @wizard.next_step_path
+      elsif @wizard.state_store.already_applied_for_course_cohort?
+        # An application for the start date appeared while the teacher was submitting.
+        redirect_to @wizard.resolve_step_path(:already_applied)
       elsif @wizard.current_step.errors.any?
         render @wizard.current_step_name, status: :unprocessable_content
       else

@@ -238,18 +238,14 @@ RSpec.describe "Registration steps", type: :request do
 
         get step_path("registration-submitted")
 
-        expect(response).to redirect_to(step_path("choose-your-provider"))
+        expect(response).to redirect_to(step_path("already-applied"))
       end
 
-      it "does not show the submitted page once the journey is answered again after submitting" do
+      it "sends the teacher to already applied when the same start date is picked again after submitting" do
         patch step_path("check-answers")
         patch step_path("course-start-date"), params: { course_start_date: { course_start_date: course_cohort.ecf_id } }
-        pass_funding_steps
-        patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
 
-        get step_path("registration-submitted")
-
-        expect(response).to redirect_to(step_path("check-answers"))
+        expect(response).to redirect_to(step_path("already-applied"))
       end
 
       it "links the submitted page to the submitted application" do
@@ -266,6 +262,30 @@ RSpec.describe "Registration steps", type: :request do
         it "creates nothing" do
           expect { patch step_path("check-answers") }.not_to(change(Application, :count))
         end
+
+        it "sends the teacher to the already applied page" do
+          patch step_path("check-answers")
+
+          expect(response).to redirect_to(step_path("already-applied"))
+        end
+
+        context "when the application appears while submitting" do
+          before { allow_any_instance_of(Registration::Wizard).to receive(:valid_path_to_current_step?).and_return(true) }
+
+          it "creates nothing" do
+            expect { patch step_path("check-answers") }.not_to(change(Application, :count))
+          end
+
+          it "sends the teacher to the already applied page instead of raising" do
+            patch step_path("check-answers")
+
+            expect(response).to redirect_to(step_path("already-applied"))
+          end
+        end
+      end
+
+      context "when the submission fails" do
+        before { allow_any_instance_of(Applications::Create).to receive(:call).and_return(false) }
 
         it "shows an error instead of raising" do
           patch step_path("check-answers")
@@ -356,6 +376,91 @@ RSpec.describe "Registration steps", type: :request do
       get step_path("course-start-date", identifier: "unknown")
 
       expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "already applied" do
+    def choose_start_date
+      patch step_path("course-start-date"), params: { course_start_date: { course_start_date: course_cohort.ecf_id } }
+    end
+
+    context "when the teacher has an application for the start date" do
+      let!(:application) { create(:application, user:, course_cohort:, status: :rejected) }
+
+      it "sends the teacher to the already applied page" do
+        choose_start_date
+
+        expect(response).to redirect_to(step_path("already-applied"))
+      end
+
+      it "names the course and links to the application" do
+        choose_start_date
+        get step_path("already-applied")
+
+        expect(response.body).to include("You have already made an application for #{course.name}")
+          .and include(application_path(application.ecf_id))
+      end
+
+      it "does not let the teacher continue with that start date" do
+        choose_start_date
+        get step_path("choose-your-provider")
+
+        expect(response).to redirect_to(step_path("already-applied"))
+      end
+
+      it "links back to the start date step" do
+        choose_start_date
+        get step_path("already-applied")
+
+        expect(response.body).to include(%(href="#{step_path('course-start-date')}"))
+      end
+    end
+
+    context "when the teacher has an application for another course" do
+      before { create(:application, user:, course: create(:course, :npd_eirt)) }
+
+      it "lets the teacher continue" do
+        choose_start_date
+
+        expect(response).to redirect_to(step_path("choose-your-provider"))
+      end
+    end
+
+    it "does not show the page to a teacher with no application" do
+      get step_path("already-applied")
+
+      expect(response).to redirect_to(step_path("course-start-date"))
+    end
+
+    context "when sign in comes after the start date step" do
+      let(:user) { create(:user) }
+
+      before do
+        stub_const("Registration::Wizard::HEAD_STEPS", %i[course_start_date sign_in])
+        allow(Registration::Steps::CourseStartDate).to receive(:requires_user).and_return(false)
+        allow(Registration::Steps::CannotRegisterYet).to receive(:requires_user).and_return(false)
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(nil)
+      end
+
+      it "lets a signed out teacher choose a start date" do
+        choose_start_date
+
+        expect(response).to redirect_to(step_path("sign-in"))
+      end
+
+      context "when the teacher signs in with an application for the start date" do
+        before do
+          create(:application, user:, course_cohort:)
+          choose_start_date
+          allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        end
+
+        it "tells the teacher right after sign in" do
+          get step_path("sign-in")
+
+          expect(response).to redirect_to(step_path("already-applied"))
+        end
+      end
     end
   end
 end

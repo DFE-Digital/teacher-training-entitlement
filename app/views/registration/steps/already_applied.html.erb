@@ -1,0 +1,19 @@
+<% content_for :title, t("helpers.title.registration_wizard.already_applied") %>
+
+<%= render "registration/steps/back_link" %>
+
+<% application = @wizard.state_store.existing_application %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">You have already applied</h1>
+
+    <p class="govuk-body">You have already made an application for <%= @course.name %> starting in <%= application.course_cohort.cohort.name %>.</p>
+
+    <p class="govuk-body">
+      <%= govuk_link_to "View your application", application_path(application.ecf_id) %>
+    </p>
+
+    <p class="govuk-body">You can go back to choose another start date for this course, if there is one.</p>
+  </div>
+</div>

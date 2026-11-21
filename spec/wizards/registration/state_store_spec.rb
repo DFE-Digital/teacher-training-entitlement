@@ -22,6 +22,58 @@ RSpec.describe Registration::StateStore do
     end
   end
 
+  describe "#already_applied_for_course_cohort?" do
+    let(:user) { create(:user) }
+
+    before do
+      state_store.current_user = user
+      state_store.write(course_start_date: course_cohort.ecf_id)
+    end
+
+    it { expect(state_store.already_applied_for_course_cohort?).to be(false) }
+
+    Application.statuses.each_key do |status|
+      it "is true whatever the status of the application (#{status})" do
+        create(:application, user:, course_cohort:, status:)
+
+        expect(state_store.already_applied_for_course_cohort?).to be(true)
+      end
+    end
+
+    it "is false when the application is for another course cohort" do
+      other = create(:course_cohort, course:, cohort: create(:cohort, :next))
+      create(:application, user:, course_cohort: other)
+
+      expect(state_store.already_applied_for_course_cohort?).to be(false)
+    end
+
+    it "is false when the application is for another course" do
+      create(:application, user:, course: create(:course, :npd_eirt))
+
+      expect(state_store.already_applied_for_course_cohort?).to be(false)
+    end
+
+    it "is false when another teacher applied" do
+      create(:application, course_cohort:)
+
+      expect(state_store.already_applied_for_course_cohort?).to be(false)
+    end
+
+    it "is false when signed out" do
+      create(:application, user:, course_cohort:)
+      state_store.current_user = nil
+
+      expect(state_store.already_applied_for_course_cohort?).to be(false)
+    end
+
+    it "is false when no start date is picked" do
+      create(:application, user:, course_cohort:)
+      state_store.write(course_start_date: "later")
+
+      expect(state_store.already_applied_for_course_cohort?).to be(false)
+    end
+  end
+
   describe "#registerable_lead_providers" do
     it "is the providers of the open course cohorts of the course, alphabetically" do
       expect(state_store.registerable_lead_providers).to eq(course_cohort.lead_providers.alphabetical)

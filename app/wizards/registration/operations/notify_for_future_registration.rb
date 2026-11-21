@@ -8,7 +8,8 @@ module Registration
       end
 
       def execute
-        @step.wizard.current_user.update!(
+        # Signed out when `sign_in` is moved after the start date step.
+        @step.wizard.current_user&.update!(
           notify_user_for_future_reg: @step.course_start_date == Steps::CourseStartDate::LATER,
         )
 
