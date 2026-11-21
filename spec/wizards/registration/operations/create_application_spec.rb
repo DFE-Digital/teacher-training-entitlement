@@ -46,18 +46,19 @@ RSpec.describe Registration::Operations::CreateApplication do
     end
 
     context "when a concurrent request has created the application" do
-      let!(:existing) { create(:application, user:, course_cohort:) }
-
-      before { allow_any_instance_of(Applications::Create).to receive(:valid?).and_return(true) }
-
-      it "succeeds" do
-        expect(operation.execute).to eq(success: true)
+      before do
+        create(:application, user:, course_cohort:)
+        allow_any_instance_of(Applications::Create).to receive(:valid?).and_return(true)
       end
 
-      it "keeps the existing application to show the submitted page" do
+      it "fails" do
+        expect(operation.execute).to include(success: false)
+      end
+
+      it "does not show the submitted page" do
         operation.execute
 
-        expect(state_store.submitted_application).to eq(existing)
+        expect(state_store.submitted_application).to be_nil
       end
     end
 

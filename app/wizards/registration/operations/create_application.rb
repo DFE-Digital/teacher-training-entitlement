@@ -36,11 +36,13 @@ module Registration
           **FundingEligibilities.for_course(state_store.course).submission_attributes(state_store),
         )
 
-        application = service.call ? service.application : service.concurrent_application
-        return failure(service) unless application
+        # Only this request's own successful call is a success. If another
+        # request created the application first, this fails and the controller
+        # sends the teacher to the already applied page.
+        return failure(service) unless service.call
 
         @repository.clear
-        @repository.write(StateStore::SUBMITTED_APPLICATION_KEY => application.id)
+        @repository.write(StateStore::SUBMITTED_APPLICATION_KEY => service.application.id)
 
         { success: true }
       end

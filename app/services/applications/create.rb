@@ -17,10 +17,6 @@ module Applications
 
     attr_reader :application
 
-    # Set when a concurrent request created the application between the
-    # validation and the insert.
-    attr_reader :concurrent_application
-
     validates :user, presence: true
     validates :course_cohort, presence: true
     validates :lead_provider, presence: true
@@ -48,7 +44,6 @@ module Applications
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
       Rails.logger.warn("Application creation failed: #{e.class}")
       @application = nil
-      @concurrent_application = user.applications.find_by(course_cohort:)
       errors.add(:application, :could_not_be_saved)
       false
     end

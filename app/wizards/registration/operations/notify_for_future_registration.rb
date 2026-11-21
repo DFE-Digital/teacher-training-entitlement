@@ -8,7 +8,8 @@ module Registration
       end
 
       def execute
-        # Signed out when `sign_in` is moved after the start date step.
+        # Signed out when `sign_in` is moved after the start date step. The
+        # flag is then not recorded: see ADR 001 §5 before moving `sign_in`.
         @step.wizard.current_user&.update!(
           notify_user_for_future_reg: @step.course_start_date == Steps::CourseStartDate::LATER,
         )

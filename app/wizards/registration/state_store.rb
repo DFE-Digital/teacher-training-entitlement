@@ -28,7 +28,10 @@ module Registration
     def existing_application
       return if current_user.blank? || course_cohort.blank?
 
-      current_user.applications.find_by(course_cohort:)
+      # Only found applications are kept: a missing one may be created later in the request.
+      @existing_applications ||= {}
+      @existing_applications[[current_user.id, course_cohort.id]] ||=
+        current_user.applications.includes(course_cohort: :cohort).find_by(course_cohort:)
     end
 
     def already_applied_for_course_cohort?

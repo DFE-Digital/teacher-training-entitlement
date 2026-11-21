@@ -282,6 +282,29 @@ RSpec.describe "Registration steps", type: :request do
             expect(response).to redirect_to(step_path("already-applied"))
           end
         end
+
+        context "when the application is inserted between validation and create" do
+          before do
+            allow_any_instance_of(Applications::Create).to receive(:valid?) do
+              create(:application, user:, course_cohort:)
+              true
+            end
+          end
+
+          it "sends the teacher to the already applied page" do
+            patch step_path("check-answers")
+
+            expect(response).to redirect_to(step_path("already-applied"))
+          end
+
+          it "does not show the submitted page" do
+            patch step_path("check-answers")
+
+            get step_path("registration-submitted")
+
+            expect(response).not_to have_http_status(:ok)
+          end
+        end
       end
 
       context "when the submission fails" do
