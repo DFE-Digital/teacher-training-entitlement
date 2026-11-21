@@ -100,7 +100,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
         get step_path("check-answers")
 
         expect(response.body.scan(/govuk-summary-list__key">\s*([^<]+?)\s*</).flatten).to eq(
-          ["Course start", "Course", "Provider", "Workplace in England", "Work setting", "Workplace"],
+          ["Course", "Course start", "Provider", "Workplace in England", "Work setting", "Workplace"],
         )
         expect(response.body).to include(school.name)
       end
@@ -128,7 +128,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
         get step_path("check-answers")
 
         expect(response.body.scan(/govuk-summary-list__key">\s*([^<]+?)\s*</).flatten).to eq(
-          ["Course start", "Course", "Provider", "Workplace in England", "Course funding"],
+          ["Course", "Course start", "Provider", "Workplace in England", "Course funding"],
         )
       end
     end
@@ -309,7 +309,7 @@ RSpec.describe "Registration state funded school steps", type: :request do
         get step_path("check-answers")
 
         expect(response.body.scan(/govuk-summary-list__key">\s*([^<]+?)\s*</).flatten).to eq(
-          ["Course start", "Course", "Provider", "Workplace in England", "Course funding"],
+          ["Course", "Course start","Provider", "Workplace in England", "Course funding"],
         )
       end
     end

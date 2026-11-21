@@ -37,11 +37,11 @@ from check answers. To change course, the teacher starts again from the selector
 
 **Options considered.**
 
-| Option | Verdict |
-|--------|---------|
+| Option                                         | Verdict                                                                                                                                                                                                 |
+|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Course as the first wizard step, kept in state | Rejected. The graph depends on the course (rule set steps), so it cannot be built before the first answer. Check answers would need to rebuild the graph when the course changes, invalidating answers. |
-| Course stored only in the session | Rejected. The wizard cannot be rebuilt from the URL alone, deep links need a redirect, and two tabs on different courses would clash. |
-| **Course in the URL** | **Chosen.** The wizard is rebuilt identically on every request from the URL. Deep links and bookmarks work. |
+| Course stored only in the session              | Rejected. The wizard cannot be rebuilt from the URL alone, deep links need a redirect, and two tabs on different courses would clash.                                                                   |
+| **Course in the URL**                          | **Chosen.** The wizard is rebuilt identically on every request from the URL. Deep links and bookmarks work.                                                                                             |
 
 ### 2. Funding eligibility rule sets are Ruby classes in a registry
 
@@ -54,11 +54,11 @@ courses.
 
 **Options considered.**
 
-| Option | Verdict |
-|--------|---------|
+| Option                                                          | Verdict                                                                                                                                                                                     |
+|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Rules and questions configured in the database (admin editable) | Rejected. Rules need conditions, lookups (institution, previous funding) and their own screens. A configuration language would be a worse version of Ruby, and untestable by a normal spec. |
-| One `if course == ...` branch per course in the wizard | Rejected. Does not scale and cannot be shared between courses. |
-| **Ruby classes with a registry, key stored on the course** | **Chosen.** Reviewed and tested like code, shareable, and the admin choice stays a simple select. |
+| One `if course == ...` branch per course in the wizard          | Rejected. Does not scale and cannot be shared between courses.                                                                                                                              |
+| **Ruby classes with a registry, key stored on the course**      | **Chosen.** Reviewed and tested like code, shareable, and the admin choice stays a simple select.                                                                                           |
 
 An unknown key stored on a course (for example after a rule set is removed) must
 fail loudly when the graph is built, not fall back silently.
@@ -67,24 +67,24 @@ fail loudly when the graph is built, not fall back silently.
 
 Every rule set exposes:
 
-| Method | Purpose |
-|--------|---------|
-| `key`, `name` | Registry key stored on the course, and the label shown to admins |
-| `draw(graph, entry:, exit:)` | Adds the rule set's steps and edges to the shared graph between two anchors |
-| `evaluate(state_store)` | Returns the funding eligibility result code. Values are compatible with the existing `applications.funding_eligibility` strings (`funded`, `not_in_england`, `previously_funded`, `ineligible_setting`, `marked_ineligible_by_policy`) |
-| `check_answer_rows(presenter)` | Adds the rule set's rows to check answers |
-| `submission_attributes(state_store)` | Returns `funding_eligibility` and `funding_choice` for the new application |
+| Method                               | Purpose                                                                                                                                                                                                                                |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `key`, `name`                        | Registry key stored on the course, and the label shown to admins                                                                                                                                                                       |
+| `draw(graph, entry:, exit:)`         | Adds the rule set's steps and edges to the shared graph between two anchors                                                                                                                                                            |
+| `evaluate(state_store)`              | Returns the funding eligibility result code. Values are compatible with the existing `applications.funding_eligibility` strings (`funded`, `not_in_england`, `previously_funded`, `ineligible_setting`, `marked_ineligible_by_policy`) |
+| `check_answer_rows(presenter)`       | Adds the rule set's rows to check answers                                                                                                                                                                                              |
+| `submission_attributes(state_store)` | Returns `funding_eligibility` and `funding_choice` for the new application                                                                                                                                                             |
 
-`draw` receives a `Registration::RuleSetGraph`: the steps processor DSL plus the
-`state_store`, which branching predicates read. `entry` is `choose_your_provider`
-and `exit` is `share_provider`. `evaluate` is memoized per set of answers by
-`Registration::StateStore#funding_eligibility_result`, which predicates and pages
-use. Helpers beyond this contract (for example `StateFundedSchool#funded?`, used by
-the legacy journey) are specific to a rule set, and the new journey must not call
-them. `check_answer_rows` receives a `Registration::CheckAnswersPresenter`.
+`draw` receives a `Registration::RuleSetGraph`: 
+  the steps processor DSL plus the `state_store`, which branching predicates read. 
+  `entry` is `choose_your_provider`and `exit` is `share_provider`. 
+`evaluate` is memoized per set of answers by `Registration::StateStore#funding_eligibility_result`, 
+which predicates and pages use. 
+Helpers beyond this contract (for example `StateFundedSchool#funded?`, used by the legacy journey) 
+are specific to a rule set, and the new journey must not call them. 
+`check_answer_rows` receives a `Registration::CheckAnswersPresenter`.
 
-The shared wizard knows nothing about a rule set's steps. It only knows the two
-anchors.
+The shared wizard knows nothing about a rule set's steps. It only knows the two anchors.
 
 **Rationale.** Two fixed anchors keep the head (sign in, start date, provider)
 and the tail (share provider, check answers, submission) identical for every
@@ -134,9 +134,9 @@ teacher comes before `sign_in`.
 
 **Options considered.**
 
-| Option | Verdict |
-|--------|---------|
-| Keep a controller guard (`before_action`) | Rejected. Blocks any anonymous step, and the position of sign-in is hidden outside the graph. |
+| Option                                                                                             | Verdict                                                                                                |
+|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| Keep a controller guard (`before_action`)                                                          | Rejected. Blocks any anonymous step, and the position of sign-in is hidden outside the graph.          |
 | **`sign_in` as a graph step with a per-step `requires_user` declaration, validated at build time** | **Chosen.** Position is explicit, and an unsafe move is caught when the graph is built, not by a user. |
 
 **Current steps that depend on the user, and block moving `sign_in` later:**
@@ -161,11 +161,11 @@ shows a hint to the teacher; it does not skip or block the step.
 
 **Options considered.**
 
-| Option | Verdict |
-|--------|---------|
+| Option                                                    | Verdict                                                                                                                                                              |
+|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Skip the step when only one course cohort is registerable | Rejected. The teacher must explicitly confirm the start date, because it resolves the course cohort. The "later" option (`cannot_register_yet`) must stay reachable. |
-| Block the step when the start date is in the past | Rejected. A late start can still be a valid application; a hint informs without removing the choice. |
-| **Always shown, with a hint for past dates** | **Chosen.** One predictable graph, and the teacher always confirms the cohort. |
+| Block the step when the start date is in the past         | Rejected. A late start can still be a valid application; a hint informs without removing the choice.                                                                 |
+| **Always shown, with a hint for past dates**              | **Chosen.** One predictable graph, and the teacher always confirms the cohort.                                                                                       |
 
 ### 7. State
 
@@ -190,11 +190,11 @@ stays the final guard.
 
 **Options considered.**
 
-| Option | Verdict |
-|--------|---------|
+| Option                                                    | Verdict                                                                                                                                                                                                   |
+|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Allow a new application after a withdrawn or rejected one | Rejected for now. It needs a policy decision on funding, declarations and the history of the earlier application, and would need a schema change to replace the unique index. Can be revisited by Policy. |
-| Allow several applications per course | Rejected. Duplicates would split declarations and funding for the same training. |
-| **One per course cohort, whatever the status** | **Chosen.** Matches today's behaviour and the existing index, so no schema change. |
+| Allow several applications per course                     | Rejected. Duplicates would split declarations and funding for the same training.                                                                                                                          |
+| **One per course cohort, whatever the status**            | **Chosen.** Matches today's behaviour and the existing index, so no schema change.                                                                                                                        |
 
 ### 9. Migration: strangler behind a feature flag
 
@@ -212,14 +212,14 @@ rejected because of the double maintenance.
 The current journey becomes the first rule set, `StateFundedSchool`. It owns the
 steps below. They exist today as `Questionnaires::*`.
 
-| Step | Today | Becomes |
-|------|-------|---------|
-| `teacher_catchment` | England or not. Not England goes to `ineligible_for_funding` | Entry step. Not England branches to `ineligible_for_funding` |
-| `work_setting` | State funded institution continues. Others go to `ineligible_for_funding`. Clears `funding` and `institution_id` on save | Same branch. Clears the same keys |
-| `choose_school` | Institution search. Ineligible (not England, not an eligible establishment, previously funded) goes to `ineligible_for_funding`. Nothing selected, or "other", loops back to `choose_school` | Same, including the loop |
-| `possible_funding` | Funded. Stores `funding_amount` and deletes `funding` from the store | Same, including clearing `funding` (so `funding_choice` stays nil for funded teachers). Leads to the exit anchor |
-| `ineligible_for_funding` | Shows a template per status code (`not_in_england`, `previously_funded`, `ineligible_setting`) | Same, templates chosen from `evaluate` |
-| `funding_your_course` | Offers `school`, `trust`, `self` and `another` (validation also accepts `employer`). Leads to `share_provider` | Same. Leads to the exit anchor |
+| Step                     | Today                                                                                                                                                                                        | Becomes                                                                                                          |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| `teacher_catchment`      | England or not. Not England goes to `ineligible_for_funding`                                                                                                                                 | Entry step. Not England branches to `ineligible_for_funding`                                                     |
+| `work_setting`           | State funded institution continues. Others go to `ineligible_for_funding`. Clears `funding` and `institution_id` on save                                                                     | Same branch. Clears the same keys                                                                                |
+| `choose_school`          | Institution search. Ineligible (not England, not an eligible establishment, previously funded) goes to `ineligible_for_funding`. Nothing selected, or "other", loops back to `choose_school` | Same, including the loop                                                                                         |
+| `possible_funding`       | Funded. Stores `funding_amount` and deletes `funding` from the store                                                                                                                         | Same, including clearing `funding` (so `funding_choice` stays nil for funded teachers). Leads to the exit anchor |
+| `ineligible_for_funding` | Shows a template per status code (`not_in_england`, `previously_funded`, `ineligible_setting`)                                                                                               | Same, templates chosen from `evaluate`                                                                           |
+| `funding_your_course`    | Offers `school`, `trust`, `self` and `another` (validation also accepts `employer`). Leads to `share_provider`                                                                               | Same. Leads to the exit anchor                                                                                   |
 
 ```mermaid
 flowchart TD

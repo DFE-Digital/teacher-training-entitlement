@@ -18,8 +18,8 @@ module Registration
     end
 
     def call
-      add_row("Course start", state_store.course_cohort&.name, :course_start_date)
       add_row("Course", wizard.course.name)
+      add_row("Course start", state_store.course_cohort&.name, :course_start_date)
       add_row("Provider", state_store.lead_provider&.name, :choose_your_provider)
       FundingEligibilities.for_course(wizard.course).check_answer_rows(self)
 

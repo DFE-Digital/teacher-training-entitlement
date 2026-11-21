@@ -281,7 +281,7 @@ RSpec.describe Registration::Wizard do
     it "has the rule set rows in check answers" do
       state_store.write(favourite_colour: "red")
 
-      expect(wizard.check_answers_rows.map(&:key)).to eq(["Course start", "Course", "Provider", "Favourite colour"])
+      expect(wizard.check_answers_rows.map(&:key)).to eq(["Course", "Course start", "Provider", "Favourite colour"])
     end
   end
 

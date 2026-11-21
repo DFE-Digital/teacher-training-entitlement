@@ -20,7 +20,7 @@ module Registration
     end
 
     def registerable_course_cohorts
-      @registerable_course_cohorts ||= CourseCohort.registerable.where(course:).includes(:cohort).order(:training_starts_at).to_a
+      @registerable_course_cohorts ||= CourseCohort.registerable.where(course:).includes(:cohort, :lead_providers).order(:training_starts_at).to_a
     end
 
     # The teacher's application for the chosen start date, whatever its status:

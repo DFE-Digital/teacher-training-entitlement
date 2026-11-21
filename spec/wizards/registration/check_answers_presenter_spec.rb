@@ -21,8 +21,8 @@ RSpec.describe Registration::CheckAnswersPresenter do
   it "starts with the shared rows" do
     expect(rows.first(3)).to eq(
       [
-        ["Course start", [course_cohort.name, :course_start_date]],
         ["Course", [course.name, nil]],
+        ["Course start", [course_cohort.name, :course_start_date]],
         ["Provider", [provider.name, :choose_your_provider]],
       ],
     )
@@ -39,13 +39,13 @@ RSpec.describe Registration::CheckAnswersPresenter do
   end
 
   it "has no work setting, workplace or funding rows until answered" do
-    expect(rows.keys).to eq(["Course start", "Course", "Provider", "Workplace in England"])
+    expect(rows.keys).to eq(["Course", "Course start", "Provider", "Workplace in England"])
   end
 
   it "adds the rows of the rule set for each answer" do
     state_store.write(work_setting: Institution::STATE_FUNDED_INSTITUTION, institution_id: school.id.to_s, funding: "trust")
 
-    expect(rows.except("Course start", "Course", "Provider", "Workplace in England")).to eq(
+    expect(rows.except("Course", "Course start", "Provider", "Workplace in England")).to eq(
       "Work setting" => ["State-funded nursery, pre-school, school or academy trust", :work_setting],
       "Workplace" => [school.name_with_address, :choose_school],
       "Course funding" => ["My trust is paying", :funding_your_course],

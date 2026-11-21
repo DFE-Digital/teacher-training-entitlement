@@ -98,6 +98,7 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
         render template: "registration_wizard/#{template}", layout: "layouts/application"
         check_accessibility_of_html(rendered)
       end
+
       # rubocop:enable RSpec/NoExpectationExample
     end
   end
