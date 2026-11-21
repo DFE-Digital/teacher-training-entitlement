@@ -3,7 +3,12 @@
 <%= render "registration/steps/back_link" %>
 
 <h1 class="govuk-heading-xl">You cannot register yet</h1>
-<p class="govuk-body">Registrations are currently open for courses starting in <%= @wizard.state_store.registerable_course_cohorts.map(&:name).to_sentence.presence || "Registration closed" %>.</p>
+<% open_start_dates = @wizard.state_store.registerable_course_cohorts.map(&:name).to_sentence %>
+<% if open_start_dates.present? %>
+  <p class="govuk-body">Registrations are currently open for courses starting in <%= open_start_dates %>.</p>
+<% else %>
+  <p class="govuk-body">There are no open start dates for this course at the moment.</p>
+<% end %>
 
 <h2 class="govuk-heading-m">Stay informed</h2>
 

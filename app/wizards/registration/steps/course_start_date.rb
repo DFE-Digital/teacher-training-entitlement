@@ -54,7 +54,7 @@ module Registration
     private
 
       def course_cohorts
-        @course_cohorts ||= state_store.registerable_course_cohorts.to_a
+        @course_cohorts ||= state_store.registerable_course_cohorts
       end
 
       def started_hint(course_cohort)

@@ -38,6 +38,7 @@ module Registration
     def steps_operator
       @steps_operator ||= DfE::Wizard::StepsOperator::Builder.draw(wizard: self) do |builder|
         builder.on_step(:course_start_date, add: [Operations::NotifyForFutureRegistration])
+        builder.on_step(:check_answers, use: [Operations::MarkSubmitted])
       end
     end
 

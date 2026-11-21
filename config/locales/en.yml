@@ -530,16 +530,16 @@ en:
           attributes:
             declaration_type:
               blank: Please choose a declaration type
-        share_provider:
+        registration/steps/share_provider:
           attributes:
             can_share_choices:
               accepted: You must agree to share data with providers to continue
-        course_start_date:
+        registration/steps/course_start_date:
           attributes:
             course_start_date:
               blank: Choose your course start date.
               inclusion: Choose a valid course start date.
-        choose_your_provider:
+        registration/steps/choose_your_provider:
           attributes:
             lead_provider_id:
               blank: Choose a provider

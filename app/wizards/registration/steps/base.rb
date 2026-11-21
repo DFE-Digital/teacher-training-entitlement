@@ -8,7 +8,7 @@ module Registration
         include DfE::Wizard::Step
 
         # Whether the step can only be reached by a signed-in teacher.
-        class_attribute :requires_authentication, instance_writer: false, default: true
+        class_attribute :requires_user, instance_writer: false, default: true
       end
 
       def state_store

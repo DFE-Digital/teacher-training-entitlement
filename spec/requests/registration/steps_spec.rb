@@ -71,10 +71,11 @@ RSpec.describe "Registration steps", type: :request do
       expect(response.body).not_to include("This course has already started.")
     end
 
-    it "redisplays the step when nothing is picked" do
+    it "redisplays the step with an error when nothing is picked" do
       patch step_path("course-start-date")
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Choose your course start date.")
     end
 
     it "moves on to choose your provider when a start date is picked" do
@@ -125,6 +126,28 @@ RSpec.describe "Registration steps", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it "does not show the submitted page before check answers is submitted" do
+      patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+      patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
+
+      get step_path("registration-submitted")
+
+      expect(response).to redirect_to(step_path("check-answers"))
+    end
+
+    it "shows the error messages of the step when nothing is picked" do
+      patch step_path("choose-your-provider")
+
+      expect(response.body).to include("Choose a provider")
+    end
+
+    it "asks for the data sharing agreement" do
+      patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+      patch step_path("share-provider"), params: { share_provider: { can_share_choices: "0" } }
+
+      expect(response.body).to include("You must agree to share data with providers to continue")
+    end
+
     it "keeps the answers of different courses apart" do
       other_course = create(:course)
 
@@ -145,6 +168,14 @@ RSpec.describe "Registration steps", type: :request do
       patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
 
       expect(response).to redirect_to(step_path("course-start-date"))
+    end
+  end
+
+  describe "a step url that is not canonical" do
+    it "is not found" do
+      get step_path("course_start_date")
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 

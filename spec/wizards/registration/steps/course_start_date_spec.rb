@@ -13,6 +13,20 @@ RSpec.describe Registration::Steps::CourseStartDate do
       expect(step).not_to be_valid
     end
 
+    it "explains what to do when blank" do
+      step.valid?
+
+      expect(step.errors[:course_start_date]).to include("Choose your course start date.")
+    end
+
+    it "explains what to do when the date is not open" do
+      state_store.write(course_start_date: "nope")
+      invalid_step = wizard.step(:course_start_date)
+      invalid_step.valid?
+
+      expect(invalid_step.errors[:course_start_date]).to include("Choose a valid course start date.")
+    end
+
     it "is valid for an open start date of the course" do
       state_store.write(course_start_date: course_cohort.ecf_id)
 

@@ -16,6 +16,12 @@ RSpec.describe Registration::Steps::ChooseYourProvider do
       expect(step).not_to be_valid
     end
 
+    it "explains what to do when blank" do
+      step.valid?
+
+      expect(step.errors[:lead_provider_id]).to include("Choose a provider")
+    end
+
     it "is valid for a provider delivering the course cohort" do
       state_store.write(lead_provider_id: delivering_provider.id.to_s)
 
@@ -26,6 +32,14 @@ RSpec.describe Registration::Steps::ChooseYourProvider do
       state_store.write(lead_provider_id: create(:lead_provider).id.to_s)
 
       expect(wizard.step(:choose_your_provider)).not_to be_valid
+    end
+
+    it "explains what to do for a provider not contracted" do
+      state_store.write(lead_provider_id: create(:lead_provider).id.to_s)
+      invalid_step = wizard.step(:choose_your_provider)
+      invalid_step.valid?
+
+      expect(invalid_step.errors[:lead_provider_id]).to include("Choose a valid provider")
     end
   end
 

@@ -43,6 +43,8 @@ module Registration
     end
 
     def set_wizard
+      raise ActionController::RoutingError, "Not Found" unless params[:step] == params[:step].underscore.dasherize
+
       @wizard = Registration::Wizard.new(
         course: @course,
         current_user:,
