@@ -22,7 +22,7 @@
               [
                 "Name: #{state_store.course_details.name}",
                 "Identifier: #{state_store.course_details.identifier}",
-                "Funding eligibility: #{FundingEligibilities.available.find { _1.key == state_store.course_details.funding_eligibility }&.name}",
+                "Funding eligibility: #{FundingEligibilities.name_for(state_store.course_details.funding_eligibility)}",
                 "Short code: #{state_store.course_details.short_code}",
                 "Description: #{state_store.course_details.description}",
               ].compact_blank.join("\n"),

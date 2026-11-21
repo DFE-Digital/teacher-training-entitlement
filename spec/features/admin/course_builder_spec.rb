@@ -80,6 +80,34 @@ RSpec.feature "Building a course", type: :feature do
     expect(page).to have_css("h1", text: "Course details")
   end
 
+  scenario "keeping the selected funding eligibility when following the course details change link" do
+    visit admin_settings_courses_builder_path(step: "course-details")
+
+    fill_in "Name", with: "Change link course"
+    select "Reception", from: "Course group"
+    select "State-funded school", from: "Funding eligibility"
+    click_on "Continue"
+
+    fill_in "milestones-started-payment-percentage-field", with: "60"
+    fill_in "milestones-completed-payment-percentage-field", with: "40"
+    click_on "Continue"
+
+    find("label", text: lead_provider.name).click
+    click_on "Continue"
+    click_on "Continue"
+
+    within(lead_provider_group(lead_provider)) do
+      find("label", text: delivery_partner.name).click
+    end
+    click_on "Continue"
+
+    within(find("tr", text: "Funding eligibility")) do
+      click_on "Change"
+    end
+
+    expect(page).to have_select("Funding eligibility", selected: "State-funded school")
+  end
+
   scenario "showing a delivery partners check answer row with a change link that keeps the ticks" do
     visit admin_settings_courses_builder_path(step: "course-details")
 

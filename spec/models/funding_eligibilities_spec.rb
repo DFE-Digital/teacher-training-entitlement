@@ -12,4 +12,14 @@ RSpec.describe FundingEligibilities do
       expect(described_class.keys).to eq(%w[state_funded_school])
     end
   end
+
+  describe ".name_for" do
+    it "returns the rule set name for a known key" do
+      expect(described_class.name_for("state_funded_school")).to eq("State-funded school")
+    end
+
+    it "returns nil for an unknown key" do
+      expect(described_class.name_for("unknown")).to be_nil
+    end
+  end
 end

@@ -32,12 +32,14 @@ namespace :declarations do
         record.name = "NPD excellence in reception teaching"
         record.short_code = "NPDEIRT"
         record.course_group = "reception"
+        record.funding_eligibility = FundingEligibilities::STATE_FUNDED_SCHOOL
         record.ecf_id = SecureRandom.uuid
       end,
       Course.find_or_create_by!(identifier: "npd-send") do |record|
         record.name = "SEND teaching"
         record.short_code = "NPDSEND"
         record.course_group = "send"
+        record.funding_eligibility = FundingEligibilities::STATE_FUNDED_SCHOOL
         record.ecf_id = SecureRandom.uuid
       end,
     ]
