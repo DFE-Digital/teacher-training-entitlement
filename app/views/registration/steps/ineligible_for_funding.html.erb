@@ -1,0 +1,11 @@
+<% content_for :title, t("helpers.title.registration_wizard.ineligible_for_funding") %>
+
+<%= render "registration/steps/back_link" %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= render "registration_wizard/ineligible_for_funding/#{@wizard.current_step.template}", course: @wizard.course, lead_provider: @wizard.state_store.lead_provider&.name %>
+
+    <%= govuk_button_link_to "Continue", @wizard.next_step_path %>
+  </div>
+</div>

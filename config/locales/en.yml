@@ -548,6 +548,30 @@ en:
             lead_provider_id:
               blank: Choose a provider
               invalid: Choose a valid provider
+        registration/steps/state_funded_school/teacher_catchment:
+          attributes:
+            teacher_catchment:
+              blank: Select ‘Yes' if you work in England
+              inclusion: Select ‘Yes' if you work in England
+        registration/steps/state_funded_school/work_setting:
+          attributes:
+            work_setting:
+              blank: Select the setting that you work in
+              inclusion: Select the setting that you work in
+        registration/steps/state_funded_school/choose_school:
+          attributes:
+            institution_id:
+              blank: Enter a workplace name
+              not_a_number: No matching school found
+              invalid: No matching school found
+            institution_name:
+              no_results: No schools with the name %{name} were found, please
+                try again
+        registration/steps/state_funded_school/funding_your_course:
+          attributes:
+            funding:
+              blank: Select an option
+              inclusion: Select an option
         questionnaires/share_provider:
           attributes:
             can_share_choices:

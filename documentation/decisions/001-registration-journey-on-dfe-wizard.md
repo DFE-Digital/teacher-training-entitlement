@@ -75,6 +75,14 @@ Every rule set exposes:
 | `check_answer_rows(presenter)` | Adds the rule set's rows to check answers |
 | `submission_attributes(state_store)` | Returns `funding_eligibility` and `funding_choice` for the new application |
 
+`draw` receives a `Registration::RuleSetGraph`: the steps processor DSL plus the
+`state_store`, which branching predicates read. `entry` is `choose_your_provider`
+and `exit` is `share_provider`. `evaluate` is memoized per set of answers by
+`Registration::StateStore#funding_eligibility_result`, which predicates and pages
+use. Helpers beyond this contract (for example `StateFundedSchool#funded?`, used by
+the legacy journey) are specific to a rule set, and the new journey must not call
+them. `check_answer_rows` receives a `Registration::CheckAnswersPresenter`.
+
 The shared wizard knows nothing about a rule set's steps. It only knows the two
 anchors.
 

@@ -31,6 +31,31 @@ module Registration
       registerable_course_cohorts.find { _1.ecf_id == ecf_id }
     end
 
+    def work_setting
+      read[:work_setting]
+    end
+
+    def funding
+      read[:funding]
+    end
+
+    def institution
+      id = read[:institution_id]
+      return if id.blank? || id == Steps::StateFundedSchool::ChooseSchool::OTHER
+
+      (@institutions ||= {})[id] ||= Institution.find(id)
+    end
+
+    # The result code of the course rule set. It is evaluated once per set of
+    # answers, as it looks up the previously funded applications of the teacher.
+    def funding_eligibility_result
+      answers = read.to_h
+      return @funding_eligibility_result if defined?(@funding_eligibility_result) && @funding_answers == answers
+
+      @funding_answers = answers
+      @funding_eligibility_result = FundingEligibilities.for_course(course).evaluate(self)
+    end
+
     def lead_provider
       id = read[:lead_provider_id]
       return if id.blank?

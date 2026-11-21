@@ -3,6 +3,7 @@ module Registration
     include DfE::Wizard
 
     class AuthenticationOrderError < StandardError; end
+    class AttributeNameClash < StandardError; end
 
     STEPS = {
       sign_in: Steps::SignIn,
@@ -60,8 +61,13 @@ module Registration
       )
     end
 
+    # Shared steps and the steps of the course rule set.
     def step_names
-      STEPS.keys
+      steps_processor.step_definitions.keys
+    end
+
+    def check_answers_rows
+      CheckAnswersPresenter.new(self).call
     end
 
     # First step of the current flow that the teacher has not completed yet.
@@ -70,7 +76,8 @@ module Registration
 
       while valid?(step_id)
         following = steps_processor.next_step(step_id)
-        return step_id if following.nil?
+        # A step can lead back to itself, for example when no school was picked.
+        return step_id if following.nil? || following == step_id
 
         step_id = following
       end
@@ -93,14 +100,22 @@ module Registration
         end
         HEAD_STEPS.each_cons(2) { |from, to| dsl.add_edge from:, to: }
         dsl.add_conditional_edge from: :course_start_date, when: :start_later?, then: :cannot_register_yet, else: :choose_your_provider
-        # Funding steps are drawn between these two steps by the course rule set.
-        dsl.add_edge from: :choose_your_provider, to: :share_provider
+        FundingEligibilities.for_course(course).draw(RuleSetGraph.new(dsl, state_store:), entry: :choose_your_provider, exit: :share_provider)
         dsl.add_edge from: :share_provider, to: :check_answers
         dsl.add_edge from: :check_answers, to: :registration_submitted
       end
 
+      ensure_unique_attribute_names!(graph)
       ensure_authentication_before_steps_needing_it!(graph)
       graph
+    end
+
+    # Answers are stored flat, so two steps with the same attribute would overwrite each other.
+    def ensure_unique_attribute_names!(graph)
+      clashes = graph.step_definitions.values.flat_map { |step_class| step_class.attribute_names.map(&:to_s) }.tally.select { |_, count| count > 1 }.keys
+      return if clashes.empty?
+
+      raise AttributeNameClash, "Step attribute names must be unique across the wizard: #{clashes.join(', ')}"
     end
 
     # Steps that need a signed-in teacher must only be reachable through `sign_in`.

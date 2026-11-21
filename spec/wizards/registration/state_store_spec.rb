@@ -72,4 +72,62 @@ RSpec.describe Registration::StateStore do
       expect(state_store.lead_provider).to eq(provider)
     end
   end
+
+  describe "funding answers" do
+    it "reads the work setting" do
+      state_store.write(work_setting: "other")
+
+      expect(state_store.work_setting).to eq("other")
+    end
+
+    it "reads the funding choice" do
+      state_store.write(funding: "self")
+
+      expect(state_store.funding).to eq("self")
+    end
+  end
+
+  describe "#institution" do
+    let(:institution) { create(:institution) }
+
+    it "is the picked institution" do
+      state_store.write(institution_id: institution.id.to_s)
+
+      expect(state_store.institution).to eq(institution)
+    end
+
+    it "is nil when nothing was picked" do
+      expect(state_store.institution).to be_nil
+    end
+
+    it "is nil when other was picked" do
+      state_store.write(institution_id: "other")
+
+      expect(state_store.institution).to be_nil
+    end
+  end
+
+  describe "#funding_eligibility_result" do
+    let(:rule_set) { instance_double(FundingEligibilities::StateFundedSchool, evaluate: :funded) }
+
+    before { allow(FundingEligibilities).to receive(:for_course).with(course).and_return(rule_set) }
+
+    it "is the result of the course rule set" do
+      expect(state_store.funding_eligibility_result).to eq(:funded)
+    end
+
+    it "is evaluated once for the same answers" do
+      2.times { state_store.funding_eligibility_result }
+
+      expect(rule_set).to have_received(:evaluate).once
+    end
+
+    it "is evaluated again when the answers change" do
+      state_store.funding_eligibility_result
+      state_store.write(work_setting: "other")
+      state_store.funding_eligibility_result
+
+      expect(rule_set).to have_received(:evaluate).twice
+    end
+  end
 end

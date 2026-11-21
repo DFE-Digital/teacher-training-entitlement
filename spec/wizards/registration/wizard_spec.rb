@@ -35,7 +35,7 @@ RSpec.describe Registration::Wizard do
   describe "branching" do
     it { is_expected.to have_next_step(:choose_your_provider).from(:course_start_date).when(course_start_date: "some-ecf-id") }
     it { is_expected.to have_next_step(:cannot_register_yet).from(:course_start_date).when(course_start_date: "later") }
-    it { is_expected.to have_next_step(:share_provider).from(:choose_your_provider) }
+    it { is_expected.to have_next_step(:teacher_catchment).from(:choose_your_provider) }
     it { is_expected.to have_next_step(:check_answers).from(:share_provider) }
     it { is_expected.to have_next_step(:registration_submitted).from(:check_answers) }
   end
@@ -43,9 +43,13 @@ RSpec.describe Registration::Wizard do
   describe "flow path" do
     let(:current_step) { :registration_submitted }
 
-    before { state_store.write(course_start_date: "some-ecf-id") }
+    before { state_store.write(course_start_date: "some-ecf-id", teacher_catchment: "other") }
 
-    it { is_expected.to have_flow_path(%i[course_start_date choose_your_provider share_provider check_answers registration_submitted]) }
+    it do
+      expect(wizard).to have_flow_path(
+        %i[course_start_date choose_your_provider teacher_catchment ineligible_for_funding funding_your_course share_provider check_answers registration_submitted],
+      )
+    end
   end
 
   describe "flow path when starting later" do
@@ -58,7 +62,7 @@ RSpec.describe Registration::Wizard do
 
   describe "previous steps" do
     it { is_expected.to have_previous_step(:course_start_date).from(:choose_your_provider) }
-    it { is_expected.to have_previous_step(:choose_your_provider).from(:share_provider) }
+    it { is_expected.to have_previous_step(:funding_your_course).from(:share_provider) }
     it { is_expected.to have_previous_step(:share_provider).from(:check_answers) }
   end
 
@@ -68,9 +72,85 @@ RSpec.describe Registration::Wizard do
 
   describe "step attribute names" do
     it "are unique across steps" do
-      names = described_class::STEPS.values.flat_map { _1.attribute_names.map(&:to_s) }
+      names = wizard.step_definitions.values.flat_map { _1.attribute_names.map(&:to_s) }
 
       expect(names).to eq(names.uniq)
+    end
+  end
+
+  describe "state funded school steps" do
+    let(:state_funded) { Institution::STATE_FUNDED_INSTITUTION }
+    let(:school) { create(:institution) }
+
+    it { is_expected.to have_next_step(:work_setting).from(:teacher_catchment).when(teacher_catchment: "ENG") }
+    it { is_expected.to have_next_step(:ineligible_for_funding).from(:teacher_catchment).when(teacher_catchment: "other") }
+    it { is_expected.to have_next_step(:choose_school).from(:work_setting).when(work_setting: state_funded) }
+    it { is_expected.to have_next_step(:ineligible_for_funding).from(:work_setting).when(work_setting: "private_institution") }
+    it { is_expected.to have_next_step(:ineligible_for_funding).from(:work_setting).when(work_setting: "other") }
+    it { is_expected.to have_next_step(:possible_funding).from(:choose_school).when(work_setting: state_funded, institution_id: school.id.to_s) }
+    it { is_expected.to have_next_step(:choose_school).from(:choose_school).when(work_setting: state_funded, institution_id: "other") }
+    it { is_expected.to have_next_step(:share_provider).from(:possible_funding) }
+    it { is_expected.to have_next_step(:funding_your_course).from(:ineligible_for_funding) }
+    it { is_expected.to have_next_step(:share_provider).from(:funding_your_course) }
+
+    context "when the school is outside England" do
+      let(:school) { create(:institution, :not_in_england) }
+
+      it { is_expected.to have_next_step(:ineligible_for_funding).from(:choose_school).when(work_setting: state_funded, institution_id: school.id.to_s) }
+    end
+
+    context "when the teacher was previously funded" do
+      before { create(:application, :with_funded_place, :accepted, user:, course:) }
+
+      it { is_expected.to have_next_step(:ineligible_for_funding).from(:choose_school).when(work_setting: state_funded, institution_id: school.id.to_s) }
+    end
+  end
+
+  describe "a rule set that adds a different step" do
+    include_context "with a single step funding eligibility rule set"
+
+    let(:course) { create(:course, funding_eligibility: "single_step") }
+    let(:current_step) { :favourite_colour }
+
+    it { is_expected.to have_next_step(:favourite_colour).from(:choose_your_provider) }
+    it { is_expected.to have_next_step(:share_provider).from(:favourite_colour) }
+    it { expect(wizard.step_names).to include(:favourite_colour) }
+    it { expect(wizard.step_names).not_to include(:teacher_catchment) }
+
+    it "has the rule set rows in check answers" do
+      state_store.write(favourite_colour: "red")
+
+      expect(wizard.check_answers_rows.map(&:key)).to eq(["Course start", "Course", "Provider", "Favourite colour"])
+    end
+  end
+
+  describe "a course with an unknown rule set" do
+    before { course.update_column(:funding_eligibility, "removed") }
+
+    it "fails loudly" do
+      expect { wizard }.to raise_error(FundingEligibilities::UnknownRuleSet)
+    end
+  end
+
+  describe "a rule set whose attribute names clash with the shared steps" do
+    include_context "with a single step funding eligibility rule set"
+
+    let(:course) { create(:course, funding_eligibility: "single_step") }
+
+    before do
+      stub_const("TestFundingEligibilities::ColourStep", Class.new do
+        include Registration::Steps::Base
+
+        attribute :lead_provider_id
+
+        def self.permitted_params
+          %i[lead_provider_id]
+        end
+      end)
+    end
+
+    it "raises a clear error" do
+      expect { wizard }.to raise_error(described_class::AttributeNameClash, /lead_provider_id/)
     end
   end
 

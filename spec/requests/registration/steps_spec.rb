@@ -135,9 +135,17 @@ RSpec.describe "Registration steps", type: :request do
       expect(response.body).to include(%(href="#{step_path('course-start-date')}"))
     end
 
-    it "reaches the submitted page after the shared steps" do
+    def pass_funding_steps
       patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+      expect(response).to redirect_to(step_path("teacher-catchment"))
+
+      patch step_path("teacher-catchment"), params: { teacher_catchment: { teacher_catchment: "other" } }
+      patch step_path("funding-your-course"), params: { funding_your_course: { funding: "self" } }
       expect(response).to redirect_to(step_path("share-provider"))
+    end
+
+    it "reaches the submitted page after the shared steps" do
+      pass_funding_steps
 
       patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
       expect(response).to redirect_to(step_path("check-answers"))
@@ -153,7 +161,7 @@ RSpec.describe "Registration steps", type: :request do
     end
 
     it "does not show the submitted page before check answers is submitted" do
-      patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+      pass_funding_steps
       patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
 
       get step_path("registration-submitted")
@@ -168,7 +176,7 @@ RSpec.describe "Registration steps", type: :request do
     end
 
     it "asks for the data sharing agreement" do
-      patch step_path("choose-your-provider"), params: { choose_your_provider: { lead_provider_id: provider.id } }
+      pass_funding_steps
       patch step_path("share-provider"), params: { share_provider: { can_share_choices: "0" } }
 
       expect(response.body).to include("You must agree to share data with providers to continue")
