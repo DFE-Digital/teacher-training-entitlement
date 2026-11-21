@@ -20,6 +20,7 @@ class Course < ApplicationRecord
   has_many :lead_providers, through: :lead_provider_profiles
 
   scope :displayable, -> { where(display: true).order(:position) }
+  scope :open_for_registration, -> { displayable.where(id: CourseCohort.registerable.select(:course_id)) }
 
   before_validation :set_defaults, on: :create
 

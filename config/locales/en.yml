@@ -394,6 +394,10 @@ en:
   activemodel:
     errors:
       models:
+        registration/course_selection:
+          attributes:
+            course_identifier:
+              blank: Select the course you want to register for
         applications/defer:
           attributes:
             application:

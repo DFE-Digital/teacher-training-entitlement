@@ -29,6 +29,14 @@ Rails.application.routes.draw do
 
   root "registration_wizard#show", step: "start"
 
+  # Course selection of the dfe-wizard registration journey. `/registration/:course_identifier`
+  # is a deep link used by landing pages on other services, so it must not match a legacy step.
+  get "/registration/courses", to: "registration/courses#index", as: "registration_courses"
+  post "/registration/courses", to: "registration/courses#create"
+  get "/registration/:course_identifier", to: "registration/courses#show", as: "registration_course", constraints: lambda { |request|
+    RegistrationWizard::VALID_REGISTRATION_STEPS.exclude?(request.path_parameters[:course_identifier].to_s.underscore.to_sym)
+  }
+
   get "/registration/:step", to: "registration_wizard#show", as: "registration_wizard_show"
   get "/registration/:step/change", to: "registration_wizard#show", as: "registration_wizard_show_change", changing_answer: "1"
   patch "/registration/:step", to: "registration_wizard#update", as: "registration_wizard_update"

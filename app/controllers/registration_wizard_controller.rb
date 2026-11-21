@@ -2,6 +2,7 @@ class RegistrationWizardController < PublicPagesController
   include HtmlRequestsOnly
 
   before_action :registration_closed
+  before_action :redirect_to_course_selection, only: :show
   before_action :redirect_to_start_if_signed_out, except: :development_login
   before_action :set_wizard, except: :development_login
   before_action :redirect_to_closed_if_no_course_cohort, only: :show
@@ -70,6 +71,11 @@ class RegistrationWizardController < PublicPagesController
   end
 
 private
+
+  # The dfe-wizard journey starts on the course selector instead of the legacy start page.
+  def redirect_to_course_selection
+    redirect_to registration_courses_path if params[:step] == "start" && Feature.registration_dfe_wizard?
+  end
 
   def redirect_to_registration_step(user)
     wizard = Registration::Wizard.for_session(
