@@ -783,6 +783,7 @@ en:
           attributes:
             application:
               already_exists: You already have an application for this course and start date.
+              could_not_be_saved: The application could not be saved.
         applications/accept:
           attributes:
             application:

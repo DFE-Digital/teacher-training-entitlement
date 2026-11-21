@@ -1,21 +1,9 @@
-<% content_for :title, t("helpers.title.registration_wizard.check_answers") %>
+<% content_for :title do %><%= "Error: " if @wizard.current_step.errors.any? %><%= t("helpers.title.registration_wizard.check_answers") %><% end %>
 
 <%= render "registration/steps/back_link" %>
 
-<% if @wizard.current_step.errors.any? %>
-  <div class="govuk-error-summary" data-module="govuk-error-summary">
-    <div role="alert">
-      <h2 class="govuk-error-summary__title">There is a problem</h2>
-      <div class="govuk-error-summary__body">
-        <ul class="govuk-list govuk-error-summary__list">
-          <% @wizard.current_step.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      </div>
-    </div>
-  </div>
-<% end %>
+<%= form_with model: @wizard.current_step, scope: :check_answers, url: @wizard.current_step_path, method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
 
 <h1 class="govuk-heading-xl">Check your answers and submit</h1>
 
@@ -35,6 +23,5 @@
       end
     end %>
 
-<%= form_with url: @wizard.current_step_path, method: :patch do |f| %>
   <%= f.govuk_submit "Submit" %>
 <% end %>

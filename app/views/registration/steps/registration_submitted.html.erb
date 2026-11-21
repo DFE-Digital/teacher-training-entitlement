@@ -20,8 +20,8 @@
     </ol>
 
     <p class="govuk-body govuk-!-margin-bottom-7">
-      <% if current_user.applications.present? %>
-        <%= govuk_link_to "View your registration details", application_path(current_user.applications.last.ecf_id) %>
+      <% if (application = @wizard.state_store.submitted_application) %>
+        <%= govuk_link_to "View your registration details", application_path(application.ecf_id) %>
       <% end %>
     </p>
     <hr>

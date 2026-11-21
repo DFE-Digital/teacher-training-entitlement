@@ -113,6 +113,23 @@ RSpec.describe Applications::Create, type: :model do
       end
     end
 
+    context "when a concurrent request creates the application first" do
+      let!(:existing) { create(:application, user:, course_cohort:) }
+
+      before { allow(service).to receive(:valid?).and_return(true) } # rubocop:disable RSpec/SubjectStub
+
+      it "returns false with a translated error" do
+        expect(service.call).to be(false)
+        expect(service.errors.full_messages.to_sentence).to eq("Application The application could not be saved.")
+      end
+
+      it "exposes the application that now exists" do
+        service.call
+
+        expect(service.concurrent_application).to eq(existing)
+      end
+    end
+
     context "when the application cannot be saved" do
       before { allow(ApplicationLeadProvider).to receive(:new).and_raise(ActiveRecord::RecordInvalid.new(Application.new)) }
 

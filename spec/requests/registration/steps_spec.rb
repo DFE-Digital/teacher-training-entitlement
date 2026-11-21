@@ -126,7 +126,7 @@ RSpec.describe "Registration steps", type: :request do
     it "shows the providers of the course cohort" do
       get step_path("choose-your-provider")
 
-      expect(response.body).to include(provider.name)
+      expect(response.body).to include(ERB::Util.html_escape(provider.name))
     end
 
     it "links back to the previous step" do
@@ -151,7 +151,7 @@ RSpec.describe "Registration steps", type: :request do
       expect(response).to redirect_to(step_path("check-answers"))
 
       get step_path("check-answers")
-      expect(response.body).to include(provider.name)
+      expect(response.body).to include(ERB::Util.html_escape(provider.name))
 
       patch step_path("check-answers")
       expect(response).to redirect_to(step_path("registration-submitted"))
@@ -232,6 +232,34 @@ RSpec.describe "Registration steps", type: :request do
         }.not_to(change(Application, :count))
       end
 
+      it "does not show the submitted page once an answer is changed after submitting" do
+        patch step_path("check-answers")
+        patch step_path("course-start-date"), params: { course_start_date: { course_start_date: course_cohort.ecf_id } }
+
+        get step_path("registration-submitted")
+
+        expect(response).to redirect_to(step_path("choose-your-provider"))
+      end
+
+      it "does not show the submitted page once the journey is answered again after submitting" do
+        patch step_path("check-answers")
+        patch step_path("course-start-date"), params: { course_start_date: { course_start_date: course_cohort.ecf_id } }
+        pass_funding_steps
+        patch step_path("share-provider"), params: { share_provider: { can_share_choices: "1" } }
+
+        get step_path("registration-submitted")
+
+        expect(response).to redirect_to(step_path("check-answers"))
+      end
+
+      it "links the submitted page to the submitted application" do
+        patch step_path("check-answers")
+
+        get step_path("registration-submitted")
+
+        expect(response.body).to include(application_path(user.applications.last.ecf_id))
+      end
+
       context "when the teacher already has an application for the course cohort" do
         before { create(:application, user:, course_cohort:) }
 
@@ -244,6 +272,12 @@ RSpec.describe "Registration steps", type: :request do
 
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include("We could not submit your registration")
+        end
+
+        it "prefixes the page title with Error" do
+          patch step_path("check-answers")
+
+          expect(response.body).to match(/<title[^>]*>\s*Error: /)
         end
 
         it "keeps the answers" do

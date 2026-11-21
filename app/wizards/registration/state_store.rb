@@ -35,10 +35,12 @@ module Registration
     end
 
     # The application created when the answers were submitted. The answers are
-    # cleared by then, so this is what tells the teacher has submitted.
+    # cleared by then, so this is what tells the teacher has submitted. It no
+    # longer counts once the teacher answers a step again.
     def submitted_application
       id = read[SUBMITTED_APPLICATION_KEY]
       return if id.blank? || current_user.blank?
+      return if read.to_h.symbolize_keys.except(SUBMITTED_APPLICATION_KEY).values.any?(&:present?)
 
       current_user.applications.find_by(id:)
     end

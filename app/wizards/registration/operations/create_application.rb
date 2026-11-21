@@ -36,10 +36,11 @@ module Registration
           **FundingEligibilities.for_course(state_store.course).submission_attributes(state_store),
         )
 
-        return failure(service) unless service.call
+        application = service.call ? service.application : service.concurrent_application
+        return failure(service) unless application
 
         @repository.clear
-        @repository.write(StateStore::SUBMITTED_APPLICATION_KEY => service.application.id)
+        @repository.write(StateStore::SUBMITTED_APPLICATION_KEY => application.id)
 
         { success: true }
       end
