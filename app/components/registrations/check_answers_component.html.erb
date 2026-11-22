@@ -4,6 +4,9 @@
       <% summary_list.with_row do |row| %>
         <% row.with_key(text: "Course") %>
         <% row.with_value(text: course.name) %>
+        <% unless Rails.env.production? %>
+          <% row.with_action(text: "Change", href: step_registration_path(Courses::CourseSelection::JOURNEY_SLUG, Courses::CourseSelection::COURSES_STEP)) %>
+        <% end %>
       <% end %>
     <% end %>
 

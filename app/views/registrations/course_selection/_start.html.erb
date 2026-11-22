@@ -20,7 +20,7 @@
         log in using Gov One Login – you can create an account if you do not already have one
         <ul class="govuk-list govuk-list--bullet">
           <li>you may need your passport to prove your identity</li>
-          <li>you’ll need a mobile to receive a verification code</li>
+          <li>you'll need a mobile to receive a verification code</li>
         </ul>
       </li>
       <li>
@@ -46,7 +46,10 @@
       ) %>
     <% end %>
 
-    <p><%= govuk_link_to "I want to register as self-funded", one_login_redirect_path %></p>
+    <%= render "step_form", current_step: do |form| %>
+      <%= form.hidden_field :self_funded, value: 'true' %>
+      <p><%= form.button "I want to register as self-funded", type: "submit", class: "govuk-link-button" %></p>
+    <% end %>
 
     <h2 class="govuk-heading-m">Already registered?</h2>
 

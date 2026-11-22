@@ -13,7 +13,7 @@ module Registrations
           slug: "check-answers",
           step_class: RegistrationSteps::CheckAnswers,
           redirect_path: "/applications",
-          # previous_step_id: course_start_date.id,
+          # previous_step_id: start.id,
         )
       end
     end

@@ -12,6 +12,10 @@ module Registrations
       @course ||= router_step.registration_journey.course
     end
 
+    def reception_course?
+      course.identifier.in?([Course::TTE_RECEPTION, Course::TTE_EARLY_YEARS])
+    end
+
     def captured_values
       @captured_values ||= router_step.captured_values.reject do |key, value|
         value.blank? || key.to_s.in?(HIDDEN_STATE_KEYS)

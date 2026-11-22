@@ -5,14 +5,15 @@ module Registrations
 
       def initialize
         @registration_journey = ::RegistrationJourney.create!(
-          name: "Course Selection",
-          slug: "course-selection",
+          name: Courses::CourseSelection::NAME,
+          slug: Courses::CourseSelection::JOURNEY_SLUG,
         )
       end
 
       def call
         start = create_step!(
           name: "Start",
+          state_store_key: "self_funded",
           step_class: RegistrationSteps::HtmlPartial,
           html_partial: "registrations/course_selection/start",
         )

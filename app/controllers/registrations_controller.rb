@@ -21,6 +21,7 @@ class RegistrationsController < PublicPagesController
     end
 
     current_step.store_answer!
+
     Registrations::StepServiceExecutor.new(
       router_step: current_step,
       execute_point: :after_update,
@@ -36,7 +37,7 @@ class RegistrationsController < PublicPagesController
     session["user_id"] = user.id
     sign_in user
 
-    redirect_to step_registration_path(params[:journey_slug], "course-start-date")
+    redirect_to step_registration_path(params[:journey_slug], params[:step])
   end
 
 private
