@@ -73,9 +73,17 @@ RSpec.describe API::V2::ApplicationPresenter do
     expect(presenter.outcome_id).to be_nil
   end
 
-  it "builds one expected declaration per course milestone" do
+  it "builds one expected declaration per course milestone, in milestone order" do
+    course = application.course
+    course.milestones.delete_all
+    { "retained-1" => 3, "completed" => 6, "started" => 0 }.each do |declaration_type, offset|
+      create(:milestone, course:, declaration_type:, acceptance_window_start_offset: offset)
+    end
+    unordered = course.milestones.reload.sort_by(&:declaration_sort_order).reverse
+    allow(presenter.contract.course).to receive(:milestones).and_return(unordered)
+
     expect(presenter.expected_declaration_ids).to eq(
-      application.course.milestones.map { |m| "#{application.ecf_id}_#{m.declaration_type}" },
+      %w[started retained-1 completed].map { |type| "#{application.ecf_id}_#{type}" },
     )
   end
 end

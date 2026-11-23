@@ -129,11 +129,17 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       )
     end
 
-    it "derives expected declarations from course milestones with underscore composite ids" do
-      expected = application.course.milestones.map { |m| { "type" => "expected-declaration", "id" => "#{application.ecf_id}_#{m.declaration_type}" } }
+    it "derives expected declarations from course milestones with underscore composite ids, in milestone order" do
+      course = application.course
+      course.milestones.delete_all
+      { "retained-1" => 3, "completed" => 6, "started" => 0 }.each do |declaration_type, offset|
+        create(:milestone, course:, declaration_type:, acceptance_window_start_offset: offset)
+      end
       list
 
-      expect(item["relationships"]["expected_declarations"]["data"]).to eq(expected)
+      expect(item["relationships"]["expected_declarations"]["data"]).to eq(
+        %w[started retained-1 completed].map { |type| { "type" => "expected-declaration", "id" => "#{application.ecf_id}_#{type}" } },
+      )
     end
 
     it "has null outcome linkage without an outcome" do

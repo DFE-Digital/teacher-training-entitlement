@@ -97,8 +97,9 @@ module API
         []
       end
 
+      # In course milestone order; sorted in memory so the preloaded milestones need no query.
       def expected_declarations
-        @expected_declarations ||= contract.course.milestones.map do |milestone|
+        @expected_declarations ||= contract.course.milestones.sort_by(&:declaration_sort_order).map do |milestone|
           ExpectedDeclaration.new(id, milestone.declaration_type)
         end
       end
