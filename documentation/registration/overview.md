@@ -15,8 +15,8 @@ Three kinds of teachers can register:
 | FE teacher            | Teacher Auth   | Field experience, may lack a TRN |
 | International teacher | Teacher Auth   | No UK TRN                        |
 
-Each `User` has a `one_login_id`, a `provider`, and a `notify_user_for_future_reg`
-flag — see `app/models/user.rb`.
+Each `Teacher` has a `one_login_id`, a `provider`, and a `notify_teacher_for_future_reg`
+flag — see `app/models/teacher.rb`.
 
 ## Journey at a glance
 

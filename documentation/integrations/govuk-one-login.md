@@ -39,7 +39,7 @@ flowchart LR
   - `offline_access` is critical: it causes Teacher Auth to return a
     `refresh_token` for users who do **not** have a TRN, allowing the service
     to re-authenticate later when activating a TRN via TRS.
-- **Devise integration**: `devise_for :users, controllers: { omniauth_callbacks: "omniauth" }`
+- **Devise integration**: `devise_for :teachers, controllers: { omniauth_callbacks: "omniauth" }`
   (in `config/routes.rb`).
 - **Callback route**: `GET /users/auth/teacher_auth/callback`.
 - **Config initializer**: `config/initializers/teacher_auth.rb` reads env vars
@@ -74,7 +74,7 @@ values are hardcoded in `config/environments/test.rb`.
    for tokens and forwards the code back to TTE's callback.
 6. `OmniauthController#teacher_auth` receives the callback, extracts the
    `omniauth.auth` hash from `request.env`, stores the `id_token` in the
-   session (for later OIDC logout), and calls `Users::FindOrCreateFromTeacherAuth`.
+   session (for later OIDC logout), and calls `Teachers::FindOrCreateFromTeacherAuth`.
 7. User provisioning runs (see §6). The user is signed in via Devise
    (`sign_in_and_redirect`).
 8. After sign-in, the user is redirected to:
@@ -83,14 +83,14 @@ values are hardcoded in `config/environments/test.rb`.
 
 ## 6. User provisioning
 
-`Users::FindOrCreateFromTeacherAuth` (`app/services/users/find_or_create_from_teacher_auth.rb`)
-runs on every sign-in and matches or creates a `User` record:
+`Teachers::FindOrCreateFromTeacherAuth` (`app/services/teachers/find_or_create_from_teacher_auth.rb`)
+runs on every sign-in and matches or creates a `Teacher` record:
 
 | Step | Match key           | What happens                                                                                                                                                            |
 |------|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | `User#trn`          | Strongest identity signal. If a non-archived user with this TRN exists, merge/archive clashing email records and update `one_login_id`, `email`, `full_name`, provider. |
-| 2    | `User#one_login_id` | Returning user. Match by `one_login_id` and provider name, update profile fields.                                                                                       |
-| 3    | (fallback)          | No match — create a new `User` with the One Login ID, email, full name, TRN (if present), and date of birth.                                                            |
+| 1    | `Teacher#trn`          | Strongest identity signal. If a non-archived user with this TRN exists, merge/archive clashing email records and update `one_login_id`, `email`, `full_name`, provider. |
+| 2    | `Teacher#one_login_id` | Returning user. Match by `one_login_id` and provider name, update profile fields.                                                                                       |
+| 3    | (fallback)          | No match — create a new `Teacher` with the One Login ID, email, full name, TRN (if present), and date of birth.                                                            |
 
 **On match**: any existing user with a clashing email is either merged (if the
 clashing user has no TRN) or archived (email blurred, `archived_at` set).
@@ -108,15 +108,15 @@ this token alive so it can later call TRS on their behalf.
   POSTs to `{TEACHER_AUTH_DOMAIN}/oauth2/token` with `grant_type=refresh_token`.
   Returns `{ access_token:, refresh_token: }` on success, `:invalid_token` if
   the grant has expired/been revoked, or `nil` on other errors.
-- **`RefreshUserTokenJob`** (`app/jobs/refresh_user_token_job.rb`): calls
+- **`RefreshTeacherTokenJob`** (`app/jobs/refresh_teacher_token_job.rb`): calls
   `RefreshToken` for a single user. On `:invalid_token` it calls
-  `User#clear_auth_tokens!` (nulls `refresh_token` and `refresh_token_updated_at`).
+  `Teacher#clear_auth_tokens!` (nulls `refresh_token` and `refresh_token_updated_at`).
 - **`Crons::EnqueueTokenRefreshesJob`** (`app/jobs/crons/enqueue_token_refreshes_job.rb`):
-  runs **hourly** (`0 * * * *`). Enqueues `RefreshUserTokenJob` for every user
-  matching `User.requiring_token_refresh`:
+  runs **hourly** (`0 * * * *`). Enqueues `RefreshTeacherTokenJob` for every user
+  matching `Teacher.requiring_token_refresh`:
   `trn IS NULL AND refresh_token IS NOT NULL AND refresh_token_updated_at < 1 day ago AND trn_requested_at IS NULL`.
 - **Storage**: `refresh_token` is encrypted at rest via Active Record encryption
-  (`encrypts :refresh_token` in the User model).
+  (`encrypts :refresh_token` in the Teacher model).
 
 ## 8. TRN activation
 
@@ -134,14 +134,14 @@ service activates a TRN via TRS.
 - **`RequestTrnJob`** (`app/jobs/request_trn_job.rb`): the orchestrator.
   1. Calls `TeacherAuth::RefreshToken` to get a fresh `access_token`.
   2. Calls `TeacherAuth::ActivateTrn` with it.
-  3. If TRN returned: stores it on `User`, clears `refresh_token`.
+  3. If TRN returned: stores it on `Teacher`, clears `refresh_token`.
   4. If TRN not returned (TRS may activate asynchronously): updates
      `refresh_token` (rotated), sets `trn_requested_at`.
   5. On `RefreshTokenError`: retries up to 5× with polynomial backoff.
 
 - **`Crons::EnqueueTrnActivationChecksJob`** (`app/jobs/crons/enqueue_trn_activation_checks_job.rb`):
   runs **daily at 06:00** (`0 6 * * *`). Re-polls TRS for users who have
-  `trn_requested_at` set but TRN still blank (`User.needing_trn_activation_check`).
+  `trn_requested_at` set but TRN still blank (`Teacher.needing_trn_activation_check`).
 
 ## 9. Sign-out flow
 
@@ -163,11 +163,11 @@ do not participate in OIDC logout).
 |----------------------------------------------------------|-------------------------------------------------------|
 | `lib/omniauth/strategies/teacher_auth.rb`                | OIDC strategy class (extends `OpenIDConnect`)         |
 | `app/controllers/omniauth_controller.rb`                 | OIDC callback handler                                 |
-| `app/services/users/find_or_create_from_teacher_auth.rb` | User provisioning on sign-in                          |
+| `app/services/teachers/find_or_create_from_teacher_auth.rb` | User provisioning on sign-in                          |
 | `app/services/teacher_auth/refresh_token.rb`             | OIDC token refresh via `POST /oauth2/token`           |
 | `app/services/teacher_auth/activate_trn.rb`              | TRS TRN activation via `PUT /v3/trn-request/activate` |
 | `app/jobs/request_trn_job.rb`                            | TRN activation job (refresh → activate → persist)     |
-| `app/jobs/refresh_user_token_job.rb`                     | Single-user token refresh job                         |
+| `app/jobs/refresh_teacher_token_job.rb`                     | Single-user token refresh job                         |
 | `app/jobs/crons/enqueue_token_refreshes_job.rb`          | Hourly cron to queue token refreshes                  |
 | `app/jobs/crons/enqueue_trn_activation_checks_job.rb`    | Daily 06:00 cron to re-poll TRS                       |
 | `app/controllers/sessions_controller.rb`                 | Sign-out with OIDC `id_token_hint` logout             |
@@ -186,10 +186,10 @@ do not participate in OIDC logout).
   `OmniAuth.config.add_mock(:teacher_auth, ...)`.
 - **Shared context**: `spec/support/shared_contexts/stub_teacher_auth.rb`
   provides a `Stub Teacher Auth Responses` context with configurable fields
-  (`user_trn`, `user_uid`, `user_email`, etc.) and sets up the mock in a
+  (`teacher_trn`, `teacher_uid`, `teacher_email`, etc.) and sets up the mock in a
   `before` block.
-- **Factory**: `spec/factories/users.rb` defines a `:with_one_login_id` trait
-  that sets `one_login_id` and `provider` for FactoryBot User records used in
+- **Factory**: `spec/factories/teachers.rb` defines a `:with_one_login_id` trait
+  that sets `one_login_id` and `provider` for FactoryBot Teacher records used in
   integration tests.
 
 ## 12. Related docs

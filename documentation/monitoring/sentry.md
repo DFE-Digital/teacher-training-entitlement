@@ -73,11 +73,11 @@ The `traces_sampler` lambda enforces the path-based rules and review-app overrid
 
 ## User context
 
-`ApplicationController` runs `before_action :set_sentry_user` (line 12), attaching `current_user.id` to every event:
+`ApplicationController` runs `before_action :set_sentry_user` (line 12), attaching `current_teacher.id` to every event:
 
 ```ruby
 def set_sentry_user
-  Sentry.set_user(id: current_user.id) if current_user
+  Sentry.set_user(id: current_teacher.id) if current_teacher
 end
 ```
 

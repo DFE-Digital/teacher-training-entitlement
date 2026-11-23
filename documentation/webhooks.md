@@ -52,7 +52,7 @@ authentication happens in the controller itself.
 | `200`  | Valid token, TRN known. The token's `last_used_at` is updated on **every** request — there is no equivalent of the LP middleware's 15-minute cache. |
 | `401`  | Missing `Authorization` header. `authenticate_or_request_with_http_token` replies with a `WWW-Authenticate: Token …` challenge; the action never runs. |
 | `403`  | Invalid or unknown bearer token. Raised as `WebhooksController::ForbiddenError`, rendered by `forbidden_response` in the `{ "errors": […] }` envelope. |
-| `404`  | Valid token, unknown TRN. `User.find_by!` raises `ActiveRecord::RecordNotFound`, rendered as `{ "error": "Resource not found" }`.            |
+| `404`  | Valid token, unknown TRN. `Teacher.find_by!` raises `ActiveRecord::RecordNotFound`, rendered as `{ "error": "Resource not found" }`.            |
 
 `APIToken.find_by_unhashed_token` deliberately keeps its `find_by!` semantics;
 the webhook controller rescues `ActiveRecord::RecordNotFound` itself so the

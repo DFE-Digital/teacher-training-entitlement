@@ -5,7 +5,7 @@ The admin console is a separate, locally-authenticated web interface at `/admin`
 - The participant-facing registration app (authenticates via TRS Teacher Auth)
 - The Lead Provider API (authenticates via HTTP Bearer tokens)
 
-Admin users are **not** `User`s. They are `AdminUser`s who sign in via a separate wizard (`SessionWizardController`), not Devise or TeacherAuth.
+Admin users are **not** `Teacher`s. They are `AdminUser`s who sign in via a separate wizard (`SessionWizardController`), not Devise or TeacherAuth.
 
 ## Who uses the admin console
 
@@ -53,7 +53,7 @@ graph TD
     A --> D[Applications]
     A --> E[Providers]
     A --> F[Delivery partners]
-    A --> G[Users]
+    A --> G[Teachers]
     A --> H[Finance]
     A --> I[Workplaces]
     A --> J[Bulk changes<br/>Super admin only]
@@ -102,7 +102,7 @@ graph TD
 | **Applications**        | `/admin/applications`        | Search, filter, and view participant applications and their lifecycle                |
 | **Providers**           | `/admin/providers`           | View and edit lead provider details, applications, delivery partners, and statements |
 | **Delivery partners**   | `/admin/delivery-partners`   | Manage delivery partner records and their partnerships with lead providers           |
-| **Users**               | `/admin/users`               | View participant user records                                                        |
+| **Teachers**            | `/admin/teachers`            | View participant teacher records                                                     |
 | **Finance**             | `/admin/finance/statements`  | Manage financial statements, adjustments, payment authorizations, and contracts      |
 | **Workplaces**          | `/admin/schools`             | View schools and manage eligibility lists                                            |
 | **Bulk changes**        | `/admin/bulk-changes`        | Run bulk operations (super admin only)                                               |

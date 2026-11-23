@@ -212,6 +212,6 @@ email on record.
 ## Related docs
 
 - [`overview.md`](./overview.md) — registration domain map.
-- [`authentication.md`](./authentication.md) — sign-in and `User` provisioning.
+- [`authentication.md`](./authentication.md) — sign-in and `Teacher` provisioning.
 - [`application-submission.md`](./application-submission.md) — how the `Application` and its first `LeadProvider` are created.
 - [`data_model.md`](../data_model.md) — `Application`, `ApplicationLeadProvider`, `LeadProvider`, `ApplicationEvent` relationships.
