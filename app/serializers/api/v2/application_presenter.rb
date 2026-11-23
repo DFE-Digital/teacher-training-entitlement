@@ -11,7 +11,7 @@ module API
 
       attr_reader :application, :assignment, :outcome
 
-      delegate :email, :created_at, :updated_at, to: :application
+      delegate :email, :created_at, to: :application
 
       # outcome: the latest outcome visible to the requesting provider, preloaded by the caller.
       def initialize(assignment, outcome: nil)
@@ -22,6 +22,12 @@ module API
 
       def id
         application.ecf_id
+      end
+
+      # Latest change to the application or the related records it exposes; selected by
+      # Applications::Query so clients can resume a sync with filter[updated_since].
+      def updated_at
+        assignment.effective_updated_at
       end
 
       def contract_assigned_at

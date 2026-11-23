@@ -348,10 +348,10 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       end
 
       it "filters by updated_since" do
-        other.update_columns(updated_at: 2.days.ago)
+        travel_to(2.days.ago) { create(:application, lead_provider: current_lead_provider) }
         list(params: { filter: { updated_since: 1.day.ago.utc.iso8601 } })
 
-        expect(ids).to eq([application.ecf_id])
+        expect(ids).to contain_exactly(application.ecf_id, other.ecf_id)
       end
 
       it "accepts several comma-separated values" do
