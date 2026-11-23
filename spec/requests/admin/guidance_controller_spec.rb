@@ -12,6 +12,11 @@ RSpec.describe Admin::GuidanceController, type: :request do
       it "returns a 200 OK response" do
         expect(subject).to(have_http_status(:ok))
       end
+
+      it "links to the courses management guidance" do
+        expect(subject.body).to include(admin_guidance_path("courses-management"))
+        expect(subject.body).not_to include(admin_guidance_path("settings-courses"))
+      end
     end
 
     context "when signed in as an admin" do
