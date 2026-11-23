@@ -159,6 +159,14 @@ RSpec.describe Application do
     }
   end
 
+  describe "#email" do
+    it "returns the user's email" do
+      application = build(:application)
+
+      expect(application.email).to eq(application.user.email)
+    end
+  end
+
   describe "#can_change_provider?" do
     subject { application.can_change_provider? }
 
@@ -206,6 +214,15 @@ RSpec.describe Application do
         create(:application, funding_eligibility: :ineligible_setting)
 
         expect(described_class.eligible_for_funding).to contain_exactly(application_eligible_for_funding)
+      end
+    end
+
+    describe ".with_email" do
+      it "returns applications whose email matches" do
+        application = create(:application)
+        create(:application)
+
+        expect(described_class.with_email(application.email)).to contain_exactly(application)
       end
     end
 

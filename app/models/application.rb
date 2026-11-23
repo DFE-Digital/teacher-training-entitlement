@@ -19,6 +19,8 @@ class Application < ApplicationRecord
   # Convenience methods to access the institutionable through institution
   # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
   delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
+  # Work/notification email for the application; for now the user's email.
+  delegate :email, to: :user
 
   has_many :participant_id_changes, through: :user
   has_many :application_events
@@ -45,6 +47,8 @@ class Application < ApplicationRecord
   scope :not_withdrawn, -> { where.not(status: WITHDRAWN).or(where(status: nil)) }
   scope :not_rejected, -> { where.not(status: REJECTED) }
   scope :previous_valid_applications, -> { where(status: [PENDING, ACCEPTED, STARTED, DEFERRED]) }
+  # Matches the value returned by #email; switch both together when the email moves to its own column.
+  scope :with_email, ->(emails) { where(user_id: User.where(email: emails).select(:id)) }
 
   attr_accessor :version_note, :admin_user, :assignment
 
