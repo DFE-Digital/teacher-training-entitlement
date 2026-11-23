@@ -32,7 +32,8 @@ access.
 - Available versions are listed in `API::Version` (`lib/api/version.rb`).
   Adding one there automatically generates a matching `/api/docs/<version>` UI.
   Today only `v1` is published. Interim, unpublished `/api/v2/applications`
-  endpoints exist; see [`v2-usage.md`](./v2-usage.md).
+  endpoints exist behind the "API V2 enabled" feature flag; see
+  [`v2-usage.md`](./v2-usage.md).
 
 ## Authentication at a glance
 

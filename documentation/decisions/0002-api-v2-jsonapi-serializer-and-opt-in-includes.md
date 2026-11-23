@@ -17,10 +17,16 @@ expected declarations, statements) reuse the same scaffolding.
   Blueprinter serializers are untouched.
 - V2 routes live in `config/routes/api/v2.rb`, drawn before the shared API
   catch-all so unknown V2 paths get V2 errors.
+- V2 is behind the `Feature::API_V2_ENABLED` ("API V2 enabled") feature flag,
+  checked in `API::V2::BaseController`. While it is off, every V2 request
+  returns a JSON:API 404 (after authentication) and V1 is unaffected.
 - V2 success and error documents use `application/vnd.api+json`. Errors are an
-  `errors` array of `{ status, title, detail }`, including errors raised by
-  middleware: 401 from `Middleware::ApiAuthentication` and 429 from
-  Rack::Attack. V1 bodies and status codes are unchanged.
+  `errors` array of `{ status, title, detail }`, including errors raised
+  outside V2 controllers: 401 from `Middleware::ApiAuthentication`, 429 from
+  Rack::Attack, and 404/422/500 from the exceptions app (`ErrorsController`).
+  Parameter errors also carry `source.parameter`. `APIV2Path`
+  (`lib/api_v2_path.rb`) is the single check for "is this a V2 request". V1
+  bodies and status codes are unchanged.
 - Shared controller concerns in `app/controllers/concerns/api/v2/`:
   - `Includes` — `allowed_includes` declares each endpoint's allow-list;
     `requested_includes` validates `?include=` (comma-separated, de-duplicated)
@@ -28,10 +34,78 @@ expected declarations, statements) reuse the same scaffolding.
     rejected request. Nested paths are accepted only if the complete path is
     listed; none are approved yet.
   - `Filters` — `allowed_filters` plus strict parsing: `filter` must be a flat
-    hash of supported keys with string values; bad values return 400.
-  - `Pagination` — Pagy countless pagination with `links` (`self`, `prev`,
-    `next`) and `meta` (`page`, `per_page`). No totals are computed. Links keep
-    every other query parameter, including filters and `include`.
+    hash of supported keys with string values; bad values (including malformed
+    TRNs and emails) return 400.
+  - `Sorting` — `allowed_sorts` with a default; `sort` uses the V1 `+`/`-`
+    syntax, and unknown or repeated fields return 400.
+  - `Pagination` — the JSON:API
+    [cursor pagination profile](https://jsonapi.org/profiles/ethanresnick/cursor-pagination/)
+    (see below).
+
+## Visibility
+
+- As in V1, a provider sees every application it is or was assigned to, once
+  each. This uses `ApplicationLeadProvider.preferred_per_application`, which
+  picks the current assignment, else the latest previous one. Previously
+  assigned applications have status `reassigned` and a `contract_unassigned_at`.
+- `outcome` links only the latest outcome of the provider's own completed,
+  billable or voidable declarations, otherwise `null`.
+
+## Pagination and sorting
+
+- Cursor (keyset) pagination replaces page numbers: `page[size]` (default 100,
+  maximum 3000), `page[after]`, `page[before]`. A size above the maximum is
+  rejected, not clamped. Range pagination (`after` and `before` together) and
+  unknown `page[...]` keys are rejected with 400.
+- `API::V2::CursorPaginator` takes the full sort order, which always ends with
+  the application id (`ecf_id`) as a unique tie-breaker. A cursor is the
+  Base64-encoded sort order plus that row's key values, so it stays valid while
+  rows change and is rejected if replayed with another sort.
+- Links are `self`, `prev` and `next`; they keep filters, `include` and `sort`.
+  Each page costs one query for `size + 1` rows; no totals are computed.
+- The default and `sort=updated_at` order use the effective `updated_at`.
+
+## Effective updated_at
+
+Clients sync with `sort=updated_at` and `filter[updated_since]`, so an
+application must count as updated when anything in its V2 representation
+changes, not just its own row. The effective `updated_at` is
+`GREATEST(...)` of:
+
+| Source                                           | Why                                                                         |
+|--------------------------------------------------|-----------------------------------------------------------------------------|
+| `applications.updated_at`                        | the application itself (course cohort, funding, status, institution id)     |
+| `users.significantly_updated_at`                 | teacher linkage (TRN) and email; same "significant change" rule as V1       |
+| `application_lead_providers.updated_at`          | the provider's assignment: reassignment, `contract_*_at`, `reassigned`      |
+| `institutions.updated_at`                        | nested `institution` (touched when the school/provider/authority changes)   |
+| `MAX(declarations.updated_at)` for this provider | `outcome` linkage (recording an outcome touches the declaration)            |
+
+Not included:
+
+- the course cohort (`contract`): only its id appears in the application, and that
+  changes through `applications.course_cohort_id`. Its own attributes belong to
+  the contract resource.
+- the course and its milestones (`course.identifier`, `expected_declarations`):
+  reference data. A change would mark every application on the course as updated,
+  and a deleted milestone leaves no timestamp anyway.
+- surveys: no data yet.
+
+The value is computed in the listing query (a join plus one correlated
+`MAX` subquery on the indexed `declarations.application_id`), so the number of
+queries per page stays the same and nothing needs a schema change or backfill. V1 data,
+`applications.updated_at` and analytics are unaffected. The rejected alternative
+was `touch:`-style callbacks that bump `applications.updated_at`. That would
+change V1 `filter[updated_since]` and analytics data, needs callbacks on several
+write paths (including `update_all`), and doesn't cover historical rows. It
+also wouldn't make the sort index-backed, because `applications.updated_at` has
+no index today.
+
+Trade-off: an expression across joined tables can't use an index, so each page
+scans and sorts the provider's visible applications, found through the
+`application_lead_providers.lead_provider_id` index. That is the same scale as V1,
+which sorts on unindexed `applications.updated_at`. If volumes need it, a
+denormalised and indexed column could replace the expression later. That would be
+a schema change with analytics review, and the API contract wouldn't change.
 
 ## Include guarantees
 
@@ -46,10 +120,13 @@ expected declarations, statements) reuse the same scaffolding.
 ## To-many bounding policy
 
 Primary data is bounded by page size (max 3000). To-many relationships are not
-paginated or truncated; each must be naturally bounded:
+paginated or truncated, so nothing is cut off. Each must be naturally bounded:
 
 - `expected_declarations`: one per course milestone (a handful per course).
-- `surveys`: always empty until survey data exists.
+- `surveys`: at most 2 per application, for specific courses only. They are
+  always empty until survey data exists.
+
+No to-many cap is needed.
 
 A future to-many relationship that is not naturally bounded must be links-only
 (no linkage, not includable), as `statement.expected_declarations` will be.

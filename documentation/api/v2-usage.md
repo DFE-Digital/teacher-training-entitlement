@@ -1,12 +1,15 @@
 # API V2 usage guide (interim)
 
 `GET /api/v2/applications` and `GET /api/v2/applications/:id` return the
-authenticated lead provider's current applications as JSON:API documents. They
-are the only V2 endpoints implemented; V1 is unchanged. Teacher, contract,
+applications the authenticated lead provider is or was assigned to as JSON:API
+documents. They are the only V2 endpoints implemented; V1 is unchanged. Teacher, contract,
 outcome, survey and expected-declaration URLs that appear in relationship
 `links` are **not yet live**.
 
 V2 is interim and not yet published in Swagger (see [Public docs](#public-docs)).
+It is behind the **"API V2 enabled"** feature flag (Admin > Settings > Features).
+While the flag is off every `/api/v2/*` request returns a JSON:API `404`
+(after authentication), and V1 is unaffected either way.
 Design decisions are recorded in
 [ADR 0002](../decisions/0002-api-v2-jsonapi-serializer-and-opt-in-includes.md).
 
@@ -33,31 +36,69 @@ Filters combine with AND. List-valued filters take comma-separated values
 | `filter[academic_year]`    | list of 4-digit years                | contract academic year                   |
 | `filter[funding_eligible]` | `true` / `false`                     | `funding.eligible`                       |
 | `filter[funding_uplift]`   | `true` / `false`                     | always no results (uplift is null)       |
-| `filter[teacher_trn]`      | list of TRNs                         | teacher TRN                              |
+| `filter[teacher_trn]`      | list of 7-digit TRNs                 | teacher TRN                              |
 | `filter[teacher_ecf_id]`   | list of UUIDs                        | teacher `ecf_id`                         |
-| `filter[email]`            | list of emails (exact match)         | application `email`                      |
-| `filter[updated_since]`    | ISO 8601 timestamp                   | application `updated_at >=`              |
+| `filter[email]`            | list of valid emails (exact match)   | application `email`                      |
+| `filter[updated_since]`    | ISO 8601 timestamp, e.g. `2025-01-01T00:00:00Z` | effective `updated_at >=` (see below) |
+
+### Sorting (list only)
+
+`sort` uses the V1 syntax: a comma-separated list of distinct fields, each
+optionally prefixed with `+` (ascending, the default) or `-` (descending).
+Sortable fields: `created_at`, `updated_at` (the effective `updated_at`, see
+[Field notes](#field-notes)). The default is `sort=updated_at`. The application
+id is always added as a final ascending tie-breaker, so the order is unique.
+Any other field, a repeated field or an empty entry returns a `400` whose
+`links.type` is the profile's `unsupported-sort` error. Encode `+` as `%2B`; an
+unencoded `+` arrives as a space and is treated as ascending.
+
+To sync changes, page through `sort=updated_at` and resume later with
+`filter[updated_since]` set to the last `updated_at` you processed.
 
 ### Pagination (list only)
 
-Pagy countless: `page[page]` (default 1) and `page[per_page]` (default 100,
-capped at 3000). Ordered by internal application id. No totals are returned.
+The list follows the JSON:API
+[cursor pagination profile](https://jsonapi.org/profiles/ethanresnick/cursor-pagination/):
+
+| Parameter      | Meaning                                                            |
+|----------------|--------------------------------------------------------------------|
+| `page[size]`   | positive integer, default `100`, maximum `3000`                    |
+| `page[after]`  | cursor; returns the results immediately after it                   |
+| `page[before]` | cursor; returns the results immediately before it                  |
 
 ```json
-"links": { "self": "https://host/api/v2/applications?...&page[page]=1&page[per_page]=100",
-           "prev": null, "next": "https://host/api/v2/applications?...&page[page]=2&page[per_page]=100" },
-"meta": { "page": 1, "per_page": 100 }
+"links": {
+  "self": "https://host/api/v2/applications?filter[course]=npd-eirt&page[size]=100",
+  "prev": null,
+  "next": "https://host/api/v2/applications?filter[course]=npd-eirt&page[after]=<cursor>&page[size]=100"
+}
 ```
 
-Pagination links are absolute and keep every other query parameter (filters,
-include). Relationship `links.related` are relative paths.
+- Links are absolute and keep every other query parameter (filters, `include`,
+  `sort`). Follow `next` until it is `null`. `prev` is `null` on the first page.
+  After a `page[after]` request `prev` is always given, and after a
+  `page[before]` request `next` is always given; they may lead to an empty page.
+- Cursors are opaque. They encode the sort order and the position of one row, so
+  rows that are added, changed or removed elsewhere don't shift the following
+  pages. A row whose `updated_at` changes during a `sort=updated_at` sync moves
+  to the end and is returned again there.
+- No totals and no `meta` are returned.
+- Rejected with `400` and `source.parameter`: a `page[size]` that is not a
+  positive integer; a `page[size]` above 3000 (not clamped; the error has
+  `meta.page.maxSize` and the profile's `max-size-exceeded` type link); an
+  invalid cursor, or one from a different sort order; `page[after]` with
+  `page[before]` (range pagination is not supported); any other `page[...]`
+  key, including the V1 `page[page]` / `page[per_page]`.
+
+Relationship `links.related` are relative paths.
 
 ### Includes
 
 `include` is opt-in, comma-separated and de-duplicated. Allowed: `teacher`,
 `contract`, `outcome`, `surveys`, `expected_declarations`. Nested paths
-(e.g. `teacher.outcomes`) and anything else are rejected with 400 before any
-data is loaded. Without `include` there is no `included` member, but
+(e.g. `teacher.outcomes`), empty paths (e.g. `include=teacher,`), a repeated
+`include[]` parameter and anything else are rejected with 400 before any data
+is loaded. Without `include` there is no `included` member, but
 relationship linkage and links are still returned. With a valid `include`,
 `included` is always present (an empty array if nothing is linked) and each
 resource appears once.
@@ -65,17 +106,23 @@ resource appears once.
 ### Errors
 
 JSON:API `errors` array with the same content type, including errors from the
-authentication middleware and rate limiting.
+authentication middleware, rate limiting and unhandled server errors. Errors
+about a query parameter name it in `source.parameter` (e.g. `filter[email]`,
+`include`, `sort`, `page[size]`).
 
 | Status | When                                                                                  |
 |--------|---------------------------------------------------------------------------------------|
-| `400`  | unsupported include; unknown filter; non-hash, array or nested filter; invalid filter value; invalid page params |
+| `400`  | unsupported or empty include path; unknown filter; non-hash, array or nested filter; invalid filter value (including malformed TRN or email); invalid sort; invalid page parameters or cursor |
 | `401`  | missing or invalid token                                                              |
-| `404`  | unknown application UUID, application not currently assigned to you, unknown `/api/v2/*` path |
+| `404`  | unknown application UUID, application never assigned to you, unknown `/api/v2/*` path, any V2 path while the feature flag is off |
+| `422`  | unprocessable content                                                                 |
 | `429`  | rate limit exceeded                                                                   |
+| `500`  | internal server error                                                                 |
 
 ```json
-{ "errors": [{ "status": "400", "title": "Bad request", "detail": "The include path(s) teacher.outcomes are not supported" }] }
+{ "errors": [{ "status": "400", "title": "Bad request",
+               "detail": "The include path(s) teacher.outcomes are not supported",
+               "source": { "parameter": "include" } }] }
 ```
 
 ## Response
@@ -107,20 +154,31 @@ same representation.
                                  "links": { "related": "/api/v2/expected-declarations?filter[application_id]=<application UUID>" } }
     }
   }],
-  "links": {}, "meta": {}
+  "links": { "self": "...", "prev": null, "next": "..." }
 }
 ```
 
 ### Field notes
 
-- **Scope**: only the provider's *current* assignments. Applications a provider
-  was previously assigned are neither listed nor shown (unlike V1, which
-  returns them with status `reassigned`).
+- **Scope**: every application the provider is or was assigned to, once each
+  (as V1). If the provider is currently assigned, its current assignment is
+  used; otherwise its latest previous one, and `status` is `reassigned`.
 - **`email`**: the application's work/notification email
   (`Application#email`, currently the user's email). `filter[email]` matches
   the same value.
 - **`contract_assigned_at` / `contract_unassigned_at`**: the requesting
-  provider's assignment timestamps.
+  provider's assignment timestamps; `contract_unassigned_at` is set for
+  `reassigned` applications and `null` otherwise.
+- **`updated_at`**: the *effective* update time, the latest of:
+  - the application's own `updated_at`;
+  - the teacher's last significant change (as V1, e.g. a TRN or email change,
+    not sign-in token refreshes);
+  - the requesting provider's assignment (e.g. reassignment);
+  - the institution (school, childcare provider or local authority details);
+  - the requesting provider's declarations for the application (recording an
+    outcome touches its declaration).
+
+  `filter[updated_since]` and `sort=updated_at` use the same value.
 - **`role`, `experience`, `funding.uplift`, `status_reason`,
   `funding.confirmation_reason`**: always `null` for now.
 - **`funding`**: `eligible` is the stored funding eligibility; `reason` is the
@@ -140,7 +198,7 @@ same representation.
   history never appear. No outcome: `data: null` and a `null` related link.
   Included outcomes expose `state` and `completion_date`.
 - **Surveys**: always empty (linkage and includes) until survey data exists.
-- **Expected declarations**: one per course milestone, id
+- **Expected declarations**: one per course milestone, in milestone order, id
   `<application UUID>_<declaration_type>`. Included resources only carry
   `declaration_type`.
 
@@ -160,3 +218,5 @@ the reference until then.
 | Shared concerns     | `app/controllers/concerns/api/v2/`          |
 | Serializers         | `app/serializers/api/v2/`                   |
 | Queries             | `app/services/api/v2/applications/`         |
+| Cursor pagination   | `app/services/api/v2/cursor_paginator.rb`   |
+| Feature flag        | `Feature::API_V2_ENABLED` (`app/services/feature.rb`) |
