@@ -39,9 +39,7 @@ module Registrations
     end
 
     def step_answer
-      Rails.logger.info "!!!!!!!!!!!!!!! registration_step.answer_key #{registration_step.answer_key}"
       step_params = params[slug]
-      Rails.logger.info "!!!!!!!!!!!!!!! step_params #{step_params}"
       if step_params.respond_to?(:key?) && (step_params.key?(:step_answer) || step_params.key?("step_answer"))
         return step_params[:step_answer]
       end
