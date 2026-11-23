@@ -49,6 +49,7 @@
     %>
 
     <h2 class="govuk-heading-m">Delivery partners</h2>
+    <%= govuk_button_link_to "Edit", edit_admin_settings_course_provider_delivery_partnerships_path(@course, @lead_provider), secondary: true %>
 
     <% if @delivery_partnerships.any? %>
       <ul class="govuk-list govuk-list--bullet">

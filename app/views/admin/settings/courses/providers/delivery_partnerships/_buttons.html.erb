@@ -1,0 +1,7 @@
+<div class="govuk-button-group">
+  <% if add_new %>
+    <%= button_tag "Add new delivery partner", type: "submit", name: "commit", value: "add_new", class: "govuk-button govuk-button--secondary", data: { module: "govuk-button" } %>
+  <% else %>
+    <%= button_tag "Save", type: "submit", name: "commit", value: "save", class: "govuk-button", data: { module: "govuk-button" } %>
+  <% end %>
+</div>

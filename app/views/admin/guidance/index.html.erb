@@ -27,6 +27,10 @@
     what registration periods are for, how to manage them and how to move an application to a different one.
   </li>
   <li>
+    <%= govuk_link_to "Settings: Courses", admin_guidance_path("settings-courses") %>:
+    how super admins view courses and providers, change delivery partners and add courses.
+  </li>
+  <li>
     <%= govuk_link_to "Glossary", admin_guidance_path("glossary") %>:
     the meaning of terms used in the admin console.
   </li>
@@ -35,5 +39,7 @@
 <h2 class="govuk-heading-m">Who can do what</h2>
 
 <p class="govuk-body">Most guidance applies to all admin users. Some actions are for super admins only, for example creating, editing and deleting registration periods.</p>
+
+<p class="govuk-body">All of <%= govuk_link_to "Settings: Courses", admin_guidance_path("settings-courses") %> is for super admins only.</p>
 
 <p class="govuk-body">See <%= govuk_link_to "who can do what for registration periods", "#{admin_guidance_path("registration-periods")}#who-can-do-what" %>.</p>

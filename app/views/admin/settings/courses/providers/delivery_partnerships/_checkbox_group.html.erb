@@ -1,0 +1,18 @@
+<% error_id = "delivery-partner-ids-error" %>
+<div class="govuk-form-group <%= "govuk-form-group--error" if error %>">
+  <fieldset class="govuk-fieldset"<% if error %> aria-describedby="<%= error_id %>"<% end %>>
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"><%= legend %></legend>
+    <% if error %>
+      <p id="<%= error_id %>" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> <%= error %></p>
+    <% end %>
+    <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+      <% partners.each_with_index do |partner, index| %>
+        <% first = first_group && index.zero? %>
+        <div class="govuk-checkboxes__item">
+          <%= check_box_tag "delivery_partner_ids[]", partner.id, selected_ids.include?(partner.id), id: (first ? "delivery-partner-ids" : "delivery-partner-#{partner.id}"), class: "govuk-checkboxes__input" %>
+          <label class="govuk-label govuk-checkboxes__label" for="<%= first ? "delivery-partner-ids" : "delivery-partner-#{partner.id}" %>"><%= partner.name %></label>
+        </div>
+      <% end %>
+    </div>
+  </fieldset>
+</div>
