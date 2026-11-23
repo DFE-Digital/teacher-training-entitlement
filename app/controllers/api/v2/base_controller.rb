@@ -7,6 +7,8 @@ module API
 
       before_action :ensure_api_v2_enabled
 
+      rescue_from ParameterError, with: :parameter_error_response
+
     private
 
       def ensure_api_v2_enabled
@@ -31,6 +33,10 @@ module API
         end
 
         render json: { errors: }, status:, content_type: CONTENT_TYPE
+      end
+
+      def parameter_error_response(exception)
+        render json: { errors: [exception.to_error_object] }, status: :bad_request, content_type: CONTENT_TYPE
       end
 
       def unpermitted_parameter_response(exception)

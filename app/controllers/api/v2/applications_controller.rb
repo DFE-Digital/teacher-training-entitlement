@@ -57,9 +57,9 @@ module API
           academic_year: list_filter(:academic_year, format: /\A\d{4}\z/),
           funding_eligible: boolean_filter(:funding_eligible),
           funding_uplift: boolean_filter(:funding_uplift),
-          teacher_trn: list_filter(:teacher_trn),
+          teacher_trn: list_filter(:teacher_trn, format: TRN_FORMAT),
           teacher_ecf_id: list_filter(:teacher_ecf_id, format: UUID_FORMAT),
-          email: list_filter(:email),
+          email: list_filter(:email, format: EMAIL_FORMAT),
           updated_since: time_filter(:updated_since),
         }
       end

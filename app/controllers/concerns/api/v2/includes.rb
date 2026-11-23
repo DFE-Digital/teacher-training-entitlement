@@ -17,14 +17,20 @@ module API
       def requested_includes
         @requested_includes ||= begin
           raw = params[:include]
-          raise ActionController::BadRequest, I18n.t(:unsupported_include, paths: "include") unless raw.nil? || raw.is_a?(String)
+          raise include_error(I18n.t(:invalid_include_format)) unless raw.nil? || raw.is_a?(String)
 
-          requested = raw.to_s.split(",").map(&:strip).uniq
-          unsupported = requested - self.class::ALLOWED_INCLUDES
-          raise ActionController::BadRequest, I18n.t(:unsupported_include, paths: unsupported.join(", ")) if unsupported.any?
+          requested = raw.to_s.split(",", -1).map(&:strip)
+          raise include_error(I18n.t(:blank_include_path)) if requested.any?(&:blank?)
 
-          requested.map(&:to_sym)
+          unsupported = requested.uniq - self.class::ALLOWED_INCLUDES
+          raise include_error(I18n.t(:unsupported_include, paths: unsupported.join(", "))) if unsupported.any?
+
+          requested.uniq.map(&:to_sym)
         end
+      end
+
+      def include_error(message)
+        ParameterError.new(message, parameter: "include")
       end
     end
   end

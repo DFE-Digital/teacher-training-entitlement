@@ -224,10 +224,26 @@ RSpec.describe "API V2 applications endpoints", type: :request do
         expect(API::V2::Applications::Query).not_to have_received(:new)
       end
 
-      it "rejects a non-string include" do
+      it "rejects a non-string include with a dedicated message" do
         list(params: { include: %w[teacher] })
 
-        expect(response).to have_http_status(:bad_request)
+        expect([response.status, json["errors"].first.slice("detail", "source")]).to eq(
+          [400, { "detail" => I18n.t(:invalid_include_format), "source" => { "parameter" => "include" } }],
+        )
+      end
+
+      ["teacher,", "teacher,,surveys", " "].each do |include_param|
+        it "rejects the blank include path in #{include_param.inspect} with a dedicated message" do
+          list(params: { include: include_param })
+
+          expect([response.status, json["errors"].first["detail"]]).to eq([400, I18n.t(:blank_include_path)])
+        end
+      end
+
+      it "names the unsupported include path" do
+        list(params: { include: "teacher,teacher.outcomes" })
+
+        expect(json["errors"].first["detail"]).to eq(I18n.t(:unsupported_include, paths: "teacher.outcomes"))
       end
     end
 
@@ -279,8 +295,8 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       end
 
       it "filters by teacher_trn" do
-        application.user.update!(trn: "0000123")
-        list(params: { filter: { teacher_trn: "0000123" } })
+        application.user.update!(trn: "0099999")
+        list(params: { filter: { teacher_trn: "0099999" } })
 
         expect(ids).to eq([application.ecf_id])
       end
@@ -338,12 +354,36 @@ RSpec.describe "API V2 applications endpoints", type: :request do
         "an array value" => { course: %w[x] },
         "a nested value" => { course: { a: "b" } },
         "an unsupported key" => { training_id: "x" },
+        "a non-numeric teacher_trn" => { teacher_trn: "abc1234" },
+        "a teacher_trn of the wrong length" => { teacher_trn: "123456" },
+        "a malformed email" => { email: "not-an-email" },
+        "a malformed email in a list" => { email: "jane@example.com,nope" },
       }.each do |description, filter|
         it "rejects #{description} with a JSON:API error and no data" do
           list(params: { filter: })
 
           expect([response.status, response.media_type, json.keys]).to eq([400, "application/vnd.api+json", %w[errors]])
         end
+      end
+
+      it "points the error at the invalid filter" do
+        list(params: { filter: { teacher_trn: "abc" } })
+
+        expect(json["errors"]).to eq([{
+          "status" => "400",
+          "title" => I18n.t(:bad_request),
+          "detail" => I18n.t(:invalid_filter, attribute: :teacher_trn),
+          "source" => { "parameter" => "filter[teacher_trn]" },
+        }])
+      end
+
+      it "explains that updated_since needs an ISO 8601 timestamp" do
+        list(params: { filter: { updated_since: "2025-01-01" } })
+
+        expect(json["errors"].first.slice("detail", "source")).to eq(
+          "detail" => I18n.t(:invalid_timestamp_filter, attribute: :updated_since),
+          "source" => { "parameter" => "filter[updated_since]" },
+        )
       end
 
       it "rejects a non-hash filter" do
