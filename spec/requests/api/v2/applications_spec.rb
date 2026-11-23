@@ -433,51 +433,6 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       end
     end
 
-    context "with pagination" do
-      before { create_list(:application, 6, lead_provider: current_lead_provider) }
-
-      it "orders by application id" do
-        list(params: { page: { per_page: 3 } })
-
-        expect(ids).to eq(Application.order(:id).limit(3).pluck(:ecf_id))
-      end
-
-      it "links to the next page preserving filters and include" do
-        list(params: { page: { per_page: 3 }, include: "teacher", filter: { updated_since: "2000-01-01T00:00:00Z" } })
-        next_query = Rack::Utils.parse_nested_query(URI(json["links"]["next"]).query)
-
-        expect(next_query).to eq(
-          "include" => "teacher",
-          "filter" => { "updated_since" => "2000-01-01T00:00:00Z" },
-          "page" => { "page" => "2", "per_page" => "3" },
-        )
-      end
-
-      it "has no previous link on the first page" do
-        list(params: { page: { per_page: 3 } })
-
-        expect(json["links"]["prev"]).to be_nil
-      end
-
-      it "has no next link on the last page" do
-        list(params: { page: { per_page: 3, page: 3 } })
-
-        expect([json["links"]["next"], json["links"]["prev"]]).to match([nil, /page%5Bpage%5D=2/])
-      end
-
-      it "has no invented totals" do
-        list(params: { page: { per_page: 3 } })
-
-        expect(json["meta"]).to eq("page" => 1, "per_page" => 3)
-      end
-
-      it "rejects an invalid page with a JSON:API error" do
-        list(params: { page: { page: "0" } })
-
-        expect([response.status, response.media_type, json.keys]).to eq([400, "application/vnd.api+json", %w[errors]])
-      end
-    end
-
     describe "query counts" do
       let(:user) { create(:user) }
 

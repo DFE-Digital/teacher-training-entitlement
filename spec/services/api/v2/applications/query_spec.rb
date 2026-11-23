@@ -48,6 +48,25 @@ RSpec.describe API::V2::Applications::Query do
     expect(ids(email: ["nobody@example.com"])).to be_empty
   end
 
+  describe "#sort_keys" do
+    it "sorts by effective updated_at with the application ecf_id as tie-breaker by default" do
+      query = described_class.new(lead_provider:)
+
+      expect(query.sort_keys.map { |key| key.slice(:name, :direction) }).to eq([
+        { name: "updated_at", direction: :asc },
+        { name: "id", direction: :asc },
+      ])
+    end
+
+    it "uses the requested sort" do
+      query = described_class.new(lead_provider:, sort: [["created_at", :desc]])
+
+      expect(query.sort_keys.first.slice(:name, :sql, :direction)).to eq(
+        name: "created_at", sql: "applications.created_at", direction: :desc,
+      )
+    end
+  end
+
   describe "#application_lead_provider" do
     it "finds a visible application by ecf_id" do
       expect(described_class.new(lead_provider:).application_lead_provider(ecf_id: application.ecf_id).application).to eq(application)

@@ -10,11 +10,18 @@ module API
       # V1), the provider's assignment, the institution, and the provider's own declarations
       # (which are touched when an outcome is recorded). It is computed in the same query, so
       # query counts stay flat, and is used for the updated_at attribute, filter and sort.
+      #
+      # `sort` is a list of [field, :asc | :desc] pairs over SORT_FIELDS; the application
+      # ecf_id is always appended as a unique tie-breaker so cursors are stable.
       class Query
-        attr_reader :scope, :effective_updated_at
+        SORT_FIELDS = %w[created_at updated_at].freeze
+        DEFAULT_SORT = [["updated_at", :asc]].freeze
 
-        def initialize(lead_provider:, filters: {})
+        attr_reader :scope, :effective_updated_at, :sort
+
+        def initialize(lead_provider:, filters: {}, sort: DEFAULT_SORT)
           @effective_updated_at = Arel.sql(effective_updated_at_sql(lead_provider))
+          @sort = sort
           @scope = lead_provider
             .application_lead_providers
             .where(id: lead_provider.application_lead_providers.preferred_per_application)
@@ -28,13 +35,18 @@ module API
                 { institution: :institutionable },
               ],
             )
-            .order("applications.id")
 
           apply_filters(filters)
         end
 
         def application_lead_providers
-          scope
+          scope.order(Arel.sql(sort_keys.map { |key| "#{key[:sql]} #{key[:direction].upcase}" }.join(", ")))
+        end
+
+        # The full sort order for CursorPaginator.
+        def sort_keys
+          sort.map { |field, direction| sort_key(field, direction) } +
+            [{ name: "id", sql: "applications.ecf_id", direction: :asc, type: :uuid }]
         end
 
         def application_lead_provider(ecf_id:)
@@ -42,6 +54,16 @@ module API
         end
 
       private
+
+        def sort_key(field, direction)
+          sql = case field
+                when "created_at" then "applications.created_at"
+                when "updated_at" then effective_updated_at
+                else raise ArgumentError, "unsupported sort field #{field}"
+                end
+
+          { name: field, sql:, direction:, type: :time }
+        end
 
         def effective_updated_at_sql(lead_provider)
           declarations_updated_at = Declaration

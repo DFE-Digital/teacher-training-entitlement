@@ -3,24 +3,28 @@ module API
     class ApplicationsController < BaseController
       include Includes
       include Filters
+      include Sorting
       include Pagination
 
       allowed_includes "teacher", "contract", "outcome", "surveys", "expected_declarations"
       allowed_filters :course, :term, :academic_year, :funding_eligible, :funding_uplift,
                       :teacher_trn, :teacher_ecf_id, :email, :updated_since
+      allowed_sorts(*Applications::Query::SORT_FIELDS, default: "updated_at")
 
-      # Validate the include list before any query or association traversal.
+      # Validate the include list (and, for the index, sort and page) before any query or
+      # association traversal.
       before_action :requested_includes
+      before_action :requested_sort, :page_size, only: :index
 
       def index
-        assignments = paginate(applications_query.application_lead_providers)
+        query = applications_query
+        assignments = paginate(query.application_lead_providers, keys: query.sort_keys)
 
         render_document(
           ApplicationSerializer.new(
             presenters(assignments),
             include: requested_includes,
             links: pagination_links,
-            meta: pagination_meta,
           ).serializable_hash,
         )
       end
@@ -36,7 +40,9 @@ module API
     private
 
       def applications_query
-        Applications::Query.new(lead_provider: current_lead_provider, filters:)
+        return Applications::Query.new(lead_provider: current_lead_provider) unless action_name == "index"
+
+        Applications::Query.new(lead_provider: current_lead_provider, filters:, sort: requested_sort)
       end
 
       def presenters(assignments)
@@ -49,8 +55,6 @@ module API
       end
 
       def filters
-        return {} unless action_name == "index"
-
         {
           course: list_filter(:course),
           term: list_filter(:term, allowed: CourseCohort::TERM_IDENTIFIERS.keys.map(&:to_s)),
