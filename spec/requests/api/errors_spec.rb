@@ -60,4 +60,29 @@ RSpec.describe "Error responses", type: :request do
       expect(response.content_type).to match(/application\/json.*/)
     end
   end
+
+  describe "API V2 errors rendered by the exceptions app" do
+    let(:lead_provider) { create(:lead_provider) }
+
+    {
+      StandardError => [500, "Internal server error"],
+      ActiveRecord::RecordInvalid => [422, "Unprocessable entity"],
+    }.each do |exception, (status, title)|
+      it "returns a JSON:API #{status} for #{exception}" do
+        allow(API::V2::Applications::Query).to receive(:new).and_raise(exception)
+        api_get "/api/v2/applications", lead_provider:, params: { filter: { course: "x" } }
+
+        expect([response.status, response.media_type, JSON.parse(response.body)]).to eq(
+          [status, "application/vnd.api+json", { "errors" => [{ "status" => status.to_s, "title" => title }] }],
+        )
+      end
+    end
+
+    it "keeps the V1 envelope for V1 server errors" do
+      allow(Applications::Query).to receive(:new).and_raise(StandardError)
+      api_get "/api/v1/applications"
+
+      expect(JSON.parse(response.body)).to eq("error" => "Internal server error")
+    end
+  end
 end

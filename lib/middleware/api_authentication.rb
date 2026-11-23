@@ -1,3 +1,5 @@
+require "api_v2_path"
+
 module Middleware
   class ApiAuthentication
     include ActionController::HttpAuthentication::Token
@@ -42,7 +44,7 @@ module Middleware
     end
 
     def unauthenticated(path)
-      return unauthenticated_json_api if path.match?(%r{^/+api/v2(/.*)?$})
+      return unauthenticated_json_api if APIV2Path.match?(path)
 
       Rack::Response.new(
         JSON.generate({ error: I18n.t(:unauthorized) }),

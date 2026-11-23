@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "api_v2_path"
+
 # Throttle general requests by IP
 class Rack::Attack
   PROTECTED_ROUTES = [
@@ -57,11 +59,10 @@ class Rack::Attack
   throttle("catch all requests by ip", limit: 1500, period: 5.minutes, &:ip)
 
   # API V2 errors are JSON:API documents; every other path keeps the default response.
-  API_V2_PATH = %r{\A/+api/v2(/|\z)}
   default_throttled_responder = throttled_responder
 
   self.throttled_responder = lambda do |request|
-    next default_throttled_responder.call(request) unless request.path.match?(API_V2_PATH)
+    next default_throttled_responder.call(request) unless APIV2Path.match?(request.path)
 
     [
       429,
