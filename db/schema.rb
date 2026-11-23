@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_164736) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -131,15 +131,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
     t.string "notes"
     t.enum "status", enum_type: "application_statuses"
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "teacher_id", null: false
     t.date "training_starts_at"
     t.jsonb "registration_data", default: {}, null: false
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["status"], name: "index_applications_on_status"
-    t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
-    t.index ["user_id"], name: "index_applications_on_user_id"
+    t.index ["teacher_id", "course_cohort_id"], name: "index_applications_on_teacher_id_and_course_cohort_id", unique: true
+    t.index ["teacher_id"], name: "index_applications_on_teacher_id"
   end
 
   create_table "bulk_operations", force: :cascade do |t|
@@ -387,11 +387,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
     t.uuid "from_participant_id", null: false
     t.uuid "to_participant_id", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "teacher_id", null: false
     t.index ["ecf_id"], name: "index_participant_id_changes_on_ecf_id", unique: true
     t.index ["from_participant_id"], name: "index_participant_id_changes_on_from_participant_id"
+    t.index ["teacher_id"], name: "index_participant_id_changes_on_teacher_id"
     t.index ["to_participant_id"], name: "index_participant_id_changes_on_to_participant_id"
-    t.index ["user_id"], name: "index_participant_id_changes_on_user_id"
   end
 
   create_table "participant_outcomes", force: :cascade do |t|
@@ -481,7 +481,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
     t.index ["lead_provider_id"], name: "index_statements_on_lead_provider_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "teachers", force: :cascade do |t|
     t.boolean "active_alert", default: false
     t.datetime "archived_at"
     t.string "archived_email"
@@ -494,7 +494,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
     t.string "feature_flag_id"
     t.text "full_name"
     t.text "national_insurance_number"
-    t.boolean "notify_user_for_future_reg", default: false
+    t.boolean "notify_teacher_for_future_reg", default: false
     t.string "one_login_id"
     t.string "preferred_name"
     t.string "provider"
@@ -507,14 +507,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
     t.datetime "trn_requested_at"
     t.datetime "updated_at", null: false
     t.datetime "updated_from_tra_at", precision: nil
-    t.index ["created_at"], name: "index_users_on_created_at"
-    t.index ["ecf_id"], name: "index_users_on_ecf_id", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["one_login_id"], name: "index_users_on_one_login_id", unique: true
-    t.index ["provider"], name: "index_users_on_provider"
-    t.index ["refresh_token_updated_at"], name: "index_users_on_refresh_token_updated_at"
-    t.index ["significantly_updated_at"], name: "index_users_on_significantly_updated_at"
-    t.index ["trn"], name: "index_users_on_trn"
+    t.index ["created_at"], name: "index_teachers_on_created_at"
+    t.index ["ecf_id"], name: "index_teachers_on_ecf_id", unique: true
+    t.index ["email"], name: "index_teachers_on_email", unique: true
+    t.index ["one_login_id"], name: "index_teachers_on_one_login_id", unique: true
+    t.index ["provider"], name: "index_teachers_on_provider"
+    t.index ["refresh_token_updated_at"], name: "index_teachers_on_refresh_token_updated_at"
+    t.index ["significantly_updated_at"], name: "index_teachers_on_significantly_updated_at"
+    t.index ["trn"], name: "index_teachers_on_trn"
   end
 
   create_table "versions", force: :cascade do |t|
@@ -537,7 +537,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
   add_foreign_key "application_events", "applications"
   add_foreign_key "application_events", "lead_providers"
   add_foreign_key "applications", "institutions"
-  add_foreign_key "applications", "users"
+  add_foreign_key "applications", "teachers"
   add_foreign_key "contract_years", "courses"
   add_foreign_key "contract_years", "lead_providers"
   add_foreign_key "course_cohort_providers", "course_cohorts"
@@ -554,7 +554,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
   add_foreign_key "delivery_partnerships", "delivery_partners"
   add_foreign_key "delivery_partnerships", "lead_providers"
   add_foreign_key "milestones", "courses"
-  add_foreign_key "participant_id_changes", "users"
+  add_foreign_key "participant_id_changes", "teachers"
   add_foreign_key "participant_outcomes", "declarations"
   add_foreign_key "statements", "lead_providers"
 end
