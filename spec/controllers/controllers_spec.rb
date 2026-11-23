@@ -81,6 +81,12 @@ RSpec.describe "choosing the correct controller to inherit from" do
     it_behaves_like "not allowing an unauthenticated teacher access"
     it_behaves_like "allowing an authenticated teacher access"
     it_behaves_like "not allowing an admin access"
+
+    it "allows a teacher signed in under the pre-rename session key access" do
+      session[:user_id] = teacher.id
+      get :index
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   context "when a controller is a subclass of AdminController" do
@@ -138,6 +144,39 @@ RSpec.describe "choosing the correct controller to inherit from" do
         expect(session[:teacher_id]).to eq teacher.id
         expect(session[:registration_store][:current_teacher]).to eq teacher
       end
+    end
+
+    context "with a NullTeacher set under the pre-rename key" do
+      before do
+        session[:user_id] = 1
+        session[:registration_store] = { current_user: NullTeacher.new }
+      end
+
+      it "clears out the session" do
+        get :index
+        expect(session[:teacher_id]).to be_nil
+        expect(session[:registration_store]).to be_nil
+      end
+    end
+  end
+
+  describe "sessions written with pre-rename keys" do
+    controller(PublicPagesController) do
+      def index
+        head :ok
+      end
+    end
+
+    before do
+      session[:user_id] = teacher.id
+      session[:registration_store] = { "current_user_id" => teacher.id, "course_identifier" => "npq-senco" }
+    end
+
+    it "moves them to the renamed keys" do
+      get :index
+      expect(session[:user_id]).to be_nil
+      expect(session[:teacher_id]).to eq teacher.id
+      expect(session[:registration_store]).to eq("current_teacher_id" => teacher.id, "course_identifier" => "npq-senco")
     end
   end
 end

@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
 
   default_form_builder GOVUKDesignSystemFormBuilder::FormBuilder
 
+  prepend_before_action :rename_legacy_session_keys
   before_action :http_basic_authenticate, if: -> { Rails.env.staging? }
 
   around_action :set_time_zone
@@ -80,6 +81,27 @@ private
 
   def set_cache_headers
     no_store
+  end
+
+  LEGACY_REGISTRATION_STORE_KEYS = {
+    "current_user" => "current_teacher",
+    "current_user_id" => "current_teacher_id",
+  }.freeze
+
+  # Sessions written before the User to Teacher rename still use these keys.
+  # Remove two weeks after deployment once they have expired.
+  def rename_legacy_session_keys
+    session[:teacher_id] = session.delete(:user_id) if session.key?(:user_id)
+
+    store = session[:registration_store]
+    return unless store.is_a?(Hash)
+
+    store.keys.each do |key|
+      new_key = LEGACY_REGISTRATION_STORE_KEYS[key.to_s]
+      next unless new_key
+
+      store[key.is_a?(Symbol) ? new_key.to_sym : new_key] = store.delete(key)
+    end
   end
 
   def clear_null_teacher_sessions
