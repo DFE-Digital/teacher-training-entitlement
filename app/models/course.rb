@@ -10,7 +10,8 @@ class Course < ApplicationRecord
 
   has_many :milestones, dependent: :destroy
   has_many :delivery_partnerships, dependent: :destroy
-  has_many :delivery_partners, through: :delivery_partnerships
+  has_many :active_delivery_partnerships, -> { active }, class_name: "DeliveryPartnership"
+  has_many :delivery_partners, through: :active_delivery_partnerships
   has_many :course_cohorts, dependent: :destroy
   has_many :course_cohort_providers, through: :course_cohorts
   has_many :cohorts, through: :course_cohorts

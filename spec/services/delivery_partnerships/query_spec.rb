@@ -24,6 +24,18 @@ RSpec.describe DeliveryPartnerships::Query do
       expect(query.delivery_partners).to eq([delivery_partner_2, delivery_partner_an_hour_ago, delivery_partner_1])
     end
 
+    context "when a partnership is archived" do
+      before { delivery_partner_1.delivery_partnerships.each(&:archive!) }
+
+      it "excludes the delivery partner" do
+        expect(query.delivery_partners).to eq([delivery_partner_2, delivery_partner_an_hour_ago])
+      end
+
+      it "raises not found on show" do
+        expect { query.delivery_partner(id: delivery_partner_1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
     context "when sorting" do
       context "when sort is +created_at" do
         let(:sort) { "+created_at" }

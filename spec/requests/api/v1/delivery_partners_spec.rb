@@ -32,6 +32,16 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
       end
     end
 
+    context "when the partnership is archived", :exceptions_app do
+      before { resource.delivery_partnerships.each(&:archive!) }
+
+      it "returns not found" do
+        api_get(path(resource_id))
+
+        expect(response.status).to eq(404)
+      end
+    end
+
     context "when the partner belongs to another lead provider", :exceptions_app do
       let(:other_resource) { create(:delivery_partner, lead_providers: { create(:course) => create(:lead_provider) }) }
 
@@ -54,6 +64,19 @@ RSpec.describe "Delivery Partner endpoints", type: :request do
     it_behaves_like "an API index endpoint"
     it_behaves_like "an API index endpoint with pagination"
     it_behaves_like "an API index endpoint with sorting", %w[name]
+
+    context "when a partnership is archived" do
+      let!(:active_partner) { create(:delivery_partner, lead_provider: current_lead_provider) }
+      let!(:archived_partner) { create(:delivery_partner, lead_provider: current_lead_provider) }
+
+      before { archived_partner.delivery_partnerships.each(&:archive!) }
+
+      it "leaves the archived partner out" do
+        api_get(path)
+
+        expect(response_ids).to contain_exactly(active_partner.ecf_id)
+      end
+    end
 
     context "when filtering by cohort" do
       let(:cohort_2023) { create(:cohort, registration_starts_at: Date.new(2023, 9, 1)) }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_18_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -300,6 +300,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_100000) do
     t.bigint "lead_provider_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "course_id", null: false
+    t.datetime "archived_at"
     t.index ["course_id"], name: "index_delivery_partnerships_on_course_id"
     t.index ["delivery_partner_id", "lead_provider_id", "course_id"], name: "idx_delivery_partnerships_on_partner_provider_course", unique: true
     t.index ["delivery_partner_id"], name: "index_delivery_partnerships_on_delivery_partner_id"

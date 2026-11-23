@@ -30,6 +30,15 @@ RSpec.describe Admin::Settings::Courses::ProvidersController, type: :request do
           expect(response.body).to include("Send course")
         end
 
+        it "does not list archived delivery partnerships" do
+          create(:delivery_partnership, course:, lead_provider:, archived_at: 1.day.ago,
+                                        delivery_partner: create(:delivery_partner, name: "Archived Partner"))
+          get admin_settings_course_provider_path(course, lead_provider)
+
+          expect(response.body).to include("Partner One")
+          expect(response.body).not_to include("Archived Partner")
+        end
+
         it "shows the overview course url and email" do
           get admin_settings_course_provider_path(course, lead_provider)
 
