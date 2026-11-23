@@ -1,16 +1,18 @@
 module API
   module V2
     module Applications
-      # Provider-visible applications for API V2: only the provider's current assignments.
+      # Provider-visible applications for API V2: every application the provider is or was
+      # assigned to, one assignment per application (the current one, else the latest
+      # previous one), as in the V1 Applications::Query.
       class Query
         attr_reader :scope
 
         def initialize(lead_provider:, filters: {})
           @scope = lead_provider
             .application_lead_providers
-            .current
+            .where(id: lead_provider.application_lead_providers.preferred_per_application)
             .joins(application: [:user, { course_cohort: :course }])
-            .includes(
+            .preload(
               application: [
                 :user,
                 { course_cohort: { course: :milestones } },

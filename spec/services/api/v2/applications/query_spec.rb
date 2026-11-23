@@ -8,16 +8,32 @@ RSpec.describe API::V2::Applications::Query do
     described_class.new(lead_provider:, filters:).application_lead_providers.map { |alp| alp.application.id }
   end
 
-  it "returns current assignments ordered by application id" do
+  it "returns current assignments" do
     later = create(:application, lead_provider:)
 
-    expect(ids).to eq([application.id, later.id])
+    expect(ids).to contain_exactly(application.id, later.id)
   end
 
-  it "excludes previous assignments" do
+  it "returns the previous assignment of a reassigned application" do
     application.change_provider!(to: create(:lead_provider))
 
-    expect(ids).to be_empty
+    expect(described_class.new(lead_provider:).application_lead_providers.map(&:current?)).to eq([false])
+  end
+
+  it "returns one assignment per application" do
+    other = create(:lead_provider)
+    application.change_provider!(to: other)
+    application.reload.change_provider!(to: lead_provider)
+    application.reload.change_provider!(to: other)
+
+    expect(ids).to eq([application.id])
+  end
+
+  it "prefers the current assignment" do
+    application.change_provider!(to: create(:lead_provider))
+    application.reload.change_provider!(to: lead_provider)
+
+    expect(described_class.new(lead_provider:).application_lead_providers.map(&:current?)).to eq([true])
   end
 
   it "returns none for any funding_uplift filter" do

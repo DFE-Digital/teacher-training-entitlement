@@ -11,7 +11,7 @@ module API
 
       attr_reader :application, :assignment, :outcome
 
-      delegate :email, :status, :created_at, :updated_at, to: :application
+      delegate :email, :created_at, :updated_at, to: :application
 
       # outcome: the latest outcome visible to the requesting provider, preloaded by the caller.
       def initialize(assignment, outcome: nil)
@@ -30,6 +30,11 @@ module API
 
       def contract_unassigned_at
         assignment.unassigned_at
+      end
+
+      # Applications the provider was previously assigned to read as reassigned, as in V1.
+      def status
+        assignment.current? ? application.status : Application::REASSIGNED
       end
 
       # Not yet sourced.

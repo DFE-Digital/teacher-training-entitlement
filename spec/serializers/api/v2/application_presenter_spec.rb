@@ -51,6 +51,17 @@ RSpec.describe API::V2::ApplicationPresenter do
     expect(presenter.institution[:category]).to be_nil
   end
 
+  it "uses the application status for the current assignment" do
+    expect(presenter.status).to eq(application.status)
+  end
+
+  it "reads as reassigned for a previous assignment" do
+    previous = application.current_application_lead_provider
+    application.change_provider!(to: create(:lead_provider))
+
+    expect(described_class.new(previous.reload).status).to eq(Application::REASSIGNED)
+  end
+
   it "has no status reason" do
     expect(presenter.status_reason).to be_nil
   end

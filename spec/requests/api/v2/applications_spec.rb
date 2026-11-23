@@ -266,11 +266,45 @@ RSpec.describe "API V2 applications endpoints", type: :request do
         expect(json["data"]).to eq([])
       end
 
-      it "does not return applications the provider was previously assigned" do
-        application.change_provider!(to: create(:lead_provider))
+      context "when the application was reassigned to another provider" do
+        before do
+          travel_to(1.day.ago) { application }
+          application.change_provider!(to: create(:lead_provider))
+        end
+
+        it "still returns it, as reassigned" do
+          list
+
+          expect([ids, item["attributes"]["status"]]).to eq([[application.ecf_id], "reassigned"])
+        end
+
+        it "exposes when the provider was unassigned" do
+          list
+
+          expect(Time.zone.parse(item["attributes"]["contract_unassigned_at"])).to be_within(1.second).of(
+            application.application_lead_providers.find_by(lead_provider: current_lead_provider).unassigned_at,
+          )
+        end
+      end
+
+      it "returns an application once when it was assigned to the provider several times" do
+        other_provider = create(:lead_provider)
+        application.change_provider!(to: other_provider)
+        application.reload.change_provider!(to: current_lead_provider)
+        application.reload.change_provider!(to: other_provider)
         list
 
-        expect(json["data"]).to eq([])
+        expect([ids, item["attributes"]["status"]]).to eq([[application.ecf_id], "reassigned"])
+      end
+
+      it "returns the current assignment when the application was reassigned back to the provider" do
+        application.change_provider!(to: create(:lead_provider))
+        application.reload.change_provider!(to: current_lead_provider)
+        list
+
+        expect([ids, item["attributes"].slice("status", "contract_unassigned_at")]).to eq(
+          [[application.ecf_id], { "status" => application.status, "contract_unassigned_at" => nil }],
+        )
       end
     end
 
@@ -578,6 +612,13 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       show(SecureRandom.uuid)
 
       expect([response.status, response.media_type, json["errors"].first["status"]]).to eq([404, "application/vnd.api+json", "404"])
+    end
+
+    it "returns an application the provider was previously assigned as reassigned" do
+      application.change_provider!(to: create(:lead_provider))
+      show(application.ecf_id)
+
+      expect([response.status, json["data"]["attributes"]["status"]]).to eq([200, "reassigned"])
     end
 
     it "returns not found for an application never assigned to the provider" do
