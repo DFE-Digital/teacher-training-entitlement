@@ -7,9 +7,9 @@ RSpec.describe "Declaration endpoints", type: :request do
   let(:serializer_version) { :v1 }
 
   def create_resource(**attrs)
-    if attrs[:user]
-      attrs[:application] = create(:application, user: attrs[:user])
-      attrs.delete(:user)
+    if attrs[:teacher]
+      attrs[:application] = create(:application, teacher: attrs[:teacher])
+      attrs.delete(:teacher)
     end
 
     if attrs[:cohort] && !attrs[:course_cohort]

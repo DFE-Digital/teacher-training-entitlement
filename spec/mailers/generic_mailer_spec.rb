@@ -31,7 +31,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#application_submitted" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:provider_name) { "Example Provider" }
     let(:course_name) { "Example Course" }
     let(:cohort_date) { "autumn 2026" }
@@ -99,7 +99,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#eligible_for_funding" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:provider_name) { "Example Provider" }
     let(:course_name) { "Example Course" }
     let(:ecf_id) { "ABC123" }
@@ -133,7 +133,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#change_provider" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:provider_name) { "Example Provider" }
     let(:course_name) { "Example Course" }
     let(:cohort_date) { "autumn 2026" }
@@ -214,7 +214,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#deferral_notification" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:provider_name) { "Example Provider" }
     let(:course_name) { "Early Years TTE" }
     let(:deferral_date) { "10 November 2026" }
@@ -288,7 +288,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#registration_open_notification" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:course_name) { "Early Years TTE" }
     let(:next_course_start_date) { "February 2027" }
     let(:deferral_date) { "10 November 2026" }
@@ -346,7 +346,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#deferral_expiring_notification" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:course_name) { "Early Years TTE" }
     let(:deferral_date) { "10 November 2026" }
     let(:ecf_id) { "ABC123" }
@@ -380,7 +380,7 @@ RSpec.describe GenericMailer, type: :mailer do
 
   describe "#provider_rejected" do
     let(:to) { "recipient@example.com" }
-    let(:full_name) { "Example User" }
+    let(:full_name) { "Example Teacher" }
     let(:provider_name) { "Example Provider" }
     let(:course_name) { "Early Years TTE" }
     let(:cohort_date) { "autumn 2026" }

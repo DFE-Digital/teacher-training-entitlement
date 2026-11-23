@@ -176,18 +176,18 @@ RSpec.describe Declarations::Query do
 
       context "when filtering by participant_id" do
         it "filters by participant_id" do
-          create(:declaration, application: create(:application, user: create(:user)))
-          declaration = create(:declaration, application: create(:application, user: create(:user)))
-          query = described_class.new(participant_ids: declaration.user.ecf_id)
+          create(:declaration, application: create(:application, teacher: create(:teacher)))
+          declaration = create(:declaration, application: create(:application, teacher: create(:teacher)))
+          query = described_class.new(participant_ids: declaration.teacher.ecf_id)
 
           expect(query.declarations).to contain_exactly(declaration)
         end
 
         it "filters by multiple participant_ids" do
-          declaration2 = create(:declaration, application: create(:application, user: create(:user)))
-          declaration1 = create(:declaration, application: create(:application, user: create(:user)))
-          create(:declaration, application: create(:application, user: create(:user)))
-          query = described_class.new(participant_ids: [declaration1.user.ecf_id, declaration2.user.ecf_id].join(","))
+          declaration2 = create(:declaration, application: create(:application, teacher: create(:teacher)))
+          declaration1 = create(:declaration, application: create(:application, teacher: create(:teacher)))
+          create(:declaration, application: create(:application, teacher: create(:teacher)))
+          query = described_class.new(participant_ids: [declaration1.teacher.ecf_id, declaration2.teacher.ecf_id].join(","))
 
           expect(query.declarations).to contain_exactly(declaration1, declaration2)
         end

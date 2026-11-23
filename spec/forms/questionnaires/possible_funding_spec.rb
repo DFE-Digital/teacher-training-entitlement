@@ -8,7 +8,7 @@ RSpec.describe Questionnaires::PossibleFunding do
       current_step: :possible_funding,
       store:,
       request: nil,
-      current_user: build_stubbed(:user),
+      current_teacher: build_stubbed(:teacher),
     )
   end
 

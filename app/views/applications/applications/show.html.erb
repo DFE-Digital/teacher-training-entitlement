@@ -1,6 +1,6 @@
 <% content_for :title, "Your registration details" %>
 <% content_for :before_content do %>
-  <% if current_user.applications.count > 1 %>
+  <% if current_teacher.applications.count > 1 %>
     <%= render GovukComponent::BackLinkComponent.new(
       text: "Back to your registrations",
       href: applications_path

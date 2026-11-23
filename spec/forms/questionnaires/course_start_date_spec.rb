@@ -7,10 +7,10 @@ RSpec.describe Questionnaires::CourseStartDate, type: :model do
     before { instance.wizard = wizard }
 
     let(:instance) { described_class.new }
-    let(:wizard) { RegistrationWizard.new(store:, request:, current_step: :course_start_date, current_user:) }
+    let(:wizard) { RegistrationWizard.new(store:, request:, current_step: :course_start_date, current_teacher:) }
     let(:request) { nil }
     let(:store) { {} }
-    let(:current_user) { create :user }
+    let(:current_teacher) { create :teacher }
 
     context "when selecting a later start date" do
       before { instance.course_start_date = "later" }

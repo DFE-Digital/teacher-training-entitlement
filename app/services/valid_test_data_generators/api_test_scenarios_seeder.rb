@@ -97,8 +97,8 @@ module ValidTestDataGenerators
       end
     end
 
-    def test_user_ecf_ids
-      applications_data.map { |app| user_ecf_id(app[:participant_id]) }
+    def test_teacher_ecf_ids
+      applications_data.map { |app| teacher_ecf_id(app[:participant_id]) }
     end
 
   private
@@ -119,12 +119,12 @@ module ValidTestDataGenerators
     end
 
     def test_emails
-      applications_data.map { |app| user_email(app[:email]) }
+      applications_data.map { |app| teacher_email(app[:email]) }
     end
 
-    def user_email(email, user_id = nil)
-      if custom_email_template.present? && user_id.present?
-        custom_email(user_id)
+    def teacher_email(email, teacher_id = nil)
+      if custom_email_template.present? && teacher_id.present?
+        custom_email(teacher_id)
       else
         email.gsub("example", self.class.to_dns_name(lead_provider.name))
       end
@@ -134,22 +134,22 @@ module ValidTestDataGenerators
       self.class.custom_email_templates[lead_provider.name]
     end
 
-    def custom_email(user_id)
+    def custom_email(teacher_id)
       prefix, domain = custom_email_template.split("@")
-      "#{prefix}+#{user_id}@#{domain}"
+      "#{prefix}+#{teacher_id}@#{domain}"
     end
 
-    def apply_custom_email_template(user)
-      return user if custom_email_template.blank?
+    def apply_custom_email_template(teacher)
+      return teacher if custom_email_template.blank?
 
-      email = custom_email(user.id)
-      user.update!(email:) unless user.email == email
-      user
+      email = custom_email(teacher.id)
+      teacher.update!(email:) unless teacher.email == email
+      teacher
     end
 
     def test_scenarios_drop_data!
-      test_users = User.where(ecf_id: test_user_ecf_ids)
-      application_ids = lead_provider.applications.where(user: test_users).pluck(:id)
+      test_teachers = Teacher.where(ecf_id: test_teacher_ecf_ids)
+      application_ids = lead_provider.applications.where(teacher: test_teachers).pluck(:id)
 
       if application_ids.any?
         declarations = Declaration.where(application_id: application_ids)
@@ -164,7 +164,7 @@ module ValidTestDataGenerators
         delete_orphaned_statements(statement_ids)
       end
 
-      delete_test_users_without_applications(test_users)
+      delete_test_teachers_without_applications(test_teachers)
     end
 
     def delete_orphaned_statements(statement_ids)
@@ -174,9 +174,9 @@ module ValidTestDataGenerators
       end
     end
 
-    def delete_test_users_without_applications(test_users)
-      user_ids_with_applications = Application.where(user_id: test_users.select(:id)).distinct.pluck(:user_id)
-      test_users.where.not(id: user_ids_with_applications).delete_all
+    def delete_test_teachers_without_applications(test_teachers)
+      teacher_ids_with_applications = Application.where(teacher_id: test_teachers.select(:id)).distinct.pluck(:teacher_id)
+      test_teachers.where.not(id: teacher_ids_with_applications).delete_all
     end
 
     def test_scenarios_create_data!
@@ -193,7 +193,7 @@ module ValidTestDataGenerators
           course_cohort: course_cohorts[app_data[:cohort_offset]],
           status: Application::PENDING,
           eligible_for_funding: app_data[:funding_eligible],
-          user: create_user(app_data),
+          teacher: create_teacher(app_data),
         ).tap do |application|
           if app_data[:change_provider]
             change_provider(application:)
@@ -212,11 +212,11 @@ module ValidTestDataGenerators
       @course ||= Course.find_by!(identifier: @course_identifier)
     end
 
-    def create_random_user(with_trn: true)
+    def create_random_teacher(with_trn: true)
       name = Faker::Name.unique.name
       email = "#{name.tr(" '.", "").downcase}@#{self.class.to_dns_name(lead_provider.name)}.com"
 
-      user = User.find_or_create_by!(email:) do |u|
+      teacher = Teacher.find_or_create_by!(email:) do |u|
         u.ecf_id = SecureRandom.uuid
         u.full_name = name
         u.trn = generate_trn if with_trn
@@ -224,18 +224,18 @@ module ValidTestDataGenerators
         u.trn_lookup_status = "Found" if with_trn
       end
 
-      apply_custom_email_template(user)
+      apply_custom_email_template(teacher)
     end
 
-    def create_user(app_data)
-      ecf_id = user_ecf_id(app_data[:participant_id])
-      fallback_email = user_email(app_data[:email])
-      user = User.find_by(ecf_id:) || User.find_by(email: fallback_email)
+    def create_teacher(app_data)
+      ecf_id = teacher_ecf_id(app_data[:participant_id])
+      fallback_email = teacher_email(app_data[:email])
+      teacher = Teacher.find_by(ecf_id:) || Teacher.find_by(email: fallback_email)
 
-      if user
-        user.update!(full_name: app_data[:full_name], trn_lookup_status: "Found", ecf_id:)
+      if teacher
+        teacher.update!(full_name: app_data[:full_name], trn_lookup_status: "Found", ecf_id:)
       else
-        user = User.create!(
+        teacher = Teacher.create!(
           full_name: app_data[:full_name],
           trn: generate_trn,
           date_of_birth: Faker::Date.birthday(min_age: 20),
@@ -245,10 +245,10 @@ module ValidTestDataGenerators
         )
       end
 
-      apply_custom_email_template(user)
+      apply_custom_email_template(teacher)
     end
 
-    def user_ecf_id(index)
+    def teacher_ecf_id(index)
       [
         "4e87fadb",
         "f678",
@@ -369,8 +369,8 @@ module ValidTestDataGenerators
       scope.order("RANDOM()").limit(INSTITUTION_SAMPLE_SIZE).to_a
     end
 
-    def create_app(course_cohort:, status:, eligible_for_funding:, user:)
-      application = lead_provider.updateable_applications.find_or_initialize_by(user:, course_cohort:)
+    def create_app(course_cohort:, status:, eligible_for_funding:, teacher:)
+      application = lead_provider.updateable_applications.find_or_initialize_by(teacher:, course_cohort:)
       application.ecf_id ||= SecureRandom.uuid
       if application.application_lead_providers.current.none?
         application.application_lead_providers.build(lead_provider:, current: true, assigned_at: Time.zone.now)
@@ -480,7 +480,7 @@ module ValidTestDataGenerators
         course_cohort:,
         status:,
         eligible_for_funding: index.even?,
-        user: create_random_user(with_trn:),
+        teacher: create_random_teacher(with_trn:),
       )
     end
 

@@ -91,11 +91,11 @@ module API
           end
         end
 
-        def updated_at(user)
+        def updated_at(teacher)
           (
-            (user.participant_id_changes || []).map(&:updated_at) +
-            (user.applications || []).map(&:updated_at) +
-            [user.significantly_updated_at]
+            (teacher.participant_id_changes || []).map(&:updated_at) +
+            (teacher.applications || []).map(&:updated_at) +
+            [teacher.significantly_updated_at]
           ).compact.max
         end
       end

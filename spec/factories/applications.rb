@@ -3,7 +3,7 @@ require "securerandom"
 FactoryBot.define do
   factory :application do
     with_school
-    user
+    teacher
     status { :pending }
     ecf_id { SecureRandom.uuid }
 
@@ -115,15 +115,15 @@ FactoryBot.define do
                                    registration_starts_at:)
         end
 
-        create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, user: application.user, course:, registration_starts_at: previous_cohort.registration_starts_at)
+        create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, teacher: application.teacher, course:, registration_starts_at: previous_cohort.registration_starts_at)
       end
     end
 
     trait :with_participant_id_change do
       after(:create) do |application|
-        user = application.user
+        teacher = application.teacher
 
-        create(:participant_id_change, to_participant_id: user.ecf_id, user:)
+        create(:participant_id_change, to_participant_id: teacher.ecf_id, teacher:)
       end
     end
 

@@ -31,7 +31,7 @@ module Statements
       #  for course_cohort for milestone
       scope = course_cohort.applications
         .joins(:current_application_lead_provider)
-                .includes(:course_cohort, :user)
+                .includes(:course_cohort, :teacher)
                 .where(funded_place:)
         .where(application_lead_providers: { lead_provider: })
 
@@ -79,7 +79,7 @@ module Statements
       statement
         .declarations
         .billable
-        .includes(application: :user, course_cohort: :cohort)
+        .includes(application: :teacher, course_cohort: :cohort)
         .where(milestone:, application: { funded_place: })
         .order(created_at: :desc)
     end

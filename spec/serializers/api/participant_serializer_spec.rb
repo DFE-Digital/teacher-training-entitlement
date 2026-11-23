@@ -7,7 +7,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
   let(:participant_id_change) { application.participant_id_changes.last }
   let(:cohort) { application.cohort }
   let(:application) { create(:application, :accepted, :with_state_change, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
-  let(:participant) { application.user }
+  let(:participant) { application.teacher }
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(participant, lead_provider:)) }
@@ -189,7 +189,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
       end
 
       context "when there're multiple application with different lead provider approval states" do
-        before { create(:application, :for_cohort_starting_on, lead_provider:, user: participant, registration_starts_at: Date.new(2021, 4, 1)) }
+        before { create(:application, :for_cohort_starting_on, lead_provider:, teacher: participant, registration_starts_at: Date.new(2021, 4, 1)) }
 
         it "serializes only accepted `enrolments`" do
           expect(attributes["enrolments"].size).to eq(1)

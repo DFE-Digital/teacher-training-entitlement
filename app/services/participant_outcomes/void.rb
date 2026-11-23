@@ -19,7 +19,7 @@ module ParticipantOutcomes
 
   private
 
-    delegate :user, :lead_provider,
+    delegate :teacher, :lead_provider,
              :course, :declaration_date,
              to: :declaration
 
@@ -29,7 +29,7 @@ module ParticipantOutcomes
     end
 
     def latest_existing_outcome
-      @latest_existing_outcome ||= user&.latest_participant_outcome(lead_provider, course.identifier)
+      @latest_existing_outcome ||= teacher&.latest_participant_outcome(lead_provider, course.identifier)
     end
   end
 end

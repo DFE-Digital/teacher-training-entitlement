@@ -1,6 +1,6 @@
 class SessionsController < PublicPagesController
   def extend_session
-    if session[:user_id].present?
+    if session[:teacher_id].present?
       session[:last_activity_at] = Time.current
       head :ok
     else

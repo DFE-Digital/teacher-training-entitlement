@@ -3,38 +3,38 @@ class RequestTrnJob < ApplicationJob
 
   retry_on RefreshTokenError, wait: :polynomially_longer, attempts: 5
 
-  def perform(user)
-    return unless user.can_request_trn?
+  def perform(teacher)
+    return unless teacher.can_request_trn?
 
     # Get fresh access token
-    tokens = TeacherAuth::RefreshToken.new(user.refresh_token).call
+    tokens = TeacherAuth::RefreshToken.new(teacher.refresh_token).call
 
     if tokens == :invalid_token
-      user.clear_auth_tokens!
+      teacher.clear_auth_tokens!
       return
     end
 
-    raise RefreshTokenError, "Failed to refresh token for user #{user.id}" unless tokens
+    raise RefreshTokenError, "Failed to refresh token for teacher #{teacher.id}" unless tokens
 
     # Request TRN activation
     result = TeacherAuth::ActivateTrn.new(tokens[:access_token]).call
 
     # Update tokens regardless of activation result
-    user_attrs = {
+    teacher_attrs = {
       refresh_token: tokens[:refresh_token],
       refresh_token_updated_at: Time.current,
       trn_requested_at: Time.current,
     }
 
-    # If TRN returned immediately, update user and clear refresh token
+    # If TRN returned immediately, update teacher and clear refresh token
     if result && result[:trn].present?
-      user_attrs.merge!(
+      teacher_attrs.merge!(
         trn: result[:trn],
         refresh_token: nil,
         refresh_token_updated_at: nil,
       )
     end
 
-    user.update!(user_attrs)
+    teacher.update!(teacher_attrs)
   end
 end

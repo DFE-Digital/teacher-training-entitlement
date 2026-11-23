@@ -63,8 +63,8 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       it do
         aggregate_failures do
           expect(GenericMailer).to receive(:with).with(
-            to: application.user.email,
-            full_name: application.user.full_name,
+            to: application.teacher.email,
+            full_name: application.teacher.full_name,
             provider_name: application.lead_provider.name,
             course_name: application.course.name,
             ecf_id: application.ecf_id,

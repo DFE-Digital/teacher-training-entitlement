@@ -97,8 +97,8 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
     context "when participants" do
       let(:email_attrs) do
         {
-          to: application.user.email,
-          full_name: application.user.full_name,
+          to: application.teacher.email,
+          full_name: application.teacher.full_name,
           provider_name: new_provider.name,
           course_name: application.course.name,
           cohort_date: application.cohort.name,
@@ -130,8 +130,8 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
           to: old_provider.email,
           provider_name: old_provider.name,
           course_name: application.course.name,
-          participant_trn: application.user.trn,
-          particitpant_name: application.user.full_name,
+          participant_trn: application.teacher.trn,
+          particitpant_name: application.teacher.full_name,
           change_date: application.previous_application_lead_provider&.updated_at&.to_fs(:govuk_short),
           ecf_id: application.ecf_id,
         }

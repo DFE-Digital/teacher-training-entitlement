@@ -37,7 +37,7 @@ module Helpers
         expect(page).to have_link("View your registration details", href: application_path(latest_application.ecf_id))
       end
 
-      expect(User.count).to be(1)
+      expect(Teacher.count).to be(1)
       expect(Application.count).to be(total_number_of_created_applications)
     end
 

@@ -21,7 +21,7 @@ RSpec.describe API::DeclarationsCsvSerializer, type: :serializer do
     it "returns expected data", :aggregate_failures do
       expect(first_row).to include({
         id: first_declaration.ecf_id,
-        participant_id: first_declaration.user.ecf_id,
+        participant_id: first_declaration.teacher.ecf_id,
         declaration_type: first_declaration.declaration_type,
         course_identifier: first_declaration.course_identifier,
         declaration_date: first_declaration.declaration_date.rfc3339,

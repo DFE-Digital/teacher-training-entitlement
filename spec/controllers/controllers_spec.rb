@@ -1,41 +1,41 @@
 require "rails_helper"
 
 RSpec.describe "choosing the correct controller to inherit from" do
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
   let(:admin_user) { create(:admin) }
 
-  shared_examples "not allowing an unauthenticated user access" do
-    it "does not allow unauthenticated user access" do
+  shared_examples "not allowing an unauthenticated teacher access" do
+    it "does not allow unauthenticated teacher access" do
       get :index
       expect(response).to redirect_to(root_path)
     end
   end
 
-  shared_examples "redirecting an unauthenticated user to admin sign in" do
-    it "does not allow unauthenticated user access" do
+  shared_examples "redirecting an unauthenticated teacher to admin sign in" do
+    it "does not allow unauthenticated teacher access" do
       get :index
       expect(response).to redirect_to(sign_in_path)
     end
   end
 
-  shared_examples "allowing an unauthenticated user access" do
-    it "allows unauthenticated user access" do
+  shared_examples "allowing an unauthenticated teacher access" do
+    it "allows unauthenticated teacher access" do
       get :index
       expect(response).to have_http_status(:ok)
     end
   end
 
-  shared_examples "allowing an authenticated user access" do
-    it "allows authenticated user access" do
-      session[:user_id] = user.id
+  shared_examples "allowing an authenticated teacher access" do
+    it "allows authenticated teacher access" do
+      session[:teacher_id] = teacher.id
       get :index
       expect(response).to have_http_status(:ok)
     end
   end
 
-  shared_examples "not allowing an authenticated user access" do
-    it "does not allow authenticated user access" do
-      session[:user_id] = user.id
+  shared_examples "not allowing an authenticated teacher access" do
+    it "does not allow authenticated teacher access" do
+      session[:teacher_id] = teacher.id
       get :index
       expect(response).to redirect_to(sign_in_path)
     end
@@ -78,8 +78,8 @@ RSpec.describe "choosing the correct controller to inherit from" do
       end
     end
 
-    it_behaves_like "not allowing an unauthenticated user access"
-    it_behaves_like "allowing an authenticated user access"
+    it_behaves_like "not allowing an unauthenticated teacher access"
+    it_behaves_like "allowing an authenticated teacher access"
     it_behaves_like "not allowing an admin access"
   end
 
@@ -90,8 +90,8 @@ RSpec.describe "choosing the correct controller to inherit from" do
       end
     end
 
-    it_behaves_like "redirecting an unauthenticated user to admin sign in"
-    it_behaves_like "not allowing an authenticated user access"
+    it_behaves_like "redirecting an unauthenticated teacher to admin sign in"
+    it_behaves_like "not allowing an authenticated teacher access"
     it_behaves_like "allowing an admin access"
   end
 
@@ -102,41 +102,41 @@ RSpec.describe "choosing the correct controller to inherit from" do
       end
     end
 
-    it_behaves_like "allowing an unauthenticated user access"
-    it_behaves_like "allowing an authenticated user access"
+    it_behaves_like "allowing an unauthenticated teacher access"
+    it_behaves_like "allowing an authenticated teacher access"
     it_behaves_like "allowing an admin access"
   end
 
-  describe "sessions with NullUser in" do
+  describe "sessions with NullTeacher in" do
     controller(PublicPagesController) do
       def index
         head :ok
       end
     end
 
-    context "with a NullUser set" do
+    context "with a NullTeacher set" do
       before do
-        session[:user_id] = 1
-        session[:registration_store] = { current_user: NullUser.new }
+        session[:teacher_id] = 1
+        session[:registration_store] = { current_teacher: NullTeacher.new }
       end
 
       it "clears out the session" do
         get :index
-        expect(session[:user_id]).to be_nil
+        expect(session[:teacher_id]).to be_nil
         expect(session[:registration_store]).to be_nil
       end
     end
 
-    context "without a NullUser set" do
+    context "without a NullTeacher set" do
       before do
-        session[:user_id] = user.id
-        session[:registration_store] = { current_user: user }
+        session[:teacher_id] = teacher.id
+        session[:registration_store] = { current_teacher: teacher }
       end
 
       it "does not clear out the session" do
         get :index
-        expect(session[:user_id]).to eq user.id
-        expect(session[:registration_store][:current_user]).to eq user
+        expect(session[:teacher_id]).to eq teacher.id
+        expect(session[:registration_store][:current_teacher]).to eq teacher
       end
     end
   end

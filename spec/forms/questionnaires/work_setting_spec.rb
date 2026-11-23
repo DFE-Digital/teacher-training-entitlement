@@ -15,7 +15,7 @@ RSpec.describe Questionnaires::WorkSetting, type: :model do
   describe "next_step" do
     subject { described_class.new(work_setting:, wizard:).next_step }
 
-    let(:wizard) { RegistrationWizard.new(current_step: :work_setting, store:, request: nil, current_user: build_stubbed(:user)) }
+    let(:wizard) { RegistrationWizard.new(current_step: :work_setting, store:, request: nil, current_teacher: build_stubbed(:teacher)) }
     let(:store) do
       { "teacher_catchment" => "england" }
     end
@@ -51,7 +51,7 @@ RSpec.describe Questionnaires::WorkSetting, type: :model do
   describe "#after_save" do
     subject(:form) { described_class.new(wizard:) }
 
-    let(:wizard) { RegistrationWizard.new(current_step: :work_setting, store:, request: nil, current_user: build_stubbed(:user)) }
+    let(:wizard) { RegistrationWizard.new(current_step: :work_setting, store:, request: nil, current_teacher: build_stubbed(:teacher)) }
     let(:store) do
       {
         "funding" => "school",

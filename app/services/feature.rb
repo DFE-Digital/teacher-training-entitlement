@@ -27,8 +27,8 @@ class Feature
       redundant.each(&:remove)
     end
 
-    def registration_closed?(user)
-      !Flipper.enabled?(REGISTRATION_OPEN, user)
+    def registration_closed?(teacher)
+      !Flipper.enabled?(REGISTRATION_OPEN, teacher)
     end
 
     def registration_disabled?

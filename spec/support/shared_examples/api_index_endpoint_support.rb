@@ -223,11 +223,11 @@ end
 RSpec.shared_examples "an API index endpoint with filter by participant_id" do
   context "when filtering by participant_id" do
     it "returns resources with the given `participant_id`" do
-      resource1 = create_resource(lead_provider: current_lead_provider, user: create(:user))
-      resource2 = create_resource(lead_provider: current_lead_provider, user: create(:user))
-      create_resource(lead_provider: current_lead_provider, user: create(:user))
+      resource1 = create_resource(lead_provider: current_lead_provider, teacher: create(:teacher))
+      resource2 = create_resource(lead_provider: current_lead_provider, teacher: create(:teacher))
+      create_resource(lead_provider: current_lead_provider, teacher: create(:teacher))
 
-      api_get(path, params: { filter: { participant_id: [resource1.user.ecf_id, resource2.user.ecf_id].join(",") } })
+      api_get(path, params: { filter: { participant_id: [resource1.teacher.ecf_id, resource2.teacher.ecf_id].join(",") } })
 
       expect(parsed_response["data"].size).to eq(2)
     end
@@ -313,7 +313,7 @@ end
 RSpec.shared_examples "an API index endpoint with filter by from_participant_id" do
   context "when fitlering by from_participant_id" do
     let!(:resource) { create_resource(lead_provider: current_lead_provider) }
-    let(:participant_id_change) { create(:participant_id_change, user: resource, to_participant_id: resource.ecf_id) }
+    let(:participant_id_change) { create(:participant_id_change, teacher: resource, to_participant_id: resource.ecf_id) }
     let(:from_participant_id) { participant_id_change.from_participant_id }
 
     it "returns resources with the given `from_participant_id`" do

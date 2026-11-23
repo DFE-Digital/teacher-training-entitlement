@@ -5,7 +5,7 @@ module API
 
     class AttributesSerializer < Blueprinter::Base
       exclude :id
-      field(:participant_id) { |declaration| declaration.user.ecf_id }
+      field(:participant_id) { |declaration| declaration.teacher.ecf_id }
       field(:declaration_type)
       field(:course_identifier)
       field(:declaration_date)

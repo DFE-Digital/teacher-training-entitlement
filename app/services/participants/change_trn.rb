@@ -6,18 +6,18 @@ module Participants
     include ActiveModel::Attributes
     include ActiveModel::Validations::Callbacks
 
-    attribute :user
+    attribute :teacher
     attribute :trn
 
     before_validation :strip_trn_whitespace
 
-    validates :user, presence: true
+    validates :teacher, presence: true
     validates :trn, valid_trn: true
 
     def change_trn
       return false if invalid?
 
-      user.update(trn:, trn_lookup_status: nil) # rubocop:disable Rails/SaveBang - return value is used by caller
+      teacher.update(trn:, trn_lookup_status: nil) # rubocop:disable Rails/SaveBang - return value is used by caller
     end
 
   private

@@ -7,13 +7,13 @@ class HandleSubmissionForStore
 
   def call
     ActiveRecord::Base.transaction do
-      @application = user.applications.create!(
+      @application = teacher.applications.create!(
         course_cohort:,
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
         institution:,
         funding_eligibility: funding_eligibility_service.funding_eligibility,
         funding_choice:,
-        registration_data: store.except("generated_confirmation_code", "current_user", "current_user_id"),
+        registration_data: store.except("generated_confirmation_code", "current_teacher", "current_teacher_id"),
         status: Application::PENDING,
       )
       enqueue_send_application_submission_email_job(application)
@@ -61,7 +61,7 @@ private
     @course ||= query_store.course
   end
 
-  def user
-    @user ||= store["current_user"].presence || User.find(store["current_user_id"])
+  def teacher
+    @teacher ||= store["current_teacher"].presence || Teacher.find(store["current_teacher_id"])
   end
 end

@@ -38,16 +38,16 @@ module Participants
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      users_updated_since = User.where(significantly_updated_at: updated_since..)
-      applications_updated_since = User.where(id: Application.where(updated_at: updated_since..).select(:user_id))
-      participant_id_changes_updated_since = User.where(id: ParticipantIdChange.where(updated_at: updated_since..).select(:user_id))
-      scope.merge!(users_updated_since.or(applications_updated_since).or(participant_id_changes_updated_since))
+      teachers_updated_since = Teacher.where(significantly_updated_at: updated_since..)
+      applications_updated_since = Teacher.where(id: Application.where(updated_at: updated_since..).select(:teacher_id))
+      participant_id_changes_updated_since = Teacher.where(id: ParticipantIdChange.where(updated_at: updated_since..).select(:teacher_id))
+      scope.merge!(teachers_updated_since.or(applications_updated_since).or(participant_id_changes_updated_since))
     end
 
     def where_status_in(status)
       return if ignore?(filter: status)
 
-      scope.merge!(User.includes(:applications).where(applications: { status: extract_conditions(status, allowlist: Application::STATUSES) }))
+      scope.merge!(Teacher.includes(:applications).where(applications: { status: extract_conditions(status, allowlist: Application::STATUSES) }))
     end
 
     def where_from_participant_id_is(from_participant_id)
@@ -57,11 +57,11 @@ module Participants
     end
 
     def order_by
-      sort_order(sort:, model: User, default: { created_at: :asc })
+      sort_order(sort:, model: Teacher, default: { created_at: :asc })
     end
 
     def all_participants
-      User
+      Teacher
         .distinct
         .joins(:applications).merge(Application.has_been_accepted)
         .includes(

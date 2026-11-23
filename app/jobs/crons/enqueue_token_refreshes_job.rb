@@ -6,8 +6,8 @@ class Crons::EnqueueTokenRefreshesJob < CronJob
   sentry_monitor_check_ins slug: "enqueue-token-refreshes"
 
   def perform
-    User.requiring_token_refresh.find_each do |user|
-      RefreshUserTokenJob.perform_later(user)
+    Teacher.requiring_token_refresh.find_each do |teacher|
+      RefreshTeacherTokenJob.perform_later(teacher)
     end
   end
 end

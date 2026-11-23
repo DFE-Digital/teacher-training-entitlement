@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Questionnaires::CheckAnswers do
-  let(:user_record_trn) { "7654321" }
-  let(:user) { create(:user, trn: user_record_trn) }
+  let(:teacher_record_trn) { "7654321" }
+  let(:teacher) { create(:teacher, trn: teacher_record_trn) }
   let(:load_provider) { LeadProvider.all.sample }
   let(:course) { create(:course) }
   let(:school) { create(:school) }
@@ -13,12 +13,12 @@ RSpec.describe Questionnaires::CheckAnswers do
       institution_id: school.institution.id,
       course_identifier: course.identifier,
       trn: store_trn,
-      confirmed_email: user.email,
+      confirmed_email: teacher.email,
     }.stringify_keys
   end
   let(:session) { {} }
   let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
-  let(:wizard) { RegistrationWizard.new(current_step: :check_answers, store:, request:, current_user: user) }
+  let(:wizard) { RegistrationWizard.new(current_step: :check_answers, store:, request:, current_teacher: teacher) }
 
   describe "#previous_step" do
     it "goes to share_provider" do

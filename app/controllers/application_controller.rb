@@ -6,9 +6,9 @@ class ApplicationController < ActionController::Base
   before_action :http_basic_authenticate, if: -> { Rails.env.staging? }
 
   around_action :set_time_zone
-  before_action :clear_null_user_sessions
+  before_action :clear_null_teacher_sessions
   before_action :set_cache_headers
-  before_action :authenticate_user!
+  before_action :authenticate_teacher!
   before_action :set_sentry_user
   before_action :initialize_store
 
@@ -27,33 +27,36 @@ private
     end
   end
 
-  def authenticate_user!
+  def authenticate_teacher!
     raise "ApplicationController should not be used directly. Use a subclass instead."
   end
 
-  # If the user is logged in then we should retrieve from the logged in user record,
-  # otherwise we should generate a new one for assigning to the NullUser record that will
-  # later be persisted against a new User record once one is created.
+  # If the teacher is logged in then we should retrieve from the logged in teacher record,
+  # otherwise we should generate a new one for assigning to the NullTeacher record that will
+  # later be persisted against a new Teacher record once one is created.
   def feature_flag_id
-    return logged_in_user.retrieve_or_persist_feature_flag_id if logged_in_user.present?
+    return logged_in_teacher.retrieve_or_persist_feature_flag_id if logged_in_teacher.present?
 
     session[:feature_flag_id] ||= SecureRandom.uuid
   end
   helper_method :feature_flag_id
 
-  def current_user
-    logged_in_user
+  def current_teacher
+    logged_in_teacher
   end
-  helper_method :current_user
+  helper_method :current_teacher
+
+  # DfE::Analytics::Requests attributes web_request events to current_user.
+  alias_method :current_user, :current_teacher
 
   def set_sentry_user
-    Sentry.set_user(id: current_user.id) if current_user
+    Sentry.set_user(id: current_teacher.id) if current_teacher
   end
 
-  # Use current_user instead!
-  def logged_in_user
-    User.find_by(id: session[:user_id]).tap do |public_user|
-      PaperTrail.request.whodunnit = "Public User #{public_user.id}" if public_user
+  # Use current_teacher instead!
+  def logged_in_teacher
+    Teacher.find_by(id: session[:teacher_id]).tap do |public_teacher|
+      PaperTrail.request.whodunnit = "Public User #{public_teacher.id}" if public_teacher
     end
   end
 
@@ -79,9 +82,9 @@ private
     no_store
   end
 
-  def clear_null_user_sessions
+  def clear_null_teacher_sessions
     if session.key?(:registration_store) &&
-        session[:registration_store][:current_user].is_a?(NullUser)
+        session[:registration_store][:current_teacher].is_a?(NullTeacher)
       reset_session
       redirect_to root_path
     end

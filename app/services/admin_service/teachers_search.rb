@@ -1,4 +1,4 @@
-class AdminService::UsersSearch
+class AdminService::TeachersSearch
   attr_reader :q
 
   def initialize(q:)
@@ -6,19 +6,19 @@ class AdminService::UsersSearch
   end
 
   def call
-    return User.all if q.blank?
+    return Teacher.all if q.blank?
 
     chain = default_scope
 
     if q.present?
-      users = User.arel_table
+      teachers = Teacher.arel_table
 
-      chain = chain.where(users[:email].matches("%#{q}%"))
-      chain = chain.or(default_scope.where(users[:full_name].matches("%#{q}%")))
-      chain = chain.or(default_scope.where(users[:preferred_name].matches("%#{q}%")))
+      chain = chain.where(teachers[:email].matches("%#{q}%"))
+      chain = chain.or(default_scope.where(teachers[:full_name].matches("%#{q}%")))
+      chain = chain.or(default_scope.where(teachers[:preferred_name].matches("%#{q}%")))
       chain = chain.or(default_scope.where(ecf_id: q))
       chain = chain.or(default_scope.where(applications: { ecf_id: q }))
-      chain = chain.or(default_scope.where(users[:trn].matches("%#{q}%")))
+      chain = chain.or(default_scope.where(teachers[:trn].matches("%#{q}%")))
       chain = chain.or(default_scope.where(applications: { institution_id: find_institutions_by_urn.pluck(:id) }))
     end
 
@@ -32,6 +32,6 @@ private
   end
 
   def default_scope
-    User.left_joins(:applications).order(email: :asc)
+    Teacher.left_joins(:applications).order(email: :asc)
   end
 end

@@ -4,9 +4,9 @@ RSpec.describe Application do
   subject(:application) { create(:application) }
 
   describe "relationships" do
-    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:teacher) }
     it { is_expected.to belong_to(:institution).optional }
-    it { is_expected.to have_many(:participant_id_changes).through(:user) }
+    it { is_expected.to have_many(:participant_id_changes).through(:teacher) }
     it { is_expected.to have_many(:state_changes) }
     it { is_expected.to have_many(:declarations) }
   end
@@ -256,29 +256,29 @@ RSpec.describe Application do
     end
   end
 
-  describe "updating the user when application changes" do
+  describe "updating the teacher when application changes" do
     let!(:old_datetime) { 6.months.ago }
-    let(:user) { create(:user, updated_at: old_datetime) }
-    let(:application) { create(:application, :pending, user:) }
+    let(:teacher) { create(:teacher, updated_at: old_datetime) }
+    let(:application) { create(:application, :pending, teacher:) }
 
     context "when application is updated" do
       before do
         travel_to(old_datetime) do
-          user
+          teacher
           application
         end
       end
 
       context "when status is changed" do
-        it "does not update user.updated_at" do
+        it "does not update teacher.updated_at" do
           freeze_time do
-            expect(user.updated_at).to be_within(1.second).of(old_datetime)
+            expect(teacher.updated_at).to be_within(1.second).of(old_datetime)
             expect(application.updated_at).to be_within(1.second).of(old_datetime)
 
             application.rejected_status!
 
             expect(application.updated_at).to eq(Time.zone.now)
-            expect(user.reload.updated_at).to be_within(1.second).of(old_datetime)
+            expect(teacher.reload.updated_at).to be_within(1.second).of(old_datetime)
           end
         end
       end

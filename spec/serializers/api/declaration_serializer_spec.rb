@@ -40,7 +40,7 @@ RSpec.describe API::DeclarationSerializer, type: :serializer do
         subject(:attributes) { JSON.parse(described_class.render(declaration, view:))["attributes"] }
 
         it "serializes the `participant_id`" do
-          expect(attributes["participant_id"]).to eq(declaration.application.user.ecf_id)
+          expect(attributes["participant_id"]).to eq(declaration.application.teacher.ecf_id)
         end
 
         it "serializes the `declaration_type`" do

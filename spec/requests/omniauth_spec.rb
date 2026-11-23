@@ -37,26 +37,26 @@ RSpec.describe "Omniauth callbacks", type: :request do
       end
 
       context "when omniauth callback is successful" do
-        let(:user) { create(:user, :with_one_login_id) }
-        let(:service) { instance_double(Users::FindOrCreateFromTeacherAuth, call: user) }
+        let(:teacher) { create(:teacher, :with_one_login_id) }
+        let(:service) { instance_double(Teachers::FindOrCreateFromTeacherAuth, call: teacher) }
 
         before do
-          allow(Users::FindOrCreateFromTeacherAuth).to receive(:new).and_return(service)
+          allow(Teachers::FindOrCreateFromTeacherAuth).to receive(:new).and_return(service)
         end
 
-        it "calls Users::FindOrCreateFromTeacherAuth to find or create a user" do
-          expect(Users::FindOrCreateFromTeacherAuth).to receive(:new).with(
+        it "calls Teachers::FindOrCreateFromTeacherAuth to find or create a teacher" do
+          expect(Teachers::FindOrCreateFromTeacherAuth).to receive(:new).with(
             provider_data: mock_auth,
             feature_flag_id: nil,
           )
           make_request
         end
 
-        it "signs in the user and redirects" do
+        it "signs in the teacher and redirects" do
           expect(StreamAnalyticsEventToBigQueryJob).to receive(:send_event).with(
             type: :one_login_completed,
             request: an_instance_of(ActionDispatch::Request),
-            user:,
+            user: teacher,
           )
 
           make_request
@@ -77,12 +77,12 @@ RSpec.describe "Omniauth callbacks", type: :request do
           end
         end
 
-        context "when user has applications" do
+        context "when teacher has applications" do
           before do
-            create(:application, user: user)
+            create(:application, teacher: teacher)
           end
 
-          it "redirects to user registrations path" do
+          it "redirects to teacher registrations path" do
             make_request
             expect(response).to redirect_to(registration_wizard_show_path("course-start-date"))
           end
@@ -91,7 +91,7 @@ RSpec.describe "Omniauth callbacks", type: :request do
 
       context "when the service raises an error" do
         before do
-          allow(Users::FindOrCreateFromTeacherAuth).to receive(:new).and_raise(StandardError, "Something went wrong")
+          allow(Teachers::FindOrCreateFromTeacherAuth).to receive(:new).and_raise(StandardError, "Something went wrong")
         end
 
         it "sends a failed event" do

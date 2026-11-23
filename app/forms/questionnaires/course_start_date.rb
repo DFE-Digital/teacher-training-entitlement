@@ -54,7 +54,7 @@ module Questionnaires
     end
 
     def requirements_met?
-      query_store.current_user
+      query_store.current_teacher
     end
 
     def after_save
@@ -63,10 +63,10 @@ module Questionnaires
 
     def next_step
       if course_start_date == "later"
-        wizard.current_user.update!(notify_user_for_future_reg: true)
+        wizard.current_teacher.update!(notify_teacher_for_future_reg: true)
         :cannot_register_yet
       else
-        wizard.current_user.update!(notify_user_for_future_reg: false)
+        wizard.current_teacher.update!(notify_teacher_for_future_reg: false)
         :choose_your_provider
       end
     end

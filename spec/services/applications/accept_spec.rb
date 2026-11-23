@@ -94,19 +94,19 @@ RSpec.describe Applications::Accept, type: :model do
       ActiveJob::Base.queue_adapter = :test
     end
 
-    context "when user has no TRN" do
-      let(:user) { create(:user, trn: nil, refresh_token: "token") }
-      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded, user:) }
+    context "when teacher has no TRN" do
+      let(:teacher) { create(:teacher, trn: nil, refresh_token: "token") }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded, teacher:) }
       let(:funded_place) { true }
 
       it "enqueues RequestTrnJob" do
-        expect { service.call }.to have_enqueued_job(RequestTrnJob).with(user)
+        expect { service.call }.to have_enqueued_job(RequestTrnJob).with(teacher)
       end
     end
 
-    context "when user has TRN" do
-      let(:user) { create(:user, trn: "1234567") }
-      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded, user:) }
+    context "when teacher has TRN" do
+      let(:teacher) { create(:teacher, trn: "1234567") }
+      let(:application) { create(:application, lead_provider:, course_cohort:, funding_eligibility: :funded, teacher:) }
       let(:funded_place) { true }
 
       it "does not enqueue RequestTrnJob" do

@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe HandleSubmissionForStore do
   subject(:service) { described_class.new(store:) }
 
-  let(:user_record_trn) { "0012345" }
-  let(:user) { create(:user, trn: user_record_trn, full_name: "John Doe", ecf_id: nil) }
+  let(:teacher_record_trn) { "0012345" }
+  let(:teacher) { create(:teacher, trn: teacher_record_trn, full_name: "John Doe", ecf_id: nil) }
   let(:school) { create(:school, :funding_eligible_establishment_type_code) }
   let(:private_childcare_provider) { create(:private_childcare_provider, :on_early_years_register) }
   let(:cohort) { create(:cohort, :current) }
@@ -14,7 +14,7 @@ RSpec.describe HandleSubmissionForStore do
 
   let(:store) do
     {
-      "current_user_id" => user.id,
+      "current_teacher_id" => teacher.id,
       "course_identifier" => course.identifier,
       "course_cohort_ecf_id" => course_cohort.ecf_id,
       "institution_id" => private_childcare_provider.institution.id,
@@ -23,12 +23,12 @@ RSpec.describe HandleSubmissionForStore do
     }
   end
 
-  let(:expected_user_attributes) do
+  let(:expected_teacher_attributes) do
     {
-      "email" => user.email,
-      "ecf_id" => user.ecf_id,
+      "email" => teacher.email,
+      "ecf_id" => teacher.ecf_id,
       "trn" => "0012345",
-      "full_name" => user.full_name,
+      "full_name" => teacher.full_name,
       "provider" => nil,
       "raw_tra_provider_data" => nil,
       "date_of_birth" => 30.years.ago.to_date.to_s,
@@ -37,13 +37,13 @@ RSpec.describe HandleSubmissionForStore do
       "archived_email" => nil,
       "archived_at" => nil,
       "national_insurance_number" => nil,
-      "notify_user_for_future_reg" => false,
-      "preferred_name" => user.preferred_name,
+      "notify_teacher_for_future_reg" => false,
+      "preferred_name" => teacher.preferred_name,
       "refresh_token" => nil,
       "refresh_token_updated_at" => nil,
       "trn_lookup_status" => nil,
       "trn_requested_at" => nil,
-      "feature_flag_id" => user.feature_flag_id,
+      "feature_flag_id" => teacher.feature_flag_id,
     }
   end
 
@@ -56,26 +56,26 @@ RSpec.describe HandleSubmissionForStore do
         .except(*Application.column_names.grep(/teacher.*country/))
     end
 
-    context "when the store includes a user object (legacy behaviour)" do
+    context "when the store includes a teacher object (legacy behaviour)" do
       let(:store) do
         {
-          "current_user" => user,
+          "current_teacher" => teacher,
           "course_identifier" => course.identifier,
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "lead_provider_id" => lead_provider.id,
         }
       end
 
-      it "creates an application for the user" do
+      it "creates an application for the teacher" do
         subject.call
-        expect(user.applications.reload.count).to eq 1
+        expect(teacher.applications.reload.count).to eq 1
       end
     end
 
     context "when store includes information from the school path" do
       let(:store) do
         {
-          "current_user_id" => user.id,
+          "current_teacher_id" => teacher.id,
           "course_identifier" => course.identifier,
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => school.institution.id,
@@ -86,15 +86,15 @@ RSpec.describe HandleSubmissionForStore do
       end
 
       it "stores data from store" do
-        expect(stable_as_json(user.reload)).to match(expected_user_attributes)
-        expect(user.applications.reload.count).to eq 0
-        expect(stable_as_json(user.applications.last)).to match(nil)
+        expect(stable_as_json(teacher.reload)).to match(expected_teacher_attributes)
+        expect(teacher.applications.reload.count).to eq 0
+        expect(stable_as_json(teacher.applications.last)).to match(nil)
 
         subject.call
 
-        expect(stable_as_json(user.reload)).to match(expected_user_attributes)
-        expect(user.applications.reload.count).to eq 1
-        last_application = user.applications.last
+        expect(stable_as_json(teacher.reload)).to match(expected_teacher_attributes)
+        expect(teacher.applications.reload.count).to eq 1
+        last_application = teacher.applications.last
         expect(last_application.lead_provider).to eq(lead_provider)
         expect(last_application.application_lead_providers.first.assigned_at).to be_present
         expect(stable_as_json(last_application)).to match({
@@ -107,7 +107,7 @@ RSpec.describe HandleSubmissionForStore do
           "notes" => nil,
           "institution_id" => school.institution.id,
           "training_starts_at" => course_cohort.training_starts_at.to_s,
-          "user_id" => user.id,
+          "teacher_id" => teacher.id,
         })
       end
 
@@ -116,7 +116,7 @@ RSpec.describe HandleSubmissionForStore do
 
         subject.call
 
-        application = user.applications.last
+        application = teacher.applications.last
         expect(application.institution.country_long_name).to eq("Jersey")
         expect(application.institution.alpha3_country_code).to eq("JEY")
       end
@@ -136,7 +136,7 @@ RSpec.describe HandleSubmissionForStore do
 
         it "clears the funding choice to nil on the application" do
           subject.call
-          expect(user.applications.first.reload.funding_choice).to be_nil
+          expect(teacher.applications.first.reload.funding_choice).to be_nil
         end
       end
 
@@ -147,7 +147,7 @@ RSpec.describe HandleSubmissionForStore do
 
         it "saves the funding choice to school on the application" do
           subject.call
-          expect(user.applications.first.reload.funding_choice).to eq "school"
+          expect(teacher.applications.first.reload.funding_choice).to eq "school"
         end
       end
     end

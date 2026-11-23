@@ -27,7 +27,7 @@ module Applications
 
   private
 
-    delegate :cohort, :user, :lead_provider, to: :application
+    delegate :cohort, :teacher, :lead_provider, to: :application
 
     def not_already_accepted
       return if application.blank?
@@ -47,7 +47,7 @@ module Applications
 
       application.transition_status!(Application::ACCEPTED, **opts)
 
-      RequestTrnJob.perform_later(user) if user.trn.blank?
+      RequestTrnJob.perform_later(teacher) if teacher.trn.blank?
     end
 
     def eligible_for_funded_place

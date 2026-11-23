@@ -3,9 +3,9 @@
 # Based on: documentation/lead_provider_api_test_scenarios.md
 
 # Custom email templates for lead providers (optional)
-# Used to generate test user emails in format: prefix+<user.id>@domain
+# Used to generate test teacher emails in format: prefix+<teacher.id>@domain
 # When a custom email template is set for a provider, the format will be:
-# email+<user.id>@domain.com where template is email@domain.com
+# email+<teacher.id>@domain.com where template is email@domain.com
 custom_email_templates:
   "UCL Institute of Education": "tte@ucl.ac.uk"
 

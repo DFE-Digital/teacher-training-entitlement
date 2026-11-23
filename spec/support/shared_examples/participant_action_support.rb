@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.shared_examples "a participant action" do
   let(:lead_provider) { application.lead_provider }
-  let(:participant_id) { application.user.ecf_id }
+  let(:participant_id) { application.teacher.ecf_id }
   let(:application) { create(:application, :accepted, :with_declaration) }
   let(:course_identifier) { application.course.identifier }
 
@@ -27,7 +27,7 @@ RSpec.shared_examples "a participant action" do
       let(:application) { create(:application) }
 
       # This error is misleading, it should be :application_not_found really,
-      # but to implement this is complex, because the current Participants::Query only returns users with accepted applications
+      # but to implement this is complex, because the current Participants::Query only returns teachers with accepted applications
       it { is_expected.to have_error(:participant_id, :invalid_participant, "Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.") }
     end
 
@@ -61,7 +61,7 @@ end
 
 RSpec.shared_examples "a participant state transition" do |action, from_states, to_state|
   let(:lead_provider) { application.lead_provider }
-  let(:participant_id) { application.user.ecf_id }
+  let(:participant_id) { application.teacher.ecf_id }
   let(:application) { create(:application, :accepted, :with_declaration, status: from_states.sample) }
   let(:course_identifier) { application.course.identifier }
 

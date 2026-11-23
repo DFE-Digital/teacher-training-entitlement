@@ -50,24 +50,24 @@ private
     FUNDED_ELIGIBILITY_RESULT
   end
 
-  def users
-    return User.where(trn:) if trn.present?
+  def teachers
+    return Teacher.where(trn:) if trn.present?
 
-    User.where(one_login_id:)
+    Teacher.where(one_login_id:)
   end
 
   def trn
-    query_store.current_user&.trn
+    query_store.current_teacher&.trn
   end
 
   def one_login_id
-    query_store.current_user&.one_login_id
+    query_store.current_teacher&.one_login_id
   end
 
   def accepted_applications
     @accepted_applications ||= begin
-      application_ids = users.flat_map do |user|
-        user.applications
+      application_ids = teachers.flat_map do |teacher|
+        teacher.applications
             .has_been_accepted
             .eligible_for_funding
             .where(funded_place: [nil, true])

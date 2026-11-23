@@ -29,7 +29,7 @@ RSpec.describe SessionWizardSteps::SignInCode, type: :model do
   end
 
   describe "validations" do
-    context "when non existent user" do
+    context "when non existent teacher" do
       let(:store) { { "email" => "noexist@example.com" } }
 
       it { is_expected.to validate_presence_of(:code) }

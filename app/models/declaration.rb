@@ -22,7 +22,7 @@ class Declaration < ApplicationRecord
   has_one :cohort, through: :course_cohort
   has_many :participant_outcomes, dependent: :destroy
 
-  delegate :course, :user, to: :application
+  delegate :course, :teacher, to: :application
   delegate :identifier, to: :course, prefix: true
   delegate :name, to: :lead_provider, prefix: true
 

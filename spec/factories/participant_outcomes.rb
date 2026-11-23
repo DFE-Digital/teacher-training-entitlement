@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :participant_outcome, aliases: [:outcome] do
     transient do
-      user { create(:user) }
+      teacher { create(:teacher) }
       lead_provider { create(:lead_provider) }
       course { create(:course) }
     end
@@ -10,7 +10,7 @@ FactoryBot.define do
     completion_date { 1.week.ago }
     ecf_id { SecureRandom.uuid }
     declaration do
-      association :declaration, :completed, :payable, lead_provider:, user:
+      association :declaration, :completed, :payable, lead_provider:, teacher:
     end
 
     trait :passed do

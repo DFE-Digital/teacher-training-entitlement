@@ -1,12 +1,12 @@
 require "rails_helper"
 
 RSpec.describe RegistrationWizard do
-  subject { described_class.new(current_step:, store:, request:, current_user: user) }
+  subject { described_class.new(current_step:, store:, request:, current_teacher: teacher) }
 
   let(:store) { { "course_cohort_ecf_id" => course_cohort.ecf_id } }
   let(:session) { {} }
   let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
   let(:current_step) { "share_provider" }
   let(:course_cohort) { create(:course_cohort) }
 
@@ -16,7 +16,7 @@ RSpec.describe RegistrationWizard do
     end
 
     context "when invalid step" do
-      subject { described_class.new(current_step: "i_do_not_exist", store:, request:, current_user: user) }
+      subject { described_class.new(current_step: "i_do_not_exist", store:, request:, current_teacher: teacher) }
 
       it "raises an error" do
         expect {

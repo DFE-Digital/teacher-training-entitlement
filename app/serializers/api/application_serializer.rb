@@ -8,14 +8,14 @@ module API
 
       view :v1 do
         field(:course_identifier) { |a| a.course.identifier }
-        field(:email) { |a| a.user.email }
+        field(:email) { |a| a.teacher.email }
         field(:email_validated) { true }
-        field(:full_name) { |a| a.user.full_name }
+        field(:full_name) { |a| a.teacher.full_name }
         field(:funding_choice)
         field(:funding_ineligible_reason, name: :ineligible_for_funding_reason)
         field(:eligible_for_funding)
-        field(:participant_id) { |a| a.user.ecf_id }
-        field(:teacher_reference_number) { |a| a.user.trn }
+        field(:participant_id) { |a| a.teacher.ecf_id }
+        field(:teacher_reference_number) { |a| a.teacher.trn }
         field(:institution_reference_number) { |a| a.institution&.institution_reference_number }
         field(:institution_type) { |a| a.institution&.institutionable_type&.downcase }
         field(:ukprn) { |a| a.institution&.ukprn }
@@ -33,7 +33,7 @@ module API
         field(:created_at)
         field(:updated_at) do |a|
           [
-            a.user.significantly_updated_at,
+            a.teacher.significantly_updated_at,
             a.updated_at,
           ].compact.max
         end

@@ -11,8 +11,8 @@ class ParticipantOutcome < ApplicationRecord
   validates :completion_date, presence: true
   validate :completion_date_not_in_the_future
 
-  delegate :user, :lead_provider, :course, :application_id, to: :declaration
-  delegate :trn, to: :user
+  delegate :teacher, :lead_provider, :course, :application_id, to: :declaration
+  delegate :trn, to: :teacher
   delegate :short_code, to: :course, prefix: true
 
   enum :state, {

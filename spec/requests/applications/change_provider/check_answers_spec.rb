@@ -4,9 +4,9 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
   let(:application) { create(:application) }
   let(:provider_before_changed) { application.lead_provider }
   let(:new_provider) { create(:lead_provider) }
-  let(:user) { application.user }
+  let(:teacher) { application.teacher }
   let(:url) { "/applications/#{application.ecf_id}/change-provider/check-answers" }
-  let(:session) { { user_id: user.id, change_provider: { provider_id: session_provider_id } } }
+  let(:session) { { teacher_id: teacher.id, change_provider: { provider_id: session_provider_id } } }
   let(:session_provider_id) { nil }
 
   before do
@@ -59,7 +59,7 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
 
           post url
           aggregate_failures do
-            last_application = user.applications.reload.last
+            last_application = teacher.applications.reload.last
             expect(last_application).not_to be(application)
 
             expect(response).to redirect_to(application_change_provider_check_answers_path(application.ecf_id))
@@ -71,7 +71,7 @@ RSpec.describe "Applications::ChangeProvider::CheckAnswers", type: :request do
       end
 
       context "when changing provider succeeds" do
-        it "creates updates the application provider and redirects to user registrations path" do
+        it "creates updates the application provider and redirects to teacher registrations path" do
           post url
 
           aggregate_failures do

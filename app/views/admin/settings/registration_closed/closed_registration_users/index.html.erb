@@ -27,16 +27,16 @@
         <tr class="govuk-table__row">
           <td class="govuk-table__cell"><%= user.email %></td>
           <td class="govuk-table__cell">
-            <% service_user = User.find_by(email: user.email) %>
-            <% if service_user.present? %>
+            <% teacher = Teacher.find_by(email: user.email) %>
+            <% if teacher.present? %>
               <%= govuk_tag(text: "Yes", colour: "green") %>
             <% else %>
               <%= govuk_tag(text: "–", colour: "red") %>
             <% end %>
           </td>
           <td class="govuk-table__cell">
-            <% if service_user.present? %>
-              <%= service_user.applications.order(created_at: :desc, id: :desc).first&.created_at&.strftime("%-d %b %Y") || "-" %>
+            <% if teacher.present? %>
+              <%= teacher.applications.order(created_at: :desc, id: :desc).first&.created_at&.strftime("%-d %b %Y") || "-" %>
             <% else %>
               –
             <% end %>

@@ -3,9 +3,9 @@
 require "rails_helper"
 
 RSpec.describe Participants::ChangeTrn, type: :model do
-  subject { described_class.new(trn: trn, user: user) }
+  subject { described_class.new(trn: trn, teacher: teacher) }
 
-  let(:user) { create(:user, trn: original_trn) }
+  let(:teacher) { create(:teacher, trn: original_trn) }
   let(:original_trn) { "1234567" }
   let(:trn) { "2345678" }
 
@@ -30,23 +30,23 @@ RSpec.describe Participants::ChangeTrn, type: :model do
       expect(subject).not_to allow_value("99123456").for(:trn).with_message("TRN is the wrong length (should be 7 characters)")
     end
 
-    it "does not allow a nil user" do
-      expect(subject).not_to allow_value(nil).for(:user).with_message("User not found")
+    it "does not allow a nil teacher" do
+      expect(subject).not_to allow_value(nil).for(:teacher).with_message("Teacher not found")
     end
   end
 
   describe "#change_trn" do
-    subject { described_class.new(trn: trn, user: user).change_trn }
+    subject { described_class.new(trn: trn, teacher: teacher).change_trn }
 
-    it "updates the user's TRN" do
-      expect { subject }.to change(user, :trn).from(original_trn).to(trn)
+    it "updates the teacher's TRN" do
+      expect { subject }.to change(teacher, :trn).from(original_trn).to(trn)
     end
 
     context "when the TRN has whitespace" do
       let(:trn) { "  2345  678  " }
 
       it "strips whitespace" do
-        expect { subject }.to change(user, :trn).from(original_trn).to("2345678")
+        expect { subject }.to change(teacher, :trn).from(original_trn).to("2345678")
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Participants::ChangeTrn, type: :model do
       let(:trn) { "" }
 
       it "does not update the TRN" do
-        expect { subject }.not_to change(user, :trn)
+        expect { subject }.not_to change(teacher, :trn)
       end
 
       it "returns false" do
@@ -62,8 +62,8 @@ RSpec.describe Participants::ChangeTrn, type: :model do
       end
     end
 
-    context "when the user is nil" do
-      let(:user) { nil }
+    context "when the teacher is nil" do
+      let(:teacher) { nil }
 
       it "returns false" do
         expect(subject).to be false
@@ -71,10 +71,10 @@ RSpec.describe Participants::ChangeTrn, type: :model do
     end
 
     context "when trn_lookup_status has a value" do
-      let(:user) { create(:user, trn: original_trn, trn_lookup_status: "Failed") }
+      let(:teacher) { create(:teacher, trn: original_trn, trn_lookup_status: "Failed") }
 
       it "updates trn_lookup_status to nil" do
-        expect { subject }.to change(user, :trn_lookup_status).to(nil)
+        expect { subject }.to change(teacher, :trn_lookup_status).to(nil)
       end
     end
   end

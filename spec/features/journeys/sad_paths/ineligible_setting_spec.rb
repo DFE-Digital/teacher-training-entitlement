@@ -3,14 +3,14 @@ require "rails_helper"
 RSpec.feature "Ineligible setting", :with_default_lead_provider, type: :feature do
   include ApplicationHelper
 
-  let(:user) { create(:user, :with_one_login_id) }
+  let(:teacher) { create(:teacher, :with_one_login_id) }
   let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
   let(:course_cohort) { create(:course_cohort) }
 
   context "when work setting is 'other'" do
     before do
       page.set_rack_session(
-        "user_id" => user.id,
+        "teacher_id" => teacher.id,
         "registration_store" => {
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "course_identifier" => course_cohort.course.identifier,
@@ -39,7 +39,7 @@ RSpec.feature "Ineligible setting", :with_default_lead_provider, type: :feature 
 
     before do
       page.set_rack_session(
-        "user_id" => user.id,
+        "teacher_id" => teacher.id,
         "registration_store" => {
           "course_cohort_ecf_id" => course_cohort.ecf_id,
           "course_identifier" => course_cohort.course.identifier,

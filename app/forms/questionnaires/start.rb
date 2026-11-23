@@ -5,7 +5,7 @@ module Questionnaires
     end
 
     def next_step
-      query_store.current_user.present? ? :course_start_date : :start
+      query_store.current_teacher.present? ? :course_start_date : :start
     end
   end
 end

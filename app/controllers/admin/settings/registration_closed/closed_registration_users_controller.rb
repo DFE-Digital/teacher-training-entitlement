@@ -22,8 +22,8 @@ class Admin::Settings::RegistrationClosed::ClosedRegistrationUsersController < A
   def destroy
     @user = ClosedRegistrationUser.find(params[:id])
     if request.delete?
-      user = User.find_by(email: @user.email)
-      Flipper.disable_actor(Feature::REGISTRATION_OPEN, user) if user
+      teacher = Teacher.find_by(email: @user.email)
+      Flipper.disable_actor(Feature::REGISTRATION_OPEN, teacher) if teacher
       if @user.delete
         flash[:success] = "Access removed for #{@user.email}"
         redirect_to admin_settings_registration_closed_closed_registration_users_path

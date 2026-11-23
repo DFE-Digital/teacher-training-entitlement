@@ -1,12 +1,12 @@
 require "rails_helper"
 
 RSpec.describe "Registrations", type: :request do
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
 
   before do
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
-      .and_return({ user_id: user.id })
+      .and_return({ teacher_id: teacher.id })
   end
 
   it "returns not found for non-HTML requests" do
@@ -15,14 +15,14 @@ RSpec.describe "Registrations", type: :request do
     expect(response).to have_http_status(:not_found)
   end
 
-  describe "User wants to create an application for a subsequent course_cohort" do
+  describe "Teacher wants to create an application for a subsequent course_cohort" do
     [
       Application::REJECTED,
       Application::COMPLETED,
       Application::WITHDRAWN,
     ].each do |status|
       context "when previous application is reject" do
-        before { create(:application, status.to_sym, user:) }
+        before { create(:application, status.to_sym, teacher:) }
 
         it do
           get registration_wizard_show_path("course-start-date")
@@ -38,7 +38,7 @@ RSpec.describe "Registrations", type: :request do
       Application::DEFERRED,
     ].each do |status|
       context "when previous application is #{status}" do
-        before { create(:application, status.to_sym, user:) }
+        before { create(:application, status.to_sym, teacher:) }
 
         it do
           get registration_wizard_show_path("course-start-date")

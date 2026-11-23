@@ -5,7 +5,7 @@ RSpec.describe Admin::Settings::FeaturesController, type: :request do
 
   before { Flipper.enable("test") }
 
-  context "when user is logged in" do
+  context "when teacher is logged in" do
     before { sign_in_as_admin(super_admin: true) }
 
     it "changes feature flag" do
@@ -19,7 +19,7 @@ RSpec.describe Admin::Settings::FeaturesController, type: :request do
     end
   end
 
-  context "when user is not logged in" do
+  context "when teacher is not logged in" do
     it "redirects to the admin sign in page if not signed in" do
       patch admin_settings_feature_path("test"), params: { feature_flag_name: "test" }
       expect(response).to redirect_to(sign_in_path)

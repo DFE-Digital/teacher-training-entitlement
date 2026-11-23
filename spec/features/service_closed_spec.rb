@@ -42,11 +42,11 @@ RSpec.feature "Service is closed", type: :feature do
     let(:super_admin) { create(:super_admin) }
     let(:email) { "example@example.com" }
     let(:other_email) { "example2@example.com" }
-    let(:user_email) { email }
+    let(:teacher_email) { email }
 
     before { close_registration! }
 
-    scenario "Allow user to register" do
+    scenario "Allow teacher to register" do
       visit "/"
       expect(page).to have_content("Registration is temporarily closed")
 
@@ -77,7 +77,7 @@ RSpec.feature "Service is closed", type: :feature do
       end
     end
 
-    scenario "When user is deleted" do
+    scenario "When teacher is deleted" do
       Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
       seed_course_cohort_in_registration_store
       visit "/closed_registration_exception"
@@ -117,7 +117,7 @@ RSpec.feature "Service is closed", type: :feature do
       end
     end
 
-    scenario "When user is deleted and has no account" do
+    scenario "When teacher is deleted and has no account" do
       visit "/closed_registration_exception"
 
       click_on("Start now")
@@ -145,7 +145,7 @@ RSpec.feature "Service is closed", type: :feature do
       end
     end
 
-    scenario "When user is not whitelisted" do
+    scenario "When teacher is not whitelisted" do
       visit "/"
       expect(page).to have_content("Registration is temporarily closed")
 

@@ -61,7 +61,7 @@ ApplicationRecord.descendants.each(&:reset_column_information)
   "add_childcare_providers.rb",
   "add_schools.rb",
   "add_lead_providers.rb",
-  "add_users.rb",
+  "add_teachers.rb",
   "add_lead_provider_courses.rb",
   "add_test_data.rb",
   "add_api_tokens.rb",

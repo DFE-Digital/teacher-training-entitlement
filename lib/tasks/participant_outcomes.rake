@@ -1,13 +1,13 @@
 namespace :participant_outcomes do
   desc "Create a participant outcome"
-  task :create, %i[application_id user_ecf_id lead_provider_ecf_id course_identifier completion_date state] => :environment do |_t, args|
+  task :create, %i[application_id teacher_ecf_id lead_provider_ecf_id course_identifier completion_date state] => :environment do |_t, args|
     logger = Rails.env.test? ? Rails.logger : Logger.new($stdout)
 
     application = Application.find_by(id: args.application_id)
     raise "Application not found: #{args.application_id}" unless application
 
-    user = User.find_by(ecf_id: args.user_ecf_id)
-    raise "User not found: #{args.user_ecf_id}" unless user
+    teacher = Teacher.find_by(ecf_id: args.teacher_ecf_id)
+    raise "Teacher not found: #{args.teacher_ecf_id}" unless teacher
 
     lead_provider = LeadProvider.find_by(ecf_id: args.lead_provider_ecf_id)
     raise "Lead provider not found: #{args.lead_provider_ecf_id}" unless lead_provider
@@ -16,7 +16,7 @@ namespace :participant_outcomes do
 
     participant_outcome_creator = ParticipantOutcomes::Create.new(
       application:,
-      participant_id: user.ecf_id,
+      participant_id: teacher.ecf_id,
       lead_provider:,
       course_identifier: args.course_identifier,
       completion_date: args.completion_date,
@@ -28,7 +28,7 @@ namespace :participant_outcomes do
 
     if participant_outcome_creator.valid?
       logger.info(
-        "Participant outcome created/found for user #{created_outcome.user.ecf_id} " \
+        "Participant outcome created/found for teacher #{created_outcome.teacher.ecf_id} " \
         "with lead provider #{created_outcome.lead_provider.name} " \
         "for course #{created_outcome.course.identifier} " \
         "with completion date #{created_outcome.completion_date} " \

@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     resources name, **options.merge(path: name.to_s.dasherize), &block
   end
 
-  devise_for :users,
+  devise_for :teachers,
              controllers: { omniauth_callbacks: "omniauth" }
 
   get "/healthcheck", to: "monitoring#healthcheck", format: :json
@@ -40,11 +40,11 @@ Rails.application.routes.draw do
 
   get "/sign-in", to: "session_wizard#show", step: "sign_in"
   get "/session/extend", to: "sessions#extend_session", as: "extend_session"
-  match "/sign-out", to: "sessions#destroy", as: "sign_out_user", via: %i[get delete]
+  match "/sign-out", to: "sessions#destroy", as: "sign_out_teacher", via: %i[get delete]
 
   get "/session/:step", to: "session_wizard#show", as: "session_wizard_show"
   patch "/session/:step", to: "session_wizard#update", as: "session_wizard_update"
-  devise_scope :user do
+  devise_scope :teacher do
     post "/one-login", to: "omniauth#one_login", as: "one_login_redirect"
   end
 

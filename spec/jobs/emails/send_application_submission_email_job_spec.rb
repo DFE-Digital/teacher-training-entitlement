@@ -17,8 +17,8 @@ RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
 
     it "calls `ApplicationSubmissionMailer`" do
       expect(GenericMailer).to receive(:with).with(
-        to: application.user.email,
-        full_name: application.user.full_name,
+        to: application.teacher.email,
+        full_name: application.teacher.full_name,
         provider_name: application.lead_provider.name,
         course_name: course.name,
         cohort_date: application.cohort.name,

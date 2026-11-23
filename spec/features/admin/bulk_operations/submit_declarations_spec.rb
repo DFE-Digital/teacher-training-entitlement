@@ -93,14 +93,14 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
 
     scenario "displays results for mixed success and failure" do
       # Create a CSV with one valid and one invalid participant
-      participant = create(:user)
+      participant = create(:teacher)
       cohort = create(:cohort, :current)
       course = create(:course, identifier: "leadership-development")
       lead_provider = create(:lead_provider)
       delivery_partner = create(:delivery_partner)
 
       schedule = create(:schedule, cohort: cohort, course_group: course.course_group, allowed_declaration_types: %w[started])
-      application = create(:application, :accepted, user: participant, cohort: cohort, course: course, lead_provider: lead_provider, schedule: schedule)
+      application = create(:application, :accepted, teacher: participant, cohort: cohort, course: course, lead_provider: lead_provider, schedule: schedule)
 
       # Create required partnerships
       create(:delivery_partnership, cohort:, course_cohort: application.course_cohort, delivery_partner: delivery_partner, lead_provider: lead_provider)

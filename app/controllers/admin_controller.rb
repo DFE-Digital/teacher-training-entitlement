@@ -1,7 +1,7 @@
 class AdminController < ApplicationController
   layout "admin"
   before_action :require_admin
-  skip_before_action :authenticate_user!
+  skip_before_action :authenticate_teacher!
 
   include Pagy::Backend
 

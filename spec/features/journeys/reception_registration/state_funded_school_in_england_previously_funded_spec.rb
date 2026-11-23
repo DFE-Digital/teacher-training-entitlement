@@ -8,13 +8,13 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
 
   include_context "Stub Teacher Auth Responses"
 
-  scenario "state-funded school in England when the user has previously been funded" do
+  scenario "state-funded school in England when the teacher has previously been funded" do
     lead_provider = LeadProvider.first
     institution = Institution.find_by!(institution_reference_number: "100000")
     course_cohort = CourseCohort.registerable.first
-    previously_funded_user = create(:user, trn: user_trn)
-    create(:application, :accepted, :eligible_for_funding, user: previously_funded_user, course: Course.reception, cohort: create(:cohort, registration_starts_at: Date.new(2024, 5, 1)))
-    previously_funded_user.update!(archived_at: Time.current, archived_email: previously_funded_user.email, email: "archived@example.com")
+    previously_funded_teacher = create(:teacher, trn: teacher_trn)
+    create(:application, :accepted, :eligible_for_funding, teacher: previously_funded_teacher, course: Course.reception, cohort: create(:cohort, registration_starts_at: Date.new(2024, 5, 1)))
+    previously_funded_teacher.update!(archived_at: Time.current, archived_email: previously_funded_teacher.email, email: "archived@example.com")
 
     start_registration
     choose_current_course_start_date
@@ -33,7 +33,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       expect(application.course).to eq(Course.reception)
       expect(application.lead_provider).to eq(lead_provider)
       expect(application.institution).to eq(institution)
-      expect(application.user.email).to eq(user_email)
+      expect(application.teacher.email).to eq(teacher_email)
 
       expect(application).to have_attributes(
         funded_place: nil,

@@ -3,7 +3,7 @@ module Applications
     helper_method :application
 
     def index
-      most_recent_application = current_user.applications.order(created_at: :desc).first
+      most_recent_application = current_teacher.applications.order(created_at: :desc).first
 
       if most_recent_application
         redirect_to application_path(most_recent_application.ecf_id)
@@ -21,7 +21,7 @@ module Applications
     def application
       return nil if application_ecf_id.nil?
 
-      @application ||= current_user.applications.find_by_ecf_id(application_ecf_id)
+      @application ||= current_teacher.applications.find_by_ecf_id(application_ecf_id)
     end
 
     def application_ecf_id

@@ -5,7 +5,7 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
   include_context "with authorization for api doc request"
 
   let(:course) { create(:course, :npd_eirt) }
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
   let(:application_status_trait) { :accepted }
   let(:application) do
     create(:application,
@@ -17,10 +17,10 @@ RSpec.describe "Participants endpoint", openapi_spec: "v1/swagger.yaml", type: :
            :with_participant_id_change,
            lead_provider:,
            course:,
-           user:,
+           teacher:,
            funded_place: true)
   end
-  let!(:participant) { application.user }
+  let!(:participant) { application.teacher }
 
   before do
     application.course_cohort.update!(

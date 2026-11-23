@@ -15,7 +15,7 @@
       applications.each do |application|
         body.with_row do |row|          
           row.with_cell(text: application.created_at.to_fs(:govuk_short))
-          row.with_cell(text: govuk_link_to(application.user.full_name, admin_user_path(application.user)))
+          row.with_cell(text: govuk_link_to(application.teacher.full_name, admin_teacher_path(application.teacher)))
           row.with_cell(text: application.institution&.name)
           row.with_cell do
             application_status_badge(application.status)

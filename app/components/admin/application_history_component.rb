@@ -119,7 +119,7 @@ module Admin
       elsif whodunnit.match(/AdminUser\ (\d+)/)
         ::AdminUser.find(whodunnit.match(/AdminUser\ (\d+)/)[1]).full_name
       elsif whodunnit.match(/Public User\ (\d+)/)
-        User.find(whodunnit.match(/Public User\ (\d+)/)[1]).full_name
+        Teacher.find(whodunnit.match(/Public User\ (\d+)/)[1]).full_name
       elsif whodunnit.match(/Lead provider\ (\d+)/)
         LeadProvider.find(whodunnit.match(/Lead provider\ (\d+)/)[1]).name
       else

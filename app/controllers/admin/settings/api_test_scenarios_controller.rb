@@ -57,9 +57,9 @@ private
     seeder = ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:)
     lead_provider
       .applications
-      .joins(:user)
+      .joins(:teacher)
       .merge(ApplicationLeadProvider.current)
-      .where(users: { ecf_id: seeder.test_user_ecf_ids })
+      .where(teachers: { ecf_id: seeder.test_teacher_ecf_ids })
       .count
   end
 end

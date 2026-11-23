@@ -11,7 +11,7 @@ RSpec.describe LoggedInController do
     allow(Sentry).to receive(:set_user)
   end
 
-  context "when user is not known" do
+  context "when teacher is not known" do
     it "does not set sentry user" do
       get :index
 
@@ -25,17 +25,17 @@ RSpec.describe LoggedInController do
     end
   end
 
-  context "when user known" do
-    let!(:user) { create(:user) }
+  context "when teacher known" do
+    let!(:teacher) { create(:teacher) }
 
     before do
-      session[:user_id] = user.id
+      session[:teacher_id] = teacher.id
     end
 
     it "sets sentry user" do
       get :index
 
-      expect(Sentry).to have_received(:set_user).with(id: user.id)
+      expect(Sentry).to have_received(:set_user).with(id: teacher.id)
     end
 
     it "sets caching headers" do

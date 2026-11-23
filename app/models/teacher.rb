@@ -1,4 +1,4 @@
-class User < ApplicationRecord
+class Teacher < ApplicationRecord
   include EcfIdable
   encrypts :refresh_token
 
@@ -10,7 +10,7 @@ class User < ApplicationRecord
     feature_flag_id
     updated_from_tra_at
     trn_lookup_status
-    notify_user_for_future_reg
+    notify_teacher_for_future_reg
     email_updates_status
     email_updates_unsubscribe_key
     refresh_token
@@ -68,7 +68,7 @@ class User < ApplicationRecord
   end
 
   def flipper_id
-    "User;#{retrieve_or_persist_feature_flag_id}"
+    "Teacher;#{retrieve_or_persist_feature_flag_id}"
   end
 
   def retrieve_or_persist_feature_flag_id

@@ -78,18 +78,18 @@ RSpec.describe ParticipantOutcomes::Query do
 
       context "when filtering by participant_ids" do
         it "filters by participant_ids" do
-          create(:participant_outcome, declaration: create(:declaration, user: create(:user)))
-          outcome = create(:participant_outcome, declaration: create(:declaration, user: create(:user)))
-          query = described_class.new(participant_ids: outcome.user.ecf_id)
+          create(:participant_outcome, declaration: create(:declaration, teacher: create(:teacher)))
+          outcome = create(:participant_outcome, declaration: create(:declaration, teacher: create(:teacher)))
+          query = described_class.new(participant_ids: outcome.teacher.ecf_id)
 
           expect(query.participant_outcomes).to contain_exactly(outcome)
         end
 
         it "filters by multiple participant_ids" do
-          outcome2 = create(:participant_outcome, declaration: create(:declaration, user: create(:user)))
-          outcome1 = create(:participant_outcome, declaration: create(:declaration, user: create(:user)))
-          create(:participant_outcome, declaration: create(:declaration, user: create(:user)))
-          query = described_class.new(participant_ids: [outcome1.user.ecf_id, outcome2.user.ecf_id].join(","))
+          outcome2 = create(:participant_outcome, declaration: create(:declaration, teacher: create(:teacher)))
+          outcome1 = create(:participant_outcome, declaration: create(:declaration, teacher: create(:teacher)))
+          create(:participant_outcome, declaration: create(:declaration, teacher: create(:teacher)))
+          query = described_class.new(participant_ids: [outcome1.teacher.ecf_id, outcome2.teacher.ecf_id].join(","))
 
           expect(query.participant_outcomes).to contain_exactly(outcome1, outcome2)
         end

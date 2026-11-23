@@ -75,20 +75,20 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
 
     expect_applicant_reached_end_of_journey
 
-    User.last.tap do |expected_user|
-      expect(expected_user.email).to eql("user@example.com")
-      expect(expected_user.full_name).to eql("John Doe")
-      expect(expected_user.trn).to eql("1234567")
-      expect(expected_user.date_of_birth).to eql(user.date_of_birth)
-      expect(expected_user.national_insurance_number).to be_nil
-      expect(expected_user.applications.count).to be(1)
+    Teacher.last.tap do |expected_teacher|
+      expect(expected_teacher.email).to eql("user@example.com")
+      expect(expected_teacher.full_name).to eql("John Doe")
+      expect(expected_teacher.trn).to eql("1234567")
+      expect(expected_teacher.date_of_birth).to eql(teacher.date_of_birth)
+      expect(expected_teacher.national_insurance_number).to be_nil
+      expect(expected_teacher.applications.count).to be(1)
 
-      expected_user.applications.first.tap do |application|
+      expected_teacher.applications.first.tap do |application|
         expect(application.eligible_for_funding).to be_truthy
       end
     end
-    if User.last.applications.count == 1
-      navigate_to_page(path: "/applications/#{User.last.applications.last.ecf_id}", submit_form: false) do
+    if Teacher.last.applications.count == 1
+      navigate_to_page(path: "/applications/#{Teacher.last.applications.last.ecf_id}", submit_form: false) do
         expect(page).to have_text(LeadProvider.first.name)
         expect(page).to have_text("NPD excellence in reception teaching")
       end
@@ -99,20 +99,20 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       end
     end
 
-    expect(retrieve_latest_application_user_data).to match(user_attributes_from_stubbed_callback_response.merge(
-                                                             "active_alert" => false,
-                                                             "archived_email" => nil,
-                                                             "archived_at" => nil,
-                                                             "ecf_id" => latest_application_user.ecf_id,
-                                                             "national_insurance_number" => nil,
-                                                             "notify_user_for_future_reg" => false,
-                                                             "preferred_name" => nil,
-                                                             "raw_tra_provider_data" => nil,
-                                                             "refresh_token" => nil,
-                                                             "refresh_token_updated_at" => nil,
-                                                             "trn_lookup_status" => nil,
-                                                             "trn_requested_at" => nil,
-                                                           ))
+    expect(retrieve_latest_application_teacher_data).to match(teacher_attributes_from_stubbed_callback_response.merge(
+                                                                "active_alert" => false,
+                                                                "archived_email" => nil,
+                                                                "archived_at" => nil,
+                                                                "ecf_id" => latest_application_teacher.ecf_id,
+                                                                "national_insurance_number" => nil,
+                                                                "notify_teacher_for_future_reg" => false,
+                                                                "preferred_name" => nil,
+                                                                "raw_tra_provider_data" => nil,
+                                                                "refresh_token" => nil,
+                                                                "refresh_token_updated_at" => nil,
+                                                                "trn_lookup_status" => nil,
+                                                                "trn_requested_at" => nil,
+                                                              ))
 
     deep_compare_application_data(
       "course_cohort_id" => course_cohort.id,

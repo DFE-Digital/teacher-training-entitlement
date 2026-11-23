@@ -2,17 +2,17 @@ require "rails_helper"
 
 RSpec.describe SessionTimeout, type: :controller do
   controller(ApplicationController) do
-    skip_before_action :authenticate_user!
+    skip_before_action :authenticate_teacher!
 
     def index
       head :ok
     end
   end
 
-  let!(:user) { create(:user) }
+  let!(:teacher) { create(:teacher) }
 
   before do
-    session[:user_id] = user.id
+    session[:teacher_id] = teacher.id
   end
 
   it "allows access when session is active" do
@@ -26,6 +26,6 @@ RSpec.describe SessionTimeout, type: :controller do
     get :index
     expect(response).to redirect_to(root_path)
     expect(flash[:notice]).to eq("Your session has expired due to inactivity.")
-    expect(session[:user_id]).to be_nil
+    expect(session[:teacher_id]).to be_nil
   end
 end

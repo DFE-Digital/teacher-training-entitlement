@@ -12,7 +12,7 @@ module Applications
                  .where(id: lead_provider.application_lead_providers.preferred_per_application)
                  .joins(:application)
                  .includes(
-                   application: [:user,
+                   application: [:teacher,
                                  :course,
                                  :cohort,
                                  :institution,
@@ -65,7 +65,7 @@ module Applications
     def where_participant_ids_in(participant_ids)
       return if ignore?(filter: participant_ids)
 
-      scope.merge!(Application.where(users: { ecf_id: extract_conditions(participant_ids) }))
+      scope.merge!(Application.where(teachers: { ecf_id: extract_conditions(participant_ids) }))
     end
 
     def where_status_in(status)

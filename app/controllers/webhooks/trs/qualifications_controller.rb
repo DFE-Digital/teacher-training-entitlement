@@ -10,8 +10,8 @@ private
   end
 
   def participant_outcomes
-    user = User.find_by!(trn:)
-    user
+    teacher = Teacher.find_by!(trn:)
+    teacher
       .participant_outcomes
       .passed_state
       .order(completion_date: :desc)

@@ -44,7 +44,7 @@ RSpec.describe Applications::Query do
             travel_to(2.days.ago) { create(:application, lead_provider:) }
 
             application = create(:application, lead_provider:, updated_at: Time.zone.now)
-            application.user.update!(updated_at: 2.days.ago)
+            application.teacher.update!(updated_at: 2.days.ago)
 
             expect(query.applications).to contain_exactly(application)
           end
@@ -181,14 +181,14 @@ RSpec.describe Applications::Query do
       end
 
       context "when filtering by participant_id" do
-        let(:user) { create(:user) }
+        let(:teacher) { create(:teacher) }
 
         context "with valid id" do
-          let(:application) { create(:application, :for_cohort_starting_on, lead_provider:, user:, registration_starts_at: Date.new(2021, 5, 1)) }
-          let(:participant_ids) { application.user.ecf_id }
+          let(:application) { create(:application, :for_cohort_starting_on, lead_provider:, teacher:, registration_starts_at: Date.new(2021, 5, 1)) }
+          let(:participant_ids) { application.teacher.ecf_id }
 
           it "filters by participant_id" do
-            create(:application, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1))
+            create(:application, :for_cohort_starting_on, teacher:, registration_starts_at: Date.new(2021, 4, 1))
 
             expect(query.applications).to contain_exactly(application)
           end
@@ -197,14 +197,14 @@ RSpec.describe Applications::Query do
         context "with multiple values" do
           let(:applications) do
             [
-              create(:application, :for_cohort_starting_on, lead_provider:, user:, registration_starts_at: Date.new(2021, 4, 1)),
-              create(:application, :for_cohort_starting_on, lead_provider:, user:, registration_starts_at: Date.new(2021, 5, 1)),
+              create(:application, :for_cohort_starting_on, lead_provider:, teacher:, registration_starts_at: Date.new(2021, 4, 1)),
+              create(:application, :for_cohort_starting_on, lead_provider:, teacher:, registration_starts_at: Date.new(2021, 5, 1)),
             ]
           end
-          let(:participant_ids) { applications.map { _1.user.ecf_id } }
+          let(:participant_ids) { applications.map { _1.teacher.ecf_id } }
 
           it "filters by multiple participant_ids" do
-            create(:application, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 6, 1))
+            create(:application, :for_cohort_starting_on, teacher:, registration_starts_at: Date.new(2021, 6, 1))
 
             expect(query.applications).to match_array(applications)
           end

@@ -66,7 +66,7 @@ RSpec.describe ParticipantOutcome, type: :model do
   end
 
   describe "delegations" do
-    it { is_expected.to delegate_method(:user).to(:declaration) }
+    it { is_expected.to delegate_method(:teacher).to(:declaration) }
     it { is_expected.to delegate_method(:lead_provider).to(:declaration) }
     it { is_expected.to delegate_method(:course).to(:declaration) }
   end
@@ -135,7 +135,7 @@ RSpec.describe ParticipantOutcome, type: :model do
   describe "#trn" do
     subject { instance.trn }
 
-    it { is_expected.to eq instance.user.trn }
+    it { is_expected.to eq instance.teacher.trn }
   end
 
   describe "#course_short_code" do

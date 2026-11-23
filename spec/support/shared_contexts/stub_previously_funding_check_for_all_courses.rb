@@ -2,9 +2,9 @@ RSpec.shared_context("Stub previously funding check for all courses") do # ruboc
   let(:trn) { raise NotImplementedError }
 
   before do
-    user = create(:user, trn:, email: "user@example.com")
+    teacher = create(:teacher, trn:, email: "user@example.com")
     Course.all.find_each do |course|
-      create(:application, :accepted, :eligible_for_funding, user:, course:)
+      create(:application, :accepted, :eligible_for_funding, teacher:, course:)
     end
   end
 end

@@ -59,4 +59,21 @@ RSpec.describe "DfE Analytics", type: :request do
       expect { get "/healthcheck" }.not_to have_sent_analytics_event_types(:web_request)
     end
   end
+
+  describe "web request event attribution" do
+    let(:teacher) { create(:teacher) }
+
+    before do
+      teacher_sign_in(teacher:)
+      allow(DfE::Analytics).to receive(:enabled?).and_return(true)
+      allow(DfE::Analytics::SendEvents).to receive(:do)
+    end
+
+    it "records the signed-in teacher as the user" do
+      get root_path
+
+      expect(DfE::Analytics::SendEvents).to have_received(:do)
+        .with([hash_including("event_type" => "web_request", "user_id" => teacher.id)])
+    end
+  end
 end

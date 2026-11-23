@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "versioned_environment rake task", :versioning do
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
 
   # Helper to invoke a rake task as if it were called from the command line
   def invoke_as_top_level(task_name)
@@ -20,12 +20,12 @@ RSpec.describe "versioned_environment rake task", :versioning do
 
     before do
       Rake::Task.define_task("test:versioned_task" => :versioned_environment) do
-        User.first.update!(email: "changed_by_rake@example.com")
+        Teacher.first.update!(email: "changed_by_rake@example.com")
       end
     end
 
     it "sets whodunnit to the camelized task name" do
-      user
+      teacher
       invoke_as_top_level("test:versioned_task")
 
       expect(PaperTrail::Version.last.whodunnit).to eq("Rake test:versioned_task")
@@ -37,12 +37,12 @@ RSpec.describe "versioned_environment rake task", :versioning do
 
     before do
       Rake::Task.define_task("test:unversioned_task" => :environment) do
-        User.first.update!(email: "changed_without_versioning@example.com")
+        Teacher.first.update!(email: "changed_without_versioning@example.com")
       end
     end
 
     it "does not set whodunnit" do
-      user
+      teacher
       Rake::Task["test:unversioned_task"].invoke
 
       expect(PaperTrail::Version.last.whodunnit).to be_nil
@@ -54,12 +54,12 @@ RSpec.describe "versioned_environment rake task", :versioning do
 
     before do
       Rake::Task.define_task("one_off:test_paper_trail_task" => :versioned_environment) do
-        User.first.update!(email: "changed_by_one_off@example.com")
+        Teacher.first.update!(email: "changed_by_one_off@example.com")
       end
     end
 
     it "sets whodunnit with proper namespace conversion" do
-      user
+      teacher
       invoke_as_top_level("one_off:test_paper_trail_task")
 
       expect(PaperTrail::Version.last.whodunnit).to eq("Rake one_off:test_paper_trail_task")
@@ -74,20 +74,20 @@ RSpec.describe "versioned_environment rake task", :versioning do
 
     before do
       Rake::Task.define_task("test:first_versioned_task" => :versioned_environment) do
-        User.first.update!(email: "first_task@example.com")
+        Teacher.first.update!(email: "first_task@example.com")
       end
 
       Rake::Task.define_task("test:second_versioned_task" => :versioned_environment) do
-        User.first.update!(email: "second_task@example.com")
+        Teacher.first.update!(email: "second_task@example.com")
       end
     end
 
     it "sets whodunnit for each task based on top-level task" do
-      user
+      teacher
       invoke_as_top_level("test:first_versioned_task")
       invoke_as_top_level("test:second_versioned_task")
 
-      versions = user.versions.last(2)
+      versions = teacher.versions.last(2)
       expect(versions[0].whodunnit).to eq("Rake test:first_versioned_task")
       expect(versions[1].whodunnit).to eq("Rake test:second_versioned_task")
     end

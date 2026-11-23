@@ -33,8 +33,8 @@ module Applications
 
     def send_provider_rejected_email
       GenericMailer.with(
-        to: application.user.email,
-        full_name: application.user.full_name,
+        to: application.teacher.email,
+        full_name: application.teacher.full_name,
         provider_name: application.lead_provider.name,
         course_name: application.course.name,
         cohort_date: application.cohort.name,
@@ -65,11 +65,11 @@ module Applications
     end
 
     def clear_refresh_token_if_no_pending_applications
-      user = application.user
-      return if user.trn.present?
-      return if user.applications.pending_status.where.not(id: application.id).exists?
+      teacher = application.teacher
+      return if teacher.trn.present?
+      return if teacher.applications.pending_status.where.not(id: application.id).exists?
 
-      user.update!(refresh_token: nil, refresh_token_updated_at: nil)
+      teacher.update!(refresh_token: nil, refresh_token_updated_at: nil)
     end
   end
 end

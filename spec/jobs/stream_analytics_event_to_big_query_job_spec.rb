@@ -40,7 +40,7 @@ RSpec.describe StreamAnalyticsEventToBigQueryJob, type: :job do
     context "when streaming a custom request event" do
       let(:type) { :one_login_completed }
       let(:request) { instance_double(ActionDispatch::Request) }
-      let(:user) { build_stubbed(:user, id: 123) }
+      let(:user) { build_stubbed(:teacher, id: 123) }
       let(:data) { { error_type: "callback_error" } }
       let(:event_payload) { { "event_type" => "one_login_completed" } }
 

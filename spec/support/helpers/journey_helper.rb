@@ -1,17 +1,17 @@
 module Helpers
   module JourneyHelper
-    APPLICATION_COMPARISON_IGNORED_ATTRIBUTES = %i[id created_at updated_at significantly_updated_at user_id type].freeze
+    APPLICATION_COMPARISON_IGNORED_ATTRIBUTES = %i[id created_at updated_at significantly_updated_at teacher_id type].freeze
 
     def latest_application
       Application.order(created_at: :asc, id: :asc).last
     end
 
-    def latest_application_user
-      latest_application&.user
+    def latest_application_teacher
+      latest_application&.teacher
     end
 
-    def retrieve_latest_application_user_data
-      latest_application_user&.as_json(except: %i[id feature_flag_id created_at updated_at significantly_updated_at updated_from_tra_at email_updates_status email_updates_unsubscribe_key])
+    def retrieve_latest_application_teacher_data
+      latest_application_teacher&.as_json(except: %i[id feature_flag_id created_at updated_at significantly_updated_at updated_from_tra_at email_updates_status email_updates_unsubscribe_key])
     end
 
     def retrieve_latest_application_data

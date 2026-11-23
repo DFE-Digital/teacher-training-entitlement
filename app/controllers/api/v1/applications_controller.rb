@@ -86,7 +86,7 @@ module API
           current_lead_provider
             .application_lead_providers
             .includes(
-              application: [:user,
+              application: [:teacher,
                             :institution,
                             { course_cohort: %i[course cohort] }],
             )

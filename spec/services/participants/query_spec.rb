@@ -8,28 +8,28 @@ RSpec.describe Participants::Query do
 
   describe "#participants" do
     let(:lead_provider) { create(:lead_provider) }
-    let!(:participant1) { create(:user, :with_application, lead_provider:) }
-    let!(:participant2) { create(:user, :with_application, lead_provider:) }
+    let!(:participant1) { create(:teacher, :with_application, lead_provider:) }
+    let!(:participant2) { create(:teacher, :with_application, lead_provider:) }
 
     it "returns all participants" do
       expect(query.participants).to contain_exactly(participant1, participant2)
     end
 
     it "orders participants by created_at in ascending order" do
-      participant3 = travel_to(1.minute.ago) { create(:user, :with_application, lead_provider:) }
+      participant3 = travel_to(1.minute.ago) { create(:teacher, :with_application, lead_provider:) }
 
       expect(query.participants).to eq([participant3, participant1, participant2])
     end
 
     it "does not fetch participants with pending applications" do
-      participant3 = create(:user, :with_application, lead_provider:)
+      participant3 = create(:teacher, :with_application, lead_provider:)
       participant3.applications.update_all(status: Application::PENDING)
 
       expect(query.participants).to eq([participant1, participant2])
     end
 
     it "does not fetch participants with rejected applications" do
-      participant3 = create(:user, :with_application, lead_provider:)
+      participant3 = create(:teacher, :with_application, lead_provider:)
       participant3.applications.update_all(status: Application::REJECTED)
 
       expect(query.participants).to eq([participant1, participant2])
@@ -37,13 +37,13 @@ RSpec.describe Participants::Query do
 
     context "when participant has multiple associated records" do
       let(:application1) { create(:application, :accepted, lead_provider:) }
-      let!(:participant1) { application1.user }
+      let!(:participant1) { application1.teacher }
 
       before do
-        create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id)
-        create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id)
-        create(:application, :accepted, :for_cohort_starting_on, user: participant1, lead_provider:, registration_starts_at: Date.new(2021, 4, 1))
-        create(:application, :accepted, :for_cohort_starting_on, user: participant1, lead_provider:, registration_starts_at: Date.new(2021, 5, 1))
+        create(:participant_id_change, teacher: participant1, to_participant_id: participant1.ecf_id)
+        create(:participant_id_change, teacher: participant1, to_participant_id: participant1.ecf_id)
+        create(:application, :accepted, :for_cohort_starting_on, teacher: participant1, lead_provider:, registration_starts_at: Date.new(2021, 4, 1))
+        create(:application, :accepted, :for_cohort_starting_on, teacher: participant1, lead_provider:, registration_starts_at: Date.new(2021, 5, 1))
       end
 
       it "does not return duplicate participants" do
@@ -57,7 +57,7 @@ RSpec.describe Participants::Query do
           let(:params) { { lead_provider: } }
 
           it "filters by lead provider" do
-            create(:user, :with_application, lead_provider: create(:lead_provider))
+            create(:teacher, :with_application, lead_provider: create(:lead_provider))
 
             expect(query.participants).to contain_exactly(participant1, participant2)
           end
@@ -88,10 +88,10 @@ RSpec.describe Participants::Query do
 
           it "filters by updated since" do
             travel_to(2.days.ago) do
-              create(:user, :with_application, lead_provider:)
-              # User where the updated_at is in the filter range, but the
+              create(:teacher, :with_application, lead_provider:)
+              # Teacher where the updated_at is in the filter range, but the
               # significantly_updated_at is not.
-              create(:user).tap { |user| user.update_column(:updated_at, 2.days.from_now) }
+              create(:teacher).tap { |teacher| teacher.update_column(:updated_at, 2.days.from_now) }
             end
 
             expect(query.participants).to contain_exactly(participant1, participant2)
@@ -117,25 +117,25 @@ RSpec.describe Participants::Query do
         end
 
         context "when a participant was not updated within the time-frame and they have applications that have been updated both inside and outside the time-frame" do
-          let(:participant1) { create(:user) }
-          let!(:application_outside_time_frame) { travel_to(4.days.ago) { create(:application, :accepted, :for_cohort_starting_on, lead_provider:, user: participant1, registration_starts_at: Date.new(2021, 4, 1)) } }
-          let!(:application_inside_time_frame) { travel_to(2.days.ago) { create(:application, :accepted, :for_cohort_starting_on, lead_provider:, user: participant1, registration_starts_at: Date.new(2021, 5, 1)) } }
-          let(:participant2) { travel_to(10.days.ago) { create(:user) } }
+          let(:participant1) { create(:teacher) }
+          let!(:application_outside_time_frame) { travel_to(4.days.ago) { create(:application, :accepted, :for_cohort_starting_on, lead_provider:, teacher: participant1, registration_starts_at: Date.new(2021, 4, 1)) } }
+          let!(:application_inside_time_frame) { travel_to(2.days.ago) { create(:application, :accepted, :for_cohort_starting_on, lead_provider:, teacher: participant1, registration_starts_at: Date.new(2021, 5, 1)) } }
+          let(:participant2) { travel_to(10.days.ago) { create(:teacher) } }
 
           let(:params) { { updated_since: 3.days.ago } }
 
           before { participant1.update!(updated_at: 5.days.ago) }
 
-          it "returns both the user and all of their applications" do
+          it "returns both the teacher and all of their applications" do
             expect(query.participants).to contain_exactly(participant1)
             expect(query.participants.map(&:applications).flatten).to contain_exactly(application_outside_time_frame, application_inside_time_frame)
           end
         end
 
         context "when application was updated recently" do
-          let!(:participant1) { travel_to(1.day.ago) { create(:user, :with_application, lead_provider:) } }
-          let!(:participant2) { travel_to(2.days.ago) { create(:user, :with_application, lead_provider:) } }
-          let!(:participant3) { travel_to(5.days.ago) { create(:user, :with_application, lead_provider:) } }
+          let!(:participant1) { travel_to(1.day.ago) { create(:teacher, :with_application, lead_provider:) } }
+          let!(:participant2) { travel_to(2.days.ago) { create(:teacher, :with_application, lead_provider:) } }
+          let!(:participant3) { travel_to(5.days.ago) { create(:teacher, :with_application, lead_provider:) } }
 
           let(:params) { { updated_since: 3.days.ago } }
 
@@ -148,35 +148,35 @@ RSpec.describe Participants::Query do
         end
 
         context "when a participant was not updated within the time-frame and they have id changes that have been updated both inside and outside the time-frame" do
-          let(:participant1) { create(:user) }
-          let!(:id_change_outside_time_frame) { travel_to(4.days.ago) { create(:participant_id_change, user: participant1) } }
-          let!(:id_change_inside_time_frame) { travel_to(2.days.ago) { create(:participant_id_change, user: participant1) } }
-          let(:participant2) { travel_to(10.days.ago) { create(:user) } }
+          let(:participant1) { create(:teacher) }
+          let!(:id_change_outside_time_frame) { travel_to(4.days.ago) { create(:participant_id_change, teacher: participant1) } }
+          let!(:id_change_inside_time_frame) { travel_to(2.days.ago) { create(:participant_id_change, teacher: participant1) } }
+          let(:participant2) { travel_to(10.days.ago) { create(:teacher) } }
 
           let(:params) { { updated_since: 3.days.ago } }
 
           before do
-            travel_to(4.days.ago) { create(:application, :accepted, lead_provider:, user: participant1) }
+            travel_to(4.days.ago) { create(:application, :accepted, lead_provider:, teacher: participant1) }
             participant1.update!(updated_at: 5.days.ago)
           end
 
-          it "returns both the user and all of their applications" do
+          it "returns both the teacher and all of their applications" do
             expect(query.participants).to contain_exactly(participant1)
             expect(query.participants.map(&:participant_id_changes).flatten).to contain_exactly(id_change_outside_time_frame, id_change_inside_time_frame)
           end
         end
 
         context "when participant_id_change was updated recently" do
-          let!(:participant1) { travel_to(1.day.ago) { create(:user, :with_application, lead_provider:) } }
-          let!(:participant2) { travel_to(2.days.ago) { create(:user, :with_application, lead_provider:) } }
-          let!(:participant3) { travel_to(5.days.ago) { create(:user, :with_application, lead_provider:) } }
+          let!(:participant1) { travel_to(1.day.ago) { create(:teacher, :with_application, lead_provider:) } }
+          let!(:participant2) { travel_to(2.days.ago) { create(:teacher, :with_application, lead_provider:) } }
+          let!(:participant3) { travel_to(5.days.ago) { create(:teacher, :with_application, lead_provider:) } }
 
           let(:params) { { updated_since: 3.days.ago } }
 
           it "filters by participant_id_change.updated_at" do
             expect(query.participants).to contain_exactly(participant2, participant1)
 
-            create(:participant_id_change, user: participant3)
+            create(:participant_id_change, teacher: participant3)
             expect(query.participants).to contain_exactly(participant2, participant1, participant3)
           end
         end
@@ -198,18 +198,18 @@ RSpec.describe Participants::Query do
 
           before do
             participant1.applications.first.update_columns(status: Application::WITHDRAWN)
-            create(:application, :accepted, :for_cohort_starting_on, user: participant1, lead_provider:, registration_starts_at: Date.new(2021, 4, 1))
+            create(:application, :accepted, :for_cohort_starting_on, teacher: participant1, lead_provider:, registration_starts_at: Date.new(2021, 4, 1))
           end
 
-          it "filters the users by status and only returns applications with the matching status" do
+          it "filters the teachers by status and only returns applications with the matching status" do
             expect(query.participants).to contain_exactly(participant1)
             expect(query.participants.map(&:applications).flatten.map(&:status)).to all(eq(Application::WITHDRAWN))
           end
         end
 
         context "with multiple status values" do
-          let!(:participant1) { create(:application, :accepted, lead_provider:).user }
-          let!(:participant2) { create(:application, :started, lead_provider:).user }
+          let!(:participant1) { create(:application, :accepted, lead_provider:).teacher }
+          let!(:participant2) { create(:application, :started, lead_provider:).teacher }
           let(:params) { { status: [Application::ACCEPTED, Application::STARTED].join(",") } }
 
           it "returns only participants with applications in status" do
@@ -219,7 +219,7 @@ RSpec.describe Participants::Query do
       end
 
       describe "from participant id" do
-        let(:participant_id_change) { create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id) }
+        let(:participant_id_change) { create(:participant_id_change, teacher: participant1, to_participant_id: participant1.ecf_id) }
         let(:from_participant_id) { participant_id_change.from_participant_id }
 
         context "when a from participant id is supplied" do
@@ -233,9 +233,9 @@ RSpec.describe Participants::Query do
         context "when the participant has multiple id changes with different from_participant_id values" do
           let(:params) { { from_participant_id: } }
 
-          before { create(:participant_id_change, user: participant1, to_participant_id: participant1.ecf_id) }
+          before { create(:participant_id_change, teacher: participant1, to_participant_id: participant1.ecf_id) }
 
-          it "filters the users by from_participant_id and only returns id changes with the matching from_participant_id" do
+          it "filters the teachers by from_participant_id and only returns id changes with the matching from_participant_id" do
             expect(query.participants).to contain_exactly(participant1)
             expect(query.participants.map(&:participant_id_changes).flatten.map(&:from_participant_id)).to all(eq(from_participant_id))
           end
@@ -270,9 +270,9 @@ RSpec.describe Participants::Query do
     end
 
     describe "sorting" do
-      let(:participant1) { travel_to(1.month.ago) { create(:user, :with_application, lead_provider:) } }
-      let(:participant2) { travel_to(1.week.ago) { create(:user, :with_application, lead_provider:) } }
-      let(:participant3) { create(:user, :with_application, lead_provider:) }
+      let(:participant1) { travel_to(1.month.ago) { create(:teacher, :with_application, lead_provider:) } }
+      let(:participant2) { travel_to(1.week.ago) { create(:teacher, :with_application, lead_provider:) } }
+      let(:participant3) { create(:teacher, :with_application, lead_provider:) }
       let(:sort) { nil }
       let(:params) { { sort: } }
 
@@ -317,7 +317,7 @@ RSpec.describe Participants::Query do
   end
 
   describe "#participant" do
-    let!(:participant) { create(:user, :with_application, lead_provider:) }
+    let!(:participant) { create(:teacher, :with_application, lead_provider:) }
     let(:params) { { lead_provider: } }
 
     it "returns a participant for a Lead Provider" do
@@ -332,7 +332,7 @@ RSpec.describe Participants::Query do
 
     it "raises an error if the participant is not in the filtered query" do
       other_lead_provider = create(:lead_provider)
-      other_participant = create(:user, :with_application, lead_provider: other_lead_provider)
+      other_participant = create(:teacher, :with_application, lead_provider: other_lead_provider)
 
       expect { query.participant(ecf_id: other_participant.ecf_id) }.to raise_error(ActiveRecord::RecordNotFound)
       expect { query.participant(id: other_participant.id) }.to raise_error(ActiveRecord::RecordNotFound)

@@ -5,8 +5,8 @@ class RegistrationQueryStore
     @store = store
   end
 
-  def current_user
-    store["current_user"] || User.find_by(id: store["current_user_id"])
+  def current_teacher
+    store["current_teacher"] || Teacher.find_by(id: store["current_teacher_id"])
   end
 
   def funding

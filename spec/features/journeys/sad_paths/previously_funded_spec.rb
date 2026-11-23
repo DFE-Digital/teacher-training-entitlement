@@ -4,7 +4,7 @@ RSpec.feature "Previously funded participant", type: :feature do
   include Helpers::JourneyAssertionHelper
   include ApplicationHelper
 
-  let(:user) { create(:user, :with_one_login_id) }
+  let(:teacher) { create(:teacher, :with_one_login_id) }
   let(:school) { create(:school, :with_address) }
   let(:course_cohort) { create(:course_cohort) }
   let(:lead_provider) { course_cohort.course_cohort_providers.first.lead_provider }
@@ -16,14 +16,14 @@ RSpec.feature "Previously funded participant", type: :feature do
     create(:application,
            :completed,
            :eligible_for_funding,
-           user:,
+           teacher:,
            school:,
            course_cohort: previous_course_cohort,
            lead_provider: previous_course_cohort.course_cohort_providers.first.lead_provider,
            funded_place: true)
 
     page.set_rack_session(
-      "user_id" => user.id,
+      "teacher_id" => teacher.id,
       "registration_store" => {
         "course_cohort_ecf_id" => course_cohort.ecf_id,
         "course_start_date" => course_cohort.ecf_id,

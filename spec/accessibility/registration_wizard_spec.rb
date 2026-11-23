@@ -72,8 +72,8 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
     obj
   end
 
-  # Stub user for templates that need current_user
-  let(:user_stub) do
+  # Stub teacher for templates that need current_teacher
+  let(:teacher_stub) do
     OpenStruct.new(
       trn: "1234567",
       email: "test@example.com",
@@ -87,7 +87,7 @@ RSpec.describe "Registration wizard templates", :axe, type: :view do
     course_cohort = course_cohort_stub
     view.define_singleton_method(:course) { course }
     view.define_singleton_method(:course_cohort) { course_cohort }
-    allow(view).to receive_messages(current_user: user_stub, registration_wizard_form_url: "/registration/test")
+    allow(view).to receive_messages(current_teacher: teacher_stub, registration_wizard_form_url: "/registration/test")
   end
 
   REGISTRATION_WIZARD_TEMPLATES.each do |template|
