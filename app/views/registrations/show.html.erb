@@ -33,3 +33,15 @@
     <% end %>
   <% end %>
 </div>
+
+<% if Rails.env.development? %>
+  <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+    <hr/>
+    <h2 class="govuk-heading-s">Captured values</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <% current_step.captured_values.each do |key, value| %>
+        <li><code><%= key %></code>: <%= value.inspect %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

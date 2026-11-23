@@ -14,7 +14,7 @@ module Registrations
     def initialize(params:, session:, current_user: nil)
       @params = params
       @current_user = current_user
-      @state_store = StateStore.new(session:, key: "registrations_#{registration_journey.id}".to_sym)
+      @state_store = StateStore.new(session:, key: :registrations)
       super()
     end
 

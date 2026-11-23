@@ -30,6 +30,19 @@ h1.govuk-fieldset__heading {
   margin-bottom: 24px;
 }
 
+.govuk-link-button {
+  @extend .govuk-link;
+
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--govuk-link-colour, #1a65a6);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
 .js-enabled .npq-js-hidden {
   display: none;
 }
