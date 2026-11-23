@@ -88,10 +88,10 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
       fill_in "adjustment[description]", with: "Third adjustment"
       fill_in "Amount", with: "400.45"
       click_on "Continue"
-      expect(page).not_to have_text("First adjustment")
-      expect(page).not_to have_text("£100.12")
-      expect(page).not_to have_text("Second adjustment")
-      expect(page).not_to have_text("£200.23")
+      expect(page).to have_no_text("First adjustment")
+      expect(page).to have_no_text("£100.12")
+      expect(page).to have_no_text("Second adjustment")
+      expect(page).to have_no_text("£200.23")
       expect(page).to have_text("Third adjustment")
       expect(page).to have_text("£400.45")
 
@@ -105,10 +105,10 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
       fill_in "adjustment[description]", with: "Third adjustment edited"
       fill_in "Amount", with: "300.34"
       click_on "Continue"
-      expect(page).not_to have_text("First adjustment")
-      expect(page).not_to have_text("£100.12")
-      expect(page).not_to have_text("Second adjustment")
-      expect(page).not_to have_text("£200.23")
+      expect(page).to have_no_text("First adjustment")
+      expect(page).to have_no_text("£100.12")
+      expect(page).to have_no_text("Second adjustment")
+      expect(page).to have_no_text("£200.23")
       expect(page).to have_text("Third adjustment edited")
       expect(page).to have_text("£300.34")
 
@@ -117,10 +117,10 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
       expect(page).to have_css("h1", text: "Are you sure you want to remove this adjustment?")
       # check cancel link
       click_on "Cancel"
-      expect(page).not_to have_text("First adjustment")
-      expect(page).not_to have_text("£100.12")
-      expect(page).not_to have_text("Second adjustment")
-      expect(page).not_to have_text("£200.23")
+      expect(page).to have_no_text("First adjustment")
+      expect(page).to have_no_text("£100.12")
+      expect(page).to have_no_text("Second adjustment")
+      expect(page).to have_no_text("£200.23")
       expect(page).to have_text("Third adjustment edited")
       expect(page).to have_text("£300.34")
       expect(page).to have_current_path(admin_finance_statement_adjustments_path(statement, show_all_adjustments: false))
@@ -136,11 +136,11 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
       expect(page).to have_text("£100.12")
       expect(page).to have_text("Second adjustment")
       expect(page).to have_text("£200.23")
-      expect(page).not_to have_text("Third adjustment edited")
+      expect(page).to have_no_text("Third adjustment edited")
 
       # edit adjustment from statement page
       click_on "Change or remove"
-      expect(page).not_to have_text("You’ve made an adjustment")
+      expect(page).to have_no_text("You’ve made an adjustment")
       expect(page).to have_text("First adjustment")
       expect(page).to have_text("£100.12")
       expect(page).to have_text("Second adjustment")
@@ -185,14 +185,14 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
       click_on "Remove"
       expect(page).to have_text("First adjustment")
       expect(page).to have_text("£100.12")
-      expect(page).not_to have_text("Second adjustment edited")
-      expect(page).not_to have_text("£500.56")
+      expect(page).to have_no_text("Second adjustment edited")
+      expect(page).to have_no_text("£500.56")
 
       choose "No", visible: :all
       click_on "Continue"
 
-      expect(page).not_to have_text("Second adjustment edited")
-      expect(page).not_to have_text("£500.56")
+      expect(page).to have_no_text("Second adjustment edited")
+      expect(page).to have_no_text("£500.56")
 
       # check adding another adjustment when going via the 'Change or remove' link
       click_on "Change or remove"
@@ -222,7 +222,8 @@ RSpec.feature "Adjustments", :no_js, type: :feature do
     scenario "statement is marked as paid" do
       visit(admin_finance_statement_path(paid_statement))
 
-      expect(page).not_to have_link "Make adjustment"
+      expect(page).to have_current_path(admin_finance_statement_path(paid_statement))
+      expect(page).to have_no_link "Make adjustment"
     end
 
     scenario "statement moved to paid whilst creating adjustment" do

@@ -31,7 +31,8 @@ RSpec.feature "Admin glossary", type: :feature do
     scenario "the glossary does not include deprecated fields" do
       visit "/admin/guidance/glossary"
 
-      expect(page).not_to have_content("Funding cap")
+      expect(page).to have_current_path("/admin/guidance/glossary")
+      expect(page).to have_no_text("Funding cap")
     end
   end
 

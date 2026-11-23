@@ -26,55 +26,55 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
   let!(:statement_other_lead_provider) { create(:statement, lead_provider: create(:lead_provider), start_date: 3.months.ago) }
 
   it "has a form that GETs to correct action" do
-    expect(rendered).to have_selector("form[method=get][action='/admin/finance/statements']")
+    expect(rendered).to have_css("form[method=get][action='/admin/finance/statements']")
   end
 
   it "has dropdown with payment status" do
     expect(rendered).to have_selector(payment_status_selector)
-    expect(rendered).to have_selector("#{payment_status_selector} option[value='']", text: "All")
-    expect(rendered).to have_selector("#{payment_status_selector} option[value='open']", text: "Open")
-    expect(rendered).to have_selector("#{payment_status_selector} option[value='payable']", text: "Payable")
-    expect(rendered).to have_selector("#{payment_status_selector} option[value='paid']", text: "Paid")
+    expect(rendered).to have_css("#{payment_status_selector} option[value='']", text: "All")
+    expect(rendered).to have_css("#{payment_status_selector} option[value='open']", text: "Open")
+    expect(rendered).to have_css("#{payment_status_selector} option[value='payable']", text: "Payable")
+    expect(rendered).to have_css("#{payment_status_selector} option[value='paid']", text: "Paid")
   end
 
   it "has dropdown with lead providers" do
-    expect(rendered).to have_selector("select#lead-provider-id-field")
-    expect(rendered).to have_selector("select#lead-provider-id-field option[value='#{lead_provider.id}']", text: lead_provider.name)
+    expect(rendered).to have_select("lead-provider-id-field")
+    expect(rendered).to have_css("select#lead-provider-id-field option[value='#{lead_provider.id}']", text: lead_provider.name)
   end
 
   it "has dropdown with statement dates" do
-    expect(rendered).to have_selector("select#statement-field")
-    expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement)}']", text: statement_name(statement))
-    expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
-    expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
+    expect(rendered).to have_select("statement-field")
+    expect(rendered).to have_css("select#statement-field option[value='#{statement_options_value(statement)}']", text: statement_name(statement))
+    expect(rendered).to have_css("select#statement-field option[value='#{statement_options_value(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
+    expect(rendered).to have_css("select#statement-field option[value='#{statement_options_value(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
   end
 
   context "when a lead provider has been selected" do
     let(:lead_provider_param) { lead_provider.id }
 
     it "only shows statements for that lead provider" do
-      expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement)}']", text: statement_name(statement))
-      expect(rendered).to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
-      expect(rendered).not_to have_selector("select#statement-field option[value='#{statement_options_value(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
+      expect(rendered).to have_css("select#statement-field option[value='#{statement_options_value(statement)}']", text: statement_name(statement))
+      expect(rendered).to have_css("select#statement-field option[value='#{statement_options_value(statement_other_cohort)}']", text: statement_name(statement_other_cohort))
+      expect(rendered).to have_no_css("select#statement-field option[value='#{statement_options_value(statement_other_lead_provider)}']", text: statement_name(statement_other_lead_provider))
     end
   end
 
   it "has a dropdown with payment run" do
-    expect(rendered).to have_selector("select#output-fee-field")
-    expect(rendered).to have_selector("select#output-fee-field option[value='']", text: "All")
-    expect(rendered).to have_selector("select#output-fee-field option[value='true']", text: "Yes")
-    expect(rendered).to have_selector("select#output-fee-field option[value='false']", text: "No")
+    expect(rendered).to have_select("output-fee-field")
+    expect(rendered).to have_css("select#output-fee-field option[value='']", text: "All")
+    expect(rendered).to have_css("select#output-fee-field option[value='true']", text: "Yes")
+    expect(rendered).to have_css("select#output-fee-field option[value='false']", text: "No")
   end
 
   it "has submit button" do
-    expect(rendered).to have_selector("button[type=submit]", text: "Search")
+    expect(rendered).to have_button("Search")
   end
 
   context "when the statement param is present" do
     let(:statement_param) { statement_options_value(statement) }
 
     it "defaults to selected statement" do
-      expect(rendered).to have_selector("select#statement-field option[selected]", text: statement_name(statement), visible: :all)
+      expect(rendered).to have_css("select#statement-field option[selected]", text: statement_name(statement), visible: :all)
     end
   end
 
@@ -82,7 +82,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     let(:lead_provider_param) { lead_provider.id }
 
     it "defaults to selected lead provider" do
-      expect(rendered).to have_selector("select#lead-provider-id-field option[selected]", text: statement.lead_provider.name, visible: :all)
+      expect(rendered).to have_css("select#lead-provider-id-field option[selected]", text: statement.lead_provider.name, visible: :all)
     end
   end
 
@@ -90,7 +90,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     let(:payment_status_param) { "paid" }
 
     it "defaults to selected payment status" do
-      expect(rendered).to have_selector("#{payment_status_selector} option[selected]", text: "Paid", visible: :all)
+      expect(rendered).to have_css("#{payment_status_selector} option[selected]", text: "Paid", visible: :all)
     end
   end
 
@@ -98,7 +98,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     let(:output_fee_param) { "true" }
 
     it "defaults to selected output fee" do
-      expect(rendered).to have_selector("select#output-fee-field option[selected]", text: "Yes", visible: :all)
+      expect(rendered).to have_css("select#output-fee-field option[selected]", text: "Yes", visible: :all)
     end
   end
 
@@ -110,7 +110,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     end
 
     it "defaults to 'Yes' selected" do
-      expect(rendered).to have_selector("select#output-fee-field option[selected]", text: "Yes", visible: :all)
+      expect(rendered).to have_css("select#output-fee-field option[selected]", text: "Yes", visible: :all)
     end
   end
 
@@ -118,7 +118,7 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     let(:output_fee_param) { "" }
 
     it "does not pre-select Yes or No" do
-      expect(rendered).not_to have_selector("select#output-fee-field option[selected]", visible: :all)
+      expect(rendered).to have_no_css("select#output-fee-field option[selected]", visible: :all)
     end
   end
 
@@ -126,16 +126,16 @@ RSpec.describe Admin::StatementSelectorComponent, type: :component do
     let(:instance) { described_class.new(statement, format_for_sidebar: true) }
 
     it "does not have payment status dropdown" do
-      expect(rendered).not_to have_selector(payment_status_selector)
+      expect(rendered).to have_no_selector(payment_status_selector)
     end
 
     it "uses a single-column layout" do
-      expect(rendered).to have_selector(".govuk-grid-column-full", count: 2)
-      expect(rendered).not_to have_selector(".govuk-grid-column-one-half")
+      expect(rendered).to have_css(".govuk-grid-column-full", count: 2)
+      expect(rendered).to have_no_css(".govuk-grid-column-one-half")
     end
 
     it "has a different label for the submit button" do
-      expect(rendered).to have_selector("button[type=submit]", text: "View")
+      expect(rendered).to have_button("View")
     end
   end
 end

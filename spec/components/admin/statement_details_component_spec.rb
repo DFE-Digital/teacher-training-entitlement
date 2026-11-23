@@ -29,6 +29,6 @@ RSpec.describe Admin::StatementDetailsComponent, type: :component do
   context "when link_to_voids is false" do
     subject(:rendered) { render_inline described_class.new(statement:, link_to_voids: false) }
 
-    it { is_expected.not_to have_link t(".view", href: received_admin_finance_statement_path(statement, status: :voided)) }
+    it { is_expected.to have_no_link t(".view", href: received_admin_finance_statement_path(statement, status: :voided)) }
   end
 end

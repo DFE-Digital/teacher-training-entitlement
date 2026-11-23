@@ -15,7 +15,7 @@ RSpec.feature "Happy journeys", type: :feature do
       page.click_button("Start now")
     end
 
-    expect(page).not_to have_content("Before you start")
+    expect(page).to have_no_text("Before you start")
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
       expect(page).to have_text("Course start")

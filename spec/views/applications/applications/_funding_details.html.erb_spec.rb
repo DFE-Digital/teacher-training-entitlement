@@ -32,7 +32,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
       expect(rendered_partial).to have_css(".govuk-summary-card__title", text: "Funding details")
       expect(rendered_partial).to have_css(".govuk-tag", text: "Eligible")
       expect(rendered_partial).to have_text("if Test Provider confirms that you have a scholarship funded space")
-      expect(rendered_partial).not_to have_text("Course funding")
+      expect(rendered_partial).to have_no_text("Course funding")
     end
   end
 

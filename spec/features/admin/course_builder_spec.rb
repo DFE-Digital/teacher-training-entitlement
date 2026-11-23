@@ -87,7 +87,7 @@ RSpec.feature "Building a course", type: :feature do
     end
     click_on "Continue"
 
-    within(find("tr", text: "Delivery partners")) do
+    within("tr", text: "Delivery partners") do
       click_on "Change"
     end
 
@@ -151,7 +151,7 @@ RSpec.feature "Building a course", type: :feature do
 
     expect(page).to have_css("h1", text: "Check course configuration")
 
-    within(find("tr", text: "Lead providers")) do
+    within("tr", text: "Lead providers") do
       click_on "Change"
     end
     find("label", text: other_lead_provider.name).click
@@ -219,7 +219,7 @@ RSpec.feature "Building a course", type: :feature do
     end
     click_on "Continue"
 
-    within(find("tr", text: "Lead providers")) do
+    within("tr", text: "Lead providers") do
       click_on "Change"
     end
 
@@ -231,7 +231,7 @@ RSpec.feature "Building a course", type: :feature do
     click_on "Continue"
 
     expect(page).to have_css("h1", text: "Check course configuration")
-    expect(page).not_to have_text(delivery_partner.name)
+    expect(page).to have_no_text(delivery_partner.name)
 
     click_button "Create course"
 

@@ -27,17 +27,20 @@ RSpec.feature "Maintenance banner", :no_js do
 
     scenario "viewing the root path" do
       visit root_path
-      expect(page).not_to have_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
+      expect(page).to have_current_path(root_path)
+      expect(page).to have_no_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
     end
 
     scenario "viewing an API guidance path" do
       visit api_guidance_path
-      expect(page).not_to have_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
+      expect(page).to have_current_path(api_guidance_path)
+      expect(page).to have_no_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
     end
 
     scenario "viewing the API docs" do
       visit api_documentation_path(version: "v1")
-      expect(page).not_to have_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
+      expect(page).to have_current_path(api_documentation_path(version: "v1"))
+      expect(page).to have_no_text(Banners::MaintenanceComponent::MAINTENANCE_TEXT)
     end
   end
 end

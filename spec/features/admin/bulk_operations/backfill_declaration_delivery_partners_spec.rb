@@ -42,12 +42,12 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
     scenario "Backfilling declaration delivery partners" do
       visit admin_settings_bulk_operations_backfill_declaration_delivery_partners_path
 
-      expect(page).to have_content "No files have been uploaded"
+      expect(page).to have_text "No files have been uploaded"
 
       attach_file "file", file.path
       click_button "Upload file"
 
-      expect(page).to have_content "File #{filename} uploaded successfully"
+      expect(page).to have_text "File #{filename} uploaded successfully"
 
       click_link filename
       within(".govuk-summary-list") do |summary_list|
@@ -69,8 +69,8 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
         expect(summary_list).to have_summary_item("Ran by", "#{admin.full_name} (#{admin.email})")
       end
 
-      expect(page).to have_content "#{declaration.ecf_id}Declaration updated"
-      expect(page).not_to have_button("Backfill declaration delivery partners")
+      expect(page).to have_text "#{declaration.ecf_id}Declaration updated"
+      expect(page).to have_no_button("Backfill declaration delivery partners")
       expect(declaration.reload.delivery_partner).to eq(delivery_partner_1)
       expect(declaration.reload.secondary_delivery_partner).to eq(delivery_partner_2)
     end
@@ -82,7 +82,7 @@ RSpec.feature "Backfill declaration delivery partners", :no_js, type: :feature d
       click_button "Backfill declaration delivery partners"
       click_link filename
 
-      expect(page).to have_content "The bulk operation is in progress."
+      expect(page).to have_text "The bulk operation is in progress."
     end
   end
 end

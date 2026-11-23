@@ -58,6 +58,6 @@ RSpec.feature "actions log", :no_js, :versioning, type: :feature do
 
   scenario "when there are no actions for an admin user" do
     visit admin_settings_actions_log_path(sign_in_as_admin.id)
-    expect(page).to have_content "No applications have been updated by this admin user."
+    expect(page).to have_text "No applications have been updated by this admin user."
   end
 end

@@ -14,6 +14,6 @@ RSpec.feature "admin", :rack_test_driver, type: :feature do
 
   scenario "regular admins cannot see links that super admins can" do
     sign_in_as_admin
-    expect(page).not_to have_link("Feature flags")
+    expect(page).to have_no_link("Feature flags")
   end
 end

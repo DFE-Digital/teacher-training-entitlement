@@ -19,8 +19,8 @@ RSpec.describe "layouts/application.html.erb", type: :view do
 
   describe "one login header" do
     context "when not logged in" do
-      it { is_expected.not_to have_link(one_login_link_text) }
-      it { is_expected.not_to have_button(sign_out_link_text) }
+      it { is_expected.to have_no_link(one_login_link_text) }
+      it { is_expected.to have_no_button(sign_out_link_text) }
     end
 
     context "when logged in" do

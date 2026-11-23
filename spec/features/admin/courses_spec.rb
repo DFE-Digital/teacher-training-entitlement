@@ -66,7 +66,7 @@ RSpec.feature "Listing and viewing courses", type: :feature do
       expect(page).to have_current_path(academic_year_admin_course_cohorts_path(2026))
       expect(page).to have_text(course_2026_a.name)
       expect(page).to have_text(course_2026_b.name)
-      expect(page).not_to have_text(course_2025.name)
+      expect(page).to have_no_text(course_2025.name)
     end
   end
 

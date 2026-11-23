@@ -53,13 +53,6 @@
   - record_type
   :statements:
   - reconcile_amount
-  :legacy_passed_participant_outcomes:
-  - id
-  - completion_date
-  - course_short_code
-  - created_at
-  - trn
-  - updated_at
   :lead_providers:
   - email
   :financial_change_logs:
@@ -68,6 +61,8 @@
   - data_changes
   - operation_description
   - updated_at
+  :delivery_partnerships:
+  - archived_at
   :course_cohort_providers:
   - recruitment_target
   - teacher_funding

@@ -25,8 +25,8 @@ RSpec.feature "Guidance", type: :feature do
     it "renders the index page with masthead" do
       visit "/api/guidance"
 
-      expect(page).to have_content("Use this API to view, submit, and update TTE training data")
-      expect(page).not_to have_css("#side-navigation")
+      expect(page).to have_text("Use this API to view, submit, and update TTE training data")
+      expect(page).to have_no_css("#side-navigation")
     end
 
     it "renders the call to action button" do
@@ -40,8 +40,9 @@ RSpec.feature "Guidance", type: :feature do
     it "renders the .html page" do
       visit "/api/guidance/get-started"
 
-      expect(page).not_to have_content("#Connect to the API")
-      expect(page).to have_content("Connect to the API")
+      expect(page).to have_current_path("/api/guidance/get-started")
+      expect(page).to have_no_text("#Connect to the API")
+      expect(page).to have_text("Connect to the API")
     end
   end
 
@@ -49,8 +50,9 @@ RSpec.feature "Guidance", type: :feature do
     it "renders the .html page" do
       visit "/api/guidance/test-environments"
 
-      expect(page).not_to have_content("#What are the test environments")
-      expect(page).to have_content("The test environments are used to test API integration without affecting real data.")
+      expect(page).to have_current_path("/api/guidance/test-environments")
+      expect(page).to have_no_text("#What are the test environments")
+      expect(page).to have_text("The test environments are used to test API integration without affecting real data.")
     end
   end
 
@@ -58,8 +60,9 @@ RSpec.feature "Guidance", type: :feature do
     it "renders the .html page" do
       visit "/api/guidance/release-notes"
 
-      expect(page).not_to have_content("#Release notes")
-      expect(page).to have_content("Release notes")
+      expect(page).to have_current_path("/api/guidance/release-notes")
+      expect(page).to have_no_text("#Release notes")
+      expect(page).to have_text("Release notes")
     end
   end
 
@@ -67,6 +70,6 @@ RSpec.feature "Guidance", type: :feature do
     # to be updated with the first nested page
     visit "/api/guidance/nested/nested/test"
 
-    expect(page).to have_content("This is a nested markdown page")
+    expect(page).to have_text("This is a nested markdown page")
   end
 end

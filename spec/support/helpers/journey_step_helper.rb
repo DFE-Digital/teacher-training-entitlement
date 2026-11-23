@@ -7,7 +7,7 @@ module Helpers
             page.fill_in "Select your workplace", with: name
           end
 
-          page.find("#registration-wizard-institution-id-field__option--0").click
+          page.find_by_id("registration-wizard-institution-id-field__option--0").click
         end
       else
         navigate_to_page(path: "/registration/choose-school", submit_form: true) do
@@ -28,7 +28,7 @@ module Helpers
             page.fill_in "Select your workplace", with: "open"
           end
 
-          page.find("#nursery-picker__option--0").click
+          page.find_by_id("nursery-picker__option--0").click
         end
       else
         navigate_to_page(path: "/registration/choose-childcare-provider", submit_form: true) do
@@ -59,9 +59,9 @@ module Helpers
             page.fill_in "private-childcare-provider-picker", with: provider.urn
           end
 
-          expect(page).to have_content("#{provider.urn} - #{provider.name} - #{provider.address_1}, #{provider.town}")
+          expect(page).to have_text("#{provider.urn} - #{provider.name} - #{provider.address_1}, #{provider.town}")
 
-          page.find("#private-childcare-provider-picker__option--0").click
+          page.find_by_id("private-childcare-provider-picker__option--0").click
         end
       else
         expect_page_to_have(path: "/registration/choose-private-childcare-provider", submit_form: true) do

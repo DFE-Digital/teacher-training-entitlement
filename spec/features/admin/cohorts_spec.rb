@@ -121,17 +121,17 @@ RSpec.feature "Managing cohorts", :ecf_api_disabled, type: :feature do
   context "when logged in as a normal admin" do
     scenario "cannot create" do
       visit_index
-      expect(page).not_to have_link(new_button_text)
+      expect(page).to have_no_link(new_button_text)
     end
 
     scenario "cannot edit" do
       navigate_to_cohort
-      expect(page).not_to have_link(edit_button_text)
+      expect(page).to have_no_link(edit_button_text)
     end
 
     scenario "cannot delete" do
       navigate_to_cohort
-      expect(page).not_to have_link(delete_button_text)
+      expect(page).to have_no_link(delete_button_text)
     end
   end
 

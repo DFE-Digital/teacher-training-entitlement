@@ -63,7 +63,7 @@ RSpec.feature "Applications", type: :feature do
         visit applications_path
 
         expect(page).to have_current_path(application_path(active_application.ecf_id))
-        expect(page).not_to have_text("Withdrawn")
+        expect(page).to have_no_text("Withdrawn")
       end
     end
   end

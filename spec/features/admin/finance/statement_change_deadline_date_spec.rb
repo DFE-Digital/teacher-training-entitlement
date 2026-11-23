@@ -26,7 +26,7 @@ RSpec.feature "Statement - change deadline date", type: :feature do
     end
     click_button "Change date"
 
-    expect(page).to have_content I18n.t("activemodel.errors.models.statements/change_deadline_date.attributes.deadline_date.blank")
+    expect(page).to have_text I18n.t("activemodel.errors.models.statements/change_deadline_date.attributes.deadline_date.blank")
 
     # check non-numeric characters validation
     fill_in "statements_change_deadline_date[deadline_date(3i)]", with: "x"
@@ -34,7 +34,7 @@ RSpec.feature "Statement - change deadline date", type: :feature do
     fill_in "statements_change_deadline_date[deadline_date(1i)]", with: "z"
     click_button "Change date"
 
-    expect(page).to have_content I18n.t("activemodel.errors.models.statements/change_deadline_date.attributes.deadline_date.blank")
+    expect(page).to have_text I18n.t("activemodel.errors.models.statements/change_deadline_date.attributes.deadline_date.blank")
 
     # check date validation
     new_deadline_date = statement.payment_date + 1.month
@@ -44,7 +44,7 @@ RSpec.feature "Statement - change deadline date", type: :feature do
 
     click_button "Change date"
 
-    expect(page).to have_content I18n.t("activemodel.errors.models.statements/change_deadline_date.attributes.deadline_date.invalid")
+    expect(page).to have_text I18n.t("activemodel.errors.models.statements/change_deadline_date.attributes.deadline_date.invalid")
 
     # check valid date
     new_deadline_date = statement.payment_date - 1.month
@@ -54,7 +54,7 @@ RSpec.feature "Statement - change deadline date", type: :feature do
 
     click_button "Change date"
 
-    expect(page).to have_content("Output payment deadline changed")
+    expect(page).to have_text("Output payment deadline changed")
     expect(page).to have_current_path(admin_finance_statement_path(statement))
   end
 end

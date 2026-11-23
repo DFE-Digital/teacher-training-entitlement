@@ -23,7 +23,7 @@ module Admin::Adjustments
 
       return false unless valid?
 
-      adjustment.save # rubocop:disable Rails/SaveBang - result used by caller
+      adjustment.save # - result used by caller
     end
 
   private

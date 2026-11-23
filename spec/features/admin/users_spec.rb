@@ -42,7 +42,7 @@ RSpec.feature "User administration", type: :feature do
       user.update!(date_of_birth: nil)
       visit admin_user_path(user)
 
-      expect(page).to have_content("Date of birth")
+      expect(page).to have_text("Date of birth")
     end
 
     scenario "shows a message if the user has no applications" do

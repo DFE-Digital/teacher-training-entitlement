@@ -37,7 +37,7 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
   it { is_expected.to have_text "Funded declarations" }
   it { is_expected.to have_text "Payment details" }
 
-  it { is_expected.not_to have_text "The output payment deadline is" }
+  it { is_expected.to have_no_text "The output payment deadline is" }
 
   it "shows funded declarations table headers" do
     subject
@@ -91,11 +91,11 @@ RSpec.describe Admin::StatementSummaryComponent, type: :component do
   context "when link_to_voids is false" do
     subject(:rendered) { render_inline described_class.new(statement:, calculator:, link_to_voids: false) }
 
-    it { is_expected.not_to have_link "View Voids", href: received_admin_finance_statement_path(statement, status: :voided) }
+    it { is_expected.to have_no_link "View Voids", href: received_admin_finance_statement_path(statement, status: :voided) }
   end
 
   it "does not show retained row" do
     subject
-    expect(page).not_to have_text("Retained")
+    expect(page).to have_no_text("Retained")
   end
 end

@@ -13,7 +13,7 @@ RSpec.describe "admin/applications/declarations/index.html.erb", :versioning, ty
 
   context "with no declarations" do
     it { is_expected.to have_text("No declarations.") }
-    it { is_expected.not_to have_text("declaration partial") }
+    it { is_expected.to have_no_text("declaration partial") }
   end
 
   context "with declarations" do
@@ -24,7 +24,7 @@ RSpec.describe "admin/applications/declarations/index.html.erb", :versioning, ty
       ]
     end
 
-    it { is_expected.not_to have_text("No declarations.") }
+    it { is_expected.to have_no_text("No declarations.") }
     it { is_expected.to have_text("declaration partial\ndeclaration partial\n") }
   end
 end

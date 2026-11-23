@@ -5,7 +5,7 @@ RSpec.feature "Admin search", type: :feature do
 
   RSpec::Matchers.define :have_application do |expected|
     match do |_actual|
-      within(find("tr", text: expected.user.full_name)) do
+      page.within("tr", text: expected.user.full_name) do
         expect(page).to have_text(expected.user.full_name)
         expect(page).to have_link("View", href: admin_application_path(expected))
       end
