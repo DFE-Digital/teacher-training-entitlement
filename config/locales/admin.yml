@@ -53,6 +53,9 @@ en:
             is turned on, events will be sent to DfE Analytics.</p>'
           lead_provider_transferred_declarations_visibility_html: '<p class="govuk-body">When
             this feature is turned on, lead providers can see transferred declarations.</p>'
+          api_v2_enabled_html: '<p class="govuk-body">When this feature is turned
+            on, lead providers can use API V2. When it is off, API V2 endpoints return
+            404 and API V1 is unaffected.</p>'
       course_payment_overview_component:
       funded: Funded
       self_funded: Self-funded

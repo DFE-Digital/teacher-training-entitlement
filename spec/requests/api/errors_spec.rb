@@ -62,6 +62,8 @@ RSpec.describe "Error responses", type: :request do
   end
 
   describe "API V2 errors rendered by the exceptions app" do
+    include_context "with API V2 enabled"
+
     let(:lead_provider) { create(:lead_provider) }
 
     {

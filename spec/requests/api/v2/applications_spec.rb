@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "API V2 applications endpoints", type: :request do
+  include_context "with API V2 enabled"
+
   let(:current_lead_provider) { create(:lead_provider) }
   let(:json) { JSON.parse(response.body) }
   let(:ids) { json["data"].map { |a| a["id"] } }

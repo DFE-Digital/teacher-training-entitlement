@@ -112,4 +112,20 @@ RSpec.describe Feature do
       end
     end
   end
+
+  describe ".api_v2_enabled?" do
+    context "when disabled" do
+      it "returns false" do
+        expect(Feature).not_to be_api_v2_enabled
+      end
+    end
+
+    context "when enabled" do
+      before { Flipper.enable(Feature::API_V2_ENABLED) }
+
+      it "returns true" do
+        expect(Feature).to be_api_v2_enabled
+      end
+    end
+  end
 end

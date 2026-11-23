@@ -7,6 +7,7 @@ class Feature
   DFE_ANALYTICS_ENABLED = "DfE Analytics Enabled".freeze
   MAINTENANCE_BANNER = "Maintenance banner".freeze
   LP_TRANSFERRED_DECLARATIONS_VISIBILITY = "Lead provider transferred declarations visibility".freeze
+  API_V2_ENABLED = "API V2 enabled".freeze
 
   # This constant 'registers' all the feature flags we are using. We must not use a feature flag that is
   # not included in this array. This approach will make tracking feature flags much easier.
@@ -16,6 +17,7 @@ class Feature
     MAINTENANCE_BANNER,
     DFE_ANALYTICS_ENABLED,
     LP_TRANSFERRED_DECLARATIONS_VISIBILITY,
+    API_V2_ENABLED,
   ].freeze
 
   class << self
@@ -57,6 +59,10 @@ class Feature
 
     def lp_transferred_declarations_visibility?
       Flipper.enabled?(LP_TRANSFERRED_DECLARATIONS_VISIBILITY)
+    end
+
+    def api_v2_enabled?
+      Flipper.enabled?(API_V2_ENABLED)
     end
 
   private

@@ -1,10 +1,25 @@
 module API
   module V2
     # Renders JSON:API documents and JSON:API error objects.
+    # API V2 is only reachable while the API V2 feature flag is enabled.
     class BaseController < API::BaseController
       CONTENT_TYPE = "application/vnd.api+json".freeze
 
+      before_action :ensure_api_v2_enabled
+
     private
+
+      def ensure_api_v2_enabled
+        render_endpoint_not_found unless Feature.api_v2_enabled?
+      end
+
+      def render_endpoint_not_found
+        render_errors(
+          status: :not_found,
+          title: I18n.t(:endpoint_not_found),
+          details: "#{request.method} #{request.path}",
+        )
+      end
 
       def render_document(document, status: :ok)
         render json: document, status:, content_type: CONTENT_TYPE
