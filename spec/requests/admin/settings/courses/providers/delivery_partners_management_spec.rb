@@ -50,9 +50,13 @@ RSpec.describe "Admin delivery partnership management", type: :request do
       expect(response.body.scan("<legend").size).to eq(2)
     end
 
-    it "shows add new and two save buttons" do
-      expect(response.body.scan(/>save</).size).to eq(2)
-      expect(response.body).to include("add new delivery partners")
+    it "shows add new and save buttons" do
+      buttons = Nokogiri::HTML(response.body).css('button[name="commit"]')
+
+      expect(buttons.map { |button| [button["value"], button.text.squish] }).to eq([
+        ["add_new", "Add new delivery partner"],
+        ["save", "Save"],
+      ])
     end
   end
 
@@ -63,6 +67,13 @@ RSpec.describe "Admin delivery partnership management", type: :request do
       expect(response).to redirect_to(show_path)
       expect(flash[:success]).to eq("1 delivery partner added, 0 removed")
       expect(DeliveryPartnership.active.where(course:, lead_provider:, delivery_partner: beta)).to exist
+    end
+
+    it "rejects an unknown commit value without saving" do
+      patch update_path, params: { commit: "unexpected", delivery_partner_ids: [zed.id] }
+
+      expect(response).to have_http_status(:bad_request)
+      expect(alpha_partnership.reload).not_to be_archived
     end
 
     it "unarchives an archived partnership without a new row" do
