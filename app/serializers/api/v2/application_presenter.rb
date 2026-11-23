@@ -1,8 +1,9 @@
 module API
   module V2
-    class TrainingPresenter
+    # Shapes one provider assignment of an application for ApplicationSerializer.
+    class ApplicationPresenter
       DEFAULT_FUNDING_CHOICE = "dfe".freeze
-      INSTITUTION_TYPES = {
+      INSTITUTION_CATEGORIES = {
         "School" => "school",
         "PrivateChildcareProvider" => "private_childcare_provider",
         "LocalAuthority" => "local_authority",
@@ -10,8 +11,7 @@ module API
 
       attr_reader :application, :assignment, :outcome
 
-      delegate :ecf_id, :status, :created_at, :institution, to: :application, allow_nil: true
-      delegate :assigned_at, :unassigned_at, to: :assignment
+      delegate :email, :status, :created_at, :updated_at, to: :application
 
       # outcome: the latest outcome visible to the requesting provider, preloaded by the caller.
       def initialize(assignment, outcome: nil)
@@ -21,24 +21,15 @@ module API
       end
 
       def id
-        ecf_id
+        application.ecf_id
       end
 
       def contract_assigned_at
-        assigned_at
+        assignment.assigned_at
       end
 
       def contract_unassigned_at
-        unassigned_at
-      end
-
-      def updated_at
-        application.updated_at
-      end
-
-      # Training notification email; temporarily the teacher's email.
-      def email
-        teacher.email
+        assignment.unassigned_at
       end
 
       # Not yet sourced.
@@ -46,33 +37,19 @@ module API
         nil
       end
 
-      def teacher
-        application.user
-      end
-
-      def teacher_id
-        teacher.trn.presence || teacher.ecf_id
-      end
-
-      def contract_id
-        application.course_cohort.ecf_id
-      end
-
       def course
         {
-          identifier: application.course_cohort.course.identifier,
+          identifier: contract.course.identifier,
           role: nil,
           experience: nil,
         }
       end
 
-      def institution_type
-        INSTITUTION_TYPES[institution&.institutionable_type]
-      end
+      def institution
+        institution = application.institution
 
-      def institution_details
         {
-          institution_type: institution_type,
+          category: INSTITUTION_CATEGORIES[institution&.institutionable_type],
           reference_number: institution&.institution_reference_number,
           ukprn: institution&.ukprn,
           country_code: institution&.alpha3_country_code,
@@ -82,13 +59,29 @@ module API
 
       def funding
         {
-          eligible: application.eligible_for_funding,
+          eligible: application.eligible_for_funding?,
           uplift: nil,
           confirmed: application.funded_place,
           choice: application.funding_choice || DEFAULT_FUNDING_CHOICE,
-          reason: application.ineligible_for_funding_reason,
+          reason: application.funding_ineligible_reason,
           confirmation_reason: nil,
         }
+      end
+
+      def teacher
+        application.user
+      end
+
+      def teacher_id
+        TeacherSerializer.identifier(teacher)
+      end
+
+      def contract
+        application.course_cohort
+      end
+
+      def contract_id
+        contract.ecf_id
       end
 
       def outcome_id
@@ -105,8 +98,8 @@ module API
       end
 
       def expected_declarations
-        @expected_declarations ||= application.course_cohort.milestones.map do |milestone|
-          ExpectedDeclaration.new(ecf_id, milestone.declaration_type)
+        @expected_declarations ||= contract.course.milestones.map do |milestone|
+          ExpectedDeclaration.new(id, milestone.declaration_type)
         end
       end
 

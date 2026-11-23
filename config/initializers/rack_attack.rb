@@ -55,6 +55,20 @@ class Rack::Attack
   # Important: this should be a higher limit than the other throttles to ensure that
   # it only comes into effect when the other throttles have been exhausted.
   throttle("catch all requests by ip", limit: 1500, period: 5.minutes, &:ip)
+
+  # API V2 errors are JSON:API documents; every other path keeps the default response.
+  API_V2_PATH = %r{\A/+api/v2(/|\z)}
+  default_throttled_responder = throttled_responder
+
+  self.throttled_responder = lambda do |request|
+    next default_throttled_responder.call(request) unless request.path.match?(API_V2_PATH)
+
+    [
+      429,
+      { "content-type" => "application/vnd.api+json" },
+      [JSON.generate({ errors: [{ status: "429", title: "Too many requests" }] })],
+    ]
+  end
 end
 
 ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, request_id, payload|

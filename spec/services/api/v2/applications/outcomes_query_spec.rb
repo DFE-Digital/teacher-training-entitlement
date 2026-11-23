@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Trainings::OutcomesQuery do
+RSpec.describe API::V2::Applications::OutcomesQuery do
   let(:lead_provider) { create(:lead_provider) }
   let(:application) { create(:application, lead_provider:) }
   let(:declaration) { create(:declaration, :completed, :payable, application:, lead_provider:, user: application.user) }

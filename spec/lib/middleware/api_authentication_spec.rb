@@ -37,7 +37,7 @@ RSpec.describe Middleware::ApiAuthentication, type: :request do
     subject(:response) { request.get(path) }
 
     context "with a V2 path" do
-      let(:path) { "/api/v2/training" }
+      let(:path) { "/api/v2/applications" }
 
       it "returns a JSON:API errors document" do
         expect([response.status, response.content_type, JSON.parse(response.body)]).to eq(
