@@ -22,9 +22,12 @@ RSpec.describe "API V2 applications effective updated_at", type: :request do
     json["data"].map { |a| a["id"] }
   end
 
-  def create_declaration(lead_provider:, at:)
-    create(:declaration, :completed, :payable, application:, lead_provider:, user: application.user)
-      .tap { |declaration| declaration.update_columns(created_at: at, updated_at: at) }
+  def create_declaration(state:, type: :completed, provider: lead_provider)
+    create(:declaration, type, state:, application:, lead_provider: provider, user: application.user)
+  end
+
+  def record_outcome(application)
+    ParticipantOutcomes::Create.new(application:, state: "passed", completion_date: "2025-02-01").create_outcome
   end
 
   it "is the application's updated_at when nothing related changed" do
@@ -39,19 +42,15 @@ RSpec.describe "API V2 applications effective updated_at", type: :request do
   end
 
   {
-    "the application is updated" => ->(app, _provider) { app.touch },
-    "the teacher gets a TRN" => ->(app, _provider) { app.user.update!(trn: "0099999") },
-    "the application is reassigned" => ->(app, _provider) { app.change_provider!(to: create(:lead_provider)) },
-    "the institution changes" => ->(app, _provider) { app.institution.touch },
-    "the provider records an outcome" => lambda { |app, _provider|
-      ParticipantOutcomes::Create.new(application: app, state: "passed", completion_date: "2025-02-01").create_outcome
-    },
+    "the application is updated" => ->(app) { app.touch },
+    "the teacher gets a TRN" => ->(app) { app.user.update!(trn: "0099999") },
+    "the application is reassigned" => ->(app) { app.change_provider!(to: create(:lead_provider)) },
+    "the institution changes" => ->(app) { app.institution.touch },
   }.each do |description, change|
     context "when #{description}" do
       before do
-        create_declaration(lead_provider:, at: created_at)
         application.update_columns(updated_at: created_at)
-        travel_to(changed_at) { instance_exec(application.reload, lead_provider, &change) }
+        travel_to(changed_at) { instance_exec(application.reload, &change) }
       end
 
       it "reflects the change" do
@@ -64,15 +63,36 @@ RSpec.describe "API V2 applications effective updated_at", type: :request do
     end
   end
 
-  it "ignores insignificant teacher changes" do
-    travel_to(changed_at) { application.user.update!(refresh_token_updated_at: Time.zone.now) }
+  # Declarations and outcomes are not V2 application attributes: statement runs,
+  # clawbacks and voids must not make providers re-sync applications. Declarations
+  # are created and changed at the current time (declaration dates can't be in the
+  # future), well after the application was last changed.
+  {
+    "a declaration becomes payable" => [:eligible, ->(declaration) { declaration.mark_payable! }],
+    "a declaration is paid" => [:payable, ->(declaration) { declaration.mark_paid! }],
+    "a declaration is voided" => [:submitted, ->(declaration) { declaration.mark_voided! }],
+    "a declaration is clawed back" => [:paid, ->(declaration) { declaration.clawback! }],
+    "the provider records an outcome" => [:payable, ->(declaration) { record_outcome(declaration.application) }],
+  }.each do |description, (state, change)|
+    context "when #{description}" do
+      before do
+        declaration = create_declaration(state:)
+        application.update_columns(updated_at: created_at)
+        instance_exec(declaration.reload, &change)
+      end
 
-    expect(updated_at).to eq(created_at)
+      it "does not change updated_at" do
+        expect(updated_at).to eq(created_at)
+      end
+
+      it "is not matched by filter[updated_since] after the creation" do
+        expect(listed_ids(created_at + 1.second)).to eq([])
+      end
+    end
   end
 
-  it "ignores declarations of other providers" do
-    create_declaration(lead_provider: create(:lead_provider), at: changed_at)
-    application.update_columns(updated_at: created_at)
+  it "ignores insignificant teacher changes" do
+    travel_to(changed_at) { application.user.update!(refresh_token_updated_at: Time.zone.now) }
 
     expect(updated_at).to eq(created_at)
   end

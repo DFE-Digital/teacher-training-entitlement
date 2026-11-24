@@ -62,8 +62,33 @@ RSpec.describe API::V2::Applications::Query do
       query = described_class.new(lead_provider:, sort: [["created_at", :desc]])
 
       expect(query.sort_keys.first.slice(:name, :sql, :direction)).to eq(
-        name: "created_at", sql: "applications.created_at", direction: :desc,
+        name: "created_at", sql: "application_lead_providers.application_created_at", direction: :desc,
       )
+    end
+  end
+
+  describe "effective updated_at" do
+    let(:query) { described_class.new(lead_provider:, filters: { updated_since: 1.day.ago }) }
+
+    def page_sql
+      paginator = API::V2::CursorPaginator.new(scope: query.application_lead_providers, keys: query.sort_keys, size: 1)
+      cursor = paginator.call.next_cursor || raise("expected a next page")
+      sql = nil
+      callback = ->(*, payload) { sql = payload[:sql] if payload[:sql].include?("GREATEST") }
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        API::V2::CursorPaginator.new(scope: query.application_lead_providers, keys: query.sort_keys, size: 1, after: cursor).call
+      end
+      sql
+    end
+
+    before { create(:application, lead_provider:) }
+
+    it "is computed once in a cursor page query with updated_since" do
+      expect(page_sql.scan("GREATEST").size).to eq(1)
+    end
+
+    it "does not read declarations" do
+      expect(page_sql).not_to include("declarations")
     end
   end
 
