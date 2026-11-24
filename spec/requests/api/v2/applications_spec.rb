@@ -468,6 +468,35 @@ RSpec.describe "API V2 applications endpoints", type: :request do
 
           expect(large).to eq(small)
         end
+
+        it "does not grow with the number of rows on a cursor page with reassigned applications (include: #{include_param.inspect})" do
+          params = include_param ? { include: include_param } : {}
+          add_applications(1)
+          add_reassigned_applications(1)
+          params = params.merge(page: cursor_after_first_row(params))
+          list(params:)
+          small = count_queries { list(params:) }
+          add_applications(2)
+          add_reassigned_applications(2)
+          large = count_queries { list(params:) }
+
+          expect([large, JSON.parse(response.body)["data"].size]).to eq([small, 6])
+        end
+      end
+
+      def add_reassigned_applications(count)
+        count.times do
+          create(:application, lead_provider: current_lead_provider, user:, course: create(:course))
+            .change_provider!(to: create(:lead_provider))
+        end
+      end
+
+      # page[after] is the first row's cursor, so every other row is on the measured page.
+      def cursor_after_first_row(params)
+        list(params: params.merge(page: { size: "1" }))
+        next_link = JSON.parse(response.body).dig("links", "next")
+
+        Rack::Utils.parse_nested_query(URI(next_link).query)["page"].slice("after")
       end
     end
 
