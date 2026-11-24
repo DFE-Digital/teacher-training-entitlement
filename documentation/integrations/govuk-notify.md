@@ -141,7 +141,7 @@ The `NotifyEmailValidator` (`app/validators/notify_email_validator.rb`) replicat
 - TLD matches `/\A([a-z]{2,63}|xn--([a-z0-9]+-)*[a-z0-9]+)\z/i`.
 - Internationalised domain names are normalised via `SimpleIDN.to_ascii` before validation.
 
-Used via `validates :email, notify_email: true` on `User` and `RegistrationInterest` models.
+Used via `validates :email, notify_email: true` on `Teacher` and `RegistrationInterest` models.
 
 ## 11. Key files
 

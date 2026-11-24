@@ -30,6 +30,6 @@ private
   end
 
   def ensure_registration_closed
-    redirect_to root_path unless Feature.registration_closed?(current_user)
+    redirect_to root_path unless Feature.registration_closed?(current_teacher)
   end
 end

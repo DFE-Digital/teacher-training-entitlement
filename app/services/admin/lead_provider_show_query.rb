@@ -15,7 +15,7 @@ module Admin
       applications = @lead_provider.applications
                        .includes(
                          :current_application_lead_provider,
-                         :lead_provider, :user, :course, :cohort,
+                         :lead_provider, :teacher, :course, :cohort,
                          course_cohort: %i[course cohort]
                        )
                        .order(created_at: :desc)

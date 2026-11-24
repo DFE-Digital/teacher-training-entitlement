@@ -1,7 +1,7 @@
 <%= render "application_side_navigation" %>
 
 <span class="govuk-caption-m">
-  <%= @application.user.full_name %>,
+  <%= @application.teacher.full_name %>,
   <%= @application.course.name %>,
   <%= @application.created_at.to_date.to_fs(:govuk_short) %>
 </span>
@@ -12,16 +12,16 @@
 govuk_summary_list(card: { title: "Overview" }) do |sl|
   sl.with_row do |row|
     row.with_key(text: "Name")
-    row.with_value(text: @application.user.full_name)
-    row.with_action(text: "View user", href: admin_user_path(@application.user))
+    row.with_value(text: @application.teacher.full_name)
+    row.with_action(text: "View teacher", href: admin_teacher_path(@application.teacher))
   end
   sl.with_row do |row|
     row.with_key(text: "Application ID")
     row.with_value(text: @application.ecf_id)
   end
   sl.with_row do |row|
-    row.with_key(text: "User ID")
-    row.with_value(text: @application.user.ecf_id)
+    row.with_key(text: "Teacher ID")
+    row.with_value(text: @application.teacher.ecf_id)
   end
   sl.with_row do |row|
     row.with_key(text: "Course")

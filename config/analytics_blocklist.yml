@@ -120,7 +120,7 @@
   - updated_at
   :institutions:
   - search_vector
-  :users:
+  :teachers:
   - archived_email
   - date_of_birth
   - national_insurance_number

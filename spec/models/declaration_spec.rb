@@ -259,12 +259,12 @@ RSpec.describe Declaration, type: :model do
       end
 
       context "when declaration already exists" do
-        let(:user) { create(:user) }
+        let(:teacher) { create(:teacher) }
         let(:course) { create(:course) }
 
-        let(:application) { create(:application, :accepted, user:, course:) }
+        let(:application) { create(:application, :accepted, teacher:, course:) }
 
-        subject { build(:declaration, course:, user:, application:, delivery_partner: nil).tap { |d| d.save!(validate: false) } }
+        subject { build(:declaration, course:, teacher:, application:, delivery_partner: nil).tap { |d| d.save!(validate: false) } }
 
         context "when declaration_date is not changed" do
           it { is_expected.to be_valid }
@@ -328,7 +328,7 @@ RSpec.describe Declaration, type: :model do
 
   describe "delegations" do
     it { is_expected.to delegate_method(:course).to(:application) }
-    it { is_expected.to delegate_method(:user).to(:application) }
+    it { is_expected.to delegate_method(:teacher).to(:application) }
     it { is_expected.to delegate_method(:identifier).to(:course).with_prefix(true) }
     it { is_expected.to delegate_method(:name).to(:lead_provider).with_prefix(true) }
   end

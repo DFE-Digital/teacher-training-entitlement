@@ -41,12 +41,12 @@ erDiagram
   }
   DeliveryPartnership {
     integer id
-    integer course_cohort_id
     datetime created_at
     integer delivery_partner_id
     integer lead_provider_id
     datetime updated_at
     integer course_id
+    datetime archived_at
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
@@ -171,11 +171,11 @@ erDiagram
     string notes
     enum status
     datetime updated_at
-    integer user_id
+    integer teacher_id
     date training_starts_at
     jsonb registration_data
   }
-  Application }o--|| User : belongs_to
+  Application }o--|| Teacher : belongs_to
   Application }o--|| CourseCohort : belongs_to
   Application }o--|| Institution : belongs_to
   Institution {
@@ -198,7 +198,7 @@ erDiagram
     string alpha3_country_code
     string subdivision_code
   }
-  User {
+  Teacher {
     integer id
     boolean active_alert
     datetime archived_at
@@ -212,7 +212,7 @@ erDiagram
     string feature_flag_id
     text full_name
     text national_insurance_number
-    boolean notify_user_for_future_reg
+    boolean notify_teacher_for_future_reg
     string one_login_id
     string preferred_name
     string provider

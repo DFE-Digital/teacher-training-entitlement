@@ -7,7 +7,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
   let(:request) { nil }
 
   let(:wizard) do
-    RegistrationWizard.new(current_step:, store:, request:, current_user: build_stubbed(:user))
+    RegistrationWizard.new(current_step:, store:, request:, current_teacher: build_stubbed(:teacher))
   end
 
   describe "validations" do
@@ -60,7 +60,7 @@ RSpec.describe Questionnaires::ChooseSchool, type: :model do
     subject { described_class.new(institution_id:, wizard:).next_step }
 
     let(:wizard) do
-      RegistrationWizard.new(current_step:, store:, request:, current_user: create(:user))
+      RegistrationWizard.new(current_step:, store:, request:, current_teacher: create(:teacher))
     end
     let(:store) do
       {

@@ -79,7 +79,7 @@ namespace :admin do
 
   resources :schools, only: %i[index show]
 
-  resources :users, only: %i[show]
+  resources :teachers, only: %i[show]
   get "search", to: "search#index", as: :search
 
   namespace :finance do
@@ -141,7 +141,7 @@ namespace :admin do
           post "unsubscribe"
         end
         collection do
-          get "all_users"
+          get "all_teachers"
           get "senco"
         end
       end

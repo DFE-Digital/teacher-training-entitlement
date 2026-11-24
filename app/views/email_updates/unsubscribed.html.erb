@@ -10,7 +10,7 @@
       You will not receive any further emails about the opening of NPD service.
     </p>
 
-    <% if current_user&.persisted? %>
+    <% if current_teacher&.persisted? %>
       <p class="govuk-body">
         Did you unsubscribe by accident?
         <%= form_for :form, url: email_updates_path do |f| %>
@@ -25,7 +25,7 @@
       <%=
         render GovukComponent::ContinueButtonComponent.new(
           text: "Re-subscribe",
-          href: user_teacher_auth_omniauth_authorize_path(request_email_updates: "true"),
+          href: teacher_teacher_auth_omniauth_authorize_path(request_email_updates: "true"),
           as_button: true
         )
       %>

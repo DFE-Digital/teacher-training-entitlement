@@ -16,7 +16,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
         current_step:,
         store:,
         request:,
-        current_user: create(:user),
+        current_teacher: create(:teacher),
       )
     end
     let(:lead_provider_id) { nil }
@@ -65,7 +65,7 @@ RSpec.describe Questionnaires::ChooseYourProvider, type: :model do
         current_step: :choose_your_provider,
         store: { "course_cohort_ecf_id" => course_cohort.ecf_id },
         request: nil,
-        current_user: create(:user),
+        current_teacher: create(:teacher),
       )
     end
 

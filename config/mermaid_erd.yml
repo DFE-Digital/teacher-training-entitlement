@@ -10,7 +10,7 @@ only:
   - LeadProvider
   - DeliveryPartnership
   - DeliveryPartner
-  - User
+  - Teacher
   - ApplicationLeadProvider
   - Application
   - ApplicationEvent

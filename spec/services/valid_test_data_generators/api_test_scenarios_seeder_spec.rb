@@ -163,14 +163,14 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect { outcome }.to change(Application, :count).by(13)
         end
 
-        it "creates 12 users" do
-          expect { outcome }.to change(User, :count).by(13)
+        it "creates 12 teachers" do
+          expect { outcome }.to change(Teacher, :count).by(13)
         end
 
         it "creates applications with correct emails" do
           seeder.call
 
-          created_emails = lead_provider.applications.joins(:user).pluck("users.email")
+          created_emails = lead_provider.applications.joins(:teacher).pluck("teachers.email")
 
           expect(created_emails).to match_array(test_emails)
         end
@@ -185,11 +185,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         it "creates applications with correct funding eligibility" do
           seeder.call
 
-          eligible_count = lead_provider.updateable_applications.joins(:user)
+          eligible_count = lead_provider.updateable_applications.joins(:teacher)
                                       .where(funding_eligibility: :funded)
                                       .count
 
-          not_eligible_count = lead_provider.updateable_applications.joins(:user)
+          not_eligible_count = lead_provider.updateable_applications.joins(:teacher)
                                           .where.not(funding_eligibility: :funded)
                                           .count
 
@@ -264,11 +264,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           )
         end
 
-        it "creates users with TRNs" do
+        it "creates teachers with TRNs" do
           seeder.call
 
-          users = User.where(email: test_emails)
-          expect(users.pluck(:trn_lookup_status).uniq).to eq(%w[Found])
+          teachers = Teacher.where(email: test_emails)
+          expect(teachers.pluck(:trn_lookup_status).uniq).to eq(%w[Found])
         end
 
         it "creates applications with correct lead provider" do
@@ -289,8 +289,8 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect { seeder.call }.not_to change(Application, :count)
         end
 
-        it "deletes and recreates users with no other applications" do
-          expect { seeder.call }.not_to change(User, :count)
+        it "deletes and recreates teachers with no other applications" do
+          expect { seeder.call }.not_to change(Teacher, :count)
         end
 
         it "does not duplicate delivery partnerships" do
@@ -343,11 +343,11 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
         end
 
         it "maintains the same test emails" do
-          original_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
+          original_emails = lead_provider.updateable_applications.joins(:teacher).pluck("teachers.email")
 
           seeder.call
 
-          new_emails = lead_provider.updateable_applications.joins(:user).pluck("users.email")
+          new_emails = lead_provider.updateable_applications.joins(:teacher).pluck("teachers.email")
           expect(new_emails).to match_array(original_emails)
         end
 
@@ -361,14 +361,14 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
           expect(lead_provider.updateable_applications.pluck(:status).uniq).to eq([Application::PENDING])
         end
 
-        it "does not delete users with other applications" do
-          # Create another application for one of the test users
-          user = User.find_by(email: test_emails.first)
+        it "does not delete teachers with other applications" do
+          # Create another application for one of the test teachers
+          teacher = Teacher.find_by(email: test_emails.first)
           other_provider = create(:lead_provider)
-          create(:application, user: user, lead_provider: other_provider)
+          create(:application, teacher: teacher, lead_provider: other_provider)
 
-          expect { seeder.call }.to not_change(User, :count)
-          expect(user.reload).to be_present
+          expect { seeder.call }.to not_change(Teacher, :count)
+          expect(teacher.reload).to be_present
         end
       end
 

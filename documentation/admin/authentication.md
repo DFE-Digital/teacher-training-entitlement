@@ -5,16 +5,16 @@ the participant-facing app. Admin users authenticate via a **two-step OTP wizard
 against the local `AdminUser` model. There is no Devise, no TeacherAuth, and no
 password.
 
-## AdminUser vs. User
+## AdminUser vs. Teacher
 
-| Aspect            | `AdminUser`                | `User`                                |
+| Aspect            | `AdminUser`                | `Teacher`                                |
 |-------------------|----------------------------|---------------------------------------|
 | Purpose           | DfE internal staff         | Participants (teachers)               |
 | Auth mechanism    | OTP code sent by email     | TRS / TeacherAuth (GOV.UK One Login)  |
 | Sign-in page      | `/sign-in`                 | `/` (registration wizard)             |
-| Model location    | `app/models/admin_user.rb` | `app/models/user.rb`                  |
+| Model location    | `app/models/admin_user.rb` | `app/models/teacher.rb`                  |
 | Trackable columns | None (session-bound)       | Devise trackable (sign-in count, IPs) |
-| Session key       | `session["admin_id"]`      | `session["user_id"]`                  |
+| Session key       | `session["admin_id"]`      | `session["teacher_id"]`                  |
 | Password          | No password field          | No password field (omniauth-based)    |
 
 ### AdminUser schema
@@ -139,8 +139,8 @@ end
 | `require_admin`       | Redirects to `/sign-in` with flash unless `current_admin`   |
 | `require_super_admin` | Redirects to `/sign-in` unless `current_admin.super_admin?` |
 
-Neither method calls `authenticate_user!` (Devise), so an admin who is not a
-participant `User` can still access the console without triggering an omniauth
+Neither method calls `authenticate_teacher!` (Devise), so an admin who is not a
+participant `Teacher` can still access the console without triggering an omniauth
 redirect.
 
 ### current_admin

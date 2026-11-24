@@ -36,15 +36,15 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       ]
     end
 
-    it { is_expected.to have_css(".govuk-caption-m", text: "#{application.user.full_name}, #{application.course.name}, #{application.created_at.to_date.to_fs(:govuk_short)}", normalize_ws: true) }
+    it { is_expected.to have_css(".govuk-caption-m", text: "#{application.teacher.full_name}, #{application.course.name}, #{application.created_at.to_date.to_fs(:govuk_short)}", normalize_ws: true) }
     it { is_expected.to have_css "h1", text: "Application details" }
 
     context "with application overview summary card" do
       subject { Capybara.string(render).find(".govuk-summary-card", text: "Overview") }
 
-      it { is_expected.to have_summary_item "Name", application.user.full_name }
+      it { is_expected.to have_summary_item "Name", application.teacher.full_name }
       it { is_expected.to have_summary_item "Application ID", application.ecf_id }
-      it { is_expected.to have_summary_item "User ID", application.user.ecf_id }
+      it { is_expected.to have_summary_item "Teacher ID", application.teacher.ecf_id }
       it { is_expected.to have_summary_item "Provider", application.lead_provider.name }
       it { is_expected.to have_summary_item "Course", application.course.name }
     end

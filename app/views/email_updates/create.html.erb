@@ -4,8 +4,8 @@
   <h1 class="govuk-panel__title">You've signed up for email updates</h1>
 </div>
 
-<p class="govuk-body">We'll send updates to <strong><%= current_user.email %></strong> when registration opens for the next course.</p>
+<p class="govuk-body">We'll send updates to <strong><%= current_teacher.email %></strong> when registration opens for the next course.</p>
 
-<% if current_user.applications.any? %>
+<% if current_teacher.applications.any? %>
   <p class="govuk-body"><%= govuk_link_to "View your existing registrations", applications_path %>.</p>
 <% end %>

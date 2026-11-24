@@ -30,7 +30,7 @@ module Statements
                            .fetch(scope).includes(course_cohort: :cohort)
                            .to_a
 
-          applications = applications.select { _1.user.full_name =~ re } if filters[:teacher_name]
+          applications = applications.select { _1.teacher.full_name =~ re } if filters[:teacher_name]
 
           grouping[declaration_type] = Array(grouping[declaration_type]) + applications
         end

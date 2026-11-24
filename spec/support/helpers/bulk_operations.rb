@@ -23,11 +23,11 @@ module Helpers
         # Create required partnerships
         create(:delivery_partnership, course:, delivery_partner:, lead_provider:)
 
-        participant1 = create(:user)
-        participant2 = create(:user)
+        participant1 = create(:teacher)
+        participant2 = create(:teacher)
 
-        create(:application, :accepted, user: participant1, course_cohort:, lead_provider:)
-        create(:application, :accepted, user: participant2, course_cohort:, lead_provider:)
+        create(:application, :accepted, teacher: participant1, course_cohort:, lead_provider:)
+        create(:application, :accepted, teacher: participant2, course_cohort:, lead_provider:)
 
         milestone = course.milestones.find_or_create_by!(declaration_type: Milestone::STARTED) do |record|
           record.acceptance_window_start_offset = 0

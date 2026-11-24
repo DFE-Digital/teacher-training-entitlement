@@ -7,9 +7,9 @@ RSpec.describe Crons::NotifyCourseCohortAvailableJob, type: :job do
       cc.cohort.update!(registration_starts_at: Date.current)
     end
 
-    context "when user is registered for npd notification" do
+    context "when teacher is registered for npd notification" do
       before do
-        create(:user, email_updates_status: User::EMAIL_NPD_REGISTRATION_OPEN)
+        create(:teacher, email_updates_status: Teacher::EMAIL_NPD_REGISTRATION_OPEN)
       end
 
       it "enqueues notification email" do
@@ -18,9 +18,9 @@ RSpec.describe Crons::NotifyCourseCohortAvailableJob, type: :job do
       end
     end
 
-    context "when user is not registered for any notification" do
+    context "when teacher is not registered for any notification" do
       before do
-        create(:user, email_updates_status: nil)
+        create(:teacher, email_updates_status: nil)
       end
 
       it "does not enqueues notification email" do

@@ -8,7 +8,7 @@ class Application < ApplicationRecord
 
   has_paper_trail meta: { note: :version_note }
 
-  belongs_to :user
+  belongs_to :teacher
   belongs_to :course_cohort
   belongs_to :institution, optional: true
 
@@ -20,7 +20,7 @@ class Application < ApplicationRecord
   # Rails delegated_type provides #school, #private_childcare_provider, #local_authority on Institution
   delegate :school, :private_childcare_provider, :local_authority, to: :institution, allow_nil: true
 
-  has_many :participant_id_changes, through: :user
+  has_many :participant_id_changes, through: :teacher
   has_many :application_events
   has_many :state_changes
   has_many :notifications
@@ -50,11 +50,11 @@ class Application < ApplicationRecord
 
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
-  validates :user_id,
+  validates :teacher_id,
             uniqueness: {
               scope: :course_cohort_id,
               conditions: -> { where.not(status: [REJECTED]) },
-              message: "/ Course Cohort already exists for user",
+              message: "/ Course Cohort already exists for teacher",
             }, unless: -> { rejected_status? }
 
   validate :ensure_valid_status_transition, if: -> { status_changed? && not_admin_user? }

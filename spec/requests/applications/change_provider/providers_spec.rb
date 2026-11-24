@@ -3,13 +3,13 @@ require "rails_helper"
 RSpec.describe "Applications::ChangeProvider::Providers", type: :request do
   let(:application) { create(:application) }
   let(:another_provider) { create(:lead_provider) }
-  let(:user) { application.user }
+  let(:teacher) { application.teacher }
   let(:url) { "/applications/#{application.ecf_id}/change-provider/providers" }
 
   before do
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
-      .and_return({ user_id: user.id })
+      .and_return({ teacher_id: teacher.id })
 
     create(:course_cohort, lead_provider: another_provider,
                            course: application.course,

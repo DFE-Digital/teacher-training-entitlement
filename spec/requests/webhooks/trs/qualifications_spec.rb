@@ -20,10 +20,10 @@ RSpec.describe "webhooks/trs/qualifications", document: ENV["RSWAG_WEBHOOKS"].pr
       security [{ api_key: [] }]
 
       response(200, "successful") do
-        let(:user) { create(:user) }
-        let(:trn) { user.trn }
+        let(:teacher) { create(:teacher) }
+        let(:trn) { teacher.trn }
 
-        before { create(:outcome, user:, completion_date: Date.new(2026, 10, 6)) }
+        before { create(:outcome, teacher:, completion_date: Date.new(2026, 10, 6)) }
 
         after do |example|
           example.metadata[:response][:content] = {

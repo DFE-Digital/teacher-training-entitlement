@@ -112,7 +112,7 @@ ActiveRecord::Base.transaction do
     institution: (institution_from_store if inside_catchment?),
     funding_eligibility: funding_eligibility_service.funding_eligibility,
     status: Application::PENDING,
-    raw_application_data: raw_application_data.except("current_user", "current_user_id"),
+    raw_application_data: raw_application_data.except("current_teacher", "current_teacher_id"),
     # work setting and catchment answers stay in registration_data; catchment is derived from institution
   )
   enqueue_send_application_submission_email_job(application)
@@ -189,7 +189,7 @@ submitted application becomes visible at `/applications/<ecf_id>`.
 ## Related docs
 
 - [`overview.md`](./overview.md) — registration domain map.
-- [`authentication.md`](./authentication.md) — sign-in and how a `User` is provisioned before the wizard.
+- [`authentication.md`](./authentication.md) — sign-in and how a `Teacher` is provisioned before the wizard.
 - `change-of-provider.md` *(forthcoming)* — change-of-provider flow (participant action after submission; guarded by `Application#can_change_provider?`).
 - [`funding.md`](../funding.md) — `FundingEligibility` status codes and downstream effect on declarations.
 

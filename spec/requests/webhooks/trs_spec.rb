@@ -2,10 +2,10 @@ require "rails_helper"
 
 RSpec.describe "Webhooks::TRS", type: :request do
   describe "GET /webhooks/trs/qualifications/:trn" do
-    let(:user) { create(:user) }
+    let(:teacher) { create(:teacher) }
     let(:token) { APIToken.create_with_random_token!(scope: :webhook) }
-    let!(:outcome) { create(:outcome, user:) }
-    let(:trn) { user.trn }
+    let!(:outcome) { create(:outcome, teacher:) }
+    let(:trn) { teacher.trn }
 
     context "when request token is missing" do
       before { get webhooks_trs_qualification_path(trn) }
@@ -39,13 +39,13 @@ RSpec.describe "Webhooks::TRS", type: :request do
         end
       end
 
-      context "when user has not outcome" do
-        let(:other_user) { create(:user) }
-        let(:trn) { other_user.trn }
+      context "when teacher has not outcome" do
+        let(:other_teacher) { create(:teacher) }
+        let(:trn) { other_teacher.trn }
         let(:expected_data) do
           {
             "data" => {
-              "trn" => other_user.trn,
+              "trn" => other_teacher.trn,
               "qualifications" => [],
             },
           }
@@ -58,11 +58,11 @@ RSpec.describe "Webhooks::TRS", type: :request do
         end
       end
 
-      context "when user has some outcomes" do
+      context "when teacher has some outcomes" do
         let(:expected_data) do
           {
             "data" => {
-              "trn" => user.trn,
+              "trn" => teacher.trn,
               "qualifications" => [
                 {
                   "award_date" => outcome.completion_date.to_fs(:succint),

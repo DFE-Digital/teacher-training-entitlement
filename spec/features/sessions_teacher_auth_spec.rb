@@ -6,10 +6,10 @@ RSpec.feature "Sessions: integration with TeacherAuth", type: :feature do
   include_context "Stub Teacher Auth Responses"
 
   before do
-    allow(User).to receive(:find_by).and_return(FactoryBot.create(:user))
+    allow(Teacher).to receive(:find_by).and_return(FactoryBot.create(:teacher))
   end
 
-  scenario "One Login header links are visible for logged-in users" do
+  scenario "One Login header links are visible for logged-in teachers" do
     visit "/"
 
     expect(page).to have_button("Sign out")

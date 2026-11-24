@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :user do
+  factory :teacher do
     sequence(:full_name) { |n| "John Doe #{n}" }
     sequence(:email) { Faker::Internet.email(name: full_name) }
     sequence(:trn) { |n| sprintf("%07i", n % 10_000_000) }
@@ -25,8 +25,8 @@ FactoryBot.define do
         lead_provider { LeadProvider.first }
       end
 
-      after(:create) do |user, evaluator|
-        create(:application, :accepted, user:, lead_provider: evaluator.lead_provider)
+      after(:create) do |teacher, evaluator|
+        create(:application, :accepted, teacher:, lead_provider: evaluator.lead_provider)
       end
     end
 

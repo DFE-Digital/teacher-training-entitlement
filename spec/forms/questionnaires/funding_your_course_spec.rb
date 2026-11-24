@@ -9,7 +9,7 @@ RSpec.describe Questionnaires::FundingYourCourse, type: :model do
         current_step: :funding_your_course,
         store: {},
         request: nil,
-        current_user: build_stubbed(:user),
+        current_teacher: build_stubbed(:teacher),
       )
     end
 

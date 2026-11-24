@@ -16,7 +16,7 @@ RSpec.feature "viewing application history", :revisit, :versioning, type: :featu
 
       expect(page).to have_css(
         ".govuk-caption-m",
-        text: "#{application.user.full_name}, #{application.course.name}, #{application.created_at.to_date.to_fs(:govuk_short)}",
+        text: "#{application.teacher.full_name}, #{application.course.name}, #{application.created_at.to_date.to_fs(:govuk_short)}",
       )
       expect(page).to have_css("h1", text: "Application history")
 
@@ -31,7 +31,7 @@ RSpec.feature "viewing application history", :revisit, :versioning, type: :featu
     let(:new_lead_provider) { create(:lead_provider, :with_courses) }
 
     before do
-      PaperTrail.request.whodunnit = "test user"
+      PaperTrail.request.whodunnit = "test teacher"
       create(:schedule, cohort: older_cohort, course_group: application.course.course_group, identifier: application.schedule.identifier)
       Applications::ChangeCohort.new(application:, new_cohort: older_cohort).call
       Applications::ChangeFundingEligibility.new(application:, eligible_for_funding: true).call
@@ -43,7 +43,7 @@ RSpec.feature "viewing application history", :revisit, :versioning, type: :featu
       visit admin_applications_history_path(application)
       expect(page).to have_css("h2", text: "Cohort changed to #{older_cohort.name}")
       expect(page).to have_css("h2", text: "Schedule changed to #{Schedule.last.name}")
-      expect(page).to have_content("by test user")
+      expect(page).to have_content("by test teacher")
       expect(page).to have_css("h2", text: "Eligible for funding changed to yes")
       expect(page).to have_css("li", text: "Status code changed to marked_funded_by_policy")
       expect(page).to have_css("h2", text: "Status changed to deferred")

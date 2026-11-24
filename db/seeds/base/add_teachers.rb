@@ -21,15 +21,15 @@ AdminUser.find_or_create_by!(email: "superadmin@example.com") do |admin|
   )
 end
 
-User.find_or_create_by!(email: "jerome.riga@education.gov.uk") do |user|
-  user.assign_attributes(
+Teacher.find_or_create_by!(email: "jerome.riga@education.gov.uk") do |teacher|
+  teacher.assign_attributes(
     full_name: "Jerome Riga",
     trn: "3013406",
   )
 end
 
-User.find_or_create_by!(email: "ben.keeping@education.gov.uk") do |user|
-  user.assign_attributes(
+Teacher.find_or_create_by!(email: "ben.keeping@education.gov.uk") do |teacher|
+  teacher.assign_attributes(
     full_name: "Ben Keeping",
     trn: "3013408",
   )

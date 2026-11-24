@@ -9,7 +9,7 @@ module API
       field(:state)
       field(:completion_date)
       field(:course_identifier) { |outcome| outcome.declaration.application.course.identifier }
-      field(:participant_id) { |outcome| outcome.user.ecf_id }
+      field(:participant_id) { |outcome| outcome.teacher.ecf_id }
       field(:created_at)
       field(:updated_at)
 

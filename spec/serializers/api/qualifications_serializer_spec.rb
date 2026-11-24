@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe API::QualificationsSerializer, type: :serializer do
   let(:outcome) { create(:participant_outcome, :passed) }
-  let(:trn) { outcome.declaration.application.user.trn }
+  let(:trn) { outcome.declaration.application.teacher.trn }
 
   subject(:response) { JSON.parse(described_class.render(trn, root: "data", participant_outcomes: [outcome])) }
 

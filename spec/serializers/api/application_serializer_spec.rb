@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe API::ApplicationSerializer, type: :serializer do
-  let(:user) { application.user }
+  let(:teacher) { application.teacher }
   let(:course) { create(:course, :npd_eirt) }
   let(:cohort) { create(:cohort, :current) }
   let(:course_cohort) { create(:course_cohort, course:, cohort:) }
@@ -174,25 +174,25 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       end
     end
 
-    describe "user serialization" do
+    describe "teacher serialization" do
       it "serializes the `participant_id`" do
-        user.ecf_id = SecureRandom.uuid
-        expect(attributes["participant_id"]).to eq(user.ecf_id)
+        teacher.ecf_id = SecureRandom.uuid
+        expect(attributes["participant_id"]).to eq(teacher.ecf_id)
       end
 
       it "serializes the `email`" do
-        user.email = "email@address.com"
-        expect(attributes["email"]).to eq(user.email)
+        teacher.email = "email@address.com"
+        expect(attributes["email"]).to eq(teacher.email)
       end
 
       it "serializes the `full_name`" do
-        user.full_name = "full name"
-        expect(attributes["full_name"]).to eq(user.full_name)
+        teacher.full_name = "full name"
+        expect(attributes["full_name"]).to eq(teacher.full_name)
       end
 
       it "serializes the `teacher_reference_number`" do
-        user.trn = "1234567"
-        expect(attributes["teacher_reference_number"]).to eq(user.trn)
+        teacher.trn = "1234567"
+        expect(attributes["teacher_reference_number"]).to eq(teacher.trn)
       end
     end
 
@@ -204,16 +204,16 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
       end
 
       it "serializes the `updated_at`" do
-        user.significantly_updated_at = Time.utc(2023, 7, 2, 11, 0, 0)
+        teacher.significantly_updated_at = Time.utc(2023, 7, 2, 11, 0, 0)
         application.updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
 
         expect(attributes["updated_at"]).to eq("2023-07-02T12:00:00Z")
       end
 
-      context "when the user was updated after the application" do
-        it "serializes the `updated_at` as the user's updated_at" do
+      context "when the teacher was updated after the application" do
+        it "serializes the `updated_at` as the teacher's updated_at" do
           application.updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
-          user.significantly_updated_at = Time.utc(2024, 7, 2, 12, 0, 0)
+          teacher.significantly_updated_at = Time.utc(2024, 7, 2, 12, 0, 0)
 
           expect(attributes["updated_at"]).to eq("2024-07-02T12:00:00Z")
         end

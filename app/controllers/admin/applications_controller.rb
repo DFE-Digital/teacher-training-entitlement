@@ -7,7 +7,7 @@ module Admin
     def index
       applications = Application
                        .includes(:current_application_lead_provider,
-                                 :institution, :user, :lead_provider,
+                                 :institution, :teacher, :lead_provider,
                                  application_lead_providers: %i[lead_provider],
                                  course_cohort: %i[course cohort])
                        .merge(filter_scope)
@@ -21,7 +21,7 @@ module Admin
 
     def set_application
       @application = Application
-                       .includes(:institution, :user,
+                       .includes(:institution, :teacher,
                                  application_lead_providers: { lead_provider: :course_cohorts },
                                  course_cohort: %i[course cohort])
                        .find_by!(ecf_id: params[:id])

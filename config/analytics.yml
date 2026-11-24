@@ -58,7 +58,7 @@ shared:
     - ecf_id
   :participant_id_changes:
     - id
-    - user_id
+    - teacher_id
     - created_at
     - updated_at
     - ecf_id
@@ -186,7 +186,7 @@ shared:
     - unassigned_at
   :applications:
     - id
-    - user_id
+    - teacher_id
     - course_cohort_id
     - created_at
     - updated_at
@@ -199,7 +199,7 @@ shared:
     - funded_place
     - training_starts_at
     - registration_data
-  :users:
+  :teachers:
     - id
     - created_at
     - updated_at
@@ -212,7 +212,7 @@ shared:
     - provider
     - updated_from_tra_at
     - trn_lookup_status
-    - notify_user_for_future_reg
+    - notify_teacher_for_future_reg
     - email_updates_status
     - email_updates_unsubscribe_key
     - archived_at

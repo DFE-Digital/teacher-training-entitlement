@@ -21,17 +21,17 @@ RSpec.describe Questionnaires::ShareProvider, type: :model do
         current_step: :share_provider,
         store:,
         request: nil,
-        current_user: build_stubbed(:user),
+        current_teacher: build_stubbed(:teacher),
       )
     end
 
-    context "when user has selected a funding option (ineligible flow)" do
+    context "when teacher has selected a funding option (ineligible flow)" do
       let(:store) { { "funding" => "self" } }
 
       it { is_expected.to eq(:funding_your_course) }
     end
 
-    context "when user has not selected a funding option (eligible flow)" do
+    context "when teacher has not selected a funding option (eligible flow)" do
       let(:store) { {} }
 
       it { is_expected.to eq(:possible_funding) }

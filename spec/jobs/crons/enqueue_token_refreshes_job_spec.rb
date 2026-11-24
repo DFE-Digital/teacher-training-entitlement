@@ -2,22 +2,22 @@ require "rails_helper"
 
 RSpec.describe Crons::EnqueueTokenRefreshesJob, type: :job do
   describe "#perform" do
-    it "enqueues RefreshUserTokenJob for users needing token refresh" do
-      user = create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 2.days.ago)
+    it "enqueues RefreshTeacherTokenJob for teachers needing token refresh" do
+      teacher = create(:teacher, trn: nil, refresh_token: "token", refresh_token_updated_at: 2.days.ago)
 
-      expect { described_class.perform_now }.to have_enqueued_job(RefreshUserTokenJob).with(user)
+      expect { described_class.perform_now }.to have_enqueued_job(RefreshTeacherTokenJob).with(teacher)
     end
 
-    it "does not enqueue jobs for users with TRN" do
-      create(:user, trn: "1234567", refresh_token: "token", refresh_token_updated_at: 2.days.ago)
+    it "does not enqueue jobs for teachers with TRN" do
+      create(:teacher, trn: "1234567", refresh_token: "token", refresh_token_updated_at: 2.days.ago)
 
-      expect { described_class.perform_now }.not_to have_enqueued_job(RefreshUserTokenJob)
+      expect { described_class.perform_now }.not_to have_enqueued_job(RefreshTeacherTokenJob)
     end
 
-    it "does not enqueue jobs for users with recent refresh" do
-      create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: 1.hour.ago)
+    it "does not enqueue jobs for teachers with recent refresh" do
+      create(:teacher, trn: nil, refresh_token: "token", refresh_token_updated_at: 1.hour.ago)
 
-      expect { described_class.perform_now }.not_to have_enqueued_job(RefreshUserTokenJob)
+      expect { described_class.perform_now }.not_to have_enqueued_job(RefreshTeacherTokenJob)
     end
   end
 end

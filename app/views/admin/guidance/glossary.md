@@ -246,6 +246,10 @@ Each statement has a unique ID. You can use this ID to find and track specific s
 
 ## T
 
+### Teacher ID
+
+Each teacher has a unique ID. This helps you search for and identify individual teachers. A teacher might have several applications—or none at all.
+
 ### Teacher reference number (TRN)
 
 A unique, 7 digit identification number that helps identify users in the education system in England. This is needed to register for a course and to download certificates.
@@ -281,10 +285,6 @@ The following information needs to be uploaded to the admin console to create co
 ### Upload statements
 
 To upload a statement a CSV file with the year, month, deadline date, payment date and output fee information must be uploaded.
-
-### User ID
-
-Each user has a unique ID. This helps you search for and identify individual users. A user might have several applications—or none at all.
 
 ## V
 

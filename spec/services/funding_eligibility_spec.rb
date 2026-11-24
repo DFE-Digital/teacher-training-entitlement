@@ -9,12 +9,12 @@ RSpec.describe FundingEligibility do
     )
   end
 
-  let(:current_user) { create(:user, :with_one_login_id, trn: "1234567") }
+  let(:current_teacher) { create(:teacher, :with_one_login_id, trn: "1234567") }
   let(:store) do
     {
       work_setting:,
       kind_of_nursery:,
-      "current_user" => current_user,
+      "current_teacher" => current_teacher,
     }.stringify_keys
   end
 
@@ -35,7 +35,7 @@ RSpec.describe FundingEligibility do
 
     context "when previously funded" do
       before do
-        create(:application, :with_funded_place, :accepted, user: current_user, course:)
+        create(:application, :with_funded_place, :accepted, teacher: current_teacher, course:)
       end
 
       it { is_expected.to eq :previously_funded }
@@ -99,9 +99,9 @@ RSpec.describe FundingEligibility do
 
     it { is_expected.to be false }
 
-    context "when user has an accepted application with funding" do
+    context "when teacher has an accepted application with funding" do
       before do
-        create(:application, :with_funded_place, :accepted, user: current_user, course:)
+        create(:application, :with_funded_place, :accepted, teacher: current_teacher, course:)
       end
 
       it { is_expected.to be true }

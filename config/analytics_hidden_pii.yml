@@ -4,7 +4,7 @@ shared:
     - registered_person_name
   :registration_interests:
     - email
-  :users:
+  :teachers:
     - trn
     - email
     - full_name

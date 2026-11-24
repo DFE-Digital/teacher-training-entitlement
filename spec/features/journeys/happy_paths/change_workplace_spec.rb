@@ -6,12 +6,12 @@ RSpec.feature "Change workplace", type: :feature do
 
   include_context "Stub Teacher Auth Responses"
 
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
   let(:school) { create(:school, :with_address) }
 
   before do
     page.set_rack_session(
-      "user_id" => user.id,
+      "teacher_id" => teacher.id,
       "registration_store" => {
         "works_in_school" => "yes",
         "institution_id" => school.institution.id.to_s,

@@ -5,7 +5,7 @@ RSpec.feature "Change provider", type: :feature do
   let(:another_provider) { create(:lead_provider) }
 
   before do
-    page.set_rack_session("user_id" => application.user.id)
+    page.set_rack_session("teacher_id" => application.teacher.id)
     create(:course_cohort, lead_provider: another_provider,
                            course: application.course,
                            cohort: application.cohort)

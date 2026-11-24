@@ -5,8 +5,8 @@ RSpec.feature "Admin search", type: :feature do
 
   RSpec::Matchers.define :have_application do |expected|
     match do |_actual|
-      within(find("tr", text: expected.user.full_name)) do
-        expect(page).to have_text(expected.user.full_name)
+      within(find("tr", text: expected.teacher.full_name)) do
+        expect(page).to have_text(expected.teacher.full_name)
         expect(page).to have_link("View", href: admin_application_path(expected))
       end
     end
@@ -21,7 +21,7 @@ RSpec.feature "Admin search", type: :feature do
 
     visit(admin_search_path)
 
-    fill_in "Name, email, TRN, user ID, application ID, declaration ID or URN", with: application.ecf_id
+    fill_in "Name, email, TRN, teacher ID, application ID, declaration ID or URN", with: application.ecf_id
     click_button "Search"
 
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
@@ -64,35 +64,35 @@ RSpec.feature "Admin search", type: :feature do
 
     visit(admin_search_path)
 
-    fill_in "Name, email, TRN, user ID, application ID, declaration ID or URN", with: search_with_results
+    fill_in "Name, email, TRN, teacher ID, application ID, declaration ID or URN", with: search_with_results
     select approval_status_without_results, from: "Application status"
     click_button "Search"
     expect(page).to have_text("No applications match the search and filters")
 
-    fill_in "Name, email, TRN, user ID, application ID, declaration ID or URN", with: search_without_results
+    fill_in "Name, email, TRN, teacher ID, application ID, declaration ID or URN", with: search_without_results
     select approval_status_with_results, from: "Application status"
     click_button "Search"
-    expect(page).to have_text("No users or applications match the search and filters")
+    expect(page).to have_text("No teachers or applications match the search and filters")
 
-    fill_in "Name, email, TRN, user ID, application ID, declaration ID or URN", with: search_with_results
+    fill_in "Name, email, TRN, teacher ID, application ID, declaration ID or URN", with: search_with_results
     select approval_status_with_results, from: "Application status"
     click_button "Search"
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
     expect(page).to have_application(application)
   end
 
-  scenario "searching for a user" do
-    user = create(:user, :with_one_login_id)
-    create(:application, user:)
+  scenario "searching for a teacher" do
+    teacher = create(:teacher, :with_one_login_id)
+    create(:application, teacher:)
 
     visit(admin_search_path)
 
-    fill_in("Name, email, TRN, user ID, application ID, declaration ID or URN", with: user.email)
+    fill_in("Name, email, TRN, teacher ID, application ID, declaration ID or URN", with: teacher.email)
     click_button("Search")
-    click_on("Users (1)")
+    click_on("Teachers (1)")
 
     expect(page).to have_css("tbody tr", count: 1)
-    expect(page).to have_css("tbody tr", text: user.full_name)
-    expect(page).to have_link(user.full_name, href: admin_user_path(user))
+    expect(page).to have_css("tbody tr", text: teacher.full_name)
+    expect(page).to have_link(teacher.full_name, href: admin_teacher_path(teacher))
   end
 end

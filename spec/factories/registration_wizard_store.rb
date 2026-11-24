@@ -8,13 +8,13 @@ FactoryBot.define do
       lead_provider { LeadProvider.first }
     end
 
-    current_user { create(:user) }
+    current_teacher { create(:teacher) }
     course_identifier { course.identifier }
     institution_id { school.institution.id }
     lead_provider_id { lead_provider.id }
     works_in_school { "yes" }
     teacher_catchment { "england" }
     work_setting { "a_school" }
-    trn { current_user.trn }
+    trn { current_teacher.trn }
   end
 end

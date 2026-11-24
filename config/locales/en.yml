@@ -381,7 +381,7 @@ en:
               taken: ECF ID must be unique
             payment_date:
               invalid: must be on or after the deadline date
-        user:
+        teacher:
           attributes:
             full_name:
               blank: Enter a full name
@@ -603,8 +603,8 @@ en:
               incorrect: Code is not correct. Please try again
         participants/change_trn:
           attributes:
-            user:
-              blank: User not found
+            teacher:
+              blank: Teacher not found
         declarations/statement_attacher:
           attributes:
             declaration:

@@ -1,6 +1,6 @@
 <%= govuk_back_link(href: url_for(:back)) %>
 
-<h1 class="govuk-heading-l"><%= @user.full_name %></h1>
+<h1 class="govuk-heading-l"><%= @teacher.full_name %></h1>
 
 <div class="govuk-summary-card">
   <div class="govuk-summary-card__title-wrapper">
@@ -12,10 +12,10 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          User ID
+          Teacher ID
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.ecf_id %>
+          <%= @teacher.ecf_id %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -23,7 +23,7 @@
           Preferred Name
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.preferred_name.presence || @user.full_name %>
+          <%= @teacher.preferred_name.presence || @teacher.full_name %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -31,7 +31,7 @@
           Email
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.email %>
+          <%= @teacher.email %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -39,7 +39,7 @@
           Date of birth
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.date_of_birth.try(:to_fs, :govuk_short) %>
+          <%= @teacher.date_of_birth.try(:to_fs, :govuk_short) %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -47,7 +47,7 @@
           National Insurance number
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.national_insurance_number %>
+          <%= @teacher.national_insurance_number %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -55,7 +55,7 @@
           TRN
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.trn.presence || ("TRN Requested" if @user.trn_requested_at) %>
+          <%= @teacher.trn.presence || ("TRN Requested" if @teacher.trn_requested_at) %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -63,7 +63,7 @@
           One Login ID
         </dt>
         <dd class="govuk-summary-list__value">
-          <%= @user.one_login_id %>
+          <%= @teacher.one_login_id %>
         </dd>
       </div>
     </dl>
@@ -73,7 +73,7 @@
 <h2 class="govuk-heading-m">Applications</h2>
 
 <% if @applications.none? %>
-  <p class="govuk-body">This user has no applications.</p>
+  <p class="govuk-body">This teacher has no applications.</p>
 <% else %>
   <%= render partial: 'application', collection: @applications %>
 <% end %>

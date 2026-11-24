@@ -9,18 +9,18 @@ RSpec.describe Questionnaires::Start do
     before { instance.wizard = wizard }
 
     let(:instance) { described_class.new }
-    let(:wizard) { RegistrationWizard.new(store:, request:, current_step: :start, current_user:) }
+    let(:wizard) { RegistrationWizard.new(store:, request:, current_step: :start, current_teacher:) }
     let(:request) { nil }
     let(:store) { {} }
 
     context "when logged in" do
-      let(:current_user) { create :user }
+      let(:current_teacher) { create :teacher }
 
       it { is_expected.to eq :course_start_date }
     end
 
     context "when not logged in" do
-      let(:current_user) { nil }
+      let(:current_teacher) { nil }
 
       it { is_expected.to eq :start }
     end

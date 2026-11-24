@@ -11,9 +11,9 @@ RSpec.describe RegistrationWizardController do
     end
   end
 
-  let(:current_user) { create(:user) }
+  let(:current_teacher) { create(:teacher) }
 
-  before { session["user_id"] = current_user.id }
+  before { session["teacher_id"] = current_teacher.id }
 
   subject(:page_response) { make_request && response }
 
@@ -45,8 +45,8 @@ RSpec.describe RegistrationWizardController do
     it { is_expected.to have_http_status :success }
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
 
-    context "when the user session is stale" do
-      before { session["user_id"] = "999999" }
+    context "when the teacher session is stale" do
+      before { session["teacher_id"] = "999999" }
 
       it "redirects registration steps to the start page" do
         make_request
@@ -68,11 +68,11 @@ RSpec.describe RegistrationWizardController do
     end
 
     context "when application already submitted for course" do
-      let!(:application) { create(:application, :accepted, course:, cohort: course_cohort.cohort, user: current_user) }
+      let!(:application) { create(:application, :accepted, course:, cohort: course_cohort.cohort, teacher: current_teacher) }
       let(:step) { nil }
 
       before do
-        teacher_sign_in(user: current_user)
+        teacher_sign_in(teacher: current_teacher)
         session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_ecf_id" => course_cohort.ecf_id }
         patch(:update, params: { step: })
       end
@@ -81,7 +81,7 @@ RSpec.describe RegistrationWizardController do
         let(:step) { "course-start-date" }
 
         it "redirects to account/registration page with alert" do
-          expect(response).to redirect_to application_path(current_user.applications.last)
+          expect(response).to redirect_to application_path(current_teacher.applications.last)
         end
       end
 
@@ -102,8 +102,8 @@ RSpec.describe RegistrationWizardController do
 
     it_behaves_like "it redirects on missing mandatory institution"
 
-    context "when the user session is stale" do
-      before { session["user_id"] = "999999" }
+    context "when the teacher session is stale" do
+      before { session["teacher_id"] = "999999" }
 
       it "redirects to the start page" do
         make_request
@@ -172,7 +172,7 @@ RSpec.describe RegistrationWizardController do
                                store: {},
                                params: wizard_params,
                                request:,
-                               current_user:)
+                               current_teacher:)
       end
 
       it "redirects to course-start-date page" do

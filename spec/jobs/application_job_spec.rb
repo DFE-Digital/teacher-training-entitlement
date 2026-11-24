@@ -8,16 +8,16 @@ RSpec.describe ApplicationJob, type: :job do
       end
 
       def perform
-        user = User.first
-        user.email = "#{Time.zone.now.to_i}@example.com"
-        user.save!
+        teacher = Teacher.first
+        teacher.email = "#{Time.zone.now.to_i}@example.com"
+        teacher.save!
       end
     end
   end
 
   describe "PaperTrail whodunnit in jobs", :versioning do
     before do
-      create(:user)
+      create(:teacher)
       simple_job.perform_now
     end
 

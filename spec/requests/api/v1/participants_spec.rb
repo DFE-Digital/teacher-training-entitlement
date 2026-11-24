@@ -12,7 +12,7 @@ RSpec.describe "Participant endpoints", type: :request do
     let(:resource_id_key) { :ecf_id }
 
     def create_resource(**attrs)
-      create(:user, :with_application, **attrs)
+      create(:teacher, :with_application, **attrs)
     end
 
     it_behaves_like "an API index endpoint"
@@ -24,7 +24,7 @@ RSpec.describe "Participant endpoints", type: :request do
   end
 
   describe "GET /api/v1/participants/:id" do
-    let(:resource) { create(:user, :with_application, lead_provider: current_lead_provider) }
+    let(:resource) { create(:teacher, :with_application, lead_provider: current_lead_provider) }
     let(:resource_id) { resource.ecf_id }
 
     def path(id = nil)

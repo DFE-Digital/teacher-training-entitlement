@@ -42,8 +42,8 @@ module Applications
 
     def send_eligible_for_funding_email
       GenericMailer.with(
-        to: @application.user.email,
-        full_name: @application.user.full_name,
+        to: @application.teacher.email,
+        full_name: @application.teacher.full_name,
         provider_name: @application.lead_provider.name,
         course_name: @application.course.name,
         ecf_id: @application.ecf_id,

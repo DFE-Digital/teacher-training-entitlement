@@ -16,7 +16,7 @@ All flags are registered in `FEATURE_FLAG_KEYS` inside
 
 | Flag key                                 | Purpose                                          | Toggle via                                        |
 |------------------------------------------|--------------------------------------------------|---------------------------------------------------|
-| `REGISTRATION_OPEN`                      | Opens registration to participants               | `Feature.registration_closed?(user)`              |
+| `REGISTRATION_OPEN`                      | Opens registration to participants               | `Feature.registration_closed?(teacher)`              |
 | `CLOSED_REGISTRATION_ENABLED`            | Post-registration features (re-opening, etc.)    | — (used directly)                                 |
 | `MAINTENANCE_BANNER`                     | Shows/hides the yellow maintenance notice banner | `Feature.maintenance_banner_enabled?`             |
 | `DFE_ANALYTICS_ENABLED`                  | Controls BigQuery event streaming                | `Feature.dfe_analytics_enabled?`                  |
@@ -118,11 +118,11 @@ stubbing. Flags use the same `active_record` adapter — no test double.
 Pass a user object to `Flipper.enabled?` for per-actor gates:
 
 ```ruby
-Flipper.enabled?(:flag, current_user)
+Flipper.enabled?(:flag, current_teacher)
 ```
 
 On first authentication the participant's `feature_flag_id` cookie value is
-stored on their `User` record. `User#flipper_id` returns this value. Per-actor
+stored on their `Teacher` record. `Teacher#flipper_id` returns this value. Per-actor
 overrides can also be set from `/admin/features` by entering the user's
 `flipper_id`.
 
@@ -162,7 +162,7 @@ the specific user(s) to exclude.
 | `config/routes/admin.rb`                       | `/admin/features` routes              |
 | `app/controllers/admin/features_controller.rb` | Admin UI controller                   |
 | `spec/rails_helper.rb`                         | Global `REGISTRATION_OPEN` pre-enable |
-| `app/models/user.rb`                           | `flipper_id` for per-actor gates      |
+| `app/models/teacher.rb`                           | `flipper_id` for per-actor gates      |
 
 ---
 

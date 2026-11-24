@@ -16,5 +16,5 @@ class ApplicationLeadProvider < ApplicationRecord
       .order(:application_id, current: :desc, updated_at: :desc, id: :desc)
   }
 
-  delegate :user, :ecf_id, to: :application
+  delegate :teacher, :ecf_id, to: :application
 end

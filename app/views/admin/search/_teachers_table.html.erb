@@ -9,11 +9,11 @@
     end
 
     table.with_body do |body|
-      users.each do |user|
+      teachers.each do |teacher|
         body.with_row do |row|
-          row.with_cell(text: govuk_link_to(user.full_name, admin_user_path(user)))
-          row.with_cell(text: user.trn)
-          row.with_cell(text: user.created_at.to_date.to_formatted_s(:govuk))
+          row.with_cell(text: govuk_link_to(teacher.full_name, admin_teacher_path(teacher)))
+          row.with_cell(text: teacher.trn)
+          row.with_cell(text: teacher.created_at.to_date.to_formatted_s(:govuk))
         end
       end
     end

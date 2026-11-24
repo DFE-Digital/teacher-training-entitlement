@@ -77,11 +77,11 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     context "when the user is a public user" do
-      let(:whodunnit) { "Public User #{application.user.id}" }
+      let(:whodunnit) { "Public User #{application.teacher.id}" }
 
       it "shows the user who made the changes" do
         expect(subject).to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header p.moj-timeline__byline",
-                                    text: "by #{application.user.full_name}")
+                                    text: "by #{application.teacher.full_name}")
       end
     end
 

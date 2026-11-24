@@ -6,7 +6,7 @@ RSpec.describe "registration_wizard/check_answers.html.erb", type: :view do
   let(:course_cohort) { create(:course_cohort) }
   let(:course) { course_cohort.course }
   let(:lead_provider) { create(:lead_provider) }
-  let(:user) { create(:user) }
+  let(:teacher) { create(:teacher) }
   let(:store) do
     {
       "lead_provider_id" => lead_provider.id,
@@ -20,7 +20,7 @@ RSpec.describe "registration_wizard/check_answers.html.erb", type: :view do
       current_step: :check_answers,
       store:,
       request: controller.request,
-      current_user: user,
+      current_teacher: teacher,
     )
   end
 

@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe RequestTrnJob, type: :job do
   describe "#perform" do
-    let(:user) { create(:user, trn: nil, refresh_token: "old-token", refresh_token_updated_at: 1.day.ago) }
+    let(:teacher) { create(:teacher, trn: nil, refresh_token: "old-token", refresh_token_updated_at: 1.day.ago) }
     let(:refresh_service) { instance_double(TeacherAuth::RefreshToken) }
     let(:activate_service) { instance_double(TeacherAuth::ActivateTrn) }
 
@@ -18,15 +18,15 @@ RSpec.describe RequestTrnJob, type: :job do
     context "when TRN is returned immediately" do
       before { stub_trn_services(trn: "1234567") }
 
-      it "updates user with TRN and clears refresh token" do
-        described_class.perform_now(user)
-        expect(user.reload).to have_attributes(trn: "1234567", refresh_token: nil)
+      it "updates teacher with TRN and clears refresh token" do
+        described_class.perform_now(teacher)
+        expect(teacher.reload).to have_attributes(trn: "1234567", refresh_token: nil)
       end
 
       it "sets trn_requested_at" do
         freeze_time do
-          described_class.perform_now(user)
-          expect(user.reload.trn_requested_at).to eq(Time.current)
+          described_class.perform_now(teacher)
+          expect(teacher.reload.trn_requested_at).to eq(Time.current)
         end
       end
     end
@@ -36,41 +36,41 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "updates refresh token and sets trn_requested_at" do
         freeze_time do
-          described_class.perform_now(user)
-          user.reload
-          expect(user.trn).to be_nil
-          expect(user.refresh_token).to eq("new-refresh-token")
-          expect(user.trn_requested_at).to eq(Time.current)
+          described_class.perform_now(teacher)
+          teacher.reload
+          expect(teacher.trn).to be_nil
+          expect(teacher.refresh_token).to eq("new-refresh-token")
+          expect(teacher.trn_requested_at).to eq(Time.current)
         end
       end
     end
 
-    context "when user already has TRN" do
-      let(:user) { create(:user, trn: "1234567", refresh_token: "token") }
+    context "when teacher already has TRN" do
+      let(:teacher) { create(:teacher, trn: "1234567", refresh_token: "token") }
 
       it "does not call refresh service" do
         expect(TeacherAuth::RefreshToken).not_to receive(:new)
-        described_class.perform_now(user)
+        described_class.perform_now(teacher)
       end
     end
 
-    context "when user has no refresh_token" do
-      let(:user) { create(:user, trn: nil, refresh_token: nil) }
+    context "when teacher has no refresh_token" do
+      let(:teacher) { create(:teacher, trn: nil, refresh_token: nil) }
 
       it "does not call refresh service" do
         expect(TeacherAuth::RefreshToken).not_to receive(:new)
-        described_class.perform_now(user)
+        described_class.perform_now(teacher)
       end
     end
 
     context "when TRN was already requested" do
-      let(:user) { create(:user, trn: nil, refresh_token: "token", trn_requested_at: 1.hour.ago) }
+      let(:teacher) { create(:teacher, trn: nil, refresh_token: "token", trn_requested_at: 1.hour.ago) }
 
       before { stub_trn_services(trn: "1234567") }
 
       it "checks again and updates TRN if found" do
-        described_class.perform_now(user)
-        expect(user.reload).to have_attributes(trn: "1234567", refresh_token: nil)
+        described_class.perform_now(teacher)
+        expect(teacher.reload).to have_attributes(trn: "1234567", refresh_token: nil)
       end
     end
 
@@ -78,8 +78,8 @@ RSpec.describe RequestTrnJob, type: :job do
       before { stub_trn_services(refresh_fails: true) }
 
       it "raises RefreshTokenError" do
-        expect { described_class.new.perform(user) }.to raise_error(RequestTrnJob::RefreshTokenError)
-        expect(user.reload.trn_requested_at).to be_nil
+        expect { described_class.new.perform(teacher) }.to raise_error(RequestTrnJob::RefreshTokenError)
+        expect(teacher.reload.trn_requested_at).to be_nil
       end
     end
 
@@ -89,13 +89,13 @@ RSpec.describe RequestTrnJob, type: :job do
         allow(refresh_service).to receive(:call).and_return(:invalid_token)
       end
 
-      it "clears the user's auth tokens" do
-        expect(user).to receive(:clear_auth_tokens!)
-        described_class.perform_now(user)
+      it "clears the teacher's auth tokens" do
+        expect(teacher).to receive(:clear_auth_tokens!)
+        described_class.perform_now(teacher)
       end
 
       it "does not raise an error" do
-        expect { described_class.perform_now(user) }.not_to raise_error
+        expect { described_class.perform_now(teacher) }.not_to raise_error
       end
     end
 
@@ -104,11 +104,11 @@ RSpec.describe RequestTrnJob, type: :job do
 
       it "updates refresh token without setting TRN" do
         freeze_time do
-          described_class.perform_now(user)
-          user.reload
-          expect(user.refresh_token).to eq("new-refresh-token")
-          expect(user.trn_requested_at).to eq(Time.current)
-          expect(user.trn).to be_nil
+          described_class.perform_now(teacher)
+          teacher.reload
+          expect(teacher.refresh_token).to eq("new-refresh-token")
+          expect(teacher.trn_requested_at).to eq(Time.current)
+          expect(teacher.trn).to be_nil
         end
       end
     end

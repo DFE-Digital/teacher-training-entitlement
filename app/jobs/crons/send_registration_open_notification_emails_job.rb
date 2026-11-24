@@ -11,8 +11,8 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
         next if already_notified?(application, cohort)
 
         GenericMailer.with(
-          to: application.user.email,
-          full_name: application.user.full_name,
+          to: application.teacher.email,
+          full_name: application.teacher.full_name,
           course_name: application.course.name,
           next_course_start_date: cohort.registration_starts_at.to_fs(:govuk),
           deferral_date: application.deferred_at.to_fs(:govuk_date_only),
@@ -31,7 +31,7 @@ private
       .deferred_status
       .joins(:course_cohort)
       .where(course_cohorts: { course_id: cohort.course_cohorts.select(:course_id) })
-      .includes(:user, course_cohort: :course)
+      .includes(:teacher, course_cohort: :course)
   end
 
   def already_notified?(application, cohort)

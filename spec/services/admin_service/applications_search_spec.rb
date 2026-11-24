@@ -6,8 +6,8 @@ RSpec.describe AdminService::ApplicationsSearch do
   subject(:results) { described_class.new(q:, filters:).call }
 
   let(:filters) { {} }
-  let(:user) { build(:user, preferred_name: "Rasmus Lerdorf") }
-  let(:application) { create(:application, user:) }
+  let(:teacher) { build(:teacher, preferred_name: "Rasmus Lerdorf") }
+  let(:application) { create(:application, teacher:) }
   let(:started_milestone) { course_milestone(application.course, :started) }
   let(:completed_milestone) { course_milestone(application.course, :completed) }
   let(:declarations) do
@@ -18,7 +18,7 @@ RSpec.describe AdminService::ApplicationsSearch do
   end
 
   before do
-    other_application = create(:application, user: create(:user, full_name: "Jane Doe"))
+    other_application = create(:application, teacher: create(:teacher, full_name: "Jane Doe"))
     create(:declaration, application: other_application, declaration_type: :started, milestone: started_milestone)
     create(:declaration, application: other_application, declaration_type: :completed, milestone: completed_milestone)
   end
@@ -28,25 +28,25 @@ RSpec.describe AdminService::ApplicationsSearch do
   end
 
   context "when name matches" do
-    let(:q) { application.user.full_name }
+    let(:q) { application.teacher.full_name }
 
     it_behaves_like "a search returning matching applications"
   end
 
   context "when name partially matches" do
-    let(:q) { application.user.full_name.split(" ").first }
+    let(:q) { application.teacher.full_name.split(" ").first }
 
     it_behaves_like "a search returning matching applications"
   end
 
   context "when preferred name matches" do
-    let(:q) { application.user.preferred_name }
+    let(:q) { application.teacher.preferred_name }
 
     it_behaves_like "a search returning matching applications"
   end
 
   context "when preferred name partially matches" do
-    let(:q) { application.user.preferred_name.split(" ").first }
+    let(:q) { application.teacher.preferred_name.split(" ").first }
 
     it_behaves_like "a search returning matching applications"
   end
@@ -96,7 +96,7 @@ RSpec.describe AdminService::ApplicationsSearch do
   context "when returning results" do
     let(:q) { nil }
 
-    it "orders by created_at descending, then user_id descending" do
+    it "orders by created_at descending, then teacher_id descending" do
       newer_application = create(:application, created_at: 1.hour.from_now)
 
       expect(results.first).to eq(newer_application)

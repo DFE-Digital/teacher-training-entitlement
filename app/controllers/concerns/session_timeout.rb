@@ -4,8 +4,8 @@ module SessionTimeout
   INACTIVITY_TIMEOUT = 30.minutes
 
   included do
-    before_action :check_session_timeout, if: :user_signed_in?
-    before_action :update_last_activity, if: :user_signed_in?
+    before_action :check_session_timeout, if: :teacher_signed_in?
+    before_action :update_last_activity, if: :teacher_signed_in?
   end
 
 private
@@ -27,7 +27,7 @@ private
     redirect_to root_path, notice: "Your session has expired due to inactivity."
   end
 
-  def user_signed_in?
-    session[:user_id].present?
+  def teacher_signed_in?
+    session[:teacher_id].present?
   end
 end

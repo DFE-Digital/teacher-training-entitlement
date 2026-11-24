@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe NotifyEmailValidator do
-  let :user_model do
+  let :teacher_model do
     Class.new do
       include ActiveModel::Model
       include ActiveModel::Attributes
@@ -37,7 +37,7 @@ RSpec.describe NotifyEmailValidator do
       email@éxample.org
     ]
     valid_email_addresses.each do |email|
-      expect(user_model.new(email:)).to be_valid
+      expect(teacher_model.new(email:)).to be_valid
     end
   end
 
@@ -76,7 +76,7 @@ RSpec.describe NotifyEmailValidator do
       "incorrect-punycode@xn---something.com",
     ]
     invalid_email_addresses.each do |email|
-      expect(user_model.new(email:)).not_to be_valid
+      expect(teacher_model.new(email:)).not_to be_valid
     end
   end
 end

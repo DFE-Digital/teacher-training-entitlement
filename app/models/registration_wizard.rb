@@ -29,7 +29,7 @@ class RegistrationWizard
 
   VALID_BLANK_STEPS = %w[closed start course-start-date registration-submitted].freeze
 
-  attr_reader :current_step, :params, :store, :request, :current_user
+  attr_reader :current_step, :params, :store, :request, :current_teacher
 
   delegate :before_render,
            :after_render,
@@ -56,12 +56,12 @@ class RegistrationWizard
     end
   end
 
-  def initialize(current_step:, store:, request:, current_user:, params: {})
-    @current_user = current_user
+  def initialize(current_step:, store:, request:, current_teacher:, params: {})
+    @current_teacher = current_teacher
     @params = params
     @store = store
     @request = request
-    store["current_user_id"] = current_user&.id
+    store["current_teacher_id"] = current_teacher&.id
     @current_step = self.class.validate_step!(current_step)
   end
 

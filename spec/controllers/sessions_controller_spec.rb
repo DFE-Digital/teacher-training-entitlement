@@ -5,11 +5,11 @@ RSpec.describe SessionsController do
   include Helpers::JourneyHelper
 
   describe "#extend_session" do
-    context "when a user is signed in" do
-      let(:user) { create(:user) }
+    context "when a teacher is signed in" do
+      let(:teacher) { create(:teacher) }
 
       before do
-        session[:user_id] = user.id
+        session[:teacher_id] = teacher.id
         session[:last_activity_at] = 20.minutes.ago
       end
 
@@ -21,7 +21,7 @@ RSpec.describe SessionsController do
       end
     end
 
-    context "when no user is signed in" do
+    context "when no teacher is signed in" do
       it "returns unauthorized" do
         get :extend_session
 

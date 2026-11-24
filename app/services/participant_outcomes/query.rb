@@ -29,7 +29,7 @@ module ParticipantOutcomes
     def where_participant_ids_in(participant_ids)
       return if ignore?(filter: participant_ids)
 
-      scope.merge!(ParticipantOutcome.where(user: { ecf_id: extract_conditions(participant_ids) }))
+      scope.merge!(ParticipantOutcome.where(teacher: { ecf_id: extract_conditions(participant_ids) }))
     end
 
     def where_created_since(created_since)
@@ -48,7 +48,7 @@ module ParticipantOutcomes
       ParticipantOutcome.distinct.includes(
         declaration: {
           lead_provider: {},
-          application: [:user, :course, { course_cohort: :course }],
+          application: [:teacher, :course, { course_cohort: :course }],
         },
       )
     end

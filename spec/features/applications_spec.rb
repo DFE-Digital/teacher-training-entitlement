@@ -10,10 +10,10 @@ RSpec.feature "Applications", type: :feature do
     end
 
     context "when logged in with no applications" do
-      let(:user) { create(:user) }
+      let(:teacher) { create(:teacher) }
 
       before do
-        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        allow_any_instance_of(ApplicationController).to receive(:current_teacher).and_return(teacher)
       end
 
       scenario "redirects to the registration start page" do
@@ -35,11 +35,11 @@ RSpec.feature "Applications", type: :feature do
   end
 
   describe "withdrawn application" do
-    let(:user) { create(:user) }
-    let!(:application) { create(:application, :withdrawn, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1)) }
+    let(:teacher) { create(:teacher) }
+    let!(:application) { create(:application, :withdrawn, :for_cohort_starting_on, teacher:, registration_starts_at: Date.new(2021, 4, 1)) }
 
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+      allow_any_instance_of(ApplicationController).to receive(:current_teacher).and_return(teacher)
     end
 
     scenario "shows withdrawn status and re-registration link" do
@@ -56,8 +56,8 @@ RSpec.feature "Applications", type: :feature do
       expect(page).to have_text("Withdrawn")
     end
 
-    context "when user also has a newer active application" do
-      let!(:active_application) { create(:application, :accepted, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 5, 1), created_at: 1.day.from_now) }
+    context "when teacher also has a newer active application" do
+      let!(:active_application) { create(:application, :accepted, :for_cohort_starting_on, teacher:, registration_starts_at: Date.new(2021, 5, 1), created_at: 1.day.from_now) }
 
       scenario "redirects to the most recent application" do
         visit applications_path

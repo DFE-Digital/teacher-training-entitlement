@@ -10,7 +10,7 @@ RSpec.describe "One Login redirect", type: :request do
 
       post one_login_redirect_path
 
-      expect(response).to redirect_to(user_teacher_auth_omniauth_authorize_path)
+      expect(response).to redirect_to(teacher_teacher_auth_omniauth_authorize_path)
       expect(response).to have_http_status(:temporary_redirect)
     end
   end

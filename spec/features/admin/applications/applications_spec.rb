@@ -19,7 +19,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_css("h1", text: "Applications")
 
     applications_in_order.limit(applications_per_page).each do |application|
-      expect(page).to have_text(application.user.full_name)
+      expect(page).to have_text(application.teacher.full_name)
       expect(page).to have_text(application.institution.name)
       expect(page).to have_link("View", href: admin_application_path(application))
     end
@@ -46,7 +46,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     expect(page).to have_select("Application status", selected: "Deferred")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_text(application.teacher.full_name)
     expect(page).to have_link("View", href: admin_application_path(application))
   end
 
@@ -60,7 +60,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     expect(page).to have_select("Application status", selected: "Accepted")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_text(application.teacher.full_name)
     expect(page).to have_link("View", href: admin_application_path(application))
   end
 
@@ -74,7 +74,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     click_on cohort.description
 
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_text(application.teacher.full_name)
     expect(page).to have_link("View", href: admin_application_path(application))
   end
 
@@ -88,7 +88,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     expect(page).to have_select("Work setting", selected: "A school")
     expect(page).to have_css("table.govuk-table tbody tr", count: 1)
-    expect(page).to have_text(application.user.full_name)
+    expect(page).to have_text(application.teacher.full_name)
     expect(page).to have_link("View", href: admin_application_path(application))
   end
 
@@ -106,13 +106,13 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     expect(page).to have_css(
       ".govuk-caption-m",
-      text: "#{application.user.full_name}, #{application.course.name}, #{application.created_at.to_date.to_fs(:govuk_short)}",
+      text: "#{application.teacher.full_name}, #{application.course.name}, #{application.created_at.to_date.to_fs(:govuk_short)}",
     )
     expect(page).to have_css("h1", text: "Application details")
     expect(page).to have_css("h2", text: "Overview")
 
     within(summary_lists[0]) do |summary_list|
-      expect(summary_list).to have_summary_item("Name", application.user.full_name)
+      expect(summary_list).to have_summary_item("Name", application.teacher.full_name)
       expect(summary_list).to have_summary_item("Application ID", application.ecf_id)
       expect(summary_list).to have_summary_item("Course", application.course.name)
       expect(summary_list).to have_summary_item("Course identifier", application.course.identifier)
@@ -143,26 +143,26 @@ RSpec.feature "Listing and viewing applications", type: :feature do
   end
 
   scenario "viewing participant details" do
-    user = applications_in_order.first.user
+    teacher = applications_in_order.first.teacher
     visit(admin_application_path(applications_in_order.first))
 
-    expect(page).to have_text(user.full_name)
+    expect(page).to have_text(teacher.full_name)
   end
 
-  scenario "viewing user details" do
+  scenario "viewing teacher details" do
     application = create(:application, :accepted)
 
     visit admin_application_path(application)
 
     within(".govuk-summary-card", text: "Overview") do
       within(".govuk-summary-list__row", text: "Name") do
-        expect(page).to have_text(application.user.full_name)
-        click_link("View user")
+        expect(page).to have_text(application.teacher.full_name)
+        click_link("View teacher")
       end
     end
 
-    expect(page).to have_current_path(admin_user_path(application.user))
-    expect(page).to have_css("h1", text: application.user.full_name)
+    expect(page).to have_current_path(admin_teacher_path(application.teacher))
+    expect(page).to have_css("h1", text: application.teacher.full_name)
 
     within(".govuk-summary-card", text: application.course.name) do
       click_link("View full application")
@@ -171,7 +171,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_current_path(admin_application_path(application))
 
     within(first(".govuk-summary-list__row", text: "Name")) do
-      expect(page).to have_text(application.user.full_name)
+      expect(page).to have_text(application.teacher.full_name)
     end
   end
 
@@ -259,13 +259,13 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       click_link("Change")
     end
 
-    expect(page).to have_css("h1", text: "Is #{application.user.full_name} eligible for funding?")
+    expect(page).to have_css("h1", text: "Is #{application.teacher.full_name} eligible for funding?")
     expect(page.find_field("No", visible: :all)).to be_checked
     choose "Yes", visible: :all
 
     perform_enqueued_jobs { click_button "Continue" }
 
-    expect_mail_to_have_been_sent(to: application.user.email, template_id: GenericMailer::TEMPLATE_ID)
+    expect_mail_to_have_been_sent(to: application.teacher.email, template_id: GenericMailer::TEMPLATE_ID)
 
     expect(page).to have_css("h1", text: "Application details")
     expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")
@@ -274,7 +274,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       click_link("Change")
     end
 
-    expect(page).to have_css("h1", text: application.user.full_name)
+    expect(page).to have_css("h1", text: application.teacher.full_name)
     choose "No", visible: :all
     click_button "Continue"
 

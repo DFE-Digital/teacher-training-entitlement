@@ -2,13 +2,13 @@ require "rails_helper"
 
 RSpec.describe "Applications::ChangeProvider::Start", type: :request do
   let(:application) { create(:application, :pending) }
-  let(:user) { application.user }
+  let(:teacher) { application.teacher }
   let(:url) { "/applications/#{application.ecf_id}/change-provider/start" }
 
   before do
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
-      .and_return({ user_id: user.id })
+      .and_return({ teacher_id: teacher.id })
   end
 
   describe "GET /applications/:application_id/change-provider/start" do
@@ -46,7 +46,7 @@ RSpec.describe "Applications::ChangeProvider::Start", type: :request do
     end
 
     context "without confirmation" do
-      it "redirects to user registration path" do
+      it "redirects to teacher registration path" do
         post url, params: { form: { confirmation: "0" } }
         expect(response).to redirect_to(application_path(application.ecf_id))
       end

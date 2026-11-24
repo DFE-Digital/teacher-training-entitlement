@@ -2,17 +2,17 @@ class Admin::Finance::Statements::ReceivedController < AdminController
   before_action :set_statement
 
   def show
-    scope = @statement.declarations.includes(:course_cohort, application: :user)
+    scope = @statement.declarations.includes(:course_cohort, application: :teacher)
 
     if teacher_filter
-      users = User.arel_table
+      teachers = Teacher.arel_table
       scope.merge!(
         Declaration
           .joins(:application)
           .merge!(
             Application
-              .joins(:user)
-              .where(users[:full_name].matches("%#{teacher_filter}%")),
+              .joins(:teacher)
+              .where(teachers[:full_name].matches("%#{teacher_filter}%")),
           ),
       )
     end

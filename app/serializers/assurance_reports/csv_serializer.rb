@@ -22,7 +22,7 @@ class AssuranceReports::CsvSerializer
       @statement
         .declarations
         .includes(
-          application: %i[user course_cohort course institution],
+          application: %i[teacher course_cohort course institution],
         )
         .find_each do |record|
         csv << to_row(record, @statement.ecf_id)
@@ -58,11 +58,11 @@ private
 
   def to_row(declaration, statement_id)
     application = declaration.application
-    user = application.user
+    teacher = application.teacher
     [
-      user.ecf_id,
-      user.full_name,
-      user.trn,
+      teacher.ecf_id,
+      teacher.full_name,
+      teacher.trn,
       application.course.identifier,
       application.course_cohort.schedule_identifier,
       application.eligible_for_funding,

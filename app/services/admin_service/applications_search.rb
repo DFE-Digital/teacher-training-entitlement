@@ -9,7 +9,7 @@ class AdminService::ApplicationsSearch
   def call
     application_scope
       .merge(search_scope)
-      .order(created_at: :desc, user_id: :desc)
+      .order(created_at: :desc, teacher_id: :desc)
   end
 
 private
@@ -18,7 +18,7 @@ private
     Application
       .includes(
         :institution,
-        :user,
+        :teacher,
         :lead_provider,
         :current_application_lead_provider,
         application_lead_providers: %i[lead_provider],
@@ -42,12 +42,12 @@ private
 
     scope.where(ecf_id: query)
       .or(scope.where(declarations: { ecf_id: query }))
-      .or(scope.where("users.full_name ilike ?", "%#{query}%"))
-      .or(scope.where("users.preferred_name ilike ?", "%#{query}%"))
+      .or(scope.where("teachers.full_name ilike ?", "%#{query}%"))
+      .or(scope.where("teachers.preferred_name ilike ?", "%#{query}%"))
       .distinct(:ecf_id)
   end
 
   def scope
-    Application.left_joins(:user, :declarations).includes(:user, :declarations)
+    Application.left_joins(:teacher, :declarations).includes(:teacher, :declarations)
   end
 end

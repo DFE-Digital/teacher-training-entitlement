@@ -85,13 +85,13 @@ namespace :declarations do
           town: "London",
         )
 
-        user = User.create!(
-          full_name: "Declaration Test User #{unique_id}",
+        teacher = Teacher.create!(
+          full_name: "Declaration Test Teacher #{unique_id}",
           email: "declaration-test-#{unique_id}@example.com",
         )
 
         application = Application.create!(
-          user:,
+          teacher:,
           course_cohort:,
           institution:,
           status: Application::PENDING,
@@ -133,7 +133,7 @@ namespace :declarations do
       puts "Started milestone: #{setup[:started_milestone].id}"
       puts "Completed milestone: #{setup[:completed_milestone].id}"
       puts "Accepted applications:"
-      setup[:applications].each { |application| puts "- #{application.id} / #{application.ecf_id} / #{application.user.email}" }
+      setup[:applications].each { |application| puts "- #{application.id} / #{application.ecf_id} / #{application.teacher.email}" }
     end
   end
 end

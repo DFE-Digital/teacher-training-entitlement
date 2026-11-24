@@ -20,8 +20,8 @@
     </ol>
 
     <p class="govuk-body govuk-!-margin-bottom-7">
-      <% if current_user.applications.present? %>
-        <%= govuk_link_to "View your registration details", application_path(current_user.applications.last.ecf_id) %>
+      <% if current_teacher.applications.present? %>
+        <%= govuk_link_to "View your registration details", application_path(current_teacher.applications.last.ecf_id) %>
       <% end %>
     </p>
     <hr>

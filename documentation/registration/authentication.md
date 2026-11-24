@@ -3,7 +3,7 @@
 Authentication is the gateway to the registration wizard. For a participant's
 visit it answers three things: **who** is signing in (GOV.UK One Login via the
 *Teacher Auth* wrapper), **whether they're the same person as last time** (a
-`User` is matched or created and a cookie session is opened), and **whether
+`Teacher` is matched or created and a cookie session is opened), and **whether
 we already have a TRN** — if not, the service holds a refresh token and waits
 for application acceptance to ask TRS for one.
 
@@ -16,16 +16,16 @@ TRS integration lives in
 
 The participant clicks **Sign in**, is redirected to Teacher Auth, signs in
 with GOV.UK One Login, and bounces back to Devise's omniauth callback. That
-callback provisions a `User` and opens a session in one step.
+callback provisions a `Teacher` and opens a session in one step.
 
 ```ruby
 # app/controllers/omniauth_controller.rb
 def teacher_auth
   provider_data = request.env["omniauth.auth"]
   session[:id_token] = provider_data.credentials.id_token   # for OIDC logout
-  @user = Users::FindOrCreateFromTeacherAuth
-            .new(provider_data:, feature_flag_id: session["feature_flag_id"])
-            .call
+  @teacher = Teachers::FindOrCreateFromTeacherAuth
+             .new(provider_data:, feature_flag_id: session["feature_flag_id"])
+             .call
   session["user_id"] = @user.id
   sign_in_and_redirect @user
 end
@@ -37,26 +37,26 @@ otherwise the registration wizard (`RegistrationWizard#next_step_path`). An
 
 ## User provisioning
 
-Every sign-in runs `Users::FindOrCreateFromTeacherAuth` against the verified
+Every sign-in runs `Teachers::FindOrCreateFromTeacherAuth` against the verified
 identity Teacher Auth returns. The match order matters:
 
 | Step | Match key           | When it wins                                             |
 |------|---------------------|----------------------------------------------------------|
-| 1    | `User#trn`          | TRN present in the response — strongest identity signal  |
-| 2    | `User#one_login_id` | Returning participant whose One Login ID we already hold |
-| 3    | (fallback)          | No match — create a new `User`                           |
+| 1    | `Teacher#trn`          | TRN present in the response — strongest identity signal  |
+| 2    | `Teacher#one_login_id` | Returning participant whose One Login ID we already hold |
+| 3    | (fallback)          | No match — create a new `Teacher`                           |
 
-A clashing `User#email` is reconciled alongside the match (see
-`merge_and_archive_clashing_email_user`): if the kept user now has a TRN and
+A clashing `Teacher#email` is reconciled alongside the match (see
+`merge_and_archive_clashing_email_teacher`): if the kept user now has a TRN and
 the clashing one doesn't, the duplicate is **merged** into the kept user via
-`Users::MergeAndArchive` (applications and `participant_id_changes` move
+`Teachers::MergeAndArchive` (applications and `participant_id_changes` move
 across, the duplicate is archived). Otherwise the clashing user is
-**archived** by `Users::Archiver#archive!` — email blurred, `one_login_id`
+**archived** by `Teachers::Archiver#archive!` — email blurred, `one_login_id`
 cleared, `archived_at` stamped. `set_one_login_id_to_nil!` exists for cases
 where we must detach a One Login ID without archiving the row.
 
 If the Teacher Auth response already includes a TRN, the stored refresh
-token is cleared — `FindOrCreateFromTeacherAuth#user_attributes`.
+token is cleared — `FindOrCreateFromTeacherAuth#teacher_attributes`.
 
 ## Sessions
 
@@ -64,7 +64,7 @@ The session is a standard Devise cookie session with two TTE-specific behaviours
 
 ### Idle expiry and `/session/extend`
 
-The wizard pings `GET /session/extend` periodically. If a `user_id` is
+The wizard pings `GET /session/extend` periodically. If a `teacher_id` is
 present, the controller refreshes `session[:last_activity_at]` and returns`200`; 
 otherwise it returns `401` and the UI boots the participant back to sign-in:
 
@@ -149,9 +149,9 @@ flowchart TD
 | Job                                    | Schedule    | Runs on users…                                | Purpose                                                                 |
 |----------------------------------------|-------------|-----------------------------------------------|-------------------------------------------------------------------------|
 | `RequestTrnJob`                        | on accept   | `can_request_trn?` (TRN blank, token present) | Refresh token, call TRS activate, persist TRN if returned, retry ×5.    |
-| `RefreshUserTokenJob`                  | hourly      | `requires_token_refresh?`                     | Rotate refresh token; clear it on `invalid_grant`.                      |
-| `Crons::EnqueueTokenRefreshesJob`      | hourly      | `User.requiring_token_refresh`                | Enqueues `RefreshUserTokenJob` per user.                                |
-| `Crons::EnqueueTrnActivationChecksJob` | daily 06:00 | `User.needing_trn_activation_check`           | Re-polls TRS activation for previously-requested-but-not-returned TRNs. |
+| `RefreshTeacherTokenJob`                  | hourly      | `requires_token_refresh?`                     | Rotate refresh token; clear it on `invalid_grant`.                      |
+| `Crons::EnqueueTokenRefreshesJob`      | hourly      | `Teacher.requiring_token_refresh`                | Enqueues `RefreshTeacherTokenJob` per user.                                |
+| `Crons::EnqueueTrnActivationChecksJob` | daily 06:00 | `Teacher.needing_trn_activation_check`           | Re-polls TRS activation for previously-requested-but-not-returned TRNs. |
 
 `RequestTrnJob` retries on `RefreshTokenError` with polynomial backoff up to five attempts — designed 
 to ride out transient Teacher Auth blips without losing the token.
@@ -176,12 +176,12 @@ The full table — including local-dev fixtures and key vault mapping — is in
 
 | Symptom                                       | Handling                                                                                       |
 |-----------------------------------------------|------------------------------------------------------------------------------------------------|
-| Teacher Auth returns an invalid refresh token | `TeacherAuth::RefreshToken` returns `:invalid_token`; the job calls `User#clear_auth_tokens!`. |
+| Teacher Auth returns an invalid refresh token | `TeacherAuth::RefreshToken` returns `:invalid_token`; the job calls `Teacher#clear_auth_tokens!`. |
 | Token refresh fails for any other reason      | `RequestTrnJob` raises `RefreshTokenError`, retries up to 5 times with polynomial backoff.     |
 | TRS activation never returns a TRN            | Daily `EnqueueTrnActivationChecksJob` keeps re-asking until TRS responds.                      |
 | Future: TRS supports a webhook                | The diagram's `(Future) TRS webhook` node — out of scope today, planned as a real-time path.   |
 
-`User#clear_auth_tokens!` nulls `refresh_token` and `refresh_token_updated_at`;
+`Teacher#clear_auth_tokens!` nulls `refresh_token` and `refresh_token_updated_at`;
 once cleared the user drops out of `without_trn` and stops being eligible for
 token refresh or TRN polling.
 

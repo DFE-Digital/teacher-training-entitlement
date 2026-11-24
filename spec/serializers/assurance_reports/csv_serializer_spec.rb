@@ -68,9 +68,9 @@ RSpec.describe AssuranceReports::CsvSerializer, type: :serializer do
 
       let :expected_data do
         [
-          declaration.user.ecf_id,
-          declaration.user.full_name,
-          declaration.user.trn,
+          declaration.teacher.ecf_id,
+          declaration.teacher.full_name,
+          declaration.teacher.trn,
           declaration.course.identifier,
           declaration.course_cohort.schedule_identifier,
           declaration.application.eligible_for_funding.to_s,

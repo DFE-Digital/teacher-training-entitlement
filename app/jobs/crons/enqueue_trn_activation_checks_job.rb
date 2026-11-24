@@ -6,8 +6,8 @@ class Crons::EnqueueTrnActivationChecksJob < CronJob
   sentry_monitor_check_ins slug: "enqueue-trn-activation-checks"
 
   def perform
-    User.needing_trn_activation_check.find_each do |user|
-      RequestTrnJob.perform_later(user)
+    Teacher.needing_trn_activation_check.find_each do |teacher|
+      RequestTrnJob.perform_later(teacher)
     end
   end
 end

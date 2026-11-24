@@ -3,17 +3,17 @@ require "rails_helper"
 RSpec.describe "Applications::ApplicationsController", type: :request do
   let(:pending_application) { create(:application, :pending) }
 
-  let(:user) { pending_application.user }
+  let(:teacher) { pending_application.teacher }
 
   before do
     allow_any_instance_of(ApplicationController)
       .to receive(:session)
-      .and_return({ user_id: user.id })
+      .and_return({ teacher_id: teacher.id })
   end
 
   describe "GET /applications" do
-    context "when the user has multiple applications" do
-      let!(:completed_application) { create(:application, :completed, :for_cohort_starting_on, user: pending_application.user, registration_starts_at: Date.new(2021, 4, 1)) }
+    context "when the teacher has multiple applications" do
+      let!(:completed_application) { create(:application, :completed, :for_cohort_starting_on, teacher: pending_application.teacher, registration_starts_at: Date.new(2021, 4, 1)) }
 
       it do
         get "/applications"
@@ -24,8 +24,8 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
   end
 
   describe "GET /applications/:ecf_id" do
-    context "when the user does not own the application" do
-      let(:user) { create(:user) }
+    context "when the teacher does not own the application" do
+      let(:teacher) { create(:teacher) }
 
       it "redirects to the root path" do
         get application_path(pending_application.ecf_id)
@@ -34,7 +34,7 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
       end
     end
 
-    context "when the user visits a pending application" do
+    context "when the teacher visits a pending application" do
       it do
         get "/applications/#{pending_application.ecf_id}"
 
@@ -42,7 +42,7 @@ RSpec.describe "Applications::ApplicationsController", type: :request do
       end
     end
 
-    context "when the user visits an application which doesn't exist" do
+    context "when the teacher visits an application which doesn't exist" do
       it "redirects you back to aaa" do
         get "/applications/does-not-exist"
 

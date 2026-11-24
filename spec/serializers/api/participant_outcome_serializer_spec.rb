@@ -37,7 +37,7 @@ RSpec.describe API::ParticipantOutcomeSerializer, type: :serializer do
         end
 
         it "serializes the `participant_id`" do
-          expect(attributes["participant_id"]).to eq(outcome.user.ecf_id)
+          expect(attributes["participant_id"]).to eq(outcome.teacher.ecf_id)
         end
 
         it "serializes the `created_at`" do

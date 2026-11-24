@@ -56,7 +56,7 @@ RSpec.describe "applications/applications/_funding_details.html.erb", type: :vie
     before do
       # An application funded on a different course
       create(:application,
-             user: application.user,
+             teacher: application.teacher,
              funding_eligibility: "funded",
              status: Application::COMPLETED,
              course_cohort: create(:course_cohort,

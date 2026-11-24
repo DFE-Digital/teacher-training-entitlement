@@ -5,7 +5,7 @@ RSpec.describe Questionnaires::RegistrationSubmitted do
 
   let(:session) { {} }
   let(:request) { ActionController::TestRequest.new({}, session, ApplicationController) }
-  let(:wizard) { RegistrationWizard.new(current_step: :registration_submitted, store: {}, request:, current_user: nil) }
+  let(:wizard) { RegistrationWizard.new(current_step: :registration_submitted, store: {}, request:, current_teacher: nil) }
 
   describe "#previous_step" do
     it { expect(form.previous_step).to be_nil }

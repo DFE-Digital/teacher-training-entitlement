@@ -145,15 +145,15 @@
     govuk_summary_list(card: { title: "Application Overview" }) do |sl|
       sl.with_row do |row|
         row.with_key(text: "Name")
-        row.with_value(text: @application.user.full_name)
+        row.with_value(text: @application.teacher.full_name)
       end
       sl.with_row do |row|
         row.with_key(text: "Application ID")
         row.with_value(text: @application.ecf_id)
       end
       sl.with_row do |row|
-        row.with_key(text: "User ID")
-        row.with_value(text: @application.user.ecf_id)
+        row.with_key(text: "Teacher ID")
+        row.with_value(text: @application.teacher.ecf_id)
       end
       sl.with_row do |row|
         row.with_key(text: "Course")

@@ -7,10 +7,10 @@ RSpec.describe "layouts/application.html.erb", type: :view do
   let(:one_login_link_text) { "GOV.UK One Login" }
   let(:sign_out_link_text) { "Sign out" }
 
-  let(:user) { nil }
+  let(:teacher) { nil }
 
   before do
-    allow(controller).to receive(:current_user).and_return(user)
+    allow(controller).to receive(:current_teacher).and_return(teacher)
   end
 
   describe "service navigation" do
@@ -24,7 +24,7 @@ RSpec.describe "layouts/application.html.erb", type: :view do
     end
 
     context "when logged in" do
-      let(:user) { build(:user) }
+      let(:teacher) { build(:teacher) }
 
       it { is_expected.to have_css(".one-login-header") }
       it { is_expected.to have_link(one_login_link_text) }

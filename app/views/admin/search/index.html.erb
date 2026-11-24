@@ -4,13 +4,13 @@
 
 <div class="admin-search-box">
   <%= form_with url: admin_search_path, method: :get do |f| %>
-    <h2 class="govuk-heading-m">Find a user or application</h2>
+    <h2 class="govuk-heading-m">Find a teacher or application</h2>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
         <%= f.govuk_text_field(
               :q,
               value: params[:q],              
-              label: { text: "Name, email, TRN, user ID, application ID, declaration ID or URN", size: "s" },
+              label: { text: "Name, email, TRN, teacher ID, application ID, declaration ID or URN", size: "s" },
             )
         %>
       </div>
@@ -33,8 +33,8 @@
   <% end %>
 </div>
 
-<% if @applications&.any? || @users&.any? %>
-  <% tabs_to_render = params[:tab] == "users" ? %w[users applications] : %w[applications users] %>
+<% if @applications&.any? || @teachers&.any? %>
+  <% tabs_to_render = params[:tab] == "teachers" ? %w[teachers applications] : %w[applications teachers] %>
 
   <%= govuk_tabs do |tabs| %>
     <% tabs_to_render.each do |tab| %>
@@ -47,11 +47,11 @@
           <% end %>
         <% end %>
       <% else %>
-        <%= tabs.with_tab(id: "users", label: "Users (#{@pagy_users&.count || 0})") do %>
-          <% if @users&.any? %>
-            <%= render "admin/search/users_table", users: @users, pagy: @pagy_users %>
+        <%= tabs.with_tab(id: "teachers", label: "Teachers (#{@pagy_teachers&.count || 0})") do %>
+          <% if @teachers&.any? %>
+            <%= render "admin/search/teachers_table", teachers: @teachers, pagy: @pagy_teachers %>
           <% else %>
-            <p class="govuk-body">No users match the search and filters.</p>
+            <p class="govuk-body">No teachers match the search and filters.</p>
           <% end %>
         <% end %>
       <% end %>
@@ -59,6 +59,6 @@
   <% end %>
 <% end %>
 
-<% if @search_requested && !(@applications&.any? || @users&.any?)  %>
-  <p class="govuk-body">No users or applications match the search and filters.</p>
+<% if @search_requested && !(@applications&.any? || @teachers&.any?)  %>
+  <p class="govuk-body">No teachers or applications match the search and filters.</p>
 <% end %>

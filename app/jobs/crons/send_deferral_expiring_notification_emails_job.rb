@@ -11,8 +11,8 @@ class Crons::SendDeferralExpiringNotificationEmailsJob < CronJob
   def perform
     eligible_applications.find_each do |application|
       GenericMailer.with(
-        to: application.user.email,
-        full_name: application.user.full_name,
+        to: application.teacher.email,
+        full_name: application.teacher.full_name,
         course_name: application.course.name,
         deferral_date: application.deferred_at.to_fs(:govuk_date_only),
         ecf_id: application.ecf_id,

@@ -52,16 +52,16 @@ class RegistrationWizardController < PublicPagesController
   def development_login
     return unless Rails.env.development? || Rails.env.review?
 
-    # user_email = ENV["DEV_USER_EMAIL_FOR_LOGIN"]
-    user = User.find_by!(email: params[:user_email])
-    session["user_id"] = user.id
-    sign_in user
+    # teacher_email = ENV["DEV_USER_EMAIL_FOR_LOGIN"]
+    teacher = Teacher.find_by!(email: params[:teacher_email])
+    session["teacher_id"] = teacher.id
+    sign_in teacher
     wizard = RegistrationWizard.new(
       current_step: :auth_callback,
       store: session["registration_store"],
       params: {},
       request:,
-      current_user: user,
+      current_teacher: teacher,
     )
 
     redirect_to registration_wizard_show_path(wizard.next_step_path)
@@ -73,12 +73,12 @@ private
     return redirect_to root_path unless @form.requirements_met?
     return redirect_to registration_wizard_show_path(@wizard.next_step_path) if @wizard.skip_step?
 
-    redirect_to root_path if store.except("current_user_id").blank? &&
+    redirect_to root_path if store.except("current_teacher_id").blank? &&
       !params[:step].in?(RegistrationWizard::VALID_BLANK_STEPS)
   end
 
   def redirect_to_start_if_signed_out
-    return if current_user.present?
+    return if current_teacher.present?
     return if params[:step].to_s.in?(%w[start closed])
 
     redirect_to root_path
@@ -107,7 +107,7 @@ private
   end
 
   def set_wizard
-    @wizard = RegistrationWizard.new(current_step: params[:step].underscore, store:, params: wizard_params, request:, current_user:)
+    @wizard = RegistrationWizard.new(current_step: params[:step].underscore, store:, params: wizard_params, request:, current_teacher:)
   end
 
   def set_form
@@ -117,7 +117,7 @@ private
   def registration_closed
     return if request.path == registration_wizard_show_path(:closed)
 
-    if Feature.registration_closed?(current_user)
+    if Feature.registration_closed?(current_teacher)
       if params[:step] == "start"
         redirect_to registration_closed_path
       else
@@ -131,7 +131,7 @@ private
   end
 
   def wizard_params
-    return {} if Feature.registration_closed?(current_user)
+    return {} if Feature.registration_closed?(current_teacher)
 
     params.fetch(:registration_wizard, {}).permit(RegistrationWizard.permitted_params_for_step(params[:step].underscore))
   end
@@ -145,11 +145,11 @@ private
   end
 
   def check_allowed_to_apply
-    return unless current_user
+    return unless current_teacher
     return if params[:step].in?(%w[registration-submitted share-provider])
-    return if current_user.allowed_to_apply?
+    return if current_teacher.allowed_to_apply?
 
-    application = current_user.applications.last
+    application = current_teacher.applications.last
     flash[:alert] = {
       title: "Application already registered",
       message: "You have already made an application for #{application.course.name}",

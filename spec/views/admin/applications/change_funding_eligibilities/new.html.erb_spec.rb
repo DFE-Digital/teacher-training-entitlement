@@ -16,7 +16,7 @@ RSpec.describe "admin/applications/change_funding_eligibilities/new", type: :vie
 
   it do
     aggregate_failures do
-      expect(subject).to have_css("h1", text: application.user.full_name)
+      expect(subject).to have_css("h1", text: application.teacher.full_name)
       expect(subject).to have_css(%(form[action="#{admin_applications_change_funding_eligibility_path(application)}"]), count: 1)
       expect(subject).to have_css(%(.govuk-form-group fieldset label), text: "Yes")
       expect(subject).to have_css(%(.govuk-form-group fieldset label), text: "No")

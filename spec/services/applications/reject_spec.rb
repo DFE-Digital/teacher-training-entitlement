@@ -62,27 +62,27 @@ RSpec.describe Applications::Reject, type: :model do
       end
     end
 
-    context "when user has no other pending applications and requires token refresh" do
-      let(:user) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
-      let(:application) { create(:application, :pending, user:) }
+    context "when teacher has no other pending applications and requires token refresh" do
+      let(:teacher) { create(:teacher, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
+      let(:application) { create(:application, :pending, teacher:) }
 
       it "clears the refresh token" do
         service.call
-        user.reload
-        expect(user.refresh_token).to be_nil
-        expect(user.refresh_token_updated_at).to be_nil
+        teacher.reload
+        expect(teacher.refresh_token).to be_nil
+        expect(teacher.refresh_token_updated_at).to be_nil
       end
     end
 
-    context "when user has other pending applications" do
-      let(:user) { create(:user, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
-      let(:application) { create(:application, :pending, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 5, 1)) }
+    context "when teacher has other pending applications" do
+      let(:teacher) { create(:teacher, trn: nil, refresh_token: "token", refresh_token_updated_at: Time.current) }
+      let(:application) { create(:application, :pending, :for_cohort_starting_on, teacher:, registration_starts_at: Date.new(2021, 5, 1)) }
 
-      before { create(:application, :pending, :for_cohort_starting_on, user:, registration_starts_at: Date.new(2021, 4, 1)) }
+      before { create(:application, :pending, :for_cohort_starting_on, teacher:, registration_starts_at: Date.new(2021, 4, 1)) }
 
       it "does not clear the refresh token" do
         service.call
-        expect(user.reload.refresh_token).to eq("token")
+        expect(teacher.reload.refresh_token).to eq("token")
       end
     end
   end

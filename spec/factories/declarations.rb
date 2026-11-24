@@ -1,14 +1,14 @@
 FactoryBot.define do
   factory :declaration do
     transient do
-      user { create(:user) }
+      teacher { create(:teacher) }
       course { nil }
       course_cohort { course ? create(:course_cohort, course:) : create(:course_cohort) }
       paid_statement { nil }
       contract { nil }
     end
 
-    application { Application.has_been_accepted.find_by(user:, course_cohort:) || association(:application, :accepted, user:, course_cohort:) }
+    application { Application.has_been_accepted.find_by(teacher:, course_cohort:) || association(:application, :accepted, teacher:, course_cohort:) }
     lead_provider { application&.lead_provider || create(:lead_provider) }
     milestone do
       (application&.course || course_cohort.course).milestones.find_or_create_by!(declaration_type:) do |record|

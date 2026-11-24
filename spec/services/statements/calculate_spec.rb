@@ -65,12 +65,12 @@ RSpec.describe Statements::Calculate do
     end
 
     describe "filters" do
-      let(:users) do
-        ["Julian Moore", "Andy Smith", "Ian Carter", "Blake Tian"].map { |full_name| create(:user, full_name:) }
+      let(:teachers) do
+        ["Julian Moore", "Andy Smith", "Ian Carter", "Blake Tian"].map { |full_name| create(:teacher, full_name:) }
       end
       let(:funded_apps) do
-        users.map do |user|
-          create(:application, :accepted, :with_funded_place, user:, course_cohort:, lead_provider:)
+        teachers.map do |teacher|
+          create(:application, :accepted, :with_funded_place, teacher:, course_cohort:, lead_provider:)
         end
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Statements::Calculate do
 
         it "applications expected a completed declaration" do
           expect(applications_by_declaration_type.keys).to contain_exactly(Milestone::STARTED)
-          names = applications_by_declaration_type[Milestone::STARTED].map { _1.user.full_name }
+          names = applications_by_declaration_type[Milestone::STARTED].map { _1.teacher.full_name }
           expect(names).to contain_exactly("Blake Tian")
         end
       end
@@ -89,8 +89,8 @@ RSpec.describe Statements::Calculate do
         let(:scope) { :expected }
         let(:filters) { { teacher_name: "ian" } }
 
-        it "applications to user to have ian in full_name" do
-          names = applications_by_declaration_type.values.flatten.map { _1.user.full_name }
+        it "applications to teacher to have ian in full_name" do
+          names = applications_by_declaration_type.values.flatten.map { _1.teacher.full_name }
           # Blake Tian is expected both started & completed declarations
           expect(names).to contain_exactly("Julian Moore", "Ian Carter", "Blake Tian", "Blake Tian")
         end

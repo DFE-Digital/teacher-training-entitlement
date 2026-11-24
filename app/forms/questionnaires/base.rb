@@ -57,12 +57,12 @@ module Questionnaires
       @changing_answer
     end
 
-    # Determines whether to return user from /registration/:step/change paths
+    # Determines whether to return teacher from /registration/:step/change paths
     # to /registration/:step paths when data changes.
     #
     # This is used when something very core to the data being gathered changes.
     #
-    # For example, if a user who said they didn't work in a school changes to
+    # For example, if a teacher who said they didn't work in a school changes to
     # say that they do work in a school or the other way around then we need to
     # put them back into the regular flow to make sure they don't get sent back
     # to the check answers page before they answer any new questions that may
@@ -84,7 +84,7 @@ module Questionnaires
     end
 
     def requirements_met?
-      # Ensures the user is:
+      # Ensures the teacher is:
       # a) logged in
       # b) has answered at least one question
       # Before allowing them to proceed into any questions.
@@ -93,8 +93,8 @@ module Questionnaires
       # Some questions add additional requirements, such as the confirmation page which requires
       # a lead provider and a course to have been selected.
       wizard.store.present? &&
-        query_store.current_user.present? &&
-        wizard.store.keys != %w[current_user]
+        query_store.current_teacher.present? &&
+        wizard.store.keys != %w[current_teacher]
     end
 
     def reset_store!

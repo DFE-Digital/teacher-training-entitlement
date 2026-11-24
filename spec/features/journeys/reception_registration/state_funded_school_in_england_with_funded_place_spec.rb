@@ -29,7 +29,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
       expect(application.course).to eq(Course.reception)
       expect(application.lead_provider).to eq(lead_provider)
       expect(application.institution).to eq(institution)
-      expect(application.user.email).to eq(user_email)
+      expect(application.teacher.email).to eq(teacher_email)
 
       expect(application).to have_attributes(
         funded_place: nil,

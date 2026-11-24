@@ -1,4 +1,4 @@
-<h1 class="govuk-heading-xl"><%= @application.user.full_name %></h1>
+<h1 class="govuk-heading-xl"><%= @application.teacher.full_name %></h1>
 
 <%= form_with model: @application, url: admin_applications_notes_path(@application) do |f| %>
   <%= f.govuk_error_summary %>
