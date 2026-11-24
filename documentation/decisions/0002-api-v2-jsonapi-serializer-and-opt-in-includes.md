@@ -62,50 +62,66 @@ expected declarations, statements) reuse the same scaffolding.
   Base64-encoded sort order plus that row's key values, so it stays valid while
   rows change and is rejected if replayed with another sort.
 - Links are `self`, `prev` and `next`; they keep filters, `include` and `sort`.
+  A link is `null` only when the server knows there are no results in that
+  direction. An empty page after `page[after]=X` still links `prev` to
+  `page[before]=X`, and an empty page before `page[before]=X` links `next` to
+  `page[after]=X`, so clients are never stranded.
   Each page costs one query for `size + 1` rows; no totals are computed.
 - The default and `sort=updated_at` order use the effective `updated_at`.
 
 ## Effective updated_at
 
 Clients sync with `sort=updated_at` and `filter[updated_since]`, so an
-application must count as updated when anything in its V2 representation
-changes, not just its own row. The effective `updated_at` is
+application must count as updated when one of its V2 attributes or its
+teacher changes, not just its own row. The effective `updated_at` is
 `GREATEST(...)` of:
 
-| Source                                           | Why                                                                         |
-|--------------------------------------------------|-----------------------------------------------------------------------------|
-| `applications.updated_at`                        | the application itself (course cohort, funding, status, institution id)     |
-| `users.significantly_updated_at`                 | teacher linkage (TRN) and email; same "significant change" rule as V1       |
-| `application_lead_providers.updated_at`          | the provider's assignment: reassignment, `contract_*_at`, `reassigned`      |
-| `institutions.updated_at`                        | nested `institution` (touched when the school/provider/authority changes)   |
-| `MAX(declarations.updated_at)` for this provider | `outcome` linkage (recording an outcome touches the declaration)            |
+| Source                                  | Why                                                                     |
+|-----------------------------------------|-------------------------------------------------------------------------|
+| `applications.updated_at`               | the application itself (course cohort, funding, status, institution id) |
+| `application_lead_providers.updated_at` | the provider's assignment: `reassigned` status, `contract_*_at`         |
+| `institutions.updated_at`               | nested `institution` (touched when the school/provider/authority changes) |
+| `users.significantly_updated_at`        | the teacher (TRN, email); same "significant change" rule as V1          |
 
 Not included:
 
+- declarations and outcomes: statement runs (`payable`, `paid`), clawbacks and
+  voids would otherwise mark every application on a statement as updated each
+  month, and clients would re-sync large parts of their data. As a result, a
+  change to the `outcome` linkage alone does not move `updated_at`.
 - the course cohort (`contract`): only its id appears in the application, and that
   changes through `applications.course_cohort_id`. Its own attributes belong to
   the contract resource.
 - the course and its milestones (`course.identifier`, `expected_declarations`):
   reference data. A change would mark every application on the course as updated,
   and a deleted milestone leaves no timestamp anyway.
-- surveys: no data yet.
+- surveys: no survey data exists yet. When surveys land (api-v2/009), their
+  `updated_at` must be added to the expression
+  (`API::V2::Applications::Query::EFFECTIVE_UPDATED_AT_SQL`).
 
-The value is computed in the listing query (a join plus one correlated
-`MAX` subquery on the indexed `declarations.application_id`), so the number of
-queries per page stays the same and nothing needs a schema change or backfill. V1 data,
-`applications.updated_at` and analytics are unaffected. The rejected alternative
-was `touch:`-style callbacks that bump `applications.updated_at`. That would
-change V1 `filter[updated_since]` and analytics data, needs callbacks on several
-write paths (including `update_all`), and doesn't cover historical rows. It
-also wouldn't make the sort index-backed, because `applications.updated_at` has
-no index today.
+The value is computed once, in an inner subquery of the listing query that is
+aliased as `application_lead_providers`; `ORDER BY`, the `updated_since` filter
+and the cursor keyset refer to its `effective_updated_at` column. The number of
+queries per page stays the same and nothing needs a schema change or backfill.
+V1 data, `applications.updated_at` and analytics are unaffected. The rejected
+alternative was `touch:`-style callbacks that bump `applications.updated_at`.
+That would change V1 `filter[updated_since]` and analytics data, needs callbacks
+on several write paths (including `update_all`), and doesn't cover historical
+rows. It also wouldn't make the sort index-backed, because
+`applications.updated_at` has no index today.
 
 Trade-off: an expression across joined tables can't use an index, so each page
-scans and sorts the provider's visible applications, found through the
-`application_lead_providers.lead_provider_id` index. That is the same scale as V1,
-which sorts on unindexed `applications.updated_at`. If volumes need it, a
-denormalised and indexed column could replace the expression later. That would be
-a schema change with analytics review, and the API contract wouldn't change.
+reads the provider's visible applications through the
+`application_lead_providers.lead_provider_id` index, joins them by primary key
+and keeps the top `size + 1` rows with a heap sort. A full sync therefore costs
+O(N²/size) row reads for a provider with N applications. PostgreSQL flattens
+the subquery, so the plan repeats the cheap four-column `GREATEST` in the join
+filter and sort key, but there is no correlated subquery. Before the flag is
+enabled in production, `EXPLAIN ANALYZE` must be run against a production-sized
+snapshot for the largest lead provider at page sizes 100 and 3000. If the numbers
+are poor, a denormalised and indexed column could replace the expression. That
+would be a schema change with analytics review, and the API contract wouldn't
+change.
 
 ## Include guarantees
 

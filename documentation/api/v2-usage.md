@@ -76,8 +76,12 @@ The list follows the JSON:API
 
 - Links are absolute and keep every other query parameter (filters, `include`,
   `sort`). Follow `next` until it is `null`. `prev` is `null` on the first page.
-  After a `page[after]` request `prev` is always given, and after a
-  `page[before]` request `next` is always given; they may lead to an empty page.
+  A link is `null` only when there are no results in that direction. After a
+  `page[after]` request `prev` is always given, and after a `page[before]`
+  request `next` is always given. If such a page is empty, the link is built from
+  the cursor you sent: an empty `page[after]=X` page has
+  `prev` = `page[before]=X`, and an empty `page[before]=X` page has
+  `next` = `page[after]=X`.
 - Cursors are opaque. They encode the sort order and the position of one row, so
   rows that are added, changed or removed elsewhere don't shift the following
   pages. A row whose `updated_at` changes during a `sort=updated_at` sync moves
@@ -169,16 +173,19 @@ same representation.
 - **`contract_assigned_at` / `contract_unassigned_at`**: the requesting
   provider's assignment timestamps; `contract_unassigned_at` is set for
   `reassigned` applications and `null` otherwise.
-- **`updated_at`**: the *effective* update time, the latest of:
+- **`updated_at`**: the *effective* update time, the latest change to the
+  application's V2 attributes or its teacher:
   - the application's own `updated_at`;
-  - the teacher's last significant change (as V1, e.g. a TRN or email change,
-    not sign-in token refreshes);
-  - the requesting provider's assignment (e.g. reassignment);
+  - the requesting provider's assignment (reassignment, `contract_assigned_at`,
+    `contract_unassigned_at`);
   - the institution (school, childcare provider or local authority details);
-  - the requesting provider's declarations for the application (recording an
-    outcome touches its declaration).
+  - the teacher's last significant change (as V1, e.g. a TRN or email change,
+    not sign-in token refreshes).
 
-  `filter[updated_since]` and `sort=updated_at` use the same value.
+  Declarations and outcomes are not included: statement runs, clawbacks, voids
+  and recorded outcomes do not move `updated_at`. Surveys will be added once
+  survey data exists. `filter[updated_since]` and `sort=updated_at` use the same
+  value.
 - **`role`, `experience`, `funding.uplift`, `status_reason`,
   `funding.confirmation_reason`**: always `null` for now.
 - **`funding`**: `eligible` is the stored funding eligibility; `reason` is the
