@@ -53,12 +53,44 @@
   - record_type
   :statements:
   - reconcile_amount
-  :legacy_passed_participant_outcomes:
+  :registration_step_answers:
   - id
-  - completion_date
-  - course_short_code
+  - registration_step_id
+  - next_step_id
+  - name
+  - value
+  - hint
+  - redirect_path
+  - redirect_state_store_key
+  - position
   - created_at
-  - trn
+  - updated_at
+  - state_store_key
+  :registration_steps:
+  - id
+  - registration_journey_id
+  - name
+  - config
+  - type
+  - slug
+  - order
+  - redirect_path
+  - redirect_state_store_key
+  - state_store_key
+  - answer_display_name
+  - display_on_check_answers
+  - created_at
+  - updated_at
+  - previous_step_id
+  - branch_join_step_id
+  - requires_answer
+  - required_answer_message
+  :registration_journeys:
+  - id
+  - name
+  - slug
+  - course_id
+  - created_at
   - updated_at
   :lead_providers:
   - email

@@ -1,0 +1,7 @@
+<div class="govuk-!-padding-top-4">
+  <%= @form.govuk_radio_buttons_fieldset("When do you want to start a course?") do %>
+    <% answer_options.each do |option| %>
+      <%= @form.govuk_radio_button(@wizard_step.answer_field_name, option[:value], label: { text: option[:display_value] }, hint: { text: option[:hint] }) %>
+    <% end %>
+  <% end %>
+</div>

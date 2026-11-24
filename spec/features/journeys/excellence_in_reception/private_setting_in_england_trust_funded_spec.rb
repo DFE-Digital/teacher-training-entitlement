@@ -1,0 +1,49 @@
+require "rails_helper"
+
+RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, type: :feature do
+  include Helpers::JourneyAssertionHelper
+  include Helpers::ExcellenceInReceptionPathHelper
+  include ApplicationHelper
+
+  include_context "Stub Teacher Auth Responses"
+
+  scenario "private setting in England funded by trust" do
+    lead_provider = LeadProvider.first
+    course_cohort = reception_course_cohort
+
+    start_registration
+    choose_current_course_start_date
+    choose_provider(lead_provider)
+    choose_teacher_catchment("Yes")
+    choose_work_setting("Private nursery, pre-school or school")
+    continue_past_ineligible_funding
+    choose_course_funding("My trust is paying")
+    agree_to_share_provider_information
+    submit_check_answers
+
+    application = Application.sole
+
+    aggregate_failures "application fields" do
+      expect(application.course).to eq(Course.reception)
+      expect(application.lead_provider).to eq(lead_provider)
+      expect(application.institution).to be_nil
+      expect(application.user.email).to eq(user_email)
+
+      expect(application).to have_attributes(
+        funded_place: nil,
+        funding_choice: "trust",
+        funding_eligibility: "ineligible_setting",
+        institution_id: nil,
+      )
+
+      expect(application.registration_data).to match(
+        "can_share_choices" => "1",
+        "course_cohort_ecf_id" => course_cohort.ecf_id,
+        "funding" => "trust",
+        "lead_provider_id" => lead_provider.id.to_s,
+        "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
+        "work_setting" => Institution::PRIVATE_INSTITUTION,
+      )
+    end
+  end
+end

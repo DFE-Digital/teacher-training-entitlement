@@ -9,6 +9,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
   let(:super_admin) { create(:super_admin) }
   let!(:lead_provider) { create(:lead_provider) }
   let!(:other_lead_provider) { create(:lead_provider) }
+  let(:course) { Course.find_by!(identifier: Course::TTE_EARLY_YEARS) }
 
   before do
     create(:school)
@@ -76,7 +77,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
 
   scenario "super admin can re-seed test data for a provider" do
     # Seed data first
-    ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider: lead_provider).call
+    ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider: lead_provider, course:).call
 
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
@@ -111,7 +112,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
 
   scenario "super admin sees confirmation dialog when re-seeding" do
     # Seed data first
-    ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider: lead_provider).call
+    ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider: lead_provider, course:).call
 
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
@@ -126,7 +127,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
   end
 
   scenario "super admin can see multiple providers and their individual statuses" do
-    ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:).call
+    ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:, course:).call
 
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path

@@ -12,14 +12,31 @@ FactoryBot.define do
     trait :npd_eirt do
       sequence(:name) { |n| "NPD excellence in reception teaching #{n}" }
       # identifier { "npd-excellence-in-reception-teaching" }
-      identifier { "tte-early-years" }
+      identifier { Course::TTE_EARLY_YEARS }
       course_group { "reception" }
       short_code { "NPDEIRT" }
+    end
+
+    trait :npd_send_eipl do
+      sequence(:name) { |n| "Embedding inclusive practice for leaders #{n}" }
+      identifier { Course::SEND_INCLUSIVE_LEADERS }
+      course_group { "send" }
+      short_code { "NPDEIPL" }
+    end
+
+    trait :npd_send_eip do
+      sequence(:name) { |n| "Embedding inclusive practice #{n}" }
+      identifier { Course::SEND_INCLUSIVE_TEACHERS }
+      course_group { "send" }
+      short_code { "NPDEIP" }
     end
 
     factory :"npd-excellence-in-reception-teaching", traits: [:npd_eirt]
     factory :"npd-eirt", traits: [:npd_eirt]
     factory :"tte-early-years", traits: [:npd_eirt]
+    factory :"tte-reception", traits: [:npd_eirt]
+    factory :"npd-send-eip", traits: [:npd_send_eip]
+    factory :"npd-send-eipl", traits: [:npd_send_eipl]
 
     transient do
       lead_provider { nil }

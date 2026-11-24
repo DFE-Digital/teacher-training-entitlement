@@ -1,0 +1,5 @@
+<%= form.govuk_radio_buttons_fieldset('') do %>
+  <% step_definition.answer_options.each do |answer| %>
+    <%= form.govuk_radio_button(step_definition.answer_key.to_sym, answer.value, label: { text: answer.name }, hint: { text: answer.hint }) %>
+  <% end %>
+<% end %>

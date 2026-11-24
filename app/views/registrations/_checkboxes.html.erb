@@ -1,0 +1,5 @@
+<%= form.govuk_check_boxes_fieldset(step_definition.answer_key.to_sym, legend: nil, multiple: step_definition.multiple_answers?) do %>
+  <% step_definition.answer_options.each do |answer| %>
+    <%= form.govuk_check_box(step_definition.answer_key.to_sym, answer.value, multiple: step_definition.multiple_answers?, label: { text: answer.name }) %>
+  <% end %>
+<% end  %>

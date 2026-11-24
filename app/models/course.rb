@@ -3,8 +3,9 @@ class Course < ApplicationRecord
 
   IDENTIFIERS = [
     TTE_EARLY_YEARS = "tte-early-years".freeze,
+    SEND_INCLUSIVE_TEACHERS = "npd-send-eip".freeze,
+    SEND_INCLUSIVE_LEADERS = "npd-send-eipl".freeze,
   ].freeze
-  # IDENTIFIERS = %w[npd-excellence-in-reception-teaching].freeze
 
   TTE_RECEPTION = "tte-reception".freeze # used to keep backward compatibility with API v1 on schedule endpoint
 
@@ -29,16 +30,12 @@ class Course < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
   def self.reception
-    find_by(identifier: "npd-excellence-in-reception-teaching") ||
-      find_by(identifier: "tte-early-years")
-  end
-
-  def rebranded_alternative_courses
-    [self]
+    find_by(identifier: Registrations::Courses::ExcellenceInReception::LEGACY_IDENTIFIER) ||
+      find_by(identifier: Registrations::Courses::ExcellenceInReception::IDENTIFIER)
   end
 
   def identifier_for_schedule
-    return TTE_RECEPTION if identifier == TTE_EARLY_YEARS
+    return TTE_RECEPTION if identifier == Registrations::Courses::ExcellenceInReception::IDENTIFIER
 
     identifier
   end

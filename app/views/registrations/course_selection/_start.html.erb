@@ -1,0 +1,68 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-heading-l">Professional development for teachers and education leaders</span>
+      Check funding eligibility to register for a course
+    </h1>
+
+    <h2 class="govuk-heading-m">To register for a course, you first need to:</h2>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>check your eligibility for funding or tell us you will self-fund</li>
+    </ul>
+
+    <p>After we have checked your eligibility, you can continue to register. We will use your eligibility result as part of your registration.</p>
+
+    <h2 class="govuk-heading-m">To complete your registration, you will need to:</h2>
+
+    <ol class="govuk-list govuk-list--number">
+      <li>
+        log in using Gov One Login – you can create an account if you do not already have one
+        <ul class="govuk-list govuk-list--bullet">
+          <li>you may need your passport to prove your identity</li>
+          <li>you'll need a mobile to receive a verification code</li>
+        </ul>
+      </li>
+      <li>
+        answer some questions to complete your registration
+        <ul class="govuk-list govuk-list--bullet">
+          <li>choose your course start date – courses usually start in either October or January, but not all providers will offer all dates</li>
+          <li>choose a training provider</li>
+        </ul>
+      </li>
+      <li>submit your registration</li>
+    </ol>
+
+    <p class="govuk-body">
+      By continuing, you agree to our <%= govuk_link_to("privacy notice", PRIVACY_NOTICE_URL) %>.
+    </p>
+
+    <% if Feature.registration_enabled? %>
+      <%= render GovukComponent::ContinueButtonComponent.new(
+        text: "Check eligibility",
+        href: one_login_redirect_path,
+        as_button: true,
+        classes: ["govuk-button--start"]
+      ) %>
+    <% end %>
+
+    <%= render "step_form", current_step: do |form| %>
+      <%= form.hidden_field :self_funded, value: 'true' %>
+      <p><%= form.button "I want to register as self-funded", type: "submit", class: "govuk-link-button" %></p>
+    <% end %>
+
+    <h2 class="govuk-heading-m">Already registered?</h2>
+
+    <p>Log in to:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>see the status of your registration</li>
+      <li>change your training provider</li>
+      <li>get your certificate when you have completed the course</li>
+    </ul>
+
+    <% if Feature.registration_enabled? %>
+      <%= render "shared/teacher_auth/redirect_button", button_text: "Log in", secondary: true %>
+    <% end %>
+  </div>
+</div>
