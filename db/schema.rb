@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_133413) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "api_token_scopes", ["lead_provider", "webhook"]
   create_enum "application_statuses", ["pending", "accepted", "started", "rejected", "completed", "deferred", "withdrawn"]
-  create_enum "course_group", ["reception", "send"]
+  create_enum "course_group", ["npd", "reception", "send"]
   create_enum "declaration_state_reasons", ["duplicate"]
   create_enum "declaration_states", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "completed"]
