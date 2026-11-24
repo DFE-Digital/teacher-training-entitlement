@@ -18,6 +18,8 @@ module API
         @scope = scope
         @keys = keys
         @size = size
+        @after_cursor = after
+        @before_cursor = before
         @after = decode(after) if after
         @before = decode(before) if before
       end
@@ -28,8 +30,9 @@ module API
 
     private
 
-      attr_reader :scope, :keys, :size, :after, :before
+      attr_reader :scope, :keys, :size, :after, :before, :after_cursor, :before_cursor
 
+      # An empty page after a cursor still links back to the results before that cursor.
       def page_after
         rows = fetch(direction: :forward, values: after)
         records = rows.first(size)
@@ -37,19 +40,24 @@ module API
         Page.new(
           records:,
           next_cursor: (encode(records.last) if rows.size > size),
-          prev_cursor: (encode(records.first) if after && records.any?),
+          prev_cursor: (cursor_or(records.first, after_cursor) if after),
         )
       end
 
+      # An empty page before a cursor still links on to the results after that cursor.
       def page_before
         rows = fetch(direction: :backward, values: before)
         records = rows.first(size).reverse
 
         Page.new(
           records:,
-          next_cursor: (encode(records.last) if records.any?),
+          next_cursor: cursor_or(records.last, before_cursor),
           prev_cursor: (encode(records.first) if rows.size > size),
         )
+      end
+
+      def cursor_or(record, request_cursor)
+        record ? encode(record) : request_cursor
       end
 
       def fetch(direction:, values:)

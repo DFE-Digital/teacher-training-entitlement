@@ -213,6 +213,58 @@ RSpec.describe "API V2 applications sorting and cursor pagination", type: :reque
       expect(link_query("self")).to eq("page" => { "size" => "2" }, "sort" => "created_at")
     end
 
+    context "when a page[before] request has no results" do
+      let(:params) { { include: "teacher", sort: "updated_at", filter: { updated_since: "2000-01-01T00:00:00Z" } } }
+      let(:cursor) do
+        list(params.merge(page: { size: "1" }))
+        link_query("next")["page"]["after"]
+      end
+
+      before { list(params.merge(page: { size: "2", before: cursor })) }
+
+      it "returns an empty page with no prev link" do
+        expect([ids, json["links"]["prev"]]).to eq([[], nil])
+      end
+
+      it "links next to the results after the request cursor" do
+        expect(link_query("next")).to eq(params.deep_stringify_keys.merge("page" => { "size" => "2", "after" => cursor }))
+      end
+
+      it "leads back to the data" do
+        follow(json["links"]["next"])
+
+        expect(ids).to eq(all_ids[1, 2])
+      end
+    end
+
+    context "when a page[after] request has no results" do
+      let(:params) { { include: "teacher", sort: "updated_at", filter: { updated_since: "2000-01-01T00:00:00Z" } } }
+      let(:cursor) do
+        list(params.merge(page: { size: "4" }))
+        link_query("next")["page"]["after"]
+      end
+
+      before do
+        cursor
+        applications.last.destroy!
+        list(params.merge(page: { size: "2", after: cursor }))
+      end
+
+      it "returns an empty page with no next link" do
+        expect([ids, json["links"]["next"]]).to eq([[], nil])
+      end
+
+      it "links prev to the results before the request cursor" do
+        expect(link_query("prev")).to eq(params.deep_stringify_keys.merge("page" => { "size" => "2", "before" => cursor }))
+      end
+
+      it "leads back to the data" do
+        follow(json["links"]["prev"])
+
+        expect(ids).to eq(all_ids[1, 2])
+      end
+    end
+
     it "is not shifted by changes before the cursor" do
       list(page: { size: "2" })
       next_link = json["links"]["next"]
