@@ -661,7 +661,7 @@ GEM
       logger (~> 1.7)
       site_prism-all_there (> 3, < 5)
     site_prism-all_there (3.0.9)
-    skylight (7.1.1)
+    skylight (7.2.0)
       activesupport (>= 7.2.0)
     sprockets (4.4.1)
       concurrent-ruby (~> 1.1)
