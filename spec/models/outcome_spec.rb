@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ParticipantOutcome, type: :model do
+RSpec.describe Outcome, type: :model do
   let(:course_cohort) { create(:course_cohort) }
   let(:milestone) { course_milestone(course_cohort.course, :completed) }
   let(:application) { create(:application, :accepted, course_cohort:) }
@@ -26,9 +26,9 @@ RSpec.describe ParticipantOutcome, type: :model do
   describe ".latest" do
     subject { described_class.latest }
 
-    let!(:latest_outcome) { create(:participant_outcome) }
+    let!(:latest_outcome) { create(:outcome) }
 
-    before { travel_to(1.hour.ago) { create(:participant_outcome) } }
+    before { travel_to(1.hour.ago) { create(:outcome) } }
 
     it { is_expected.to eq(latest_outcome) }
   end
@@ -120,8 +120,8 @@ RSpec.describe ParticipantOutcome, type: :model do
   end
 
   describe "#latest_for_declaration?" do
-    let!(:previous_outcome) { create(:participant_outcome, :voided, declaration:, created_at: 2.minutes.ago) }
-    let!(:latest_outcome) { create(:participant_outcome, :passed, declaration:, created_at: 1.minute.ago) }
+    let!(:previous_outcome) { create(:outcome, :voided, declaration:, created_at: 2.minutes.ago) }
+    let!(:latest_outcome) { create(:outcome, :passed, declaration:, created_at: 1.minute.ago) }
 
     it "returns false for superceded outcomes" do
       expect(previous_outcome).not_to be_latest_for_declaration

@@ -20,7 +20,7 @@ class Declaration < ApplicationRecord
   belongs_to :paid_declaration, class_name: "Declaration", optional: true
   has_one :course_cohort, through: :application
   has_one :cohort, through: :course_cohort
-  has_many :participant_outcomes, dependent: :destroy
+  has_many :participant_outcomes, dependent: :destroy, class_name: "Outcome"
 
   delegate :course, :user, to: :application
   delegate :identifier, to: :course, prefix: true

@@ -329,7 +329,7 @@ en:
               inclusion: Please choose a declaration type
             payment_percentage:
               inclusion: Please choose a declaration type
-        participant_outcome:
+        outcome:
           attributes:
             ecf_id:
               blank: Enter an ECF ID
