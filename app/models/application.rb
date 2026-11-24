@@ -198,6 +198,11 @@ class Application < ApplicationRecord
     funding_eligibility unless eligible_for_funding?
   end
 
+  def funding_uplift_eligible?
+    eligible_for_funding? && uplift_institution? && uplift_percentage.present?
+  end
+  alias_method :funding_uplift_eligible, :funding_uplift_eligible?
+
   def transition_status!(status, reason: nil, metadata: {}, **attributes)
     metadata.merge!(reason:) if reason.present?
     self.class.transaction do
@@ -214,6 +219,20 @@ private
 
   def not_admin_user?
     admin_user.blank?
+  end
+
+  def uplift_institution?
+    return false if course.nil? || institution_id.nil?
+
+    course.course_uplift_institutions.exists?(institution_id:)
+  end
+
+  # The uplift percentage is saved on the generic contract year (no academic year)
+  # of the course and lead provider.
+  def uplift_percentage
+    return if course.nil? || lead_provider.nil?
+
+    course.contract_years.generic.find_by(lead_provider:)&.uplift_percentage
   end
 
   def ensure_valid_status_transition

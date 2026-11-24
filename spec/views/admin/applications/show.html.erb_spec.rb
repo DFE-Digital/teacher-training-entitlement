@@ -95,6 +95,18 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       it { is_expected.to have_summary_item "Funding choice", "My workplace is covering the cost" }
     end
 
+    context "when the application is eligible for the uplift incentive" do
+      before { allow(application).to receive(:funding_uplift_eligible?).and_return(true) }
+
+      it { is_expected.to have_summary_item "Uplift incentive", "Yes" }
+    end
+
+    context "when the application is not eligible for the uplift incentive" do
+      before { allow(application).to receive(:funding_uplift_eligible?).and_return(false) }
+
+      it { is_expected.to have_summary_item "Uplift incentive", "No" }
+    end
+
     context "without funding choice data from the registration journey" do
       let(:application_attributes) { { registration_data: {} } }
 

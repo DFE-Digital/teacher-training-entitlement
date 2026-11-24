@@ -465,4 +465,55 @@ RSpec.describe Application do
       expect(build(:application, funding_eligibility: :previously_funded).funding_ineligible_reason).to eq("previously_funded")
     end
   end
+
+  describe "#funding_uplift_eligible?" do
+    subject(:application) { create(:application, funding_eligibility:, institution:) }
+
+    let(:funding_eligibility) { :funded }
+    let(:institution) { create(:institution) }
+    let(:uplift_institution) { institution }
+    let(:contract_lead_provider) { application.lead_provider }
+    let(:uplift_percentage) { 0.15 }
+
+    before do
+      create(:course_uplift_institution, course: application.course, institution: uplift_institution)
+      create(:contract_year, :generic, course: application.course, lead_provider: contract_lead_provider, uplift_percentage:)
+    end
+
+    context "when funded, the institution is an uplift institution and the provider has an uplift percentage" do
+      it { is_expected.to be_funding_uplift_eligible }
+      it { expect(application.funding_uplift_eligible).to be(true) }
+    end
+
+    context "when not eligible for funding" do
+      let(:funding_eligibility) { :ineligible_setting }
+
+      it { is_expected.not_to be_funding_uplift_eligible }
+    end
+
+    context "when the institution is not an uplift institution of the course" do
+      let(:uplift_institution) { create(:institution) }
+
+      it { is_expected.not_to be_funding_uplift_eligible }
+    end
+
+    context "when the application has no institution" do
+      let(:institution) { nil }
+      let(:uplift_institution) { create(:institution) }
+
+      it { is_expected.not_to be_funding_uplift_eligible }
+    end
+
+    context "when the provider has no uplift percentage" do
+      let(:uplift_percentage) { nil }
+
+      it { is_expected.not_to be_funding_uplift_eligible }
+    end
+
+    context "when only another provider has an uplift percentage" do
+      let(:contract_lead_provider) { create(:lead_provider) }
+
+      it { is_expected.not_to be_funding_uplift_eligible }
+    end
+  end
 end
