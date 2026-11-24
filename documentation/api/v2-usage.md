@@ -27,7 +27,13 @@ Bearer token as V1 ([`authentication.md`](./authentication.md)).
 ### Filters (list only)
 
 Filters combine with AND. List-valued filters take comma-separated values
-(any match). Values must be strings; `filter` must be a flat hash.
+(any match); an empty value (e.g. `filter[course]=a,,b`, or a leading or
+trailing comma) returns a `400`. Values must be strings; `filter` must be a
+flat hash.
+
+`filter`, `sort` and `page` are list-only: sending any of them (with any key or
+value) to show returns a `400` naming the parameter in `source.parameter`,
+before any data is loaded. They are rejected rather than ignored.
 
 | Filter                     | Value                                | Matches                                  |
 |----------------------------|--------------------------------------|------------------------------------------|
@@ -116,7 +122,7 @@ about a query parameter name it in `source.parameter` (e.g. `filter[email]`,
 
 | Status | When                                                                                  |
 |--------|---------------------------------------------------------------------------------------|
-| `400`  | unsupported or empty include path; unknown filter; non-hash, array or nested filter; invalid filter value (including malformed TRN or email); invalid sort; invalid page parameters or cursor |
+| `400`  | unsupported or empty include path; unknown filter; non-hash, array or nested filter; invalid or empty filter value (including malformed TRN or email); invalid sort; invalid page parameters or cursor; `filter`, `sort` or `page` on show |
 | `401`  | missing or invalid token                                                              |
 | `404`  | unknown application UUID, application never assigned to you, unknown `/api/v2/*` path, any V2 path while the feature flag is off |
 | `422`  | unprocessable content                                                                 |

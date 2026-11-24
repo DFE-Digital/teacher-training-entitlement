@@ -35,9 +35,13 @@ expected declarations, statements) reuse the same scaffolding.
     listed; none are approved yet.
   - `Filters` — `allowed_filters` plus strict parsing: `filter` must be a flat
     hash of supported keys with string values; bad values (including malformed
-    TRNs and emails) return 400.
+    TRNs and emails) and empty list values (e.g. `a,,b`) return 400.
   - `Sorting` — `allowed_sorts` with a default; `sort` uses the V1 `+`/`-`
     syntax, and unknown or repeated fields return 400.
+  - `single_resource_actions` (on `API::V2::BaseController`) declares the
+    actions that return one resource. They reject the list-only `filter`,
+    `sort` and `page` parameters with a 400 (`source.parameter` names the
+    parameter) before any query, instead of silently ignoring them.
   - `Pagination` — the JSON:API
     [cursor pagination profile](https://jsonapi.org/profiles/ethanresnick/cursor-pagination/)
     (see below).
