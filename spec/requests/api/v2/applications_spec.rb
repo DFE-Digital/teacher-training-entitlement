@@ -576,6 +576,36 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       expect([response.status, json.keys]).to eq([400, %w[errors]])
     end
 
+    {
+      "sort" => { sort: "bogus" },
+      "page" => { page: { size: "99999" } },
+      "filter" => { filter: { unknown: "1" } },
+    }.each do |parameter, params|
+      it "rejects #{parameter} with a JSON:API error naming the parameter" do
+        show(application.ecf_id, params:)
+
+        expect([response.status, response.media_type, json["errors"]]).to eq([400, "application/vnd.api+json", [{
+          "status" => "400",
+          "title" => I18n.t(:bad_request),
+          "detail" => I18n.t(:collection_parameter_not_supported, parameter:),
+          "source" => { "parameter" => parameter },
+        }]])
+      end
+    end
+
+    it "rejects a valid list filter too" do
+      show(application.ecf_id, params: { filter: { course: application.course.identifier } })
+
+      expect(json["errors"].first["source"]).to eq("parameter" => "filter")
+    end
+
+    it "rejects list-only parameters before querying applications" do
+      allow(API::V2::Applications::Query).to receive(:new).and_call_original
+      show(application.ecf_id, params: { sort: "updated_at" })
+
+      expect(API::V2::Applications::Query).not_to have_received(:new)
+    end
+
     it "returns a JSON:API not found error for an unknown UUID" do
       show(SecureRandom.uuid)
 

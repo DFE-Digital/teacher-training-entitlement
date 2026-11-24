@@ -18,6 +18,12 @@ RSpec.describe "API V2 feature flag", type: :request do
       end
     end
 
+    it "returns not found before validating show parameters" do
+      api_get("/api/v2/applications/#{application.ecf_id}", lead_provider:, params: { sort: "bogus" })
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it "does not query applications" do
       allow(API::V2::Applications::Query).to receive(:new)
       api_get("/api/v2/applications", lead_provider:)

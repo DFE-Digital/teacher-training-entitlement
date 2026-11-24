@@ -12,7 +12,8 @@ module API
       allowed_sorts(*Applications::Query::SORT_FIELDS, default: "updated_at")
 
       # Validate the include list (and, for the index, sort and page) before any query or
-      # association traversal.
+      # association traversal. Show rejects the list-only parameters.
+      single_resource_actions :show
       before_action :requested_includes
       before_action :requested_sort, :page_size, only: :index
 

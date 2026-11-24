@@ -4,12 +4,27 @@ module API
     # API V2 is only reachable while the API V2 feature flag is enabled.
     class BaseController < API::BaseController
       CONTENT_TYPE = "application/vnd.api+json".freeze
+      # List-only query parameters, rejected (not ignored) on single-resource actions.
+      COLLECTION_PARAMETERS = %w[filter sort page].freeze
 
       before_action :ensure_api_v2_enabled
 
       rescue_from ParameterError, with: :parameter_error_response
 
+      # Declares the actions that return a single resource. They reject `filter`,
+      # `sort` and `page` with a 400 before any query, rather than ignoring them.
+      def self.single_resource_actions(*actions)
+        before_action :reject_collection_parameters, only: actions
+      end
+
     private
+
+      def reject_collection_parameters
+        parameter = COLLECTION_PARAMETERS.find { |name| params.key?(name) }
+        return unless parameter
+
+        raise ParameterError.new(I18n.t(:collection_parameter_not_supported, parameter:), parameter:)
+      end
 
       def ensure_api_v2_enabled
         render_endpoint_not_found unless Feature.api_v2_enabled?
