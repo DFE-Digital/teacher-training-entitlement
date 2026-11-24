@@ -421,12 +421,14 @@ RSpec.describe "API V2 applications endpoints", type: :request do
         it "rejects the empty value in #{value.inspect}" do
           list(params: { filter: { course: value } })
 
-          expect([response.status, json["errors"]]).to eq([400, [{
+          error = {
             "status" => "400",
             "title" => I18n.t(:bad_request),
             "detail" => I18n.t(:blank_filter_value, attribute: :course),
             "source" => { "parameter" => "filter[course]" },
-          }]])
+          }
+
+          expect([response.status, json["errors"]]).to eq([400, [error]])
         end
       end
 
@@ -584,12 +586,14 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       it "rejects #{parameter} with a JSON:API error naming the parameter" do
         show(application.ecf_id, params:)
 
-        expect([response.status, response.media_type, json["errors"]]).to eq([400, "application/vnd.api+json", [{
+        error = {
           "status" => "400",
           "title" => I18n.t(:bad_request),
           "detail" => I18n.t(:collection_parameter_not_supported, parameter:),
           "source" => { "parameter" => parameter },
-        }]])
+        }
+
+        expect([response.status, response.media_type, json["errors"]]).to eq([400, "application/vnd.api+json", [error]])
       end
     end
 
