@@ -6,6 +6,8 @@ en:
   bad_request: Bad request
   forbidden: Resource cannot be updated
   resource_not_found: Resource not found
+  unprocessable_content: Unprocessable entity
+  internal_server_error: Internal server error
   not_found: Not found
   endpoint_not_found: The requested endpoint does not exist
   invalid_date_filter: "The filter '#/%{parameterized_attribute}' must be a valid ISO 8601 date"

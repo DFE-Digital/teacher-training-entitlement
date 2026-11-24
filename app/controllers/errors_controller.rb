@@ -8,7 +8,7 @@ class ErrorsController < PublicPagesController
   before_action :set_format
 
   def not_found
-    return render_json_api_error(:not_found, "Resource not found") if api_v2_request?
+    return render_json_api_error(:not_found, :resource_not_found) if api_v2_request?
 
     respond_to do |format|
       format.html { render status: :not_found }
@@ -18,7 +18,7 @@ class ErrorsController < PublicPagesController
   end
 
   def internal_server_error
-    return render_json_api_error(:internal_server_error, "Internal server error") if api_v2_request?
+    return render_json_api_error(:internal_server_error, :internal_server_error) if api_v2_request?
 
     respond_to do |format|
       format.html { render status: :internal_server_error }
@@ -28,7 +28,7 @@ class ErrorsController < PublicPagesController
   end
 
   def unprocessable_content
-    return render_json_api_error(:unprocessable_content, "Unprocessable entity") if api_v2_request?
+    return render_json_api_error(:unprocessable_content, :unprocessable_content) if api_v2_request?
 
     respond_to do |format|
       format.html { render status: :unprocessable_content }
@@ -48,9 +48,11 @@ private
     APIV2Path.match?(request.original_fullpath)
   end
 
-  def render_json_api_error(status, title)
+  # Titles use the same I18n keys as API::V2::BaseController (e.g. resource_not_found),
+  # so an error has the same title whichever path renders it.
+  def render_json_api_error(status, title_key)
     code = Rack::Utils.status_code(status)
 
-    render json: { errors: [{ status: code.to_s, title: }] }, status: code, content_type: JSON_API_CONTENT_TYPE
+    render json: { errors: [{ status: code.to_s, title: I18n.t(title_key) }] }, status: code, content_type: JSON_API_CONTENT_TYPE
   end
 end
