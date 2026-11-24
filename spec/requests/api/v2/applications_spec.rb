@@ -417,6 +417,19 @@ RSpec.describe "API V2 applications endpoints", type: :request do
         }])
       end
 
+      ["a,,b", ",a", "a,", ","].each do |value|
+        it "rejects the empty value in #{value.inspect}" do
+          list(params: { filter: { course: value } })
+
+          expect([response.status, json["errors"]]).to eq([400, [{
+            "status" => "400",
+            "title" => I18n.t(:bad_request),
+            "detail" => I18n.t(:blank_filter_value, attribute: :course),
+            "source" => { "parameter" => "filter[course]" },
+          }]])
+        end
+      end
+
       it "explains that updated_since needs an ISO 8601 timestamp" do
         list(params: { filter: { updated_since: "2025-01-01" } })
 

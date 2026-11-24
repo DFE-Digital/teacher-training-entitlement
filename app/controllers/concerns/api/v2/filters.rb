@@ -35,13 +35,15 @@ module API
         raw.to_unsafe_h.symbolize_keys
       end
 
-      # Comma-separated list; every value must be allowed and match the format
-      # (a Regexp, or a callable returning true for valid values).
+      # Comma-separated list with no empty values; every value must be allowed and
+      # match the format (a Regexp, or a callable returning true for valid values).
       def list_filter(name, allowed: nil, format: nil)
         value = filter_params[name]
         return if value.blank?
 
-        values = value.split(",")
+        values = value.split(",", -1)
+        raise filter_error(I18n.t(:blank_filter_value, attribute: name), "filter[#{name}]") if values.any?(&:blank?)
+
         invalid = values.reject { |v| (allowed.nil? || allowed.include?(v)) && matches_format?(v, format) }
         raise filter_error(I18n.t(:invalid_filter, attribute: name), "filter[#{name}]") if invalid.any?
 

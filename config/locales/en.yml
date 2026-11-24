@@ -11,6 +11,7 @@ en:
   invalid_date_filter: "The filter '#/%{parameterized_attribute}' must be a valid ISO 8601 date"
   invalid_participant_id_filter: "The filter '#/participant_id' must be a comma-delimited list of valid UUIDs"
   invalid_filter: "The filter '#/%{attribute}' contains an unsupported value"
+  blank_filter_value: "The filter '#/%{attribute}' must not contain empty values"
   unsupported_include: "The include path(s) %{paths} are not supported"
   invalid_include_format: "The include parameter must be a single comma-separated list of relationship paths"
   blank_include_path: "The include parameter must not contain empty paths"
