@@ -1,9 +1,9 @@
 module Registrations
   module Journeys
-    class SharedSendInclusivePracticeWizard < BaseJourneyWizard
+    class SendInclusivePracticeWizard < BaseJourneyWizard
       def steps_processor
         @steps_processor ||= DfE::Wizard::StepsProcessor::Graph.draw(self, predicate_caller: state_store) do |graph|
-          check_course = add_node(
+          add_node(
             graph,
             name: "You are checking funding eligbility for the #{journey_definition.name} NPD course",
             slug: "check-course",
@@ -19,35 +19,34 @@ module Registrations
             ],
           )
 
-          state_funded_school, _teaches_send, funding_result = add_shared_journey(
+          add_shared_journey(
             Spikes::SharedSendFundingEligibilityJourneyWizard,
             graph:,
-            after: check_course.graph_id,
+            after: :check_course,
             before: :check_answers,
-            connect_from_after: false,
           )
 
-          check_answers = add_node(
+          add_node(
             graph,
             name: "Check answers",
             slug: "check-answers",
             step_class: Registrations::StepDefinitions::CheckAnswers,
             redirect_path: "/applications",
-            previous_step_slug: funding_result.slug,
+            previous_step_slug: :funding_eligibility_result,
           )
 
-          graph.root check_course.graph_id
-          graph.add_multiple_conditional_edges(
-            from: check_course.graph_id,
-            branches: [
-              {
-                when: -> { state_store["self_funded"] == "true" },
-                then: check_answers.graph_id,
-                label: "Self-funded",
-              },
-            ],
-            default: state_funded_school.graph_id,
-          )
+          graph.root :check_course
+          # graph.add_multiple_conditional_edges(
+          #   from: :check_course,
+          #   branches: [
+          #     {
+          #       when: -> { state_store["self_funded"] == "true" },
+          #       then: :check_answers,
+          #       label: "Self-funded",
+          #     },
+          #   ],
+          #   default: :state_funded_school,
+          # )
         end
       end
     end

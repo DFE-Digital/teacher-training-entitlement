@@ -2,8 +2,8 @@ module Registrations
   class JourneyWizardFactory
     WIZARD_CLASSES = {
       Course::TTE_EARLY_YEARS => Registrations::Journeys::ExcellenceInReceptionWizard,
-      Course::SEND_INCLUSIVE_TEACHERS => Registrations::Journeys::SendInclusivePracticeTeachersWizard,
-      Course::SEND_INCLUSIVE_LEADERS => Registrations::Journeys::SendInclusivePracticeLeadersWizard,
+      Course::SEND_INCLUSIVE_TEACHERS => Registrations::Journeys::SendInclusivePracticeWizard,
+      Course::SEND_INCLUSIVE_LEADERS => Registrations::Journeys::SendInclusivePracticeWizard,
       "course-selection" => Registrations::Journeys::CourseSelectionWizard,
       Course::COURSE_ONE => Registrations::Journeys::Spikes::CourseOneWizard,
       Course::COURSE_TWO => Registrations::Journeys::Spikes::CourseTwoWizard,
