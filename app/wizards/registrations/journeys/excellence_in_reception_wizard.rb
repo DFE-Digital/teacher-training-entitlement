@@ -51,7 +51,7 @@ module Registrations
             previous_step_slug: choose_provider.slug,
             required_answer_message: "Select 'Yes' if you work in England",
             services: [
-              { class_name: Registrations::Courses::ExcellenceInReception::FUNDING_ELIGIBILITY_CLASS.name, execute_point: :after_update },
+              { class_name: course.funding_eligibility_service_class.name, execute_point: :after_update },
             ],
             answers: [
               { name: "Yes", value: Institution::ENGLAND_SUBDIVISION_CODE, next_step_slug: "work-setting" },
@@ -77,7 +77,7 @@ module Registrations
               },
             ],
             services: [
-              { class_name: Registrations::Courses::ExcellenceInReception::FUNDING_ELIGIBILITY_CLASS.name, execute_point: :after_update },
+              { class_name: course.funding_eligibility_service_class.name, execute_point: :after_update },
             ],
             answers: [
               { name: "State-funded nursery, pre-school, school or academy trust", value: Institution::STATE_FUNDED_INSTITUTION, next_step_slug: "choose-school" },
@@ -96,7 +96,7 @@ module Registrations
             previous_step_slug: work_setting.slug,
             required_answer_message: "Enter a workplace name",
             services: [
-              { class_name: Registrations::Courses::ExcellenceInReception::FUNDING_ELIGIBILITY_CLASS.name, execute_point: :after_update },
+              { class_name: course.funding_eligibility_service_class.name, execute_point: :after_update },
             ],
             answers: [
               { name: "Not in England", state_store_key: "funding_eligibility_result", value: Registrations::FundingEligibilityConstants::NOT_IN_ENGLAND, next_step_slug: "ineligible-for-funding" },
@@ -180,7 +180,7 @@ module Registrations
             redirect_state_store_key: "application_ecf_id",
             previous_step_slug: share_provider.slug,
             services: [
-              { class_name: course_definition::APPLICATION_COMPLETION_CLASS.name, execute_point: :after_update },
+              { class_name: course.application_creation_service_class_name, execute_point: :after_update },
             ],
           )
 

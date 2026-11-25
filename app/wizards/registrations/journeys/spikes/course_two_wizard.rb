@@ -15,11 +15,11 @@ module Registrations
             )
 
             add_shared_journey(
-              SharedFundingEligibilityJourneyWizard,
+              SharedFavouritePetAndSportJourneyWizard,
               graph:,
               after: :crackers,
               before: :colour,
-              funding_eligibility_class: course_definition::FUNDING_ELIGIBILITY_CLASS,
+              funding_eligibility_class: course.funding_eligibility_service_class,
             )
 
             add_node(
@@ -40,7 +40,7 @@ module Registrations
               step_class: Registrations::StepDefinitions::CheckAnswers,
               previous_step_slug: :colour,
               services: [
-                { class_name: course_definition::APPLICATION_COMPLETION_CLASS.name, execute_point: :after_update },
+                { class_name: course.application_creation_service_class_name, execute_point: :after_update },
               ],
             )
 

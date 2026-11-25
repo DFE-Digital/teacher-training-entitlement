@@ -4,11 +4,11 @@ module Registrations
   class BaseJourneyWizard
     include DfE::Wizard
 
-    attr_reader :journey_definition, :course_definition, :current_user
+    attr_reader :journey_definition, :course, :current_user
 
-    def initialize(session:, course_definition: nil, journey_definition: nil, current_step: nil, current_step_params: {}, current_user: nil)
-      @course_definition = course_definition
-      @journey_definition = journey_definition || JourneyDefinition.new(course_definition:)
+    def initialize(session:, course: nil, journey_definition: nil, current_step: nil, current_step_params: {}, current_user: nil)
+      @course = course || journey_definition&.course
+      @journey_definition = journey_definition || JourneyDefinition.new(course:)
       @current_user = current_user
       repository = DfE::Wizard::Repository::Session.new(session:, key: :registrations)
       super(

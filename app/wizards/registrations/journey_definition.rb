@@ -2,14 +2,10 @@ module Registrations
   class JourneyDefinition
     attr_reader :name, :slug, :course, :step_definitions
 
-    def initialize(course_definition: nil, name: nil, slug: nil, course: nil)
-      @name = course_definition ? course_definition::NAME : name
-      @slug = course_definition ? course_definition::JOURNEY_SLUG : slug.presence || name.to_s.parameterize
-      @course = if course_definition
-                  course_definition.course if course_definition.respond_to?(:course)
-                else
-                  course
-                end
+    def initialize(course: nil, name: nil, slug: nil)
+      @name = course&.name || name
+      @slug = course&.identifier || slug.presence || name.to_s.parameterize
+      @course = course
       @step_definitions = []
     end
 

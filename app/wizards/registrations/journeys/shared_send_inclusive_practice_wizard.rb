@@ -6,10 +6,11 @@ module Registrations
           check_course = add_node(
             graph,
             name: "You are checking funding eligbility for the #{journey_definition.name} NPD course",
+            slug: "check-course",
             step_class: Registrations::StepDefinitions::Plain,
             texts: [
               {
-                text: "If you want to check for a different course you can <a href=\"/registrations/#{Registrations::Courses::CourseSelection::JOURNEY_SLUG}/#{Registrations::Courses::CourseSelection::COURSES_STEP}\">change your course</a>",
+                text: "If you want to check for a different course you can <a href=\"/registrations/#{Registrations::Journeys::CourseSelectionWizard::JOURNEY_SLUG}/#{Registrations::Journeys::CourseSelectionWizard::COURSES_STEP}\">change your course</a>",
                 text_class: "govuk-hint",
               },
             ],
@@ -18,22 +19,12 @@ module Registrations
             ],
           )
 
-          teacher_catchment = add_node(
-            graph,
-            name: "Do you work in England?",
-            slug: "teacher-catchment",
-            answer_display_name: "Works in England?",
-            state_store_key: "teacher_catchment",
-            step_class: Registrations::StepDefinitions::RadioButtons,
-            previous_step_slug: check_course.slug,
-            required_answer_message: "Select 'Yes' if you work in England",
-            services: [
-              { class_name: Registrations::Courses::ExcellenceInReception::FUNDING_ELIGIBILITY_CLASS.name, execute_point: :after_update },
-            ],
-            answers: [
-              { name: "Yes", value: Questionnaires::TeacherCatchment::ENGLAND },
-              { name: "No", value: Questionnaires::TeacherCatchment::NOT_ENGLAND },
-            ],
+          state_funded_school, _teaches_send, funding_result = add_shared_journey(
+            Spikes::SharedSendFundingEligibilityJourneyWizard,
+            graph:,
+            after: check_course.graph_id,
+            before: :check_answers,
+            connect_from_after: false,
           )
 
           check_answers = add_node(
@@ -42,7 +33,7 @@ module Registrations
             slug: "check-answers",
             step_class: Registrations::StepDefinitions::CheckAnswers,
             redirect_path: "/applications",
-            previous_step_slug: teacher_catchment.slug,
+            previous_step_slug: funding_result.slug,
           )
 
           graph.root check_course.graph_id
@@ -55,9 +46,8 @@ module Registrations
                 label: "Self-funded",
               },
             ],
-            default: teacher_catchment.graph_id,
+            default: state_funded_school.graph_id,
           )
-          graph.add_edge from: teacher_catchment.graph_id, to: check_answers.graph_id
         end
       end
     end

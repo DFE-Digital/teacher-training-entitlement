@@ -5,7 +5,7 @@
         <% row.with_key(text: "Course") %>
         <% row.with_value(text: course.name) %>
         <% unless Rails.env.production? %>
-          <% row.with_action(text: "Change", href: step_registration_path(Registrations::Courses::CourseSelection::JOURNEY_SLUG, Registrations::Courses::CourseSelection::COURSES_STEP)) %>
+          <% row.with_action(text: "Change", href: step_registration_path(Registrations::Journeys::CourseSelectionWizard::JOURNEY_SLUG, Registrations::Journeys::CourseSelectionWizard::COURSES_STEP)) %>
         <% end %>
       <% end %>
     <% end %>
