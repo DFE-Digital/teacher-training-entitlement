@@ -482,7 +482,6 @@ RSpec.describe Application do
 
     context "when funded, the institution is an uplift institution and the provider has an uplift percentage" do
       it { is_expected.to be_funding_uplift_eligible }
-      it { expect(application.funding_uplift_eligible).to be(true) }
     end
 
     context "when not eligible for funding" do

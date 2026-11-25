@@ -201,7 +201,6 @@ class Application < ApplicationRecord
   def funding_uplift_eligible?
     eligible_for_funding? && uplift_institution? && uplift_percentage.present?
   end
-  alias_method :funding_uplift_eligible, :funding_uplift_eligible?
 
   def transition_status!(status, reason: nil, metadata: {}, **attributes)
     metadata.merge!(reason:) if reason.present?
