@@ -52,6 +52,7 @@ en:
         not_real: You must enter a valid TRN
         wrong_length: TRN is the wrong length (should be %{count} characters)
   course_group:
+    npd: National Professional Development (NPD)
     reception: National Professional Development (NPD)
   mailers:
     eligible_for_funding: Eligible for funding

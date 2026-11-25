@@ -162,11 +162,11 @@ RSpec.describe Statement, type: :model do
       let(:lead_provider) { create(:lead_provider) }
 
       it "selects the open statement for the lead provider, period, frequency and course group" do
-        statement = create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 8, 1))
+        statement = create(:statement, :open, lead_provider:, course_group: "npd", start_date: Date.new(2026, 8, 1))
         create(:statement, :open, lead_provider:, course_group: "send", start_date: Date.new(2026, 8, 1))
-        create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 9, 1))
+        create(:statement, :open, lead_provider:, course_group: "npd", start_date: Date.new(2026, 9, 1))
 
-        expect(Statement.current(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))).to contain_exactly(statement)
+        expect(Statement.current(lead_provider:, course_group: "npd", date: Date.new(2026, 8, 15))).to contain_exactly(statement)
       end
     end
 
@@ -174,11 +174,11 @@ RSpec.describe Statement, type: :model do
       let(:lead_provider) { create(:lead_provider) }
 
       it "selects the next open statement for the lead provider, period, frequency and course group" do
-        statement = create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 9, 1))
+        statement = create(:statement, :open, lead_provider:, course_group: "npd", start_date: Date.new(2026, 9, 1))
         create(:statement, :open, lead_provider:, course_group: "send", start_date: Date.new(2026, 9, 1))
-        create(:statement, :open, lead_provider:, course_group: "reception", start_date: Date.new(2026, 8, 1))
+        create(:statement, :open, lead_provider:, course_group: "npd", start_date: Date.new(2026, 8, 1))
 
-        expect(Statement.clawback(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))).to contain_exactly(statement)
+        expect(Statement.clawback(lead_provider:, course_group: "npd", date: Date.new(2026, 8, 15))).to contain_exactly(statement)
       end
     end
   end
@@ -187,11 +187,11 @@ RSpec.describe Statement, type: :model do
     it "creates an open statement for the lead provider, period, frequency and course group" do
       lead_provider = create(:lead_provider)
 
-      statement = Statement.create_current!(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))
+      statement = Statement.create_current!(lead_provider:, course_group: "npd", date: Date.new(2026, 8, 15))
 
       expect(statement).to have_attributes(
         lead_provider:,
-        course_group: "reception",
+        course_group: "npd",
         frequency: "monthly",
         start_date: Date.new(2026, 8, 1),
         state: "open",
@@ -203,11 +203,11 @@ RSpec.describe Statement, type: :model do
     it "creates the next open statement for the lead provider, period, frequency and course group" do
       lead_provider = create(:lead_provider)
 
-      statement = Statement.create_clawback!(lead_provider:, course_group: "reception", date: Date.new(2026, 8, 15))
+      statement = Statement.create_clawback!(lead_provider:, course_group: "npd", date: Date.new(2026, 8, 15))
 
       expect(statement).to have_attributes(
         lead_provider:,
-        course_group: "reception",
+        course_group: "npd",
         frequency: "monthly",
         start_date: Date.new(2026, 9, 1),
         state: "open",

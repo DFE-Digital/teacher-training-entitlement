@@ -245,7 +245,7 @@ RSpec.describe Courses::Create do
           name: "Existing course",
           identifier: existing_course.identifier,
           short_code: "EXIST",
-          course_group: "reception",
+          course_group: "npd",
           description: "Existing course description",
         )
       end
