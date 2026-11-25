@@ -2,8 +2,9 @@ module Registrations
   module Journeys
     module Spikes
       class SharedFavouritePetAndSportJourneyWizard
-        def initialize(add_node:, **)
+        def initialize(add_node:, funding_eligibility_class:, **)
           @add_node = add_node
+          @funding_eligibility_class = funding_eligibility_class
         end
 
         def add_to_graph(graph:, after:, before:)
@@ -38,7 +39,7 @@ module Registrations
               { name: "Tennis", value: "tennis" },
             ],
             services: [
-              { class_name: Registrations::Spikes::FavouriteThingsFundingEligibility.name, execute_point: :after_update },
+              { class_name: @funding_eligibility_class.name, execute_point: :after_update },
             ],
           )
 

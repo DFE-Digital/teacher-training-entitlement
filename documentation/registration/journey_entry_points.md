@@ -91,12 +91,13 @@ The shared questions and graph live in
 2. What's your favourite sport?
 3. Show the funding eligibility result.
 
-This shared class currently attaches
-`Registrations::Spikes::FavouriteThingsFundingEligibility` directly. The
-Course One and Course Two wizards pass `course.funding_eligibility_service_class`
-when composing it, but the shared class does not currently use that argument.
-Changing the course's service method therefore does not change this shared
-journey's funding calculation yet.
+The shared class receives `course.funding_eligibility_service_class` and
+attaches that class as an `after_update` service to the favourite-sport step.
+Course One and Course Two currently resolve to
+`Registrations::Spikes::FavouriteThingsFundingEligibility`, which checks the
+captured pet and sport answers. Changing the course's service selection changes
+the calculation without changing these questions, provided the replacement
+service uses the shared journey's state-store keys.
 
 ## Injecting funding rules into a shared journey
 
