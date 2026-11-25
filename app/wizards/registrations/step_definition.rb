@@ -97,7 +97,8 @@ module Registrations
     end
 
     def add_text!(text: nil, text_class: nil)
-      type_config = config[type_as_param] ||= {}
+      config[type_as_param] ||= {}
+      type_config = config[type_as_param]
       texts = type_config["text"] ||= []
       texts << { "text" => Array(text), "text_class" => text_class }.compact
     end
