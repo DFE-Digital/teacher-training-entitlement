@@ -4,7 +4,7 @@ module Admin
       before_action :set_application
 
       def show
-        @outcomes = ParticipantOutcome.where(declaration: @application.declarations)
+        @outcomes = Outcome.where(declaration: @application.declarations)
       end
 
     private

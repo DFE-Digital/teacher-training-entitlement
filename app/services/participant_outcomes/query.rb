@@ -23,29 +23,29 @@ module ParticipantOutcomes
     def where_lead_provider_is(lead_provider)
       return if ignore?(filter: lead_provider)
 
-      scope.merge!(ParticipantOutcome.where(declaration: { lead_provider: }))
+      scope.merge!(Outcome.where(declaration: { lead_provider: }))
     end
 
     def where_participant_ids_in(participant_ids)
       return if ignore?(filter: participant_ids)
 
-      scope.merge!(ParticipantOutcome.where(user: { ecf_id: extract_conditions(participant_ids) }))
+      scope.merge!(Outcome.where(user: { ecf_id: extract_conditions(participant_ids) }))
     end
 
     def where_created_since(created_since)
       return if ignore?(filter: created_since)
 
-      scope.merge!(ParticipantOutcome.where(created_at: created_since..))
+      scope.merge!(Outcome.where(created_at: created_since..))
     end
 
     def where_application_id_is(application_id)
       return if ignore?(filter: application_id)
 
-      scope.merge!(ParticipantOutcome.where(declaration: { applications: { ecf_id: application_id } }))
+      scope.merge!(Outcome.where(declaration: { applications: { ecf_id: application_id } }))
     end
 
     def all_participant_outcomes
-      ParticipantOutcome.distinct.includes(
+      Outcome.distinct.includes(
         declaration: {
           lead_provider: {},
           application: [:user, :course, { course_cohort: :course }],

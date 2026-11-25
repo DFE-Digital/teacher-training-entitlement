@@ -56,12 +56,12 @@ RSpec.feature "submit declarations", :rack_test_driver, :revisit, type: :feature
       expect(page).to have_content "Declaration created successfully"
       expect(page).not_to have_button("Submit declarations")
       expect(Declaration.count).to eq(2)
-      expect(ParticipantOutcome.count).to eq(1)
+      expect(Outcome.count).to eq(1)
 
       declaration = Declaration.last
       expect(declaration.declaration_type).to eq("completed")
 
-      outcome = ParticipantOutcome.last
+      outcome = Outcome.last
       expect(outcome.state).to eq("passed")
       expect(outcome.declaration).to eq(declaration)
     end

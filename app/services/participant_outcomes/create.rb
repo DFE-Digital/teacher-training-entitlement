@@ -48,7 +48,7 @@ module ParticipantOutcomes
     end
 
     def build_outcome
-      @build_outcome ||= ParticipantOutcome.new(declaration: latest_completed_declaration, state:, completion_date:)
+      @build_outcome ||= Outcome.new(declaration: latest_completed_declaration, state:, completion_date:)
     end
 
     def completed_declarations

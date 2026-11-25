@@ -1,1 +1,0 @@
-ParticipantOutcome = Outcome
