@@ -10,13 +10,12 @@ This guide is for developers adding or changing a journey.
 ## Where to look
 
 - Wizard classes: `app/wizards/registrations/`
-- Shared wizard behavior: `app/wizards/registrations/journey_wizard.rb`
-- Journey, step, answer, and step-type definitions: `app/wizards/`
+- Shared wizard behavior: `app/wizards/registrations/base_journey_wizard.rb`
+- Journey, step, answer, and step-type definitions: `app/wizards/registrations/`
 - Registration page partials: `app/views/registrations/`
 - DfE Wizard integration: `app/wizards/registrations/`
 - Example: `app/wizards/registrations/documentation_example_wizard.rb`
-- Default branch destination: `Registrations::StepDefinition#default_next_step`
-  and `lib/tasks/registration_journeys.rake`
+- Default routes and branches: each wizard's `steps_processor` graph
 
 ## Visual example
 
@@ -36,14 +35,9 @@ flowchart TD
   date --> answers[Check your answers<br/>CheckAnswers]
 ```
 
-Build the in-memory graph used by the documentation example with:
-
-```sh
-bin/rails registration_journeys:documentation_example
-```
-
-It is available at `/registrations/documentation-example/:step_slug`, for
-example `/registrations/documentation-example/start` and
+The factory builds this in-memory graph when the documentation journey is
+requested. It is available at `/registrations/documentation-example/:step_slug`,
+for example `/registrations/documentation-example/start` and
 `/registrations/documentation-example/choose-a-path`. The app requires a
 signed-in user to view registration pages.
 
@@ -60,7 +54,7 @@ signed-in user to view registration pages.
 ## Create a wizard
 
 Create a class under `app/wizards/registrations/journeys/` that inherits from
-`Registrations::JourneyWizard`. Build a `JourneyDefinition` in `initialize`,
+`Registrations::BaseJourneyWizard`. Build a `JourneyDefinition` in `initialize`,
 then declare each step and graph transition in `steps_processor`. The protected
 `add_node` helper creates the step definition and its DfE Wizard graph node
 together. These excerpts use the documentation journey's actual name and first
@@ -69,7 +63,7 @@ two steps:
 ```ruby
 module Registrations
   module Journeys
-    class DocumentationExampleWizard < JourneyWizard
+    class DocumentationExampleWizard < BaseJourneyWizard
       SLUG = "documentation-example"
 
       def initialize(session:, journey_definition: nil, current_step: nil, current_step_params: {}, current_user: nil)
@@ -423,9 +417,9 @@ graph.add_multiple_conditional_edges(
 ```
 
 Use step slugs to reference destinations; they do not need to be created first.
-Branches can nest, with each decision pointing to its own join. The graph
-examples in `lib/tasks/registration_journeys.rake` show both a simple and a
-nested branch.
+Branches can nest, with each decision pointing to its own join. The
+`Registrations::Journeys::ExcellenceInReceptionWizard` graph is an example of
+a production journey with multiple branching decisions.
 
 ## Services attached to steps
 
@@ -447,9 +441,10 @@ Supported execution points are `:before_show` and `:after_update`. The service
 configuration lives on the step, so wizard classes do not need to modify the
 controller.
 
-## Rebuilding journeys locally
+## Finding the wizard for a route
 
-`Registrations::Courses::JourneyDefinitions` maps each journey slug to its Wizard 3
-class. The `registration_journeys:rebuild` task builds the registered journey
-graphs for local inspection; it does not write journey definitions to the
-database.
+`Registrations::JourneyWizardFactory` maps course identifiers and the
+documentation journey slug to wizard classes. Course identifiers map to
+`Course` records, which are passed to the wizard. The graph is built in memory
+when the request constructs the wizard; journey definitions are not stored in
+the database.
