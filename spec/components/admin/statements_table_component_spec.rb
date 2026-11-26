@@ -31,7 +31,7 @@ RSpec.describe Admin::StatementsTableComponent, type: :component do
     let(:show_lead_provider) { false }
 
     it "renders no course provider column" do
-      expect(rendered_content).not_to have_css("th", text: "Provider")
+      expect(rendered_content).to have_no_css("th", text: "Provider")
     end
 
     it "does render the other columns" do

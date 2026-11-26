@@ -14,7 +14,7 @@ RSpec.feature "Service is closed", type: :feature do
     close_registration!
 
     visit "/"
-    expect(page).to have_content("Registration is temporarily closed")
+    expect(page).to have_text("Registration is temporarily closed")
   end
 
   scenario "Services closes while registration in progress" do
@@ -33,7 +33,7 @@ RSpec.feature "Service is closed", type: :feature do
     close_registration!
     page.click_button("Continue")
 
-    expect(page).to have_content("Registration has closed temporarily")
+    expect(page).to have_text("Registration has closed temporarily")
   end
 
   context "when using late registration" do
@@ -48,7 +48,7 @@ RSpec.feature "Service is closed", type: :feature do
 
     scenario "Allow user to register" do
       visit "/"
-      expect(page).to have_content("Registration is temporarily closed")
+      expect(page).to have_text("Registration is temporarily closed")
 
       sign_in_as(super_admin)
 
@@ -56,7 +56,7 @@ RSpec.feature "Service is closed", type: :feature do
       fill_in("Email address", with: email)
       click_on("Add user")
 
-      expect(page).to have_content("Added #{email}")
+      expect(page).to have_text("Added #{email}")
 
       click_link("Sign out")
 
@@ -64,7 +64,7 @@ RSpec.feature "Service is closed", type: :feature do
 
       click_on("Start now")
 
-      expect(page).to have_content("Registration has closed temporarily")
+      expect(page).to have_text("Registration has closed temporarily")
 
       Flipper.enable(Feature::CLOSED_REGISTRATION_ENABLED)
 
@@ -83,7 +83,7 @@ RSpec.feature "Service is closed", type: :feature do
       visit "/closed_registration_exception"
 
       click_on("Start now")
-      expect(page).to have_content("Registration has closed temporarily")
+      expect(page).to have_text("Registration has closed temporarily")
 
       sign_in_as(super_admin)
 
@@ -91,7 +91,7 @@ RSpec.feature "Service is closed", type: :feature do
       fill_in("Email", with: email)
       click_on("Add user")
 
-      expect(page).to have_content("Added #{email}")
+      expect(page).to have_text("Added #{email}")
 
       seed_course_cohort_in_registration_store
       visit "/closed_registration_exception"
@@ -106,14 +106,14 @@ RSpec.feature "Service is closed", type: :feature do
 
       click_link("Remove access")
       click_link("Remove access")
-      expect(page).to have_content("Access removed for #{email}")
+      expect(page).to have_text("Access removed for #{email}")
 
       visit "/closed_registration_exception"
 
       click_on("Start now")
 
       expect_page_to_have(path: "/registration/closed") do
-        expect(page).to have_content("Registration has closed temporarily")
+        expect(page).to have_text("Registration has closed temporarily")
       end
     end
 
@@ -121,7 +121,7 @@ RSpec.feature "Service is closed", type: :feature do
       visit "/closed_registration_exception"
 
       click_on("Start now")
-      expect(page).to have_content("Registration has closed temporarily")
+      expect(page).to have_text("Registration has closed temporarily")
 
       sign_in_as(super_admin)
 
@@ -129,25 +129,25 @@ RSpec.feature "Service is closed", type: :feature do
       fill_in("Email", with: other_email)
       click_on("Add user")
 
-      expect(page).to have_content("Added #{other_email}")
+      expect(page).to have_text("Added #{other_email}")
 
       click_link("Remove access")
       click_link("Remove access")
 
-      expect(page).to have_content("Access removed for #{other_email}")
+      expect(page).to have_text("Access removed for #{other_email}")
 
       visit "/closed_registration_exception"
 
       click_on("Start now")
 
       expect_page_to_have(path: "/registration/closed") do
-        expect(page).to have_content("Registration has closed temporarily")
+        expect(page).to have_text("Registration has closed temporarily")
       end
     end
 
     scenario "When user is not whitelisted" do
       visit "/"
-      expect(page).to have_content("Registration is temporarily closed")
+      expect(page).to have_text("Registration is temporarily closed")
 
       visit "/closed_registration_exception"
 
@@ -162,10 +162,10 @@ RSpec.feature "Service is closed", type: :feature do
 
     scenario "Invalid unsubscribe link" do
       visit "/email_updates/unsubscribe?unsubscribe_key=user.email_updates_unsubscribe_key"
-      expect(page).to have_content("Are you sure you want to unsubscribe?")
+      expect(page).to have_text("Are you sure you want to unsubscribe?")
       click_button "Unsubscribe"
 
-      expect(page).to have_content("Invalid unsubscribe link")
+      expect(page).to have_text("Invalid unsubscribe link")
     end
   end
 

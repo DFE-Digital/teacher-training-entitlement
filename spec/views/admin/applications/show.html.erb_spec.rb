@@ -167,9 +167,9 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       let(:application_trait) { :pending }
 
       it do
-        expect(subject).not_to have_link("Revert to Pending")
-        expect(subject).not_to have_link("Defer/Withdraw")
-        expect(subject).not_to have_link("Accept")
+        expect(subject).to have_no_link("Revert to Pending")
+        expect(subject).to have_no_link("Defer/Withdraw")
+        expect(subject).to have_no_link("Accept")
       end
     end
 
@@ -179,7 +179,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       it do
         expect(subject).to have_link("Revert to Pending")
         expect(subject).to have_link("Defer")
-        expect(subject).not_to have_link("Accept")
+        expect(subject).to have_no_link("Accept")
       end
     end
 
@@ -187,9 +187,9 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       let(:application_trait) { :withdrawn }
 
       it do
-        expect(subject).not_to have_link("Revert to Pending")
+        expect(subject).to have_no_link("Revert to Pending")
         expect(subject).to have_link("Accept")
-        expect(subject).not_to have_link("Defer/Withdraw")
+        expect(subject).to have_no_link("Defer/Withdraw")
       end
     end
 

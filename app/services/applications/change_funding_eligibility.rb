@@ -9,8 +9,8 @@ module Applications
       @eligible_for_funding = eligible_for_funding
     end
 
-    validate  :validate_funding_eligiblity_status_code_change
-    validate  :validate_funding_eligiblity_status_with_funded_place
+    validate :validate_funding_eligiblity_status_code_change
+    validate :validate_funding_eligiblity_status_with_funded_place
 
     def call
       return if invalid?

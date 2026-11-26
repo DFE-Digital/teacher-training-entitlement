@@ -16,16 +16,16 @@ RSpec.feature "Administering feature flags", type: :feature do
       page.click_link("View")
     end
     expect(page).to have_current_path(admin_settings_feature_path("Registration open"))
-    expect(page).to have_content("Registration open")
+    expect(page).to have_text("Registration open")
     expect(Flipper.enabled?(Feature::REGISTRATION_OPEN)).to be(true)
 
     fill_in "Confirm the feature flag name to change the state", with: "wrong answer"
     page.click_button "Change state"
-    expect(page).to have_content("There was an error updating the feature flag.")
+    expect(page).to have_text("There was an error updating the feature flag.")
 
     fill_in "Confirm the feature flag name to change the state", with: "Registration open"
     page.click_button "Change state"
-    expect(page).to have_content("You have turned the Registration open feature flag off.")
+    expect(page).to have_text("You have turned the Registration open feature flag off.")
     expect(Flipper.enabled?(Feature::REGISTRATION_OPEN)).to be(false)
   end
 

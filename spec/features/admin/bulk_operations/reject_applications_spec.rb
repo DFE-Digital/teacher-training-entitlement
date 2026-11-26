@@ -25,12 +25,12 @@ RSpec.feature "reject applications", type: :feature do
     scenario "reject applications" do
       visit admin_settings_bulk_operations_reject_applications_path
 
-      expect(page).to have_content "No files have been uploaded"
+      expect(page).to have_text "No files have been uploaded"
 
       attach_file "file", applications_file.path
       click_button "Upload file"
 
-      expect(page).to have_content "File #{filename} uploaded successfully"
+      expect(page).to have_text "File #{filename} uploaded successfully"
 
       click_link filename
       within(".govuk-summary-list") do |summary_list|
@@ -52,9 +52,9 @@ RSpec.feature "reject applications", type: :feature do
         expect(summary_list).to have_summary_item("Ran by", "#{admin.full_name} (#{admin.email})")
       end
 
-      expect(page).to have_content "#{Application.first.ecf_id}Changed to rejected"
-      expect(page).to have_content "#{Application.last.ecf_id}Changed to rejected"
-      expect(page).not_to have_button("Reject applications")
+      expect(page).to have_text "#{Application.first.ecf_id}Changed to rejected"
+      expect(page).to have_text "#{Application.last.ecf_id}Changed to rejected"
+      expect(page).to have_no_button("Reject applications")
       expect(Application.all.pluck(:status)).to eq %w[rejected rejected]
     end
 
@@ -65,18 +65,18 @@ RSpec.feature "reject applications", type: :feature do
       click_button "Reject applications"
       click_link filename
 
-      expect(page).to have_content "The bulk operation is in progress."
+      expect(page).to have_text "The bulk operation is in progress."
     end
 
     scenario "file validation" do
       visit admin_settings_bulk_operations_reject_applications_path
       attach_file "file", empty_file.path
       click_button "Upload"
-      expect(page).to have_content "is empty"
+      expect(page).to have_text "is empty"
 
       attach_file "file", wrong_format_file.path
       click_button "Upload"
-      expect(page).to have_content "is wrong format"
+      expect(page).to have_text "is wrong format"
 
       attach_file "file", applications_file.path
       click_button "Upload"

@@ -26,7 +26,7 @@ RSpec.feature "Change workplace", type: :feature do
     visit "/registration/choose-school/change"
 
     within(".npq-js-reveal") do
-      input = find("input[type='text']", visible: true)
+      input = find_field(type: "text", visible: true)
       expect(input.value).to eq(school.name_with_address)
     end
   end

@@ -26,12 +26,12 @@ RSpec.feature "submit declarations", :revisit, type: :feature do
       click_link "Bulk changes"
       click_link "Submit declarations"
 
-      expect(page).to have_content "No files have been uploaded"
+      expect(page).to have_text "No files have been uploaded"
 
       attach_file "file", declarations_file.path
       click_button "Upload file"
 
-      expect(page).to have_content "File #{filename} uploaded successfully"
+      expect(page).to have_text "File #{filename} uploaded successfully"
 
       click_link filename
       within(".govuk-summary-list") do |summary_list|
@@ -53,8 +53,8 @@ RSpec.feature "submit declarations", :revisit, type: :feature do
         expect(summary_list).to have_summary_item("Ran by", "#{admin.full_name} (#{admin.email})")
       end
 
-      expect(page).to have_content "Declaration created successfully"
-      expect(page).not_to have_button("Submit declarations")
+      expect(page).to have_text "Declaration created successfully"
+      expect(page).to have_no_button("Submit declarations")
       expect(Declaration.count).to eq(2)
       expect(ParticipantOutcome.count).to eq(1)
 
@@ -73,18 +73,18 @@ RSpec.feature "submit declarations", :revisit, type: :feature do
       click_button "Submit declarations"
       click_link filename
 
-      expect(page).to have_content "The bulk operation is in progress."
+      expect(page).to have_text "The bulk operation is in progress."
     end
 
     scenario "file validation" do
       visit admin_settings_bulk_operations_submit_declarations_path
       attach_file "file", empty_file.path
       click_button "Upload"
-      expect(page).to have_content "is empty"
+      expect(page).to have_text "is empty"
 
       attach_file "file", wrong_format_file.path
       click_button "Upload"
-      expect(page).to have_content "is wrong format"
+      expect(page).to have_text "is wrong format"
 
       attach_file "file", declarations_file.path
       click_button "Upload"
@@ -125,8 +125,8 @@ RSpec.feature "submit declarations", :revisit, type: :feature do
       click_link mixed_filename
 
       # Check that it shows both success and failure
-      expect(page).to have_content "Declaration created successfully"
-      expect(page).to have_content "Participant not found"
+      expect(page).to have_text "Declaration created successfully"
+      expect(page).to have_text "Participant not found"
       expect(Declaration.count).to eq(1) # Only one declaration should be created
     end
   end

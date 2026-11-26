@@ -41,7 +41,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
       within(summary_cards[0]) do |summary_card|
         expect(summary_card).to have_css(".govuk-summary-card__title", text: "Started (Eligible)")
 
-        within(find(".govuk-summary-list")) do |summary_list|
+        within(".govuk-summary-list") do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", started_declaration.ecf_id)
           expect(summary_list).to have_summary_item("Declaration date", started_declaration.declaration_date.to_fs(:govuk_short))
           expect(summary_list).to have_summary_item("Declaration cohort", started_declaration.course_cohort.schedule_identifier)
@@ -56,7 +56,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
       within(summary_cards[1]) do |summary_card|
         expect(summary_card).to have_css(".govuk-summary-card__title", text: "Completed (Eligible)")
 
-        within(find(".govuk-summary-list")) do |summary_list|
+        within(".govuk-summary-list") do |summary_list|
           expect(summary_list).to have_summary_item("Declaration ID", "-")
           expect(summary_list).to have_summary_item("Declaration date", completed_declaration.declaration_date.to_fs(:govuk_short))
           expect(summary_list).to have_summary_item("Declaration cohort", completed_declaration.course_cohort.schedule_identifier)
@@ -73,7 +73,7 @@ RSpec.feature "Application declaration details", :versioning, type: :feature do
       end
 
       within(summary_cards[2]) do
-        within(find(".govuk-summary-list")) do |summary_list|
+        within(".govuk-summary-list") do |summary_list|
           expect(summary_list).to have_summary_item(
             "Statement",
             payable_statement.start_date.to_fs(:govuk_approx),

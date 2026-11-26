@@ -179,8 +179,8 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     it "does not show the funding eligibility status code change as a separate item" do
-      expect(subject).not_to have_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
-                                      text: /status code changed/i)
+      expect(subject).to have_no_css(".moj-timeline .moj-timeline__item .moj-timeline__header h2.moj-timeline__title",
+                                     text: /status code changed/i)
     end
 
     it "shows the funding eligibility status code change as a bullet point" do
@@ -197,7 +197,7 @@ RSpec.describe Admin::ApplicationHistoryComponent, :versioning, type: :component
     end
 
     it "does not show the version in the history" do
-      expect(subject).not_to have_text("Cohort changed")
+      expect(subject).to have_no_text("Cohort changed")
     end
   end
 end

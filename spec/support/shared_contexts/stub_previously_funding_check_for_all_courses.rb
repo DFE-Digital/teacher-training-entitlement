@@ -1,4 +1,4 @@
-RSpec.shared_context("Stub previously funding check for all courses") do # rubocop:disable RSpec/ContextWording:
+RSpec.shared_context("Stub previously funding check for all courses") do # rubocop:disable RSpec/ContextWording -- shared context name describes its setup
   let(:trn) { raise NotImplementedError }
 
   before do

@@ -16,7 +16,7 @@ module Admin::Adjustments
     def destroy_adjustment
       return false unless valid?
 
-      adjustment.destroy # rubocop:disable Rails/SaveBang - we don't want to raise an error if destroy fails
+      adjustment.destroy # rubocop:disable Rails/SaveBang -- we don't want to raise an error if destroy fails
 
       adjustment.destroyed?
     end

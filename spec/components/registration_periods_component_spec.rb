@@ -117,7 +117,7 @@ RSpec.describe RegistrationPeriodsComponent, type: :component do
       end
 
       it "does not put aria-current on the parent year link" do
-        expect(rendered_content).not_to have_css('a.x-govuk-sub-navigation__link[aria-current="true"]', exact_text: "2026")
+        expect(rendered_content).to have_no_css('a.x-govuk-sub-navigation__link[aria-current="true"]', exact_text: "2026")
       end
 
       it "does not mark the sibling leaf as current" do
@@ -159,13 +159,13 @@ RSpec.describe RegistrationPeriodsComponent, type: :component do
     it "does not put aria-current on the defaulted year link" do
       render_inline(subject)
 
-      expect(rendered_content).not_to have_css('a.x-govuk-sub-navigation__link[aria-current="true"]', exact_text: "2027 / 2028")
+      expect(rendered_content).to have_no_css('a.x-govuk-sub-navigation__link[aria-current="true"]', exact_text: "2027 / 2028")
     end
 
     it "does not mark any leaf as current" do
       render_inline(subject)
 
-      expect(rendered_content).not_to have_css("li.x-govuk-sub-navigation__section-item--current a[aria-current='true']")
+      expect(rendered_content).to have_no_css("li.x-govuk-sub-navigation__section-item--current a[aria-current='true']")
     end
 
     it "does not mark a non-matching year as current" do

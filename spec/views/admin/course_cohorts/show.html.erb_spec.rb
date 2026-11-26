@@ -48,11 +48,11 @@ RSpec.describe "admin/course_cohorts/show.html.erb", type: :view do
   end
 
   it "does not show an edit button for milestones" do
-    expect(rendered_page).not_to have_link("Edit")
+    expect(rendered_page).to have_no_link("Edit")
   end
 
   it "shows provider course profiles" do
-    expect(rendered_page).to have_content("Provider course profiles")
+    expect(rendered_page).to have_text("Provider course profiles")
     expect(rendered).to include("https://example.com/course")
     expect(rendered).to include("provider@example.com")
   end

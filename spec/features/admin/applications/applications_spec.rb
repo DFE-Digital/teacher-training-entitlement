@@ -197,7 +197,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect(page).to have_css("h1", text: "Application details")
     within(".govuk-summary-list__row", text: "Application status") do |summary_list_row|
       expect(summary_list_row).to have_text "Pending"
-      expect(summary_list_row).not_to have_link("Change")
+      expect(summary_list_row).to have_no_link("Change")
     end
   end
 
@@ -268,7 +268,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
     expect_mail_to_have_been_sent(to: application.user.email, template_id: GenericMailer::TEMPLATE_ID)
 
     expect(page).to have_css("h1", text: "Application details")
-    expect(page).to have_content("Funding eligibility has been changed to ‘Yes’")
+    expect(page).to have_text("Funding eligibility has been changed to ‘Yes’")
     within(".govuk-summary-list__row", text: "Eligible for funding") do |summary_list_row|
       expect(summary_list_row).to have_text "Yes"
       click_link("Change")

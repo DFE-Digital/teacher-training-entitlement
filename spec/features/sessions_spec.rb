@@ -7,11 +7,11 @@ RSpec.feature "Sessions", type: :feature do
 
   scenario "signing in when user does not exist" do
     visit "/sign-in"
-    expect(page).to have_content("Sign in")
+    expect(page).to have_text("Sign in")
     page.fill_in "What’s your email address?", with: "user@example.com"
     page.click_button "Sign in"
 
-    expect(page).to have_content("Check your email")
+    expect(page).to have_text("Check your email")
     expect(ActionMailer::Base.deliveries.size).to be_zero
   end
 
@@ -20,16 +20,16 @@ RSpec.feature "Sessions", type: :feature do
     FactoryBot.create(:admin, email: "user@example.com")
 
     visit "/sign-in"
-    expect(page).to have_content("Sign in")
+    expect(page).to have_text("Sign in")
     page.fill_in "What’s your email address?", with: " User@example.com "
     page.click_button "Sign in"
 
-    expect(page).to have_content("Check your email")
+    expect(page).to have_text("Check your email")
 
     page.fill_in "Enter your code", with: otp_code
     page.click_button "Sign in"
 
-    expect(page).to have_content("Dashboards")
+    expect(page).to have_text("Dashboards")
   end
 
   scenario "signing in with a lowercase code with look-alike characters" do
@@ -42,6 +42,6 @@ RSpec.feature "Sessions", type: :feature do
     page.fill_in "Enter your code", with: "o123abcd"
     page.click_button "Sign in"
 
-    expect(page).to have_content("Dashboards")
+    expect(page).to have_text("Dashboards")
   end
 end

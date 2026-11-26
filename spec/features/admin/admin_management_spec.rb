@@ -72,6 +72,6 @@ RSpec.feature "admin management", type: :feature do
 
   def then_the_admin_record_should_have_been_deleted_for(full_name:)
     expect(page).to have_current_path(admin_settings_admins_path)
-    expect(page).to have_content("#{full_name} deleted")
+    expect(page).to have_text("#{full_name} deleted")
   end
 end

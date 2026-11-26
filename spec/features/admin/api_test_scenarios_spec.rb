@@ -19,10 +19,11 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     sign_in_as_admin
     visit admin_path
 
-    expect(page).not_to have_link("API Test Scenarios")
+    expect(page).to have_current_path(admin_path)
+    expect(page).to have_no_link("API Test Scenarios")
 
     visit admin_settings_api_test_scenarios_path
-    expect(page).to have_content("Unauthorized")
+    expect(page).to have_text("Unauthorized")
   end
 
   scenario "super admin can view the API Test Scenarios page" do
@@ -38,9 +39,9 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
 
-    expect(page).to have_content(lead_provider.name)
+    expect(page).to have_text(lead_provider.name)
     expect(page).to have_css("strong.govuk-tag.govuk-tag--grey", text: "Not seeded")
-    expect(page).to have_content("0") # Applications count
+    expect(page).to have_text("0") # Applications count
   end
 
   scenario "super admin can seed test data for a provider", :js do
@@ -54,9 +55,9 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     end
 
     expect(page).to have_current_path(admin_settings_api_test_scenarios_path)
-    expect(page).to have_content("Success")
-    expect(page).to have_content("API test scenarios seeded successfully for #{lead_provider.name}")
-    expect(page).to have_content("Created 12 applications")
+    expect(page).to have_text("Success")
+    expect(page).to have_text("API test scenarios seeded successfully for #{lead_provider.name}")
+    expect(page).to have_text("Created 12 applications")
   end
 
   scenario "super admin sees updated status after seeding", :js do
@@ -70,7 +71,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     end
 
     expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
-    expect(page).to have_content("12") # Applications count
+    expect(page).to have_text("12") # Applications count
     expect(page).to have_button("Re-seed data")
   end
 
@@ -82,7 +83,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     visit admin_settings_api_test_scenarios_path
 
     expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
-    expect(page).to have_content("12")
+    expect(page).to have_text("12")
 
     accept_confirm do
       within("tr", text: lead_provider.name) do
@@ -90,9 +91,9 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
       end
     end
 
-    expect(page).to have_content("Success")
-    expect(page).to have_content("API test scenarios seeded successfully")
-    expect(page).to have_content("12")
+    expect(page).to have_text("Success")
+    expect(page).to have_text("API test scenarios seeded successfully")
+    expect(page).to have_text("12")
   end
 
   scenario "super admin sees confirmation dialog when seeding", :js do
@@ -106,7 +107,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
       end
     end
 
-    expect(page).to have_content("Success")
+    expect(page).to have_text("Success")
   end
 
   scenario "super admin sees confirmation dialog when re-seeding", :js do
@@ -122,7 +123,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
       end
     end
 
-    expect(page).to have_content("Success")
+    expect(page).to have_text("Success")
   end
 
   scenario "super admin can see multiple providers and their individual statuses" do
@@ -133,13 +134,13 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
 
     within("tr", text: lead_provider.name) do
       expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
-      expect(page).to have_content("12")
+      expect(page).to have_text("12")
       expect(page).to have_button("Re-seed data")
     end
 
     within("tr", text: other_lead_provider.name) do
       expect(page).to have_css("strong.govuk-tag.govuk-tag--grey", text: "Not seeded")
-      expect(page).to have_content("0")
+      expect(page).to have_text("0")
       expect(page).to have_button("Seed data")
     end
   end
@@ -161,7 +162,8 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     allow(Rails).to receive(:env).and_return("production".inquiry)
     visit admin_path
 
-    expect(page).not_to have_link("API Test Scenarios")
+    expect(page).to have_current_path(admin_path)
+    expect(page).to have_no_link("API Test Scenarios")
   end
 
   scenario "super admin cannot access page in production environment" do
@@ -178,7 +180,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     visit admin_settings_api_test_scenarios_path
 
     expect(page).to have_css(".govuk-warning-text")
-    expect(page).to have_content("Running this will delete any existing test data for the selected provider and cohort year")
+    expect(page).to have_text("Running this will delete any existing test data for the selected provider and cohort year")
   end
 
   scenario "seeded data persists across page reloads", :js do
@@ -198,7 +200,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
 
     within("tr", text: lead_provider.name) do
       expect(page).to have_css("strong.govuk-tag.govuk-tag--green", text: "Seeded")
-      expect(page).to have_content("12")
+      expect(page).to have_text("12")
     end
   end
 end

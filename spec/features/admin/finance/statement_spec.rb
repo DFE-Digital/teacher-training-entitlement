@@ -33,17 +33,17 @@ RSpec.feature "Statement", type: :feature do
 
     find("span", text: "Statement ID").click
     within("#statement-id") do
-      expect(page).to have_content(statement.ecf_id)
+      expect(page).to have_text(statement.ecf_id)
     end
 
-    expect(page).to have_content("Output payment date: #{statement.payment_date.to_fs(:govuk)}")
-    expect(page).to have_content("Payment status: #{statement.state.humanize}")
-    expect(page).to have_content("Payment run: Yes")
-    expect(page).to have_content("Milestones: started")
+    expect(page).to have_text("Output payment date: #{statement.payment_date.to_fs(:govuk)}")
+    expect(page).to have_text("Payment status: #{statement.state.humanize}")
+    expect(page).to have_text("Payment run: Yes")
+    expect(page).to have_text("Milestones: started")
 
     expect(page).to have_link("Download declarations (CSV)", href: admin_finance_assurance_report_path(statement, format: :csv))
 
-    expect(page).not_to have_text("Standalone payments")
+    expect(page).to have_no_text("Standalone payments")
   end
 
   scenario "see the contract information for all courses of a statement" do
@@ -51,7 +51,7 @@ RSpec.feature "Statement", type: :feature do
     find("span", text: "Contract Information").click
 
     within all(".govuk-details__text", visible: false).last do
-      expect(page).to have_content(course_cohort.course.name)
+      expect(page).to have_text(course_cohort.course.name)
     end
   end
 

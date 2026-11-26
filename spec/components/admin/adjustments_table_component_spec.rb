@@ -38,8 +38,8 @@ RSpec.describe Admin::AdjustmentsTableComponent, type: :component do
 
   describe "adjustment total" do
     context "when show_total is false" do
-      it { is_expected.not_to have_css "tbody th", text: t(".total") }
-      it { is_expected.not_to have_css "tbody td", text: "£50.00" }
+      it { is_expected.to have_no_css "tbody th", text: t(".total") }
+      it { is_expected.to have_no_css "tbody td", text: "£50.00" }
     end
 
     context "when show_total is true" do

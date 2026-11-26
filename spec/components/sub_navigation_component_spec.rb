@@ -84,7 +84,7 @@ RSpec.describe SubNavigationComponent, type: :component do
     selector = "li.x-govuk-sub-navigation__section-item > a.x-govuk-sub-navigation__link"
 
     expect(rendered_content).to have_css(selector, text: "This is the first page")
-    expect(rendered_content).not_to have_css(selector, text: "This is the second page")
+    expect(rendered_content).to have_no_css(selector, text: "This is the second page")
   end
 
   it "only renders the navigation nodes within the subsection" do
@@ -100,7 +100,7 @@ RSpec.describe SubNavigationComponent, type: :component do
     expect(rendered_content).to have_css(selector, text: "First part 1")
     expect(rendered_content).to have_css(selector, text: "First part 2")
 
-    expect(rendered_content).not_to have_css(selector, text: /Second/)
+    expect(rendered_content).to have_no_css(selector, text: /Second/)
   end
 
   describe "highlighting the current section" do
@@ -145,7 +145,7 @@ RSpec.describe SubNavigationComponent, type: :component do
       render_inline(subject)
 
       expect(rendered_content).to have_css("li.x-govuk-sub-navigation__section-item")
-      expect(rendered_content).not_to have_css("li.x-govuk-sub-navigation__section-item--current")
+      expect(rendered_content).to have_no_css("li.x-govuk-sub-navigation__section-item--current")
     end
   end
 

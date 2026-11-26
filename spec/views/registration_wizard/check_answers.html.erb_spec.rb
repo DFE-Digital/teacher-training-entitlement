@@ -36,7 +36,7 @@ RSpec.describe "registration_wizard/check_answers.html.erb", type: :view do
     within_course_row = rendered_page
       .all(".govuk-summary-list__row")
       .find { _1.has_css?(".govuk-summary-list__key", text: "Course", exact_text: true) }
-    expect(within_course_row).not_to have_link("Change")
+    expect(within_course_row).to have_no_link("Change")
   end
 
   it "renders a change link for answers with a change step" do

@@ -28,7 +28,7 @@ RSpec.describe "applications/applications/show.html.erb", type: :view do
   context "when application is started" do
     let(:application) { build_stubbed(:application, :started) }
 
-    it { is_expected.not_to have_link "Register with a different provider" }
+    it { is_expected.to have_no_link "Register with a different provider" }
   end
 
   describe "work details" do

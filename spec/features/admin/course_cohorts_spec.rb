@@ -28,7 +28,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
 
     click_on "Add course"
 
-    expect(page).to have_content("Course added")
+    expect(page).to have_text("Course added")
 
     course_cohort = cohort.course_cohorts.find_by(course:)
     expect(course_cohort).to be_present
@@ -54,7 +54,7 @@ RSpec.feature "Adding a course to a cohort", type: :feature do
 
     click_on "Add course"
 
-    expect(page).to have_content("Course added")
+    expect(page).to have_text("Course added")
 
     course_cohort = cohort.course_cohorts.find_by(course:)
     course_cohort_provider = course_cohort.course_cohort_providers.find_by(lead_provider: lead_provider_one)

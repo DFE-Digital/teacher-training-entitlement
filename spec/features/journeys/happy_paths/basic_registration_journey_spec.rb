@@ -27,7 +27,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       page.click_button("Start now")
     end
 
-    expect(page).not_to have_content("Before you start")
+    expect(page).to have_no_text("Before you start")
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
       expect(page).to have_text("When do you want to start a course?")
