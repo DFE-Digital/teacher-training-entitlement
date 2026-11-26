@@ -126,6 +126,7 @@ RSpec.feature "Listing and viewing applications", type: :feature do
 
     within(summary_lists[1]) do |summary_list|
       expect(summary_list).to have_summary_item("Eligible for funding", "Yes")
+      expect(summary_list).to have_summary_item("Uplift incentive", "No")
       expect(summary_list).to have_summary_item("Funded place", "Yes")
       expect(summary_list).to have_summary_item("Status code", application.funding_eligibility.titleize)
       expect(summary_list).to have_summary_item("Schedule cohort", application.cohort.name)
@@ -139,6 +140,27 @@ RSpec.feature "Listing and viewing applications", type: :feature do
       expect(summary_list).to have_summary_item("UK Provider Reference Number (UKPRN)", application.institution.ukprn)
       expect(summary_list).to have_summary_item("Unique reference number (URN)", application.institution.urn)
       expect(summary_list).to have_summary_item("Workplace in England", "Yes")
+    end
+  end
+
+  scenario "viewing the uplift incentive for a course with uplift details" do
+    uplift_application, other_application = applications_in_order.first(2)
+    [uplift_application, other_application].each { |application| application.update!(funding_eligibility: "funded") }
+    course = uplift_application.course
+
+    create(:course_uplift_institution, course:, institution: uplift_application.institution)
+    create(:contract_year, :generic, course:, lead_provider: uplift_application.lead_provider, uplift_percentage: 0.15)
+
+    visit(admin_application_path(uplift_application))
+
+    within(".govuk-summary-card", text: "Funding eligibility") do |summary_card|
+      expect(summary_card).to have_summary_item("Uplift incentive", "Yes")
+    end
+
+    visit(admin_application_path(other_application))
+
+    within(".govuk-summary-card", text: "Funding eligibility") do |summary_card|
+      expect(summary_card).to have_summary_item("Uplift incentive", "No")
     end
   end
 
