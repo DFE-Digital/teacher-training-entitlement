@@ -41,12 +41,12 @@ erDiagram
   }
   DeliveryPartnership {
     integer id
+    integer course_cohort_id
     datetime created_at
     integer delivery_partner_id
     integer lead_provider_id
     datetime updated_at
     integer course_id
-    datetime archived_at
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
@@ -82,6 +82,19 @@ erDiagram
   }
   CourseCohort }o--|| Course : belongs_to
   CourseCohort }o--|| Cohort : belongs_to
+  Course {
+    integer id
+    enum course_group
+    datetime created_at
+    text description
+    boolean display
+    uuid ecf_id
+    string identifier
+    text name
+    integer position
+    string short_code
+    datetime updated_at
+  }
   Cohort {
     integer id
     datetime created_at
@@ -184,19 +197,6 @@ erDiagram
     datetime updated_at
     string alpha3_country_code
     string subdivision_code
-  }
-  Course {
-    integer id
-    enum course_group
-    datetime created_at
-    text description
-    boolean display
-    uuid ecf_id
-    string identifier
-    text name
-    integer position
-    string short_code
-    datetime updated_at
   }
   User {
     integer id
