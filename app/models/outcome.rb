@@ -1,4 +1,6 @@
-class ParticipantOutcome < ApplicationRecord
+class Outcome < ApplicationRecord
+  self.table_name = "participant_outcomes"
+
   self.ignored_columns = %i[
     qualified_teachers_api_request_successful
     sent_to_qualified_teachers_api_at

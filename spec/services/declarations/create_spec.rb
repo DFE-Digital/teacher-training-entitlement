@@ -94,7 +94,7 @@ RSpec.describe Declarations::Create, type: :model do
       end
 
       it "does not create an participant outcome" do
-        expect { service.call }.not_to change(ParticipantOutcome, :count)
+        expect { service.call }.not_to change(Outcome, :count)
       end
 
       context "when no statement exist" do
@@ -184,7 +184,7 @@ RSpec.describe Declarations::Create, type: :model do
 
     describe "happy paths" do
       it { expect { service.call }.to change(Declaration, :count).by(1) }
-      it { expect { service.call }.to change(ParticipantOutcome, :count).by(1) }
+      it { expect { service.call }.to change(Outcome, :count).by(1) }
 
       context "when no statement exist" do
         let(:statement) { nil }

@@ -21,8 +21,8 @@ PARTICIPANT_OUTCOME = {
             description: "The state of the outcome (passed or failed)",
             nullable: false,
             type: :string,
-            example: ParticipantOutcome.states.keys.first,
-            enum: ParticipantOutcome.states.keys,
+            example: Outcome.states.keys.first,
+            enum: Outcome.states.keys,
           },
           completion_date: {
             description: "The date the participant received the assessment outcome for this course",

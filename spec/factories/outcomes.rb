@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :participant_outcome, aliases: [:outcome] do
+  factory :outcome, aliases: [:participant_outcome] do
     transient do
       user { create(:user) }
       lead_provider { create(:lead_provider) }

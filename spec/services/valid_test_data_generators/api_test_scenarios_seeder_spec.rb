@@ -97,7 +97,7 @@ RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
 
       it "creates passed and failed outcomes" do
         completed_declarations = Declaration.completed.where(application: lead_provider.applications)
-        outcomes = ParticipantOutcome.where(declaration: completed_declarations)
+        outcomes = Outcome.where(declaration: completed_declarations)
 
         expect(outcomes.pluck(:state)).to contain_exactly("passed", "failed", "passed")
       end

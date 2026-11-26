@@ -7,7 +7,7 @@ module ValidTestDataGenerators
   # NOTE: the change-provider scenario is flagged via `change_provider` in
   # db/seeds/api_test_scenarios.yml
   class APITestScenariosSeeder
-    Outcome = Data.define(:success, :error, :applications_count, :academic_year) do
+    TestOutcome = Data.define(:success, :error, :applications_count, :academic_year) do
       def initialize(success:, error: nil, applications_count: nil, academic_year: nil)
         super(success:, error:, applications_count:, academic_year:)
       end
@@ -68,7 +68,7 @@ module ValidTestDataGenerators
 
     def call
       unless Rails.env.in?(%w[development review sandbox])
-        return Outcome[success: false, error: "Only available in development, review, and sandbox environments"]
+        return TestOutcome[success: false, error: "Only available in development, review, and sandbox environments"]
       end
 
       ActiveRecord::Base.transaction do
@@ -76,7 +76,7 @@ module ValidTestDataGenerators
         test_scenarios_create_data!
       end
 
-      Outcome[
+      TestOutcome[
         success: true,
         applications_count: applications_data.size,
         academic_year:,
@@ -86,7 +86,7 @@ module ValidTestDataGenerators
       logger.error e.backtrace.join("\n")
 
       Sentry.capture_exception(e)
-      Outcome[success: false, error: e.message]
+      TestOutcome[success: false, error: e.message]
     end
 
     def custom_data(nb_cohort:, nb_app_per_state:)
@@ -156,7 +156,7 @@ module ValidTestDataGenerators
         declaration_ids = declarations.pluck(:id)
         statement_ids = declarations.distinct.pluck(:statement_id)
 
-        ParticipantOutcome.where(declaration_id: declaration_ids).delete_all
+        Outcome.where(declaration_id: declaration_ids).delete_all
         declarations.delete_all
         ApplicationEvent.where(application_id: application_ids).delete_all
         Application.where(id: application_ids).delete_all
@@ -410,7 +410,7 @@ module ValidTestDataGenerators
 
     def create_completed_declaration(application:, statement:, declaration_date: nil, has_passed: true)
       create_declaration(application:, statement:, declaration_type: :completed, declaration_date:).tap do |declaration|
-        ParticipantOutcome
+        Outcome
           .new(declaration:, state: has_passed ? "passed" : "failed", completion_date: declaration.declaration_date)
           .save!(validate: false)
       end

@@ -10,7 +10,7 @@ module ParticipantOutcomes
     def void_outcome
       return unless voidable_outcome?
 
-      ParticipantOutcome.create!(
+      Outcome.create!(
         declaration:,
         completion_date: declaration_date,
         state: "voided",

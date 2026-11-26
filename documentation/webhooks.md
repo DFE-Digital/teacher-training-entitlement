@@ -16,7 +16,7 @@ Routes live in `config/routes/webhooks.rb`, drawn from `config/routes.rb`
 ## `GET /webhooks/trs/qualifications/{trn}`
 
 Returns the qualifications/certificates a teacher has **passed**, newest first. The
-controller looks the participant up by TRN, takes their `ParticipantOutcome`
+controller looks the participant up by TRN, takes their `Outcome`
 rows in the `passed` state ordered by `completion_date` descending, and
 renders them through `Webhooks::QualificationsSerializer` under a `"data"`
 root:
