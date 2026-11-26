@@ -202,6 +202,35 @@ RSpec.describe User do
     end
   end
 
+  describe "#copy_email_to_applications!" do
+    let(:user) { create(:user, email: "new@example.com") }
+    let!(:outdated_application) { create(:application, user:, email: "old@example.com", updated_at: 1.day.ago) }
+    let!(:current_application) { create(:application, :accepted, user:, email: "new@example.com", course: create(:course), updated_at: 1.day.ago) }
+
+    it "updates applications with a different email without changing updated_at" do
+      expect { user.copy_email_to_applications! }
+        .to change { outdated_application.reload.email }.from("old@example.com").to("new@example.com")
+        .and(not_change { outdated_application.reload.updated_at })
+    end
+
+    it "records the change in the application's history", :versioning do
+      expect { user.copy_email_to_applications! }
+        .to change { outdated_application.versions.count }.by(1)
+    end
+
+    it "leaves applications that already have the email untouched", :versioning do
+      expect { user.copy_email_to_applications! }
+        .not_to(change { current_application.versions.count })
+    end
+
+    it "does not touch other users' applications" do
+      other_application = create(:application, email: "someone@example.com")
+
+      expect { user.copy_email_to_applications! }
+        .not_to(change { other_application.reload.email })
+    end
+  end
+
   describe "#change_unsubscribe_key_on_update_email_status" do
     let(:user) { create(:user, email_updates_unsubscribe_key: "old-key") }
 

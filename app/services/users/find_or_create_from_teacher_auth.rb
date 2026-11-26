@@ -15,6 +15,14 @@ module Users
     attr_reader :one_login_id, :trn, :email, :full_name, :date_of_birth, :feature_flag_id, :refresh_token
 
     def call
+      find_or_create_user.tap do |user|
+        PaperTrail.request(whodunnit: "Public User #{user.id}") { user.copy_email_to_applications! }
+      end
+    end
+
+  private
+
+    def find_or_create_user
       user_matched_using_trn = matching_users.first
 
       if user_matched_using_trn
@@ -35,8 +43,6 @@ module Users
       merge_and_archive_clashing_email_user(nil)
       create_user_with_provider_data
     end
-
-  private
 
     def matching_users
       return [] if trn.blank?

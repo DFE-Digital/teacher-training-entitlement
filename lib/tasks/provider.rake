@@ -61,6 +61,7 @@ namespace :provider do
 
       # Update the email
       if user.update!(email: new_email)
+        user.copy_email_to_applications!
         updated_count += 1
       else
         failed_count += 1

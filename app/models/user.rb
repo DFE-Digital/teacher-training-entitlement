@@ -109,6 +109,15 @@ class User < ApplicationRecord
     applications.previous_valid_applications.empty?
   end
 
+  def copy_email_to_applications!
+    applications.where("applications.email IS DISTINCT FROM ?", email).find_each do |application|
+      application.email = email
+      # Runs on every sign-in, so an unrelated invalid application must not block it, and the
+      # API's updated_since filter tracks application changes rather than login changes.
+      application.save!(validate: false, touch: false)
+    end
+  end
+
 private
 
   def change_unsubscribe_key_on_update_email_status
