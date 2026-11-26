@@ -2,13 +2,14 @@ require "rails_helper"
 
 RSpec.describe Crons::SendDeferralExpiringNotificationEmailsJob, type: :job do
   describe "#perform" do
-    let(:application) { create(:application, :deferred) }
+    let(:application) { create(:application, :deferred, email: "application@example.com") }
 
     it "enqueues email for deferrals at 11 months" do
       application.state_changes.last.update!(created_at: 11.months.ago)
 
       expect { described_class.perform_now }
         .to have_enqueued_mail(GenericMailer, :deferral_expiring_notification)
+        .with(a_hash_including(params: a_hash_including(to: "application@example.com")))
     end
 
     it "skips recent deferrals" do

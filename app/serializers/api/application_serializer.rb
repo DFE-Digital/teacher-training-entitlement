@@ -8,7 +8,7 @@ module API
 
       view :v1 do
         field(:course_identifier) { |a| a.course.identifier }
-        field(:email) { |a| a.user.email }
+        field(:email)
         field(:email_validated) { true }
         field(:full_name) { |a| a.user.full_name }
         field(:funding_choice)

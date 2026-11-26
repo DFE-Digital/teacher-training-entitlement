@@ -11,7 +11,7 @@ class Crons::SendRegistrationOpenNotificationEmailsJob < CronJob
         next if already_notified?(application, cohort)
 
         GenericMailer.with(
-          to: application.user.email,
+          to: application.email,
           full_name: application.user.full_name,
           course_name: application.course.name,
           next_course_start_date: cohort.registration_starts_at.to_fs(:govuk),

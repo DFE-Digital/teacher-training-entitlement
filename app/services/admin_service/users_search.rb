@@ -14,6 +14,7 @@ class AdminService::UsersSearch
       users = User.arel_table
 
       chain = chain.where(users[:email].matches("%#{q}%"))
+      chain = chain.or(default_scope.where(Application.arel_table[:email].matches("%#{q}%")))
       chain = chain.or(default_scope.where(users[:full_name].matches("%#{q}%")))
       chain = chain.or(default_scope.where(users[:preferred_name].matches("%#{q}%")))
       chain = chain.or(default_scope.where(ecf_id: q))

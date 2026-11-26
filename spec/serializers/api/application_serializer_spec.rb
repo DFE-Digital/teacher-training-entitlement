@@ -180,9 +180,10 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
         expect(attributes["participant_id"]).to eq(user.ecf_id)
       end
 
-      it "serializes the `email`" do
-        user.email = "email@address.com"
-        expect(attributes["email"]).to eq(user.email)
+      it "serializes the application's `email` rather than the user's" do
+        application.email = "application@example.com"
+        user.email = "user@example.com"
+        expect(attributes["email"]).to eq("application@example.com")
       end
 
       it "serializes the `full_name`" do

@@ -15,6 +15,7 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
         :application,
         :deferred,
         course_cohort:,
+        email: "application@example.com",
       )
     end
 
@@ -23,6 +24,7 @@ RSpec.describe Crons::SendRegistrationOpenNotificationEmailsJob, type: :job do
     it "enqueues email for deferred applications when registration opened yesterday" do
       expect { described_class.perform_now }
         .to have_enqueued_mail(GenericMailer, :registration_open_notification)
+        .with(a_hash_including(params: a_hash_including(to: "application@example.com")))
     end
 
     it "records a notification event for the cohort and course" do

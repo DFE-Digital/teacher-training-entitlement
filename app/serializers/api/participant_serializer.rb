@@ -18,7 +18,7 @@ module API
         field(:enrolments) do |object, options|
           applications(object, options).map do |application|
             {
-              email: object.email,
+              email: application.email,
               course_identifier: application.course.identifier,
               schedule_identifier: application.course_cohort.schedule_identifier,
               cohort: application.course_cohort.academic_year,
