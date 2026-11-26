@@ -31,7 +31,7 @@ namespace :declarations do
       Course.find_or_create_by!(identifier: "tte-early-years") do |record|
         record.name = "NPD excellence in reception teaching"
         record.short_code = "NPDEIRT"
-        record.course_group = "reception"
+        record.course_group = "npd"
         record.ecf_id = SecureRandom.uuid
       end,
       Course.find_or_create_by!(identifier: "npd-send") do |record|
