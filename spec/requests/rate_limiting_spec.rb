@@ -67,6 +67,34 @@ RSpec.describe "Rate limiting" do
     end
   end
 
+  describe "throttled response body", :rack_attack do
+    let(:auth_token) { APIToken.create_with_random_token!(lead_provider: create(:lead_provider)) }
+    let(:throttle) { Rack::Attack.throttles["API requests by auth token"] }
+
+    before do
+      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
+      allow(Rack::Attack.cache).to receive(:store) { memory_store }
+      allow(throttle).to receive(:limit).and_return(1)
+      allow(Rails.logger).to receive(:warn)
+      freeze_time
+      set_auth_token(auth_token)
+    end
+
+    it "is a JSON:API error document for API V2" do
+      2.times { get api_v2_applications_path }
+
+      expect([response.status, response.media_type, JSON.parse(response.body)]).to eq(
+        [429, "application/vnd.api+json", { "errors" => [{ "status" => "429", "title" => "Too many requests" }] }],
+      )
+    end
+
+    it "keeps the default response for API V1" do
+      2.times { get api_v1_applications_path }
+
+      expect([response.status, response.body]).to eq([429, "Retry later\n"])
+    end
+  end
+
   it_behaves_like "a rate limited endpoint", "non-API requests by ip" do
     def perform_request
       get root_path

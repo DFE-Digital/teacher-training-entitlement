@@ -1,3 +1,5 @@
+require "api_v2_path"
+
 module Middleware
   class ApiAuthentication
     include ActionController::HttpAuthentication::Token
@@ -10,7 +12,7 @@ module Middleware
       request = ActionDispatch::Request.new(env)
       if Rack::Request.new(env).path.match?(%r{^/+api/v\d+(/.*)?$})
         authenticate_lead_provider(env, request)
-        return unauthenticated if env["current_lead_provider"].nil?
+        return unauthenticated(request.path) if env["current_lead_provider"].nil?
       end
       @app.call(env)
     end
@@ -41,11 +43,21 @@ module Middleware
       nil
     end
 
-    def unauthenticated
+    def unauthenticated(path)
+      return unauthenticated_json_api if APIV2Path.match?(path)
+
       Rack::Response.new(
         JSON.generate({ error: I18n.t(:unauthorized) }),
         401,
         { "Content-Type" => "application/json" },
+      ).to_a
+    end
+
+    def unauthenticated_json_api
+      Rack::Response.new(
+        JSON.generate({ errors: [{ status: "401", title: I18n.t(:unauthorized) }] }),
+        401,
+        { "Content-Type" => "application/vnd.api+json" },
       ).to_a
     end
   end

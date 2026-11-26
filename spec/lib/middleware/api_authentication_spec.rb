@@ -33,6 +33,28 @@ RSpec.describe Middleware::ApiAuthentication, type: :request do
     end
   end
 
+  describe "unauthenticated requests" do
+    subject(:response) { request.get(path) }
+
+    context "with a V2 path" do
+      let(:path) { "/api/v2/applications" }
+
+      it "returns a JSON:API errors document" do
+        expect([response.status, response.content_type, JSON.parse(response.body)]).to eq(
+          [401, "application/vnd.api+json", { "errors" => [{ "status" => "401", "title" => I18n.t(:unauthorized) }] }],
+        )
+      end
+    end
+
+    context "with a V1 path" do
+      let(:path) { api_v1_applications_path }
+
+      it "keeps the V1 error envelope" do
+        expect([response.status, JSON.parse(response.body)]).to eq([401, { "error" => I18n.t(:unauthorized) }])
+      end
+    end
+  end
+
   describe "non API requests" do
     let(:path) { root_path }
 

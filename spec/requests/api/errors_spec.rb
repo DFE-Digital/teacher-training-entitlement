@@ -11,6 +11,11 @@ RSpec.describe "Error responses", type: :request do
       expect(response.content_type).to match(/application\/json.*/)
     end
 
+    it "keeps the V1 envelope for unknown V1 paths" do
+      api_get "/api/v1/thisdoesnotexist"
+      expect(JSON.parse(response.body)).to have_key("error")
+    end
+
     context "when the request is for API guidance docs" do
       it "returns an HTML response" do
         api_get "/api/guidance/thisdoesnotexist"
@@ -53,6 +58,43 @@ RSpec.describe "Error responses", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to eq %({"error":"Unprocessable entity"})
       expect(response.content_type).to match(/application\/json.*/)
+    end
+  end
+
+  describe "API V2 errors rendered by the exceptions app" do
+    include_context "with API V2 enabled"
+
+    let(:lead_provider) { create(:lead_provider) }
+
+    {
+      StandardError => [500, :internal_server_error],
+      ActiveRecord::RecordInvalid => [422, :unprocessable_content],
+      ActionController::RoutingError.new("not found") => [404, :resource_not_found],
+    }.each do |exception, (status, title_key)|
+      it "returns a JSON:API #{status} titled from the #{title_key} key for #{exception}" do
+        allow(API::V2::Applications::Query).to receive(:new).and_raise(exception)
+        api_get "/api/v2/applications", lead_provider:, params: { filter: { course: "x" } }
+
+        expect([response.status, response.media_type, JSON.parse(response.body)]).to eq(
+          [status, "application/vnd.api+json", { "errors" => [{ "status" => status.to_s, "title" => I18n.t(title_key) }] }],
+        )
+      end
+    end
+
+    it "titles a 404 the same as a not found error rendered by a V2 controller" do
+      api_get("/api/v2/applications/#{SecureRandom.uuid}", lead_provider:)
+      controller_title = JSON.parse(response.body)["errors"].first["title"]
+      allow(API::V2::Applications::Query).to receive(:new).and_raise(ActionController::RoutingError.new("not found"))
+      api_get("/api/v2/applications", lead_provider:)
+
+      expect(JSON.parse(response.body)["errors"].first["title"]).to eq(controller_title)
+    end
+
+    it "keeps the V1 envelope for V1 server errors" do
+      allow(Applications::Query).to receive(:new).and_raise(StandardError)
+      api_get "/api/v1/applications"
+
+      expect(JSON.parse(response.body)).to eq("error" => "Internal server error")
     end
   end
 end

@@ -112,3 +112,5 @@ end
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 
 gem "dfe-wizard", "~> 1.0.0", github: "DFE-Digital/dfe-wizard", require: "dfe/wizard"
+
+gem "jsonapi-serializer", "~> 2.2"
