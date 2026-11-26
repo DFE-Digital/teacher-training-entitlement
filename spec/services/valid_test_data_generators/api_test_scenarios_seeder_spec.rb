@@ -3,7 +3,8 @@
 require "rails_helper"
 
 RSpec.describe ValidTestDataGenerators::APITestScenariosSeeder do
-  let(:seeder) { described_class.new(lead_provider:, academic_year:) }
+  let(:seeder) { described_class.new(lead_provider:, course:, academic_year:) }
+  let(:course) { Course.find_by!(identifier: Course::TTE_EARLY_YEARS) }
   let(:lead_provider) { create(:lead_provider) }
   let(:academic_year) { 2026 }
 

@@ -97,7 +97,6 @@ FactoryBot.define do
       funding_eligibility { FundingEligibility::PREVIOUSLY_FUNDED }
 
       after(:create) do |application|
-        course = application.course.rebranded_alternative_courses.first
         previous_registration_starts_at = application.cohort.registration_starts_at.prev_month
         previous_registration_starts_at = application.cohort.registration_starts_at.next_month if previous_registration_starts_at.year < 2021
 
@@ -115,7 +114,7 @@ FactoryBot.define do
                                    registration_starts_at:)
         end
 
-        create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, user: application.user, course:, registration_starts_at: previous_cohort.registration_starts_at)
+        create(:application, :accepted, :eligible_for_funding, :for_cohort_starting_on, user: application.user, course: application.course, registration_starts_at: previous_cohort.registration_starts_at)
       end
     end
 

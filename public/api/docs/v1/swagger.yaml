@@ -1539,6 +1539,8 @@ components:
               example: tte-early-years
               enum:
               - tte-early-years
+              - npd-send-eip
+              - npd-send-eipl
             email:
               description: The email address registered for this participant
               type: string
@@ -1978,6 +1980,8 @@ components:
                     example: tte-early-years
                     enum:
                     - tte-early-years
+                    - npd-send-eip
+                    - npd-send-eipl
                   schedule_identifier:
                     description: The ternmidentifier for the participant
                     nullable: true
@@ -2172,6 +2176,8 @@ components:
               example: tte-early-years
               enum:
               - tte-early-years
+              - npd-send-eip
+              - npd-send-eipl
             participant_id:
               description: The unique identifier of this participant
               type: string
@@ -2225,6 +2231,8 @@ components:
                   example: tte-early-years
                   enum:
                   - tte-early-years
+                  - npd-send-eip
+                  - npd-send-eipl
                 state:
                   description: The state of the outcome (passed or failed)
                   required: true
@@ -2482,6 +2490,8 @@ components:
               example: tte-early-years
               enum:
               - tte-early-years
+              - npd-send-eip
+              - npd-send-eipl
             declaration_date:
               description: The event declaration date
               type: string
@@ -2827,6 +2837,8 @@ components:
               example: tte-early-years
               enum:
               - tte-early-years
+              - npd-send-eip
+              - npd-send-eipl
             schedule_identifier:
               description: The new schedule of the participant
               nullable: true

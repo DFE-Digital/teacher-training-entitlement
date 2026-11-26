@@ -1,0 +1,5 @@
+<%= form.govuk_radio_buttons_fieldset("When do you want to start a course?") do %>
+  <% step.answer_options.each do |option| %>
+    <%= form.govuk_radio_button(step.answer_field_name, option.value, label: { text: option.name }, hint: { text: option.hint }) %>
+  <% end %>
+<% end %>
