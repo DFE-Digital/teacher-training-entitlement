@@ -174,6 +174,7 @@ erDiagram
     integer user_id
     date training_starts_at
     jsonb registration_data
+    string email
   }
   Application }o--|| User : belongs_to
   Application }o--|| CourseCohort : belongs_to

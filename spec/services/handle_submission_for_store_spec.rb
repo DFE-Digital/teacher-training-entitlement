@@ -100,6 +100,7 @@ RSpec.describe HandleSubmissionForStore do
         expect(stable_as_json(last_application)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
+          "email" => user.email,
           "funded_place" => nil,
           "funding_choice" => nil,
           "funding_eligibility" => "funded",

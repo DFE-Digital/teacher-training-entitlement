@@ -4,6 +4,8 @@ shared:
     - registered_person_name
   :registration_interests:
     - email
+  :applications:
+    - email
   :users:
     - trn
     - email

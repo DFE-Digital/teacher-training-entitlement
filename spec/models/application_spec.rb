@@ -112,6 +112,8 @@ RSpec.describe Application do
         .with_message("ECF ID must be unique")
     }
 
+    it { is_expected.to validate_presence_of(:email).with_message("Enter an email address") }
+
     context "when the cohort has a funding cap" do
       let(:cohort) { create(:cohort, :current, :with_funding_cap) }
 
@@ -157,14 +159,6 @@ RSpec.describe Application do
         employer: "employer",
       ).backed_by_column_of_type(:enum).with_suffix
     }
-  end
-
-  describe "#email" do
-    it "returns the user's email" do
-      application = build(:application)
-
-      expect(application.email).to eq(application.user.email)
-    end
   end
 
   describe "#can_change_provider?" do
@@ -219,10 +213,16 @@ RSpec.describe Application do
 
     describe ".with_email" do
       it "returns applications whose email matches" do
-        application = create(:application)
+        application = create(:application, email: "application@example.com")
         create(:application)
 
-        expect(described_class.with_email(application.email)).to contain_exactly(application)
+        expect(described_class.with_email("application@example.com")).to contain_exactly(application)
+      end
+
+      it "does not match on the user's email" do
+        application = create(:application, email: "application@example.com")
+
+        expect(described_class.with_email(application.user.email)).to be_empty
       end
     end
 

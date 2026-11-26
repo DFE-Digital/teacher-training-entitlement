@@ -92,6 +92,7 @@ namespace :declarations do
 
         application = Application.create!(
           user:,
+          email: user.email,
           course_cohort:,
           institution:,
           status: Application::PENDING,
@@ -133,7 +134,7 @@ namespace :declarations do
       puts "Started milestone: #{setup[:started_milestone].id}"
       puts "Completed milestone: #{setup[:completed_milestone].id}"
       puts "Accepted applications:"
-      setup[:applications].each { |application| puts "- #{application.id} / #{application.ecf_id} / #{application.user.email}" }
+      setup[:applications].each { |application| puts "- #{application.id} / #{application.ecf_id} / #{application.email}" }
     end
   end
 end

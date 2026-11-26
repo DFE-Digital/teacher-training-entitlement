@@ -200,6 +200,8 @@ en:
             ecf_id:
               blank: Enter an ECF ID
               taken: ECF ID must be unique
+            email:
+              blank: Enter an email address
         application_state:
           attributes:
             ecf_id:

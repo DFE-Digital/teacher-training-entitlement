@@ -199,6 +199,7 @@ shared:
     - funded_place
     - training_starts_at
     - registration_data
+    - email
   :users:
     - id
     - created_at
