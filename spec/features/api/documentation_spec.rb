@@ -3,7 +3,7 @@ require "api/version"
 
 RSpec.feature "API documentation", type: :feature do
   API::Version.all.each do |version|
-    scenario "viewing the #{version} API documentation" do
+    scenario "viewing the #{version} API documentation", :js do
       visit "/api/docs/#{version}"
 
       expect(page).to have_css(".title", text: "Teacher Training Entitlement (TTE) API")

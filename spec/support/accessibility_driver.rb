@@ -24,7 +24,7 @@ RSpec.shared_context "with axe driver" do
     Capybara.current_driver = :selenium_headless
     example.run
   ensure
-    Capybara.current_driver = :cuprite
+    Capybara.current_driver = Capybara.default_driver
   end
 end
 

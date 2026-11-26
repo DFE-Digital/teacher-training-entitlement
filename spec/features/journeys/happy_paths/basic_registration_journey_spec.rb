@@ -15,7 +15,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
     scenario("registration journey (with JS)") { run_scenario(js: true) }
   end
 
-  context "when JavaScript is disabled", :no_js do
+  context "when JavaScript is disabled" do
     scenario("registration journey (without JS)") { run_scenario(js: false) }
   end
 

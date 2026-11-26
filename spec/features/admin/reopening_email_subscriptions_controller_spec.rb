@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Reopening Email Subscription Management", :rack_test_driver, type: :feature do
+RSpec.feature "Reopening Email Subscription Management", type: :feature do
   include Helpers::AdminLogin
 
   let(:super_admin) { create(:super_admin) }

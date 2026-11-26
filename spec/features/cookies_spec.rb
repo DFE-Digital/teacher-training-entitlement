@@ -10,7 +10,7 @@ RSpec.feature "Cookies", type: :feature do
     expect(page).to have_content("Cookies are small files saved on your phone, tablet or computer when you visit a website.")
   end
 
-  scenario "when rejecting cookies" do
+  scenario "when rejecting cookies", :js do
     visit "/"
     expect(page).to have_content("We use some essential cookies to make this service work.")
     click_button("Reject additional cookies")
@@ -21,7 +21,7 @@ RSpec.feature "Cookies", type: :feature do
     expect(page).not_to have_content("You’ve rejected additional cookies")
   end
 
-  scenario "when accepting cookies" do
+  scenario "when accepting cookies", :js do
     visit "/"
 
     expect(page).to have_content("We use some essential cookies to make this service work.")

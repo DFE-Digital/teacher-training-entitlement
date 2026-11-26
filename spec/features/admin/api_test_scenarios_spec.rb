@@ -43,7 +43,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     expect(page).to have_content("0") # Applications count
   end
 
-  scenario "super admin can seed test data for a provider" do
+  scenario "super admin can seed test data for a provider", :js do
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
 
@@ -59,7 +59,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     expect(page).to have_content("Created 12 applications")
   end
 
-  scenario "super admin sees updated status after seeding" do
+  scenario "super admin sees updated status after seeding", :js do
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
 
@@ -74,7 +74,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     expect(page).to have_button("Re-seed data")
   end
 
-  scenario "super admin can re-seed test data for a provider" do
+  scenario "super admin can re-seed test data for a provider", :js do
     # Seed data first
     ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider: lead_provider).call
 
@@ -95,7 +95,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     expect(page).to have_content("12")
   end
 
-  scenario "super admin sees confirmation dialog when seeding" do
+  scenario "super admin sees confirmation dialog when seeding", :js do
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
 
@@ -109,7 +109,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     expect(page).to have_content("Success")
   end
 
-  scenario "super admin sees confirmation dialog when re-seeding" do
+  scenario "super admin sees confirmation dialog when re-seeding", :js do
     # Seed data first
     ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider: lead_provider).call
 
@@ -181,7 +181,7 @@ RSpec.feature "Administering API Test Scenarios", :revisit, type: :feature do
     expect(page).to have_content("Running this will delete any existing test data for the selected provider and cohort year")
   end
 
-  scenario "seeded data persists across page reloads" do
+  scenario "seeded data persists across page reloads", :js do
     sign_in_as_super_admin
     visit admin_settings_api_test_scenarios_path
 

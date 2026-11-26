@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "admin", :rack_test_driver, type: :feature do
+RSpec.feature "admin", type: :feature do
   include Helpers::AdminLogin
   include_context "Stub Teacher Auth Responses"
 
