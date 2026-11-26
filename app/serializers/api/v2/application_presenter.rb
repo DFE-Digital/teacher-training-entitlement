@@ -71,7 +71,7 @@ module API
       def funding
         {
           eligible: application.eligible_for_funding?,
-          uplift: nil,
+          uplift: application.funding_uplift_eligible?,
           confirmed: application.funded_place,
           choice: application.funding_choice || DEFAULT_FUNDING_CHOICE,
           reason: application.funding_ineligible_reason,
