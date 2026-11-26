@@ -8,7 +8,7 @@ RSpec.feature "Reopening Email Subscription Management", type: :feature do
   before do
     sign_in_as(super_admin)
     Cohort.current
-    create :user, email_updates_status: User::EMAIL_NPD_REGISTRATION_OPEN, email: "example@example.org", full_name: "John Doe"
+    create :email_update_subscription, email: "example@example.org", full_name: "John Doe"
   end
 
   scenario "unsubscribe user" do
@@ -17,6 +17,7 @@ RSpec.feature "Reopening Email Subscription Management", type: :feature do
     click_link "Unsubscribe"
     click_link "Unsubscribe"
     expect(page).to have_text("Email 'example@example.org' unsubscribed")
+    expect(EmailUpdateSubscription.count).to eq(0)
   end
 
   scenario "super admin exports users as CSV" do

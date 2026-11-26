@@ -6,6 +6,9 @@ shared:
     - email
   :applications:
     - email
+  :email_update_subscriptions:
+    - email
+    - full_name
   :users:
     - trn
     - email

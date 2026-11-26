@@ -208,8 +208,6 @@ erDiagram
     date date_of_birth
     uuid ecf_id
     string email
-    enum email_updates_status
-    string email_updates_unsubscribe_key
     string feature_flag_id
     text full_name
     text national_insurance_number

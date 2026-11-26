@@ -1,4 +1,4 @@
 <%= CSV.generate_line(["Name", "Email"], encoding: "utf-8") -%>
-<% @all_users.each do |user| %>
-  <%= CSV.generate_line([user.full_name, user.email], encoding: "utf-8") -%>
+<% @all_subscriptions.each do |subscription| %>
+  <%= CSV.generate_line([subscription.full_name, subscription.email], encoding: "utf-8") -%>
 <% end %>

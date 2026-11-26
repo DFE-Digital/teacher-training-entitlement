@@ -70,14 +70,6 @@ RSpec.describe User do
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique") }
   end
 
-  describe "enums" do
-    it {
-      expect(subject).to define_enum_for(:email_updates_status).with_values(
-        npd_registration_open: "npd_registration_open",
-      ).backed_by_column_of_type(:enum).with_suffix
-    }
-  end
-
   describe "touch_significantly_updated_at" do
     let(:user) { travel_to(1.day.ago) { create(:user, :without_significantly_updated_at) } }
     let(:significant_change) { { full_name: "New Name" } }
@@ -228,28 +220,6 @@ RSpec.describe User do
 
       expect { user.copy_email_to_applications! }
         .not_to(change { other_application.reload.email })
-    end
-  end
-
-  describe "#change_unsubscribe_key_on_update_email_status" do
-    let(:user) { create(:user, email_updates_unsubscribe_key: "old-key") }
-
-    before do
-      allow(SecureRandom).to receive(:uuid).and_return("new-key")
-    end
-
-    it "sets a new unsubscribe key when the email updates status changes" do
-      expect {
-        user.update!(email_updates_status: :npd_registration_open)
-      }.to change { user.reload.email_updates_unsubscribe_key }.from("old-key").to("new-key")
-    end
-
-    it "clears the unsubscribe key when the email updates status is cleared" do
-      user.update_columns(email_updates_status: "npd_registration_open", email_updates_unsubscribe_key: "old-key")
-
-      expect {
-        user.update!(email_updates_status: nil)
-      }.to change { user.reload.email_updates_unsubscribe_key }.from("old-key").to(nil)
     end
   end
 

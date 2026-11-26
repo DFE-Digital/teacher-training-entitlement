@@ -84,6 +84,8 @@
   - service_fee
   - teacher_funding
   - updated_at
+  :email_update_subscriptions:
+  - unsubscribe_key
   :closed_registration_users:
   - id
   - created_at
