@@ -68,9 +68,18 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       list
 
       expect(item["attributes"]["funding"]).to eq(
-        "eligible" => false, "uplift" => nil, "confirmed" => false, "choice" => "dfe",
+        "eligible" => false, "uplift" => false, "confirmed" => false, "choice" => "dfe",
         "reason" => "ineligible_setting", "confirmation_reason" => nil
       )
+    end
+
+    it "returns true for funding uplift eligibility" do
+      application.update!(funding_eligibility: FundingEligibility::FUNDED_ELIGIBILITY_RESULT)
+      create(:course_uplift_institution, course: application.course, institution: application.institution)
+      create(:contract_year, :generic, course: application.course, lead_provider: current_lead_provider, uplift_percentage: 0.15)
+      list
+
+      expect(item["attributes"]["funding"]["uplift"]).to be(true)
     end
 
     it "returns the stored funding choice when set" do

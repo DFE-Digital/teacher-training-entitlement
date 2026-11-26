@@ -21,8 +21,14 @@ RSpec.describe API::V2::ApplicationPresenter do
     expect(presenter.funding[:choice]).to eq("dfe")
   end
 
-  it "leaves uplift, confirmation reason, role and experience null" do
-    expect([presenter.funding[:uplift], presenter.funding[:confirmation_reason], presenter.course[:role], presenter.course[:experience]]).to all(be_nil)
+  it "reports uplift eligibility from the application" do
+    allow(presenter.application).to receive(:funding_uplift_eligible?).and_return(true)
+
+    expect(presenter.funding[:uplift]).to be(true)
+  end
+
+  it "leaves confirmation reason, role and experience null" do
+    expect([presenter.funding[:confirmation_reason], presenter.course[:role], presenter.course[:experience]]).to all(be_nil)
   end
 
   it "reports funding eligibility from the application" do
