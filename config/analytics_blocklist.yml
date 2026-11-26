@@ -61,8 +61,6 @@
   - data_changes
   - operation_description
   - updated_at
-  :delivery_partnerships:
-  - archived_at
   :course_cohort_providers:
   - recruitment_target
   - teacher_funding
