@@ -3,6 +3,7 @@ module CourseGroupable
 
   included do
     enum :course_group, {
+      npd: "npd",
       reception: "reception",
       send: "send",
     }, suffix: true
