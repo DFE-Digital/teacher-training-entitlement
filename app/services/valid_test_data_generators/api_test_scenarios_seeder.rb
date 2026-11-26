@@ -27,7 +27,7 @@ module ValidTestDataGenerators
 
     INSTITUTION_SAMPLE_SIZE = 200
 
-    attr_reader :lead_provider, :academic_year, :logger
+    attr_reader :lead_provider, :academic_year, :logger, :course
 
     class << self
       def applications_data
@@ -57,11 +57,11 @@ module ValidTestDataGenerators
     end
 
     def initialize(lead_provider:,
-                   course_identifier: "tte-early-years",
+                   course:,
                    academic_year: Date.current.year,
                    logger: Rails.logger)
       @lead_provider = lead_provider
-      @course_identifier = course_identifier
+      @course = course
       @academic_year = academic_year.to_i
       @logger = logger
     end
@@ -206,10 +206,6 @@ module ValidTestDataGenerators
     def create_data!(registration_starts_at:, academic_year:, apps_per_state:)
       course_cohort = course_cohort_setup(registration_starts_at:, academic_year:)
       applications_setup(course_cohort:, apps_per_state:)
-    end
-
-    def course
-      @course ||= Course.find_by!(identifier: @course_identifier)
     end
 
     def create_random_user(with_trn: true)

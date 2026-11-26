@@ -19,7 +19,7 @@ class Admin::Settings::APITestScenariosController < AdminController
   def create
     lead_provider = LeadProvider.find(params[:lead_provider_id])
 
-    outcome = ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:).call
+    outcome = ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:, course:).call
 
     if outcome.success
       flash[:success] = "API test scenarios seeded successfully for #{lead_provider.name}. Created #{outcome.applications_count} applications."
@@ -54,12 +54,16 @@ private
   end
 
   def test_applications_count(lead_provider)
-    seeder = ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:)
+    seeder = ValidTestDataGenerators::APITestScenariosSeeder.new(lead_provider:, course:)
     lead_provider
       .applications
       .joins(:user)
       .merge(ApplicationLeadProvider.current)
       .where(users: { ecf_id: seeder.test_user_ecf_ids })
       .count
+  end
+
+  def course
+    @course ||= Course.find_by!(identifier: Course::TTE_EARLY_YEARS)
   end
 end

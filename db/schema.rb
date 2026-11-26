@@ -426,6 +426,53 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
     t.index ["email"], name: "index_registration_interests_on_email", unique: true
   end
 
+  create_table "registration_journeys", force: :cascade do |t|
+    t.string "name"
+    t.string "slug"
+    t.bigint "course_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_registration_journeys_on_course_id"
+  end
+
+  create_table "registration_step_answers", force: :cascade do |t|
+    t.bigint "registration_step_id", null: false
+    t.bigint "next_step_id"
+    t.string "name"
+    t.string "value"
+    t.text "hint"
+    t.string "redirect_path"
+    t.string "redirect_state_store_key"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "state_store_key"
+    t.index ["next_step_id"], name: "index_registration_step_answers_on_next_step_id"
+    t.index ["registration_step_id", "position"], name: "index_registration_step_answers_on_step_and_position"
+  end
+
+  create_table "registration_steps", force: :cascade do |t|
+    t.bigint "registration_journey_id", null: false
+    t.string "name"
+    t.jsonb "config", default: {}, null: false
+    t.string "type"
+    t.string "slug"
+    t.string "redirect_path"
+    t.string "redirect_state_store_key"
+    t.string "state_store_key"
+    t.string "answer_display_name"
+    t.boolean "display_on_check_answers", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "previous_step_id"
+    t.bigint "branch_join_step_id"
+    t.boolean "requires_answer", default: false, null: false
+    t.string "required_answer_message"
+    t.index ["branch_join_step_id"], name: "index_registration_steps_on_branch_join_step_id"
+    t.index ["previous_step_id"], name: "index_registration_steps_on_previous_step_id"
+    t.index ["registration_journey_id"], name: "index_registration_steps_on_registration_journey_id"
+  end
+
   create_table "reports", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "data"
@@ -556,5 +603,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_100000) do
   add_foreign_key "milestones", "courses"
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcomes", "declarations"
+  add_foreign_key "registration_step_answers", "registration_steps", column: "next_step_id", on_delete: :nullify, validate: false
+  add_foreign_key "registration_step_answers", "registration_steps", on_delete: :cascade, validate: false
+  add_foreign_key "registration_steps", "registration_journeys"
+  add_foreign_key "registration_steps", "registration_steps", column: "branch_join_step_id", on_delete: :nullify
+  add_foreign_key "registration_steps", "registration_steps", column: "previous_step_id", on_delete: :nullify
   add_foreign_key "statements", "lead_providers"
 end

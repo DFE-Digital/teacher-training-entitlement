@@ -45,6 +45,27 @@ RSpec.describe RegistrationWizardController do
     it { is_expected.to have_http_status :success }
     it { expect(page_response.headers).to include "cache-control" => "no-store" }
 
+    context "when the new registration journey is enabled" do
+      before { Flipper.enable(Feature::NEW_REGISTRATION_JOURNEY) }
+      after { Flipper.disable(Feature::NEW_REGISTRATION_JOURNEY) }
+
+      it "redirects signed-in users from the old journey to the new journey start" do
+        make_request
+
+        expect(response).to redirect_to(step_registration_path(Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG, "course-start-date"))
+      end
+
+      context "when the user is signed out" do
+        before { session["user_id"] = "999999" }
+
+        it "keeps the legacy sign-in entry point available without redirecting in a loop" do
+          make_request
+
+          expect(response).to redirect_to(root_path)
+        end
+      end
+    end
+
     context "when the user session is stale" do
       before { session["user_id"] = "999999" }
 

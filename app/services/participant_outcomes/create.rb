@@ -7,7 +7,6 @@ module ParticipantOutcomes
 
     STATES = %w[passed failed].freeze
     COMPLETION_DATE_FORMAT = /\d{4}-\d{2}-\d{2}/
-    PERMITTED_COURSES = Course::IDENTIFIERS
 
     attr_reader :created_outcome
 

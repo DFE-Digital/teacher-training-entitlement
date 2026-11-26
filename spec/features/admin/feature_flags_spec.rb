@@ -6,6 +6,8 @@ RSpec.feature "Administering feature flags", :rack_test_driver, type: :feature d
 
   let(:super_admin) { create(:super_admin) }
 
+  after { Flipper.disable(Feature::NEW_REGISTRATION_JOURNEY) }
+
   scenario "super admins can see the list of feature flags and change their state" do
     create(:cohort, :current)
     sign_in_as_super_admin
@@ -38,5 +40,25 @@ RSpec.feature "Administering feature flags", :rack_test_driver, type: :feature d
         page.click_link("View")
       end
     end
+  end
+
+  scenario "super admins can switch the new registration journey on" do
+    Flipper.disable(Feature::NEW_REGISTRATION_JOURNEY)
+    sign_in_as_super_admin
+    visit admin_settings_features_path
+
+    within("tr", text: Feature::NEW_REGISTRATION_JOURNEY) do
+      page.click_link("View")
+    end
+
+    expect(page).to have_current_path(admin_settings_feature_path(Feature::NEW_REGISTRATION_JOURNEY))
+    expect(page).to have_content("Current state")
+    expect(Flipper.enabled?(Feature::NEW_REGISTRATION_JOURNEY)).to be(false)
+
+    fill_in "Confirm the feature flag name to change the state", with: Feature::NEW_REGISTRATION_JOURNEY
+    page.click_button "Change state"
+
+    expect(page).to have_content("You have turned the New registration journey feature flag on.")
+    expect(Flipper.enabled?(Feature::NEW_REGISTRATION_JOURNEY)).to be(true)
   end
 end

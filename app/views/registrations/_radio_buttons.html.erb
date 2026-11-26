@@ -1,0 +1,6 @@
+<%= form.govuk_radio_buttons_fieldset(step.class::ATTRIBUTE, legend: nil) do %>
+  <% answer_options = step.respond_to?(:answer_options) ? step.answer_options : step.class.answer_options %>
+  <% answer_options.each do |answer| %>
+    <%= form.govuk_radio_button(step.class::ATTRIBUTE, answer[:value], label: { text: answer[:name] }, hint: { text: answer[:hint] }) %>
+  <% end %>
+<% end %>

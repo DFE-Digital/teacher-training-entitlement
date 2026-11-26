@@ -1,0 +1,10 @@
+<p class="govuk-heading-s">Stay informed</p>
+<p class="govuk-body">You can sign up for email updates to:</p>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li>find out when NPD registration opens</li>
+</ul>
+
+<%= form_for :form, url: email_updates_path do |form| %>
+  <%= form.govuk_submit("Sign up for updates") %>
+<% end %>

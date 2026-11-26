@@ -53,6 +53,7 @@ en:
             is turned on, events will be sent to DfE Analytics.</p>'
           lead_provider_transferred_declarations_visibility_html: '<p class="govuk-body">When
             this feature is turned on, lead providers can see transferred declarations.</p>'
+          new_registration_journey_html: '<p class="govuk-body">When this feature is turned on, requests to the old registration journey are redirected to the Excellence in Reception journey. When it is turned off, the old registration journey is used.</p>'
       course_payment_overview_component:
       funded: Funded
       self_funded: Self-funded

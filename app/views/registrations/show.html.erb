@@ -1,0 +1,54 @@
+<div id="registrations">
+  <% content_for :before_content do %>
+    <% if wizard.previous_step %>
+      <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: step_registration_path(wizard.journey_slug, wizard.previous_step.to_s.dasherize)) %>
+    <% end %>
+  <% end %>
+
+  <% unless current_step.class::PARTIAL == "html_partial" %>
+    <h3 class="govuk-heading-xl"><%= current_step.respond_to?(:title) ? current_step.title : current_step.class::TITLE %></h3>
+
+    <% text_data_for_step = if current_step.respond_to?(:text_data)
+                              current_step.text_data
+                            elsif current_step.class.const_defined?(:TEXTS, false)
+                              current_step.class::TEXTS
+                            else
+                              []
+                            end %>
+    <% text_data_for_step.each do |text_data| %>
+      <p class="<%= text_data['text_class'] %>">
+        <% text_data['text'].each do |text| %>
+          <%= text.html_safe %>
+          <br/>
+        <% end %>
+      </p>
+    <% end %>
+  <% end %>
+
+  <% if current_step.class::PARTIAL == "html_partial" %>
+    <%= render current_step.class::PARTIAL_NAME,
+               form: nil,
+               step: current_step,
+               wizard_step: current_step %>
+  <% else %>
+    <%= render "step_form", current_step: current_step do |form| %>
+      <%= render "registrations/#{current_step.class::PARTIAL}",
+                 form:,
+                 step: current_step,
+                 wizard_step: current_step %>
+      <%= form.govuk_submit %>
+    <% end %>
+  <% end %>
+</div>
+
+<% if Rails.env.development? && 1 == 2%>
+  <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+    <hr/>
+    <h2 class="govuk-heading-s">Captured values</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <% wizard.state_store.read.each do |key, value| %>
+        <li><code><%= key %></code>: <%= value.inspect %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

@@ -1,0 +1,8 @@
+<%= form_with model: current_step,
+                  url: step_registration_path(current_step.wizard.journey_slug, current_step.step_id.to_s.dasherize),
+                  scope: current_step.step_id.to_s.dasherize,
+                  method: :patch do |form| %>
+  <%= form.govuk_error_summary %>
+
+  <%= yield form %>
+<% end %>

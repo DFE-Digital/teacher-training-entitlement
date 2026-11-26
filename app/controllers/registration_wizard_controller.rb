@@ -3,6 +3,7 @@ class RegistrationWizardController < PublicPagesController
 
   before_action :registration_closed
   before_action :redirect_to_start_if_signed_out, except: :development_login
+  before_action :redirect_to_new_registration_journey, except: :development_login, if: :new_registration_journey_enabled?
   before_action :set_wizard
   before_action :redirect_to_closed_if_no_course_cohort, only: :show
   before_action :set_form
@@ -68,6 +69,16 @@ class RegistrationWizardController < PublicPagesController
   end
 
 private
+
+  def new_registration_journey_enabled?
+    Feature.new_registration_journey_enabled? && current_user.present?
+  end
+
+  def redirect_to_new_registration_journey
+    return if params[:step] == "closed"
+
+    redirect_to step_registration_path(Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG, "course-start-date")
+  end
 
   def ensure_can_render_step
     return redirect_to root_path unless @form.requirements_met?

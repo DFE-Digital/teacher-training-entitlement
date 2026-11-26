@@ -34,8 +34,8 @@ PARTICIPANT_OUTCOME = {
             description: "The course this application relates to",
             type: :string,
             nullable: false,
-            example: ParticipantOutcomes::Create::PERMITTED_COURSES.first,
-            enum: ParticipantOutcomes::Create::PERMITTED_COURSES,
+            example: Course::IDENTIFIERS.first,
+            enum: Course::IDENTIFIERS,
           },
           participant_id: {
             description: "The unique identifier of this participant",

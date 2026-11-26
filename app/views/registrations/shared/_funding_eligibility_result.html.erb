@@ -1,0 +1,7 @@
+<% funded = wizard_step.wizard.state_store["funding_eligibility_result"] == Registrations::FundingEligibilityConstants::FUNDED %>
+
+<div class="govuk-panel<%= ' govuk-panel--confirmation' if funded %>">
+  <h1 class="govuk-panel__title"><%= funded ? "You are eligible for funding" : "You are not eligible for funding" %></h1>
+</div>
+
+<%= link_to "Continue", wizard_step.wizard.next_step_path, class: "govuk-button" %>

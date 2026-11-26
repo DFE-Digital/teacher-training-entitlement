@@ -41,12 +41,12 @@ erDiagram
   }
   DeliveryPartnership {
     integer id
-    integer course_cohort_id
     datetime created_at
     integer delivery_partner_id
     integer lead_provider_id
     datetime updated_at
     integer course_id
+    datetime archived_at
   }
   DeliveryPartnership }o--|| DeliveryPartner : belongs_to
   DeliveryPartnership }o--|| LeadProvider : belongs_to
