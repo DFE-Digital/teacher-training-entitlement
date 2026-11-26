@@ -54,8 +54,13 @@ RSpec.describe Courses::Create do
           selected_contract_financials: selected_contract_financials,
           selected_delivery_partnerships: selected_delivery_partnerships,
           milestone_configs:,
+          uplift_percentage:,
+          uplift_incentive?: uplift_percentage.present?,
+          selected_uplift_institutions:,
         )
       end
+      let(:uplift_percentage) { nil }
+      let(:selected_uplift_institutions) { [] }
       let(:selected_contract_financials) { [selected_contract_financial] }
       let(:delivery_partner) { create(:delivery_partner) }
       let(:selected_delivery_partnerships) do
@@ -109,6 +114,55 @@ RSpec.describe Courses::Create do
           course_url: nil,
           email: nil,
         )
+      end
+
+      context "without uplift details" do
+        it "does not set an uplift percentage" do
+          service.call
+
+          expect(ContractYear.where(course: service.course).pluck(:uplift_percentage)).to all(be_nil)
+        end
+
+        it "does not add uplift institutions" do
+          service.call
+
+          expect(service.course.uplift_institutions).to be_empty
+        end
+      end
+
+      context "with uplift details" do
+        let(:uplift_percentage) { "15" }
+        let(:institution) { create(:institution) }
+        let(:selected_uplift_institutions) { [institution] }
+
+        it "stores the uplift percentage as a decimal on the generic contract year" do
+          service.call
+
+          expect(ContractYear.find_by!(course: service.course, lead_provider:, academic_year: nil).uplift_percentage).to eq(BigDecimal("0.15"))
+        end
+
+        it "does not store the uplift percentage on the academic year contract year" do
+          service.call
+
+          expect(ContractYear.find_by!(course: service.course, lead_provider:, academic_year: 2027).uplift_percentage).to be_nil
+        end
+
+        it "adds the uplift institutions to the course" do
+          service.call
+
+          expect(service.course.uplift_institutions).to contain_exactly(institution)
+        end
+      end
+
+      context "with an uplift percentage but no uplift institutions" do
+        let(:uplift_percentage) { "15" }
+
+        it "adds an error and does not create the course" do
+          service.call
+
+          expect(Course.exists?(name: "New course")).to be false
+          expect(service.errors[:uplift_institution_ids]).to contain_exactly("Select at least one uplift institution")
+        end
       end
 
       context "when the contract financials are generic" do
@@ -226,6 +280,7 @@ RSpec.describe Courses::Create do
           Admin::CourseBuilder::StateStore,
           selected_lead_providers:,
           selected_delivery_partnerships:,
+          uplift_incentive?: false,
         )
       end
 
@@ -256,6 +311,9 @@ RSpec.describe Courses::Create do
           milestone_configs: [],
           selected_lead_providers: [],
           selected_delivery_partnerships: [],
+          uplift_incentive?: false,
+          uplift_percentage: nil,
+          selected_uplift_institutions: [],
         )
       end
       let!(:existing_course) { create(:course, identifier: "existing-course") }

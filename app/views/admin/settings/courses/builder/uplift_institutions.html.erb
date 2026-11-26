@@ -1,0 +1,36 @@
+<% content_for(:page_title) { @wizard.step_title } %>
+
+<%= govuk_back_link href: @wizard.previous_step_path(fallback: admin_path) %>
+
+<h1 class="govuk-heading-l"><%= @wizard.step_title %></h1>
+
+<%= form_with model: @wizard.current_step, scope: @wizard.current_step_name, url: @wizard.current_step_path, method: :patch do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <%= f.govuk_text_field :uplift_institution_search,
+                             label: { text: "Search for an institution", size: "s" },
+                             hint: { text: "Enter a name, postcode or URN" } %>
+    </div>
+  </div>
+
+  <%= button_tag "Search institutions",
+                 type: "submit",
+                 name: "search_institutions",
+                 value: "1",
+                 class: "govuk-button govuk-button--secondary",
+                 data: { module: "govuk-button" } %>
+
+  <% institutions = @wizard.current_step.institution_options %>
+
+  <%= f.govuk_collection_check_boxes :uplift_institution_ids,
+                                     institutions,
+                                     :id,
+                                     :name,
+                                     ->(institution) { [institution.urn, institution.address_string].compact_blank.join(" – ") },
+                                     legend: { text: "Select uplift institutions", size: "m" },
+                                     hint: { text: institutions.any? ? "Select at least one institution." : "Search for an institution to add it to this list." } %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>
