@@ -174,6 +174,7 @@ erDiagram
     integer user_id
     date training_starts_at
     jsonb registration_data
+    string email
   }
   Application }o--|| User : belongs_to
   Application }o--|| CourseCohort : belongs_to
@@ -207,8 +208,6 @@ erDiagram
     date date_of_birth
     uuid ecf_id
     string email
-    enum email_updates_status
-    string email_updates_unsubscribe_key
     string feature_flag_id
     text full_name
     text national_insurance_number

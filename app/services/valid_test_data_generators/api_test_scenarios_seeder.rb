@@ -377,6 +377,7 @@ module ValidTestDataGenerators
       end
       application.update!(
         **funding_attributes(status:, eligible_for_funding:),
+        email: user.email,
         status:,
       )
       application

@@ -33,7 +33,7 @@ module Applications
 
     def send_provider_rejected_email
       GenericMailer.with(
-        to: application.user.email,
+        to: application.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
         course_name: application.course.name,

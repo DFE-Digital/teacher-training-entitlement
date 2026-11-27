@@ -4,7 +4,7 @@ module Emails
 
     def perform(application:)
       GenericMailer.with(
-        to: application.user.email,
+        to: application.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
         course_name: application.course.name,

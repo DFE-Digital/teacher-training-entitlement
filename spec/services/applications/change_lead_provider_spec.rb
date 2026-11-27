@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Applications::ChangeLeadProvider, type: :model do
   let(:old_provider) { create(:lead_provider) }
   let(:new_provider) { create(:lead_provider) }
-  let(:application) { create(:application, :pending, lead_provider: old_provider) }
+  let(:application) { create(:application, :pending, lead_provider: old_provider, email: "application@example.com") }
   let(:new_assignment_date) { Time.zone.now }
   let(:old_application_lead_provider) { build(:application_lead_provider, :unassigned, application:, lead_provider: old_provider) }
 
@@ -97,7 +97,7 @@ RSpec.describe Applications::ChangeLeadProvider, type: :model do
     context "when participants" do
       let(:email_attrs) do
         {
-          to: application.user.email,
+          to: application.email,
           full_name: application.user.full_name,
           provider_name: new_provider.name,
           course_name: application.course.name,

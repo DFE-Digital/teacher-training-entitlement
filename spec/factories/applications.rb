@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :application do
     with_school
     user
+    email { user.email }
     status { :pending }
     ecf_id { SecureRandom.uuid }
 

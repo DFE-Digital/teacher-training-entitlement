@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe Applications::ChangeFundingEligibility, type: :model do
   let(:eligible_for_funding) { false }
-  let(:application) { create(:application, :accepted) }
+  let(:application) { create(:application, :accepted, email: "application@example.com") }
 
   subject(:service) { described_class.new(application:, eligible_for_funding:) }
 
@@ -63,7 +63,7 @@ RSpec.describe Applications::ChangeFundingEligibility, type: :model do
       it do
         aggregate_failures do
           expect(GenericMailer).to receive(:with).with(
-            to: application.user.email,
+            to: application.email,
             full_name: application.user.full_name,
             provider_name: application.lead_provider.name,
             course_name: application.course.name,

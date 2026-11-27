@@ -18,6 +18,15 @@ RSpec.describe AdminService::UsersSearch do
       end
     end
 
+    context "when application#email match" do
+      let!(:application) { create(:application, user:, email: "application-only@example.com") }
+      let(:q) { "application-only" }
+
+      it "returns the hit" do
+        expect(subject.call).to include(user)
+      end
+    end
+
     context "when user#full_name match" do
       let(:q) { user.full_name }
 

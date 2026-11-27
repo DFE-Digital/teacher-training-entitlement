@@ -3,7 +3,7 @@ class User < ApplicationRecord
   encrypts :refresh_token
 
   # TO DO: remove after succesful deploy
-  self.ignored_columns += %w[get_an_identity_id_synced_to_ecf trn_verified trn_auto_verified]
+  self.ignored_columns += %w[get_an_identity_id_synced_to_ecf trn_verified trn_auto_verified email_updates_status email_updates_unsubscribe_key]
 
   INSIGNIFICANT_ATTRIBUTES = %w[
     raw_tra_provider_data
@@ -11,8 +11,6 @@ class User < ApplicationRecord
     updated_from_tra_at
     trn_lookup_status
     notify_user_for_future_reg
-    email_updates_status
-    email_updates_unsubscribe_key
     refresh_token
     refresh_token_updated_at
     trn_requested_at
@@ -39,7 +37,6 @@ class User < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }
 
   after_commit :touch_significantly_updated_at
-  before_save :change_unsubscribe_key_on_update_email_status
 
   scope :admins, -> { where(admin: true) }
   scope :without_trn, -> { where(trn: nil).where.not(refresh_token: nil) }
@@ -49,14 +46,6 @@ class User < ApplicationRecord
       .where(trn_requested_at: nil)
   }
   scope :needing_trn_activation_check, -> { without_trn.where.not(trn_requested_at: nil) }
-
-  EMAIL_UPDATES_STATES = [
-    EMAIL_NPD_REGISTRATION_OPEN = :npd_registration_open,
-  ].freeze
-
-  enum :email_updates_status,
-       { EMAIL_NPD_REGISTRATION_OPEN => EMAIL_NPD_REGISTRATION_OPEN.to_s },
-       suffix: true
 
   attr_accessor :version_note, :skip_touch_significantly_updated_at
 
@@ -109,17 +98,16 @@ class User < ApplicationRecord
     applications.previous_valid_applications.empty?
   end
 
-private
-
-  def change_unsubscribe_key_on_update_email_status
-    return unless email_updates_status_changed?
-
-    self.email_updates_unsubscribe_key = if email_updates_status.blank?
-                                           nil
-                                         else
-                                           SecureRandom.uuid
-                                         end
+  def copy_email_to_applications!
+    applications.where("applications.email IS DISTINCT FROM ?", email).find_each do |application|
+      application.email = email
+      # Runs on every sign-in, so an unrelated invalid application must not block it, and the
+      # API's updated_since filter tracks application changes rather than login changes.
+      application.save!(validate: false, touch: false)
+    end
   end
+
+private
 
   def touch_significantly_updated_at
     return if skip_touch_significantly_updated_at

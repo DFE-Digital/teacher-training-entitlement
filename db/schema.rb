@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_133413) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_164429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -134,8 +134,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_133413) do
     t.bigint "user_id", null: false
     t.date "training_starts_at"
     t.jsonb "registration_data", default: {}, null: false
+    t.string "email"
     t.index ["course_cohort_id"], name: "index_applications_on_course_cohort_id"
     t.index ["ecf_id"], name: "index_applications_on_ecf_id", unique: true
+    t.index ["email"], name: "index_applications_on_email"
     t.index ["institution_id"], name: "index_applications_on_institution_id"
     t.index ["status"], name: "index_applications_on_status"
     t.index ["user_id", "course_cohort_id"], name: "index_applications_on_user_id_and_course_cohort_id", unique: true
@@ -305,6 +307,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_133413) do
     t.index ["delivery_partner_id", "lead_provider_id", "course_id"], name: "idx_delivery_partnerships_on_partner_provider_course", unique: true
     t.index ["delivery_partner_id"], name: "index_delivery_partnerships_on_delivery_partner_id"
     t.index ["lead_provider_id"], name: "index_delivery_partnerships_on_lead_provider_id"
+  end
+
+  create_table "email_update_subscriptions", force: :cascade do |t|
+    t.string "email", null: false
+    t.text "full_name"
+    t.enum "status", null: false, enum_type: "email_updates_statuses"
+    t.string "unsubscribe_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email", "status"], name: "index_email_update_subscriptions_on_email_and_status", unique: true
+    t.index ["unsubscribe_key"], name: "index_email_update_subscriptions_on_unsubscribe_key", unique: true
   end
 
   create_table "financial_change_logs", force: :cascade do |t|

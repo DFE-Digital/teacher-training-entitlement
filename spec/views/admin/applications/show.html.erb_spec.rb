@@ -43,6 +43,7 @@ RSpec.describe "admin/applications/show.html.erb", type: :view do
       subject { Capybara.string(render).find(".govuk-summary-card", text: "Overview") }
 
       it { is_expected.to have_summary_item "Name", application.user.full_name }
+      it { is_expected.to have_summary_item "Email", application.email }
       it { is_expected.to have_summary_item "Application ID", application.ecf_id }
       it { is_expected.to have_summary_item "User ID", application.user.ecf_id }
       it { is_expected.to have_summary_item "Provider", application.lead_provider.name }

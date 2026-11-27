@@ -52,7 +52,7 @@ RSpec.describe HandleSubmissionForStore do
       return if record.nil?
 
       record
-        .as_json(except: %i[id created_at updated_at significantly_updated_at updated_from_tra_at DEPRECATED_school_urn email_updates_status email_updates_unsubscribe_key registration_data])
+        .as_json(except: %i[id created_at updated_at significantly_updated_at updated_from_tra_at DEPRECATED_school_urn registration_data])
         .except(*Application.column_names.grep(/teacher.*country/))
     end
 
@@ -100,6 +100,7 @@ RSpec.describe HandleSubmissionForStore do
         expect(stable_as_json(last_application)).to match({
           "course_cohort_id" => course_cohort.id,
           "ecf_id" => last_application.ecf_id,
+          "email" => user.email,
           "funded_place" => nil,
           "funding_choice" => nil,
           "funding_eligibility" => "funded",

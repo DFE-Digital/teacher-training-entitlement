@@ -9,6 +9,7 @@ class HandleSubmissionForStore
     ActiveRecord::Base.transaction do
       @application = user.applications.create!(
         course_cohort:,
+        email: user.email,
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
         institution:,
         funding_eligibility: funding_eligibility_service.funding_eligibility,

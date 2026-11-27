@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
   let(:course) { create(:course, :npd_eirt) }
-  let(:application) { create(:application, course:, registration_data: { "funding_amount" => "123" }) }
+  let(:application) { create(:application, course:, email: "application@example.com", registration_data: { "funding_amount" => "123" }) }
 
   subject(:job) { described_class.new(application:) }
 
@@ -17,7 +17,7 @@ RSpec.describe Emails::SendApplicationSubmissionEmailJob, type: :job do
 
     it "calls `ApplicationSubmissionMailer`" do
       expect(GenericMailer).to receive(:with).with(
-        to: application.user.email,
+        to: application.email,
         full_name: application.user.full_name,
         provider_name: application.lead_provider.name,
         course_name: course.name,

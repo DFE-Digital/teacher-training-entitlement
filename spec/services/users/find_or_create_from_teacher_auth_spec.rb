@@ -52,6 +52,19 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
         make_request
         expect(user.reload).to have_attributes(email:, full_name: verified_name.join(" "))
       end
+
+      it "updates the email on the user's applications" do
+        application = create(:application, user:)
+
+        expect { make_request }.to change { application.reload.email }.to(email)
+      end
+
+      it "attributes the application email change to the user", :versioning do
+        application = create(:application, user:)
+        make_request
+
+        expect(application.versions.last.whodunnit).to eq("Public User #{user.id}")
+      end
     end
   end
 

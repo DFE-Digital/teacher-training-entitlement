@@ -2,8 +2,8 @@ class Admin::Settings::RegistrationClosed::ReopeningEmailSubscriptionsController
   before_action :require_super_admin
 
   def index
-    @all_users = User.where.not(email_updates_status: nil)
-    @pagy, @users = pagy(@all_users)
+    @all_subscriptions = EmailUpdateSubscription.order(:created_at)
+    @pagy, @subscriptions = pagy(@all_subscriptions)
 
     respond_to do |format|
       format.html
@@ -15,10 +15,10 @@ class Admin::Settings::RegistrationClosed::ReopeningEmailSubscriptionsController
   end
 
   def unsubscribe
-    @user = User.find(params[:id])
+    @subscription = EmailUpdateSubscription.find(params[:id])
     if request.post?
-      flash[:success] = "Email '#{@user.email}' unsubscribed"
-      @user.update!(email_updates_status: nil)
+      flash[:success] = "Email '#{@subscription.email}' unsubscribed"
+      @subscription.destroy!
 
       redirect_to admin_settings_registration_closed_reopening_email_subscriptions_path
     end

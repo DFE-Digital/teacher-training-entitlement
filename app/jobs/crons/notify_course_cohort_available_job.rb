@@ -16,14 +16,14 @@ class Crons::NotifyCourseCohortAvailableJob < CronJob
 
     return unless course_cohort
 
-    User.where(email_updates_status: User::EMAIL_NPD_REGISTRATION_OPEN).find_each do |user|
+    EmailUpdateSubscription.npd_registration_open_status.find_each do |subscription|
       GenericMailer.with(
-        to: user.email,
+        to: subscription.email,
         course_name: course_cohort.course.name,
         course_group: I18n.t("course_group.#{course_cohort.course.course_group}"),
         training_date: course_cohort.training_starts_at.to_fs(:govuk_approx),
         application_link: Rails.application.routes.url_helpers.registration_wizard_show_url(:start),
-        unsubscribe_link: Rails.application.routes.url_helpers.unsubscribe_email_updates_url(unsubscribe_key: user.email_updates_unsubscribe_key),
+        unsubscribe_link: Rails.application.routes.url_helpers.unsubscribe_email_updates_url(unsubscribe_key: subscription.unsubscribe_key),
       ).notify_course_cohort_available.deliver_later
     end
   end

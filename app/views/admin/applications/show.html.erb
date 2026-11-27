@@ -16,6 +16,10 @@ govuk_summary_list(card: { title: "Overview" }) do |sl|
     row.with_action(text: "View user", href: admin_user_path(@application.user))
   end
   sl.with_row do |row|
+    row.with_key(text: "Email")
+    row.with_value(text: @application.email)
+  end
+  sl.with_row do |row|
     row.with_key(text: "Application ID")
     row.with_value(text: @application.ecf_id)
   end

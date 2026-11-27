@@ -199,6 +199,14 @@ shared:
     - funded_place
     - training_starts_at
     - registration_data
+    - email
+  :email_update_subscriptions:
+    - id
+    - email
+    - full_name
+    - status
+    - created_at
+    - updated_at
   :users:
     - id
     - created_at
@@ -213,8 +221,6 @@ shared:
     - updated_from_tra_at
     - trn_lookup_status
     - notify_user_for_future_reg
-    - email_updates_status
-    - email_updates_unsubscribe_key
     - archived_at
     - significantly_updated_at
     - preferred_name

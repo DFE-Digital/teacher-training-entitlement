@@ -6,7 +6,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
   let(:school) { application.school }
   let(:participant_id_change) { application.participant_id_changes.last }
   let(:cohort) { application.cohort }
-  let(:application) { create(:application, :accepted, :with_state_change, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true) }
+  let(:application) { create(:application, :accepted, :with_state_change, :eligible_for_funded_place, :with_participant_id_change, lead_provider:, funded_place: true, email: "enrolment@example.com") }
   let(:participant) { application.user }
 
   describe "core attributes" do
@@ -76,7 +76,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
         accepted_event = application.state_changes.find_by(event: Application::ACCEPTED)
         expect(attributes["enrolments"]).to eq([
           {
-            email: participant.email,
+            email: application.email,
             course_identifier: application.course.identifier,
             schedule_identifier: application.course_cohort.schedule_identifier,
             cohort: application.course_cohort.academic_year,
@@ -101,7 +101,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
         it "serializes the `enrolments`" do
           expect(attributes["enrolments"]).to eq([
             {
-              email: participant.email,
+              email: application.email,
               course_identifier: application.course.identifier,
               schedule_identifier: application.course_cohort.schedule_identifier,
               cohort: application.course_cohort.academic_year,
@@ -137,7 +137,7 @@ RSpec.describe API::ParticipantSerializer, type: :serializer do
         it "serializes the `enrolments`" do
           expect(attributes["enrolments"]).to eq([
             {
-              email: participant.email,
+              email: application.email,
               course_identifier: application.course.identifier,
               schedule_identifier: application.course_cohort.schedule_identifier,
               cohort: application.course_cohort.academic_year,

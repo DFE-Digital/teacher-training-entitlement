@@ -379,8 +379,9 @@ RSpec.describe "API V2 applications endpoints", type: :request do
       end
 
       it "only returns the provider-visible applications of the filtered email" do
-        create(:application, lead_provider: create(:lead_provider), user: application.user, course: create(:course))
-        list(params: { filter: { email: application.email } })
+        application.update!(email: "application@example.com")
+        create(:application, lead_provider: create(:lead_provider), user: application.user, course: create(:course), email: "application@example.com")
+        list(params: { filter: { email: "application@example.com" } })
 
         expect(ids).to eq([application.ecf_id])
       end

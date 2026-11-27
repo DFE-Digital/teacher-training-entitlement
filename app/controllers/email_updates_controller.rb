@@ -4,21 +4,25 @@ class EmailUpdatesController < PublicPagesController
   end
 
   def create
-    current_user.update!(email_updates_status: User::EMAIL_NPD_REGISTRATION_OPEN)
+    @subscription = EmailUpdateSubscription.find_or_initialize_by(
+      email: current_user.email,
+      status: EmailUpdateSubscription::NPD_REGISTRATION_OPEN,
+    )
+    @subscription.update!(full_name: current_user.full_name)
 
     GenericMailer.with(
-      to: current_user.email,
-      name: current_user.full_name,
-      unsubscribe_link:,
+      to: @subscription.email,
+      name: @subscription.full_name,
+      unsubscribe_link: unsubscribe_email_updates_url(unsubscribe_key: @subscription.unsubscribe_key),
     ).email_updates_confirmation.deliver_later
   end
 
   def unsubscribe
     if request.post?
-      user = User.find_by(email_updates_unsubscribe_key: params[:unsubscribe_key])
+      subscription = EmailUpdateSubscription.find_by(unsubscribe_key: params[:unsubscribe_key])
 
-      if user
-        user.update!(email_updates_status: nil)
+      if subscription
+        subscription.destroy!
         redirect_to unsubscribed_email_updates_path
       else
         flash[:error] = "Invalid unsubscribe link"
@@ -28,10 +32,4 @@ class EmailUpdatesController < PublicPagesController
   end
 
   def unsubscribed; end
-
-private
-
-  def unsubscribe_link
-    unsubscribe_email_updates_url(unsubscribe_key: current_user.email_updates_unsubscribe_key)
-  end
 end
