@@ -51,7 +51,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         "course_cohort_ecf_id" => course_cohort.ecf_id,
         "funding" => "school",
         "institution_id" => institution.id.to_s,
-        "lead_provider_id" => lead_provider.id.to_s,
+        "lead_provider_id" => lead_provider.id,
         "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
         "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
       )

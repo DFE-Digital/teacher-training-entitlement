@@ -1,13 +1,10 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class TeacherCatchment
-        include DfE::Wizard::Step
-
-        TITLE = "Do you work in England?".freeze
-        PARTIAL = "radio_buttons".freeze
-        ATTRIBUTE = :teacher_catchment
-        ANSWER_DISPLAY_NAME = "Works in England?".freeze
+      class TeacherCatchment < Shared::RadioButtons
+        with_title "Do you work in England?"
+        with_attribute :teacher_catchment
+        with_answer_display_name "Works in England?"
 
         attribute ATTRIBUTE, :string
         validates ATTRIBUTE, presence: { message: "Select 'Yes' if you work in England" }

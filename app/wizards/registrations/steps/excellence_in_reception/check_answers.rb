@@ -1,11 +1,8 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class CheckAnswers
-        include DfE::Wizard::Step
-
-        TITLE = "Check your answers and submit".freeze
-        PARTIAL = "check_answers".freeze
+      class CheckAnswers < Shared::CheckAnswers
+        with_title "Check your answers and submit"
 
         def self.permitted_params = []
 

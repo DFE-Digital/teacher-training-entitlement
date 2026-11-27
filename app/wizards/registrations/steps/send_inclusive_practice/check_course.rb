@@ -1,10 +1,7 @@
 module Registrations
   module Steps
     module SendInclusivePractice
-      class CheckCourse
-        include DfE::Wizard::Step
-
-        PARTIAL = "plain".freeze
+      class CheckCourse < Shared::Plain
 
         def self.permitted_params = []
 

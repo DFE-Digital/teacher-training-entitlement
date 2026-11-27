@@ -19,7 +19,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
     choose_teacher_catchment("Yes")
     choose_work_setting("State-funded nursery, pre-school, school or academy trust")
     choose_a_school(js: false, name: "open")
-    expect_page_to_have(path: registration_step_path("possible-funding"), submit_form: true)
+    expect_page_to_have(path: registration_step_path("possible-funding"), click_continue: true)
     agree_to_share_provider_information
     submit_check_answers
 
@@ -42,7 +42,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,
         "institution_id" => institution.id.to_s,
-        "lead_provider_id" => lead_provider.id.to_s,
+        "lead_provider_id" => lead_provider.id,
         "teacher_catchment" => Institution::ENGLAND_SUBDIVISION_CODE,
         "work_setting" => Institution::STATE_FUNDED_INSTITUTION,
       )

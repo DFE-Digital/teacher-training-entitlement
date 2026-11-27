@@ -1,13 +1,10 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class ChooseYourProvider
-        include DfE::Wizard::Step
-
-        TITLE = "Select your training provider".freeze
-        PARTIAL = "radio_buttons".freeze
-        ATTRIBUTE = :lead_provider_id
-        ANSWER_DISPLAY_NAME = "Provider".freeze
+      class ChooseYourProvider < Shared::RadioButtons
+        with_title "Select your training provider"
+        with_attribute :lead_provider_id
+        with_answer_display_name "Provider"
 
         attribute ATTRIBUTE, :integer
         validates ATTRIBUTE, presence: { message: "Choose a provider" }

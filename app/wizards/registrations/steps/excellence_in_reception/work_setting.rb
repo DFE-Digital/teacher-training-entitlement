@@ -1,21 +1,13 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class WorkSetting
-        include DfE::Wizard::Step
-
-        TITLE = "Tell us where you work".freeze
-        PARTIAL = "radio_buttons".freeze
-        ATTRIBUTE = :work_setting
-        TEXTS = [
-          {
-            "text" => [
-              "Make sure the information you provide is correct, as your provider will check your details.",
-              "Register using your current workplace details, even if they will change soon.",
-            ],
-            "text_class" => "govuk-hint",
-          },
-        ].freeze
+      class WorkSetting < Shared::RadioButtons
+        with_title "Tell us where you work"
+        with_attribute :work_setting
+        with_text [
+          "Make sure the information you provide is correct, as your provider will check your details.",
+          "Register using your current workplace details, even if they will change soon.",
+        ], text_class: "govuk-hint"
 
         attribute ATTRIBUTE, :string
         validates ATTRIBUTE, presence: { message: "Select the setting that you work in" }

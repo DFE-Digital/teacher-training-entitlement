@@ -74,32 +74,35 @@ private
 
   def wizard
     @wizard ||= begin
-      step_slug = params[:step_slug]
-      step_id = step_slug&.underscore&.to_sym
-      step_params = if step_id
-                      raw_params = params[step_slug]
-                      raw_params = raw_params.to_unsafe_h if raw_params.respond_to?(:to_unsafe_h)
-                      { step_id => raw_params || {} }
-                    else
-                      {}
-                    end
+      step_slug = params[:step_slug]&.underscore&.to_sym
+      step_params = {}
+      if step_slug
+        step_params[step_slug] = params[step_slug]&.to_unsafe_h || {}
+      end
 
       wizard_options = {
         session:,
-        current_step: step_id,
+        current_step: step_slug,
         current_step_params: step_params,
         current_user:,
       }
 
       wizard_options.merge!(course: Course.find_by!(identifier: journey_slug)) unless journey_slug == COURSE_SELECTION_SLUG
-      raise ActiveRecord::RecordNotFound, "Registration journey #{journey_slug} not found" unless WIZARD_COURSE_MAP[journey_slug]
 
-      WIZARD_COURSE_MAP[journey_slug].new(**wizard_options)
+      wizard_class.new(**wizard_options)
     end
   end
 
   def current_step
     wizard.current_step
+  end
+
+  def wizard_class
+    @wizard = begin
+      raise ActiveRecord::RecordNotFound, "Registration journey #{journey_slug} not found" unless WIZARD_COURSE_MAP[journey_slug]
+
+      WIZARD_COURSE_MAP[journey_slug]
+    end
   end
 
   def journey_slug
@@ -112,7 +115,5 @@ private
     Course::SEND_INCLUSIVE_TEACHERS => Registrations::Journeys::SendInclusivePracticeWizard,
     Course::SEND_INCLUSIVE_LEADERS => Registrations::Journeys::SendInclusivePracticeWizard,
     COURSE_SELECTION_SLUG => Registrations::Journeys::CourseSelectionWizard,
-    Course::COURSE_ONE => Registrations::Journeys::Spikes::CourseOneWizard,
-    Course::COURSE_TWO => Registrations::Journeys::Spikes::CourseTwoWizard,
   }.freeze
 end

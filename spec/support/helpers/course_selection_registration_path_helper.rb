@@ -5,24 +5,26 @@ module Helpers
     end
 
     def registration_journey_path
-      "/registrations/#{Registrations::Courses::CourseSelection::JOURNEY_SLUG}"
+      "/registrations/course-selection"
     end
 
     def choose_excellence_in_reception_course
-      expect_page_to_have(path: "#{registration_journey_path}/courses", submit_form: true) do
-        page.choose("Excellence In Reception", visible: :all)
-      end
+      choose_course(Course::TTE_EARLY_YEARS)
     end
 
     def choose_send_leaders_course
-      expect_page_to_have(path: "#{registration_journey_path}/courses", submit_form: true) do
-        page.choose("Embedding inclusive practice for leaders", visible: :all)
-      end
+      choose_course(Course::SEND_INCLUSIVE_LEADERS)
     end
 
     def choose_send_teachers_course
+      choose_course(Course::SEND_INCLUSIVE_TEACHERS)
+    end
+
+  private
+
+    def choose_course(course_identifier)
       expect_page_to_have(path: "#{registration_journey_path}/courses", submit_form: true) do
-        page.choose("Embedding inclusive practice", visible: :all)
+        find("input[type='radio'][value='#{course_identifier}']", visible: :all).set(true)
       end
     end
   end

@@ -1,13 +1,9 @@
 module Registrations
   module Steps
     module SendInclusivePractice
-      class CheckAnswers
-        include DfE::Wizard::Step
-
-        TITLE = "Check answers".freeze
-        PARTIAL = "check_answers".freeze
-
-        def self.permitted_params = []
+      class CheckAnswers < Shared::HtmlPartial
+        with_title "Check answers"
+        with_partial "registrations/send_inclusive_practice/check_answers"
 
         def redirect_target
           "/applications"

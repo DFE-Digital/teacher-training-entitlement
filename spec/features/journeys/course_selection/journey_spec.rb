@@ -12,20 +12,20 @@ RSpec.feature "Course selection registration", :no_js, :with_default_lead_provid
     start_registration
     choose_excellence_in_reception_course
 
-    expect(page).to have_current_path("/registrations/excellence-in-reception", ignore_query: true)
+    expect(page).to have_current_path("/registrations/#{Course::TTE_EARLY_YEARS}/course-start-date", ignore_query: true)
   end
 
   scenario "Choosing Embedding inclusive practice course" do
     start_registration
     choose_send_teachers_course
 
-    expect(page).to have_current_path("/registrations/embedding-inclusive-practice", ignore_query: true)
+    expect(page).to have_current_path("/registrations/#{Course::SEND_INCLUSIVE_TEACHERS}/check-course", ignore_query: true)
   end
 
   scenario "Choosing Embedding inclusive practice for leaders course" do
     start_registration
     choose_send_leaders_course
 
-    expect(page).to have_current_path("/registrations/embedding-inclusive-practice-for-leaders", ignore_query: true)
+    expect(page).to have_current_path("/registrations/#{Course::SEND_INCLUSIVE_LEADERS}/check-course", ignore_query: true)
   end
 end

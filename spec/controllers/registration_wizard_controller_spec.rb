@@ -52,7 +52,7 @@ RSpec.describe RegistrationWizardController do
       it "redirects signed-in users from the old journey to the new journey start" do
         make_request
 
-        expect(response).to redirect_to(step_registration_path(Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG, "course-start-date"))
+        expect(response).to redirect_to(step_registration_path(Course::TTE_EARLY_YEARS, "course-start-date"))
       end
 
       context "when the user is signed out" do

@@ -1,13 +1,10 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class FundingYourCourse
-        include DfE::Wizard::Step
-
-        TITLE = "How are you funding your course?".freeze
-        PARTIAL = "radio_buttons".freeze
-        ATTRIBUTE = :funding
-        ANSWER_DISPLAY_NAME = "Course funding".freeze
+      class FundingYourCourse < Shared::RadioButtons
+        with_title "How are you funding your course?"
+        with_attribute :funding
+        with_answer_display_name "Course funding"
 
         attribute ATTRIBUTE, :string
         validates ATTRIBUTE, presence: { message: "Select an option" }

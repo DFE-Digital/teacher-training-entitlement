@@ -1,17 +1,21 @@
 <div id="registrations">
+  <% standalone_partial = current_step.is_a?(Registrations::Steps::Shared::HtmlPartial) %>
+
   <% content_for :before_content do %>
     <% if wizard.previous_step %>
       <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: step_registration_path(wizard.journey_slug, wizard.previous_step.to_s.dasherize)) %>
     <% end %>
   <% end %>
 
-  <% unless current_step.class::PARTIAL == "html_partial" %>
+  <% unless standalone_partial %>
     <h3 class="govuk-heading-xl"><%= current_step.respond_to?(:title) ? current_step.title : current_step.class::TITLE %></h3>
 
     <% text_data_for_step = if current_step.respond_to?(:text_data)
                               current_step.text_data
                             elsif current_step.class.const_defined?(:TEXTS, false)
                               current_step.class::TEXTS
+                            elsif current_step.class.respond_to?(:texts)
+                              current_step.class.texts
                             else
                               []
                             end %>
@@ -25,14 +29,14 @@
     <% end %>
   <% end %>
 
-  <% if current_step.class::PARTIAL == "html_partial" %>
-    <%= render current_step.class::PARTIAL_NAME,
+  <% if standalone_partial %>
+    <%= render current_step.partial_name,
                form: nil,
                step: current_step,
                wizard_step: current_step %>
   <% else %>
     <%= render "step_form", current_step: current_step do |form| %>
-      <%= render "registrations/#{current_step.class::PARTIAL}",
+      <%= render "registrations/#{current_step.partial_name}",
                  form:,
                  step: current_step,
                  wizard_step: current_step %>
@@ -41,7 +45,7 @@
   <% end %>
 </div>
 
-<% if Rails.env.development? && 1 == 2%>
+<% if Rails.env.development? %>
   <div class="govuk-!-margin-top-9 govuk-!-margin-bottom-9">
     <hr/>
     <h2 class="govuk-heading-s">Captured values</h2>

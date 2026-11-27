@@ -1,0 +1,28 @@
+<% wizard = wizard_step.wizard %>
+<% data = wizard.data %>
+<% captured_values = data.fetch(:steps, {}).values.reduce({}, :merge).merge(data.except(:steps)).with_indifferent_access %>
+<% answer_steps = [] %>
+
+<%= govuk_summary_list do |summary_list| %>
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: "Course") %>
+    <% row.with_value(text: wizard.course.name) %>
+    <% unless Rails.env.production? %>
+      <% row.with_action(text: "Change", href: step_registration_path(Registrations::Journeys::CourseSelectionWizard::JOURNEY_SLUG, Registrations::Journeys::CourseSelectionWizard::COURSES_STEP)) %>
+    <% end %>
+  <% end %>
+  <% summary_list.with_row do |row| %>
+    <% if captured_values["self_funded"] == "true" %>
+      <% row.with_key(text: "Funding") %>
+      <% row.with_value(text: "You have chosen to self-fund this course")%>
+    <% end %>
+  <% end %>
+
+  <% answer_steps.each do |step, value| %>
+    <% summary_list.with_row do |row| %>
+      <% row.with_key(text: step.class::ANSWER_DISPLAY_NAME) %>
+      <% row.with_value(text: step.class.answer_options.find { |option| option[:value].to_s == value.to_s }&.fetch(:name) || value.to_s) %>
+      <% row.with_action(text: "Change", href: step_registration_path(wizard.journey_slug, step.step_id.to_s.dasherize)) %>
+    <% end %>
+  <% end %>
+<% end %>

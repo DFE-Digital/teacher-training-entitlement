@@ -1,13 +1,10 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class CourseStartDate
-        include DfE::Wizard::Step
-
-        TITLE = "Course start".freeze
-        PARTIAL = "radio_buttons".freeze
-        ATTRIBUTE = :course_cohort_ecf_id
-        ANSWER_DISPLAY_NAME = "Course start".freeze
+      class CourseStartDate < Shared::RadioButtons
+        with_title "Course start"
+        with_attribute :course_cohort_ecf_id
+        with_answer_display_name "Course start"
         REQUIRED_ANSWER_MESSAGE = "Choose your course start date".freeze
 
         attribute ATTRIBUTE, :string

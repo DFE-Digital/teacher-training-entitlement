@@ -5,8 +5,6 @@ class Course < ApplicationRecord
     TTE_EARLY_YEARS = "tte-early-years".freeze,
     SEND_INCLUSIVE_TEACHERS = "npd-send-eip".freeze,
     SEND_INCLUSIVE_LEADERS = "npd-send-eipl".freeze,
-    COURSE_ONE = "course-one".freeze,
-    COURSE_TWO = "course-two".freeze,
   ].freeze
 
   TTE_RECEPTION = "tte-reception".freeze # used to keep backward compatibility with API v1 on schedule endpoint
@@ -43,9 +41,7 @@ class Course < ApplicationRecord
   end
 
   def application_creation_service_class_name
-    if identifier.in?([COURSE_ONE, COURSE_TWO])
-      Registrations::Spikes::ApplicationCreation.name
-    elsif identifier.in?([TTE_RECEPTION, TTE_EARLY_YEARS])
+    if identifier.in?([TTE_RECEPTION, TTE_EARLY_YEARS])
       Registrations::ExcellenceInReception::ApplicationCreation.name
     elsif identifier.in?([SEND_INCLUSIVE_TEACHERS, SEND_INCLUSIVE_LEADERS])
       Registrations::SendInclusivePractice::ApplicationCreation.name
@@ -53,9 +49,7 @@ class Course < ApplicationRecord
   end
 
   def funding_eligibility_service_class
-    if identifier.in?([COURSE_ONE, COURSE_TWO])
-      Registrations::Spikes::FavouriteThingsFundingEligibility
-    elsif identifier.in?([TTE_RECEPTION, TTE_EARLY_YEARS])
+    if identifier.in?([TTE_RECEPTION, TTE_EARLY_YEARS])
       Registrations::ExcellenceInReception::FundingEligibility
     elsif identifier.in?([SEND_INCLUSIVE_TEACHERS, SEND_INCLUSIVE_LEADERS])
       Registrations::SendInclusivePractice::FundingEligibility

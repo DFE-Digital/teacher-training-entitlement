@@ -8,7 +8,7 @@ module Registrations
       attr_reader :wizard_step
 
       def call
-        wizard_step.wizard.state_store.write(funding_eligibility_result:)
+        wizard_step.wizard.state_store.write("funding_eligibility_result" => funding_eligibility_result)
       end
 
     private

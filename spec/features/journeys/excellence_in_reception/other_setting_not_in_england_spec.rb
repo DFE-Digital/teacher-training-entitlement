@@ -39,7 +39,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         "can_share_choices" => "1",
         "course_cohort_ecf_id" => course_cohort.ecf_id,
         "funding" => "another",
-        "lead_provider_id" => lead_provider.id.to_s,
+        "lead_provider_id" => lead_provider.id,
         "teacher_catchment" => Institution::OTHER,
       )
     end

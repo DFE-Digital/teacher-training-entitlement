@@ -3,11 +3,11 @@ module Helpers
     def start_registration
       seed_reception_course_cohort_in_session
 
-      navigate_to_page(path: "/registrations/#{Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG}/course-start-date", submit_form: false)
+      navigate_to_page(path: "/registrations/#{Course::TTE_EARLY_YEARS}/course-start-date", submit_form: false)
     end
 
     def choose_current_course_start_date
-      expect_page_to_have(path: "/registrations/#{Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG}/course-start-date", submit_form: true) do
+      expect_page_to_have(path: "/registrations/#{Course::TTE_EARLY_YEARS}/course-start-date", submit_form: true) do
         page.choose(reception_course_cohort.cohort.name, visible: :all)
       end
     end
@@ -38,7 +38,7 @@ module Helpers
     end
 
     def continue_past_ineligible_funding
-      expect_page_to_have(path: page.current_path, submit_form: true)
+      expect_page_to_have(path: page.current_path, click_continue: true)
     end
 
     def choose_course_funding(label)
@@ -60,7 +60,7 @@ module Helpers
   private
 
     def registration_step_path(step_slug)
-      "/registrations/#{Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG}/#{step_slug}"
+      "/registrations/#{Course::TTE_EARLY_YEARS}/#{step_slug}"
     end
 
     def reception_course_cohort

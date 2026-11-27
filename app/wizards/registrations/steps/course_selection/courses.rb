@@ -1,13 +1,10 @@
 module Registrations
   module Steps
     module CourseSelection
-      class Courses
-        include DfE::Wizard::Step
-
-        TITLE = "Which course would you like to apply for?".freeze
-        PARTIAL = "radio_buttons".freeze
-        ATTRIBUTE = :course_journey_slug
-        ANSWER_DISPLAY_NAME = "Course".freeze
+      class Courses < Shared::RadioButtons
+        with_title "Which course would you like to apply for?"
+        with_attribute :course_journey_slug
+        with_answer_display_name "Course"
 
         attribute ATTRIBUTE, :string
         validates ATTRIBUTE, presence: { message: "Select a course" }

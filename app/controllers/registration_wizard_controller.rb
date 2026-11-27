@@ -77,7 +77,7 @@ private
   def redirect_to_new_registration_journey
     return if params[:step] == "closed"
 
-    redirect_to step_registration_path(Registrations::Courses::ExcellenceInReception::JOURNEY_SLUG, "course-start-date")
+    redirect_to step_registration_path(Course::TTE_EARLY_YEARS, "course-start-date")
   end
 
   def ensure_can_render_step

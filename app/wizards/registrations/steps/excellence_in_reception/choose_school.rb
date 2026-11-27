@@ -1,13 +1,10 @@
 module Registrations
   module Steps
     module ExcellenceInReception
-      class ChooseSchool
-        include DfE::Wizard::Step
-
-        TITLE = "Select your workplace".freeze
-        PARTIAL = "choose_institution".freeze
-        ATTRIBUTE = :institution_id
-        ANSWER_DISPLAY_NAME = "Workplace".freeze
+      class ChooseSchool < Shared::ChooseInstitution
+        with_title "Select your workplace"
+        with_attribute :institution_id
+        with_answer_display_name "Workplace"
 
         attribute ATTRIBUTE, :string
         validates ATTRIBUTE, presence: { message: "Enter a workplace name" }
