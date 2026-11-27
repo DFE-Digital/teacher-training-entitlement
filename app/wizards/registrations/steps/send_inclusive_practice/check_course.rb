@@ -2,7 +2,6 @@ module Registrations
   module Steps
     module SendInclusivePractice
       class CheckCourse < Shared::Plain
-
         def self.permitted_params = []
 
         def title
