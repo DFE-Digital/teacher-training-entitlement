@@ -40,14 +40,6 @@ class Course < ApplicationRecord
     identifier
   end
 
-  def application_creation_service_class_name
-    if identifier.in?([TTE_RECEPTION, TTE_EARLY_YEARS])
-      Registrations::ExcellenceInReception::ApplicationCreation.name
-    elsif identifier.in?([SEND_INCLUSIVE_TEACHERS, SEND_INCLUSIVE_LEADERS])
-      Registrations::SendInclusivePractice::ApplicationCreation.name
-    end
-  end
-
   def funding_eligibility_service_class
     if identifier.in?([TTE_RECEPTION, TTE_EARLY_YEARS])
       Registrations::ExcellenceInReception::FundingEligibility

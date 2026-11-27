@@ -7,7 +7,7 @@ module Registrations
         def self.permitted_params = []
 
         def after_update
-          wizard.course.application_creation_service_class_name.constantize.new(wizard_step: self).call
+          Registrations::ApplicationCreation.new(wizard_step: self).call
         end
 
         def redirect_target

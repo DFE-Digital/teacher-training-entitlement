@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Registrations::ExcellenceInReception::ApplicationCreation do
+RSpec.describe Registrations::ApplicationCreation do
   subject(:service) { described_class.new(wizard_step:) }
 
   let(:user) { create(:user, ecf_id: nil) }

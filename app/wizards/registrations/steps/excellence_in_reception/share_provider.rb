@@ -12,10 +12,10 @@ module Registrations
         with_text "For more information about who we share your data with read our <a href=\"https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers#register-NPQ\">privacy notice</a>."
         with_text "If you do not agree to share your information you will not be able to progress with your NPD course."
 
-        attribute ATTRIBUTE, :string
-        validates ATTRIBUTE, presence: { message: "You must agree to share data with providers to continue" }
+        attribute :can_share_choices, :string
+        validates :can_share_choices, presence: { message: "You must agree to share data with providers to continue" }
 
-        def self.permitted_params = [ATTRIBUTE]
+        def self.permitted_params = [:can_share_choices]
 
         def self.answer_options
           [{ name: "Yes, I agree to share my information", value: "1" }]

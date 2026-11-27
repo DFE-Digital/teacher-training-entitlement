@@ -74,10 +74,11 @@ private
 
   def wizard
     @wizard ||= begin
-      step_slug = params[:step_slug]&.underscore&.to_sym
+      route_step_slug = params[:step_slug]
+      step_slug = route_step_slug&.underscore&.to_sym
       step_params = {}
       if step_slug
-        step_params[step_slug] = params[step_slug]&.to_unsafe_h || {}
+        step_params[step_slug] = params[route_step_slug]&.to_unsafe_h || {}
       end
 
       wizard_options = {
